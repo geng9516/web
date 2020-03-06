@@ -1,0 +1,8 @@
+spring:
+  thymeleaf:
+    cache: off
+  datasource:
+    url: jdbc:postgresql://localhost:5432/next-job?currentSchema=dev
+    username: postgres
+    password: root
+    driver-class-name: org.postgresql.Driver

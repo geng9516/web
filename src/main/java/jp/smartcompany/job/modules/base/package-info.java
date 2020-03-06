@@ -1,0 +1,1 @@
+package jp.smartcompany.job.modules.base;
