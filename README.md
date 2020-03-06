@@ -112,7 +112,20 @@
 3. [itext](https://itextpdf.com)
 
 #### Idea必须提前安装的插件
-> [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok)
-> [GenerateSerialVersionUID 自动生成序列号](https://blog.csdn.net/qq_42651904/article/details/90680430)<BR>
-> [Alibaba Java Coding Guidelines 阿里巴巴代码风格检测工具](https://blog.csdn.net/hou549135295/article/details/82743698)
-> [MyBatisX MybatisXML文件编写插件](https://mybatis.plus/guide/mybatisx-idea-plugin.html) 
+> [Lombok](https://plugins.jetbrains.com/plugin/6317-lombok)  
+> [GenerateSerialVersionUID 自动生成序列号](https://blog.csdn.net/qq_42651904/article/details/90680430)  
+> [Alibaba Java Coding Guidelines 阿里巴巴代码风格检测工具](https://blog.csdn.net/hou549135295/article/details/82743698)  
+> [MyBatisX MybatisXML文件编写插件](https://mybatis.plus/guide/mybatisx-idea-plugin.html)   
+
+#### 提交代码时的格式规范:
+> 「type」: 「subject」<br>
+> 例：　git commit -m "refactor:&nbsp;重构此文件xxx方法的逻辑"
+
+#### 提交代码的类型
+1. feat： 新功能（feature）
+2. fix： 修复bug
+3. docs： 添加文档（documentation）
+4. style： 只是修改了代码的格式（不影响代码逻辑，比如去掉了一些空格）
+5. refactor： 重构
+6. test： 增加了测试代码
+7. chore： 配置文件等涉及系统构建时的修改
