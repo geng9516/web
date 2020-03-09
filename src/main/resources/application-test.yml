@@ -1,0 +1,8 @@
+spring:
+  thymeleaf:
+    cache: off
+  datasource:
+    url: jdbc:postgresql://47.74.50.9:5532/web-work?currentSchema=dev
+    username: soadmin
+    password: ab9t_P6TNm!WB2
+    driver-class-name: org.postgresql.Driver

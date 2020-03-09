@@ -1,4 +1,4 @@
-# next-job
+# Web就业
 基于spring-boot的web就业系统源码，基于maven构建
 
 ### 项目结构详细说明
@@ -81,8 +81,9 @@
           ├── static  静态资源存放文件夹
           ├── templates 模板存放文件夹
           ├── application.yml 项目核心配置文件 
-          ├── application-dev.yml 开发环境配置项
-          ├── application-prod.yml 生产环境配置项
+          ├── application-dev.yml 本地开发环境相关配置
+          ├── application-prod.yml 线上生产环境相关配置
+          ├── application-test.yml 线上测试环境相关配置(application.yml中默认的环境配置)
           ├── banner.txt  系统启动时的banner
      ├── test 单元测试（文件夹）
 ├── .gitignore  git忽略文件
