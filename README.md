@@ -98,6 +98,14 @@
    4. 项目操作excel使用hutool的Excel对apache-poi进行的封装
    5. 项目操作pdf使用itext7
    6. 项目操作csv不使用任何工具，自定义工具完成
+   7. 系统相关数据表前缀说明：
+        1. conf_XX_XX 系统表 控制功能开关
+        2. dt_XX_XX 中间表 存储UPDS数据
+        3. hist_XX_XX  smartcompany功能表  主要只用HIST_DESIGNATION
+        4. mast_XX_XX  MAST数据　　
+            MAST_GENERIC_DETAIL　　名称マスタ明細データ
+        5. tmg_XX_XX  就业系统表,如：TMG_NTF_xx 请假，TMG_PAID_xx赋予
+        6. t_xx 本次系统升级新增数据表
    
   
 #### 开发必须插件：
