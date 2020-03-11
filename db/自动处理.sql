@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS dev.t_schedule_job;
-CREATE TABLE dev.t_schedule_job (
+DROP TABLE IF EXISTS t_schedule_job;
+CREATE TABLE t_schedule_job (
     job_id bigserial,
     bean_name varchar(200),
     params varchar(2000),
@@ -11,18 +11,18 @@ CREATE TABLE dev.t_schedule_job (
     PRIMARY KEY (job_id)
 );
 
-COMMENT ON TABLE dev.t_schedule_job IS '任務マスター';
-COMMENT ON COLUMN dev.t_schedule_job.job_id IS '任務id';
-COMMENT ON COLUMN dev.t_schedule_job.bean_name IS 'spring bean名前';
-COMMENT ON COLUMN dev.t_schedule_job.params IS 'パラメータ';
-COMMENT ON COLUMN dev.t_schedule_job.cron_expression IS 'cron式';
-COMMENT ON COLUMN dev.t_schedule_job.status IS '任務状態　１　ノーマル  0：一時停止';
-COMMENT ON COLUMN dev.t_schedule_job.remark IS 'リマーク';
-COMMENT ON COLUMN dev.t_schedule_job.create_time IS '作成時刻';
-COMMENT ON COLUMN dev.t_schedule_job.update_time IS '更新時刻';
+COMMENT ON TABLE t_schedule_job IS '任務マスター';
+COMMENT ON COLUMN t_schedule_job.job_id IS '任務id';
+COMMENT ON COLUMN t_schedule_job.bean_name IS 'spring bean名前';
+COMMENT ON COLUMN t_schedule_job.params IS 'パラメータ';
+COMMENT ON COLUMN t_schedule_job.cron_expression IS 'cron式';
+COMMENT ON COLUMN t_schedule_job.status IS '任務状態　１　ノーマル  0：一時停止';
+COMMENT ON COLUMN t_schedule_job.remark IS 'リマーク';
+COMMENT ON COLUMN t_schedule_job.create_time IS '作成時刻';
+COMMENT ON COLUMN t_schedule_job.update_time IS '更新時刻';
 
-DROP TABLE IF EXISTS dev.t_schedule_job_log;
-CREATE TABLE dev.t_schedule_job_log (
+DROP TABLE IF EXISTS t_schedule_job_log;
+CREATE TABLE t_schedule_job_log (
     log_id bigserial,
     job_id int8,
     bean_name varchar(200),
@@ -35,19 +35,19 @@ CREATE TABLE dev.t_schedule_job_log (
     PRIMARY KEY (log_id)
 );
 
-COMMENT ON TABLE dev.t_schedule_job_log IS '任務ログ';
-COMMENT ON COLUMN dev.t_schedule_job_log.log_id IS '任務ログID';
-COMMENT ON COLUMN dev.t_schedule_job_log.job_id IS '任務ID';
-COMMENT ON COLUMN dev.t_schedule_job_log.bean_name IS 'spring bean名前';
-COMMENT ON COLUMN dev.t_schedule_job_log.params IS 'リクエストパラメータ';
-COMMENT ON COLUMN dev.t_schedule_job_log.status IS '任務状態 true：成功 false：失敗';
-COMMENT ON COLUMN dev.t_schedule_job_log.error IS '失敗情報';
-COMMENT ON COLUMN dev.t_schedule_job_log.time IS '実行時間（ミリ秒）';
-COMMENT ON COLUMN dev.t_schedule_job_log.create_time IS '作成時刻';
-COMMENT ON COLUMN dev.t_schedule_job_log.update_time IS '更新時刻';
+COMMENT ON TABLE t_schedule_job_log IS '任務ログ';
+COMMENT ON COLUMN t_schedule_job_log.log_id IS '任務ログID';
+COMMENT ON COLUMN t_schedule_job_log.job_id IS '任務ID';
+COMMENT ON COLUMN t_schedule_job_log.bean_name IS 'spring bean名前';
+COMMENT ON COLUMN t_schedule_job_log.params IS 'リクエストパラメータ';
+COMMENT ON COLUMN t_schedule_job_log.status IS '任務状態 true：成功 false：失敗';
+COMMENT ON COLUMN t_schedule_job_log.error IS '失敗情報';
+COMMENT ON COLUMN t_schedule_job_log.time IS '実行時間（ミリ秒）';
+COMMENT ON COLUMN t_schedule_job_log.create_time IS '作成時刻';
+COMMENT ON COLUMN t_schedule_job_log.update_time IS '更新時刻';
 
-DROP TABLE IF EXISTS dev.qrtz_job_details;
-CREATE TABLE dev.qrtz_job_details (
+DROP TABLE IF EXISTS qrtz_job_details;
+CREATE TABLE qrtz_job_details (
     SCHED_NAME VARCHAR(120) NOT NULL,
     JOB_NAME  VARCHAR(200) NOT NULL,
     JOB_GROUP VARCHAR(200) NOT NULL,
@@ -61,8 +61,8 @@ CREATE TABLE dev.qrtz_job_details (
     PRIMARY KEY (SCHED_NAME,JOB_NAME,JOB_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_triggers;
-CREATE TABLE dev.qrtz_triggers (
+DROP TABLE IF EXISTS qrtz_triggers;
+CREATE TABLE qrtz_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -82,8 +82,8 @@ CREATE TABLE dev.qrtz_triggers (
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_simple_triggers;
-CREATE TABLE dev.qrtz_simple_triggers (
+DROP TABLE IF EXISTS qrtz_simple_triggers;
+CREATE TABLE qrtz_simple_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -93,8 +93,8 @@ CREATE TABLE dev.qrtz_simple_triggers (
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_cron_triggers;
-CREATE TABLE dev.qrtz_cron_triggers (
+DROP TABLE IF EXISTS qrtz_cron_triggers;
+CREATE TABLE qrtz_cron_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -103,8 +103,8 @@ CREATE TABLE dev.qrtz_cron_triggers (
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_simprop_triggers;
-CREATE TABLE dev.qrtz_simprop_triggers (
+DROP TABLE IF EXISTS qrtz_simprop_triggers;
+CREATE TABLE qrtz_simprop_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -122,8 +122,8 @@ CREATE TABLE dev.qrtz_simprop_triggers (
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_blob_triggers;
-CREATE TABLE dev.qrtz_blob_triggers (
+DROP TABLE IF EXISTS qrtz_blob_triggers;
+CREATE TABLE qrtz_blob_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
     TRIGGER_GROUP VARCHAR(200) NOT NULL,
@@ -131,23 +131,23 @@ CREATE TABLE dev.qrtz_blob_triggers (
     PRIMARY KEY (SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_calendars;
-CREATE TABLE dev.qrtz_calendars (
+DROP TABLE IF EXISTS qrtz_calendars;
+CREATE TABLE qrtz_calendars (
     SCHED_NAME VARCHAR(120) NOT NULL,
     CALENDAR_NAME  VARCHAR(200) NOT NULL,
     CALENDAR BYTEA NOT NULL,
     PRIMARY KEY (SCHED_NAME,CALENDAR_NAME)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_paused_trigger_grps;
-CREATE TABLE dev.qrtz_paused_trigger_grps (
+DROP TABLE IF EXISTS qrtz_paused_trigger_grps;
+CREATE TABLE qrtz_paused_trigger_grps (
     SCHED_NAME VARCHAR(120) NOT NULL,
     TRIGGER_GROUP  VARCHAR(200) NOT NULL,
     PRIMARY KEY (SCHED_NAME,TRIGGER_GROUP)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_fired_triggers;
-CREATE TABLE dev.qrtz_fired_triggers (
+DROP TABLE IF EXISTS qrtz_fired_triggers;
+CREATE TABLE qrtz_fired_triggers (
     SCHED_NAME VARCHAR(120) NOT NULL,
     ENTRY_ID VARCHAR(95) NOT NULL,
     TRIGGER_NAME VARCHAR(200) NOT NULL,
@@ -164,8 +164,8 @@ CREATE TABLE dev.qrtz_fired_triggers (
     PRIMARY KEY (SCHED_NAME,ENTRY_ID)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_scheduler_state;
-CREATE TABLE dev.qrtz_scheduler_state (
+DROP TABLE IF EXISTS qrtz_scheduler_state;
+CREATE TABLE qrtz_scheduler_state (
     SCHED_NAME VARCHAR(120) NOT NULL,
     INSTANCE_NAME VARCHAR(200) NOT NULL,
     LAST_CHECKIN_TIME BIGINT NOT NULL,
@@ -173,32 +173,32 @@ CREATE TABLE dev.qrtz_scheduler_state (
     PRIMARY KEY (SCHED_NAME,INSTANCE_NAME)
 );
 
-DROP TABLE IF EXISTS dev.qrtz_locks;
-CREATE TABLE dev.qrtz_locks (
+DROP TABLE IF EXISTS qrtz_locks;
+CREATE TABLE qrtz_locks (
     SCHED_NAME VARCHAR(120) NOT NULL,
     LOCK_NAME  VARCHAR(40) NOT NULL,
     PRIMARY KEY (SCHED_NAME,LOCK_NAME)
 );
 
-create index idx_qrtz_j_req_recovery on dev.qrtz_job_details(SCHED_NAME,REQUESTS_RECOVERY);
-create index idx_qrtz_j_grp on dev.qrtz_job_details(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_j_req_recovery on qrtz_job_details(SCHED_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_j_grp on qrtz_job_details(SCHED_NAME,JOB_GROUP);
 
-create index idx_qrtz_t_j on dev.qrtz_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
-create index idx_qrtz_t_jg on dev.qrtz_triggers(SCHED_NAME,JOB_GROUP);
-create index idx_qrtz_t_c on dev.qrtz_triggers(SCHED_NAME,CALENDAR_NAME);
-create index idx_qrtz_t_g on dev.qrtz_triggers(SCHED_NAME,TRIGGER_GROUP);
-create index idx_qrtz_t_state on dev.qrtz_triggers(SCHED_NAME,TRIGGER_STATE);
-create index idx_qrtz_t_n_state on dev.qrtz_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);
-create index idx_qrtz_t_n_g_state on dev.qrtz_triggers(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);
-create index idx_qrtz_t_next_fire_time on dev.qrtz_triggers(SCHED_NAME,NEXT_FIRE_TIME);
-create index idx_qrtz_t_nft_st on dev.qrtz_triggers(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);
-create index idx_qrtz_t_nft_misfire on dev.qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);
-create index idx_qrtz_t_nft_st_misfire on dev.qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);
-create index idx_qrtz_t_nft_st_misfire_grp on dev.qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_j on qrtz_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_t_jg on qrtz_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_t_c on qrtz_triggers(SCHED_NAME,CALENDAR_NAME);
+create index idx_qrtz_t_g on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP);
+create index idx_qrtz_t_state on qrtz_triggers(SCHED_NAME,TRIGGER_STATE);
+create index idx_qrtz_t_n_state on qrtz_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_n_g_state on qrtz_triggers(SCHED_NAME,TRIGGER_GROUP,TRIGGER_STATE);
+create index idx_qrtz_t_next_fire_time on qrtz_triggers(SCHED_NAME,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st on qrtz_triggers(SCHED_NAME,TRIGGER_STATE,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME);
+create index idx_qrtz_t_nft_st_misfire on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_STATE);
+create index idx_qrtz_t_nft_st_misfire_grp on qrtz_triggers(SCHED_NAME,MISFIRE_INSTR,NEXT_FIRE_TIME,TRIGGER_GROUP,TRIGGER_STATE);
 
-create index idx_qrtz_ft_trig_inst_name on dev.qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME);
-create index idx_qrtz_ft_inst_job_req_rcvry on dev.qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);
-create index idx_qrtz_ft_j_g on dev.qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
-create index idx_qrtz_ft_jg on dev.qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
-create index idx_qrtz_ft_t_g on dev.qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
-create index idx_qrtz_ft_tg on dev.qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
+create index idx_qrtz_ft_trig_inst_name on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME);
+create index idx_qrtz_ft_inst_job_req_rcvry on qrtz_fired_triggers(SCHED_NAME,INSTANCE_NAME,REQUESTS_RECOVERY);
+create index idx_qrtz_ft_j_g on qrtz_fired_triggers(SCHED_NAME,JOB_NAME,JOB_GROUP);
+create index idx_qrtz_ft_jg on qrtz_fired_triggers(SCHED_NAME,JOB_GROUP);
+create index idx_qrtz_ft_t_g on qrtz_fired_triggers(SCHED_NAME,TRIGGER_NAME,TRIGGER_GROUP);
+create index idx_qrtz_ft_tg on qrtz_fired_triggers(SCHED_NAME,TRIGGER_GROUP);
