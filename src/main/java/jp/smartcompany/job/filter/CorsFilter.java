@@ -20,7 +20,6 @@ public class CorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
-
         String origin = req.getHeader("Origin");
         if(origin == null) {
             origin = req.getHeader("Referer");
@@ -30,8 +29,10 @@ public class CorsFilter extends OncePerRequestFilter {
         if(RequestMethod.OPTIONS.toString().equals(req.getMethod())) {
             String allowMethod = req.getHeader("Access-Control-Request-Method");
             String allowHeaders = req.getHeader("Access-Control-Request-Headers");
-            resp.setHeader("Access-Control-Allow-Methods", allowMethod);  // 允许浏览器在预检请求成功之后发送的实际请求方法名
-            resp.setHeader("Access-Control-Allow-Headers", allowHeaders); // 允许浏览器发送的请求消息头
+            // 允许浏览器在预检请求成功之后发送的实际请求方法名
+            resp.setHeader("Access-Control-Allow-Methods", allowMethod);
+            // 允许浏览器发送的请求消息头
+            resp.setHeader("Access-Control-Allow-Headers", allowHeaders);
         }
         chain.doFilter(req, resp);
     }
