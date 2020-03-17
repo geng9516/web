@@ -4,7 +4,7 @@
 
 列名|类型|长度|注释|主键|是否为null|默认值
 :---:|:---:|:---:|:---:|:---:|:---:|:---:
-ma_id|int8|64|IDカラム|Y|N|AUTO_INCREMENT
+MA_ID|int8|64|IDカラム|Y|N|AUTO_INCREMENT
 MA_CCUSTOMERID|varchar|10|顧客コード|N|Y|NULL
 MA_CUSERID|varchar|30|ユーザID|N|Y|NULL
 MA_CACCOUNT|varchar|30|アカウント|N|Y|NULL
