@@ -9,7 +9,7 @@ MA_CCUSTOMERID|varchar|10|顧客コード|N|Y|NULL
 MA_CUSERID|varchar|30|ユーザID|N|Y|NULL
 MA_CACCOUNT|varchar|30|アカウント|N|Y|NULL
 MA_DSTART|date|0|有効期間開始日|N|Y|now()
-MA_DEND|date|0|有効期間終了日|N|Y|to_date('2222-12-31'::text, 'YYYY/MM/DD'::text)
+MA_DEND|date|0|有効期間終了日|N|Y|to_date('2222-12-31', 'YYYY/MM/DD')
 MA_NRETRYCOUNTER|int2|0|パスワード間違い回数|N|Y|0
 MA_NPASSWORDLOCK|bool|1|ロックアウトフラグ|N|Y|false
 MA_CADMINUSER|varchar|1|管理ツールユーザフラグ|N|Y|0
