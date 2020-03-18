@@ -1,0 +1,66 @@
+# 人事考課歴(HIST_RATING)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HR_ID|numeric||否|IDカラム  |
+|HR_CCUSTOMERID|varchar||否|顧客コード|
+|HR_CCOMPANYID|varchar||否|法人コード|
+|HR_CEMPLOYEEID|varchar||否|社員番号|
+|HR_CUSERID|varchar||否|ユーザID|
+|HR_DSTARTDATE|date||否|データ開始日|
+|HR_DENDDATE|date||否|データ終了日|
+|HR_CMODIFIERUSERID|varchar||是|最終更新者|
+|HR_DMODIFIEDDATE|date||是|最終更新日|
+|HR_NYEAR|numeric||是|考課年度|
+|HR_CTERMID|varchar||是|考課対象期|
+|HR_CTERM|varchar||是|考課対象期コード|
+|HR_N1STSCORE|numeric||是|一次考課点数|
+|HR_C1STRATING|varchar||是|一次考課結果|
+|HR_C1STRATINGCD|varchar||是|一次考課結果コード|
+|HR_C1STCOMMENT|varchar||是|一次考課コメント|
+|HR_N2NDSCORE|numeric||是|二次考課点数|
+|HR_C2NDRATING|varchar||是|二次考課結果|
+|HR_C2NDRATINGCD|varchar||是|二次考課結果コード|
+|HR_C2NDCOMMENT|varchar||是|二次考課コメント|
+|HR_N3RDSCORE|numeric||是|三次考課点数|
+|HR_C3RDRATING|varchar||是|三次考課結果|
+|HR_C3RDRATINGCD|varchar||是|三次考課結果コード|
+|HR_C3RDCOMMENT|varchar||是|三次考課コメント|
+|HR_NFINALSCORE|numeric||是|最終考課点数|
+|HR_CFINALRATING|varchar||是|最終考課結果|
+|HR_CFINALRATINGCD|varchar||是|最終考課結果コード|
+|HR_CFINALCOMMENT|varchar||是|最終考課コメント|
+|HR_CREMARKS|varchar||是|備考|
+|HR_CSPAREDESC1|varchar||是|予備内容1（別名用ダミー）|
+|HR_CSPAREDESC1JA|varchar||是|予備内容1（日本語）|
+|HR_CSPAREDESC1EN|varchar||是|予備内容1（英語）|
+|HR_CSPAREDESC1CH|varchar||是|予備内容1（中国語）|
+|HR_CSPAREDESC101|varchar||是|予備内容1（予備１）|
+|HR_CSPAREDESC102|varchar||是|予備内容1（予備2）|
+|HR_CSPAREDESC2|varchar||是|予備内容2（別名用ダミー）|
+|HR_CSPAREDESC2JA|varchar||是|予備内容2（日本語）|
+|HR_CSPAREDESC2EN|varchar||是|予備内容2（英語）|
+|HR_CSPAREDESC2CH|varchar||是|予備内容2（中国語）|
+|HR_CSPAREDESC201|varchar||是|予備内容2（予備１）|
+|HR_CSPAREDESC202|varchar||是|予備内容2（予備2）|
+|HR_CSPAREDESC3|varchar||是|予備内容3（別名用ダミー）|
+|HR_CSPAREDESC3JA|varchar||是|予備内容3（日本語）|
+|HR_CSPAREDESC3EN|varchar||是|予備内容3（英語）|
+|HR_CSPAREDESC3CH|varchar||是|予備内容3（中国語）|
+|HR_CSPAREDESC301|varchar||是|予備内容3（予備１）|
+|HR_CSPAREDESC302|varchar||是|予備内容3（予備2）|
+|HR_NNUMBER01|numeric||是|予備数値1|
+|HR_NNUMBER02|numeric||是|予備数値2|
+|HR_NNUMBER03|numeric||是|予備数値3|
+|HR_CCHAR01|varchar||是|予備文字列1|
+|HR_CCHAR02|varchar||是|予備文字列2|
+|HR_CCHAR03|varchar||是|予備文字列3|
+|HR_DDATE01|date||是|予備日付1|
+|HR_DDATE02|date||是|予備日付2|
+|HR_DDATE03|date||是|予備日付3|
+|HR_CCODE01|varchar||是|予備コード1|
+|HR_CCODE01CD|varchar||是|予備コード1コード|
+|HR_CCODE02|varchar||是|予備コード2|
+|HR_CCODE02CD|varchar||是|予備コード2コード|
+|HR_CCODE03|varchar||是|予備コード3|
+|HR_CCODE03CD|varchar||是|予備コード3コード|
+|VERSIONNO|numeric||否|バージョンNo  |

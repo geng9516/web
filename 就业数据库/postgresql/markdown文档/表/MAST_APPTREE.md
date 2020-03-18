@@ -1,0 +1,40 @@
+# アプリケーション設定マスタ(MAST_APPTREE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MTR_ID|numeric||否|IDカラム|
+|MTR_COBJECTID|varchar||否|オブジェクトID|
+|MTR_CSITEID|varchar||是|サイトID|
+|MTR_CAPPID|varchar||是|アプリケーションID|
+|MTR_CSUBAPPID|varchar||是|サブアプリケーションID|
+|MTR_CSCREENID|varchar||是|画面ID|
+|MTR_CBUTTONID|varchar||是|ボタンID|
+|MTR_COBJNAME|varchar||是|項目名|
+|MTR_COBJNAMEJA|varchar||是|項目名（日本語）|
+|MTR_COBJNAMEEN|varchar||是|項目名（英語）|
+|MTR_COBJNAMECH|varchar||是|項目名（中国語）|
+|MTR_COBJNAME01|varchar||是|項目名（予備１）|
+|MTR_COBJNAME02|varchar||是|項目名（予備２）|
+|MTR_CTYPE|varchar||否|種別|
+|MTR_CTEMPLATEID|varchar||是|使用レイアウトID|
+|MTR_CURL|varchar||是|URL|
+|MTR_CIMAGEURL|varchar||是|画像URL|
+|MTR_CSITECAPTION|varchar||是|サイト説明文|
+|MTR_CSITECAPTIONJA|varchar||是|サイト説明文（日本語）|
+|MTR_CSITECAPTIONEN|varchar||是|サイト説明文（英語）|
+|MTR_CSITECAPTIONCH|varchar||是|サイト説明文（中国語）|
+|MTR_CSITECAPTION01|varchar||是|サイト説明文（予備１）|
+|MTR_CSITECAPTION02|varchar||是|サイト説明文（予備２）|
+|MTR_NSEQ|numeric||否|並び順|
+|MTR_CVERSION|varchar||是|対応バージョン|
+|MTR_CSYSTEMID|varchar||是|対応システム|
+|MTR_CDEFAULTTARGETUSER|varchar||是|デフォルト検索対象者|
+|MTR_CCRITERIALDATETYPE|varchar||是|適用基準日区分|
+|MTR_CDATAPERMISSIONTYPE|varchar||是|検索対象範囲適用種別|
+|MTR_CAPPAUTOLOAD|varchar||是|アプリケーション自動起動|
+|MTR_CONLINEHELPURL|varchar||是|オンラインヘルプURL|
+|MTR_CONLINEHELPATTR|varchar||是|オンラインヘルプWindow属性|
+|MTR_CDOMAINID|varchar||是|ドメインコード|
+|MTR_CIFRAMEFLAG|varchar||是|インラインフレーム使用フラグ|
+|MTR_CMODIFIERUSERID|varchar||是|最終更新者|
+|MTR_DMODIFIEDDATE|date||是|最終更新日|
+|VERSIONNO|numeric||否|バージョンNo|

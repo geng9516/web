@@ -1,0 +1,53 @@
+# 昇格歴(HIST_JOBGRADE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HJG_ID|numeric||否|IDカラム|
+|HJG_CCUSTOMERID|varchar||否|顧客コード|
+|HJG_CCOMPANYID|varchar||否|法人コード|
+|HJG_CEMPLOYEEID|varchar||否|社員番号|
+|HJG_CUSERID|varchar||否|ユーザID|
+|HJG_DSTARTDATE|date||否|データ開始日|
+|HJG_DENDDATE|date||否|データ終了日|
+|HJG_CMODIFIERUSERID|varchar||是|最終更新者|
+|HJG_DMODIFIEDDATE|date||是|最終更新日|
+|HJG_DDATEOFANNOUNCEMENT|date||是|発令日|
+|HJG_CGRADE|varchar||是|資格等級|
+|HJG_CGRADECD|varchar||是|資格等級コード|
+|HJG_NGRADEPERIOD|numeric||是|資格等級滞留|
+|HJG_CCLASS|varchar||是|級・号俸|
+|HJG_CCLASSCD|varchar||是|級・号俸コード|
+|HJG_NCLASSPERIOD|numeric||是|級・号俸滞留|
+|HJG_CSPAREDESC1|varchar||是|予備内容1（別名用ダミー）|
+|HJG_CSPAREDESC1JA|varchar||是|予備内容1（日本語）|
+|HJG_CSPAREDESC1EN|varchar||是|予備内容1（英語）|
+|HJG_CSPAREDESC1CH|varchar||是|予備内容1（中国語）|
+|HJG_CSPAREDESC101|varchar||是|予備内容1（予備１）|
+|HJG_CSPAREDESC102|varchar||是|予備内容1（予備2）|
+|HJG_CSPAREDESC2|varchar||是|予備内容2（別名用ダミー）|
+|HJG_CSPAREDESC2JA|varchar||是|予備内容2（日本語）|
+|HJG_CSPAREDESC2EN|varchar||是|予備内容2（英語）|
+|HJG_CSPAREDESC2CH|varchar||是|予備内容2（中国語）|
+|HJG_CSPAREDESC201|varchar||是|予備内容2（予備１）|
+|HJG_CSPAREDESC202|varchar||是|予備内容2（予備2）|
+|HJG_CSPAREDESC3|varchar||是|予備内容3（別名用ダミー）|
+|HJG_CSPAREDESC3JA|varchar||是|予備内容3（日本語）|
+|HJG_CSPAREDESC3EN|varchar||是|予備内容3（英語）|
+|HJG_CSPAREDESC3CH|varchar||是|予備内容3（中国語）|
+|HJG_CSPAREDESC301|varchar||是|予備内容3（予備１）|
+|HJG_CSPAREDESC302|varchar||是|予備内容3（予備2）|
+|HJG_NNUMBER01|numeric||是|予備数値1|
+|HJG_NNUMBER02|numeric||是|予備数値2|
+|HJG_NNUMBER03|numeric||是|予備数値3|
+|HJG_CCHAR01|varchar||是|予備文字列1|
+|HJG_CCHAR02|varchar||是|予備文字列2|
+|HJG_CCHAR03|varchar||是|予備文字列3|
+|HJG_DDATE01|date||是|予備日付1|
+|HJG_DDATE02|date||是|予備日付2|
+|HJG_DDATE03|date||是|予備日付3|
+|HJG_CCODE01|varchar||是|予備コード1|
+|HJG_CCODE01CD|varchar||是|予備コード1コード|
+|HJG_CCODE02|varchar||是|予備コード2|
+|HJG_CCODE02CD|varchar||是|予備コード2コード|
+|HJG_CCODE03|varchar||是|予備コード3|
+|HJG_CCODE03CD|varchar||是|予備コード3コード|
+|VERSIONNO|numeric||否|バージョンNo  |

@@ -1,0 +1,56 @@
+# [勤怠]月次集計出力イメージ(Works)                                       (TMG_WORKS_KINTAI)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TXKW_CCUSTOMERID|varchar||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
+|TXKW_CCOMPANYID|varchar||否|法人ｺｰﾄﾞ                                                                                    |
+|TXKW_CEMPLOYEEID|varchar||否|社員番号                                                                                      |
+|TXKW_DSTARTDATE|date||否|開始日                                                                                       |
+|TXKW_DENDDATE|date||否|終了日                                                                                       |
+|TXKW_CMODIFIERUSERID|varchar||是|更新者                                                                                       |
+|TXKW_DMODIFIEDDATE|date||是|更新日                                                                                       |
+|TXKW_CMODIFIERPROGRAMID|varchar||是|更新プログラムID                                                                                 |
+|TXKW_NSEQ|numeric||否|履歴ｼｰｹﾝｽ                                                                                   |
+|TXKW_CSHIFTCODE|varchar||是|シフトコード                                                                                    |
+|TXKW_CSHIFTID|varchar||是|シフト区分                                                                                     |
+|TXKW_NNUMBER01|numeric||是|月平均所定労働時間                                                                                 |
+|TXKW_NNUMBER02|numeric||是|勤務時間数・非                                                                                   |
+|TXKW_NNUMBER03|numeric||是|減額                                                                                        |
+|TXKW_NNUMBER04|numeric||是|超勤(100/100)                                                                               |
+|TXKW_NNUMBER05|numeric||是|超勤(125/100)                                                                               |
+|TXKW_NNUMBER06|numeric||是|超勤(150/100)                                                                               |
+|TXKW_NNUMBER07|numeric||是|休日(135/100)                                                                               |
+|TXKW_NNUMBER08|numeric||是|休日(160/100)                                                                               |
+|TXKW_NNUMBER09|numeric||是|夜勤(25/100)                                                                                |
+|TXKW_NNUMBER10|numeric||是|超勤(175/100)                                                                               |
+|TXKW_NNUMBER11|numeric||是|超勤2(100/100)                                                                              |
+|TXKW_NNUMBER12|numeric||是|超勤2(125/100)                                                                              |
+|TXKW_NNUMBER13|numeric||是|超勤2(150/100)                                                                              |
+|TXKW_NNUMBER14|numeric||是|休日2(135/100)                                                                              |
+|TXKW_NNUMBER15|numeric||是|休日2(160/100)                                                                              |
+|TXKW_NNUMBER16|numeric||是|夜勤2(25/100)                                                                               |
+|TXKW_NNUMBER17|numeric||是|超勤2(175/100)                                                                              |
+|TXKW_NNUMBER18|numeric||是|宿日直(医師当直)                                                                                 |
+|TXKW_NNUMBER19|numeric||是|宿日直(核物教員)                                                                                 |
+|TXKW_NNUMBER20|numeric||是|宿日直(医病看護師長)                                                                               |
+|TXKW_NNUMBER21|numeric||是|宿日直(医病薬剤師)                                                                                |
+|TXKW_NNUMBER22|numeric||是|宿日直(その他)                                                                                  |
+|TXKW_NNUMBER23|numeric||是|高所15(4H以上)                                                                                |
+|TXKW_NNUMBER24|numeric||是|高所15(4H未満)                                                                                |
+|TXKW_NNUMBER25|numeric||是|高所30(4H以上)                                                                                |
+|TXKW_NNUMBER26|numeric||是|高所30(4H未満)                                                                                |
+|TXKW_NNUMBER27|numeric||是|爆発物(4H以上)                                                                                 |
+|TXKW_NNUMBER28|numeric||是|爆発物(4H未満)                                                                                 |
+|TXKW_NNUMBER29|numeric||是|死体処理                                                                                      |
+|TXKW_NNUMBER30|numeric||是|死体処理(運搬)                                                                                  |
+|TXKW_NNUMBER31|numeric||是|放射線                                                                                       |
+|TXKW_NNUMBER32|numeric||是|異常圧力(0.2Mpaまで)                                                                            |
+|TXKW_NNUMBER33|numeric||是|異常圧力(0.3Mpaまで)                                                                            |
+|TXKW_NNUMBER34|numeric||是|異常圧力(0.3Mpa超)                                                                             |
+|TXKW_NNUMBER35|numeric||是|夜間看護(深夜全部)                                                                                |
+|TXKW_NNUMBER36|numeric||是|夜間看護(深夜4H以上)                                                                              |
+|TXKW_NNUMBER37|numeric||是|夜間看護(深夜2H～4H)                                                                             |
+|TXKW_NNUMBER38|numeric||是|夜間看護(深夜2H未満)                                                                              |
+|TXKW_NNUMBER39|numeric||是|夜間看護(5Km未満)                                                                               |
+|TXKW_NNUMBER40|numeric||是|夜間看護(5～10Km)                                                                              |
+|TXKW_NNUMBER41|numeric||是|夜間看護(10Km以上)                                                                              |
+|TXKW_NNUMBER42|numeric||是|ドクターヘリ                                                                                    |

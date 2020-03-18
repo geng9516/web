@@ -1,0 +1,46 @@
+# TMG_CSV2WORKSKINTAI_TMP_PS_T1(TMG_CSV2WORKSKINTAI_TMP_PS_T1)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TCWP_CEMPLOYEEID|varchar||是|null|
+|TCWP_DSTARTDATE|date||是|null|
+|TCWP_DENDDATE|date||是|null|
+|TCWP_9001|numeric||是|null|
+|TCWP_9002|numeric||是|null|
+|TCWP_2504|numeric||是|null|
+|TCWP_2508|numeric||是|null|
+|TCWP_2509|numeric||是|null|
+|TCWP_2510|numeric||是|null|
+|TCWP_2511|numeric||是|null|
+|TCWP_2512|numeric||是|null|
+|TCWP_2513|numeric||是|null|
+|TCWP_2515|numeric||是|null|
+|TCWP_2516|numeric||是|null|
+|TCWP_2517|numeric||是|null|
+|TCWP_2518|numeric||是|null|
+|TCWP_2519|numeric||是|null|
+|TCWP_2520|numeric||是|null|
+|TCWP_2612|numeric||是|null|
+|TCWP_2613|numeric||是|null|
+|TCWP_2614|numeric||是|null|
+|TCWP_2615|numeric||是|null|
+|TCWP_2616|numeric||是|null|
+|TCWP_2402|numeric||是|null|
+|TCWP_2403|numeric||是|null|
+|TCWP_2404|numeric||是|null|
+|TCWP_2405|numeric||是|null|
+|TCWP_2407|numeric||是|null|
+|TCWP_2408|numeric||是|null|
+|TCWP_2410|numeric||是|null|
+|TCWP_2411|numeric||是|null|
+|TCWP_2602|numeric||是|null|
+|TCWP_2521|numeric||是|null|
+|TCWP_2522|numeric||是|null|
+|TCWP_2523|numeric||是|null|
+|TCWP_2604|numeric||是|null|
+|TCWP_2605|numeric||是|null|
+|TCWP_2606|numeric||是|null|
+|TCWP_2607|numeric||是|null|
+|TCWP_2608|numeric||是|null|
+|TCWP_2609|numeric||是|null|
+|TCWP_2610|numeric||是|null|
+|TCWP_2625|numeric||是|null|

@@ -1,0 +1,46 @@
+# TMG_DAILY_D_90190013(TMG_DAILY_D_90190013)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TDAD_CCUSTOMERID|varchar||否|null|
+|TDAD_CCOMPANYID|varchar||否|null|
+|TDAD_CEMPLOYEEID|varchar||否|null|
+|TDAD_DSTARTDATE|date||否|null|
+|TDAD_DENDDATE|date||否|null|
+|TDAD_CMODIFIERUSERID|varchar||是|null|
+|TDAD_DMODIFIEDDATE|date||是|null|
+|TDAD_CMODIFIERPROGRAMID|varchar||是|null|
+|TDAD_NYYYY|numeric||否|null|
+|TDAD_DYYYYMM|date||否|null|
+|TDAD_DYYYYMMDD|date||否|null|
+|TDAD_CNOTWORKID|varchar||是|null|
+|TDAD_CNOTWORKNAME|varchar||是|null|
+|TDAD_NOPEN|numeric||是|null|
+|TDAD_NCLOSE|numeric||是|null|
+|TDAD_NDELETEFLG|numeric||是|null|
+|TDAD_SEQ|numeric||否|null|
+|TDAD_CSPARECHAR1|varchar||是|null|
+|TDAD_CSPARECHAR2|varchar||是|null|
+|TDAD_CSPARECHAR3|varchar||是|null|
+|TDAD_CSPARECHAR4|varchar||是|null|
+|TDAD_CSPARECHAR5|varchar||是|null|
+|TDAD_NSPARENUM1|numeric||是|null|
+|TDAD_NSPARENUM2|numeric||是|null|
+|TDAD_NSPARENUM3|numeric||是|null|
+|TDAD_NSPARENUM4|numeric||是|null|
+|TDAD_NSPARENUM5|numeric||是|null|
+|TDAD_DSPAREDATE1|date||是|null|
+|TDAD_DSPAREDATE2|date||是|null|
+|TDAD_DSPAREDATE3|date||是|null|
+|TDAD_DSPAREDATE4|date||是|null|
+|TDAD_DSPAREDATE5|date||是|null|
+|TDAD_CCODE01|varchar||是|null|
+|TDAD_CCODENM01|varchar||是|null|
+|TDAD_CCODE02|varchar||是|null|
+|TDAD_CCODENM02|varchar||是|null|
+|TDAD_CCODE03|varchar||是|null|
+|TDAD_CCODENM03|varchar||是|null|
+|TDAD_CCODE04|varchar||是|null|
+|TDAD_CCODENM04|varchar||是|null|
+|TDAD_CCODE05|varchar||是|null|
+|TDAD_CCODENM05|varchar||是|null|
+|TDAD_CREFNTFNO|varchar||是|null|
