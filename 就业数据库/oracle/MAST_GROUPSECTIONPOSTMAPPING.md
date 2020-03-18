@@ -1,0 +1,17 @@
+# グループ定義条件マスタ（組織、役職）(MAST_GROUPSECTIONPOSTMAPPING)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MAG_ID|NUMBER||否|IDカラム|
+|MAG_CCUSTOMERID_CK_FK|VARCHAR2||否|顧客コード|
+|MAG_CSYSTEMID_CK|VARCHAR2||否|システムコード|
+|MAG_CGROUPID_FK|VARCHAR2||否|グループコード|
+|MAG_DSTARTDATE_CK|DATE||是|開始日|
+|MAG_DENDDATE|DATE||是|終了日|
+|MAG_CTYPEID|VARCHAR2||否|定義区分|
+|MAG_CCOMPANYID|VARCHAR2||否|法人コード|
+|MAG_CSECTIONID|VARCHAR2||是|組織コード|
+|MAG_CPOSTID|VARCHAR2||是|役職コード|
+|MAG_CEMPLOYEEID|VARCHAR2||是|社員番号|
+|MAG_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|MAG_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

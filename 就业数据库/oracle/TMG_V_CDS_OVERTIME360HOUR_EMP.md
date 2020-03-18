@@ -1,0 +1,11 @@
+# 年間超過勤務時間が360時間を越えた職員(TMG_V_CDS_OVERTIME360HOUR_EMP)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TVCO360_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TVCO360_CCOMPANYID|VARCHAR2||否|法人コード|
+|TVCO360_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVCO360_CUSERID|VARCHAR2||否|ユーザーID|
+|TVCO360_DSTARTDATE|DATE||是|データ開始日|
+|TVCO360_DENDDATE|DATE||是|データ終了日|
+|TVCO360_NYYYY|NUMBER||是|該当年度|
+|TVCO360_NOVERTIME|NUMBER||是|超過勤務時間|

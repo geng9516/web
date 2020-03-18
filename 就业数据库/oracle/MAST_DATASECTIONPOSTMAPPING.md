@@ -1,0 +1,13 @@
+# 検索対象範囲条件定義マスタ(組織、役職)(MAST_DATASECTIONPOSTMAPPING)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MDSP_ID|NUMBER||否|IDカラム|
+|MDSP_CPERMISSIONID|VARCHAR2||否|定義ID|
+|MDSP_CTYPEID|VARCHAR2||否|定義区分|
+|MDSP_CCOMPANYID|VARCHAR2||否|法人コード|
+|MDSP_CSECTIONID|VARCHAR2||是|組織コード|
+|MDSP_CPOSTID|VARCHAR2||是|役職コード|
+|MDSP_CEMPLOYEEID|VARCHAR2||是|社員番号|
+|MDSP_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|MDSP_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

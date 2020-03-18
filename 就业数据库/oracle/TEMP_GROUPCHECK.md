@@ -1,0 +1,17 @@
+# グループ判定結果データ(TEMP_GROUPCHECK)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TGC_ID|NUMBER||否|IDカラム|
+|TGC_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TGC_CCOMPANYID|VARCHAR2||否|法人コード|
+|TGC_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TGC_CUSERID|VARCHAR2||否|ユーザID|
+|TGC_CSYSTEMID|VARCHAR2||否|システムID|
+|TGC_DSTARTDATE|DATE||否|開始日|
+|TGC_DENDDATE|DATE||否|終了日|
+|TGC_CGROUPID|VARCHAR2||否|グループID|
+|TGC_NWEIGHTAGE|NUMBER||否|優先順|
+|TGC_DBASEDATE|DATE||否|グループ定義作成日|
+|TGC_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|TGC_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

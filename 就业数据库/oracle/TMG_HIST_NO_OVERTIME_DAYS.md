@@ -1,0 +1,13 @@
+# [勤怠]ノー残業デー設定ワークテーブル(TMG_HIST_NO_OVERTIME_DAYS)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|THNOD_CCUSTOMERID|VARCHAR2||否|顧客コードﾞ     固定：01|
+|THNOD_CCOMPANYID|VARCHAR2||否|法人コード|
+|THNOD_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|THNOD_DSTARTDATE|DATE||否|データ開始日|
+|THNOD_DENDDATE|DATE||否|データ終了日|
+|THNOD_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|THNOD_DMODIFIEDDATE|DATE||是|更新日|
+|THNOD_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
+|THNOD_DTARGETDATE|DATE||是|対象日付|
+|THNOD_CSECTIONID|VARCHAR2||是|所属コード|

@@ -1,0 +1,9 @@
+# HIST_DESIGNATION_CHIEF(HIST_DESIGNATION_CHIEF)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HDC_CCUSTOMERID|VARCHAR2||是|null|
+|HDC_CCOMPANYID|VARCHAR2||是|null|
+|HDC_CSECTIONID|VARCHAR2||是|null|
+|HDC_CEMPLOYEEID|VARCHAR2||是|null|
+|HDC_DSTARTDATE|DATE||是|null|
+|HDC_DENDDATE|DATE||是|null|

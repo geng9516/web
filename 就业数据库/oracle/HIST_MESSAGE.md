@@ -1,0 +1,30 @@
+# メッセージ通知 メッセージ送信情報テーブル(HIST_MESSAGE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HME_ID|NUMBER||否|IDカラム|
+|HME_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|HME_CUSERID|VARCHAR2||是|送信者ユーザID|
+|HME_CSITEID|VARCHAR2||是|サイトID|
+|HME_CAPPID|VARCHAR2||否|コンテンツID|
+|HME_DRELEASEDATE|DATE||否|公開日|
+|HME_CTITLEJA|NVARCHAR2||否|送信件名（日本語）|
+|HME_CCONTENTJA|NCLOB||否|送信内容（日本語）|
+|HME_CURL|CLOB||是|表示url|
+|HME_CNOTIFICATION_TYPE|VARCHAR2||是|通知種別|
+|HME_NSUMMAILFLAG|NUMBER||否|送信内容まとめフラグ|
+|HME_CFROMADDRESSJA|NVARCHAR2||是|送信元メールアドレス（日本語）|
+|HME_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|HME_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|
+|HME_CTITLEEN|NVARCHAR2||是|送信件名（英語）|
+|HME_CTITLECH|NVARCHAR2||是|送信件名（中国語）|
+|HME_CTITLE01|NVARCHAR2||是|送信件名（予備１）|
+|HME_CTITLE02|NVARCHAR2||是|送信件名（予備２）|
+|HME_CCONTENTEN|NCLOB||是|送信内容（英語）|
+|HME_CCONTENTCH|NCLOB||是|送信内容（中国語）|
+|HME_CCONTENT01|NCLOB||是|送信内容（予備１）|
+|HME_CCONTENT02|NCLOB||是|送信内容（予備２）|
+|HME_CFROMADDRESSEN|NVARCHAR2||是|送信元メールアドレス（英語）|
+|HME_CFROMADDRESSCH|NVARCHAR2||是|送信元メールアドレス（中国語）|
+|HME_CFROMADDRESS01|NVARCHAR2||是|送信元メールアドレス（予備１）|
+|HME_CFROMADDRESS02|NVARCHAR2||是|送信元メールアドレス（予備２）|

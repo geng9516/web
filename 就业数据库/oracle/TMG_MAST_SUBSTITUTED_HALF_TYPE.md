@@ -1,0 +1,11 @@
+# 振替休日区分マスタ(TMG_MAST_SUBSTITUTED_HALF_TYPE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TMSH_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
+|TMSH_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
+|TMSH_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日|
+|TMSH_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日|
+|TMSH_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TMSH_DMODIFIEDDATE|DATE||是|更新日|
+|TMSH_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
+|TMSH_CNTFTYPE|VARCHAR2||否|申請区分|

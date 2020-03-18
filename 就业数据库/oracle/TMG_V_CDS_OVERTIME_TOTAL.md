@@ -1,0 +1,15 @@
+# 【条件検索】超過勤務累計時間(TMG_V_CDS_OVERTIME_TOTAL)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TVCOTTL_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TVCOTTL_CCOMPANYID|VARCHAR2||否|法人コード|
+|TVCOTTL_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVCOTTL_CUSERID|VARCHAR2||否|ユーザーID|
+|TVCOTTL_NYYYY|NUMBER||是|該当年|
+|TVCOTTL_DYYYYMM|DATE||是|該当年月|
+|TVCOTTL_DYYYYMMDD|DATE||是|該当年月日|
+|TVCOTTL_NCHOKIN|NUMBER||是|超過勤務時間|
+|TVCOTTL_NTOTAL_MONTH|NUMBER||是|超過勤務累計(月)|
+|TVCOTTL_NTOTAL_YEAR|NUMBER||是|超過勤務累計(年)|
+|TVCOTTL_DSTARTDATE|DATE||是|データ開始日|
+|TVCOTTL_DENDDATE|DATE||是|データ終了日|

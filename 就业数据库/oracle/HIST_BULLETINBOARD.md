@@ -1,0 +1,20 @@
+# 掲示板データ(HIST_BULLETINBOARD)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HB_ID|NUMBER||否|ID|
+|HB_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|HB_CCOMPANYID|VARCHAR2||是|法人コード|
+|HB_DDATEOFANNOUNCEMENT|DATE||是|掲示開始日|
+|HB_DDATEOFEXPIRE|DATE||是|掲示終了日|
+|HB_CTITLE|NVARCHAR2||是|タイトル|
+|HB_CCONTENTS|NVARCHAR2||是|掲示内容|
+|HB_CFILENAME|NVARCHAR2||是|添付ファイル名|
+|HB_CLINK|VARCHAR2||是|関連情報リンク|
+|HB_CMNUSER|VARCHAR2||是|掲示者ユーザID|
+|HB_CMNUSERNAME|NVARCHAR2||是|掲示者氏名|
+|HB_BATTACH|BLOB||是|添付ファイル|
+|HB_CHEADDISP|VARCHAR2||是|先頭表示フラグ|
+|HB_CFIX|VARCHAR2||是|確定フラグ|
+|HB_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|HB_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

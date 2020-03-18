@@ -1,0 +1,25 @@
+# 取込出張データ(TMG_HIST_SHUCHO)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|THS_ID|NUMBER||否|IDカラム シーケンスTMG_HIST_SHUCHO_SEQを作る必要があります。 |
+|THS_CCUSTOMERID|VARCHAR2||否|顧客コード  |
+|THS_CCOMPANYID|VARCHAR2||否|法人コード  |
+|THS_DSTART|DATE||否|データ開始日  |
+|THS_DEND|DATE||否|データ終了日  |
+|THS_CEMPLOYEEID|VARCHAR2||否|個人番号  |
+|THS_CKANJINAME|NVARCHAR2||是|氏名  |
+|THS_CSECTION_NAME|NVARCHAR2||是|所属  |
+|THS_CSHUCHO_ID|VARCHAR2||是|処理番号  |
+|THS_DTRIPSTART|DATE||是|旅行開始日  |
+|THS_DTRIPEND|DATE||是|旅行終了日  |
+|THS_CYOUMU1|NVARCHAR2||是|用務先１  |
+|THS_CYOUMU2|NVARCHAR2||是|用務先２  |
+|THS_CYOUMU3|NVARCHAR2||是|用務先３  |
+|THS_CKAIGAI_FLAG|VARCHAR2||是|海外出張 KAIGAI|0→国内出張、KAIGAI|1→海外出張 |
+|THS_DTORIKOMI|DATE||是|取込日時  |
+|THS_DSHORI|DATE||是|処理日時  |
+|THS_CSHORI_FLAG|VARCHAR2||是|処理フラグ SHUCHOFLAG|0→未、SHUCHOFLAG|1→済、SHUCHOFLAG|9→無効 |
+|THS_DCANCEL|DATE||是|取消日時  |
+|THS_CCANCEL_FLAG|VARCHAR2||是|取消フラグ SHUCHOFLAG|0→未、SHUCHOFLAG|1→済 |
+|THS_CMESSAGE|NVARCHAR2||是|メッセージ  |
+|VERSIONNO|NUMBER||否|バージョンNO V4互換用 |

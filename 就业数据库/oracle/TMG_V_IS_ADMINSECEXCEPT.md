@@ -1,0 +1,10 @@
+# TMG_V_IS_ADMINSECEXCEPT(TMG_V_IS_ADMINSECEXCEPT)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TIA_CCUSTOMERID|VARCHAR2||否|null|
+|TIA_CCOMPANYID|VARCHAR2||否|null|
+|TIA_CEMPLOYEEID|VARCHAR2||否|null|
+|TIA_CUSERID|VARCHAR2||否|null|
+|TIA_DSTARTDATE|DATE||是|null|
+|TIA_DENDDATE|DATE||是|null|
+|TIA_ISADMINSECEXCEPT|NUMBER||是|null|

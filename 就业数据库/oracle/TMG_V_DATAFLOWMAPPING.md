@@ -1,0 +1,10 @@
+# [設計書もどき]入力データ→集計マッピング→条件検索 マスタ設定状況(TMG_V_DATAFLOWMAPPING)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TMMM_CMONTHLYCOLUMN|VARCHAR2||是|TMG_MONTHLYへのマッピング先カラム名|
+|MGD_CITEMNAME|NVARCHAR2||是|TMG_MONTHLYの項目名称|
+|TMTI_CTOTALIZATIONID|VARCHAR2||否|集計先項目コード|
+|TMTI_CTOTALIZATIONNM|VARCHAR2||否|集計項目名称|
+|TMTI_CUNITID|VARCHAR2||是|単位|
+|TMTM_CMASTER4SOURCE|VARCHAR2||是|入力源マスタコード ※"TMG_TOTALMAPPING%":集計処理用の中間コード|
+|TMTM_CMASTER4SOURCENM|NVARCHAR2||是|入力源マスタ名称(MAST_GENERIC_DETAIL,TMG_MAST_JORNALIZE)|

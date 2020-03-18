@@ -1,0 +1,17 @@
+# [勤怠/名称マスタ]非勤務区分マスタ(TMG_V_MGD_NOTWORK)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MGD_CCOMPANYID_CK_FK|VARCHAR2||是|法人コード|
+|MGD_DSTART_CK|DATE||否|開始日|
+|MGD_DEND|DATE||否|終了日|
+|MGD_CLANGUAGE_CK|VARCHAR2||是|言語区分|
+|MGD_CMASTERCODE|VARCHAR2||是|マスタコード(連番)|
+|MGD_CNOTWORKNAME|NVARCHAR2||是|非勤務区分名|
+|MGD_CNICKNAME|NVARCHAR2||是|通常略称|
+|MGD_CNICKNAME_ATTEND|NVARCHAR2||是|出勤簿略称|
+|MGD_NPAID_OR_NOT_FLG|NUMBER||是|有給・無給フラグ|
+|MGD_NHOURS_DISP_TYPE|NUMBER||是|時間数表示|
+|MGD_NFRACTION_UNIT|NUMBER||是|端数処理単位(分)|
+|MGD_NGROUPING_TYPE|NUMBER||是|グルーピング|
+|MGD_NCONFIRMATTENDANCE|NUMBER||是|勤務したとみなす判定|

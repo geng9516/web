@@ -1,0 +1,14 @@
+# [就業]勤務パターン適用情報(部署)(TMG_PATTERN_APPLIES_CHECK)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TPAA_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
+|TPAA_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
+|TPAA_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日|
+|TPAA_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日|
+|TPAA_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TPAA_CSECTIONID|VARCHAR2||否|部局ｺｰﾄﾞ|
+|TPAA_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TPAA_DMODIFIEDDATE|DATE||是|更新日|
+|TPAA_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
+|TPAA_CGROUPID|VARCHAR2||否|グループコード|
+|TPAA_CPATTERNID|VARCHAR2||是|勤務パターンID|

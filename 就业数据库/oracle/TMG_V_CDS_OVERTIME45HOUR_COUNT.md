@@ -1,0 +1,11 @@
+# 月45時間を超える超過勤務の月数情報(TMG_V_CDS_OVERTIME45HOUR_COUNT)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TVCO45C_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TVCO45C_CCOMPANYID|VARCHAR2||否|法人コード|
+|TVCO45C_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVCO45C_CUSERID|VARCHAR2||否|ユーザーID|
+|TVCO45C_DSTARTDATE|DATE||是|データ開始日|
+|TVCO45C_DENDDATE|DATE||是|データ終了日|
+|TVCO45C_NYYYY|NUMBER||是|年度|
+|TVCO45C_NOVERCOUNT|NUMBER||是|月45時間を超える超過勤務の月数|

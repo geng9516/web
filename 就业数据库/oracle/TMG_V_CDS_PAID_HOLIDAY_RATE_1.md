@@ -1,0 +1,14 @@
+# 【条件検索】年休取得率情報：集計期間１月から12月(TMG_V_CDS_PAID_HOLIDAY_RATE_1)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TVCH1_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TVCH1_CCOMPANYID|VARCHAR2||否|法人コード|
+|TVCH1_CEMPLOYEEID|VARCHAR2||否|社員番号|
+|TVCH1_CUSERID|VARCHAR2||否|ユーザーID|
+|TVCH1_DSTARTDATE|DATE||是|開始日|
+|TVCH1_DENDDATE|DATE||是|終了日|
+|TVCH1_NINVEST|NUMBER||是|付与日数|
+|TVCH1_NUSED_DAYS|NUMBER||是|消化日数|
+|TVCH1_NUSED_HOURS|NUMBER||是|消化時間数|
+|TVCH1_NUSED_DAYS_BY_TIME|NUMBER||是|消化時間／日単位|
+|TVCH1_NUSE_RATE|NUMBER||是|年休取得率|

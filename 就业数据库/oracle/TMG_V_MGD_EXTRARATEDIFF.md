@@ -1,0 +1,13 @@
+# [勤怠/名称マスタ]仕訳コード－割増率マッピングマスタ(TMG_V_MGD_EXTRARATEDIFF)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MGD_CCOMPANYID_CK_FK|VARCHAR2||是|法人コード|
+|MGD_DSTART_CK|DATE||否|開始日|
+|MGD_DEND|DATE||否|終了日|
+|MGD_CLANGUAGE_CK|VARCHAR2||是|言語区分|
+|MGD_CEXTRAPAYRATEMAPPINGID|VARCHAR2||是|割増率マッピングコード|
+|MGD_CEXTRAPAYRATEMAPPINGNM|NVARCHAR2||是|割増率マッピング名称|
+|MGD_CTOTALIZATIONID|NVARCHAR2||是|集計項目コード|
+|MGD_CEXTRAPAYRATE|NVARCHAR2||是|集計先の割増率|
+|MGD_CEXTRAPAYRATE_CONV|NVARCHAR2||是|変換後の割増率|

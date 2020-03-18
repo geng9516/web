@@ -1,0 +1,14 @@
+# ロギング(変更チェック対象項目)マスタ(TMG_V_MGD_TDCL_RELATION)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MGD_CCOMPANYID_CK_FK|VARCHAR2||是|法人コード|
+|MGD_DSTART_CK|DATE||否|開始日|
+|MGD_DEND|DATE||否|終了日|
+|MGD_CLANGUAGE_CK|VARCHAR2||是|言語区分|
+|MGD_CMASTERCODE|VARCHAR2||是|マスタコード|
+|MGD_CGENERICDETAILDESC|NVARCHAR2||是|説明|
+|MGD_CPROGRAMID|NVARCHAR2||是|更新プログラムID|
+|MGD_CTABLEID|NVARCHAR2||是|テーブルID|
+|MGD_CITEMID|NVARCHAR2||是|項目ID|
+|MGD_NUSEFLG|NUMBER||是|使用有無|

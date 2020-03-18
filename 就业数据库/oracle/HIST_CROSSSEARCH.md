@@ -1,0 +1,16 @@
+# クロス集計検索設定保存データ(HIST_CROSSSEARCH)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HCS_ID|NUMBER||否|IDカラム|
+|HCS_NSETTINGID|NUMBER||否|設定ID|
+|HCS_CCUSTOMERID_CK|VARCHAR2||否|顧客コード|
+|HCS_CCOMPANYID_CK|VARCHAR2||否|法人コード|
+|HCS_CUSERID|VARCHAR2||否|ユーザID|
+|HCS_CFILENAME|NVARCHAR2||否|設定名|
+|HCS_CCOMMENT|NVARCHAR2||是|備考|
+|HCS_CIFPUBLIC|VARCHAR2||是|共有フラグ|
+|HCS_CIGNORECASE|VARCHAR2||是|大文字小文字判定有無|
+|HCS_CNODATANOOUTPUT|VARCHAR2||是|データのある行のみ表示|
+|HCS_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|HCS_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

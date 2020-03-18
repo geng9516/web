@@ -1,0 +1,14 @@
+# [勤怠]HR連携用(勤怠種別)・連携ワークテーブル (TMG_WORK_HIST_WORKTYPE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TWHW_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ  |
+|TWHW_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ |
+|TWHW_CEMPLOYEEID|VARCHAR2||否|社員番号  |
+|TWHW_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日 |
+|TWHW_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日  |
+|TWHW_CMODIFIERUSERID|VARCHAR2||是|更新者   |
+|TWHW_DMODIFIEDDATE|DATE||是|更新日  |
+|TWHW_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID |
+|TWHW_CWORKTYPEID|VARCHAR2||是|勤怠種別 MGD:TMG_WORKTYPE |
+|TWHW_CWORKTYPENAME|VARCHAR2||是|null|
+|TWHW_CMANAGEFLG|VARCHAR2||否|null|

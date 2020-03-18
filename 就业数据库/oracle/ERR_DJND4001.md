@@ -1,0 +1,46 @@
+# ERR_DJND4001(ERR_DJND4001)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|CCOMPKB|VARCHAR2||是|null|
+|DSTART|DATE||是|null|
+|SSTART|VARCHAR2||是|null|
+|DEND|DATE||是|null|
+|SEND|VARCHAR2||是|null|
+|CDE_SYBT|VARCHAR2||是|null|
+|CDE_VAL|VARCHAR2||是|null|
+|DTA1|VARCHAR2||是|null|
+|DTA2|VARCHAR2||是|null|
+|DTA3|VARCHAR2||是|null|
+|DTA4|VARCHAR2||是|null|
+|DTA5|VARCHAR2||是|null|
+|DTA6|VARCHAR2||是|null|
+|DTA7|VARCHAR2||是|null|
+|DTA8|VARCHAR2||是|null|
+|DTA9|VARCHAR2||是|null|
+|DTA10|VARCHAR2||是|null|
+|DTA11|VARCHAR2||是|null|
+|DTA12|VARCHAR2||是|null|
+|CTRL_CDE1|VARCHAR2||是|null|
+|CTRL_CDE2|VARCHAR2||是|null|
+|CTRL_CDE3|VARCHAR2||是|null|
+|CTRL_CDE4|VARCHAR2||是|null|
+|CTRL_CDE5|VARCHAR2||是|null|
+|NAME|VARCHAR2||是|null|
+|DNAME|VARCHAR2||是|null|
+|SNAME|VARCHAR2||是|null|
+|RNAME|VARCHAR2||是|null|
+|KNAME01|VARCHAR2||是|null|
+|KNAME02|VARCHAR2||是|null|
+|KNAME03|VARCHAR2||是|null|
+|DNAME_COMMENT|VARCHAR2||是|null|
+|START_DTE|VARCHAR2||是|null|
+|DSTART_DTE|DATE||是|null|
+|END_DTE|VARCHAR2||是|null|
+|DEND_DTE|DATE||是|null|
+|KOSIN_USR|VARCHAR2||是|null|
+|KOSIN_PGM|VARCHAR2||是|null|
+|LAST_DTE|DATE||是|null|
+|KOSIN_KBN|VARCHAR2||是|null|
+|CMNUSER|VARCHAR2||是|null|
+|DMNDATE|DATE||是|null|
+|CERRMSG|VARCHAR2||是|null|

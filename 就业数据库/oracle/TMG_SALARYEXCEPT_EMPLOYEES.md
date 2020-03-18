@@ -1,0 +1,12 @@
+# 給与除外対象者ワークテーブル(TMG_SALARYEXCEPT_EMPLOYEES)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TESS_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TESS_CCOMPANYID|VARCHAR2||否|法人コード|
+|TESS_CEMPLOYEEID|VARCHAR2||否|職員番号|
+|TESS_DSTARTDATE|DATE||否|開始日|
+|TESS_DENDDATE|DATE||否|終了日|
+|TESS_CMASTERCODE|VARCHAR2||是|マスタコード|
+|TESS_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TESS_DMODIFIEDDATE|DATE||是|更新日|
+|TESS_CMODIFIERPROGRAMID|VARCHAR2||是|更新ﾌﾟﾛｸﾞﾗﾑID|

@@ -1,0 +1,16 @@
+# 役割関係マスタ(MAST_RELATIONSHIPDEFINITIONS)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MRD_ID|NUMBER||否|IDカラム|
+|MRD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MRD_CSYSTEMID|VARCHAR2||是|システムコード|
+|MRD_CCONTENTTYPE|VARCHAR2||是|コンテンツ区分|
+|MRD_DSTARTDATE|DATE||是|開始日|
+|MRD_DENDDATE|DATE||是|終了日|
+|MRD_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|MRD_DMODIFIEDDATE|DATE||是|最終更新日|
+|MRD_CUSERID_FROM|VARCHAR2||是|検索者ユーザID|
+|MRD_CUSERID_TO|VARCHAR2||是|被検索者ユーザID|
+|MRD_CRELATIONSHIPID|VARCHAR2||是|リレーションID|
+|MRD_CFIXED|VARCHAR2||是|確定フラグ|
+|VERSIONNO|NUMBER||否|バージョンNo|

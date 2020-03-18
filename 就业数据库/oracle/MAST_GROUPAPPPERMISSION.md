@@ -1,0 +1,20 @@
+# グループ別アプリケーション権限マスタ(MAST_GROUPAPPPERMISSION)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGP_ID|NUMBER||否|IDカラム|
+|MGP_CCOMPANYID|VARCHAR2||是|法人コード|
+|MGP_CSYSTEMID|VARCHAR2||否|システムID|
+|MGP_CGROUPID|VARCHAR2||否|グループコード|
+|MGP_COBJECTID|VARCHAR2||否|オブジェクトID|
+|MGP_CSITE|VARCHAR2||是|サイトID|
+|MGP_CAPP|VARCHAR2||是|アプリケーションID|
+|MGP_CSUBAPP|VARCHAR2||是|サブアプリケーションID|
+|MGP_CBUTTON|VARCHAR2||是|ボタンID|
+|MGP_CSCREEN|VARCHAR2||是|画面ID|
+|MGP_CPERMISSION|VARCHAR2||否|実行権限|
+|MGP_CREJECT|VARCHAR2||否|実行拒否設定|
+|MGP_DSTARTDATE|DATE||否|開始日|
+|MGP_DENDDATE|DATE||否|終了日|
+|MGP_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|MGP_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

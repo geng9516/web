@@ -1,0 +1,16 @@
+# グループ事前判定データ(HIST_EMPLOYEEGROUPS)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HE_ID|NUMBER||否|IDカラム|
+|HE_CCUSTOMERID_CK|VARCHAR2||否|顧客コード|
+|HE_CCOMPANYID_CK|VARCHAR2||否|法人コード|
+|HE_CEMPLOYEEID_CK|VARCHAR2||否|社員番号|
+|HE_CUSERID|VARCHAR2||否|ユーザID|
+|HE_CSYSTEMID_CK|VARCHAR2||否|システムコード|
+|HE_DSTARTDATE_CK|DATE||否|開始日|
+|HE_DENDDATE|DATE||否|終了日|
+|HE_CGROUPID|VARCHAR2||否|グループコード|
+|HE_NWEIGHTAGE|NUMBER||否|優先順|
+|HE_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|HE_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|

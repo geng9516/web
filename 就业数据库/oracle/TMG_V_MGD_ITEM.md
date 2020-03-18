@@ -1,0 +1,18 @@
+# [勤怠/名称マスタ]勤務実績入力欄(項目)マスタ(TMG_V_MGD_ITEM)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MGD_CCOMPANYID_CK_FK|VARCHAR2||是|法人コード|
+|MGD_DSTART_CK|DATE||否|開始日|
+|MGD_DEND|DATE||否|終了日|
+|MGD_CLANGUAGE_CK|VARCHAR2||是|言語区分|
+|MGD_CMASTERCODE|VARCHAR2||是|マスタコード(連番)|
+|MGD_CITEMNAME|NVARCHAR2||是|項目名|
+|MGD_CATEGORYCODE|NVARCHAR2||是|カテゴリコード|
+|MGD_CALCULATE_ATTRIBUTES|NVARCHAR2||是|計算属性|
+|MGD_CTEMPLATEFILENAME|NVARCHAR2||是|テンプレートJSPファイル名|
+|MGD_CNICKNAME|NVARCHAR2||是|略称|
+|MGD_NWHETHER_USING|NUMBER||是|使用可否|
+|MGD_NSEQ|NUMBER||是|並び順|
+|MGD_NOT_ENTER_ID|NUMBER||是|時間帯非入力区分|
+|MGD_NAUTO_APPROVAL_ID|NUMBER||是|月次自動承認除外区分|

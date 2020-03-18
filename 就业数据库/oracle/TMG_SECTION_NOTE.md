@@ -1,0 +1,13 @@
+# [就業]組織備考情報(TMG_SECTION_NOTE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TSN_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|TSN_CCOMPANYID|VARCHAR2||是|法人コード|
+|TSN_CSECTIONID|VARCHAR2||是|組織コード|
+|TSN_DSTARTDATE|DATE||是|開始日|
+|TSN_DENDDATE|DATE||是|終了日|
+|TSN_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TSN_DMODIFIEDDATE|DATE||是|更新日|
+|TSN_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラム|
+|TSN_CTYPE|VARCHAR2||是|項目区分|
+|TSN_CCOMMENT|VARCHAR2||是|コメント|

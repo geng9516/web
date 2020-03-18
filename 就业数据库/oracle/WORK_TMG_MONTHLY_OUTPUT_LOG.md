@@ -1,0 +1,15 @@
+# [勤怠]月次集計処理ログ(ユーザー自動作成スクリプト用、一時退避テーブル)(WORK_TMG_MONTHLY_OUTPUT_LOG)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TMOL_CCUSTOMERID|VARCHAR2||否|null|
+|TMOL_CCOMPANYID|VARCHAR2||否|null|
+|TMOL_DSTARTDATE|DATE||否|null|
+|TMOL_DENDDATE|DATE||否|null|
+|TMOL_CMODIFIERUSERID|VARCHAR2||是|null|
+|TMOL_DMODIFIEDDATE|DATE||是|null|
+|TMOL_CMODIFIERPROGRAMID|VARCHAR2||是|null|
+|TMOL_CYYYYMM|DATE||否|null|
+|TMOL_CSTATUSFLG|VARCHAR2||是|null|
+|TMOL_NCOUNT|NUMBER||是|null|
+|TNOL_CERRCODE|VARCHAR2||是|null|
+|TNOL_CERRMSG|VARCHAR2||是|null|

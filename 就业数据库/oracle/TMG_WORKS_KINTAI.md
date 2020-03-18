@@ -1,0 +1,56 @@
+# [勤怠]月次集計出力イメージ(Works)                                       (TMG_WORKS_KINTAI)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TXKW_NNUMBER17|NUMBER||是|超勤2(175/100)                                                                              |
+|TXKW_NNUMBER18|NUMBER||是|宿日直(医師当直)                                                                                 |
+|TXKW_NNUMBER19|NUMBER||是|宿日直(核物教員)                                                                                 |
+|TXKW_NNUMBER20|NUMBER||是|宿日直(医病看護師長)                                                                               |
+|TXKW_NNUMBER21|NUMBER||是|宿日直(医病薬剤師)                                                                                |
+|TXKW_NNUMBER22|NUMBER||是|宿日直(その他)                                                                                  |
+|TXKW_NNUMBER23|NUMBER||是|高所15(4H以上)                                                                                |
+|TXKW_NNUMBER24|NUMBER||是|高所15(4H未満)                                                                                |
+|TXKW_NNUMBER25|NUMBER||是|高所30(4H以上)                                                                                |
+|TXKW_NNUMBER26|NUMBER||是|高所30(4H未満)                                                                                |
+|TXKW_NNUMBER27|NUMBER||是|爆発物(4H以上)                                                                                 |
+|TXKW_NNUMBER28|NUMBER||是|爆発物(4H未満)                                                                                 |
+|TXKW_NNUMBER29|NUMBER||是|死体処理                                                                                      |
+|TXKW_NNUMBER30|NUMBER||是|死体処理(運搬)                                                                                  |
+|TXKW_NNUMBER31|NUMBER||是|放射線                                                                                       |
+|TXKW_NNUMBER32|NUMBER||是|異常圧力(0.2Mpaまで)                                                                            |
+|TXKW_NNUMBER33|NUMBER||是|異常圧力(0.3Mpaまで)                                                                            |
+|TXKW_NNUMBER34|NUMBER||是|異常圧力(0.3Mpa超)                                                                             |
+|TXKW_NNUMBER35|NUMBER||是|夜間看護(深夜全部)                                                                                |
+|TXKW_NNUMBER36|NUMBER||是|夜間看護(深夜4H以上)                                                                              |
+|TXKW_NNUMBER37|NUMBER||是|夜間看護(深夜2H～4H)                                                                             |
+|TXKW_NNUMBER38|NUMBER||是|夜間看護(深夜2H未満)                                                                              |
+|TXKW_NNUMBER39|NUMBER||是|夜間看護(5Km未満)                                                                               |
+|TXKW_NNUMBER40|NUMBER||是|夜間看護(5～10Km)                                                                              |
+|TXKW_NNUMBER41|NUMBER||是|夜間看護(10Km以上)                                                                              |
+|TXKW_NNUMBER42|NUMBER||是|ドクターヘリ                                                                                    |
+|TXKW_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ                        固定：01                                                       |
+|TXKW_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ                                                                                    |
+|TXKW_CEMPLOYEEID|VARCHAR2||否|社員番号                                                                                      |
+|TXKW_DSTARTDATE|DATE||否|開始日                                                                                       |
+|TXKW_DENDDATE|DATE||否|終了日                                                                                       |
+|TXKW_CMODIFIERUSERID|VARCHAR2||是|更新者                                                                                       |
+|TXKW_DMODIFIEDDATE|DATE||是|更新日                                                                                       |
+|TXKW_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID                                                                                 |
+|TXKW_NSEQ|NUMBER||否|履歴ｼｰｹﾝｽ                                                                                   |
+|TXKW_CSHIFTCODE|VARCHAR2||是|シフトコード                                                                                    |
+|TXKW_CSHIFTID|VARCHAR2||是|シフト区分                                                                                     |
+|TXKW_NNUMBER01|NUMBER||是|月平均所定労働時間                                                                                 |
+|TXKW_NNUMBER02|NUMBER||是|勤務時間数・非                                                                                   |
+|TXKW_NNUMBER03|NUMBER||是|減額                                                                                        |
+|TXKW_NNUMBER04|NUMBER||是|超勤(100/100)                                                                               |
+|TXKW_NNUMBER05|NUMBER||是|超勤(125/100)                                                                               |
+|TXKW_NNUMBER06|NUMBER||是|超勤(150/100)                                                                               |
+|TXKW_NNUMBER07|NUMBER||是|休日(135/100)                                                                               |
+|TXKW_NNUMBER08|NUMBER||是|休日(160/100)                                                                               |
+|TXKW_NNUMBER09|NUMBER||是|夜勤(25/100)                                                                                |
+|TXKW_NNUMBER10|NUMBER||是|超勤(175/100)                                                                               |
+|TXKW_NNUMBER11|NUMBER||是|超勤2(100/100)                                                                              |
+|TXKW_NNUMBER12|NUMBER||是|超勤2(125/100)                                                                              |
+|TXKW_NNUMBER13|NUMBER||是|超勤2(150/100)                                                                              |
+|TXKW_NNUMBER14|NUMBER||是|休日2(135/100)                                                                              |
+|TXKW_NNUMBER15|NUMBER||是|休日2(160/100)                                                                              |
+|TXKW_NNUMBER16|NUMBER||是|夜勤2(25/100)                                                                               |

@@ -1,0 +1,17 @@
+# [勤怠/名称マスタ]職種/申請リレーション(TMG_V_MGD_NTF_RELATION)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MGD_CCUSTOMERID|VARCHAR2||是|顧客コード|
+|MGD_CCOMPANYID_CK_FK|VARCHAR2||是|法人コード|
+|MGD_DSTART_CK|DATE||否|開始日|
+|MGD_DEND|DATE||否|終了日|
+|MGD_CLANGUAGE_CK|VARCHAR2||是|言語区分|
+|MGD_CWORKERTYPE|NVARCHAR2||是|勤怠種別|
+|MGD_CNTFTYPE|NVARCHAR2||是|申請種類|
+|MGD_WEEKLY_WORKING_DAYS|NVARCHAR2||是|週の所定労働日数|
+|MGD_KEIZOKUKINMU|NVARCHAR2||是|継続勤務期間|
+|MGD_RODOKEIYAKU|NVARCHAR2||是|労働契約期間|
+|MGD_NMGD_NWHETHER_USING|NUMBER||是|使用有無|
+|MGD_NMAXIMUM_LIMIT_VALUE|NUMBER||是|取得上限値|
+|MGD_NLIMIT_ETC|NUMBER||是|取得可能回数、子が1人の時の取得上限値等、色々|
+|MGD_NLIMIT_PERIOD|NUMBER||是|取得可能期間|

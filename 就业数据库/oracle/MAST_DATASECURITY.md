@@ -1,0 +1,19 @@
+# データセキュリティマスタ(MAST_DATASECURITY)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|MDS_CASPECT_CLOSE|VARCHAR2||是|相対締め日|
+|MDS_DABSOLUTE_START|DATE||是|絶対開始日|
+|MDS_DABSOLUTE_END|DATE||是|絶対終了日|
+|MDS_CMODIFIERUSERID|VARCHAR2||是|最終更新者|
+|MDS_DMODIFIEDDATE|DATE||是|最終更新日|
+|VERSIONNO|NUMBER||否|バージョンNo|
+|MDS_ID|NUMBER||否|IDカラム|
+|MDS_COBJECTID|VARCHAR2||否|オブジェクトID|
+|MDS_CSITEID|VARCHAR2||是|サイトID  |
+|MDS_CAPPID|VARCHAR2||是|アプリケーションID  |
+|MDS_CBEHAVIOR_FLG|VARCHAR2||否|ビヘイビア適用フラグ|
+|MDS_CUNDER_FLG|VARCHAR2||是|下位適用フラグ|
+|MDS_CKINDDATESELECT|VARCHAR2||否|日付種類選択|
+|MDS_CDATEMODE|VARCHAR2||否|年月日モード|
+|MDS_NASPECT_START|NUMBER||是|相対過去対象|
+|MDS_NASPECT_END|NUMBER||是|相対未来対象|

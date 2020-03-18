@@ -1,0 +1,16 @@
+# 評価者ビュー(HIST_EVALUATOR_V)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|HEVV_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|HEVV_CUSERID|VARCHAR2||否|評価対象者ユーザID|
+|HEVV_DSTARTDATE|DATE||否|開始日|
+|HEVV_DENDDATE|DATE||否|終了日|
+|HEVV_NLEVEL|NUMBER||否|評価レベル|
+|HEVV_CRELINETYPE|VARCHAR2||否|レポートラインタイプ|
+|HEVV_CHONKEN|VARCHAR2||否|本務/兼務区分|
+|HEVV_CDECISIONTYPE|VARCHAR2||否|判定区分|
+|HEVV_CEVALUATEE|VARCHAR2||否|評価者ユーザID|
+|HEVV_CKANJINAME|NVARCHAR2||否|評価者ユーザ漢字氏名|
+|HEVV_CSECTIONNAME|NVARCHAR2||是|評価者本務所属名称|
+|HEVV_CPOSTNAME|NVARCHAR2||是|評価者本務役職名称|
+|HEVV_CCOMPANYID_CK|VARCHAR2||否|法人コード|

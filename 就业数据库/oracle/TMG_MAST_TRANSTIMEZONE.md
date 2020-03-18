@@ -1,0 +1,13 @@
+# 勤務時間帯区分マスタ(TMG_MAST_TRANSTIMEZONE)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TMTZ_CCUSTOMERID|VARCHAR2||否|顧客ｺｰﾄﾞ|
+|TMTZ_CCOMPANYID|VARCHAR2||否|法人ｺｰﾄﾞ|
+|TMTZ_DSTARTDATE|DATE||否|ﾃﾞｰﾀ開始日|
+|TMTZ_DENDDATE|DATE||否|ﾃﾞｰﾀ終了日|
+|TMTZ_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TMTZ_DMODIFIEDDATE|DATE||是|更新日|
+|TMTZ_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
+|TMTZ_CPHASE|VARCHAR2||否|処理フェーズ（変換FUNCTIONのオブジェクト名）|
+|TMTZ_CMASTER4SOURCE|VARCHAR2||否|変換前マスタコード|
+|TMTZ_CMASTER4DEST|VARCHAR2||否|変換後マスタコード|

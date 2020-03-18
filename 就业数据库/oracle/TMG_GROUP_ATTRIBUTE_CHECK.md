@@ -1,0 +1,31 @@
+# エラーチェック用・グループ属性テーブル(TMG_GROUP_ATTRIBUTE_CHECK)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TGRA_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TGRA_CCOMPANYID|VARCHAR2||否|法人コード|
+|TGRA_CSECTIONID|VARCHAR2||否|組織コード|
+|TGRA_CGROUPID|VARCHAR2||否|グループコード|
+|TGRA_DSTARTDATE|DATE||否|開始日|
+|TGRA_DENDDATE|DATE||是|終了日|
+|TGRA_CMODIFIERUSERID|VARCHAR2||是|更新者|
+|TGRA_DMODIFIEDDATE|DATE||是|更新日|
+|TGRA_CAUTOSET_EVA|VARCHAR2||否|デフォルト承認者自動設定フラグ|
+|TGRA_CMODIFIERPROGRAMID|VARCHAR2||是|更新プログラムID|
+|TGRA_OT_MONTLY_01|NUMBER||是|超勤実績警告値(月)01|
+|TGRA_OT_MONTLY_02|NUMBER||是|超勤実績警告値(月)02|
+|TGRA_OT_MONTLY_03|NUMBER||是|超勤実績警告値(月)03|
+|TGRA_OT_MONTLY_04|NUMBER||是|超勤実績警告値(月)04|
+|TGRA_OT_MONTLY_05|NUMBER||是|超勤実績警告値(月)05|
+|TGRA_OT_YEARLY_01|NUMBER||是|超勤実績警告値(年)01|
+|TGRA_OT_YEARLY_02|NUMBER||是|超勤実績警告値(年)02|
+|TGRA_OT_YEARLY_03|NUMBER||是|超勤実績警告値(年)03|
+|TGRA_OT_YEARLY_04|NUMBER||是|超勤実績警告値(年)04|
+|TGRA_OT_YEARLY_05|NUMBER||是|超勤実績警告値(年)05|
+|TGRA_OT_MONTHLY_COUNT|NUMBER||是|月次警告値超過回数|
+|TGRA_HT_MONTLY_01|NUMBER||是|休暇勤務日数警告値(月)01|
+|TGRA_HT_MONTLY_02|NUMBER||是|休暇勤務日数警告値(月)02|
+|TGRA_HT_MONTLY_03|NUMBER||是|休暇勤務日数警告値(月)03|
+|TGRA_HT_MONTLY_04|NUMBER||是|休暇勤務日数警告値(月)04|
+|TGRA_HT_MONTLY_05|NUMBER||是|休暇勤務日数警告値(月)05|
+|TGRA_OT_DAILY_01|NUMBER||是|勤務時間警告値(日)01|
+|TGRA_OT_MONTHLY_AVG|NUMBER||是|複数月平均時間|

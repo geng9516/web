@@ -1,0 +1,13 @@
+# 超過勤務命令（月／組織）(TMG_V_281_OVERTIME_SEC_MONTH)
+| 列名   | 类型   | KEY  | 可否为空 | 注释   |
+| ---- | ---- | ---- | ---- | ---- |
+|TV2811_CCUSTOMERID|VARCHAR2||否|顧客コード|
+|TV2811_CCOMPANYID|VARCHAR2||否|法人コード|
+|TV2811_CUSERID|VARCHAR2||是|ユーザーID|
+|TV2811_NYYYY|NUMBER||是|該当年度|
+|TV2811_DYYYYMM|DATE||否|該当年月|
+|TV2811_NCHOKIN|NUMBER||是|超過勤務時間|
+|TV2811_CSECTIONID|VARCHAR2||是|組織コード|
+|TV2811_CSECTIONCHIEF|VARCHAR2||是|所属長|
+|TV2811_DSTARTDATE|DATE||是|データ開始日|
+|TV2811_DENDDATE|DATE||是|データ終了日|
