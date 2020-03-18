@@ -46,6 +46,11 @@ VERSIONNO|int8|64|バージョンNo|N|N|1
      primary key(ms_id)
   );
 
-INSERT INTO MAST_SYSTEM VALUES ('1000000000', '01', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'ja', TO_DATE('2007-04-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL, '1', NULL, TO_DATE('2012-09-13 20:24:41', 'SYYYY-MM-DD HH24:MI:SS'), '1');
+```
+
+##### 示例数据
+```postgresql
+
+ INSERT INTO mast_system VALUES ('1000000000', '01', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'SmartCompany', 'ja', TO_DATE('2007-04-01 00:00:00', 'SYYYY-MM-DD HH24:MI:SS'), '0', NULL, '1', NULL, TO_DATE('2012-09-13 20:24:41', 'SYYYY-MM-DD HH24:MI:SS'), '1');
 
 ```
