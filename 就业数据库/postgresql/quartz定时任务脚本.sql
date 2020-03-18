@@ -6,8 +6,8 @@ CREATE TABLE t_schedule_job (
     cron_expression varchar(100),
     status int4,
     remark varchar(100),
-    create_time timestamptz,
-    update_time timestamptz,
+    create_time timestamptz(0),
+    update_time timestamptz(0),
     PRIMARY KEY (job_id)
 );
 
@@ -30,8 +30,8 @@ CREATE TABLE t_schedule_job_log (
     status bool,
     error varchar(4000),
     time int8,
-    create_time timestamptz,
-    update_time timestamptz,
+    create_time timestamptz(0),
+    update_time timestamptz(0),
     PRIMARY KEY (log_id)
 );
 

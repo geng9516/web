@@ -3,8 +3,16 @@
 
 ### 项目结构详细说明
 ```html
-├── db 数据库脚本sql存放文件夹
-├── docs 保存项目开发相关的各类文档  
+├── 就业数据库 就业脚本文件存放目录
+     ├── oracle
+           ├── markdown文档
+                ├── 表
+                ├── 视图
+     ├── postgresql
+           ├── markdown文档
+                ├── 表
+                ├── 视图
+├── 开发文档 开发时语法和规范的注意 
 ├── src 源码目录  
      ├── main 主目录  
      ├── jp.smartcompany.job 主包  

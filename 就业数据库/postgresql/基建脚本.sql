@@ -8,8 +8,8 @@ CREATE TABLE t_access_audit (
     ip varchar(64),
     request_time timestamptz,
     response_time timestamptz,
-    create_time timestamptz,
-    update_time timestamptz,
+    create_time timestamptz(0),
+    update_time timestamptz(0),
     PRIMARY KEY (audit_id)
 );
 COMMENT ON TABLE t_access_audit IS 'アクセスログ';
@@ -35,8 +35,8 @@ CREATE TABLE t_error_audit (
    ip varchar(64),
    user_agent varchar(500),
    message varchar(5000),
-   create_time timestamptz,
-   update_time timestamptz,
+   create_time timestamptz(0),
+   update_time timestamptz(0),
    primary key(audit_id)
 );
 COMMENT ON TABLE t_error_audit IS 'エラーログマスタ';
@@ -60,8 +60,8 @@ CREATE TABLE t_login_audit (
    status bool,
    ip varchar(64),
    user_agent varchar(500),
-   create_time timestamptz,
-   update_time timestamptz,
+   create_time timestamptz(0),
+   update_time timestamptz(0),
    primary key(audit_id)
 );
 
@@ -85,8 +85,8 @@ CREATE TABLE t_operation_audit (
    params varchar(3000),
    ip varchar(20),
    time int8,
-   create_time timestamptz,
-   update_time timestamptz,
+   create_time timestamptz(0),
+   update_time timestamptz(0),
    primary key(audit_id)
 );
 
