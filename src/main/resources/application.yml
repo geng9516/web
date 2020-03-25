@@ -56,14 +56,6 @@ spring:
       maxLifetime: 1800000
       # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
       idle-timeout: 600000
-      data-source-properties:
-        serverTimezone: Asia/Tokyo
-        characterEncoding: utf-8
-        useUnicode: true
-        useSSL: false
-        allowMultiQueries: true
-        autoReconnect: true
-        useLegacyDatetimeCode: true
   http:
     encoding:
       charset: utf-8
