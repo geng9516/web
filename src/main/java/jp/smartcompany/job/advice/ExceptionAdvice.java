@@ -7,10 +7,6 @@ import jp.smartcompany.job.common.GlobalResponse;
 import jp.smartcompany.job.enums.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authz.UnauthorizedException;
-import org.apache.shiro.session.UnknownSessionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -25,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -41,30 +38,6 @@ public class ExceptionAdvice {
 
     @Value("${spring.profiles.active}")
     private String env;
-
-    @ExceptionHandler(UnknownAccountException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public GlobalResponse unknownAccountException() {
-      return GlobalResponse.error(ErrorMessage.USER_NOT_EXIST);
-    }
-
-    @ExceptionHandler(IncorrectCredentialsException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public GlobalResponse incorrectCredentialsException() {
-        return GlobalResponse.error(ErrorMessage.PASSWORD_INVALID);
-    }
-
-    @ExceptionHandler(UnauthorizedException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public GlobalResponse authorizationException() {
-        return GlobalResponse.error(ErrorMessage.AUTH_NOT_ENOUGH);
-    }
-
-    @ExceptionHandler(UnknownSessionException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public GlobalResponse unknownSessionException() {
-        return GlobalResponse.error(ErrorMessage.SESSION_EXPIRE);
-    }
 
     @ExceptionHandler(GlobalException.class)
     public GlobalResponse systemException(GlobalException e) {
@@ -119,9 +92,7 @@ public class ExceptionAdvice {
         }
     }
 
-    @ExceptionHandler({
-            HttpMediaTypeNotSupportedException.class
-    })
+    @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     public GlobalResponse httpMediaTypeNotSupportedException() {
         return GlobalResponse.error(ErrorMessage.CONTENT_TYPE_SUPPORTED_ERROR);
@@ -129,30 +100,40 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public GlobalResponse arrayIndexOutOfBoundsException() {
-        return GlobalResponse.error(ErrorMessage.OUT_OF_BOUNDARY);
+    public ModelAndView arrayIndexOutOfBoundsException() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("500");
+        mv.addObject("error",GlobalResponse.error(ErrorMessage.OUT_OF_BOUNDARY));
+        return mv;
     }
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public GlobalResponse nullPointerException() {
-        return GlobalResponse.error(ErrorMessage.NPC_EXCEPTION);
+    public ModelAndView nullPointerException() {
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("500");
+        mv.addObject("error",GlobalResponse.error("NPC異常"));
+        return mv;
     }
 
     @ExceptionHandler({Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public GlobalResponse handleException(Exception e) {
+    public ModelAndView handleException(Exception e) {
         boolean isTestEnv = StrUtil.equals(Constant.Env.DEV, env) || StrUtil.equals(Constant.Env.TEST, env);
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("500");
+        mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
         if (isTestEnv) {
             String message = e.getMessage();
             if (StrUtil.isNotBlank(message)) {
-                return GlobalResponse.error(message);
+                mv.addObject("error",GlobalResponse.error(message));
             } else {
-                return GlobalResponse.error(ErrorMessage.SERVER_INTERNAL_ERROR);
+                mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
             }
         } else {
-            return GlobalResponse.error(ErrorMessage.SERVER_INTERNAL_ERROR);
+            mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
         }
+        return mv;
     }
 
     private GlobalResponse convertError(Errors error) {
