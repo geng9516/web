@@ -28,6 +28,8 @@ public class SysErrorController implements ErrorController {
     public String notFound() {
         if (response.getStatus() == HttpStatus.HTTP_NOT_FOUND) {
             return "404";
+        } else if (response.getStatus()==HttpStatus.HTTP_OK) {
+            return "redirect:/";
         } else {
             return "500";
         }

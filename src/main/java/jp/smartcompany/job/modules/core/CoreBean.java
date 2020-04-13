@@ -19,6 +19,7 @@ public interface CoreBean {
 
   interface Controller {
     String LOG = "logController";
+    String INDEX = "indexController";
   }
 
 }
