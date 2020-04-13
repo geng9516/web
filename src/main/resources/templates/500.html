@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
+<head th:replace="layout/header::common_header(title=500)"></head>
 <body>
    500
-   [(${error.msg})]
+   <div id="page-500">
+     {{errorMessage}}
+   </div>
+   <div th:replace="layout/script::common_script(jsPaths='/libs/vue-2.6.11.min.js')"></div>
+   <script>
+      var page505 = new Vue({
+         el: '#page-500',
+         data: function() {
+            return {
+               errorMessage: '[[${error.msg}]]'
+            }
+         }
+      })
+   </script>
 </body>
 </html>

@@ -20,6 +20,7 @@ server:
   servlet:
     session:
       timeout: 86400
+    context-path: /v2
 management:
   endpoint:
     health:

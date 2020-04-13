@@ -1,0 +1,12 @@
+<!--
+   author: Xiao Wenpeng
+-->
+<th:block th:fragment="common_script" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:if="jsPaths!=null">
+        <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}"
+                th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static'+jsPath
+                }"></script>
+    </th:block>
+</th:block>
