@@ -1,18 +1,21 @@
 <!--
    author: Xiao Wenpeng
 -->
-<head th:fragment="common_header(title)" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header" xmlns:th="http://www.thymeleaf.org">
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+    <title th:text="${title}"></title>
 
-    <!--系统默认资源及css文件 Start-->
+    <!--系统默认资源及公用css文件 Start-->
     <link rel="icon" type="image/x-icon" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/favicon.ico'}">
-    <!--系统默认资源及css文件 End-->
+    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/color.css'}">
+    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/reset.css'}">
+    <!--系统默认资源及公用css文件 End-->
 
-    <!--开发人员按自己需要引入的脚本 Start-->
+    <!--各页面独自引入的CSS Start-->
     <th:block th:if="cssPaths!=null">
-        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static'+cssPath}">
+        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css' + cssPath}">
     </th:block>
-    <!--开发人员按自己需要引入的脚本 End-->
+    <!--各页面独自引入的CSS End-->
 </head>

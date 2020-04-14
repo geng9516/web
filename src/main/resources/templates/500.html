@@ -1,21 +1,32 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header::common_header(title=500)"></head>
-<body>
-   500
-   <div id="page-500">
-     {{errorMessage}}
-   </div>
-   <div th:replace="layout/script::common_script(jsPaths='/libs/vue-2.6.11.min.js')"></div>
-   <script>
-      var page505 = new Vue({
-         el: '#page-500',
-         data: function() {
-            return {
-               errorMessage: '[[${error.msg}]]'
-            }
-         }
-      })
-   </script>
-</body>
+  <head th:replace="layout/header::common_header(title=500,cssPaths='/pages/errorPage.min.css')"></head>
+  <body>
+    <main class="error-page">
+      <section class="error-wrap">
+        <figure class="error-img" style="background-image: url('../static/svg/500.svg')"></figure>
+        <section class="error-content">
+          <h1 class="mb20">500</h1>
+          <p class="p mb15">ページは表示できませんでした。</p>
+          <button class="action" @click="goHomepage">ホームページへ</button>
+        </section>
+      </section>
+    </main>
+    <div th:replace="layout/script::common_script(jsPaths='/libs/vue-2.6.11.min.js')"></div>
+    <script>
+        var page505 = new Vue({
+            el: '.error-page',
+            data() {
+                return {
+                    errorMessage: '[[${error.msg}]]'
+                }
+            },
+            methods: {
+                goHomepage() {
+                    window.location.href="/";
+                }
+            },
+        })
+    </script>
+  </body>
 </html>

@@ -1,0 +1,20 @@
+/*!
+ * @description CSS Colors
+ */
+
+:root {
+  --primary: rgb(45, 140, 240);
+  --theme-blue: rgb(48, 118, 242);
+  --label-blue: rgb(132, 178, 239);
+  --grey: rgb(104, 109, 116);
+  --border-grey: rgb(234, 235, 236);
+  --light-grey: rgb(245, 247, 249);
+  --text-light-grey: rgb(169, 169, 169);
+  --input-border-grey: rgb(220, 222, 226);
+  --light-input-border-grey: rgb(230, 230, 230);
+  --brown: rgb(175, 121, 2);
+  --text-green: rgb(91, 208, 41);
+  --white: rgb(255, 255, 255);
+  --red: rgb(252, 13, 27);
+  --green: rgb(82, 196, 26);
+}

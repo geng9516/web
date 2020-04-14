@@ -1,0 +1,47 @@
+.error-page {
+  min-height: 100vh;
+  background: var(--light-grey);
+  .error-wrap {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 72vh;
+    .error-img {
+      width: 100%;
+      max-width: 430px;
+      height: 360px;
+      padding-right: 150px;
+      background-repeat: no-repeat;
+      background-position: 50% 50%;
+      background-size: contain;
+    }
+    .error-content {
+      flex: .5;
+    }
+    h1 {
+      font-size: 72px;
+      line-height: 72px;
+    }
+    .p {
+      font-size: 20px;
+      line-height: 28px;
+      color: var(--text-light-grey);
+    }
+    .action {
+      height: 32px;
+      padding: 0 15px;
+      border: 1px solid transparent;
+      border-radius: 2px;
+      color: var(--white);
+      background-color: var(--green);
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+    }
+  }
+}
+@media (max-width: 1280px) {
+  .error-wrap {
+    width: 1280px;
+  }
+}
