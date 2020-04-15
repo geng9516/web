@@ -6,10 +6,10 @@ import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.base.BaseBean;
 import jp.smartcompany.job.modules.base.pojo.bo.PluggableBO;
-import jp.smartcompany.job.modules.business.vacation.VacationBean;
-import jp.smartcompany.job.modules.business.vacation.service.VacationService;
-import jp.smartcompany.job.modules.business.work.WorkBean;
-import jp.smartcompany.job.modules.business.work.service.WorkService;
+import jp.smartcompany.job.modules.tmg.vacation.VacationBean;
+import jp.smartcompany.job.modules.tmg.vacation.service.VacationService;
+import jp.smartcompany.job.modules.tmg.work.WorkBean;
+import jp.smartcompany.job.modules.tmg.work.service.WorkService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

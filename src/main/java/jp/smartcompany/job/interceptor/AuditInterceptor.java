@@ -1,6 +1,6 @@
 package jp.smartcompany.job.interceptor;
 
-import jp.smartcompany.job.modules.core.manager.AccessAuditManager;
+import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.util.IpUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class AuditInterceptor implements HandlerInterceptor {
 
     private final static String REQUEST_TIME = "requestTime";
 
-    private final AccessAuditManager accessAuditManager;
+    private final AccessAuditService accessAuditService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -47,6 +47,6 @@ public class AuditInterceptor implements HandlerInterceptor {
             .setTime(time)
             .setUrl(request.getServletPath());
 //        EmpBO empBO = ShiroUtil.getLoginEmp();
-        accessAuditManager.save(accessAuditDO);
+        accessAuditService.save(accessAuditDO);
     }
 }

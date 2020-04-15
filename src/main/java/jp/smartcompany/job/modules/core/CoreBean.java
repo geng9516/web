@@ -5,16 +5,15 @@ package jp.smartcompany.job.modules.core;
  */
 public interface CoreBean {
 
-  interface Manager {
-    String ACCESS_AUDIT = "accessAuditManager";
-    String OPERATION_AUDIT = "operationAuditManager";
-    String LOGIN_AUDIT = "loginAuditManager";
-    String ERROR_AUDIT = "errorAuditManager";
+  interface Service {
+    String ACCESS_AUDIT = "accessAuditService";
+    String OPERATION_AUDIT = "operationAuditService";
+    String LOGIN_AUDIT = "loginAuditService";
+    String ERROR_AUDIT = "errorAuditService";
   }
 
-  interface Service {
-    String LOG = "logService";
-
+  interface Business {
+    String LOG = "logBusiness";
   }
 
   interface Controller {

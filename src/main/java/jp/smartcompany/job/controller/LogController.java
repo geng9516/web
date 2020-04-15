@@ -1,7 +1,7 @@
 package jp.smartcompany.job.controller;
 
 import jp.smartcompany.job.modules.core.CoreBean;
-import jp.smartcompany.job.modules.core.service.LogService;
+import jp.smartcompany.job.modules.core.business.LogBusiness;
 import jp.smartcompany.job.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,26 +21,26 @@ import java.util.Map;
 @RequestMapping("log")
 public class LogController {
 
-  private final LogService logService;
+  private final LogBusiness logBusiness;
 
   @GetMapping("access")
   public PageUtil accessAuditList(@RequestParam Map<String, Object> params) {
-    return logService.listAccessLog(params);
+    return logBusiness.listAccessLog(params);
   }
 
   @GetMapping("login")
   public PageUtil loginAuditList(@RequestParam Map<String, Object> params) {
-    return logService.listLoginLog(params);
+    return logBusiness.listLoginLog(params);
   }
 
   @GetMapping("error")
   public PageUtil errorAuditList(@RequestParam Map<String, Object> params) {
-    return logService.listErrorLog(params);
+    return logBusiness.listErrorLog(params);
   }
 
   @GetMapping("operation")
   public PageUtil operationAuditList(@RequestParam Map<String, Object> params) {
-    return logService.listOperationLog(params);
+    return logBusiness.listOperationLog(params);
   }
 
 }

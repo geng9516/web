@@ -6,13 +6,12 @@ import cn.hutool.json.JSONUtil;
 
 import jp.smartcompany.job.annotation.OperationLog;
 import jp.smartcompany.job.common.Constant;
-import jp.smartcompany.job.modules.core.manager.ErrorAuditManager;
-import jp.smartcompany.job.modules.core.manager.OperationAuditManager;
+import jp.smartcompany.job.modules.core.service.ErrorAuditService;
+import jp.smartcompany.job.modules.core.service.OperationAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.OperationAuditDO;
 import jp.smartcompany.job.util.ContextUtil;
 import jp.smartcompany.job.util.IpUtil;
-import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
@@ -40,8 +39,8 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class LogAspect {
 
-  private final ErrorAuditManager errorAuditManager;
-  private final OperationAuditManager operationAuditManager;
+  private final ErrorAuditService errorAuditService;
+  private final OperationAuditService operationAuditService;
 
   @Around(value="@annotation(jp.smartcompany.job.annotation.OperationLog)")
   public Object around(ProceedingJoinPoint point) throws Throwable {
@@ -114,7 +113,7 @@ public class LogAspect {
     //执行时长(毫秒)
     long time = System.currentTimeMillis() - beginTime;
     operationAuditDO.setTime(time);
-    operationAuditManager.save(operationAuditDO);
+    operationAuditService.save(operationAuditDO);
     return result;
   }
 
@@ -185,7 +184,7 @@ public class LogAspect {
 //    }
     errorAuditDO
             .setUsername(username);
-    errorAuditManager.save(errorAuditDO);
+    errorAuditService.save(errorAuditDO);
   }
 
 
