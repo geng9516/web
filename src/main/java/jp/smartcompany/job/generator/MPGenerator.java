@@ -25,7 +25,7 @@ public class MPGenerator {
         //controller文件是不是带RestController
         boolean restControllerStyle = false;
         //entity是否需要继承父类，如果需要则将已有的父类路径写下面，同理可配置Controller等父类。
-        String superEntityClass = "jp.smartcompany.job.modules.base.pojo.entity.AbstractDBBean";
+//        String superEntityClass = "jp.smartcompany.job.modules.base.pojo.entity.AbstractDBBean";
 
         AutoGenerator mpg = new AutoGenerator();
         // 全局配置
@@ -113,8 +113,6 @@ public class MPGenerator {
         strategy.setEntityLombokModel(true);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setRestControllerStyle(restControllerStyle);
-        strategy.setSuperEntityClass(superEntityClass);
-        strategy.setSuperEntityColumns("versionno");
         strategy.setEntitySerialVersionUID(false);
         strategy.setEntityTableFieldAnnotationEnable(true);
 
