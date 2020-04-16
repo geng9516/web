@@ -1,9 +1,12 @@
 package jp.smartcompany.job.modules.core.service;
 
+
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -11,46 +14,62 @@ import java.util.Date;
  * </p>
  *
  * @author Xiao Wenpeng
- * @since 2020-04-16
+ * @since 20200416
  */
 public interface IMastGenericDetailService extends IService<MastGenericDetailDO> {
 
-    /**
-     * 常勤通常付与年休ルールを取得
-     *
-     * @param customerId    顧客コード
-     * @param companyId     法人コード
-     * @param employeeId    社員番号
-     * @param yyyymmdd      基準日
-     * @param beginDateWork 　開始日
-     * @return int 年休ルール
-     */
-    int selectNenkyuRuleH(String customerId, String companyId, String employeeId
-            , Date yyyymmdd, Date beginDateWork);
+   /**
+      * 常勤通常付与年休ルールを取得
+      *
+      * @param customerId    顧客コード
+      * @param companyId     法人コード
+      * @param employeeId    社員番号
+      * @param yyyymmdd      基準日
+      * @param beginDateWork 　開始日
+      * @return int 年休ルール
+      */
+   int selectNenkyuRuleH(String customerId, String companyId, String employeeId
+           , Date yyyymmdd, Date beginDateWork);
 
     /**
-     * 非常勤通常付与年休ルールを取得
-     *
-     * @param customerId    顧客コード
-     * @param companyId     法人コード
-     * @param employeeId    社員番号
-     * @param yyyymmdd      基準日
-     * @param beginDateWork 　開始日
-     * @return int 年休ルール
-     */
+      * 非常勤通常付与年休ルールを取得
+      *
+      * @param customerId    顧客コード
+      * @param companyId     法人コード
+      * @param employeeId    社員番号
+      * @param yyyymmdd      基準日
+      * @param beginDateWork 　開始日
+      * @return int 年休ルール
+      */
     int selectNenkyuRuleT(String customerId, String companyId, String employeeId
-            , Date yyyymmdd, Date beginDateWork);
+          , Date yyyymmdd, Date beginDateWork);
+
 
     /**
-     * 汎用マスタから予備日付を取得
+     * 2つの歴の引き算
      *
-     * @param customerId 　顧客コード
-     * @param companyId  　法人コード
-     * @param wsGroupId  　グループコード
-     * @param wsDetailId 　名称コード
-     * @param language   　言語
-     * @param wdKijun    　基準日
-     * @return MastGenericDetailDO 名称マスタD0
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param startDate    検索期間開始日
+     * @param endDate      検索期間開始日
+     * @param checkCtype 　差異値
+     * @param csTypeNull 　既定値
+     * @return List<TmgTermRow> 除外期間
      */
+    List<TmgTermRow> tmgFExcludeTerm(String customerId, String companyId, Date startDate, Date endDate, String checkCtype, String csTypeNull);
+
+    /**
+      * 汎用マスタから予備日付を取得
+      *
+      * @param customerId 　顧客コード
+      * @param companyId  　法人コード
+      * @param wsGroupId  　グループコード
+      * @param wsDetailId 　名称コード
+      * @param language   　言語
+      * @param wdKijun    　基準日
+      * @return MastGenericDetailDO 名称マスタD0
+      */
     MastGenericDetailDO selectMastGenericDetailDO(String customerId, String companyId, String wsGroupId, String wsDetailId, String language, Date wdKijun);
-}
+
+
+        }

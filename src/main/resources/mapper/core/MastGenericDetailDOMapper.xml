@@ -2,6 +2,68 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper">
 
+
+
+
+    <select id="tmgFExcludeTerm" resultType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow" >
+        with PL_TERM_A as (SELECT
+        NULL::TEXT AS CTYPE,
+        #{startDate,jdbcType=DATE} ::Date as DOPEN,
+        #{endDate,jdbcType=DATE} ::Date as DCLOSE,
+        NULL ::TEXT as CVALUE_A,
+        NULL ::TEXT as CVALUE_B),
+        PL_TERM_B as (SELECT
+        NULL                    AS  CTYPE
+        ,   R1.MGD_DSTART_CK        AS  DOPEN
+        ,   R1.MGD_DEND             AS  DCLOSE
+        ,   NULL                    AS  CVALUE_A
+        ,   NULL                    AS  CVALUE_B
+        FROM
+        TMG_V_MGD_IGNORE_NYKLOSE R1
+        WHERE
+        R1.MGD_CCUSTOMERID              =   #{customerId}
+        AND     R1.MGD_CCOMPANYID_CK_FK         =   #{companyId})
+
+
+        SELECT
+        CASE CTYPE WHEN #{csTypeNull} THEN '' ELSE CTYPE END as CTYPE,
+        DOPEN,
+        DCLOSE,
+        CVALUE_A,
+        CVALUE_B )
+
+        FROM (
+        SELECT DISTINCT
+        t.CTYPE, t.DOPEN, t.DCLOSE, a.CVALUE_A AS CVALUE_A, a.CVALUE_B AS CVALUE_B
+        FROM
+        (
+        SELECT -- 分割期間のリストとして取得
+        CASE WHEN #{checkCtype} = 1 THEN R.CTYPE ELSE #{csTypeNull} END AS CTYPE,
+        LAG(R.DDATE) OVER(PARTITION BY CASE WHEN #{checkCtype} = 1 THEN R.CTYPE ELSE #{csTypeNull} END ORDER BY R.DDATE) AS DOPEN,
+        R.DDATE - 1                                            AS DCLOSE
+        FROM
+        (   -- 分割の基点となる日付リストを取得
+        SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE, DOPEN      AS DDATE FROM PL_TERM_A
+        UNION SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE, DOPEN      AS DDATE FROM PL_TERM_B
+        UNION SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE, DCLOSE + 1 AS DDATE FROM PL_TERM_A
+        UNION SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE, DCLOSE + 1 AS DDATE FROM PL_TERM_B
+        ) R
+        ) t,
+        TABLE( PL_TERM_A ) a
+        WHERE
+        ((#{checkCtype} = 1 AND t.CTYPE = coalesce(a.CTYPE,#{csTypeNull})) OR (#{checkCtype} = 0))
+        AND t.DOPEN     >= a.DOPEN
+        AND t.DOPEN     <= a.DCLOSE
+        AND NOT EXISTS (
+        SELECT 1 FROM ( SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE,DOPEN,DCLOSE FROM PL_TERM_B ) b
+        WHERE
+        ((#{checkCtype} = 1 AND b.CTYPE = t.CTYPE) OR (#{checkCtype} = 0))
+        AND t.DOPEN BETWEEN b.DOPEN AND b.DCLOSE
+        )
+        )
+        ORDER BY CTYPE, DOPEN
+    </select>
+
     <select id="selectNenkyuRuleH" resultType="int" >
         select
             e.mgd_nsparenum1

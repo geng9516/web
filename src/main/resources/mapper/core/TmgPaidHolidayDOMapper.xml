@@ -2,4 +2,54 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayMapper">
 
+
+    <select id="selectNykLoseDate" resultType="java.util.Date" >
+    -- 通常付与の喪失日
+    SELECT
+    R1.TPH_DEXPIRE_INVEST + 1		AS	TPH_DEXPIRE_INVEST							-- 付与の有効期限
+    FROM
+    TMG_PAID_HOLIDAY	R1
+    WHERE
+    R1.TPH_CCUSTOMERID				=	#{customerId}
+    AND		R1.TPH_CCOMPANYID				=	#{companyId}
+    AND		R1.TPH_CEMPLOYEEID				=	#{employeeId}
+    AND		R1.TPH_DEXPIRE_INVEST + 1		BETWEEN #{startdate,jdbcType=DATE} AND #{enddate,jdbcType=DATE}			-- 付与の有効期限
+    AND		NVL(R1.TPH_NINVEST, 0)			>	0
+    --
+    UNION
+    -- 調整付与の喪失日
+    SELECT
+    R1.TPH_DEXPIRE_ADJUST + 1														-- 調整付与の有効期限
+    FROM
+    TMG_PAID_HOLIDAY	R1
+    WHERE
+    R1.TPH_CCUSTOMERID				=	#{customerId}
+    AND		R1.TPH_CCOMPANYID				=	#{companyId}
+    AND		R1.TPH_CEMPLOYEEID				=	#{employeeId}
+    AND		R1.TPH_DEXPIRE_ADJUST + 1		BETWEEN #{startdate,jdbcType=DATE} AND #{enddate,jdbcType=DATE}				-- 調整付与の有効期限
+    AND	(	NVL(R1.TPH_NADJUST, 0)			<![CDATA[<>]]>	0											-- 調整日数(付与)
+    OR
+    NVL(R1.TPH_NADJUST_HOURS, 0)	<![CDATA[<>]]>	0											-- 調整時間(付与)
+    )
+    --
+    UNION
+    --調整繰越の喪失日
+    SELECT
+    R1.TPH_DEXPIRE_ADJUST_TO + 1													-- 調整繰越の有効期限
+    FROM
+    TMG_PAID_HOLIDAY	R1
+    WHERE
+    R1.TPH_CCUSTOMERID				=	#{customerId}
+    AND		R1.TPH_CCOMPANYID				=	#{companyId}
+    AND		R1.TPH_CEMPLOYEEID				=	#{employeeId}
+    AND		R1.TPH_DEXPIRE_ADJUST_TO + 1	BETWEEN #{startdate,jdbcType=DATE} AND #{enddate,jdbcType=DATE}				-- 調整繰越の有効期限
+    AND	(	NVL(R1.TPH_NADJUST_TO, 0)		<![CDATA[<>]]>	0											-- 調整日数(付与)
+    OR
+    NVL(R1.TPH_NADJUST_HOURS_TO, 0)	<![CDATA[<>]]>	0											-- 調整時間(付与)
+    )
+
+      </select>
+
+
+
 </mapper>
