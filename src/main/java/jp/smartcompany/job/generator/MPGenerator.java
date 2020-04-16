@@ -113,7 +113,7 @@ public class MPGenerator {
         strategy.setEntityLombokModel(true);
         strategy.setColumnNaming(NamingStrategy.underline_to_camel);
         strategy.setRestControllerStyle(restControllerStyle);
-        strategy.setEntitySerialVersionUID(false);
+        strategy.setEntitySerialVersionUID(true);
         strategy.setEntityTableFieldAnnotationEnable(true);
 
         strategy.setExclude(
