@@ -2,4 +2,159 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper">
 
+    <select id="selectNenkyuRuleH" resultType="int" >
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd3001 d
+        on
+            e.mgd_ccompanyid_ck_fk =  d.ccompkb
+        and e.mgd_csparechar1 = substr(d.kinmu_cde,'1','1')
+        and e.mgd_csparechar2 = d.hjksyk_misy_cde
+        and e.mgd_csparechar3 = substr(d.kinmu_cde,'2','1')
+        where
+            d.ccompkb        = #{companyId}
+        and d.dstart        <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       = #{employeeId}
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck     <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+    </select>
+
+    <select id="selectNenkyuRuleH2" resultType="int" >
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd3001 d
+        on d.ccompkb  = e.mgd_ccompanyid_ck_fk
+        and e.mgd_csparechar1 = substr(d.kinmu_cde,'1','1')
+        and e.mgd_csparechar2 is null
+        and e.mgd_csparechar3 is null
+        where
+            e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend >= #{yyyymmdd,jdbcType=DATE}
+        and d.ccompkb = #{companyId}
+        and d.dstart <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno = #{employeeId}
+
+        union all
+
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd0110 d
+        on d.ccompkb  = e.mgd_ccompanyid_ck_fk
+        and e.mgd_csparechar1 = d.kei_cde
+        and e.mgd_csparechar2 is null
+        and e.mgd_csparechar3 is null
+        where
+            e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck     <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd}
+        and d.ccompkb        = #{companyId}
+        and d.dstart        <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >=  #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       =  #{employeeId}
+    </select>
+
+    <select id="selectNenkyuRuleT" resultType="int" >
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd0110 d
+        on
+            d.ccompkb  = e.mgd_ccompanyid_ck_fk
+        and e.mgd_csparechar1 = d.kei_cde
+        and e.mgd_csparechar2 = d.knmei_cde
+        and e.mgd_csparechar3 = d.kmkbn_cde
+        where
+        and d.ccompkb        = #{companyId}
+        and d.dstart         <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       = #{employeeId}
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck      <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+    </select>
+
+    <select id="selectNenkyuRuleT2" resultType="int" >
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd3001 d
+        on
+            d.ccompkb  = e.mgd_ccompanyid_ck_fk
+        and e.mgd_csparechar1 = substr(d.kinmu_cde,'1','1')
+        where
+            e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+        and d.ccompkb        = #{companyId}
+        and d.dstart        <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       = #{employeeId}
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck    <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_csparechar2 is null
+        and e.mgd_csparechar3 is null
+
+        union all
+
+        select
+            e.mgd_nsparenum1
+        from
+            mast_generic_detail e
+        inner join
+            dt_djnd0110 d
+        on
+            d.ccompkb  = e.mgd_ccompanyid_ck_fk
+        and e.mgd_csparechar1 = d.kei_cde
+        where
+            d e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
+        and d.ccompkb        = #{companyId}
+        and d.dstart        <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and d.dend          >= #{yyyymmdd,jdbcType=DATE}
+        and d.cshainno       = #{employeeId}
+        and e.mgd_ccustomerid = #{customerId}
+        and e.mgd_dstart_ck     <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_dend       >= #{yyyymmdd,jdbcType=DATE}
+        and e.mgd_csparechar2 is null
+        and e.mgd_csparechar3 is null
+    </select>
+
+    <select id="selectMastGenericDetailDO" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO">
+        select
+            mgd_dsparedate1,    -- //予備日付1
+            mgd_dsparedate2,    -- //予備日付2
+            mgd_dsparedate3,    -- //予備日付3
+            mgd_dsparedate4,    -- //予備日付4
+            mgd_dsparedate5     -- //予備日付5
+        from
+            mast_generic_detail
+        where
+            mgd_ccustomerid = #{customerId}
+        and mgd_ccompanyid_ck_fk = #{companyId}
+        and mgd_cgenericgroupid = #{wsGroupId}
+        and mgd_cgenericdetailid_ck = #{wsDetailId}
+        and mgd_clanguage_ck =  #{language}
+        and mgd_dstart_ck <![CDATA[<=]]> #{wdKijun,jdbcType=DATE}
+        and mgd_dend >= #{wdKijun,jdbcType=DATE}
+    </select>
+
 </mapper>
