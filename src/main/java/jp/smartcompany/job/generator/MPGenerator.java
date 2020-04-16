@@ -12,6 +12,11 @@ import com.baomidou.mybatisplus.generator.config.rules.DbColumnType;
 import com.baomidou.mybatisplus.generator.config.rules.NamingStrategy;
 import java.util.List;
 
+
+/**
+ * @author Xiao Wenpeng
+ * 注意：不要随意运行！
+ */
 public class MPGenerator {
 
     public static void main(String[] args)  {
@@ -35,7 +40,7 @@ public class MPGenerator {
         gc.setAuthor(author);
         gc.setOpen(false);
         gc.setEntityName("%sDO");
-        gc.setFileOverride(true);
+        gc.setFileOverride(false);
         gc.setDateType(DateType.ONLY_DATE);
         gc.setIdType(IdType.AUTO);
         mpg.setGlobalConfig(gc);
