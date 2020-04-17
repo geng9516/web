@@ -46,7 +46,7 @@ public class TmgConvFraction4nyk extends BaseExecute {
      *
      * @return int 端数処理
      */
-    public String init(String employeeId, Date yyyymmdd, int pnTime, String customerId, String companyId) {
+    public int init(String employeeId, Date yyyymmdd, int pnTime, String customerId, String companyId) {
 
         // プラガブルDTO設定
         PluggableDTO pluggableDTO = new PluggableDTO();
@@ -54,11 +54,11 @@ public class TmgConvFraction4nyk extends BaseExecute {
         pluggableDTO.setCompanyId(companyId);
         pluggableDTO.setYyyymmdd(yyyymmdd);
         pluggableDTO.setEmployeeId(employeeId);
+        pluggableDTO.setPnTime(pnTime);
         pluggableDTO.setCphase("TMG_F_CONV_FRACTION4NYK");
 
-        // プラガブルを実行して、年休付与区分を取得する
-        //年休付与区分判定
-        return (String)pluggableService.execute(pluggableDTO);
+        // 端数処理
+        return (int)pluggableService.execute(pluggableDTO);
     }
 
 }

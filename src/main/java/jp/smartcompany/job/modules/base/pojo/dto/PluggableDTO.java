@@ -39,6 +39,6 @@ public class PluggableDTO {
     /**
      *分単位の数値
      */
-    private Date pnTime;
+    private int pnTime;
 
 }
