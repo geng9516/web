@@ -46,7 +46,7 @@ public class TmgConvFraction4nyk extends BaseExecute {
      *
      * @return int 端数処理
      */
-    public int init(String employeeId, Date yyyymmdd, int pnTime, String customerId, String companyId) {
+    public int init(String employeeId, Date yyyymmdd, Double pnTime, String customerId, String companyId) {
 
         // プラガブルDTO設定
         PluggableDTO pluggableDTO = new PluggableDTO();

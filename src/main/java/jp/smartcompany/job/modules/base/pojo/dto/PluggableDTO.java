@@ -1,12 +1,14 @@
 package jp.smartcompany.job.modules.base.pojo.dto;
 
-import jp.smartcompany.job.modules.base.pojo.bo.PluggableBO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
 
+/**
+ * @author Nie Wanqun
+ */
 @Getter
 @Setter
 @ToString
@@ -39,6 +41,6 @@ public class PluggableDTO {
     /**
      *分単位の数値
      */
-    private int pnTime;
+    private Double pnTime;
 
 }
