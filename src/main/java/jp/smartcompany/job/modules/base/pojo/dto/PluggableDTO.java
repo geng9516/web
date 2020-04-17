@@ -36,6 +36,9 @@ public class PluggableDTO {
      *勤務開始日
      */
     private Date beginDateWork;
-
+    /**
+     *分単位の数値
+     */
+    private Date pnTime;
 
 }
