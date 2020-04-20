@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +42,12 @@ public class BasicAuthRealm extends AuthorizingRealm {
             throw new LockedAccountException(CoreError.USER_LOCK.msg());
         }
         String password = new String((char[])credentials);
-        boolean isValid = authBusiness.checkPassword(mastAccountDO.getMaCuserid(),password);
 
+        String digestPassword = new Md5Hash(password).toHex();
+        boolean isValid = authBusiness.checkPassword(mastAccountDO,digestPassword);
+        if (isValid) {
+          return new SimpleAuthenticationInfo(mastAccountDO,digestPassword,getName());
+        }
         return null;
     }
 
