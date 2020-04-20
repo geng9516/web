@@ -46,15 +46,15 @@ public class TmgGetMgdD extends BaseExecute {
     /**
      * 汎用マスタの予備日付取得処理
      *
-     * @param masterCode マスタコード
-     * @param kiJun 基準日
-     * @param columnNum カラム番号
      * @param customerId 顧客コード
      * @param companyId 法人コード
+     * @param kiJun 基準日
+     * @param masterCode マスタコード
+     * @param columnNum カラム番号
      * @param language 言語コード
      * @return Date
      */
-    public Date init (String masterCode, Date kiJun, int columnNum,String customerId,String companyId,String language){
+    public Date init (String customerId,String companyId, Date kiJun ,String masterCode, int columnNum,String language){
 
         // 予備日付初期化
         Date wdData = null;

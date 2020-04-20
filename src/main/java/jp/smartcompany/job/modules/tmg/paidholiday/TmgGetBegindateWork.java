@@ -60,7 +60,7 @@ public class TmgGetBegindateWork extends BaseExecute {
         String masterCode ="TMG_DATEOFEMPLOYMENT" + "|"+ employeeId;
 
         // 勤務開始日を取得
-        Date begindateWork = tmgGetMgdD.init(masterCode,yyyymmdd,1,customerId,companyId,"ja");
+        Date begindateWork = tmgGetMgdD.init(customerId,companyId,yyyymmdd,masterCode,1,"ja");
 
         if (begindateWork != null){
             return begindateWork;
