@@ -2,7 +2,14 @@ package jp.smartcompany.job.modules.tmg.paidholiday;
 
 import jp.smartcompany.job.modules.base.pojo.dto.PluggableDTO;
 import jp.smartcompany.job.modules.base.service.BaseExecute;
+import org.springframework.stereotype.Service;
 
+/**
+ * @author Nie Wanqun
+ * 端数処理（端数処理なし　１分未満は切り上げ）
+ * TMG_F_CONV_FRACTION4NYK_ASIS
+ */
+@Service
 public class TmgConvFraction4nykAsis  extends BaseExecute {
 
     /**
