@@ -11,6 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller(CoreBean.Controller.INDEX)
 public class IndexController {
 
+    /**
+     * 控制台首页
+     * @return String
+     */
     @GetMapping
     public String toIndex() {
         return "index";

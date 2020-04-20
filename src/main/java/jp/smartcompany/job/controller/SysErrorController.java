@@ -34,5 +34,11 @@ public class SysErrorController implements ErrorController {
             return "500";
         }
     }
+
+    @RequestMapping("unauthorized")
+    public String unauthorized() {
+       return "403";
+    }
+
 }
 
