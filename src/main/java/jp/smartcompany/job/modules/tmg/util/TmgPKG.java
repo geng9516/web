@@ -30,6 +30,20 @@ public class TmgPKG {
     /** 名称マスタコード　出勤 */
     public final static String CS_WORK_000 = "TMG_WORK|000";
 
+    /** 予備数字1 */
+    public final static int CN_SPARENUM_1 = 1;
+
+    /** 予備数字2 */
+    public final static int CN_SPARENUM_2 = 2;
+
+    /** 予備数字3 */
+    public final static int CN_SPARENUM_3 = 3;
+
+    /** 予備数字4 */
+    public final static int CN_SPARENUM_4 = 4;
+
+    /** 予備数字5 */
+    public final static int CN_SPARENUM_5 = 5;
 
 
 }
