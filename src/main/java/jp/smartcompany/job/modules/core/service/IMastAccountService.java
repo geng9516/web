@@ -13,4 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IMastAccountService extends IService<MastAccountDO> {
 
-        }
+        /**
+         * 根据用户名获取账户信息
+         * @param username
+         * @return
+         */
+        MastAccountDO getByUsername(String username);
+
+}
