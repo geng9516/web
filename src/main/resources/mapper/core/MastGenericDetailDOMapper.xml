@@ -202,6 +202,16 @@
 
     <select id="selectMastGenericDetailDO" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO">
         select
+            mgd_csparechar1,    -- //予備文字列1
+            mgd_csparechar2,    -- //予備文字列2
+            mgd_csparechar3,    -- //予備文字列3
+            mgd_csparechar4,    -- //予備文字列4
+            mgd_csparechar5     -- //予備文字列5
+            mgd_nsparenum1,     -- //予備数値1
+            mgd_nsparenum2,     -- //予備数値2
+            mgd_nsparenum3,     -- //予備数値3
+            mgd_nsparenum4,     -- //予備数値4
+            mgd_nsparenum5,      -- //予備数値5
             mgd_dsparedate1,    -- //予備日付1
             mgd_dsparedate2,    -- //予備日付2
             mgd_dsparedate3,    -- //予備日付3

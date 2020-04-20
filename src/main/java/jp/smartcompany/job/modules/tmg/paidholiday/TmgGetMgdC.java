@@ -14,13 +14,13 @@ import java.util.Date;
 
 /**
  * @author Nie Wanqun
- * 汎用マスタの予備日付取得処理
- * TMG_F_GET_MGD_D
+ * 汎用マスタの予備文字列取得処理
+ * TMG_F_GET_MGD_C
  *
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class TmgGetMgdD extends BaseExecute {
+public class TmgGetMgdC extends BaseExecute {
 
     /**
      * MastGenericDetailManager
@@ -44,7 +44,7 @@ public class TmgGetMgdD extends BaseExecute {
     }
 
     /**
-     * 汎用マスタの予備日付取得処理
+     * 汎用マスタの予備文字列取得処理
      *
      * @param customerId 顧客コード
      * @param companyId 法人コード
@@ -52,12 +52,12 @@ public class TmgGetMgdD extends BaseExecute {
      * @param masterCode マスタコード
      * @param columnNum カラム番号
      * @param language 言語コード
-     * @return Date
+     * @return String
      */
-    public Date init (String customerId,String companyId, Date kiJun ,String masterCode, int columnNum,String language){
+    public String init (String customerId,String companyId, Date kiJun ,String masterCode, int columnNum,String language){
 
         // 予備日付初期化
-        Date wdData = null;
+        String wdStr = null;
 
         // 基準日を'DD'で取得
         Date wdKijun = DateUtil.beginOfDay(kiJun) ;
@@ -71,19 +71,19 @@ public class TmgGetMgdD extends BaseExecute {
         // 汎用マスタを取得
         MastGenericDetailDO mastGenericDetailDO = iMastGenericDetailService.selectMastGenericDetailDO(customerId, companyId, wsGroupId, wsDetailId, language, wdKijun);
 
-        // パラメータ数値をもとに予備日付の値を代入
+        // パラメータ数値をもとに予備文字列の値を代入
         if (columnNum == 1){
-            wdData = mastGenericDetailDO.getMgdDsparedate1();
+            wdStr = mastGenericDetailDO.getMgdCsparechar1();
         } else if (columnNum == 2) {
-            wdData = mastGenericDetailDO.getMgdDsparedate2();
+            wdStr = mastGenericDetailDO.getMgdCsparechar2();
         } else if (columnNum == 3) {
-            wdData = mastGenericDetailDO.getMgdDsparedate3();
+            wdStr = mastGenericDetailDO.getMgdCsparechar2();
         } else if (columnNum == 4) {
-            wdData = mastGenericDetailDO.getMgdDsparedate4();
+            wdStr = mastGenericDetailDO.getMgdCsparechar3();
         } else if (columnNum == 5) {
-            wdData = mastGenericDetailDO.getMgdDsparedate5();
+            wdStr = mastGenericDetailDO.getMgdCsparechar4();
         }
 
-        return wdData;
+        return wdStr;
     }
 }
