@@ -1,10 +1,14 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.mapper.MastPasswordMapper;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -15,6 +19,18 @@ import org.springframework.stereotype.Repository;
  * @since 2020-04-16
  */
 @Repository
-        public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, MastPasswordDO> implements IMastPasswordService {
+public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, MastPasswordDO> implements IMastPasswordService {
 
+        @Override
+        public Date getUpdateDateByUsernamePassword(String userId, String password) {
+                QueryWrapper<MastPasswordDO> qw = SysUtil.query();
+                qw.eq("map_cuserid", userId).eq("map_cpassword", password)
+                .eq("map_nhistory",0).select("map_dpwddate");
+                MastPasswordDO mastPasswordDO = getOne(qw);
+                if (mastPasswordDO!=null){
+                  return mastPasswordDO.getMapDpwddate();
+                }
+                return null;
         }
+
+}
