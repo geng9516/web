@@ -6,6 +6,10 @@ import jp.smartcompany.job.modules.base.BaseBean;
 import jp.smartcompany.job.modules.base.pojo.dto.PluggableDTO;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPluggableDO;
+import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
+import jp.smartcompany.job.modules.core.service.ITmgPluggableService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +20,13 @@ import java.util.List;
  * @author XiaoWenpeng
  */
 @Service(BaseBean.Service.PLUGGABLE)
-public  class PluggableService {
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class PluggableService {
+
+    /**
+     * ITmgPluggableService
+     */
+    private final ITmgPluggableService iTmgPluggableService;
 
     /**
      * メソッド実行
@@ -24,26 +34,26 @@ public  class PluggableService {
     @Transactional(rollbackFor = GlobalException.class)
     public Object execute(PluggableDTO pluggableDTO) {
 
-        Object object = null;
-        // TODO プラガブル取得処理
-        List<TmgPluggableDO> pluggableBOList = new ArrayList<TmgPluggableDO>();
+        // プラガブル取得処理
+        List<TmgPluggableDO> pluggableBOList = iTmgPluggableService.listTmgPluggableDO(pluggableDTO.getCustomerId()
+                , pluggableDTO.getCompanyId(), pluggableDTO.getYyyymmdd(), "*", pluggableDTO.getCphase());
 
         try {
-            for (TmgPluggableDO pluggableBO: pluggableBOList) {
+            for (TmgPluggableDO pluggableBO : pluggableBOList) {
 
                 // 执行勤务service里的方法
                 BaseExecute service = SpringUtil.getBean(pluggableBO.getTplCsparechar04());
-                object = service.execute(pluggableDTO);
-                if (object != null){
+                Object object = service.execute(pluggableDTO);
+                if (object != null) {
                     return object;
                 }
             }
-        }catch (GlobalException e){
+        } catch (GlobalException e) {
             // error
-            return  new GlobalException("error");
+            return new GlobalException("error");
         }
 
-        return object;
+        return null;
     }
 
     /**
@@ -52,8 +62,11 @@ public  class PluggableService {
     @Transactional(rollbackFor = GlobalException.class)
     public void execute2(PluggableDTO pluggableDTO) {
 
-        // TODO プラガブル取得処理
-        List<TmgPluggableDO> pluggableBOList = new ArrayList<TmgPluggableDO>();
+        Object object = null;
+
+        // プラガブル取得処理
+        List<TmgPluggableDO> pluggableBOList = iTmgPluggableService.listTmgPluggableDO(pluggableDTO.getCustomerId()
+                , pluggableDTO.getCompanyId(), pluggableDTO.getYyyymmdd(), "*", pluggableDTO.getCphase());
 
         try {
             for (TmgPluggableDO pluggableBO : pluggableBOList) {
@@ -62,7 +75,7 @@ public  class PluggableService {
                 BaseExecute service = SpringUtil.getBean(pluggableBO.getTplCsparechar04());
                 service.execute(pluggableDTO);
             }
-        }catch (GlobalException e){
+        } catch (GlobalException e) {
             // error
             throw new GlobalException("error");
         }
