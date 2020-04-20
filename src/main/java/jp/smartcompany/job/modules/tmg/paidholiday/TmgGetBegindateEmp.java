@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.base.service.BaseExecute;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 
@@ -14,6 +15,7 @@ import java.util.Date;
  * TMG_F_GET_BEGINDATE_EMP
  * TMG_EMPLOYEESの開始日取得
  */
+@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgGetBegindateEmp extends BaseExecute {
 
