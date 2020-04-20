@@ -48,4 +48,8 @@ public class Constant {
         String TEST = "test";
     }
 
+    public final static String LOG_LOGIN = "ログイン";
+    public final static String LOG_LOGOUT = "ログアウト";
+
+
 }

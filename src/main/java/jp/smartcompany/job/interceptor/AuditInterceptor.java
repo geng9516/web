@@ -1,5 +1,6 @@
 package jp.smartcompany.job.interceptor;
 
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.util.IpUtil;
@@ -46,7 +47,9 @@ public class AuditInterceptor implements HandlerInterceptor {
             .setResponseTime(new Date(responseTime))
             .setTime(time)
             .setUrl(request.getServletPath());
-//        EmpBO empBO = ShiroUtil.getLoginEmp();
+        Date now = DateUtil.date();
+        accessAuditDO.setCreateTime(now);
+        accessAuditDO.setUpdateTime(now);
         accessAuditService.save(accessAuditDO);
     }
 }

@@ -1,16 +1,16 @@
 package jp.smartcompany.job.controller;
 
 import jp.smartcompany.job.modules.core.CoreBean;
+import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
+import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.UsernamePasswordToken;
-import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * @author Xiao Wenpeng
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthController {
 
+    private final AuthBusiness authBusiness;
 
     /**
      * 跳转到登录页
@@ -33,10 +34,15 @@ public class AuthController {
      * 登录接口
      */
     @PostMapping("login")
-    public void login(@RequestBody LoginDTO loginDTO) {
-        Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken token = new UsernamePasswordToken(loginDTO.getUsername(), loginDTO.getPassword());
-        subject.login(token);
+    public RedirectView login(@RequestBody LoginDTO loginDTO) {
+        authBusiness.login(loginDTO);
+        return new RedirectView("/");
+    }
+
+    @GetMapping("logout")
+    public RedirectView logout() {
+        ShiroUtil.getSubject().logout();
+        return new RedirectView("/login");
     }
 
 }

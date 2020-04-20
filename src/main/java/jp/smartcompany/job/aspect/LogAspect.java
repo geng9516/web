@@ -1,5 +1,6 @@
 package jp.smartcompany.job.aspect;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.Map;
 
 /**
@@ -113,6 +115,9 @@ public class LogAspect {
     //执行时长(毫秒)
     long time = System.currentTimeMillis() - beginTime;
     operationAuditDO.setTime(time);
+    Date now  = DateUtil.date();
+    operationAuditDO.setCreateTime(now);
+    operationAuditDO.setUpdateTime(now);
     operationAuditService.save(operationAuditDO);
     return result;
   }
@@ -184,6 +189,9 @@ public class LogAspect {
 //    }
     errorAuditDO
             .setUsername(username);
+    Date now = DateUtil.date();
+    errorAuditDO.setCreateTime(now);
+    errorAuditDO.setUpdateTime(now);
     errorAuditService.save(errorAuditDO);
   }
 
