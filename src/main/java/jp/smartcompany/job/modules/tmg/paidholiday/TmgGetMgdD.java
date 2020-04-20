@@ -60,7 +60,7 @@ public class TmgGetMgdD extends BaseExecute {
         Date wdData = null;
 
         // 基準日を'DD'で取得
-        Date wdKijun = DateUtil.endOfDay(kiJun) ;
+        Date wdKijun = DateUtil.beginOfDay(kiJun) ;
 
         // グループIDを取得
         String wsGroupId = StrUtil.subWithLength(masterCode,1,StrUtil.indexOf(masterCode,CS_PIPE,1)-1);
