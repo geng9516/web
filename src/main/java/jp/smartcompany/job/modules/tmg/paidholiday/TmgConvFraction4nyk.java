@@ -38,15 +38,16 @@ public class TmgConvFraction4nyk extends BaseExecute {
     /**
      * 年休付与区分判定（プラガブル）
      *
+     * @param customerId 顧客コード
+     * @param companyId 法人コード
      * @param employeeId 社員番号
      * @param yyyymmdd 基準日
      * @param pnTime 分単位の数値
-     * @param customerId 顧客コード
-     * @param companyId 法人コード
+
      *
      * @return int 端数処理
      */
-    public int init(String employeeId, Date yyyymmdd, Double pnTime, String customerId, String companyId) {
+    public int init(String customerId, String companyId, String employeeId, Date yyyymmdd, Double pnTime) {
 
         // プラガブルDTO設定
         PluggableDTO pluggableDTO = new PluggableDTO();
