@@ -34,6 +34,8 @@ public class PluggableDTO {
      *基準日
      */
     private Date yyyymmdd;
+
+
     /**
      *勤務開始日
      */
@@ -42,5 +44,36 @@ public class PluggableDTO {
      *分単位の数値
      */
     private Double pnTime;
+
+
+
+    //region 年次有給休暇消化処理
+
+    /**
+     *開始日
+     */
+    private Date startDate;
+    /**
+     *終了日
+     */
+    private Date endDate;
+    /**
+     *消化前残日数
+     */
+    private int restDays;
+    /**
+     *消化前残時間数
+     */
+    private int restHours;
+    /**
+     *申請番号
+     */
+    private String ntfNo;
+    /**
+     *0:指定された申請以外も含む計算(通常) 1:指定された申請番号のみでの計算
+     */
+    private int single;
+    //endregion
+
 
 }

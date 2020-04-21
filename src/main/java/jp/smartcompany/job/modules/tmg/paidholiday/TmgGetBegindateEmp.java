@@ -38,8 +38,8 @@ public class TmgGetBegindateEmp extends BaseExecute {
     /**
      * TMG_EMPLOYEESの開始日取得
      *
-     * @param customerId 顧客コード
-     * @param companyId 法人コード
+     * @param customerId 法人コード
+     * @param companyId 顧客コード
      * @param employeeId 社員番号
      * @param yyyymmdd 基準日
      * @return Date 開始日
