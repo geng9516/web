@@ -53,7 +53,7 @@
         WHERE
         ((#{checkCtype} = 1 AND t.CTYPE = coalesce(a.CTYPE,#{csTypeNull})) OR (#{checkCtype} = 0))
         AND t.DOPEN     >= a.DOPEN
-        AND t.DOPEN     <![CDATA[<= ]]> a.DCLOSE
+        AND t.DOPEN     <![CDATA[<=]]> a.DCLOSE
         AND NOT EXISTS (
         SELECT 1 FROM ( SELECT coalesce(CTYPE,#{csTypeNull}) CTYPE,DOPEN,DCLOSE FROM PL_TERM_B ) b
         WHERE

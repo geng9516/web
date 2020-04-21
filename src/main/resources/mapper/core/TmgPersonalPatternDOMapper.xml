@@ -2,4 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPersonalPatternMapper">
 
+
+    <select id="selectAvgWorkTime" resultType="int" >
+        SELECT
+            P.TPPA_NAVGWORKTIME
+        FROM
+            TMG_PERSONAL_PATTERN P
+        WHERE
+                P.TPPA_CCUSTOMERID     =   #{customerId}
+        AND     P.TPPA_CCOMPANYID      =   #{companyId}
+        AND     P.TPPA_CEMPLOYEEID     =   #{employeeId}
+        AND     P.TPPA_DSTARTDATE      <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     P.TPPA_DENDDATE        <![CDATA[>=]]>  #{yyyymmdd,jdbcType=DATE}
+        ;
+
+      </select>
 </mapper>
