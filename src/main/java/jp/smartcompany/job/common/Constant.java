@@ -37,6 +37,8 @@ public class Constant {
     public final static String MSG = "msg";
     public final static String CODE = "code";
 
+    public final static String LOGIN_INFO = "loginInfo";
+
     public final static String ANON_USER = "anon user";
 
     /**
@@ -50,6 +52,8 @@ public class Constant {
 
     public final static String LOG_LOGIN = "ログイン";
     public final static String LOG_LOGOUT = "ログアウト";
+
+    public final static String DEFAULT_LANGUAGE = "ja";
 
 
 }

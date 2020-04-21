@@ -31,7 +31,7 @@ public class AuthController {
     }
 
     /**
-     * 登录接口
+     * 登录API
      */
     @PostMapping("login")
     public RedirectView login(@RequestBody LoginDTO loginDTO) {
@@ -39,9 +39,13 @@ public class AuthController {
         return new RedirectView("/");
     }
 
+    /**
+     * 退出登录API
+     * @return
+     */
     @GetMapping("logout")
     public RedirectView logout() {
-        ShiroUtil.getSubject().logout();
+        authBusiness.logout();
         return new RedirectView("/login");
     }
 

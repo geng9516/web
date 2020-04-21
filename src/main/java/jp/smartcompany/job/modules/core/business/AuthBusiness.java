@@ -1,17 +1,24 @@
 package jp.smartcompany.job.modules.core.business;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.common.Constant;
+import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.enums.ErrorMessage;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
+import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.LoginAuditService;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.util.ContextUtil;
 import jp.smartcompany.job.util.IpUtil;
+import jp.smartcompany.job.util.ShiroUtil;
 import jp.smartcompany.job.util.SysDateUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
@@ -22,18 +29,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Xiao Wenpeng
  */
-@Service(CoreBean.Business.AUTH_BUSINESS)
+@Service(CoreBean.Business.AUTH)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AuthBusiness {
 
     private final IMastPasswordService iMastPasswordService;
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
+    private final IMastSystemService iMastSystemService;
+    private final GroupBusiness groupBusiness;
+    private final HttpSession httpSession;
 
     public boolean checkPassword(MastAccountDO account, String password) {
         Date passwordSetDate = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
@@ -68,7 +80,16 @@ public class AuthBusiness {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         subject.login(token);
+        // 初始化session
+        httpSession.setAttribute(Constant.LOGIN_INFO,new PsSession());
+        executeLoginSequence();
         saveLoginInfo(true, username);
+    }
+
+    public void logout() {
+        String username = ShiroUtil.getUsername();
+        saveLoginInfo(true, username);
+        ShiroUtil.getSubject().logout();
     }
 
     private void saveLoginInfo(boolean status,String username) {
@@ -86,6 +107,16 @@ public class AuthBusiness {
             loginAuditDO.setIp(IpUtil.getRemoteAddr(request));
         }
         loginAuditService.save(loginAuditDO);
+    }
+
+    private void executeLoginSequence() {
+           // 默认为日本语
+           String language = Constant.DEFAULT_LANGUAGE;
+           List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
+           if (CollUtil.isEmpty(systemList)){
+               throw new GlobalException("Master not found");
+           }
+           groupBusiness.getGroupList(language,systemList);
     }
 
 

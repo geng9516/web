@@ -2,4 +2,75 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupMapper">
 
+    <select id="getUserGroupByLanguage" resultType="jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO" parameterType="map">
+        SELECT
+            MG_CSYSTEMID_CK_FK as systemId,
+            MG_NWEIGHTAGE as weight,
+            MG_CGROUPID_PK as groupId,
+            MGP_CQUERY as pQuery,
+            FUNC_GET_SYSTEM_NAME(
+                MG_CSYSTEMID_CK_FK,
+                current_date,
+                #{language}
+            ) AS systemName,
+            FUNC_GET_GROUP_DESC(
+            MG_CSYSTEMID_CK_FK,
+            MG_CGROUPID_PK,
+            current_date,
+            #{language}
+            ) AS groupName
+        FROM
+            (
+                SELECT
+                *
+                FROM
+                MAST_GROUP,
+                MAST_GROUPDEFINITIONS
+                WHERE
+                MG_CSYSTEMID_CK_FK = #{systemCode}
+                AND MG_CLANGUAGE = #{language}
+                AND	MG_DSTARTDATE <![CDATA[<=]]> current_date
+                AND	MG_DENDDATE >= current_date
+                AND	MGP_CCUSTOMERID_CK_FK = MG_CCUSTOMERID
+                AND	MGP_CSYSTEMID_CK = MG_CSYSTEMID_CK_FK
+                AND	MGP_CGROUPID_CK_FK = MG_CGROUPID_PK
+                AND	MGP_DSTARTDATE <![CDATA[<=]]> current_date
+                AND	MGP_DENDDATE >= current_date
+                ORDER BY
+                MG_NWEIGHTAGE,
+                MG_CGROUPID_PK
+            ) groups
+    </select>
+
+    <select id="getPretreatGroupByLanguageUserId" resultType="jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO" parameterType="map">
+        SELECT
+        MG_CSYSTEMID_CK_FK,
+        MG_NWEIGHTAGE,
+        MG_CGROUPID_PK,
+        FUNC_GET_SYSTEM_NAME( MG_CSYSTEMID_CK_FK, current_date, #{language} ) AS SYSTEM_NAME,
+        FUNC_GET_GROUP_DESC( MG_CSYSTEMID_CK_FK, MG_CGROUPID_PK, current_date, #{language}) AS GROUP_NAME
+        FROM
+        (SELECT
+        *
+        FROM
+        MAST_GROUP,
+        HIST_EMPLOYEEGROUPS
+        WHERE
+        HE_CCUSTOMERID_CK = MG_CCUSTOMERID AND
+        HE_CSYSTEMID_CK = MG_CSYSTEMID_CK_FK AND
+        HE_CGROUPID = MG_CGROUPID_PK AND
+        MG_CLANGUAGE = #{language} AND
+        MG_DSTARTDATE <![CDATA[<=]]> current_date AND
+        MG_DENDDATE >= current_date AND
+        HE_DSTARTDATE_CK <![CDATA[<=]]> current_date AND
+        HE_DENDDATE >= current_date AND
+        HE_CUSERID = #{userId}
+        ORDER BY
+        HE_CSYSTEMID_CK,
+        HE_NWEIGHTAGE,
+        HE_CGROUPID
+        ) groups
+        ;
+    </select>
+
 </mapper>
