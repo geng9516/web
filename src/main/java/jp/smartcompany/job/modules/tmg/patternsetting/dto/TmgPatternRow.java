@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.tmg.PatternSetting.dto;
+package jp.smartcompany.job.modules.tmg.patternsetting.dto;
 
 
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTimeRange;

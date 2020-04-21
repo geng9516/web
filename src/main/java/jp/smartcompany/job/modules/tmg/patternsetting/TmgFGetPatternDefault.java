@@ -1,10 +1,10 @@
-package jp.smartcompany.job.modules.tmg.PatternSetting;
+package jp.smartcompany.job.modules.tmg.patternsetting;
 
 
 import jp.smartcompany.job.modules.base.pojo.dto.PluggableDTO;
 import jp.smartcompany.job.modules.base.service.BaseExecute;
 import jp.smartcompany.job.modules.base.service.PluggableService;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternRow;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternRow;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
