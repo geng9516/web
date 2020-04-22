@@ -33,8 +33,7 @@ import java.util.List;
                         .eq("mo_clanguage", "ja")
                         .le("mo_dstart",yyyymmdd)
                         .ge("mo_dend",yyyymmdd)
-                        .select("*")
-                        .orderBy(true,true, "mo_nseq");
+                        .orderByAsc("mo_nseq");
                 MastOrganisationDO mastOrganisationDO = getOne(qw);
                 if (mastOrganisationDO!=null){
                         return mastOrganisationDO;
