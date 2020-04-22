@@ -3,13 +3,12 @@ package jp.smartcompany.job.modules.core.business;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
-import jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO;
-import jp.smartcompany.job.modules.core.pojo.bo.UserGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.PQueryUserGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.handler.UserGroupEntityListHandler;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
@@ -17,6 +16,7 @@ import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +32,7 @@ import java.util.Map;
  */
 @Service(CoreBean.Business.GROUP)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class GroupBusiness {
 
     private final IMastSystemService iMastSystemService;
@@ -47,7 +48,7 @@ public class GroupBusiness {
      */
     public void getGroupList(String language, List<MastSystemDO> systemList) {
         String groupCheckMode = GROUP_CHECK_MODE_MULTIPLE;
-        boolean groupCheckFlag = true;
+        boolean groupCheckFlag = false;
         iMastSystemService.getByLang(language);
         if (groupCheckFlag) {
             setPretreatGroup(language);
@@ -56,18 +57,18 @@ public class GroupBusiness {
         }
     }
 
-    private void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
+    public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
         String userId = ShiroUtil.getUserId();
         systemList.forEach(system -> {
             String systemCode = system.getMsCsystemidPk();
-            List<LoginUserGroupBO> mastGroupList = iMastGroupService.getUserGroupByLanguage(language,systemCode);
+            List<DBMastGroupBO> mastGroupList = iMastGroupService.getUserGroupByLanguage(language,systemCode);
             if (CollUtil.isNotEmpty(mastGroupList)) {
                 List<LoginGroupBO> listLoginGroup =CollUtil.newArrayList();
 
-                for (LoginUserGroupBO loginUserGroupBO : mastGroupList) {
-                    int nQueryCount = getAssembleSql(loginUserGroupBO, userId);
-                    if (1 < nQueryCount) {
-                        LoginGroupBO loginGroup = setLoginGroupBO(loginUserGroupBO);
+                for (DBMastGroupBO DBMastGroupBO : mastGroupList) {
+                    int nQueryCount = getAssembleSql(DBMastGroupBO, userId);
+                    if (nQueryCount>0) {
+                        LoginGroupBO loginGroup = setLoginGroupBO(DBMastGroupBO);
                         listLoginGroup.add(loginGroup);
                         if (StrUtil.equalsIgnoreCase(checkMode, GROUP_CHECK_MODE_SINGLE)) {
                             break;
@@ -76,10 +77,12 @@ public class GroupBusiness {
                 }
 
                 if (StrUtil.equalsIgnoreCase(checkMode,GROUP_CHECK_MODE_SINGLE) && CollUtil.isEmpty(listLoginGroup)) {
-                    LoginUserGroupBO lastGroup = CollUtil.getLast(mastGroupList);
+                    DBMastGroupBO lastGroup = CollUtil.getLast(mastGroupList);
                     LoginGroupBO loginGroup = setLoginGroupBO(lastGroup);
                     listLoginGroup.add(loginGroup);
                 }
+
+                System.out.println(listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
                     PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
@@ -93,8 +96,8 @@ public class GroupBusiness {
         List<LoginGroupBO> lGroup = CollUtil.newArrayList();
         String systemCode = "";
         Map<String, List<LoginGroupBO>> hGroupMap = MapUtil.newHashMap(true);
-        List<LoginUserGroupBO> mastGroupList = iMastGroupService.getPretreatGroupByLanguageUserId(language, userId);
-        for (LoginUserGroupBO group : mastGroupList) {
+        List<DBMastGroupBO> mastGroupList = iMastGroupService.getPretreatGroupByLanguageUserId(language, userId);
+        for (DBMastGroupBO group : mastGroupList) {
             systemCode = group.getSystemId();
             if (hGroupMap.containsKey(systemCode)) {
                 lGroup = hGroupMap.get(systemCode);
@@ -108,23 +111,24 @@ public class GroupBusiness {
         }
     }
 
-    private LoginGroupBO setLoginGroupBO(LoginUserGroupBO loginUserGroupBO) {
+    private LoginGroupBO setLoginGroupBO(DBMastGroupBO dBMastGroupBO) {
         LoginGroupBO loginGroup = new LoginGroupBO();
-        loginGroup.setSystemCode(loginUserGroupBO.getSystemId())
-                .setSystemName(loginUserGroupBO.getSystemName())
-                .setGroupCode(loginUserGroupBO.getGroupId())
-                .setGroupName(loginUserGroupBO.getGroupName());
+        loginGroup.setSystemCode(dBMastGroupBO.getSystemId())
+                .setSystemName(dBMastGroupBO.getSystemName())
+                .setGroupCode(dBMastGroupBO.getGroupId())
+                .setGroupName(dBMastGroupBO.getGroupName());
         return loginGroup;
     }
 
-    private int getAssembleSql(LoginUserGroupBO groupBO, String userId) {
+    public int getAssembleSql(DBMastGroupBO groupBO, String userId) {
         String strQuery = groupBO.getPQuery() + " AND HD_CUSERID = "
                 + " '" + userId + "'";
         int nQueryCount = 0;
         Connection connection = null;
+        log.info("运行的sql语句：{}",strQuery);
         try {
             connection = dataSource.getConnection();
-            List<UserGroupBO> entityList = SqlExecutor.query(connection,strQuery, new UserGroupEntityListHandler());
+            List<PQueryUserGroupBO> entityList = SqlExecutor.query(connection,strQuery, new UserGroupEntityListHandler());
             return entityList.size();
         } catch (SQLException e) {
             e.printStackTrace();

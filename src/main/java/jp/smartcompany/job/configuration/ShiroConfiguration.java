@@ -14,6 +14,7 @@ import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -27,6 +28,14 @@ import java.util.Map;
 @Configuration
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class ShiroConfiguration {
+
+    @Bean
+    public MethodInvokingFactoryBean methodInvokingFactoryBean(SecurityManager securityManager){
+        MethodInvokingFactoryBean bean = new MethodInvokingFactoryBean();
+        bean.setStaticMethod("org.apache.shiro.SecurityUtils.setSecurityManager");
+        bean.setArguments(securityManager);
+        return bean;
+    }
 
     @Bean("sessionIdCookie")
     @Primary

@@ -1,10 +1,14 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupbasesectionMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -15,6 +19,11 @@ import org.springframework.stereotype.Repository;
  * @since 2020-04-16
  */
 @Repository
-        public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasesectionMapper, MastGroupbasesectionDO> implements IMastGroupbasesectionService {
+public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasesectionMapper, MastGroupbasesectionDO> implements IMastGroupbasesectionService {
 
-        }
+  @Override
+  public List<GroupBaseSectionBO> getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date) {
+       return null;
+  }
+
+}

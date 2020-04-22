@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
@@ -21,12 +21,12 @@ import java.util.List;
 public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroupDO> implements IMastGroupService {
 
         @Override
-        public List<LoginUserGroupBO> getUserGroupByLanguage(String language,String systemCode) {
+        public List<DBMastGroupBO> getUserGroupByLanguage(String language, String systemCode) {
            return baseMapper.getUserGroupByLanguage(language,systemCode);
         }
 
         @Override
-        public List<LoginUserGroupBO> getPretreatGroupByLanguageUserId(String language,String userId) {
+        public List<DBMastGroupBO> getPretreatGroupByLanguageUserId(String language, String userId) {
             return baseMapper.getPretreatGroupByLanguageUserId(language,userId);
         }
 

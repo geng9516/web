@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class LoginUserGroupBO {
+public class DBMastGroupBO {
 
     private String systemId;
     private Integer weight;

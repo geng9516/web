@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
-import jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,7 +21,7 @@ public interface IMastGroupService extends IService<MastGroupDO> {
          * @param language
          * @return
          */
-        List<LoginUserGroupBO> getUserGroupByLanguage(String language,String systemCode);
+        List<DBMastGroupBO> getUserGroupByLanguage(String language, String systemCode);
 
         /**
          * 根据语言标识和用户id获取角色组
@@ -29,6 +29,6 @@ public interface IMastGroupService extends IService<MastGroupDO> {
          * @param userId
          * @return
          */
-        List<LoginUserGroupBO> getPretreatGroupByLanguageUserId(String language,String userId);
+        List<DBMastGroupBO> getPretreatGroupByLanguageUserId(String language, String userId);
 
 }

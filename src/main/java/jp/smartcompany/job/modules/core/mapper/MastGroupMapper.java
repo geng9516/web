@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
-import jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -25,7 +25,7 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
          * @param language
          * @return
          */
-        List<LoginUserGroupBO> getUserGroupByLanguage(@Param("language") String language,@Param("systemCode") String systemCode);
+        List<DBMastGroupBO> getUserGroupByLanguage(@Param("language") String language, @Param("systemCode") String systemCode);
 
         /**
          *根据语言标识和用户id获取角色组
@@ -33,5 +33,5 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
          * @param userId
          * @return List<LoginUserGroupBO>
          */
-        List<LoginUserGroupBO> getPretreatGroupByLanguageUserId(@Param("language") String language,@Param("userId") String userId);
+        List<DBMastGroupBO> getPretreatGroupByLanguageUserId(@Param("language") String language, @Param("userId") String userId);
 }

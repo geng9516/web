@@ -16,6 +16,7 @@ public interface CoreBean {
     String LOG = "logBusiness";
     String AUTH = "authBusiness";
     String GROUP = "groupBusiness";
+    String BASE_SECTION = "baseSectionBusiness";
   }
 
   interface Controller {

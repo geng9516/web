@@ -10,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class UserGroupBO {
+public class PQueryUserGroupBO {
 
     private String hdCemployeeidCk;
     private String hdCcustomeridCk;

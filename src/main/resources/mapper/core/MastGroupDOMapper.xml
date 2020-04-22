@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGroupMapper">
 
-    <select id="getUserGroupByLanguage" resultType="jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO" parameterType="map">
+    <select id="getUserGroupByLanguage" resultType="jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO" parameterType="map">
         SELECT
             MG_CSYSTEMID_CK_FK as systemId,
             MG_NWEIGHTAGE as weight,
@@ -42,7 +42,7 @@
             ) groups
     </select>
 
-    <select id="getPretreatGroupByLanguageUserId" resultType="jp.smartcompany.job.modules.core.pojo.bo.LoginUserGroupBO" parameterType="map">
+    <select id="getPretreatGroupByLanguageUserId" resultType="jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO" parameterType="map">
         SELECT
         MG_CSYSTEMID_CK_FK,
         MG_NWEIGHTAGE,

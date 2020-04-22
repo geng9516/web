@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.core.business;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.enums.ErrorMessage;
@@ -44,7 +43,10 @@ public class AuthBusiness {
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
     private final IMastSystemService iMastSystemService;
+
     private final GroupBusiness groupBusiness;
+    private final BaseSectionBusiness baseSectionBusiness;
+
     private final HttpSession httpSession;
 
     public boolean checkPassword(MastAccountDO account, String password) {
@@ -116,7 +118,10 @@ public class AuthBusiness {
            if (CollUtil.isEmpty(systemList)){
                throw new GlobalException("Master not found");
            }
+           // 获取系统组
            groupBusiness.getGroupList(language,systemList);
+           // 获取基点组织
+           baseSectionBusiness.getBaseSectionList();
     }
 
 
