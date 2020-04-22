@@ -229,4 +229,19 @@
         and mgd_dend >= #{wdKijun,jdbcType=DATE}
     </select>
 
+
+    <select id="selectWorkPattern" resultType="java.lang.String">
+        SELECT
+        R1.MGD_CDEFAULT_WORK_PATTERN
+        FROM
+        TMG_V_MGD_WORKERTYPE        R1
+        WHERE
+        R1.MGD_CCUSTOMERID          =   #{customerId}
+        AND     R1.MGD_CCOMPANYID_CK_FK     =   #{companyId}
+        AND     R1.MGD_DSTART_CK            <![CDATA[<=]]>  #{wdKijun,jdbcType=DATE}
+        AND     R1.MGD_DEND                 >=  #{wdKijun,jdbcType=DATE}
+        AND     R1.MGD_CWORKERTYPE          =   #{workerType}
+        AND     R1.MGD_CLANGUAGE_CK         =   'ja'
+        ;
+    </select>
 </mapper>

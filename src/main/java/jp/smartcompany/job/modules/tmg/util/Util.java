@@ -4,10 +4,7 @@ import cn.hutool.core.convert.Convert;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
-import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
-import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
-import jp.smartcompany.job.modules.core.service.ITmgPaidHolidayAttributeService;
-import jp.smartcompany.job.modules.core.service.ITmgPersonalPatternService;
+import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.tmg.paidholiday.TmgConvFraction4nyk;
 import jp.smartcompany.job.modules.tmg.patternsetting.TmgFGetPatternDefault;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +18,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class util {
+public class Util {
 
     private final ITmgPaidHolidayAttributeService iTmgPaidHolidayAttributeService;
     private final ITmgPersonalPatternService iTmgPersonalPatternService;
@@ -29,6 +26,7 @@ public class util {
     private final TmgFGetPatternDefault tmgFGetPatternDefault;
     private final TmgConvFraction4nyk tmgConvFraction4nyk;
     private final IMastOrganisationService iMastOrganisationService;
+    private final ITmgEmployeesService iTmgEmployeesService;
     /**
      *平均勤務時間の換算処理
      * @param customerId 法人コード
@@ -76,8 +74,8 @@ public class util {
             }else{
                 //[勤怠]HR連携用(勤怠種別)の勤怠種別に応じ、勤務パターンを学内標準か再雇用者か判断
                 sysIntroduction= Convert.toDate(tmgFGetSysProp(customerId,"TMG_SYSTEM_INTRODUCTION_DATE"));
-                List<Object> dateList= Arrays.asList(yyyymmdd,Convert.toDate(sqlUtil.nvlSql(sysIntroduction,yyyymmdd)));
-                yyyymmdd=Convert.toDate(sqlUtil.greatestSql(dateList));
+                List<Object> dateList= Arrays.asList(yyyymmdd,Convert.toDate(SqlUtil.nvlSql(sysIntroduction,yyyymmdd)));
+                yyyymmdd=Convert.toDate(SqlUtil.greatestSql(dateList));
                 return tmgFGetPatternDefault.init(customerId,companyId,employeeId,yyyymmdd).getNTime();
             }
         }
@@ -117,7 +115,7 @@ public class util {
      * @return List<String>  上位組織
      * */
     public List<String>  tmgGetUpperSection (String customerId, String companyId, String sectionId, Date yyyymmdd){
-        Date baseDate=(Date)sqlUtil.nvlSql(yyyymmdd,DateUtil.date());
+        Date baseDate=(Date) SqlUtil.nvlSql(yyyymmdd,DateUtil.date());
         List<String> sectionIdList=new ArrayList<String>();
         //取得フラグ
         boolean loopFlg=false;
@@ -147,4 +145,19 @@ public class util {
         return sectionIdList;
 
     }
+
+    /**
+     *勤怠種別の取得
+     * @param customerId 法人コード
+     * @param companyId 顧客コード
+     * @param employeeId 社員番号
+     * @param yyyymmdd 基準日
+     * @return String 勤怠種別
+     * */
+    public String tmgGetWorkerType(String customerId, String companyId, String employeeId, Date yyyymmdd){
+
+        return iTmgEmployeesService.selectWorkerType(customerId,companyId,employeeId,yyyymmdd);
+    }
+
+
 }

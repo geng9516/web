@@ -137,4 +137,30 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
                return baseMapper.selectMastGenericDetailDO(map);
        }
 
+
+
+
+    /**
+     * ワークタイプのデフォルトパターンを検索
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param workerType 　ワークタイプ
+     * @return String パターン
+     */
+    @Override
+    public String selectWorkPattern(String customerId, String companyId, Date yyyymmdd, String workerType) {
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("customerId", customerId);
+        map.put("companyId", companyId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("workerType", workerType);
+        // パターン
+        String workPattern = baseMapper.selectWorkPattern(map);
+
+
+        return workPattern;
+    }
+
 }

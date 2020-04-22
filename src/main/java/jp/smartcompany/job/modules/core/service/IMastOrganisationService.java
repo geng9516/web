@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Date;
+import java.util.List;
+
 /**
  * <p>
  * 組織ツリーマスタ 服务类
@@ -12,5 +15,26 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-04-16
  */
 public interface IMastOrganisationService extends IService<MastOrganisationDO> {
+
+
+        /**
+         * 指定組織の検索
+         * @param customerId
+         * @param companyId
+         * @param sectionId
+         * @param yyyymmdd
+         * @return
+         */
+        MastOrganisationDO selectOrganisation(String customerId, String companyId,String sectionId,Date yyyymmdd);
+
+
+        /**
+         * 指定組織の検索（パタンが存在する）
+         * @param customerId
+         * @param companyId
+         * @param yyyymmdd
+         * @return
+         */
+        List<MastOrganisationDO> selectPatternOrganisation(String customerId, String companyId,Date yyyymmdd);
 
         }

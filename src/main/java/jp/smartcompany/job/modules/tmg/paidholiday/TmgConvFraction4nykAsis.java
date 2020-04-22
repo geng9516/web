@@ -24,17 +24,14 @@ public class TmgConvFraction4nykAsis  extends BaseExecute {
     }
 
     /**
-     *換算処理区分が「端数処理なし(1分未満は切り上げ)」の場合
+     * 換算処理区分が「端数処理なし(1分未満は切り上げ)」の場合
      *
      * @param pnTime 分単位の数値
      * @return 分単位の数値
      */
-    public int init(Double pnTime) {
-        double tmp = 0;
-        if(pnTime == null){
-            pnTime = tmp ;
-        }
+    public int init(int pnTime) {
+
         // 換算処理区分が「端数処理なし(1分未満は切り上げ)」の場合
-        return (int)Math.ceil(pnTime);
+        return pnTime;
     }
 }

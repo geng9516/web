@@ -43,7 +43,7 @@ public class PluggableDTO {
     /**
      *分単位の数値
      */
-    private Double pnTime;
+    private int pnTime;
 
 
 
