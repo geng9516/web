@@ -1,13 +1,18 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.TmgEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -63,5 +68,32 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
         map.put("endDate", endDate);
 
         return baseMapper.selectStartDate(map);
+    }
+
+
+    /**
+     * 　勤怠種別の取得
+     *
+     * @param customerId 顧客コード
+     * @param companyId  法人コード
+     * @param employeeId 社員番号
+     * @param yyyymmdd   基準日
+     * @return String 勤怠種別
+     */
+    @Override
+    public String selectWorkerType(String customerId, String companyId, String employeeId, Date yyyymmdd){
+        QueryWrapper<TmgEmployeesDO> qw = SysUtil.query();
+        qw.eq("tem_ccustomerid", customerId)
+                .eq("tem_ccompanyid", companyId)
+                .eq("tem_cemployeeid", employeeId)
+                ///基準日を'DD'で取得
+                .le("tem_dstartdate", DateUtil.formatDate(yyyymmdd))
+                .ge("tem_denddate",DateUtil.formatDate(yyyymmdd))
+                .select("tem_cworktypeid");
+        TmgEmployeesDO teDo= getOne(qw);
+        if (teDo!=null){
+            return teDo.getTemCworktypeid();
+        }
+        return null;
     }
 }

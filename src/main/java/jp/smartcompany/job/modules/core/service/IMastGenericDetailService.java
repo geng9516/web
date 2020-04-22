@@ -71,5 +71,15 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
       */
     MastGenericDetailDO selectMastGenericDetailDO(String customerId, String companyId, String wsGroupId, String wsDetailId, String language, Date wdKijun);
 
+    /**
+     * ワークタイプのデフォルトパターンを検索
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param workerType 　ワークタイプ
+     * @return String パターン
+     */
+    String selectWorkPattern(String customerId, String companyId, Date yyyymmdd, String workerType);
 
-        }
+}

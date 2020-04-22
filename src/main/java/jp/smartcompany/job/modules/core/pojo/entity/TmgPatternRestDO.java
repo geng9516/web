@@ -84,6 +84,7 @@ private static final long serialVersionUID=1L;
         /**
          * 勤務パターンid
          */
+        @TableId
     @TableField("tpr_cpatternid")
         private String tprCpatternid;
 

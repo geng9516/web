@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPersonalPatternDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPersonalPatternRow;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Map;
@@ -26,4 +27,13 @@ public interface TmgPersonalPatternMapper extends BaseMapper<TmgPersonalPatternD
          * @return int 週平均勤務時間
          */
         int selectAvgWorkTime(Map<String, Object> map);
+
+
+        /**
+         * 契約情報勤務パターン取得処理
+         *
+         * @param map 検索条件
+         * @return TmgPersonalPatternRow 契約情報勤務パターン取得処理
+         */
+        TmgPersonalPatternRow selectPersonalPatternRow(Map<String, Object> map);
         }

@@ -69,4 +69,10 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
          * @return TmgTermRow 除外期間
          */
         List<TmgTermRow> tmgFExcludeTerm(Map<String, Object> map);
+
+
+        /**
+         * ワークタイプのデフォルトパターンを検索
+         */
+        String selectWorkPattern(Map<String, Object> map);
         }

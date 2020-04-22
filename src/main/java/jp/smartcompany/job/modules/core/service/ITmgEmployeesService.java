@@ -36,4 +36,15 @@ public interface ITmgEmployeesService extends IService<TmgEmployeesDO> {
      * @return Date 就業管理対象の開始日
      */
     Date selectStartDate(String customerId, String companyId, String employeeId, Date yyyymmdd, Date endDate);
+
+    /**
+     * 　勤怠種別の取得
+     *
+     * @param customerId 顧客コード
+     * @param companyId  法人コード
+     * @param employeeId 社員番号
+     * @param yyyymmdd   基準日
+     * @return String 勤怠種別
+     */
+    String selectWorkerType(String customerId, String companyId, String employeeId, Date yyyymmdd);
 }
