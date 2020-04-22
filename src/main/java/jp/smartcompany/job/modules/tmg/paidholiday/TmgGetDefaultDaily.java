@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTimeRange;
 import jp.smartcompany.job.modules.tmg.patternsetting.TmgFGetPatternDefault;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternRow;
 import jp.smartcompany.job.modules.tmg.util.TmgPKG;
+import jp.smartcompany.job.modules.tmg.util.Util;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,12 @@ public class TmgGetDefaultDaily extends BaseExecute {
      */
     private final TmgGetCalendarList tmgGetCalendarList;
 
+    /**
+     * Util
+     */
+    private final Util util;
+
+
 
     @Override
     public Object execute(PluggableDTO pluggableDTO) {
@@ -63,7 +70,7 @@ public class TmgGetDefaultDaily extends BaseExecute {
     public List<TmgDailyRow> init(String customerId, String companyId, String employeeId, Date startDate, Date endDate) {
 
         // 初期化
-        List<TmgDailyRow> tmgDailyRowList = new ArrayList<TmgDailyRow>();
+        List<TmgDailyRow> tmgDailyRowList = new ArrayList<>();
 
         // 開始日と終了日設定
         Date dStartDate;
@@ -107,15 +114,22 @@ public class TmgGetDefaultDaily extends BaseExecute {
         // CURSOR_TMG_DAILY
         List<TmgDailyTemp> tmgDailyTempList = this.cursorTmgDaily(customerId, companyId, employeeId, dStartDate, dEndDate);
         for (TmgDailyTemp tmgDailyTemp : tmgDailyTempList) {
-
+            tppmNinfo = 0 ;
             List<TmgTimeRange> tmgTimeRangeList;
 
             // デフォルト勤務パターン取得
             TmgPatternRow tmgPatternRow = tmgFGetPatternDefault.init(customerId, companyId, employeeId, tmgDailyTemp.getYyyyMmDd());
             // 休日フラグの成型
-            if (tmgPatternRow != null && tmgPatternRow.getCHolFlg() != null) {
-                patternHolFlg = "TMG_HOLFLG|" + tmgPatternRow.getCHolFlg();
-            } else {
+            if (tmgPatternRow != null) {
+                if (tmgPatternRow.getCHolFlg() != null) {
+                    patternHolFlg = "TMG_HOLFLG|" + tmgPatternRow.getCHolFlg();
+                } else {
+                    patternHolFlg = null;
+                }
+                // 日別勤務時間数
+                tppmNinfo = tmgPatternRow.getNTime();
+
+            }else {
                 patternHolFlg = null;
             }
 
@@ -133,8 +147,6 @@ public class TmgGetDefaultDaily extends BaseExecute {
                     }
                 }
 
-                // 日別勤務時間数
-                tppmNinfo = tmgPatternRow.getNTime();
 
                 // 休日フラグと勤務時間で就業区分を設定
                 if (TmgPKG.CS_HOLFLG_0.equals(tcaCholFlg)) {
@@ -153,7 +165,7 @@ public class TmgGetDefaultDaily extends BaseExecute {
 
                 } else {
                     // 休日としてセット
-                    tmgTimeRangeList = new ArrayList<TmgTimeRange>();
+                    tmgTimeRangeList = new ArrayList<>();
                     workingid = tmgGetMgdC.init("01", "01", tmgDailyTemp.getYyyyMmDd(), tcaCholFlg, 1, "ja");
                     patternid = "";
                 }
@@ -198,11 +210,11 @@ public class TmgGetDefaultDaily extends BaseExecute {
      */
     private List<TmgDailyTemp> cursorTmgDaily(String customerId, String companyId, String employeeId, Date startDate, Date endDate) {
 
-        List<TmgDailyTemp> tmgDailyTempList = new ArrayList<TmgDailyTemp>();
+        List<TmgDailyTemp> tmgDailyTempList = new ArrayList<>();
 
         TmgDailyTemp tmgDailyTemp;
-        // TODO TMG_F_GET_DATE
-        List<Date> dateList = new ArrayList<Date>();
+        // 指定期間の日付を表として返却します
+        List<Date> dateList = util.tmgGetDate(startDate, endDate);
         for (Date date : dateList) {
 
             tmgDailyTemp = new TmgDailyTemp();

@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.tmg.paidholiday.TmgConvFraction4nyk;
 import jp.smartcompany.job.modules.tmg.patternsetting.TmgFGetPatternDefault;
+import jp.smartcompany.job.util.SysDateUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -158,6 +159,49 @@ public class Util {
 
         return iTmgEmployeesService.selectWorkerType(customerId,companyId,employeeId,yyyymmdd);
     }
+
+    /**
+     * 指定期間の日付を表として返却します
+     * TMG_F_GET_DATE
+     * @param pdStartDate 開始日
+     * @param pdEndDate　終了日
+     * @return List<Date>
+     */
+    public List<Date> tmgGetDate(Date pdStartDate,Date pdEndDate){
+        List<Date> dateList = new ArrayList<>();
+        Date startDate;
+        Date endDate;
+
+        // 開始日と終了日が逆転している場合にはなにも返さない
+        if (SysDateUtil.isGreater(pdStartDate, pdEndDate)) {
+            return dateList;
+        }
+
+        // 開始日が未指定の場合はSYSDATEの月の1日～末日
+        if (pdStartDate == null) {
+            startDate = DateUtil.beginOfMonth(DateUtil.date());
+            endDate = DateUtil.endOfMonth(DateUtil.date());
+
+            // 終了日が未指定の場合は開始日の月の1日～末日
+        } else if (pdEndDate == null) {
+            startDate = DateUtil.beginOfMonth(pdStartDate);
+            endDate = DateUtil.endOfMonth(pdStartDate);
+
+            // 通常は開始日～終了日
+        } else {
+            startDate = pdStartDate;
+            endDate = pdEndDate;
+        }
+
+        // 対象となる期間の日付を返却値としてセット
+        while(!SysDateUtil.isGreater(startDate, endDate)){
+            dateList.add(startDate);
+            startDate = DateUtil.offsetDay(startDate ,1);
+
+        }
+        return dateList;
+    }
+
 
 
 }

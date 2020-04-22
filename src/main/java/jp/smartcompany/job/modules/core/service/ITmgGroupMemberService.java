@@ -15,6 +15,5 @@ import java.util.List;
  */
 public interface ITmgGroupMemberService extends IService<TmgGroupMemberDO> {
 
-        List<TmgGroupMemberDO> getTmgGroupMemberDOList(String customerId, String companyId, String employeeId);
 
 }
