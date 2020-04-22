@@ -72,10 +72,6 @@ public class TmgGetCalendarList extends BaseExecute {
         List<TmgCalendarRow> tmgCalendarRowList = new ArrayList<>();
 
         // 引数を変数に待避
-//        // 顧客コード
-//        String wsCustomerId = customerId;
-//        // 法人コード
-//        String wsCompanyId = companyId;
         // 組織コード
         String wSectionId = sectionId;
         // グループコード
@@ -176,7 +172,6 @@ public class TmgGetCalendarList extends BaseExecute {
         // 存在しない場合は全学を返却
         if (!wbAllFlg) {
 
-
             // レコード呼出(全学)
             List<TmgCalendarDO> tmgCalendarDOList = iTmgCalendarService.getBaseMapper().selectList(SysUtil.<TmgCalendarDO>query()
                     .eq("tca_ccustomerid", gsCustomerId)
@@ -186,6 +181,7 @@ public class TmgGetCalendarList extends BaseExecute {
                     .le("tca_dyyyymm", DateUtil.beginOfYear(wsDate))
                     .ge("tca_dyyyymm", DateUtil.endOfYear(wsDate))
             );
+
             for (TmgCalendarDO tmgCalendarDO : tmgCalendarDOList) {
                 TmgCalendarRow tmgCalendarRow = this.setTmgCalendarRowByTmgCalendar(tmgCalendarDO);
                 tmgCalendarRowList.add(tmgCalendarRow);
