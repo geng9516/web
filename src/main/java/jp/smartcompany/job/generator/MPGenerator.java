@@ -26,7 +26,7 @@ public class MPGenerator {
         String username = "soadmin";
         String password = "ab9t_P6TNm!WB2";
         //作者名，用于生成文件注解时使用。
-        String author = "Xiao Wenpeng";
+        String author = "Wang ZiYue";
         //controller文件是不是带RestController
         boolean restControllerStyle = false;
         //entity是否需要继承父类，如果需要则将已有的父类路径写下面，同理可配置Controller等父类。
@@ -122,24 +122,7 @@ public class MPGenerator {
         strategy.setEntityTableFieldAnnotationEnable(true);
 
         strategy.setExclude(
-                "t_session",
-                "t_schedule_job",
-                "t_schedule_job_log",
-                "t_error_audit",
-                "t_login_audit",
-                "t_operation_audit",
-                "t_access_audit",
-                "qrtz_blob_triggers",
-                "qrtz_fired_triggers",
-                "qrtz_calendars",
-                "qrtz_cron_triggers",
-                "qrtz_job_details",
-                "qrtz_locks",
-                "qrtz_paused_trigger_grps",
-                "qrtz_scheduler_state",
-                "qrtz_simple_triggers",
-                "qrtz_simprop_triggers",
-                "qrtz_triggers"
+
         );
 
 
