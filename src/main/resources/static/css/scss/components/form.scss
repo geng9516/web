@@ -1,0 +1,125 @@
+//通用提示信息
+.notice_i {
+  text-align: left;
+  padding: 5px;
+  color: var(--form-notice);
+  p {
+    position: relative;
+    margin: 5px 0;
+  }
+  i {
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    margin-top: -8px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--form-notice);
+  }
+  span {
+    display: block;
+    padding-left: 35px;
+    color: var(--form-notice);
+  }
+}
+//通用表单样式
+.ivu-form {
+  .ivu-form-item {
+    margin-bottom: 3px;
+    vertical-align: top;
+    zoom: 1;
+    .ivu-form-item-label {
+      font-size: 13px;
+      position: relative;
+      white-space: nowrap;
+      background-color: var(--form-label);
+      color: var(--white);
+    }
+    .ivu-form-item-content {
+      line-height: inherit;
+      vertical-align: bottom;
+      text-align: left;
+    }
+    .ivu-input {
+      display: inline-block;
+      border-radius: 1px;
+    }
+    .ivu-input-number {
+      border-radius: 1px;
+      vertical-align: bottom;
+    }
+    .ivu-input-wrapper {
+      vertical-align: bottom;
+    }
+    .ivu-select {
+      vertical-align: bottom;
+    }
+  }
+  .ivu-form-item-required .ivu-form-item-label {
+    position: relative;
+    border-radius: 2px 0 0 2px;
+  }
+  .ivu-select .ivu-select-selection {
+    border-radius: 0 2px 2px 0;
+  }
+  // 通用表单验证的星
+  .ivu-form-item-required .ivu-form-item-label:before {
+    content: "*";
+    background-color: var(--form-required-star);
+    padding: 0px 5px;
+    color: var(--white);
+    position: absolute;
+    left: 0;
+    height: 15px;
+    line-height: 15px;
+    top: 0;
+    border-radius: 2px 0 2px 0;
+  }
+  // 通用表单验证的错误信息
+  // .ivu-form-item-error-tip {}
+  .ivu-form-item-error .ivu-input:focus {
+    border-color: rgb(87, 163, 243);
+    box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
+  }
+}
+//环境设定的标题样式
+.titlenorm {
+  border-top: solid 1px var(--form-title-border);
+  border-bottom: solid 1px var(--form-title-border);
+  // 低调的灰色
+  // background-color: var(--form-title-background);
+  // 显眼的绿色
+  background-color: var(--table-td-hover);
+  padding: 6px 10px;
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  text-align: left;
+  // &.left {
+  //   margin-right: 68px;
+  // }
+  i {
+    // color: var(--form-title-icon;
+    color: var(--text-green);
+    font-size: 18px;
+    padding-right: 10px;
+    vertical-align: bottom;
+  }
+}
+//环境设定的表单
+.formnorm .ivu-form-item-content {
+  width: 20%;
+}
+
+.ivu-modal {
+  top: 50px;
+}
+.bg .ivu-select-selected-value {
+  background: var(--light-blue);
+}
+.bg .ivu-input-icon-normal + .ivu-input {
+  background: var(--light-blue);
+}
+.bg textarea.ivu-input {
+  background: var(--light-blue);
+}

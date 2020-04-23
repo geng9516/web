@@ -1,0 +1,73 @@
+body {
+  background: rgb(247, 247, 247);
+}
+.login {
+  max-width: 1920px;
+  height: 100vh;
+  margin: 0 auto;
+  .hero-warp{
+    height: 90vh;
+    background-repeat: no-repeat;
+    background-size: 95%;
+    margin-left: 60px;
+  }
+  .login-warp {
+    width: 520px;
+    transform: translateY(18%) scale(0.9);
+    overflow: hidden;
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+    @media (min-height: 800px) {
+      transform: translateY(22%) scale(0.9);
+    }
+    .title {
+      background: var(--primary-background);
+      padding: 20px;
+      .logo-warp {
+        width: 382px;
+        height: 51px;
+        background-repeat: no-repeat;
+        background-size: 91%;
+        margin: 10px 10px 0 25px;
+      }
+    }
+    .login-content {
+      flex-direction: column;
+      justify-content: space-around;
+      display: flex;
+      padding: 20px 26px;
+      height: 400px;
+      .login-label {
+        display: inline-block;
+        text-align: left;
+        font-size: 16px;
+        font-weight: bold;
+        color: rgb(128, 134, 149);
+        background: transparent;
+      }
+    }
+  }
+  .login-time {
+    position: absolute;
+    right: 13px;
+    top: 74px;
+    font-size: 16px;
+    color:  var(--white);
+    background: transparent;
+  }
+  /deep/ {
+    .ivu-input-prefix {
+      padding-left: 25px;
+      i {
+        font-size: 30px;
+        line-height: 50px;
+      }
+    }
+    .ivu-input {
+      height: 50px;
+      padding-left: 73px;
+      border-color: var(--input-border-grey);
+    }
+  }
+}
