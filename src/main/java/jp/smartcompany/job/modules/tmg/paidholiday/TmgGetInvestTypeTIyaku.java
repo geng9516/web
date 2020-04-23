@@ -44,6 +44,7 @@ class TmgGetInvestTypeTIyaku extends BaseExecute {
      * @param companyId 法人コード
      * @param employeeId 社員番号
      * @param yyyymmdd 基準日
+     * @param beginDateWork 開始日
      * @return String 年休付与区分
      */
     protected Object init(String customerId, String companyId, String employeeId, Date yyyymmdd, Date beginDateWork) {

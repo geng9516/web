@@ -42,6 +42,11 @@ public class PluggableDTO {
      * 更新プログラムID
      */
     private String programId;
+    /**
+     * 勤怠種別
+     */
+    private String workType;
+
 
 
     /**
