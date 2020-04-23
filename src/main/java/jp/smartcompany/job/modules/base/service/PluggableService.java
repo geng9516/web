@@ -106,7 +106,7 @@ public class PluggableService {
         }
         // プラガブル取得処理
         List<TmgPluggableDO> pluggableBOList = iTmgPluggableService.listTmgPluggableDO(pluggableDTO.getCustomerId()
-                , pluggableDTO.getCompanyId(), pluggableDTO.getYyyymmdd(), "*", pluggableDTO.getCphase());
+                , pluggableDTO.getCompanyId(), pluggableDTO.getYyyymmdd(), workType, pluggableDTO.getCphase());
 
         try {
             for (TmgPluggableDO pluggableBO : pluggableBOList) {
