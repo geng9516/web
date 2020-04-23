@@ -45,5 +45,10 @@ public class TmgPKG {
     /** 予備数字5 */
     public final static int CN_SPARENUM_5 = 5;
 
+    /** 日単位に取得 */
+    public final static String CS_DATETYPEFLG_0 ="TMG_DATETYPEFLG|0";
+
+    /** 月単位に取得*/
+    public final static String CS_DATETYPEFLG_1 ="TMG_DATETYPEFLG|1";
 
 }
