@@ -56,18 +56,16 @@ body {
     color:  var(--white);
     background: transparent;
   }
-  /deep/ {
-    .ivu-input-prefix {
-      padding-left: 25px;
-      i {
-        font-size: 30px;
-        line-height: 50px;
-      }
+  .ivu-input-prefix {
+    padding-left: 25px;
+    i {
+      font-size: 30px;
+      line-height: 50px;
     }
-    .ivu-input {
-      height: 50px;
-      padding-left: 73px;
-      border-color: var(--input-border-grey);
-    }
+  }
+  .ivu-input {
+    height: 50px;
+    padding-left: 73px;
+    border-color: var(--input-border-grey);
   }
 }
