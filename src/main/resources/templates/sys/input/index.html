@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header::common_header(title='index')"></head>
+<head th:replace="layout/header::common_header(title='就業入力')"></head>
 <body>
    <!-- 顶部菜单切换栏 -->
    <div th:replace="layout/topNavs"></div>
    当前tabIndex: <span th:text="${#httpServletRequest.getAttribute('siteIndex')}"></span>
-   <!-- 揭示板 -->
-   揭示板区块
+
 </body>
 </html>

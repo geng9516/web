@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
@@ -12,6 +13,7 @@ import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.apache.shiro.web.servlet.Cookie;
 import org.apache.shiro.web.servlet.SimpleCookie;
+import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.MethodInvokingFactoryBean;
@@ -46,6 +48,15 @@ public class ShiroConfiguration {
         return simpleCookie;
     }
 
+    @Bean("sessionManager")
+    @DependsOn("sessionIdCookie")
+    @Primary
+    public SessionManager sessionManager() {
+        DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
+        sessionManager.setSessionIdCookie(sessionIdCookie());
+        return sessionManager;
+    }
+
     /**
      * 权限管理，配置主要是Realm的管理认证
      */
@@ -54,6 +65,7 @@ public class ShiroConfiguration {
     public SecurityManager securityManager(BasicAuthRealm basicAuthRealm) {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         basicAuthRealm.setCredentialsMatcher(credentialsMatcher());
+        securityManager.setSessionManager(sessionManager());
         securityManager.setRealm(basicAuthRealm);
         return securityManager;
     }
@@ -67,7 +79,7 @@ public class ShiroConfiguration {
         map.put("/error","anon");
 
         map.put("/logout", "logout");
-        map.put("/**", "user");
+        map.put("/sys/**", "user");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");

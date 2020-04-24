@@ -1,0 +1,11 @@
+<div th:fragment="topNavs" xmlns:th="http://www.thymeleaf.org">
+    <th:block th:with="
+                     topNavs = ${#httpServletRequest.getAttribute('topNavs')},
+                     baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+        <ul>
+            <li th:each="nav,navStat:${topNavs}">
+                <a th:href="@{${baseUrl+'/'+nav.url}(psSite=${nav.pageId},menuId=${nav.menuId},tabIndex=${navStat.index+1})}">[[${nav.jaName}]]</a>
+            </li>
+        </ul>
+    </th:block>
+</div>

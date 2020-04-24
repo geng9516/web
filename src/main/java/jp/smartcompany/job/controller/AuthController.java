@@ -36,12 +36,12 @@ public class AuthController {
     @PostMapping("login")
     public RedirectView login(@RequestBody LoginDTO loginDTO) {
         authBusiness.login(loginDTO);
-        return new RedirectView("/");
+        return new RedirectView("/sys");
     }
 
     /**
      * 退出登录API
-     * @return
+     * @return RedirectView
      */
     @GetMapping("logout")
     public RedirectView logout() {

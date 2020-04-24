@@ -1,5 +1,7 @@
 package jp.smartcompany.job.filter;
 
+import cn.hutool.http.useragent.UserAgent;
+import cn.hutool.http.useragent.UserAgentUtil;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -20,6 +22,10 @@ public class CorsFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
+        String uaStr = req.getHeader("User-Agent");
+        UserAgent ua = UserAgentUtil.parse(uaStr);
+        req.setAttribute("isMobile",ua.isMobile());
+
         String origin = req.getHeader("Origin");
         if(origin == null) {
             origin = req.getHeader("Referer");

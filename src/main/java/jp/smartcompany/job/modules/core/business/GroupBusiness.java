@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 用户组Logic层
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.GROUP)
@@ -82,7 +83,6 @@ public class GroupBusiness {
                     listLoginGroup.add(loginGroup);
                 }
 
-                System.out.println(listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
                     PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());

@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 
 
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public  class TmgFGetPatternDefault extends BaseExecute {
 

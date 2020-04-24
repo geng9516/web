@@ -55,7 +55,16 @@ public class Constant {
 
     public final static String DEFAULT_LANGUAGE = "ja";
 
+    /**
+     * 基点组织（是否包含组织下的所有自组织）
+     */
     public final static String NO_SUB_LEVEL = "1";
 
+    /**
+     * 系统菜单相关常量
+     */
+    public final static String TOP_NAVS = "topNavs";
+
+    public final static String SITE_INDEX = "siteIndex";
 
 }

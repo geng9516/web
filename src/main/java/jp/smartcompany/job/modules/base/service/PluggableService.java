@@ -28,7 +28,7 @@ import static jp.smartcompany.job.modules.tmg.util.TmgPKG.CS_WORKERTYPE_00;
 /**
  * @author XiaoWenpeng
  */
-@Service(BaseBean.Service.PLUGGABLE)
+//@Service(BaseBean.Service.PLUGGABLE)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PluggableService {
 

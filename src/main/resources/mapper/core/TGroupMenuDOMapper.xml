@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TGroupMenuMapper">
+
+
+    <select id="listTopMenuByGroupCode" resultType="jp.smartcompany.job.modules.core.pojo.entity.TMenuDO" parameterType="map">
+        select
+            m.menu_id,
+            m.url,
+            m.parent_menu_id,
+            m.type,
+            m.order_num,
+            m.level,
+            m.icon,
+            m.perms,
+            m.ja_name,
+            m.en_name,
+            m.zh_name,
+            m.customer_id,
+            m.company_id,
+            m.remark,
+            m.dispatcher_button,
+            m.page_id
+        from t_group_menu gm
+        join mast_group g on g.mg_cgroupid_pk = gm.group_code
+        join t_menu m on m.menu_id = gm.menu_id
+        <where>
+            and gm.start_date <![CDATA[<=]]> current_date
+            and	gm.end_date >= current_date
+            and gm.customer_id = #{customerId}
+            and gm.company_id = #{systemCode}
+            and g.mg_cgroupid_pk in
+            <foreach collection="groupCodes" separator="," item="groupCode" open="(" close=")">
+                #{groupCode}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

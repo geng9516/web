@@ -15,7 +15,7 @@ import java.util.Date;
  * 端数処理
  * TMG_F_CONV_FRACTION4NYK
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgConvFraction4nyk extends BaseExecute {
 

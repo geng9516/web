@@ -9,7 +9,7 @@ import java.util.List;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 class TmgFExcludeTerm extends BaseExecute {
     private IMastGenericDetailService iMastGenericDetailService;
     /**

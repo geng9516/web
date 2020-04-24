@@ -16,7 +16,7 @@ import java.util.Date;
  * 年次休暇情報計算処理(勤怠種別：)
  * TMG_P_CALC_HOLIDAY_PKG
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgCalcHolidayPkg extends BaseExecute {
 

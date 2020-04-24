@@ -28,11 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
-import java.util.List;
 
 /**
+ * 权限验证Logic层
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.AUTH)
@@ -42,12 +41,6 @@ public class AuthBusiness {
     private final IMastPasswordService iMastPasswordService;
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
-    private final IMastSystemService iMastSystemService;
-
-    private final GroupBusiness groupBusiness;
-    private final BaseSectionBusiness baseSectionBusiness;
-
-    private final HttpSession httpSession;
 
     public boolean checkPassword(MastAccountDO account, String password) {
         Date passwordSetDate = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
@@ -82,9 +75,6 @@ public class AuthBusiness {
         Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         subject.login(token);
-        // 初始化session
-        httpSession.setAttribute(Constant.LOGIN_INFO,new PsSession());
-        executeLoginSequence();
         saveLoginInfo(true, username);
     }
 
@@ -109,19 +99,6 @@ public class AuthBusiness {
             loginAuditDO.setIp(IpUtil.getRemoteAddr(request));
         }
         loginAuditService.save(loginAuditDO);
-    }
-
-    private void executeLoginSequence() {
-           // 默认为日本语
-           String language = Constant.DEFAULT_LANGUAGE;
-           List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
-           if (CollUtil.isEmpty(systemList)){
-               throw new GlobalException("Master not found");
-           }
-           // 获取系统组
-           groupBusiness.getGroupList(language,systemList);
-           // 获取基点组织
-           baseSectionBusiness.getBaseSectionList();
     }
 
 

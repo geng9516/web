@@ -2,26 +2,26 @@
    author: Xiao Wenpeng
    author: Dellen Shang
 -->
-<head th:fragment="common_header" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="common_header" xmlns:th="http://www.thymeleaf.org"
+    th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
     <meta charset="UTF-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <title th:text="${title}"></title>
 
     <!--系统默认资源及公用css文件 Start-->
-    <link rel="icon" type="image/x-icon" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/favicon.ico'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/iview.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/color.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/reset.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/pages/button.min.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/pages/form.min.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/pages/table.min.css'}">
-    <link rel="stylesheet" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css/pages/utils.min.css'}">
+    <link rel="icon" type="image/x-icon" th:href="${baseUrl + '/static/favicon.ico'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/iview.css'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/color.css'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/reset.css'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/button.min.css'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/table.min.css'}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/utils.min.css'}">
     <!--系统默认资源及公用css文件 End-->
 
     <!--各页面独自引入的CSS Start-->
     <th:block th:if="cssPaths!=null">
-        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/css' + cssPath}">
+        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath}">
     </th:block>
     <!--各页面独自引入的CSS End-->
 </head>

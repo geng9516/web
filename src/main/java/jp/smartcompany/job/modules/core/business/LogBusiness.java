@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
+ * 日志Logic层
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.LOG)

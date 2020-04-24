@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * 基点组织Logic层
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.BASE_SECTION)

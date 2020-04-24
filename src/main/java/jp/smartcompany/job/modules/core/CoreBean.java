@@ -17,11 +17,12 @@ public interface CoreBean {
     String AUTH = "authBusiness";
     String GROUP = "groupBusiness";
     String BASE_SECTION = "baseSectionBusiness";
+    String MENU = "menuBusiness";
   }
 
   interface Controller {
     String LOG = "logController";
-    String INDEX = "indexController";
+    String SITE = "siteController";
     String AUTH = "authController";
   }
 

@@ -18,7 +18,7 @@ import java.util.Map;
  */
 @RestController(CoreBean.Controller.LOG)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@RequestMapping("log")
+@RequestMapping("sys/log")
 public class LogController {
 
   private final LogBusiness logBusiness;

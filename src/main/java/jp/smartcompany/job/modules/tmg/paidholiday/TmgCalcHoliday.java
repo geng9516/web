@@ -12,7 +12,7 @@ import java.util.Date;
 /**
  *
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgCalcHoliday extends BaseExecute {
 

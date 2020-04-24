@@ -15,7 +15,7 @@ import java.util.Date;
  * 年休付与区分判定（プラガブル）
  * TMG_F_GET_INVEST_TYPE
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 class TmgGetInvestType extends BaseExecute {
 

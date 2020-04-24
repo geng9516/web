@@ -27,7 +27,7 @@ import java.util.List;
  * カレンダー情報の返却
  * TMG_F_GET_CALENDAR_LIST
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgGetCalendarList extends BaseExecute {
 

@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
  * 端数処理（端数処理なし　１分未満は切り上げ）
  * TMG_F_CONV_FRACTION4NYK_ASIS
  */
-@Service
+//@Service
 public class TmgConvFraction4nykAsis  extends BaseExecute {
 
     /**

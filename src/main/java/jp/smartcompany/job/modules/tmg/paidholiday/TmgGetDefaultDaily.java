@@ -26,7 +26,7 @@ import java.util.List;
  * <p>
  * TMG_F_GET_DEFAULT_DAILY
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgGetDefaultDaily extends BaseExecute {
 
