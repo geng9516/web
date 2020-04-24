@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.pojo.bo;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,6 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of="mgbsCsectionid")
 public class GroupBaseSectionBO {
 
     private String mgbsCcompanyid;

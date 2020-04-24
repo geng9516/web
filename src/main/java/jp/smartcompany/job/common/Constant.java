@@ -55,5 +55,7 @@ public class Constant {
 
     public final static String DEFAULT_LANGUAGE = "ja";
 
+    public final static String NO_SUB_LEVEL = "1";
+
 
 }

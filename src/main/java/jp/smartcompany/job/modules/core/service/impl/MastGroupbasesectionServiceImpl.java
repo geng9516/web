@@ -23,7 +23,7 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
 
   @Override
   public List<GroupBaseSectionBO> getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date) {
-       return null;
+       return baseMapper.getBaseSectionByGroupCode(customerId, systemCode, groupCode, date);
   }
 
 }
