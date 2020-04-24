@@ -4,9 +4,8 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgGroupMemberDO;
 import jp.smartcompany.job.modules.core.mapper.TmgGroupMemberMapper;
 import jp.smartcompany.job.modules.core.service.ITmgGroupMemberService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import org.springframework.stereotype.Repository;
 
 /**
  * <p>
@@ -19,8 +18,4 @@ import java.util.List;
 @Repository
 public class TmgGroupMemberServiceImpl extends ServiceImpl<TmgGroupMemberMapper, TmgGroupMemberDO> implements ITmgGroupMemberService {
 
-        @Override
-        public List<TmgGroupMemberDO> getTmgGroupMemberDOList(String customerId, String companyId, String employeeId) {
-                return null;
-        }
 }

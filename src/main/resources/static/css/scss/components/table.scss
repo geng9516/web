@@ -1,0 +1,138 @@
+.ivu-table {
+  .ivu-table-header {
+    th {
+      padding: 4px 0;
+    }
+  }
+  .ivu-table-body {
+    tr {
+      // 这条代替stripe
+      &:nth-child(2n) td {
+        background-color: var(--table-td-stripe);
+      }
+      // 土 日
+      &.sat td {
+        background-color: var(--table-td-sat);
+      }
+      &.sun td {
+        background-color: var(--table-td-sun);
+      }
+    }
+  }
+  th {
+    background-color: var(--table-head);
+    text-align: center;
+    color: var(--white);
+    border-bottom: 1px solid var(--table-head-border);
+    border-right: 1px solid var(--table-head-border);
+    // 出勤	外出	戻り	退勤
+    &.checkin {
+      background-color: var(--light-blue);
+      color: var(--table-th-checkin);
+      border-bottom: 1px solid var(--border-grey);
+      border-right: 1px solid var(--border-grey);
+    }
+    // 遅刻	早退	外出
+    &.urgent {
+      background-color: var(--light-pink);
+      color: var(--red);
+      border-bottom: 1px solid var(--border-grey);
+      border-right: 1px solid var(--border-grey);
+    }
+    // 休息日 如星期六日
+    &.rest {
+      background-color: var(--table-td-hover);
+      color: var(--text-green);
+      border-bottom: 1px solid var(--border-grey);
+      border-right: 1px solid var(--border-grey);
+    }
+  }
+  td {
+    // 表格边框颜色加深
+    border-color: var(--table-border);
+  }
+  td,
+  th {
+    height: 23px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-overflow: ellipsis;
+    vertical-align: middle;
+    .ivu-table-cell {
+      padding-left: 8px;
+      padding-right: 8px;
+      // max-height: 100vh;
+    }
+  }
+  // 长表格格子间距，如月间日间，申请承认
+  .long-table & {
+    td:not(.select),
+    th:not(.select) {
+      .ivu-table-cell {
+        padding-left: 2px;
+        padding-right: 2px;
+      }
+    }
+  }
+  // 日间表格 激活class
+  tr {
+    &.select-col:hover td {
+      cursor: pointer;
+      background-color: var(--table-td-hover);
+      .ivu-progress-bg:before {
+        content: '';
+        opacity: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: var(--white);
+        border-radius: 10px;
+        animation: ivu-progress-active 2s ease-in-out infinite;
+      }
+    }
+  }
+  // 侧边表头化处理
+  .like-title {
+    background-color: var(--table-head) !important;
+    color: var(--white) !important;
+  }
+  .sub-title {
+    background-color: var(--light-blue-l) !important;
+    // border-bottom-color: var(--light-grey);
+    color: var(--theme-blue) !important;
+    .ivu-table-cell {
+      white-space: pre-line;
+      // hack 出勤簿的换行的字间距
+      line-height: 26px;
+    }
+  }
+  .rest-title {
+    background-color: var(--table-td-hover) !important;
+    color: var(--text-green) !important;
+  }
+}
+
+// 申请表格的特殊处理
+.ivu-table-wrapper {
+  &.deny {
+    flex: 0;
+    border-left: 0;
+    width: 50px;
+    .ivu-table {
+      td {
+        height: 57px;
+      }
+    }
+    .ivu-table-tip {
+      display: none;
+    }
+  }
+  &.confirm {
+    flex: 1;
+  }
+  .ivu-checkbox-wrapper {
+    margin-left: 0;
+  }
+}

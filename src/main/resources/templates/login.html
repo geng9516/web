@@ -1,7 +1,97 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header::common_header(title='ログイン')"></head>
+<head th:replace="layout/header::common_header(title='ログイン',cssPaths='/pages/login.min.css')"></head>
 <body>
-ログイン
+  <div th:replace="layout/loadingBar::loading_bar"></div>
+  <div class="login">
+    <Row>
+      <i-col span="16" style="transform: translate(-3%, 3%)">
+        <figure class="hero-warp" style="background-image: url('../static/svg/LoginSvg.svg')"></figure>
+      </i-col>
+      <i-col span="8">
+        <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
+          <div class="title">
+            <figure class="logo-warp" style="background-image: url('../static/svg/Logo.svg')"></figure>
+            <p class="login-time">3月15 木 9：29</p>
+          </div>
+          <div class="login-content">
+            <p class="login-label">アカウント</p>
+            <form-item class="login-item" prop="username">
+              <i-input
+                prefix="ios-contact"
+                v-model="login.username"
+                @keyup.enter.native="loging"
+                placeholder="アカウント"
+              />
+            </form-item>
+            <p class="login-label">パスワード</p>
+            <form-item class="login-item" prop="password">
+              <i-input
+                prefix="md-key"
+                v-model="login.password"
+                @keyup.enter.native="loging"
+                placeholder="パスワード"
+                type="password"
+                autocomplete="new-password"
+              />
+            </form-item>
+            <Row :gutter="16" class="mt10 mb5">
+              <i-col span="12"><i-button type="primary" size="large" ghost long>出勤</i-button></i-col>
+              <i-col span="12"><i-button size="large" long>退勤</i-button></i-col>
+            </Row>
+            <form-item class="login-btn">
+              <i-button @click="loging" type="primary" size="large" :loading="loading" long>
+                ログイン
+              </i-button>
+            </form-item>
+          </div>
+        </i-form>
+      </i-col>
+    </Row>
+  </div>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel">
+// import LoginSvg from '../static/svg/LoginSvg.vue'
+// import Logo from '../static/svg/Logo.vue'
+        const login = new Vue({
+            el: '.login',
+  //           components: {
+  //   LoginSvg,
+  //   Logo
+  // },
+  data() {
+    return {
+      userCode: '',
+      password: '',
+      login: {
+        username: '',
+        password: ''
+      },
+      loading: false,
+      ruleValidate: {
+        username: [
+          {
+            required: true,
+            message: '社員コードを入力してください',
+            trigger: 'blur'
+          }
+        ],
+        password: [
+          {
+            required: true,
+            message: 'パスワードを入力してください',
+            trigger: 'blur'
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    loging() {
+
+    }
+  }
+})
+</script>
 </body>
 </html>

@@ -1,0 +1,167 @@
+.ivu-btn {
+  transition: none;
+  &:focus {
+    box-shadow:none;
+  }
+}
+
+// 点开按钮后的步骤条样式统一管理
+.ivu-modal-header p, .ivu-modal-header-inner {
+  color: var(--grey);
+}
+.stepLook {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+.ivu-steps .ivu-steps-title {
+  margin-top: 2.5px;
+}
+.back-btn {
+  flex-grow: 0;
+}
+.next-btn {
+  flex-grow: 0;
+}
+
+
+// 轻量的操作按钮
+.operateBtn {
+  a {
+    color: var(--grey);
+    font-size: 14px;
+    font-weight: bold;
+    &:nth-child(2n) {
+      color: rgb(78, 159, 248);
+      margin-left: 28px;
+      &::before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        top: 10px;
+        right: 74px;
+        height: 17px;
+        width: 1px;
+        transform: scaleX(0.3);
+        background-color: var(--grey);
+      }
+    }
+  }
+}
+
+// iview的六种类型按钮覆盖
+.ivu-btn-primary {
+  border-color: var(--primary-border);
+  background: var(--primary-background);
+  box-shadow: 0 2px 8px 0 var(--primary-shadow);
+  &:hover {
+    background: var(--primary-hover);
+  }
+  &:active {
+    background: var(--primary-active);
+  }
+}
+.ivu-btn-ghost.ivu-btn-primary{
+  background: var(--ghost-primary-background);
+  border-color: var(--ghost-primary-border);
+  box-shadow: 0 1px 5px 0 var(--ghost-primary-shadow);
+  &:hover {
+    background: var(--ghost-primary-hover);
+  }
+  &:active {
+    background: var(--ghost-primary-active);
+  }
+}
+
+.ivu-btn-error {
+  border-color: var(--error-border);
+  background: var(--error-background);
+  box-shadow: 0 2px 8px 0 var(--error-shadow);
+  &:hover {
+    border-color: var(--error-border);
+    background: var(--error-hover);
+  }
+  &:active {
+    border-color: var(--error-border);
+    background: var(--error-active);
+  }
+}
+
+.ivu-btn-ghost.ivu-btn-error{
+  background: var(--ghost-error-background);
+  border-color: var(--ghost-error-border);
+  box-shadow: 0 2px 8px 0 var(--ghost-error-shadow);
+  &:hover {
+    background: var(--ghost-error-hover);
+  }
+  &:active {
+    background: var(--ghost-error-active);
+  }
+}
+
+.ivu-btn-success {
+  border-color: var(--success-border);
+  background: var(--success-background);
+  box-shadow: 0 2px 8px 0 var(--success-shadow);
+  &:hover {
+    background: var(--success-hover);
+  }
+  &:active {
+    background: var(--success-active);
+  }
+}
+
+.ivu-btn-ghost.ivu-btn-success{
+  background: var(--ghost-success-background);
+  border-color: var(--ghost-success-border);
+  box-shadow: 0 2px 8px 0 var(--ghost-success-shadow);
+  &:hover {
+    background: var(--ghost-success-hover);
+  }
+  &:active {
+    background: var(--ghost-success-active);
+  }
+}
+
+
+.cancel-btn {
+  border-color: var(--user-avatar-background);
+  color: var(--grey);
+}
+// .ivu-btn-warning {
+//   border-color: var(--warning-border);
+//   background: var(--warning-background);
+//   box-shadow: 0 2px 8px 0 var(--warning-shadow);
+//   &:hover {
+//     background: var(--warning-hover);
+//   }
+//   &:active {
+//     background: var(--warning-active);
+//   }
+// }
+
+// .ivu-btn-info {
+//   border-color: var(--info-border);
+//   background: var(--info-background);
+//   box-shadow: 0 2px 8px 0 var(--info-shadow);
+//   &:hover {
+//     background: var(--info-hover);
+//   }
+//   &:active {
+//     background: var(--info-active);
+//   }
+// }
+
+// .ivu-btn-text {
+//   border-color: var(--text-border);
+//   background: var(--text-background);
+//   box-shadow: 0 2px 8px 0 var(--text-shadow);
+//   &:hover {
+//     background: var(--text-hover);
+//   }
+//   &:active {
+//     background: var(--text-active);
+//   }
+// }

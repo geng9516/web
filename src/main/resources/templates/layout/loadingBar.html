@@ -1,0 +1,60 @@
+<!--
+   author: Dellen Shang
+-->
+<div class="loading" th:fragment="loading_bar" xmlns:th="http://www.thymeleaf.org">
+  <style>
+    .loading {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      background: rgb(247, 247, 247);
+      z-index: 4000;
+    }
+
+    .loading .loader {
+      position: absolute;
+      height: 2px;
+      border-radius: 5px;
+      top: 0;
+      left: 0;
+      background: -webkit-gradient(linear-gradient(to left, rgb(30, 233, 93), rgb(87, 20, 206)));
+      background: linear-gradient(to left, rgb(30, 233, 93), rgb(87, 20, 206));
+      -webkit-animation: line-grow 7s ease-in-out;
+      animation: line-grow 7s ease-in-out;
+    }
+
+    @-webkit-keyframes line-grow {
+      0% {
+        width: 0;
+      }
+
+      100% {
+        width: 95%;
+      }
+    }
+
+    @keyframes line-grow {
+      0% {
+        width: 0;
+      }
+
+      100% {
+        width: 95%;
+      }
+    }
+  </style>
+  <div class="loader"></div>
+  <script>
+    function loadingPage() {
+      var el = document.querySelector(".loading")
+      el.parentNode && el.parentNode.removeChild(el)
+    }
+    document.onreadystatechange = function () {
+      if (document.readyState === "complete") {
+        loadingPage();
+      }
+    }
+  </script>
+</div>

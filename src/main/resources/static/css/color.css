@@ -12,9 +12,86 @@
   --text-light-grey: rgb(169, 169, 169);
   --input-border-grey: rgb(220, 222, 226);
   --light-input-border-grey: rgb(230, 230, 230);
+  --light-blue-l: rgb(244, 250, 255);
+  --light-blue: rgb(233, 243, 255);
+  --light-pink: rgb(255, 241, 240);
   --brown: rgb(175, 121, 2);
   --text-green: rgb(91, 208, 41);
   --white: rgb(255, 255, 255);
   --red: rgb(252, 13, 27);
   --green: rgb(82, 196, 26);
+  --orange: rgb(255, 127, 80);
+  /* header checkin */
+  --user-avatar-background: rgb(209, 216, 224);
+  --toTopBtn-background: rgba(103, 208, 59, 0.78);
+  /* content-head */
+  --searchwrap-background: rgb(241, 244, 247);
+  /*  table */
+  --table-head: rgb(132, 178, 239);
+  --table-head-border: rgb(176, 210, 255);
+  --table-month-label: rgb(227, 235, 243);
+  --table-th-checkin: rgb(65, 123, 255);
+  --table-td-stripe: rgb(248, 248, 249);
+  --table-border: rgb(230, 230, 230);
+  --table-td-sat: --light-blue;
+  /* 更深得黄 163 */
+  --table-td-sun: rgb(255, 255, 206);
+  --table-td-hover: rgb(232, 247, 233);
+  --table-td-applying-textshadow: 0 13.36px 8.896px rgb(196, 181, 157), 0 -2px 1px var(--white);
+
+  /* sider */
+  --sider-border-right: var(--border-grey);
+  --sider-trigger: rgb(23, 94, 220);
+  --sider-item-border-b: rgb(34, 96, 206);
+  --sider-item-border-t: rgb(79, 143, 255);
+  /* form */
+  --form-label: rgb(132, 178, 239);
+  --form-notice: rgb(0, 185, 177);
+  --form-required-star: rgb(48, 118, 242);
+  --form-bg-blue: rgb(244, 249, 255);
+  --form-bg-grey: rgb(253, 253, 253);
+  --form-border-blue: rgb(212, 231, 255);
+  --form-border-dash: rgb(221, 221, 221);
+  --form-title-icon: rgb(78, 159, 248);
+  --form-title-border: var(--border-grey);
+  --form-title-background: var(--light-grey);
+  /* btn */
+  --btn-shadow: rgba(36, 10, 147, 0.15);
+  --ghost-hover: rgb(239, 245, 250);
+
+  --primary-border: rgb(53, 173, 255);
+  --primary-background: linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255));
+  --primary-shadow: var(--btn-shadow);
+  --primary-hover: linear-gradient(90deg, rgb(72, 191, 255), rgb(84, 133, 255));
+  --primary-active: linear-gradient(90deg, rgb(33, 167, 240), rgb(36, 95, 245));
+
+  --ghost-primary-border: rgb(53, 173, 255);
+  --ghost-primary-background: var(--white);
+  --ghost-primary-shadow: var(--btn-shadow);
+  --ghost-primary-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
+  --ghost-primary-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
+
+  --error-border: rgb(251, 146, 140);
+  --error-background: linear-gradient(-45deg, rgb(251, 81, 82), var(--error-border));
+  --error-shadow: var(--btn-shadow);
+  --error-hover: linear-gradient(-45deg, rgba(251, 81, 82, 0.9), rgba(251, 146, 140, 0.9));
+  --error-active: linear-gradient(-45deg, rgb(243, 54, 67), var(--error-border));
+
+  --ghost-error-border: rgb(251, 81, 82);
+  --ghost-error-background: var(--white);
+  --ghost-error-shadow: var(--btn-shadow);
+  --ghost-error-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
+  --ghost-error-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
+
+  --success-border: rgb(84, 216, 159);
+  --success-background: linear-gradient(-45deg, rgb(9, 184, 88), var(--success-border));
+  --success-shadow: var(--btn-shadow);
+  --success-hover: linear-gradient(-45deg, rgba(9, 184, 88, 0.9), rgba(84, 216, 159, 0.9));
+  --success-active: linear-gradient(-45deg, rgb(11, 189, 70), var(--success-border));
+
+  --ghost-success-border: rgb(9, 184, 88);
+  --ghost-success-background: var(--white);
+  --ghost-success-shadow: var(--btn-shadow);
+  --ghost-success-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
+  --ghost-success-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
 }

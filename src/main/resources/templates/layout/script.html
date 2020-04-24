@@ -1,12 +1,36 @@
 <!--
    author: Xiao Wenpeng
+   author: Dellen Shang
 -->
 <th:block th:fragment="common_script" xmlns:th="http://www.thymeleaf.org">
-    <th:block th:if="jsPaths!=null">
-        <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}"
-                th:src="${
+  <!--默认资源 Start-->
+  <!--支持ES6基本语法-->
+  <script th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static/libs/browser.min.js'
+                }"></script>
+  <!--支持ES6余下语法，如Promise-->
+  <script th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static/libs/browser-polyfill.min.js'
+                }"></script>
+  <script th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static/libs/vue-2.6.11.min.js'
+                }"></script>
+  <script th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static/libs/iview.min.js'
+                }"></script>
+  <script th:src="${
+                  #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
+                  + #request.getServerPort()  + #request.getContextPath() + '/static/libs/axios-0.19.2.min.js'
+                }"></script>
+  <!--默认资源 End-->
+  <th:block th:if="jsPaths!=null">
+    <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${
                   #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':'
                   + #request.getServerPort()  + #request.getContextPath() + '/static'+jsPath
                 }"></script>
-    </th:block>
+  </th:block>
 </th:block>
