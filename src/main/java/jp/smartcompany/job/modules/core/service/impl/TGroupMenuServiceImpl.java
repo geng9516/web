@@ -29,4 +29,17 @@ public class TGroupMenuServiceImpl extends ServiceImpl<TGroupMenuMapper, TGroupM
      return baseMapper.listTopMenuByGroupCode(groupCodes,systemCode,customerId);
   }
 
+  @Override
+  public List<TMenuDO> listSecondMenuByGroupCode(List<String> groupCodes,String systemCode,String customerId) {
+      if (CollUtil.isEmpty(groupCodes)) {
+          return CollUtil.newArrayList();
+      }
+      return baseMapper.listSecondMenuByGroupCode(groupCodes,systemCode,customerId);
+  }
+
+  @Override
+  public List<TMenuDO> listMenuByGroupCodeAndParentId(Long menuId,String systemCode,String customerId) {
+      return baseMapper.listMenuByGroupCodeAndParentId(menuId,systemCode,customerId);
+  }
+
 }

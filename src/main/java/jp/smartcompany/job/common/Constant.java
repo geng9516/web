@@ -64,6 +64,10 @@ public class Constant {
      * 系统菜单相关常量
      */
     public final static String TOP_NAVS = "topNavs";
+    public final static String SECOND_NAVS = "secondNavs";
+
+    public final static String SYSTEM_CODE = "systemCode";
+    public final static String CUSTOMER_ID = "customerId";
 
     public final static String SITE_INDEX = "siteIndex";
 

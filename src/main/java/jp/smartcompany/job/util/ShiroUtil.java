@@ -36,4 +36,8 @@ public class ShiroUtil {
 		return mastAccountDO.getMaCaccount();
 	}
 
+	public static boolean isAuthenticated() {
+		return getSubject().isAuthenticated();
+	}
+
 }

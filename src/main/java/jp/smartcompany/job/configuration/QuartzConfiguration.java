@@ -11,7 +11,7 @@ import java.util.Properties;
  * quartz配置
  * @author Xiao Wenpeng
  */
-@Configuration
+//@Configuration
 public class QuartzConfiguration {
 
     @Bean

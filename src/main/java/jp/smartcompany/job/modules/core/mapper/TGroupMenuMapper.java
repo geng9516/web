@@ -22,4 +22,8 @@ public interface TGroupMenuMapper extends BaseMapper<TGroupMenuDO> {
 
    List<TMenuDO> listTopMenuByGroupCode(@Param("groupCodes") List<String> groupCodes, @Param("systemCode") String systemCode, @Param("customerId") String customerId);
 
+   List<TMenuDO> listSecondMenuByGroupCode(@Param("groupCodes") List<String> groupCode, @Param("systemCode") String systemCode,@Param("customerId") String customerId);
+
+   List<TMenuDO> listMenuByGroupCodeAndParentId(@Param("menuId") Long menuId,@Param("systemCode") String systemCode,
+                                                @Param("customerId") String customerId);
 }

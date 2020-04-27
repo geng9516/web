@@ -4,7 +4,9 @@
   <body>
     <main class="error-page">
       <section class="error-wrap">
-        <figure class="error-img" style="background-image: url('../static/svg/500.svg')"></figure>
+        <figure class="error-img" th:style="${'background-image: url('+
+          #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() +
+        '/static/svg/500.svg)'}"></figure>
         <section class="error-content">
           <h1 class="mb20">500</h1>
           <p class="p mb15">ページは表示できませんでした。</p>

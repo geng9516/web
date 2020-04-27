@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(of="id",callSuper = false)
 @Accessors(chain = true)
 @TableName("t_menu")
 public class TMenuDO implements Serializable {

@@ -3,8 +3,13 @@
 <head th:replace="layout/header::common_header(title='就業入力')"></head>
 <body>
    <!-- 顶部菜单切换栏 -->
+   <h2>一级菜单</h2>
    <div th:replace="layout/topNavs"></div>
+   <!-- 二级菜单切换栏 -->
+   <h2>二级菜单</h2>
+   <div th:replace="layout/secondNavs"></div>
    当前tabIndex: <span th:text="${#httpServletRequest.getAttribute('siteIndex')}"></span>
-
+   <iframe th:with="baseUrl=${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()+'/'}"
+           th:src="@{${baseUrl+secondNavs[0].url}(menuId=${secondNavs[0].menuId},moduleIndex=1)}" id="moduleFrame"></iframe>
 </body>
 </html>
