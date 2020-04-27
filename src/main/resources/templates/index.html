@@ -1,12 +1,26 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="layout/header::common_header(title='index')"></head>
-<body>
-   <!-- 顶部菜单切换栏 -->
-   <div th:replace="layout/topNavs2"></div>
-
-   当前tabIndex: <span th:text="${#httpServletRequest.getAttribute('siteIndex')}"></span>
-   <!-- 揭示板 -->
-   揭示板区块
-</body>
+  <head th:replace="layout/header::common_header(title='index')"></head>
+  <body>
+   <div th:replace="layout/loadingBar::loading_bar"></div>
+    <!-- 菜单导航栏 -->
+    <div th:replace="layout/sider"></div>
+    <iframe id="moduleFrame" :src="`${baseUrl}/sys/dashboard`" class="iframe-wrap"></iframe>
+    <script type="text/babel">
+      const INDEX = new Vue({
+          el: '#moduleFrame',
+          data() {
+              return {
+               baseUrl: SIDER._data.baseUrl
+              }
+          },
+          methods: {
+              goHomepage() {
+                  window.location.href="/";
+              }
+          },
+      })
+    </script>
+    <div th:replace="layout/head::header"></div>
+  </body>
 </html>

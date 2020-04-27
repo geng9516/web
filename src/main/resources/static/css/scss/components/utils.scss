@@ -2,6 +2,14 @@
 .ivu-layout {
   background-color: transparent;
 }
+// iframe wrap
+.iframe-wrap {
+  background-color: var(--white);
+  padding: 51px 0 0 50px;
+  height: calc(100vh - 6px);
+  width: calc(100vw);
+  border: none;
+}
 // siderbar默认过渡效果取消
 .ivu-layout-sider {
   transition: none;

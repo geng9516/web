@@ -9,7 +9,7 @@
         <figure class="hero-warp" style="background-image: url('../static/svg/LoginSvg.svg')"></figure>
       </i-col>
       <i-col span="8">
-        <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
+        <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow" method="post" action="http://localhost:6879/login">
           <div class="title">
             <figure class="logo-warp" style="background-image: url('../static/svg/Logo.svg')"></figure>
             <p class="login-time">3月15 木 9：29</p>
@@ -43,6 +43,9 @@
               <i-button @click="loging" type="primary" size="large" :loading="loading" long>
                 ログイン
               </i-button>
+              <!-- <p>name: <input type="text" name="username"></p>
+              <p>password: <input type="password" name="password"></p>
+              <input type="submit" value="提交"> -->
             </form-item>
           </div>
         </i-form>
@@ -87,8 +90,11 @@
     }
   },
   methods: {
-    loging() {
-
+    async loging() {
+    //  const form = this.$refs.login
+    //  form.$el.submit()
+  await this.http.postForm('/login',this.login)
+      // window.location.href="/";
     }
   }
 })

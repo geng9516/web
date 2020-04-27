@@ -1,0 +1,39 @@
+.label {
+  padding: 5px 0;
+  font-size: 14px;
+  text-align: center;
+  font-weight: 600;
+  color: white;
+  background-color: var(--label-blue);
+}
+
+.ivu-input {
+  text-align: center;
+}
+.time {
+  display: inline-block;
+  width: 40%;
+  padding-left: 10px;
+}
+.with-split {
+  width: 40%;
+  display: inline-block;
+  &::before {
+    content: '';
+    display: inline-block;
+    position: absolute;
+    width: 1px;
+    height: 30px;
+    margin-left: -15px;
+    border-right: 1px solid var(--border-grey);
+  }
+}
+.person-info {
+  height: 30px;
+  line-height: 30px;
+  font-size: 14px;
+  border-right: 1px solid var(--border-grey);
+  border-bottom: 1px solid var(--border-grey);
+  border-left: 1px solid var(--border-grey);
+  background-color: white;
+}
