@@ -14,7 +14,7 @@ import java.util.Properties;
 //@Configuration
 public class QuartzConfiguration {
 
-    @Bean
+//    @Bean
     public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setDataSource(dataSource);

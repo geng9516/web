@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -37,4 +38,13 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
          */
         List<MastOrganisationDO> selectPatternOrganisation(String customerId, String companyId,Date yyyymmdd);
 
-        }
+        /**
+         * 根据层级选择基点组织下的组织列表
+         * @param customerId
+         * @param conds
+         * @param date
+         * @return
+         */
+        List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId,String conds,Date date);
+
+}

@@ -8,10 +8,7 @@ import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.CoreError;
-import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
-import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
-import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
-import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
+import jp.smartcompany.job.modules.core.pojo.bo.*;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsSession;
@@ -41,6 +38,11 @@ public class BaseSectionBusiness {
         BaseSectionBO baseSection = getBaseSection(DateUtil.date());
     }
 
+    /**
+     * 基準日時点の基点組織情報を取得します
+     * @param date 基準日(yyyy/mm/dd)
+     * @return 基点組織情報(法人別とグループ別)
+     */
     public BaseSectionBO getBaseSection(Date date) {
         String userId = ShiroUtil.getUserId();
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.LOGIN_INFO);
@@ -60,18 +62,28 @@ public class BaseSectionBusiness {
         return bsi;
     }
 
+    /**
+     * 基点組織情報を生成し、hashMapに格納します
+     * @param sCustomer 顧客コード
+     * @param sSystem システムコード
+     * @param date 基準日
+     */
     private void queryBaseSection(String sCustomer, String sSystem, Date date,
                                   Map<String, Map<String, String>> hashMapComp,
                                   Map<String, Map<String, String>> hashMapGroup) {
         Map<String, List<GroupBaseSectionBO>> lhmComp = MapUtil.newHashMap(true);
         Map<String, List<GroupBaseSectionBO>> lhmGroup = MapUtil.newHashMap(true);
         queryBaseSectionMaster(sCustomer, sSystem, date, lhmComp, lhmGroup);
-// todo
-//        hashMapComp.put(sSystem, getBaseSectionByCompany(sCustomer, date, lhmComp));
-
+        hashMapComp.put(sSystem, getBaseSectionByCompany(sCustomer, date, lhmComp));
         hashMapGroup.put(sSystem, getBaseSectionByGroup(sCustomer, date, lhmGroup));
     }
 
+    /**
+     * 基点組織マスタ取得を取得し、マップに格納します
+     * @param sCustomer 顧客区分
+     * @param sSystem システムコード
+     * @param date 基準日
+     */
     private void queryBaseSectionMaster(String sCustomer,
                                         String sSystem,
                                         Date date,
@@ -101,6 +113,68 @@ public class BaseSectionBusiness {
         }
     }
 
+    /**
+     * 法人別基点組織の生成
+     * @param sCustomer 顧客コード
+     * @param tsDate 基準日
+     * @param lhmSectionId 法人別基点組織マスタ <法人コード, List<基点組織マスタ>>
+     * @return 法人別基点組織 <法人, 基点組織情報>
+     */
+    public Map<String, String> getBaseSectionByCompany(String sCustomer,
+                                                       Date tsDate,
+                                                       Map<String, List<GroupBaseSectionBO>> lhmSectionId) {
+        Map<String,String> lhmBase = MapUtil.newHashMap(true);
+        for (Map.Entry <String, List<GroupBaseSectionBO>> e : lhmSectionId.entrySet()) {
+            String sCompany = e.getKey();	// 法人コード
+            lhmBase.put(sCompany, this.createBaseSectionString(sCustomer, sCompany, tsDate, e.getValue()));
+        }
+
+        return lhmBase;
+    }
+
+    /**
+     * 法人別基点組織の文字列を生成
+     *  フォーマット: 法人コード#組織コード!組織コード!組織コード
+     * @param sCustomer 顧客コード
+     * @param sCompany 法人コード
+     * @param tsDate 基準日
+     * @param lBaseSection 法人別基点組織マスタ <法人コード, List<基点組織マスタ>>
+     * @return
+     */
+    public String createBaseSectionString(String sCustomer, String sCompany,Date tsDate, List<GroupBaseSectionBO> lBaseSection) {
+        // リストの生成
+        StringBuilder sbList = new StringBuilder();
+        sbList.append(sCompany + "#");	// 法人コード + "#"
+        // 基点組織がない場合は終了
+        if (lBaseSection.size() <= 0) {
+            return sbList.toString();
+        }
+        // 基点組織が「のみ」の場合
+        if ("1".equals(lBaseSection.get(0).getMgbsCbeloworsingle())) {
+            // 組織コードを結合
+            for (int i = 0; i < lBaseSection.size(); i++) {
+                if (i > 0) { sbList.append("!"); }
+                sbList.append(lBaseSection.get(i).getMgbsCsectionid());
+            }
+            // 基点組織が「以下」の場合
+        } else {
+            // 基点組織情報の下位組織を取得
+            List<BaseSectionOrganisationBO> list = getOrganisationBelow(sCustomer, tsDate, lBaseSection);
+            // 組織コードを結合
+            for (int i = 0; i < list.size(); i++) {
+                if (i > 0) { sbList.append("!"); }
+                sbList.append(list.get(i).getMoCsectionidCk());
+            }
+        }
+        return sbList.toString();
+    }
+
+    /**
+     * グループ別基点組織の生成
+     * @param lhmLayeredId グループ別基点組織マスタ <グループコード, List<基点組織マスタ>>
+     * @return グループ別基点組織 <グループ, 基点組織情報>
+     * @exception
+     */
     public Map<String, String> getBaseSectionByGroup(
             String sCustomer,
             Date tsDate,
@@ -117,6 +191,14 @@ public class BaseSectionBusiness {
         return lhmGroupBase;
     }
 
+    /**
+     * グループ別基点組織の文字列を生成
+     *  フォーマット: 階層コード!階層コード!階層コード
+     * @param sCustomer 顧客コード
+     * @param tsDate 基準日
+     * @param lBaseSection グループ別基点組織マスタ <グループコード, List<基点組織マスタ>>
+     * @return
+     */
     private String getLayerdBaseSectionString(String sCustomer, Date tsDate,
                                          List<GroupBaseSectionBO> lBaseSection) {
         StringBuffer sbList = new StringBuffer();
@@ -133,18 +215,25 @@ public class BaseSectionBusiness {
                 sbList.append(lBaseSection.get(i).getMgbsClayeredsectionid());
             }
         } else {
-//            List<GroupBaseSectionBO> list = getOrganisationBelow(
-//                    sCustomer, tsDate, lBaseSection);
-//            for (int i = 0; i < list.size(); i++) {
-//                if (i > 0) {
-//                    sbList.append("!");
-//                }
-//                sbList.append(list.get(i).getMoClayeredsectionid());
-//            }
+            List<BaseSectionOrganisationBO> list = getOrganisationBelow(
+                    sCustomer, tsDate, lBaseSection);
+            for (int i = 0; i < list.size(); i++) {
+                if (i > 0) {
+                    sbList.append("!");
+                }
+                sbList.append(list.get(i).getMoClayeredsectionid());
+            }
         }
         return sbList.toString();
     }
 
+    /**
+     * 基点組織情報の下位組織を取得します
+     * @param sCustomer 顧客コード
+     * @param tsDate 基準日
+     * @param lBaseSection 基点組織マスタ
+     * @return 基点組織以下の下位組織
+     */
     private List<BaseSectionOrganisationBO> getOrganisationBelow(
             String sCustomer, Date tsDate,
             List<GroupBaseSectionBO> lBaseSection) {
@@ -157,10 +246,8 @@ public class BaseSectionBusiness {
                     .get(i)).getMgbsClayeredsectionid()).append("%' ");
         }
         sbWhere.append(" ) ");
-
-//        return iMastOrganisationService.getOrganisationByLevel(sCustomer,
-//                sbWhere.toString(), tsDate);
-        return null;
+        return iMastOrganisationService.selectOrganisationByLevel(sCustomer,
+                sbWhere.toString(), tsDate);
     }
 
 }
