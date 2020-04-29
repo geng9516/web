@@ -1,0 +1,53 @@
+.header-wrap {
+  padding: 0;
+  margin-bottom: -1px;  /* 按钮和sider减少1px*/
+  height: 50px;
+  background:var(--white);
+  z-index: 900;
+  position: fixed;
+  top: 0px;
+  width: 100vw;
+  box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  .ivu-dropdown {
+    position: absolute;
+    right: 0;
+    padding-right: 20px;
+    line-height: 45px;
+    a {
+      color: rgb(81, 90, 110);
+    }
+    i.ivu-icon-md-contact {
+      color: #ffcc6a;
+      font-size: 2.5em;
+    }
+    .ivu-dropdown-rel {
+      height: 45px;
+    }
+    .ivu-menu-item {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+  }
+  &.ivu-menu-horizontal {
+    height: 50px;
+    line-height: 50px;
+  }
+  &.ivu-menu-light {
+    background: transparent;
+    text-align: center;
+  }
+}
+
+.header-lang {
+  right: 3rem;
+}
+.layout-Dropdown {
+  position: absolute;
+  right: 0;
+  top: -3px;
+  padding-right: 10px;
+  line-height: 50px;
+}
+.layout-nav {
+  display: inline-block;
+}

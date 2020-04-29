@@ -1,10 +1,208 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='打刻',cssPaths='/pages/content.min.css,' + '/pages/sign.min.css')">
 </head>
+
 <body>
-   打刻
+    <div th:replace="layout/loadingBar::loading_bar"></div>
+    <svg th:replace="layout/icons::svg_icons"></svg>
+    <main class="content">
+        <section class="stamp-warp tc">
+            <div class="schedule">
+                <span class="time-title">時間</span>
+                <span class="plan-title">本日の勤務予定</span>
+                <ul class="time-list">
+                    <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
+                </ul>
+                <span :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'"
+                    v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
+                    {{ item.time }}
+                </span>
+            </div>
+            <div class="stamp">
+                <Clock :time="data.serverTime" @updatetime="e => (data.serverTime += e)" ref="clock"></Clock>
+                <Row>
+                    <i-col span="12" class="pr5">
+                        <i-button long @click="handleStamp('1')"
+                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none"
+                            :loading="checkInLoading" v-if="!this.data.clockOnTime">
+                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: rgb(48,118,242)">
+                                <use xlink:href="#kiwi"></use>
+                            </svg>
+                            <span class="pl5" style="position:relative;top:-13px">出勤</span>
+                        </i-button>
+                        <i-button v-else disabled long
+                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none">
+                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: white">
+                                <use xlink:href="#kiwi"></use>
+                            </svg>
+                            <span class="pl5" style="position:relative;top:-13px">出勤</span>
+                        </i-button>
+                    </i-col>
+                    <i-col span="12" class="pl5">
+                        <i-button @click="handleStamp('2')"
+                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none" long
+                            :loading="checkOutLoading">
+                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: rgb(48,118,242)">
+                                <use xlink:href="#crow"></use>
+                            </svg>
+                            <span class="pl5" style="position:relative;top:-13px">退勤</span>
+                        </i-button>
+                    </i-col>
+                    <i-col span="24" class="mt20">
+                        <i-button long style="height:53px;font-size:18px;background:rgb(238, 247, 255);border:none"
+                            @click="workApply">
+                            <svg class="i-svg" aria-hidden="true" style="width:24px;height:24px;fill: rgb(48,118,242)">
+                                <use xlink:href="#otter"></use>
+                            </svg>
+                            <span class="pl5" style="position:relative;top:-5px">超勤申請</span>
+                        </i-button>
+                    </i-col>
+                    <i-col span="24" class="mt20 msg">
+                        <p>
+                            出勤時刻：
+                            <span>{{ data.clockOnTime ? data.clockOnTime.substring(11, 16) : '未打刻' }}</span>
+                        </p>
+                        <p>
+                            退勤時刻：
+                            <span>{{ data.clockOffTime ? data.clockOffTime.substring(11, 16) : '' }}</span>
+                        </p>
+                    </i-col>
+                </Row>
+            </div>
+            <div class="total">
+                <div class="label">月間出勤日数</div>
+                <div class="total-content mb30">
+                    <span>17</span>
+                    <span style="font-size:20px">日</span>
+                </div>
+
+                <div class="label">月間実働時間</div>
+                <div class="total-content mb30">
+                    <span>150</span>
+                    <span style="font-size:20px">時</span>
+                </div>
+
+                <div class="label">残業時間</div>
+                <div class="total-content mb30">
+                    <span>20</span>
+                    <span style="font-size:20px">時</span>
+                </div>
+
+                <div class="label">有休残日数</div>
+                <div class="total-content">
+                    <span>5</span>
+                    <span style="font-size:20px">日</span>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div th:replace="layout/script::common_script(jsPaths='/component/clock.js')"></div>
+    <script type="text/babel">
+        const getNumArray = (start, end) => {
+            return Array(end - start + 1)
+                .fill(0)
+                .map((v, i) => i + start)
+        }
+        const timeToMinute = (time) => {
+            if (time.indexOf(':') > -1) {
+                return +time.split(':')[0] * 60 + +time.split(':')[1]
+            }
+            return time.replace(/(^[0-9]{1,2})([0-9]{2}$)/g, (match, $1, $2) => +$1 * 60 + +$2)
+        }
+        const SIGN = new Vue({
+            el: '.stamp-warp',
+            components: { Clock: clock_c },
+            data() {
+                return {
+                    isShow: false,
+                    data: {
+                        serverTime: 0,
+                        clockOnTime: '',
+                        clockOffTime: '',
+                        scheduleStartTime: '',
+                        scheduleEndTime: ''
+                    },
+                    scheduleData: ['9:30-12:00', '13:30-18:30'],
+                    checkInLoading: false,
+                    checkOutLoading: false
+                }
+            },
+            mounted() {
+                this.$refs.clock.showTime()
+            },
+            beforeDestroy() {
+                this.$refs.clock.cleanClock()
+            },
+            computed: {
+                isActivated() {
+                    if (this.data.clockOnTime && !this.data.clockOffTime) return true
+                    return false
+                },
+                dynamicSchedule() {
+                    const that = this
+                    const topHelper = this.scheduleData[0].split('-')[0].split(':')[0] * 60
+                    return this.scheduleData.map(e => {
+                        const startTime = timeToMinute(e.split('-')[0])
+                        const endTime = timeToMinute(e.split('-')[1])
+                        const contentHeight = ((endTime - startTime) / 60) * 45
+                        const top = ((startTime - topHelper) / 60) * 45 + 60
+                        return {
+                            time: e,
+                            style: {
+                                height: `${contentHeight}px`,
+                                lineHeight: `${contentHeight}px`,
+                                top: `${top}px`
+                            }
+                        }
+                    })
+                },
+                scheduleTime() {
+                    const from = +this.scheduleData[0].split('-')[0].split(':')[0]
+                    const end = from + 11
+                    return getNumArray(from, end).map(e => `${e}:00`)
+                }
+            },
+            methods: {
+                getData() {
+                    // try {
+                    //   const { data } = await this.api.checkIn('fetch')
+                    //   this.data = data
+                    //   this.scheduleData = [
+                    //     `${this.data.scheduleStartTime}-${this.data.scheduleEndTime}`
+                    //   ]
+                    //   this.data.serverTime = Date.parse(this.data.serverTime) - 1000
+                    //   return
+                    // } catch (e) {
+                    //   console.log(e)
+                    //   this.data.serverTime = Date.now()
+                    // }
+                    this.data.serverTime = Date.now()
+                    console.log(this.data.serverTime)
+                },
+                workApply() {
+                    this.isShow = true
+                },
+                async handleStamp(clockType) {
+                    if (clockType === '1') this.data.clockOnTime = formatDate(Date.now())
+                    else this.data.clockOffTime = formatDate(Date.now())
+                    // try {
+                    //   if (clockType === '1') this.checkInLoading = true
+                    //   else this.checkOutLoading = true
+                    //   await this.api.checkIn('stamp', { clockType })
+                    //   this.getData()
+                    //   return
+                    // } catch (e) {
+                    //   console.log(e)
+                    // } finally {
+                    //   if (clockType === '1') this.checkInLoading = false
+                    //   else this.checkOutLoading = false
+                    // }
+                }
+            }
+        })
+    </script>
 </body>
+
 </html>

@@ -1,0 +1,47 @@
+<!--
+   author: Dellen Shang
+-->
+<i-menu mode="horizontal" theme="light" th:fragment="header" class="header-wrap" xmlns:th="http://www.thymeleaf.org">
+  <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
+  <span class="layout-logo"></span>
+  <div class="layout-nav">
+    <menu-item name="ブックマック区">ブックマック区</menu-item>
+  </div>
+  <dropdown trigger="hover" class="layout-Dropdown">
+    <a>
+      <avatar style="background-color: #87d068;margin-left:10px;">USER</avatar>
+    </a>
+    <dropdown-menu slot="list">
+      <dropdown-item @click.native="goProfile">
+        user
+      </dropdown-item>
+      <dropdown-item @click.native="logout">ログアウト</dropdown-item>
+    </dropdown-menu>
+  </dropdown>
+  <script th:inline="javascript">
+    const HEADER = new Vue({
+      el: '.header-wrap',
+      data() {
+        return {
+          baseUrl: SIDER._data.baseUrl
+        }
+      },
+      mounted() {
+      },
+      methods: {
+        logout() {
+          // this.api.auth('logout')
+          // sessionStorage.removeItem('SO_login')
+          // this.clearRoutes()
+          // this.$router.push('/')
+        },
+        goProfile() {
+          // if (this.$route.path === '/sys/user/profile') {
+          //   return
+          // }
+          // this.$router.push('/sys/user/profile')
+        }
+      },
+    })
+  </script>
+</i-menu>

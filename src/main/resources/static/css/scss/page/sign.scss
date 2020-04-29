@@ -1,0 +1,199 @@
+.schedule {
+  box-sizing: border-box;
+  width: 400px;
+  height: 605px;
+  font-size: 0;
+  border: 1px solid rgb(231, 238, 246);
+  position: relative;
+  color: var(--grey);
+  .time-title {
+    display: inline-block;
+    text-align: center;
+    width: 80px;
+    height: 40px;
+    border-right: 1px solid rgb(231, 238, 246);
+    border-bottom: 1px solid rgb(231, 238, 246);
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: rgb(240, 250, 255);
+  }
+  .plan-title {
+    display: inline-block;
+    width: 318px;
+    height: 40px;
+    text-align: center;
+    border-bottom: 1px solid rgb(231, 238, 246);
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    background-color: rgb(240, 250, 255);
+  }
+  .time-list {
+    position: relative;
+    height: 562px;
+    background: var(--white);
+    overflow-y: hidden;
+    .li {
+      font-size: 13px;
+      width: 49px;
+      position: relative;
+      padding: 13px 0 13px 35px;
+      text-align: right;
+      &:before {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        // 边框各占一个像素，所以是42
+        top: 42px;
+        left: 80px;
+        width: 318px;
+        height: 1px;
+        background-image: linear-gradient(to right, rgb(231, 238, 246) 0%, rgb(231, 238, 246) 50%, transparent 50%);
+        background-size: 13px 1px;
+        background-repeat: repeat-x;
+      }
+      &:after {
+        content: '';
+        display: inline-block;
+        position: absolute;
+        top: 20px;
+        left: 80px;
+        width: 318px;
+        border-top: solid 1px rgb(231, 238, 246);
+      }
+    }
+    &:after {
+      content: '';
+      display: inline-block;
+      position: absolute;
+      top: 0px;
+      left: 79px;
+      width: 1px;
+      height: 562px;
+      border-left: solid 1px rgb(231, 238, 246);
+    }
+  }
+  .real-schedule {
+    display: block;
+    position: absolute;
+    left: 155px;
+    width: 150px;
+    font-size: 14px;
+    letter-spacing: 2px;
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 1s;
+    border-radius: 8px;
+  }
+}
+.stamp {
+  flex: 0.9;
+}
+.stamp-warp {
+  display: flex;
+  justify-content: space-around;
+  margin: 60px auto;
+  @media (max-height: 800px) {
+    margin-top: 30px;
+  }
+  .msg {
+    height: 201px;
+    background-color: var(--light-grey);
+    font-size: 16px;
+    padding: 10px;
+    p {
+      margin: 5px;
+    }
+    span {
+      margin-left: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+    text-align: left;
+    border-radius: 8px;
+  }
+}
+.total {
+  width: 400px;
+  padding: 18px;
+  background: rgb(240, 250, 255);
+  .label {
+    background-color: var(--label-blue);
+    color: white;
+    font-size: 14px;
+    font-weight: bolder;
+    line-height: 30px;
+    height: 30px;
+  }
+  .total-content {
+    background-color: white;
+    font-size: 45px;
+    line-height: 90px;
+    height: 90px;
+    font-weight: 500;
+    letter-spacing: 5px;
+  }
+}
+.stamp-deactived {
+  background: rgba(221, 224, 226, 0.42);
+}
+.stamp-actived {
+  background: var(--label-blue);
+  color: white;
+}
+// clock样式
+.shadow {
+  margin-bottom: 25px;
+  z-index: 0;
+  position: relative;
+  padding: 20px;
+  background-color: rgb(240, 250, 255);
+  &:after {
+    right: 10px;
+    left: auto;
+    transform: rotate(3deg);
+  }
+}
+.hour-style {
+  background-color: var(--white);
+  font-size: 80px;
+  height: 127px;
+  font-weight: 500;
+  color: var(--grey);
+  // font-family: 'digital';
+  letter-spacing: 5px;
+}
+.date-style {
+  height: 40px;
+  border-bottom: 1px solid rgb(231, 238, 246);
+  line-height: 40px;
+  font-size: 16px;
+  font-weight: bold;
+  background: var(--primary-background);
+  color: var(--white);
+  letter-spacing: 1px;
+}
+// 15寸以及以下电脑
+@media (max-width: 1400px) {
+  .stamp-warp {
+    width: 1200px;
+  }
+  .total {
+    width: 300px;
+  }
+  .schedule {
+    width: 300px;
+    .plan-title {
+      width: 218px;
+    }
+    .real-schedule {
+      left: 112px;
+    }
+  }
+}
+// 外接显示器
+@media (min-width: 1900px) {
+  .stamp-warp {
+    width: 1800px;
+  }
+}
