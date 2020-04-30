@@ -2,9 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,4 +28,7 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
      * @return Date
      */
     Date selectBegindateWork(Map<String, Object> map);
+
+    List<PaidHolidayInitVO> selectPaidHolidayInit();
+
 }

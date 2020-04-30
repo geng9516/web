@@ -1,5 +1,8 @@
 package jp.smartcompany.job.controller;
 
+import jp.smartcompany.job.modules.tmg.paidholiday.PaidHolidayBean;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +15,10 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("sys/wmanage")
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SiteWManageController {
+
+    private final PaidHolidayBean paidHolidayBean;
 
     /**
      * 跳转到カレンダー管理界面
@@ -41,6 +47,8 @@ public class SiteWManageController {
                                  @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+        paidHolidayBean.actionInitHandler(modelMap);
+        System.out.println(modelMap.getAttribute("vacationDaysList"));
         return "sys/wmanage/vacation";
     }
 

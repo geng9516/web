@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jp.smartcompany.job.modules.base.pojo.entity.BaseBean;
@@ -17,6 +18,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @Accessors(chain = true)
+@KeySequence("T_SCHEDULE_JOB_JOB_ID_SEQ")
 @EqualsAndHashCode(of = "auditId",callSuper = true)
 public class OperationAuditDO extends BaseBean {
 

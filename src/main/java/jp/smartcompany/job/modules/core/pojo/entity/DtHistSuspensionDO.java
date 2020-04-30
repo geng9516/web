@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-    @TableField("hs_id")
+        @TableId(value="hs_id",type = IdType.INPUT)
         private Long hsId;
 
         /**

@@ -2,7 +2,7 @@ spring:
   thymeleaf:
     cache: off
   datasource:
-    url: jdbc:postgresql://localhost:5432/next-job?currentSchema=public
-    username: postgres
-    password: root
-    driver-class-name: org.postgresql.Driver
+    url: dbc:oracle:thin:@47.74.25.28:1521:orcl
+    username: tmg_iyaku2
+    password: tmg_iyakupass
+    driver-class-name: oracle.jdbc.OracleDriver

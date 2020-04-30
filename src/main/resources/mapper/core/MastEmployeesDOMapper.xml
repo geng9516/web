@@ -11,9 +11,83 @@
             me.me_ccustomerid_ck  = #{customerId}
         and me.me_ccompanyid      = #{companyId}
         and me.me_cemployeeid_ck  = #{employeeId}
-        and me.me_dstartdate     <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
-        and me.me_denddate       >= #{yyyymmdd,jdbcType=DATE}
+        and me.me_dstartdate <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        and me.me_denddate >= #{yyyymmdd,jdbcType=DATE}
     </select>
 
+    <!--年次休假管理一览-->
+    <select id="selectPaidHolidayInit" resultType="jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO">
+        select h.TPH_CEMPLOYEEID,
+               (
+                 select e.ME_CKANJINAME from MAST_EMPLOYEES e
+                 where e.ME_CCUSTOMERID_CK	= h.TPH_CCUSTOMERID
+                       and e.ME_CCOMPANYID = h.TPH_CCOMPANYID
+                       and e.ME_CEMPLOYEEID_CK	= h.TPH_CEMPLOYEEID
+                       and e.ME_DSTARTDATE = (
+                           select  max(ee.ME_DSTARTDATE) from MAST_EMPLOYEES ee
+                           where ee.ME_CCUSTOMERID_CK = e.ME_CCUSTOMERID_CK
+                             and ee.ME_CCOMPANYID = e.ME_CCOMPANYID
+                             and ee.ME_CEMPLOYEEID_CK = e.ME_CEMPLOYEEID_CK
+                           )
+                ) as name,
+                (
+                    select  e.TEM_CWORKTYPEID from  TMG_EMPLOYEES e
+                    where e.TEM_CCUSTOMERID = h.TPH_CCUSTOMERID
+                      and e.TEM_CCOMPANYID = h.TPH_CCOMPANYID
+                      and e.TEM_CEMPLOYEEID = h.TPH_CEMPLOYEEID
+                      and e.TEM_DSTARTDATE <![CDATA[<=]]> trunc(SYSDATE)
+                      and e.TEM_DENDDATE >= trunc(SYSDATE)) as workertypeid,
+                (
+                          select tmg_f_get_mgd(e.TEM_CWORKTYPEID, trunc(SYSDATE), h.TPH_CCUSTOMERID, h.TPH_CCOMPANYID, 'ja') from TMG_EMPLOYEES e
+                          where e.TEM_CCUSTOMERID = h.TPH_CCUSTOMERID
+                            and e.TEM_CCOMPANYID = h.TPH_CCOMPANYID
+                            and e.TEM_CEMPLOYEEID = h.TPH_CEMPLOYEEID
+                            and e.TEM_DSTARTDATE <![CDATA[<=]]> trunc(SYSDATE)
+                            and e.TEM_DENDDATE >= trunc(SYSDATE)
+                ) as workertypenm,
+                to_char(h.TPH_DYYYYMM, 'yyyy/mm') as TPH_DYYYYMM,
+                to_char(h.TPH_DYYYYMMDD, 'yyyy/MM/dd') as TPH_DYYYYMMDD,
+                a.SEQ,
+                NVL(h.TPH_NINVEST, 0) + NVL(h.TPH_NADJUST, 0) as invest_days_sum,
+                TMG_F_CONV_MIN2HHMI_WITH_MINUS(h.TPH_NADJUST_HOURS, 1) as invest_hours,
+                NVL(h.TPH_NTHROUGHOUT, 0) + NVL(h.TPH_NADJUST_TO, 0) as throughout_days_sum,
+                TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(h.TPH_NTHROUGHOUT_HOURS, 0) + NVL(h.TPH_NADJUST_HOURS_TO, 0), 1) as throughout_hours_sum
+                from TMG_PAID_HOLIDAY h,
+                (
+                    SELECT '34370889' as empid,'吉武 徹' as empname,1 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '19225739' as empid,'吉田 健二' as empname,2 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '57854417' as empid,'加藤 宏二' as empname,3 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '19231982' as empid,'渡邊 雄二' as empname,4 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '07755956' as empid,'遠藤 浩輝' as empname,5 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '40907319' as empid,'陶山 聡' as empname,6 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '26050240' as empid,'久保 圭江子' as empname,7 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '59977466' as empid,'大島 由紀子' as empname,8 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '67841708' as empid,'河本 智裕' as empname,9 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '77224330' as empid,'柴垣 朋子' as empname,10 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '55276713' as empid,'中川 昌世' as empname,11 as seq,'01' as cust,'01' as comp FROM DUAL
+                    UNION ALL
+                    SELECT '09278924' as empid,'西村 智子' as empname,12 as seq,'01' as cust,'01' as comp FROM DUAL
+               ) a
+               where h.TPH_DYYYYMMDD =
+                (
+                  select max(h2.TPH_DYYYYMMDD) from TMG_PAID_HOLIDAY h2
+                  where h2.TPH_CCUSTOMERID = h.TPH_CCUSTOMERID
+                    and h2.TPH_CCOMPANYID = h.TPH_CCOMPANYID
+                    and h2.TPH_CEMPLOYEEID = h.TPH_CEMPLOYEEID
+                    and h2.TPH_DYYYYMMDD <![CDATA[<=]]> trunc(SYSDATE)
+                ) and a.EMPID = h.TPH_CEMPLOYEEID
+                  and a.CUST = h.TPH_CCUSTOMERID
+                  and a.COMP = h.TPH_CCOMPANYID  order by a.SEQ
+    </select>
 
 </mapper>

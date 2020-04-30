@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 会社区分
          */
-                @TableId(value = "ccompkb", type = IdType.AUTO)
+        @TableId(value="ccompkb",type = IdType.INPUT)
                 private String ccompkb;
 
         /**

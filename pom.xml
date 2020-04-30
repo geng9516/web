@@ -20,7 +20,7 @@
         <mybatis.plus.version>3.3.1</mybatis.plus.version>
         <java.version>1.8</java.version>
         <shiro-spring.version>1.5.2</shiro-spring.version>
-        <hutool.version>5.2.5</hutool.version>
+        <hutool.version>5.3.2</hutool.version>
         <poi.version>4.1.2</poi.version>
         <itext.version>7.1.10</itext.version>
         <servlet.version>4.0.1</servlet.version>
@@ -88,9 +88,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.ojdbc</groupId>
+            <artifactId>orai18n</artifactId>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>

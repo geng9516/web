@@ -1,7 +1,6 @@
 package jp.smartcompany.job.interceptor;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSONUtil;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
@@ -107,8 +106,8 @@ public class SysSessionInterceptor implements HandlerInterceptor {
             menuGroupBO.setSecondMenuList(secondMenuList);
             menuGroupList.add(menuGroupBO);
         }
+        System.out.println("=====");
         request.setAttribute(Constant.TOP_NAVS,menuGroupList);
-        request.setAttribute("jsNavs", JSONUtil.parse(menuGroupList));
     }
 
 }

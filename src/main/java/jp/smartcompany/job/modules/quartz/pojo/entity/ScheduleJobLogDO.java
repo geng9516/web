@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.quartz.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -14,6 +15,7 @@ import lombok.*;
 @Setter
 @ToString
 @TableName("t_schedule_job_log")
+@KeySequence("T_SCHEDULE_JOB_LOG_LOG_ID_SEQ")
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of="logId",callSuper = true)

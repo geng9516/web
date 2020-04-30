@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-    @TableField("map_id")
+        @TableId(value="map_id",type = IdType.INPUT)
         private Long mapId;
 
         /**

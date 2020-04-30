@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jp.smartcompany.job.modules.base.pojo.entity.BaseBean;
@@ -15,6 +16,7 @@ import java.util.Date;
  * @author Xiao Wenpeng
  */
 @TableName("t_access_audit")
+@KeySequence("T_ACCESS_AUDIT_AUDIT_ID_SEQ")
 @ToString
 @Getter
 @Setter

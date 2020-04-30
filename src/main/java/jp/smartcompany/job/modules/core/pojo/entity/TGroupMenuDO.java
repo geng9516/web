@@ -29,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * t_menu表中的menu_id
          */
-                @TableId(value = "menu_id", type = IdType.AUTO)
+                @TableId(value = "menu_id", type = IdType.INPUT)
                 private String menuId;
 
         /**

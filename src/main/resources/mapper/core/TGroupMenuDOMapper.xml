@@ -8,9 +8,9 @@
             m.menu_id,
             m.url,
             m.parent_menu_id,
-            m.type,
+            m.menu_type,
             m.order_num,
-            m.level,
+            m.menu_level,
             m.icon,
             m.perms,
             m.ja_name,
@@ -44,9 +44,9 @@
         m.menu_id,
         m.url,
         m.parent_menu_id,
-        m.type,
+        m.menu_type,
         m.order_num,
-        m.level,
+        m.menu_level,
         m.icon,
         m.perms,
         m.ja_name,
@@ -70,7 +70,7 @@
                 #{groupCode}
             </foreach>
             and m.type = 1
-            and m.dispatcher_button = false
+            and m.dispatcher_button = 0
             and m.start_date <![CDATA[<=]]> current_date
             and	m.end_date >= current_date
         </where>
@@ -81,9 +81,9 @@
             m.menu_id,
             m.url,
             m.parent_menu_id,
-            m.type,
+            m.menu_type,
             m.order_num,
-            m.level,
+            m.menu_level,
             m.icon,
             m.perms,
             m.ja_name,
@@ -103,8 +103,8 @@
             and gm.customer_id = #{customerId}
             and gm.company_id = #{systemCode}
             and m.parent_menu_id = #{menuId}
-            and m.type = 1
-            and m.dispatcher_button = false
+            and m.menu_type = 1
+            and m.dispatcher_button = 0
             and m.start_date <![CDATA[<=]]> current_date
             and	m.end_date >= current_date
         </where>

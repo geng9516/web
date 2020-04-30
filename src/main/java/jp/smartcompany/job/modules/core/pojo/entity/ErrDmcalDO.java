@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * ccompkb
          */
-    @TableField("ccompkb")
+        @TableId(value = "ccompkb", type = IdType.INPUT)
         private String ccompkb;
 
         /**

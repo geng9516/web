@@ -21,6 +21,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(of="id",callSuper = false)
 @Accessors(chain = true)
 @TableName("t_menu")
+@KeySequence("T_MENU_ID_SEQ")
 public class TMenuDO implements Serializable {
 
 private static final long serialVersionUID=1L;
@@ -28,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * 物理主键
          */
-                @TableId(value = "id", type = IdType.AUTO)
+                @TableId(value = "id", type = IdType.INPUT)
                 private Long id;
 
         /**
@@ -52,7 +53,7 @@ private static final long serialVersionUID=1L;
         /**
          * 菜单类型： 0 目录 1 菜单 2 按钮
          */
-    @TableField("type")
+    @TableField("menu_type")
         private String type;
 
         /**
@@ -64,7 +65,7 @@ private static final long serialVersionUID=1L;
         /**
          * 菜单层级，包含了菜单的层级信息,如：1.2.5
          */
-    @TableField("level")
+    @TableField("menu_level")
         private String level;
 
         /**

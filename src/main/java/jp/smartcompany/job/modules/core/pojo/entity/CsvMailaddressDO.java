@@ -29,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * cemployeeid
          */
-    @TableField("cemployeeid")
+    @TableId(value="cemployeeid",type = IdType.INPUT)
         private String cemployeeid;
 
         /**

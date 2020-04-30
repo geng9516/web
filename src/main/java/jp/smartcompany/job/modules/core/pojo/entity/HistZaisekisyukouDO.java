@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 顧客ｺｰﾄﾞ                        固定：01
          */
-    @TableField("hzs_ccustomerid_ck")
+    @TableId(value="hzs_ccustomerid_ck",type = IdType.INPUT)
         private String hzsCcustomeridCk;
 
         /**

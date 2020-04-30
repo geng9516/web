@@ -2,6 +2,7 @@ package jp.smartcompany.job.configuration;
 
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.parser.ISqlParser;
+import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
@@ -32,6 +33,11 @@ public class MyBatisPlusConfiguration {
     public OptimisticLockerInterceptor optimisticLockerInterceptor() {
         // 乐观锁
         return new OptimisticLockerInterceptor();
+    }
+
+    @Bean
+    public OracleKeyGenerator oracleKeyGenerator(){
+        return new OracleKeyGenerator();
     }
 
 }

@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.quartz.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableField;
 import jp.smartcompany.job.modules.base.pojo.entity.BaseBean;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @Setter
 @ToString
 @TableName("t_schedule_job")
+@KeySequence("T_SCHEDULE_JOB_JOB_ID_SEQ")
 @Accessors(chain = true)
 public class ScheduleJobDO extends BaseBean implements Serializable {
 

@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * hd_id
          */
-    @TableField("hd_id")
+    @TableId(value="hd_id",type = IdType.INPUT)
         private Long hdId;
 
         /**

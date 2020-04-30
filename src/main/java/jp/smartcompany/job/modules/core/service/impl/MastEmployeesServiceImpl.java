@@ -5,9 +5,11 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -40,5 +42,10 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
         map.put("yyyymmdd", yyyymmdd);
 
         return baseMapper.selectBegindateWork(map);
+    }
+
+    @Override
+    public List<PaidHolidayInitVO> listPaidHolidayInit() {
+        return baseMapper.selectPaidHolidayInit();
     }
 }
