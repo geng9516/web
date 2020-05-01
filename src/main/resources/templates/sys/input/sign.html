@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loading_bar"></div>
+    <div th:replace="layout/loadingBar::loadingBar"></div>
     <svg th:replace="layout/icons::svg_icons"></svg>
     <main class="content">
         <section class="stamp-warp tc">
@@ -98,8 +98,8 @@
             </div>
         </section>
     </main>
-    <div th:replace="layout/script::common_script(jsPaths='/component/clock.js')"></div>
-    <script type="text/babel">
+    <div th:replace="layout/script::common_script(jsPaths='/component/Clock.js')"></div>
+    <script type="text/babel" th:inline="javascript">
         const getNumArray = (start, end) => {
             return Array(end - start + 1)
                 .fill(0)
@@ -113,7 +113,7 @@
         }
         const SIGN = new Vue({
             el: '.stamp-warp',
-            components: { Clock: clock_c },
+            components: { Clock },
             data() {
                 return {
                     isShow: false,

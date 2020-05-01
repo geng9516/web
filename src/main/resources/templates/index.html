@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
   <head th:replace="layout/header::common_header(title='index')"></head>
   <body>
-   <div th:replace="layout/loadingBar::loading_bar"></div>
+   <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
     <iframe id="moduleFrame" :src="`${baseUrl}/sys/dashboard`" class="iframe-wrap"></iframe>

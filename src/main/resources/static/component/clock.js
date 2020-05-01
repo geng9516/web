@@ -48,7 +48,7 @@ function formatDate(date, format = 'YYYY-MM-DD hh:mm:ss') {
 
   return result
 }
-const clock_c = {
+const Clock = {
   name: 'clock',
   template: `<div v-if="timeView.dateMsg.length > 0" class="shadow">
   <div class="date-style">

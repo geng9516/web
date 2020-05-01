@@ -1,7 +1,7 @@
-@mixin flex-row(var(--justify) {
+@mixin flex-row($justify) {
   display: flex;
   flex-flow: row nowrap;
-  justify-content: var(--justify;
+  justify-content: var($justify);
   align-items: center
 }
 .content {

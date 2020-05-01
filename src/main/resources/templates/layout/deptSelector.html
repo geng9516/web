@@ -1,0 +1,74 @@
+<span th:fragment="deptSelector" class="dept-selector" xmlns:th="http://www.thymeleaf.org"
+  style="display:flex;width: calc(15% + 200px);">
+  <span class="label">所属</span>
+  <i-button @click="isShow = true" class="input-like-span mr30 cursor grey"
+    style="width: calc(100% - 120px);border-radius:0">
+    {{ showName(deptName) }}
+  </i-button>
+  <Drawer title="所属" placement="right" width="500" : closable="false" v-model="isShow">
+    <i-tree class="tree" : data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし"></i-tree>
+  </Drawer>
+  <script th:inline="javascript" type="text/babel">
+    const DEPTSELECTOR = new Vue({
+      el: '.dept-selector',
+      data() {
+        return {
+          isShow: false,
+          treeData: [
+            {
+              title: '医薬基盤・健康・栄養研究所(0)',
+              expand: true,
+              children: [
+                {
+                  title: '(本部) (0)',
+                  expand: true,
+                  children: [
+                    {
+                      title: '総務部(8)',
+                      value: 666
+                    },
+                    {
+                      title: '監査担当(0)'
+                    }
+                  ]
+                },
+                {
+                  title: '医薬基盤研究所(1)',
+                  expand: true,
+                  children: [
+                    {
+                      title: '開発振興部(16)'
+                    },
+                    {
+                      title: '難治性疾患研究開発・支援センター(2)',
+                      expand: true,
+                      children: [
+                        {
+                          title: '難治性疾患治療開発・支援室(10)'
+                        },
+                        {
+                          title: '難病資源研究室(6)'
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          deptName: '请选择'
+        }
+      },
+      methods: {
+        handleClickLeaf(e) {
+          this.deptName = e[0].title
+          this.isShow = false
+        },
+        showName(e) {
+          const result = e.match(/^[\s\S]+(?=\()/g)
+          return (result && result[0]) || e
+        }
+      }
+    })
+  </script>
+</span>
