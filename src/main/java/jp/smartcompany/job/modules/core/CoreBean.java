@@ -17,7 +17,7 @@ public interface CoreBean {
     String AUTH = "authBusiness";
     String GROUP = "groupBusiness";
     String BASE_SECTION = "baseSectionBusiness";
-    String MENU = "menuBusiness";
+    String TREE_VIEW = "treeViewBusiness";
   }
 
   interface Controller {
