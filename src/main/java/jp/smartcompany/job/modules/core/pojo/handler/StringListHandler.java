@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.core.pojo.handler;
 
 import cn.hutool.db.handler.HandleHelper;
 import cn.hutool.db.handler.RsHandler;
-import jp.smartcompany.job.modules.core.pojo.bo.PQueryUserGroupBO;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -12,7 +11,7 @@ import java.util.List;
 /**
  * @author Xiao Wenpeng
  */
-public class UserGroupEntityListHandler implements RsHandler<List<PQueryUserGroupBO>> {
+public class StringListHandler implements RsHandler<List<String>> {
     private static final long serialVersionUID = -2846240126316979895L;
     private boolean caseInsensitive;
 
@@ -20,16 +19,16 @@ public class UserGroupEntityListHandler implements RsHandler<List<PQueryUserGrou
         return new cn.hutool.db.handler.EntityListHandler();
     }
 
-    public UserGroupEntityListHandler() {
+    public StringListHandler() {
         this(false);
     }
 
-    public UserGroupEntityListHandler(boolean caseInsensitive) {
+    public StringListHandler(boolean caseInsensitive) {
         this.caseInsensitive = caseInsensitive;
     }
 
     @Override
-    public List<PQueryUserGroupBO> handle(ResultSet rs) throws SQLException {
+    public List<String> handle(ResultSet rs) throws SQLException {
         return HandleHelper.handleRs(rs, new ArrayList(), this.caseInsensitive);
     }
 

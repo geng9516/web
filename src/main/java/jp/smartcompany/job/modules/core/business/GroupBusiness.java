@@ -124,7 +124,7 @@ public class GroupBusiness {
         String strQuery = groupBO.getPQuery() + " AND HD_CUSERID = "
                 + " '" + userId + "'";
         int nQueryCount = 0;
-        Connection connection = null;
+        Connection connection;
         log.info("运行的sql语句：{}",strQuery);
         try {
             connection = dataSource.getConnection();
