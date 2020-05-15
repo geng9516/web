@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
+ * 直接通过Spring注入即可使用
  * @author Xiao Wenpeng
  */
 @Getter
