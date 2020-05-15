@@ -66,7 +66,7 @@ public class LogAspect {
     for (int i = 0;i<args.length;i++) {
       Object arg = args[i];
       if (arg != null) {
-        boolean isOriginalInsert = arg instanceof MultipartFile || (arg instanceof String && ((String) arg).length() > 3000);
+        boolean isOriginalInsert = arg instanceof MultipartFile || (arg instanceof String && ((String) arg).length() > 5000);
         if (isOriginalInsert) {
           canOriginalInsert = false;
           break;
@@ -124,7 +124,7 @@ public class LogAspect {
 
   @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.job.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
   public void afterThrowing(JoinPoint point, Throwable e) {
-    int maxParamLen = 2000;
+    int maxParamLen = 5000;
 //    EmpBO empBO = ShiroUtil.getLoginEmp();
     MethodSignature signature = (MethodSignature) point.getSignature();
     Method method = signature.getMethod();
@@ -174,7 +174,7 @@ public class LogAspect {
     } else {
       params = "Params is not serializable";
     }
-    errorAuditDO.setParams(params.length()>2000?"Params is too long":params);
+    errorAuditDO.setParams(params.length()>3000?"Params is too long":params);
     //获取request
     HttpServletRequest request = ContextUtil.getHttpRequest();
     if (request!=null) {
