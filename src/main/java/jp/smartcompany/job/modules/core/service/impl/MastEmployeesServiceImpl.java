@@ -1,16 +1,19 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
+import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -47,5 +50,19 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     @Override
     public List<PaidHolidayInitVO> listPaidHolidayInit() {
         return baseMapper.selectPaidHolidayInit();
+    }
+
+    @Override
+    public  List<String> selectUserIdList(String psCustid,
+                                          String psCompid,
+                                          String psLoginUserId,
+                                          Date psDate) {
+        QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
+        qw.eq("ME_CCUSTOMERID_CK",psCustid)
+          .eq("ME_CCOMPANYID",psCompid)
+          .eq("ME_CEMPLOYEEID_CK",psLoginUserId)
+                .lt("ME_DSTARTDATE",psDate)
+                .gt("ME_DENDDATE",psDate);
+        return list(qw).stream().map(MastEmployeesDO::getMeCuserid).collect(Collectors.toList());
     }
 }

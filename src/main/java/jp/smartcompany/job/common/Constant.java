@@ -37,7 +37,7 @@ public class Constant {
     public final static String MSG = "msg";
     public final static String CODE = "code";
 
-    public final static String LOGIN_INFO = "loginInfo";
+    public final static String PS_SESSION = "psSession";
 
     public final static String ANON_USER = "anon user";
 

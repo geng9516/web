@@ -30,12 +30,14 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BaseSectionBusiness {
 
-    private final HttpSession httpSession;
+    private final PsSession psSession;
     private final IMastGroupbasesectionService iMastGroupbasesectionService;
     private final IMastOrganisationService iMastOrganisationService;
 
     public void getBaseSectionList() {
         BaseSectionBO baseSection = getBaseSection(DateUtil.date());
+        psSession.setLoginBaseSection(baseSection.getHmCompany());
+        psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
     }
 
     /**
@@ -45,7 +47,6 @@ public class BaseSectionBusiness {
      */
     public BaseSectionBO getBaseSection(Date date) {
         String userId = ShiroUtil.getUserId();
-        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.LOGIN_INFO);
         Map<String, List<LoginGroupBO>> hmGroups = psSession.getLoginGroups();
         if (CollUtil.isEmpty(hmGroups)){
             throw new GlobalException(CoreError.LOGIN_GROUP_NOT_FOUND);
@@ -89,7 +90,6 @@ public class BaseSectionBusiness {
                                         Date date,
                                         Map<String, List<GroupBaseSectionBO>> lhmComp,
                                         Map<String, List<GroupBaseSectionBO>> lhmGroup) {
-        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.LOGIN_INFO);
         List<LoginGroupBO> hmGroups = psSession.getLoginGroups().get(sSystem);
         for (LoginGroupBO hmGroup : hmGroups) {
             String groupCode = hmGroup.getGroupCode();

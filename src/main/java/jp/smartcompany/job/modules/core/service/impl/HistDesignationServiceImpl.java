@@ -1,15 +1,19 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.mapper.HistDesignationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
+import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -47,5 +51,13 @@ import java.util.Map;
                 return sgId;
         }
 
-
+        @Override
+        public List<HistDesignationDO> selectCompanyId(String userId, Date date) {
+                QueryWrapper<HistDesignationDO> qw = SysUtil.query();
+                qw.eq("HD_CUSERID",userId)
+                  .lt("HD_DSTARTDATE_CK",date)
+                   .gt("HD_DENDDATE",date);
+                return list(qw);
         }
+
+}

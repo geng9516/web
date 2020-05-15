@@ -47,4 +47,31 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
          */
         List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId,String conds,Date date);
 
+        /**
+         * 获取父级组织的id
+         * @param psCustID
+         * @param psCompCode
+         * @param psTargetDept
+         * @param pdSearchDate
+         * @return
+         */
+        List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate);
+
+
+        /**
+         * <p>
+         * <b>下位組織</b>情報取得（組織指定）
+         * </p>
+         * <div>指定した組織の下位組織リストを返却する。 </div>
+         *
+         * @author t-abe
+         * @param customerId 顧客コード
+         * @param compnyId 法人コード
+         * @param sectionId 組織コード
+         * @param searchDate 検索基準日
+         * @return 下位組織情報
+         * @exception
+         */
+        List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date);
+
 }

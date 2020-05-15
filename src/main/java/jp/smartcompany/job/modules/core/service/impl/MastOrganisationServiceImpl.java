@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
@@ -75,5 +76,27 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                    return organisationBO;
                 }).collect(Collectors.toList());
                 return organisationBOList;
+        }
+
+        @Override
+        public List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate) {
+                QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
+                qw.eq("mo_ccustomerid_ck_fk", psCustID)
+                        .eq("mo_ccompanyid_ck_fk", psCompCode)
+                        .eq("mo_csectionid_ck", psTargetDept)
+                        .eq("mo_clanguage", "ja")
+                        .le("mo_dstart",pdSearchDate)
+                        .ge("mo_dend",pdSearchDate)
+                        .orderByAsc("mo_nseq");
+                List<MastOrganisationDO> mastOrganisationList = list(qw);
+                if (CollUtil.isNotEmpty(mastOrganisationList)){
+                        return mastOrganisationList.stream().map(MastOrganisationDO::getMoClayeredsectionid).collect(Collectors.toList());
+                }
+                return null;
+        }
+
+        @Override
+        public  List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date) {
+                return baseMapper.selectLowerSection(psCustID,psCompID,psSection,date);
         }
 }

@@ -2,6 +2,8 @@ package jp.smartcompany.job.util;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import java.util.Vector;
+
 /**
  * @author Xiao Wenpeng
  */
@@ -32,6 +34,40 @@ public class SysUtil {
     public static String escapeQuote(String psSourceStr) {
         StringBuilder sbResult = new StringBuilder("");
         int i ;
+        if (psSourceStr == null) {
+            return null;
+        }
+        for (i = 0; i < psSourceStr.length(); i++) {
+            if (psSourceStr.charAt(i) == '\'') {
+                sbResult.append("''");
+            } else {
+                sbResult.append(psSourceStr.substring(i, i + 1));
+            }
+        }
+        return sbResult.toString();
+    }
+
+    public static Vector replaceEscape(Vector pvReplaceStrings) {
+        if (pvReplaceStrings == null) {
+            return null;
+        }
+        String value = "";
+        String replacevalue = "";
+        for (int i = 0; i < pvReplaceStrings.size(); i++) {
+            if (pvReplaceStrings.get(i) != null) {
+                value = (String) pvReplaceStrings.get(i);
+                replacevalue = escape(value);
+                pvReplaceStrings.removeElementAt(i);
+                pvReplaceStrings.insertElementAt(replacevalue, i);
+            }
+        }
+        return pvReplaceStrings;
+    }
+
+    public static String escape(String psSourceStr) {
+        StringBuilder sbResult = new StringBuilder();
+        int i = 0;
+        String sDest = "";
         if (psSourceStr == null) {
             return null;
         }

@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -28,5 +29,8 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
          * @return
          */
         SectionGroupId selectSecGroupId(String customerId, String companyId, String employeeId , Date yyyymmdd);
+
+
+        List<HistDesignationDO> selectCompanyId(String userId,Date date);
 
 }

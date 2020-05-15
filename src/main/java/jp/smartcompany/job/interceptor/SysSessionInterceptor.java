@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +48,11 @@ public class SysSessionInterceptor implements HandlerInterceptor {
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
 
 // 测试时可以注释
-//        PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
-//        if (session==null) {
-//            httpSession.setAttribute(Constant.LOGIN_INFO, new PsSession());
+        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        if (session==null) {
+            httpSession.setAttribute(Constant.PS_SESSION, new PsSession());
 //            executeLoginSequence(systemList,language);
-//        }
+        }
         if (request.getAttribute(Constant.TOP_NAVS) == null) {
             loadMenus(request, systemCode, customerId, systemList);
         }

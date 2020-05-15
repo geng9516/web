@@ -31,4 +31,7 @@ public class PsSession implements Serializable {
     private String loginCssCategory;
     private Map<String, List<LoginGroupBO>> loginGroups;
 
+    private Map<String, Map<String, String>> loginBaseSection;
+    private Map<String, Map<String, String>> loginGroupBaseSection;
+
 }

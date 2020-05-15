@@ -32,4 +32,9 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
 
     List<PaidHolidayInitVO> listPaidHolidayInit();
 
+    List<String> selectUserIdList(String psCustid,
+                                  String psCompid,
+                                  String psLoginUserId,
+                                  Date psDate);
+
 }
