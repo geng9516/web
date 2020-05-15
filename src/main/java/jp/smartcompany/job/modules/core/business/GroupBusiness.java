@@ -84,7 +84,7 @@ public class GroupBusiness {
                 }
 
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
-                    PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
+                    PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
                 }
             }
@@ -106,7 +106,7 @@ public class GroupBusiness {
             hGroupMap.put(systemCode, lGroup);
         }
         if (CollUtil.isNotEmpty(lGroup)) {
-            PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
+            PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
             session.setLoginGroups(hGroupMap);
         }
     }

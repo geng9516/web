@@ -546,4 +546,37 @@ public class PsDBBean {
         }
     }
 
+    /**
+     * 指定評価レベルの評価者を取得します
+     * @param psCustomerID 検索対象顧客コード
+     * @param psTargetCompanyID 検索対象ユーザ法人コード
+     * @param psTargetUserID 検索対象ユーザ社員番号
+     * @param psCreterialDate 検索基準日
+     * @param pnEvaluationLevel 評価レベル
+     * @param psReportLine レポートラインタイプ
+     * @param pbIgnoreRelationDefinitions 判定基準フラグ
+     * @return 法人コード、社員番号のセットのVector×n
+     * @throws Exception システム例外
+     */
+    public Vector<Vector<Object>> getEvaluator(String psCustomerID,
+                                               String psTargetCompanyID,
+                                               String psTargetUserID,
+                                               String psCreterialDate,
+                                               int pnEvaluationLevel,
+                                               String psReportLine,
+                                               boolean pbIgnoreRelationDefinitions)
+            throws Exception {
+        try {
+            return this.getV3Logic().getEvaluator(
+                    psCustomerID, this.getCompCode(),
+                    this.getUserCode(), psTargetCompanyID,
+                    psTargetUserID, psCreterialDate,
+                    pnEvaluationLevel, psReportLine,
+                    pbIgnoreRelationDefinitions, this.getGroupID(),
+                    this.getSystemCode(), this.getGUID());
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
 }
