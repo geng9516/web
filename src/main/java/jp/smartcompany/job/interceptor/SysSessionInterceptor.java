@@ -107,7 +107,6 @@ public class SysSessionInterceptor implements HandlerInterceptor {
             menuGroupBO.setSecondMenuList(secondMenuList);
             menuGroupList.add(menuGroupBO);
         }
-        System.out.println("=====");
         request.setAttribute(Constant.TOP_NAVS,menuGroupList);
     }
 

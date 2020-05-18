@@ -4,7 +4,6 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.core.util.TmgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -378,7 +377,7 @@ public class TmgEmpList {
 
         if(!useManageFLG){
             // 管理対象外を判定
-            sSQL.append("  AND '"+ jp.smartcompany.job.modules.core.util.TmgUtil.Cs_MGD_MANAGEFLG_0+"' <> ");
+            sSQL.append("  AND '"+ TmgUtil.Cs_MGD_MANAGEFLG_0+"' <> ");
             sSQL.append("        TMG_F_IS_MANAGEFLG(e.TEM_CEMPLOYEEID,TRUNC(" + targetEndDate+ "),LAST_DAY("+ targetEndDate +"),e.TEM_CCUSTOMERID,e.TEM_CCOMPANYID)");
         }
 
@@ -395,7 +394,7 @@ public class TmgEmpList {
 
         if(isJoinTmgEmployees){
             // 管理対象身分か判定
-            sSQL.append(" AND e.TEM_CWORKTYPEID NOT IN ('"+ jp.smartcompany.job.modules.core.util.TmgUtil.Cs_MGD_WORKERTYPE_00+"') ");
+            sSQL.append(" AND e.TEM_CWORKTYPEID NOT IN ('"+ TmgUtil.Cs_MGD_WORKERTYPE_00+"') ");
         }
 
         // 組織コード、役職ウェイト、カナ氏名、職員番号、でソート
@@ -464,9 +463,9 @@ public class TmgEmpList {
         StringBuffer sbSQL = new StringBuffer("");
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
-        if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
+        if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString(sReplaceSearchData + "%"));
-        } else if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
+        } else if (TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData));
         } else {
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData + "%"));
@@ -506,7 +505,7 @@ public class TmgEmpList {
 
         sbSQL.append(" WHERE ");
         sbSQL.append(     " ROWNUM <= NVL(( ").append(buildSQLForSelectTmgDispLimit4Tree(psCustId, psCompId, psDate, psLanguage));
-        sbSQL.append(                "), ").append(jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TmgDispLimit4TreeDefault).append(")");
+        sbSQL.append(                "), ").append(TmgUtil.Cs_TmgDispLimit4TreeDefault).append(")");
 
         return sbSQL.toString();
 

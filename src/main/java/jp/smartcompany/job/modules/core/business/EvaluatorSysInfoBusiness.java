@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import cn.hutool.core.collection.CollUtil;
+import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.DesignationBO;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
@@ -12,10 +13,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,13 +25,14 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EvaluatorSysInfoBusiness {
 
-    private final PsSession psSession;
     private final IHistDesignationService iHistDesignationService;
     private final IMastRelationshipService iMastRelationshipService;
+    private final HttpSession httpSession;
 
     public List<EvaluatorBO> getEvaluator(String customerId, String systemId,
                                           String userId, Date pdSearchDate, int evaluation,
                                           String reportType, boolean judgFlg) {
+        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         String sLanguage = psSession.getLanguage();
         if (!judgFlg) {
             List<EvaluatorBO> manualEvaluatorList = iHistDesignationService

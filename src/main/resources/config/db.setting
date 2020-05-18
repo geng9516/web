@@ -1,6 +1,6 @@
 ## 基本配置信息(hutool-db使用)
 # JDBC URL，根据不同的数据库，使用相应的JDBC连接字符串
-url = jdbc:oracle:thin:@127.0.0.1:1521:nsg
+url = jdbc:oracle:thin:@47.74.25.28:1521/orcl
 # 用户名，此处也可以使用 user 代替
 username = tmg_iyaku2
 # 密码，此处也可以使用 pass 代替

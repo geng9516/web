@@ -3,7 +3,6 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.core.util.TmgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -221,7 +220,7 @@ public class TmgMemberList {
         }
 
         return ((ArrayList)entityList.get(0)).size() == 0 ?
-                jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TmgDispLimit4TreeDefault : ((ArrayList < String >)((ArrayList)entityList.get(0)).get(0)).get(0);
+                TmgUtil.Cs_TmgDispLimit4TreeDefault : ((ArrayList < String >)((ArrayList)entityList.get(0)).get(0)).get(0);
 
     }
 
@@ -298,9 +297,9 @@ public class TmgMemberList {
 
         String sColumnName = new String();
 
-        if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_ITEMS_KANJINAME.equals(psSearchItems)){
+        if (TmgUtil.Cs_TREE_VIEW_ITEMS_KANJINAME.equals(psSearchItems)){
             sColumnName = "CKANJINAME";
-        } else if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_ITEMS_EMPLOYEEID.equals(psSearchItems)){
+        } else if (TmgUtil.Cs_TREE_VIEW_ITEMS_EMPLOYEEID.equals(psSearchItems)){
             sColumnName = "CEMPLOYEEID";
         } else {
             sColumnName = "CKANANAME";
@@ -326,9 +325,9 @@ public class TmgMemberList {
         StringBuffer sbSQL = new StringBuffer("");
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
-        if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
+        if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString(sReplaceSearchData + "%"));
-        } else if (jp.smartcompany.job.modules.core.util.TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
+        } else if (TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData));
         } else {
             sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData + "%"));

@@ -29,12 +29,12 @@ import java.util.Map;
 @Service(CoreBean.Business.BASE_SECTION)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BaseSectionBusiness {
-
-    private final PsSession psSession;
     private final IMastGroupbasesectionService iMastGroupbasesectionService;
     private final IMastOrganisationService iMastOrganisationService;
+    private final HttpSession httpSession;
 
     public void getBaseSectionList() {
+        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         BaseSectionBO baseSection = getBaseSection(DateUtil.date());
         psSession.setLoginBaseSection(baseSection.getHmCompany());
         psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
@@ -46,6 +46,7 @@ public class BaseSectionBusiness {
      * @return 基点組織情報(法人別とグループ別)
      */
     public BaseSectionBO getBaseSection(Date date) {
+        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         String userId = ShiroUtil.getUserId();
         Map<String, List<LoginGroupBO>> hmGroups = psSession.getLoginGroups();
         if (CollUtil.isEmpty(hmGroups)){
@@ -90,6 +91,7 @@ public class BaseSectionBusiness {
                                         Date date,
                                         Map<String, List<GroupBaseSectionBO>> lhmComp,
                                         Map<String, List<GroupBaseSectionBO>> lhmGroup) {
+        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         List<LoginGroupBO> hmGroups = psSession.getLoginGroups().get(sSystem);
         for (LoginGroupBO hmGroup : hmGroups) {
             String groupCode = hmGroup.getGroupCode();

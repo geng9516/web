@@ -1,9 +1,6 @@
 package jp.smartcompany.job.configuration;
 
 import cn.hutool.db.ds.DSFactory;
-import cn.hutool.extra.spring.SpringUtil;
-import jp.smartcompany.job.common.Constant;
-import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -27,11 +24,6 @@ public class BeanConfiguration {
     @Bean
     public DataSource dataSource() {
         return DSFactory.get();
-    }
-
-    @Bean
-    public PsSession getSession() {
-        return (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
     }
 
 }

@@ -15,7 +15,6 @@ import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
@@ -53,7 +52,6 @@ public class PsDBBean {
     protected Object ObjectQueries = null;
     protected String strGUID = null;
 
-    private final PsSession psSession;
     private final BaseSectionBusiness baseSectionBusiness;
     private final IMastOrganisationService iMastOrganisationService;
     private final IMastEmployeesService iMastEmployeesService;
