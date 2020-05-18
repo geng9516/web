@@ -51,6 +51,7 @@ public class PsDBBean {
     protected Vector GsPostCode = null;
     protected Vector dept = null;
     protected Object ObjectQueries = null;
+    protected String strGUID = null;
 
     private final PsSession psSession;
     private final BaseSectionBusiness baseSectionBusiness;
@@ -74,7 +75,7 @@ public class PsDBBean {
     /** ドメインコード */
     private static final String DOMAIN_CODE = "01";
 
-    public Map<String, Object> requestHash;
+    public Hashtable requestHash;
     private String language;
 
     public void setGroupID(String param) {
@@ -183,7 +184,7 @@ public class PsDBBean {
         return sTimeStamp;
     }
 
-    public void setSysControl(Map<String,Object> hash) {
+    public void setSysControl(Hashtable hash ){
         this.requestHash = hash;
         setCompCode((String)this.requestHash.get("CompCode"));
         setGroupID((String)this.requestHash.get("GroupCode"));
@@ -564,9 +565,8 @@ public class PsDBBean {
                                                String psCreterialDate,
                                                int pnEvaluationLevel,
                                                String psReportLine,
-                                               boolean pbIgnoreRelationDefinitions){
+                                               boolean pbIgnoreRelationDefinitions) {
         String sTargetUserCode = getUseridForV4(psCustomerID, psTargetCompanyID, psTargetUserID, psCreterialDate);
         return null;
     }
-
 }

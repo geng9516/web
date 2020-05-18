@@ -12,7 +12,7 @@ import org.springframework.ui.ModelMap;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class PaidHolidayBean {
+public class PaidholidayBean {
 
     private final IMastEmployeesService iMastEmployeesService;
 
