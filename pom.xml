@@ -24,6 +24,7 @@
         <poi.version>4.1.2</poi.version>
         <itext.version>7.1.10</itext.version>
         <servlet.version>4.0.1</servlet.version>
+        <jdom.version>2.0.6</jdom.version>
     </properties>
 
     <dependencies>
@@ -165,6 +166,11 @@
             <groupId>com.itextpdf</groupId>
             <artifactId>layout</artifactId>
             <version>${itext.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jdom</groupId>
+            <artifactId>jdom2</artifactId>
+            <version>${jdom.version}</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

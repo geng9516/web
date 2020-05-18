@@ -51,6 +51,7 @@ public class PsDBBean {
     protected Vector GsPostCode = null;
     protected Vector dept = null;
     protected Object ObjectQueries = null;
+    protected String strGUID = null;
 
     private final PsSession psSession;
     private final BaseSectionBusiness baseSectionBusiness;
@@ -74,7 +75,7 @@ public class PsDBBean {
     /** ドメインコード */
     private static final String DOMAIN_CODE = "01";
 
-    public Map<String, Object> requestHash;
+    public Hashtable requestHash;
     private String language;
 
     public void setGroupID(String param) {
@@ -183,7 +184,7 @@ public class PsDBBean {
         return sTimeStamp;
     }
 
-    public void setSysControl(Map<String,Object> hash) {
+    public void setSysControl(Hashtable hash ){
         this.requestHash = hash;
         setCompCode((String)this.requestHash.get("CompCode"));
         setGroupID((String)this.requestHash.get("GroupCode"));
@@ -546,37 +547,41 @@ public class PsDBBean {
         }
     }
 
-    /**
-     * 指定評価レベルの評価者を取得します
-     * @param psCustomerID 検索対象顧客コード
-     * @param psTargetCompanyID 検索対象ユーザ法人コード
-     * @param psTargetUserID 検索対象ユーザ社員番号
-     * @param psCreterialDate 検索基準日
-     * @param pnEvaluationLevel 評価レベル
-     * @param psReportLine レポートラインタイプ
-     * @param pbIgnoreRelationDefinitions 判定基準フラグ
-     * @return 法人コード、社員番号のセットのVector×n
-     * @throws Exception システム例外
-     */
-    public Vector<Vector<Object>> getEvaluator(String psCustomerID,
-                                               String psTargetCompanyID,
-                                               String psTargetUserID,
-                                               String psCreterialDate,
-                                               int pnEvaluationLevel,
-                                               String psReportLine,
-                                               boolean pbIgnoreRelationDefinitions)
-            throws Exception {
-        try {
-            return this.getV3Logic().getEvaluator(
-                    psCustomerID, this.getCompCode(),
-                    this.getUserCode(), psTargetCompanyID,
-                    psTargetUserID, psCreterialDate,
-                    pnEvaluationLevel, psReportLine,
-                    pbIgnoreRelationDefinitions, this.getGroupID(),
-                    this.getSystemCode(), this.getGUID());
-        } catch (Exception e) {
-            throw e;
-        }
+//    /**
+//     * 指定評価レベルの評価者を取得します
+//     * @param psCustomerID 検索対象顧客コード
+//     * @param psTargetCompanyID 検索対象ユーザ法人コード
+//     * @param psTargetUserID 検索対象ユーザ社員番号
+//     * @param psCreterialDate 検索基準日
+//     * @param pnEvaluationLevel 評価レベル
+//     * @param psReportLine レポートラインタイプ
+//     * @param pbIgnoreRelationDefinitions 判定基準フラグ
+//     * @return 法人コード、社員番号のセットのVector×n
+//     * @throws Exception システム例外
+//     */
+//    public Vector<Vector<Object>> getEvaluator(String psCustomerID,
+//                                               String psTargetCompanyID,
+//                                               String psTargetUserID,
+//                                               String psCreterialDate,
+//                                               int pnEvaluationLevel,
+//                                               String psReportLine,
+//                                               boolean pbIgnoreRelationDefinitions)
+//            throws Exception {
+//        try {
+//            return this.getV3Logic().getEvaluator(
+//                    psCustomerID, this.getCompCode(),
+//                    this.getUserCode(), psTargetCompanyID,
+//                    psTargetUserID, psCreterialDate,
+//                    pnEvaluationLevel, psReportLine,
+//                    pbIgnoreRelationDefinitions, this.getGroupID(),
+//                    this.getSystemCode(), this.getGUID());
+//        } catch (Exception e) {
+//            throw e;
+//        }
+//    }
+
+    public String getGUID() {
+        return this.strGUID;
     }
 
 }

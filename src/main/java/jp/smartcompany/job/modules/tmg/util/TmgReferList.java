@@ -591,7 +591,7 @@ public class TmgReferList {
      * @param pvSearchDataArray ※piParamが「csSessionControl4SearchTreeSave」の時のみ使用
      * @return なし
      */
-    private void sessionControl4SearchTree(int piParam, Vector pvSearchDataArray, String psDispLimit4Tree){
+    private void sessionControl4SearchTree(int piParam, List pvSearchDataArray, String psDispLimit4Tree){
 
         switch(piParam){
             case csSessionControl4SearchTreeInitialization:
@@ -657,12 +657,12 @@ public class TmgReferList {
         }
 
         // 組織が選択されている場合、社員一覧を初期化
-        if(targetSec_admin != null && !targetSec_admin.equals("")){
+        if(targetSec_admin != null && !"".equals(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
             if(targetEmp_admin == null || !empList.existsEmp(targetEmp_admin)){
                 if(empList.getDataArray().size() > 0){
-                    targetEmp_admin = (String)((Vector)empList.getDataArray().elementAt(0)).elementAt(TmgEmpList.DEFAULT_KEY_EMPID);
+                    targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
                 }else{
                     targetEmp_admin = null;
                 }
@@ -707,11 +707,11 @@ public class TmgReferList {
         // 2007/10/02 Shishido 2007/08/30の修正を元に戻します
         // 承認サイトで社員の存在しない部署を選択しても、自動的に社員が存在する部署を対象になるため、
         // 一見すると、部署選択のロジックがバグってるように見えてしまう→これを改善
-        Vector dataList = memberList.getDataArray();
+        List dataList = memberList.getDataArray();
         // 対象組織の値が存在しない場合、デフォルト値をセットする
         if(targetSec_perm == null || targetSec_perm.equals("") || !existsSection(targetDate, psDaseDate, targetSec_perm)){
             if(dataList.size() > 0){
-                targetSec_perm = (String)((Vector)dataList.elementAt(0)).elementAt(TmgMemberList.DEFAULT_KEY_SECID);
+                targetSec_perm = (String)((List)dataList.get(0)).get(TmgMemberList.DEFAULT_KEY_SECID);
             }else{
                 targetSec_perm = null;
             }
@@ -720,11 +720,11 @@ public class TmgReferList {
         }
 
         // 対象グループの値が存在しない場合、デフォルト値をセットする
-        if(targetGroup_perm == null || targetGroup_perm.equals("")|| !existsGroup(targetDate, psDaseDate, targetGroup_perm)){
+        if(targetGroup_perm == null || "".equals(targetGroup_perm)|| !existsGroup(targetDate, psDaseDate, targetGroup_perm)){
             String[] keyData = {targetSec_perm};
             dataList = JSONArrayGenerator.selectDataArray(dataList, TmgMemberList.DEFAULT_KEY_SECID, keyData);
             if(dataList.size() > 0){
-                targetGroup_perm = (String)((Vector)dataList.elementAt(0)).elementAt(TmgMemberList.DEFAULT_KEY_GROUPID);
+                targetGroup_perm = (String)((List)dataList.get(0)).get(TmgMemberList.DEFAULT_KEY_GROUPID);
             }else{
                 targetGroup_perm = null;
             }
@@ -732,11 +732,11 @@ public class TmgReferList {
         }
 
         // 対象社員の値が存在しない場合、デフォルト値をセットする
-        if(targetMember_perm == null || targetMember_perm.equals("")|| !existsEmployee(targetDate, psDaseDate, targetMember_perm)){
+        if(targetMember_perm == null || "".equals(targetMember_perm)|| !existsEmployee(targetDate, psDaseDate, targetMember_perm)){
             String[] keyData = {targetGroup_perm};
             dataList = JSONArrayGenerator.selectDataArray(dataList, TmgMemberList.DEFAULT_KEY_GROUPID, keyData);
             if(dataList.size() > 0){
-                targetMember_perm = (String)((Vector)dataList.elementAt(0)).elementAt(TmgMemberList.DEFAULT_KEY_EMPID);
+                targetMember_perm = (String)((List)dataList.get(0)).get(TmgMemberList.DEFAULT_KEY_EMPID);
             }else{
                 targetMember_perm = null;
             }
@@ -788,7 +788,7 @@ public class TmgReferList {
             // 検索対象範囲条件を取得（暂时不需要）
 //            String sExists = orgTree.getOrgTreeSearchRange(psDBBean.requestHash, session);
             // セッションに組織ツリーのデータが格納されていれば、セッションのデータを使用する
-            Vector obj = (Vector)psDBBean.session.getAttribute(SESSION_KEY_ORGTREE_RESULT);
+            List obj = (List)psDBBean.session.getAttribute(SESSION_KEY_ORGTREE_RESULT);
             String sCondition = (String)psDBBean.session.getAttribute(SESSION_KEY_ORGTREE_CONDITION);
             // if(obj != null && sCondition != null && sCondition.equalsIgnoreCase(sExists) && sessionSameCheck()) {
             if(obj != null && sCondition != null && sessionSameCheck()) {
@@ -816,10 +816,10 @@ public class TmgReferList {
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             divTree = new TmgDivisionTree(psDBBean,beanDesc);
             // 検索対象範囲条件を取得(暂时不需要)
-//            String sExists = divTree.getDivTreeSearchRange(psDBBean.requestHash, session);
+            // String sExists = divTree.getDivTreeSearchRange(psDBBean.requestHash, session);
             // セッションに組織ツリーのデータが格納されていれば、セッションのデータを使用する
-            Vector obj = (Vector)session.getAttribute(SESSION_KEY_DIVTREE_RESULT);
-            String sCondition = (String)session.getAttribute(SESSION_KEY_DIVTREE_CONDITION);
+            List obj = (List)psDBBean.session.getAttribute(SESSION_KEY_DIVTREE_RESULT);
+            String sCondition = (String)psDBBean.session.getAttribute(SESSION_KEY_DIVTREE_CONDITION);
             if(obj != null && sessionSameCheck()) {
 //            if(obj != null && sCondition.equalsIgnoreCase(sExists)  && sessionSameCheck()) {
                 divTree.setDataArray(obj);
@@ -863,10 +863,6 @@ public class TmgReferList {
 
     /**
      * システム管理者か判定するSQL
-     * @param cust
-     * @param comp
-     * @param user
-     * @param baseDate
      * @return
      */
     private String buildSQLforCheckAdmin(){
@@ -891,7 +887,6 @@ public class TmgReferList {
      * 勤怠承認サイトのメンバー一覧と異なり、リクエストの都度、検索処理を実行します。
      * @param targetSection
      * @param targetDate
-     * @param baseDate
      */
     private void createEmpList(String targetSection, String targetDate, int piHidSelectTab) throws Exception{
         // 勤怠管理サイトの場合、対象部署について、SYSDATE-targetDateの範囲で歴を持っている社員一覧を作成する
@@ -916,9 +911,9 @@ public class TmgReferList {
                         isJoinTmgEmployees,
                         this.gbUseManageFLG
                 );
-                if (target.equals(session.getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
-                    empList.setSearchDataArray((Vector)session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-                    empList.setDispLimit4Tree((String)session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
+                if (target.equals(psDBBean.session.getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
+                    empList.setSearchDataArray((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+                    empList.setDispLimit4Tree((String)psDBBean.session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
                 } else {
                     if (isSelectedSearchTab()){
                         empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
@@ -929,7 +924,7 @@ public class TmgReferList {
                     } else {
                         empList.setSearchDataArray(null);
                     }
-                    session.setAttribute(SESSION_KEY_TARGETDATE, target);
+                    psDBBean.session.setAttribute(SESSION_KEY_TARGETDATE, target);
                     sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
                 }
             }
@@ -959,13 +954,13 @@ public class TmgReferList {
     private void createEmpList4TreeView(String psBase, String psTarget, String psTargetSection,
                                         SimpleDateFormat pSdf) throws Exception{
 
-        Vector dataArray = null;
+        List dataArray = null;
         String condition = (String)psDBBean.session.getAttribute(SESSION_KEY_EMPLIST_CONDITION);
-//        TmgSearchRangeUtil tmgSearchRangeUtil = new TmgSearchRangeUtil();
+        // TmgSearchRangeUtil tmgSearchRangeUtil = new TmgSearchRangeUtil();
         // セッションに登録されているデータと、検索条件(対象部署＆結合条件)が同じ場合、そちらのデータを取りに行く
         if (condition != null) {
 //        if(condition != null && condition.equalsIgnoreCase(tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean.requestHash))){
-            dataArray = (Vector)psDBBean.session.getAttribute(SESSION_KEY_EMPLIST_RESULT);
+            dataArray = (List)psDBBean.session.getAttribute(SESSION_KEY_EMPLIST_RESULT);
         }
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
         if(dataArray != null  && getRecordDate().equals(gsSessionDate) && sessionSameCheck()){
@@ -985,7 +980,9 @@ public class TmgReferList {
                     isJoinTmgEmployees,
                     this.gbUseManageFLG //管理対象外を表示するか
             );
-            psDBBean.session.setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, bean.requestHash));
+            //TODO
+            //psDBBean.session.setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean.requestHash));
+            psDBBean.session.setAttribute(SESSION_KEY_EMPLIST_CONDITION, null);
             psDBBean.session.setAttribute(SESSION_KEY_EMPLIST_RESULT, empList.getDataArray());
             psDBBean.session.setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
         }
@@ -1005,11 +1002,11 @@ public class TmgReferList {
     private void createEmpList4SearchView(String psBase, String psTarget, String psTargetSection,
                                           SimpleDateFormat pSdf) throws Exception{
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
-        if((Vector)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
+        if((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
                 getRecordDate().equals(gsSessionDate) && isSession4SearchTabItem()
         ){
-            empList.setSearchDataArray((Vector)session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-            empList.setDispLimit4Tree((String)session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
+            empList.setSearchDataArray((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+            empList.setDispLimit4Tree((String)psDBBean.session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
         }
         // そうでなければ「SYSDATE-前年度初日」の範囲で社員一覧を作成しておく
         else{
@@ -1030,7 +1027,6 @@ public class TmgReferList {
     /**
      * セッション情報と選択・入力された情報が一致しているか判定し返却する
      * 選択・入力された情報がなくセッションに保持されている場合も判定し返却する
-     * @param なし
      * @return boolean
      */
     private boolean isSession4SearchTabItem(){
@@ -1054,7 +1050,6 @@ public class TmgReferList {
 
     /**
      *
-     * @param targetSection
      * @param targetDate
      * @throws Exception
      */
@@ -1163,7 +1158,7 @@ public class TmgReferList {
     private void createMemberList4TreeView(TmgMemberList pTemberList, String psBase) throws Exception{
 
         // セッションにメンバー一覧のデータが登録されていない場合、SYSDATE-前年度初日の範囲でメンバー一覧を作成して登録しておきます
-        Vector dataArray = (Vector)psDBBean.session.getAttribute(SESSION_KEY_MEMBERLIST_RESULT);
+        List dataArray = (List)psDBBean.session.getAttribute(SESSION_KEY_MEMBERLIST_RESULT);
 
         if(dataArray != null && sessionSameCheck()){
             // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
@@ -1182,9 +1177,9 @@ public class TmgReferList {
      */
     private void createMemberList4SearchView(TmgMemberList pTmgMemberList, String psBase) throws Exception{
 
-        if((Vector)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
+        if((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
             // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
-            pTmgMemberList.setSearchDataArray((Vector)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+            pTmgMemberList.setSearchDataArray((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
             pTmgMemberList.setDispLimit4Tree((String)psDBBean.session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
         } else {
             if (isSelectedSearchTab()){
@@ -1318,7 +1313,6 @@ public class TmgReferList {
     /**
      * 勤怠管理サイトにおいて、選択された部署に所属している社員の一覧を取得するSQLを構築して返します。<br>
      * Oracleテーブルオブジェクトの作成版
-     * @param targetSection 対象部署
      * @return String SQL文
      */
     private String buildSQLForSelectEmpListTableObject(boolean pbSelectedSearchTab){
@@ -1492,7 +1486,7 @@ public class TmgReferList {
      * @return String ツリービュー用のJSON配列
      */
     public String getJSONArrayForSectionList(){
-        if(isSite(ps.c01.tmg.util.TmgUtil.Cs_SITE_ID_TMG_PERM)){
+        if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             if(groupList == null){
                 return null;
             }
@@ -2372,18 +2366,18 @@ public class TmgReferList {
         if (StrUtil.equals(vGroup.get(TmgGroupList.DEFAULT_KEY_NOTIFICATION),TmgUtil.Cs_MGD_ONOFF_1) ) {
             return true;
         }
-        if (StrUtil.equals(TmgGroupList.DEFAULT_KEY_OVERTIME,TmgUtil.Cs_MGD_ONOFF_1)) {
+        if (StrUtil.equals(vGroup.get(TmgGroupList.DEFAULT_KEY_OVERTIME),TmgUtil.Cs_MGD_ONOFF_1)) {
             return true;
         }
-        if (StrUtil.equals(TmgGroupList.DEFAULT_KEY_AUTHORITY,TmgUtil.Cs_MGD_ONOFF_1)) {
+        if (StrUtil.equals(vGroup.get(TmgGroupList.DEFAULT_KEY_AUTHORITY),TmgUtil.Cs_MGD_ONOFF_1)) {
             return true;
         }
         //#427
-        if (StrUtil.equals(TmgGroupList.DEFAULT_KEY_SCHEDULE,TmgUtil.Cs_MGD_ONOFF_1)) {
+        if (StrUtil.equals(vGroup.get(TmgGroupList.DEFAULT_KEY_SCHEDULE),TmgUtil.Cs_MGD_ONOFF_1)) {
             return true;
         }
         // #1160
-        if(StrUtil.equals(TmgGroupList.DEFAULT_KEY_MONTHLYAPPROVAL,TmgUtil.Cs_MGD_ONOFF_1)) {
+        if(StrUtil.equals(vGroup.get(TmgGroupList.DEFAULT_KEY_MONTHLYAPPROVAL),TmgUtil.Cs_MGD_ONOFF_1)) {
             return true;
         }
         return false;
