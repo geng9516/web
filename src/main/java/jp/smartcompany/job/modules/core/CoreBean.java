@@ -17,6 +17,7 @@ public interface CoreBean {
     String AUTH = "authBusiness";
     String GROUP = "groupBusiness";
     String BASE_SECTION = "baseSectionBusiness";
+    String EVALUATOR = "evaluatorBusiness";
   }
 
   interface Controller {

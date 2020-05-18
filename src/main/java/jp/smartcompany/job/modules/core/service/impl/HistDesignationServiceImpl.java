@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.mapper.HistDesignationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
@@ -24,7 +25,7 @@ import java.util.stream.Collectors;
  * @since 2020-04-16
  */
 @Repository
-        public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMapper, HistDesignationDO> implements IHistDesignationService {
+public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMapper, HistDesignationDO> implements IHistDesignationService {
 
 
 
@@ -47,7 +48,6 @@ import java.util.stream.Collectors;
                 // パターン
                 SectionGroupId sgId = baseMapper.selectSecGroupId(map);
 
-
                 return sgId;
         }
 
@@ -58,6 +58,18 @@ import java.util.stream.Collectors;
                   .lt("HD_DSTARTDATE_CK",date)
                    .gt("HD_DENDDATE",date);
                 return list(qw);
+        }
+
+        @Override
+        public List<EvaluatorBO> selectEvaluator(String customerId, String systemId, String userId,
+                                                 Date pdSearchDate, int evaluation,
+                                                 String reportType, String sLanguage) {
+              return baseMapper.selectEvaluator(customerId,systemId, userId, pdSearchDate, evaluation, reportType, sLanguage);
+        }
+
+        @Override
+        public List<EvaluatorBO> selectAllEvaluator(String psCustomerId,String psUserId,Date pdSearchDate,String psLanguage) {
+              return baseMapper.selectAllEvaluator(psCustomerId,psUserId, pdSearchDate, psLanguage);
         }
 
 }

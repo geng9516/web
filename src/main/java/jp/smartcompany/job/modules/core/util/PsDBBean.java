@@ -564,19 +564,9 @@ public class PsDBBean {
                                                String psCreterialDate,
                                                int pnEvaluationLevel,
                                                String psReportLine,
-                                               boolean pbIgnoreRelationDefinitions)
-            throws Exception {
-        try {
-            return this.getV3Logic().getEvaluator(
-                    psCustomerID, this.getCompCode(),
-                    this.getUserCode(), psTargetCompanyID,
-                    psTargetUserID, psCreterialDate,
-                    pnEvaluationLevel, psReportLine,
-                    pbIgnoreRelationDefinitions, this.getGroupID(),
-                    this.getSystemCode(), this.getGUID());
-        } catch (Exception e) {
-            throw e;
-        }
+                                               boolean pbIgnoreRelationDefinitions){
+        String sTargetUserCode = getUseridForV4(psCustomerID, psTargetCompanyID, psTargetUserID, psCreterialDate);
+        return null;
     }
 
 }

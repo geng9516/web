@@ -25,6 +25,7 @@ public class PsSession implements Serializable {
     private String loginCompany;
     private String loginUser;
     private String loginEmployee;
+    private String language;
     private String loginKanjiName;
     private List<Designation> loginDesignation;
     private String defaultCssCategory;

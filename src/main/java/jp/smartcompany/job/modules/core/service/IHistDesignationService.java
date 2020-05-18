@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
@@ -32,5 +33,12 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
 
 
         List<HistDesignationDO> selectCompanyId(String userId,Date date);
+
+        List<EvaluatorBO> selectEvaluator(String customerId,String systemId,String userId,
+                                          Date pdSearchDate,int evaluation,
+                                          String reportType,String sLanguage);
+
+        List<EvaluatorBO> selectAllEvaluator(String psCustomerId,String psUserId,Date pdSearchDate,String psLanguage);
+
 
 }
