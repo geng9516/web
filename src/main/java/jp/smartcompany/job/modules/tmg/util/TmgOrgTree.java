@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -38,21 +37,32 @@ public class TmgOrgTree {
 
     private PsDBBean psDBBean = null;
     private String beanDesc = null;
-    private ArrayList dataArray = null;
-    private ArrayList<OrganisationBO> dataArray1 = null;
+    private List dataArray = null;
+    private List<OrganisationBO> dataArray1 = null;
     private List dataArray2 = null;
     private String[] keyArray = null;
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
 
     @Autowired
-    private DataSource dataSource;
+    DataSource dataSource;
+    private Connection connection;
 
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     */
     @Autowired
-    public TmgOrgTree() {
-        // 下記のコンストラクタのエラー回避のためです。
+    public TmgOrgTree(PsDBBean psDBBean) {
+        this.psDBBean = psDBBean;
+        keyArray = DEFAULT_KEY_ARRAY;
     }
 
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     * @param beanDesc
+     */
     public TmgOrgTree(PsDBBean psDBBean, String beanDesc) {
         this.psDBBean = psDBBean;
         this.beanDesc = beanDesc;
@@ -64,17 +74,14 @@ public class TmgOrgTree {
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
         //String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate, psDBBean.requestHash, psDBBean.session);
 
-        Connection connection;
-        ArrayList<OrganisationBO> entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        List<OrganisationBO> entityList = null;
+        log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        //dataArray1 = entityList.get(0);
         dataArray1 = entityList;
     }
 
@@ -272,7 +279,7 @@ public class TmgOrgTree {
         }
     }
 
-    public ArrayList getDataArray() {
+    public List getDataArray() {
         return dataArray;
     }
 
