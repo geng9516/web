@@ -11,7 +11,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -58,52 +57,63 @@ public class TmgGroupList {
     public static final int DEFAULT_KEY_APPROVALLEVEL   = 17;
     public static final int DEFAULT_KEY_APPROVALLEVELNAME   = 18;
 
-    private PsDBBean bean = null;
+    private PsDBBean psDBBean = null;
     private String beanDesc = null;
-    private ArrayList dataArray = null;
+    private List dataArray = null;
     private List dataArray1 = null;
     private String[] keyArray = null;
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
+    @Autowired
     private DataSource dataSource;
     private Connection connection;
 
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     */
     @Autowired
-    public TmgGroupList() {
+    public TmgGroupList(PsDBBean psDBBean) {
         // 下記のコンストラクタのエラー回避のためです。
+        this.psDBBean = psDBBean;
+        keyArray = DEFAULT_KEY_ARRAY;
+        dateFormat = DEFAULT_DATE_FORMAT;
     }
 
-    public TmgGroupList(PsDBBean bean, String beanDesc) {
-        this.bean = bean;
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     * @param beanDesc
+     */
+    public TmgGroupList(PsDBBean psDBBean, String beanDesc) {
+        this.psDBBean = psDBBean;
         this.beanDesc = beanDesc;
         keyArray = DEFAULT_KEY_ARRAY;
         dateFormat = DEFAULT_DATE_FORMAT;
     }
 
     public void createGroupList(String baseDate, String targetDate) throws Exception{
-        ArrayList<String> vecQuery = new ArrayList<String>();
         String sSQL =   buildSQLForSelectGroupList(
-                        bean.escDBString(bean.getCustID()),
-                        bean.escDBString(bean.getCompCode()),
-                        bean.escDBString(bean.getUserCode()),
-                        baseDate,
-                        bean.escDBString(bean.getLanguage()),
-                        bean.escDBString(DEFAULT_DATE_FORMAT)
+                psDBBean.escDBString(psDBBean.getCustID()),
+                psDBBean.escDBString(psDBBean.getCompCode()),
+                psDBBean.escDBString(psDBBean.getUserCode()),
+                baseDate,
+                psDBBean.escDBString(psDBBean.getLanguage()),
+                psDBBean.escDBString(DEFAULT_DATE_FORMAT)
                 );
 
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createGroupList_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        dataArray = (ArrayList)entityList.get(0);
+        dataArray = entityList;
     }
 
     public String buildSQLForSelectGroupList(
@@ -215,7 +225,7 @@ public class TmgGroupList {
             if (row > 0) {
                 buf.append(",");
             }
-            buf.append("'"+((ArrayList)distinctDataArray.get(row)).get(DEFAULT_KEY_GROUPID)+"'");
+            buf.append("'"+((List)distinctDataArray.get(row)).get(DEFAULT_KEY_GROUPID)+"'");
         }
         return buf.toString();
     }
@@ -241,7 +251,7 @@ public class TmgGroupList {
             if (row > 0) {
                 buf.append(",");
             }
-            buf.append("'"+((ArrayList)distinctDataArray.get(row)).get(DEFAULT_KEY_SECID)+"'");
+            buf.append("'"+((List)distinctDataArray.get(row)).get(DEFAULT_KEY_SECID)+"'");
         }
         return buf.toString();
     }
@@ -265,7 +275,7 @@ public class TmgGroupList {
         String[] groupListArray = new String[distinctDataArray.size()];
 
         for(int i = 0; i < distinctDataArray.size(); i++){
-            groupListArray[i] = (String)((ArrayList)distinctDataArray.get(i)).get(DEFAULT_KEY_GROUPID);
+            groupListArray[i] = (String)((List)distinctDataArray.get(i)).get(DEFAULT_KEY_GROUPID);
         }
 
         return groupListArray;
@@ -290,7 +300,7 @@ public class TmgGroupList {
         String[] sectionListArray = new String[distinctDataArray.size()];
 
         for(int i = 0; i < distinctDataArray.size(); i++){
-            sectionListArray[i] = (String)((ArrayList)distinctDataArray.get(i)).get(DEFAULT_KEY_SECID);
+            sectionListArray[i] = (String)((List)distinctDataArray.get(i)).get(DEFAULT_KEY_SECID);
         }
 
         return sectionListArray;
@@ -306,7 +316,7 @@ public class TmgGroupList {
     public String getTargetGroupData(String targetGroupId, int keyIndex){
         try{
             for(Iterator i = dataArray.iterator(); i.hasNext();){
-                ArrayList data = (ArrayList)i.next();
+                List data = (List)i.next();
                 if(data.get(DEFAULT_KEY_GROUPID).equals(targetGroupId)){
                     return (String)data.get(keyIndex);
                 }
@@ -335,7 +345,7 @@ public class TmgGroupList {
      */
     public String getTargetSectionName(String targetSectionId){
         for(Iterator i = dataArray.iterator(); i.hasNext();){
-            ArrayList data = (ArrayList)i.next();
+            List data = (List)i.next();
             if(data.get(DEFAULT_KEY_SECID).equals(targetSectionId)){
                 return (String)data.get(DEFAULT_KEY_SECNIC);
             }
@@ -343,7 +353,7 @@ public class TmgGroupList {
         return null;
     }
 
-    public ArrayList getDataArray() {
+    public List getDataArray() {
         return dataArray;
     }
 

@@ -1,9 +1,10 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
-import jp.smartcompany.job.modules.core.pojo.handler.RootSectionEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,21 +39,31 @@ public class TmgDivisionTree {
     private PsDBBean psDBBean = null;
     private String beanDesc = null;
     private OrganisationBO dataArray = null;
-    private ArrayList dataArray1 = null;
-    private List dataArray2 = null;
+    private List dataArray1 = null;
     private String[] keyArray = null;
 
     private Boolean gbAllDivision;
     private String gsRootSection;
 
+    @Autowired
     private DataSource dataSource;
     private Connection connection;
 
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     */
     @Autowired
-    public TmgDivisionTree() {
-        // 下記のコンストラクタのエラー回避のためです。
+    public TmgDivisionTree(PsDBBean psDBBean) {
+        this.psDBBean = psDBBean;
+        keyArray = DEFAULT_KEY_ARRAY;
     }
 
+    /**
+     * コンストラクタ
+     * @param psDBBean
+     * @param beanDesc
+     */
     public TmgDivisionTree(PsDBBean psDBBean, String beanDesc) {
         this.psDBBean = psDBBean;
         this.beanDesc = beanDesc;
@@ -60,34 +71,31 @@ public class TmgDivisionTree {
     }
 
     public void createDivisionTree(String custId, String compCode, String language, String baseDate) throws Exception{
-        //
+
         String sExists = "";
         String sSQL =  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
 
         List<OrganisationBO> entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createDivisionTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        dataArray = entityList.get(0);
+        dataArray1 = entityList;
 
         //最上位組織コードを取得する
         String sSQL1 =  buildSQLForSelectRootSection(custId, compCode, language, baseDate);
-        List<String> rootSectionList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        Entity rootSection = null;
+        log.info("createDivisionTree_SQL2：{}",sSQL1);
         try {
             connection = dataSource.getConnection();
-            rootSectionList = SqlExecutor.query(connection,sSQL1 ,new RootSectionEntityListHandler());
-            log.info("{}",gsRootSection);
+            rootSection = SqlExecutor.query(connection,sSQL1 ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        gsRootSection = rootSectionList.get(0);
-
+        gsRootSection = rootSection.getStr("MO_CSECTIONID_CK");
         gbAllDivision = (sExists == null || "".equals(sExists));
     }
 
@@ -304,12 +312,12 @@ public class TmgDivisionTree {
         }
     }
 
-    public ArrayList getDataArray() {
+    public List getDataArray() {
         return dataArray1;
     }
 
-    public void setDataArray(List dataArray2) {
-        this.dataArray2 = dataArray2;
+    public void setDataArray(List dataArray1) {
+        this.dataArray1 = dataArray1;
     }
 
     public String[] getKeyArray() {

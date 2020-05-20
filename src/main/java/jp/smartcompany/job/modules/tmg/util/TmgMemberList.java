@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -11,7 +13,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -50,21 +51,27 @@ public class TmgMemberList {
 
     private PsDBBean bean = null;
     private String beanDesc = null;
-    private ArrayList dataArray = null;
-    private List dataArray2 = null;
-    private ArrayList gvSearchDataArray = null;
-    private List gvSearchDataArray2 = null;
+    private List dataArray = null;
+    private List gvSearchDataArray = null;
     private String[] keyArray = null;
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
+    @Autowired
     private DataSource dataSource;
     private Connection connection;
 
+    /**
+     * コンストラクタ
+     * @param bean
+     */
     @Autowired
-    public TmgMemberList() {
+    public TmgMemberList(PsDBBean bean) {
         // 下記のコンストラクタのエラー回避のためです。
+        this.bean = bean;
+        keyArray = DEFAULT_KEY_ARRAY;
+        dateFormat = DEFAULT_DATE_FORMAT;
     }
 
     /**
@@ -75,7 +82,6 @@ public class TmgMemberList {
     public TmgMemberList(PsDBBean bean, String beanDesc) {
         this.bean = bean;
         this.beanDesc = beanDesc;
-
         keyArray = DEFAULT_KEY_ARRAY;
         dateFormat = DEFAULT_DATE_FORMAT;
     }
@@ -133,8 +139,6 @@ public class TmgMemberList {
      */
     private void createTreeMemberList(String baseDate, String psParamUseManageFlg) throws Exception{
 
-        ArrayList < String > vecQuery = new ArrayList < String > ();
-
         String sSQL =   buildSQLForSelectMemberList(
                         bean.escDBString(bean.getCustID()),
                         bean.escDBString(bean.getCompCode()),
@@ -148,16 +152,15 @@ public class TmgMemberList {
                         null);
 
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createTreeMemberList_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        dataArray = (ArrayList)entityList.get(0);
+        dataArray = entityList;
 
     }
 
@@ -177,24 +180,20 @@ public class TmgMemberList {
                                         String psSearchCondition, String psSearchData
     ) throws Exception{
 
-        ArrayList < String > vecQuery = new ArrayList < String > ();
-
         String sSQL =   buildSQLForSelectMemberList(bean.escDBString(bean.getCustID()), bean.escDBString(bean.getCompCode()),
                         bean.escDBString(bean.getUserCode()), baseDate, psParamUseManageFlg, bean.escDBString(bean.getLanguage()),
                         bean.escDBString(DEFAULT_DATE_FORMAT), psSearchItems, psSearchCondition,
                         psSearchData);
 
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createSearchMemberList_SQL2：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        gvSearchDataArray = (ArrayList)entityList.get(0);
-
+        gvSearchDataArray = entityList;
     }
 
     private String gsDispLimi4Tree = null;
@@ -209,18 +208,17 @@ public class TmgMemberList {
         String sSQL =   buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
                         bean.escDBString(bean.getCompCode()), psBaseDate, bean.escDBString(bean.getLanguage()));
 
-        List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        Entity entityList = null;
+        log.info("getMsgDispLimit4Tree_SQL3：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
+            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return ((ArrayList)entityList.get(0)).size() == 0 ?
-                TmgUtil.Cs_TmgDispLimit4TreeDefault : ((ArrayList < String >)((ArrayList)entityList.get(0)).get(0)).get(0);
+        //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
+        return entityList.size() == 0 ?TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
 
     }
 
@@ -664,7 +662,7 @@ public class TmgMemberList {
             target = sdf.parse(baseDate);
         }
 
-        return JSONArrayGenerator.selectDataArrayBetween(dataArray2, target, base, DEFAULT_KEY_DSTART, DEFAULT_KEY_DEND, sdf);
+        return JSONArrayGenerator.selectDataArrayBetween(dataArray, target, base, DEFAULT_KEY_DSTART, DEFAULT_KEY_DEND, sdf);
     }
 
     /**
@@ -720,7 +718,7 @@ public class TmgMemberList {
     public String getTargetMemberData(String targetMemberId, int keyIndex){
         try{
             for(Iterator i = dataArray.iterator(); i.hasNext();){
-                ArrayList data = (ArrayList)i.next();
+                List data = (List)i.next();
                 if(data.get(DEFAULT_KEY_EMPID).equals(targetMemberId)){
                     return (String)data.get(keyIndex);
                 }
@@ -776,12 +774,12 @@ public class TmgMemberList {
         }
     }
 
-    public ArrayList getDataArray() {
+    public List getDataArray() {
         return dataArray;
     }
 
     public void setDataArray(List dataArray) {
-        this.dataArray2 = dataArray;
+        this.dataArray = dataArray;
     }
 
     public String[] getKeyArray() {
@@ -832,12 +830,12 @@ public class TmgMemberList {
         return !(targetDataArray == null || targetDataArray.size() == 0);
     }
 
-    public ArrayList getSearchDataArray() {
+    public List getSearchDataArray() {
         return this.gvSearchDataArray;
     }
 
     public void setSearchDataArray(List pvSearchDataArray) {
-        this.gvSearchDataArray2 = pvSearchDataArray;
+        this.gvSearchDataArray = pvSearchDataArray;
     }
 
 }

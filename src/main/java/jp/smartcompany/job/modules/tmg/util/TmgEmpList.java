@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -13,7 +14,6 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -50,10 +50,9 @@ public class TmgEmpList {
 
     private PsDBBean bean = null;
     private String beanDesc = null;
-    private ArrayList dataArray = null;
-    private List dataArray1 = null;
-    private ArrayList gvSearchDataArray = null;
-    private List gvSearchDataArray2 = null;
+    private List dataArray = null;
+    private List gvSearchDataArray = null;
+    //private List gvSearchDataArray2 = null;
     private String[] keyArray = null;
 
     /** 検索対象範囲設定を考慮するかどうか */
@@ -62,14 +61,19 @@ public class TmgEmpList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    private DataSource dataSource;
+    @Autowired
+    DataSource dataSource;
+    private Connection connection;
 
     /**
      * コンストラクタ
+     * @param bean
      */
     @Autowired
-    public TmgEmpList() {
-        // 下記のコンストラクタのエラー回避のためです。
+    public TmgEmpList(PsDBBean bean) {
+        this.bean = bean;
+        this.keyArray = DEFAULT_KEY_ARRAY;
+        this.dateFormat = DEFAULT_DATE_FORMAT;
     }
 
     /**
@@ -167,26 +171,19 @@ public class TmgEmpList {
                                    boolean useManageFLG
     ) throws Exception{
 
-        ArrayList < Entity > vecQuery = new ArrayList < Entity >();
-
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, null, null, null);
 
-        Connection connection;
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createTreeEmpList_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        dataArray = (ArrayList)entityList.get(0);
-
-        // dataArray = (ArrayList)result.getResult().get(0);
-
-    }
+        dataArray = entityList;
+     }
 
     /**
      * 組織ツリー検索タブ用
@@ -209,21 +206,16 @@ public class TmgEmpList {
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, psSearchItems,psSearchCondition, psSearchData);
 
-        Connection connection;
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createSearchEmpList_SQL2：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-
-        //PsResult result = bean.getValuesforMultiquery(vecQuery,beanDesc);
-
-        setSearchDataArray((ArrayList)entityList.get(0));
+      setSearchDataArray(entityList);
 
     }
 
@@ -244,20 +236,21 @@ public class TmgEmpList {
             String language,
             boolean ifKeyOrAdditionalRole
     ) throws Exception{
-        //ArrayList vecQuery = new ArrayList();
+
         String sSQL = buildSQLForSelectWardEmpList(cust, comp, ward, targetDate, language, ifKeyOrAdditionalRole);
 
         Connection connection;
         List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        log.info("createWardEmpList_SQL3：{}",sSQL);
+
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        dataArray = (ArrayList)entityList.get(0);
+
+        dataArray = entityList;
     }
 
     /**
@@ -520,24 +513,21 @@ public class TmgEmpList {
      */
     private String getMsgDispLimit4Tree(String psBaseDate) throws Exception{
 
-        ArrayList < String > vecQuery = new ArrayList < String > ();
-
         String sSQL =buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
                         bean.escDBString(bean.getCompCode()),psBaseDate, bean.escDBString(bean.getLanguage()));
 
         Connection connection;
-        List entityList = null;
-        log.info("実行SQL文：｛｝",sSQL);
+        Entity entityList = null;
+        log.info("getMsgDispLimit4Tree_SQL4："+ sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
-            log.info("{}",entityList);
+            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
-        return ((ArrayList)entityList.get(0)).size() == 0 ?
-                TmgUtil.Cs_TmgDispLimit4TreeDefault : ((ArrayList < String >)((ArrayList)entityList.get(0)).get(0)).get(0);
+        //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
+        return entityList.size() == 0 ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
 
     }
 
@@ -920,7 +910,7 @@ public class TmgEmpList {
 
     public boolean existsEmp(String empid){
         for(Iterator i = dataArray.iterator(); i.hasNext();){
-            ArrayList data = (ArrayList)i.next();
+            List data = (List)i.next();
             if(empid.equals((String)data.get(DEFAULT_KEY_EMPID))){
                 return true;
             }
@@ -938,7 +928,7 @@ public class TmgEmpList {
     public String getTargetEmpData(String targetMemberId, int keyIndex){
         try{
             for(Iterator i = dataArray.iterator(); i.hasNext();){
-                ArrayList data = (ArrayList)i.next();
+                List data = (List)i.next();
                 if(data.get(DEFAULT_KEY_EMPID).equals(targetMemberId)){
                     return (String)data.get(keyIndex);
                 }
@@ -995,24 +985,24 @@ public class TmgEmpList {
         }
     }
 
-    public ArrayList getDataArray() {
+    public List getDataArray() {
         return dataArray;
     }
 
     public void setDataArray(List dataArray) {
-        this.dataArray1 = dataArray;
+        this.dataArray = dataArray;
     }
 
     public String[] getKeyArray() {
         return keyArray;
     }
 
-    public ArrayList getSearchDataArray() {
+    public List getSearchDataArray() {
         return this.gvSearchDataArray;
     }
 
     public void setSearchDataArray(List pvSearchDataArray) {
-        this.gvSearchDataArray2 = pvSearchDataArray;
+        this.gvSearchDataArray = pvSearchDataArray;
     }
 
 }
