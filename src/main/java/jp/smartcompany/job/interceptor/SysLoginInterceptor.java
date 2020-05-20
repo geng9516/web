@@ -1,16 +1,19 @@
 package jp.smartcompany.job.interceptor;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Xiao Wenpeng
@@ -47,14 +52,15 @@ public class SysSessionInterceptor implements HandlerInterceptor {
         String language = Constant.DEFAULT_LANGUAGE;
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
 
-// 测试时可以注释
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {
             httpSession.setAttribute(Constant.PS_SESSION, new PsSession());
-//            executeLoginSequence(systemList,language);
         }
-        if (request.getAttribute(Constant.TOP_NAVS) == null) {
-            loadMenus(request, systemCode, customerId, systemList);
+        if (ShiroUtil.isAuthenticated()) {
+            executeLoginSequence(systemList,language);
+            if (request.getAttribute(Constant.TOP_NAVS) == null) {
+                loadMenus(request, systemCode, customerId, systemList);
+            }
         }
         return true;
     }
@@ -75,20 +81,20 @@ public class SysSessionInterceptor implements HandlerInterceptor {
 
     private void loadMenus(HttpServletRequest request, String systemCode, String customerId, List<MastSystemDO> systemList) {
         // 获取用户拥有的用户组（测试时注释）
-//        PsSession session = (PsSession) httpSession.getAttribute(Constant.LOGIN_INFO);
-//        Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
-//        List<LoginGroupBO> groupList = CollUtil.newArrayList();
-//        systemList.forEach(system -> {
-//            loginGroupList.forEach((key,value)-> {
-//                 if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
-//                     CollUtil.addAllIfNotContains(groupList,value);
-//                 }
-//            });
-//        });
+        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
+        List<LoginGroupBO> groupList = CollUtil.newArrayList();
+        systemList.forEach(system -> {
+            loginGroupList.forEach((key,value)-> {
+                 if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
+                     CollUtil.addAllIfNotContains(groupList,value);
+                 }
+            });
+        });
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
-//        List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+        List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         // 测试时打开
-        List<String> groupCodes = CollUtil.newArrayList("4","7");
+//        List<String> groupCodes = CollUtil.newArrayList("4","7");
         List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);
         List<TMenuDO> topNavs = CollUtil.addAllIfNotContains(topMenus,CollUtil.newArrayList());
         // 第一种菜单展现方式，每一个主菜单都对应有一个主页
