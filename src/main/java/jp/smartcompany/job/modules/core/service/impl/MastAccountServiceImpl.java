@@ -26,7 +26,7 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
                 qw.eq("ma_caccount", username)
                   .lt("ma_dstart", DateUtil.date())
                   .gt("ma_dend",DateUtil.date());
-                return getOne(qw);
+                return list(qw).get(0);
         }
 
 }

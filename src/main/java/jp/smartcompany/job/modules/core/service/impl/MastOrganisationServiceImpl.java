@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -90,9 +91,28 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                         .orderByAsc("mo_nseq");
                 List<MastOrganisationDO> mastOrganisationList = list(qw);
                 if (CollUtil.isNotEmpty(mastOrganisationList)){
-                        return mastOrganisationList.stream().map(MastOrganisationDO::getMoClayeredsectionid).collect(Collectors.toList());
+                        List<String> layeredsectionid = mastOrganisationList.stream().map(MastOrganisationDO::getMoClayeredsectionid).collect(Collectors.toList());
+                        return makeSectionList(layeredsectionid.get(0));
                 }
                 return null;
+        }
+
+        private List<String> makeSectionList(String layeredSection) {
+                List<String> sectionList = CollUtil.newArrayList();
+
+                int pipe = layeredSection.indexOf("|");
+                String[] array;
+                if (pipe != -1) {
+                        layeredSection = layeredSection.substring(pipe + 1);
+                        array = layeredSection.split(",");
+                } else {
+                        array = layeredSection.split(",");
+                }
+                sectionList.addAll(Arrays.asList(array));
+                if (pipe == -1) {
+                        sectionList.remove(array.length - 1);
+                }
+                return sectionList;
         }
 
         @Override

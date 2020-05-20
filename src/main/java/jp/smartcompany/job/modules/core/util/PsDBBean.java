@@ -182,67 +182,70 @@ public class PsDBBean {
         return sTimeStamp;
     }
 
-    public void setSysControl(Hashtable hash ){
-        this.requestHash = hash;
-        setCompCode((String)this.requestHash.get("CompCode"));
-        setGroupID((String)this.requestHash.get("GroupCode"));
-        setUserCode((String)this.requestHash.get("UserCode"));
-        setCustID((String)requestHash.get("CustID"));
+    public void setSysControl(Hashtable<String,Object> requestHash){
+        this.requestHash = requestHash;
 
-        setPostID((Vector) this.requestHash.get("PostCode"));
-        setDept((Vector) this.requestHash.get("Dept"));
+//        setCompCode((String)this.requestHash.get("CompCode"));
+//        setGroupID((String)this.requestHash.get("GroupCode"));
+//        setUserCode((String)this.requestHash.get("UserCode"));
+//        setCustID((String)requestHash.get("CustID"));
+//        setTargetUser((String)requestHash.get("EmployeeCode"));
+//        setSystemCode((String)requestHash.get("SystemCode"));
 
-        setTargetUser((String)requestHash.get("EmployeeCode"));
-        setSystemCode((String)requestHash.get("SystemCode"));
-        if (this.requestHash.containsKey("ReplacedCompCode")) {
-            setReplacedCompCode((String)this.requestHash
-                    .get("ReplacedCompCode"));
-        } else {
-            setReplacedCompCode("");
-        }
-        if (this.requestHash.containsKey("ReplacedUserCode")) {
-            setReplacedUserCode((String)this.requestHash
-                    .get("ReplacedUserCode"));
-        } else {
-            setReplacedUserCode("");
-        }
-        if (this.requestHash.get("CreterialDate") != null) {
-            setCreterialDate1((String) this.requestHash.get("CreterialDate"));
-            setCreterialDate2((String) this.requestHash.get("CreterialDate"));
-        }
-        setQueriesObject(this.requestHash.get("Queries"));
-        if ((this.requestHash.containsKey("EmployeeCode"))
-                && (this.requestHash.get("EmployeeCode") != null)
-                && this.requestHash.get("EmployeeCode")!=null) {
-            setEmployeeCode((String)this.requestHash.get("EmployeeCode"));
-        } else {
-            setEmployeeCode((String)this.requestHash.get("UserCode"));
-        }
-        setLanguage((String)this.requestHash.get("Language"));
-        if (this.requestHash.get("targetComp") != null) {
-            setTargetComp((String)this.requestHash.get("targetComp"));
-        }
-        if (this.requestHash.get("sectionid") != null) {
-            setTargetDept((String)this.requestHash.get("sectionid"));
-        }
-        if (this.requestHash.get("compid") != null) {
-            setTargetComp((String)this.requestHash.get("compid"));
-        }
-        if (this.requestHash.get("custid") != null) {
-            setTargetCust((String)this.requestHash.get("custid"));
-        }
-        this.targetComp = getTargetComp();
-        this.targetDept = getTargetDept();
-        this.targetCust = getTargetCust();
-        if (this.targetComp == null) {
-            this.targetComp = "";
-            this.targetDept = "";
-            this.targetCust = "";
-        } else if (this.targetComp.trim().equals("")) {
-            this.targetComp = "";
-            this.targetDept = "";
-            this.targetCust = "";
-        }
+//        setPostID((Vector) this.requestHash.get("PostCode"));
+//        setDept((Vector) this.requestHash.get("Dept"));
+
+//        if (this.requestHash.get("CreterialDate") != null) {
+//            setCreterialDate1((String) this.requestHash.get("CreterialDate"));
+//            setCreterialDate2((String) this.requestHash.get("CreterialDate"));
+//        }
+//
+//        setQueriesObject(this.requestHash.get("Queries"));
+
+//        if (this.requestHash.containsKey("ReplacedCompCode")) {
+//            setReplacedCompCode((String)this.requestHash
+//                    .get("ReplacedCompCode"));
+//        } else {
+//            setReplacedCompCode("");
+//        }
+//        if (this.requestHash.containsKey("ReplacedUserCode")) {
+//            setReplacedUserCode((String)this.requestHash
+//                    .get("ReplacedUserCode"));
+//        } else {
+//            setReplacedUserCode("");
+//        }
+//
+//        if (this.requestHash.containsKey("EmployeeCode") && this.requestHash.get("EmployeeCode") != null) {
+//            setEmployeeCode((String)this.requestHash.get("EmployeeCode"));
+//        } else {
+//            setEmployeeCode((String)this.requestHash.get("UserCode"));
+//        }
+//
+//        setLanguage((String)this.requestHash.get("Language"));
+//
+//        if (this.requestHash.get("targetComp") != null) {
+//            setTargetComp((String)this.requestHash.get("targetComp"));
+//        }
+//        if (this.requestHash.get("sectionid") != null) {
+//            setTargetDept((String)this.requestHash.get("sectionid"));
+//        }
+//        if (this.requestHash.get("compid") != null) {
+//            setTargetComp((String)this.requestHash.get("compid"));
+//        }
+//        if (this.requestHash.get("custid") != null) {
+//            setTargetCust((String)this.requestHash.get("custid"));
+//        }
+//        if (this.targetComp == null) {
+//            this.targetComp = "";
+//            this.targetDept = "";
+//            this.targetCust = "";
+//        } else if (StrUtil.isBlank(targetComp)) {
+//            this.targetComp = "";
+//            this.targetDept = "";
+//            this.targetCust = "";
+//        }
+
+
 //        Hashtable siteurls = (Hashtable) this.requestHash.get("SitePermission");
 //        setDomObject((Document) siteurls.get(getCustID() + "_" + getCompCode()
 //                + "_" + getSystemCode() + "_" + getGroupID()));
@@ -545,26 +548,4 @@ public class PsDBBean {
         }
     }
 
-    /**
-     * 指定評価レベルの評価者を取得します
-     * @param psCustomerID 検索対象顧客コード
-     * @param psTargetCompanyID 検索対象ユーザ法人コード
-     * @param psTargetUserID 検索対象ユーザ社員番号
-     * @param psCreterialDate 検索基準日
-     * @param pnEvaluationLevel 評価レベル
-     * @param psReportLine レポートラインタイプ
-     * @param pbIgnoreRelationDefinitions 判定基準フラグ
-     * @return 法人コード、社員番号のセットのVector×n
-     * @throws Exception システム例外
-     */
-    public Vector<Vector<Object>> getEvaluator(String psCustomerID,
-                                               String psTargetCompanyID,
-                                               String psTargetUserID,
-                                               String psCreterialDate,
-                                               int pnEvaluationLevel,
-                                               String psReportLine,
-                                               boolean pbIgnoreRelationDefinitions) {
-        String sTargetUserCode = getUseridForV4(psCustomerID, psTargetCompanyID, psTargetUserID, psCreterialDate);
-        return null;
-    }
 }

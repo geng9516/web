@@ -1,7 +1,7 @@
 package jp.smartcompany.job.configuration;
 
 import jp.smartcompany.job.interceptor.AuditInterceptor;
-import jp.smartcompany.job.interceptor.SysSessionInterceptor;
+import jp.smartcompany.job.interceptor.SysLoginInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -16,12 +16,12 @@ import org.springframework.web.servlet.config.annotation.*;
 public class WebConfiguration extends WebMvcConfigurationSupport {
 
     private final AuditInterceptor auditInterceptor;
-    private final SysSessionInterceptor sysSessionInterceptor;
+    private final SysLoginInterceptor sysLoginInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/favicon","/log/**");
-        registry.addInterceptor(sysSessionInterceptor).addPathPatterns("/","/sys/**");
+        registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/favicon","/log/**","/static/**");
+        registry.addInterceptor(sysLoginInterceptor).addPathPatterns("/","/sys/**");
     }
 
     @Override

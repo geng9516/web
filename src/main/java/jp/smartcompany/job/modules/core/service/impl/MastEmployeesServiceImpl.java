@@ -65,4 +65,18 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
                 .gt("ME_DENDDATE",psDate);
         return list(qw).stream().map(MastEmployeesDO::getMeCuserid).collect(Collectors.toList());
     }
+
+    @Override
+    public List<MastEmployeesDO> selectEmployByLoginUserId(String psCustid,
+                                                           String psCompid,
+                                                           String psLoginUserId,
+                                                           Date psDate) {
+        QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
+        qw.eq("ME_CCUSTOMERID_CK",psCustid)
+                .eq("ME_CCOMPANYID",psCompid)
+                .eq("ME_CEMPLOYEEID_CK",psLoginUserId)
+                .lt("ME_DSTARTDATE",psDate)
+                .gt("ME_DENDDATE",psDate);
+        return list(qw);
+    }
 }

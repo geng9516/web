@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.business;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
@@ -67,7 +68,12 @@ public class GroupBusiness {
                 List<LoginGroupBO> listLoginGroup =CollUtil.newArrayList();
 
                 for (DBMastGroupBO DBMastGroupBO : mastGroupList) {
-                    int nQueryCount = getAssembleSql(DBMastGroupBO, userId);
+                    int nQueryCount = 0;
+                    try {
+                        nQueryCount = getAssembleSql(DBMastGroupBO, userId);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
                     if (nQueryCount>0) {
                         LoginGroupBO loginGroup = setLoginGroupBO(DBMastGroupBO);
                         listLoginGroup.add(loginGroup);
@@ -120,11 +126,11 @@ public class GroupBusiness {
         return loginGroup;
     }
 
-    public int getAssembleSql(DBMastGroupBO groupBO, String userId) {
+    public int getAssembleSql(DBMastGroupBO groupBO, String userId) throws SQLException {
         String strQuery = groupBO.getPQuery() + " AND HD_CUSERID = "
                 + " '" + userId + "'";
         int nQueryCount = 0;
-        Connection connection;
+        Connection connection =null;
         log.info("运行的sql语句：{}",strQuery);
         try {
             connection = dataSource.getConnection();
@@ -132,6 +138,10 @@ public class GroupBusiness {
             return entityList.size();
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection!=null) {
+                connection.close();
+            }
         }
         return nQueryCount;
     }

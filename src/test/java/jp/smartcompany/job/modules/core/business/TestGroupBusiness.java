@@ -11,6 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.sql.SQLException;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -29,7 +31,7 @@ public class TestGroupBusiness {
      * 测试获取某用户是否拥有用户组
      */
    @Test
-   public void  testGetAssembleSql() {
+   public void  testGetAssembleSql() throws SQLException {
        String[] sqls = {
                "SELECT    DISTINCT ( HD_CEMPLOYEEID_CK )  , HD_CCUSTOMERID_CK , HD_CCOMPANYID_CK , HD_CUSERID FROM HIST_DESIGNATION , MAST_GROUPSECTIONPOSTMAPPING WHERE  (  ( MAG_CCOMPANYID = HD_CCOMPANYID_CK AND MAG_CEMPLOYEEID = HD_CEMPLOYEEID_CK AND MAG_CTYPEID = '07' )  )  AND MAG_CCUSTOMERID_CK_FK  = '01' AND MAG_CSYSTEMID_CK = '01' AND MAG_CGROUPID_FK = '12' AND HD_DSTARTDATE_CK <=  current_date  AND HD_DENDDATE >=  current_date  AND MAG_DSTARTDATE_CK <= current_date  AND MAG_DENDDATE >=  current_date ",
                " SELECT    DISTINCT ( HD_CEMPLOYEEID_CK )  , HD_CCUSTOMERID_CK , HD_CCOMPANYID_CK , HD_CUSERID FROM HIST_DESIGNATION , MAST_EMPLOYEES WHERE HD_CCUSTOMERID_CK = '01' AND HD_CCOMPANYID_CK = '01' AND HD_CCUSTOMERID_CK  = ME_CCUSTOMERID_CK AND HD_CUSERID         = ME_CUSERID AND HD_DSTARTDATE_CK  <= current_date AND HD_DENDDATE       >= current_date AND ME_DSTARTDATE <= current_date AND ME_DENDDATE >= current_date AND  (   ME_CIFSTILLEMPLOYEDID = '0'  ) ",

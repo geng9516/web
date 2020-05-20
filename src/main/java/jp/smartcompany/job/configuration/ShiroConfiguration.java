@@ -79,7 +79,7 @@ public class ShiroConfiguration {
         map.put("/error","anon");
 
         map.put("/logout", "logout");
-//        map.put("/sys/**", "user");
+        map.put("/sys/**", "user");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");

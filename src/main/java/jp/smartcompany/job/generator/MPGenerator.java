@@ -21,12 +21,12 @@ public class MPGenerator {
 
     public static void main(String[] args)  {
         //数据库配置
-        String dataBaseUrl = "jdbc:postgresql://47.74.50.9:5532/web-work";
-        String DataBaseDriver = "org.postgresql.Driver";
-        String username = "soadmin";
-        String password = "ab9t_P6TNm!WB2";
+        String dataBaseUrl = "jdbc:oracle:thin:@47.74.25.28:1521/orcl";
+        String DataBaseDriver = "oracle.jdbc.OracleDriver";
+        String username = "tmg_iyaku2";
+        String password = "tmg_iyakupass";
         //作者名，用于生成文件注解时使用。
-        String author = "Wang ZiYue";
+        String author = "Xiao Wenpeng";
         //controller文件是不是带RestController
         boolean restControllerStyle = false;
         //entity是否需要继承父类，如果需要则将已有的父类路径写下面，同理可配置Controller等父类。
@@ -121,10 +121,11 @@ public class MPGenerator {
         strategy.setEntitySerialVersionUID(true);
         strategy.setEntityTableFieldAnnotationEnable(true);
 
-        strategy.setExclude(
+//        strategy.setExclude(
+//
+//        );
 
-        );
-
+        strategy.setInclude("TMG_TRIGGER");
 
         mpg.setStrategy(strategy);
         mpg.execute();

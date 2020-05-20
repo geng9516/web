@@ -21,12 +21,14 @@ import java.util.List;
 /**
  * @author Xiao Wenpeng
  */
+@Deprecated
 @Service(CoreBean.Business.EVALUATOR)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EvaluatorSysInfoBusiness {
 
     private final IHistDesignationService iHistDesignationService;
     private final IMastRelationshipService iMastRelationshipService;
+    private final SectionChiefBusiness sectionChiefBusiness;
     private final HttpSession httpSession;
 
     public List<EvaluatorBO> getEvaluator(String customerId, String systemId,
@@ -69,10 +71,10 @@ public class EvaluatorSysInfoBusiness {
 
             List<EvaluatorBO> designationListForSectionChief = CollUtil.newLinkedList();
             Iterator<EvaluatorBO> designationTergetUserIte = designationTergetUserList.iterator();
-//            while (designationTergetUserIte.hasNext()) {
-//                DesignationBO designationTergetUser = designationTergetUserIte.next();
-//                String sDesignationTergetUserid = designationTergetUser.getUserid();
-//                String sSectionId = designationTergetUser.getSection();
+            while (designationTergetUserIte.hasNext()) {
+                DesignationBO designationTergetUser = designationTergetUserIte.next();
+                String sDesignationTergetUserid = designationTergetUser.getUserid();
+                String sSectionId = designationTergetUser.getSection();
 //                if ((SystemPropertyCache.getValue("SkipSameBoss") != null)
 //                        && (SystemPropertyCache.getValue("SkipSameBoss")
 //                        .equalsIgnoreCase("yes"))) {
@@ -94,32 +96,32 @@ public class EvaluatorSysInfoBusiness {
 //                                .get(0)).getSection();
 //                    }
 //                }
-//                List<EvaluatorBO> designationListForSectionChiefTemp = this.psSectionChiefLogic
-//                        .getSectionChiefWithSection(sDesignationTergetUserid,
-//                                sSectionId, pdSearchDate);
-//                if ((designationListForSectionChiefTemp != null)
-//                        && (!designationListForSectionChiefTemp.isEmpty())) {
-//                    Iterator<String> initSectionIte = initSections.iterator();
-//                    for (int i = 0; i < designationListForSectionChiefTemp
-//                            .size(); i++) {
-//                        boolean bDuplicate = true;
-//                        while (initSectionIte.hasNext()) {
-//                            String sSectionHierarchy = initSectionIte
-//                                    .next();
-//                            if (sSectionHierarchy.contains(designationListForSectionChiefTemp
-//                                    .get(i).getSectionHierarchy())) {
-//                                bDuplicate = false;
-//                                break;
-//                            }
-//                        }
-//                        if (bDuplicate) {
-//                            designationListForSectionChiefTemp.remove(i);
-//                        }
-//                    }
-//                    Iterator<EvaluatorBO> designationIteForSectionChiefTemp = designationListForSectionChiefTemp
-//                            .iterator();
-//                    while (designationIteForSectionChiefTemp.hasNext()) {
-//                        EvaluatorBO designationForSectionChiefTemp = designationIteForSectionChiefTemp.next();
+                List<EvaluatorBO> designationListForSectionChiefTemp = sectionChiefBusiness.getSectionChiefWithSection(sDesignationTergetUserid,
+                                sSectionId, pdSearchDate);
+
+                if ((designationListForSectionChiefTemp != null)
+                        && (!designationListForSectionChiefTemp.isEmpty())) {
+                    Iterator<String> initSectionIte = initSections.iterator();
+                    for (int i = 0; i < designationListForSectionChiefTemp
+                            .size(); i++) {
+                        boolean bDuplicate = true;
+                        while (initSectionIte.hasNext()) {
+                            String sSectionHierarchy = initSectionIte
+                                    .next();
+                            if (sSectionHierarchy.contains(designationListForSectionChiefTemp
+                                    .get(i).getSectionHierarchy())) {
+                                bDuplicate = false;
+                                break;
+                            }
+                        }
+                        if (bDuplicate) {
+                            designationListForSectionChiefTemp.remove(i);
+                        }
+                    }
+                    Iterator<EvaluatorBO> designationIteForSectionChiefTemp = designationListForSectionChiefTemp
+                            .iterator();
+                    while (designationIteForSectionChiefTemp.hasNext()) {
+                        EvaluatorBO designationForSectionChiefTemp = designationIteForSectionChiefTemp.next();
 //                        if (SystemPropertyCache.getValue("SkipSameBoss").equalsIgnoreCase("yes")) {
 //                            if (!designationForSectionChiefTemp.getUserid()
 //                                    .equals(sDesignationTergetUserid)) {
@@ -131,20 +133,21 @@ public class EvaluatorSysInfoBusiness {
 //                                designationListForSectionChief
 //                                        .add(designationForSectionChiefTemp);
 //                            }
-//                        } else if ((!designationForSectionChiefTemp.getUserid()
+//                        }
+//                        else if ((!designationForSectionChiefTemp.getUserid()
 //                                .equals(sDesignationTergetUserid))
 //                                || (!designationForSectionChiefTemp
 //                                .getSection().equals(sSectionId))) {
-//                            designationForSectionChiefTemp
-//                                    .setEvalLevel(nEvaluationLevel.toString());
-//                            designationForSectionChiefTemp.setJudgDiv("0");
-//
-//                            designationListForSectionChief
-//                                    .add(designationForSectionChiefTemp);
+                            designationForSectionChiefTemp
+                                    .setEvalLevel(nEvaluationLevel.toString());
+                            designationForSectionChiefTemp.setJudgDiv("0");
+
+                            designationListForSectionChief
+                                    .add(designationForSectionChiefTemp);
 //                        }
-//                    }
-//                }
-//            }
+                    }
+                }
+            }
             designationTergetUserList = designationListForSectionChief;
         }
         return designationTergetUserList;

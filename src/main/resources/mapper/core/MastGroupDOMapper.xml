@@ -8,12 +8,12 @@
             MG_NWEIGHTAGE as weight,
             MG_CGROUPID_PK as groupId,
             MGP_CQUERY as pQuery,
-            FUNC_GET_SYSTEM_NAME(
+            PSMASTER.FUNC_GET_SYSTEM_NAME(
                 MG_CSYSTEMID_CK_FK,
                 current_date,
                 #{language}
             ) AS systemName,
-            FUNC_GET_GROUP_DESC(
+            PSMASTER.FUNC_GET_GROUP_DESC(
             MG_CSYSTEMID_CK_FK,
             MG_CGROUPID_PK,
             current_date,
@@ -47,8 +47,8 @@
         MG_CSYSTEMID_CK_FK,
         MG_NWEIGHTAGE,
         MG_CGROUPID_PK,
-        FUNC_GET_SYSTEM_NAME( MG_CSYSTEMID_CK_FK, current_date, #{language} ) AS SYSTEM_NAME,
-        FUNC_GET_GROUP_DESC( MG_CSYSTEMID_CK_FK, MG_CGROUPID_PK, current_date, #{language}) AS GROUP_NAME
+        PSMASTER.FUNC_GET_SYSTEM_NAME( MG_CSYSTEMID_CK_FK, current_date, #{language} ) AS SYSTEM_NAME,
+        PSMASTER.FUNC_GET_GROUP_DESC( MG_CSYSTEMID_CK_FK, MG_CGROUPID_PK, current_date, #{language}) AS GROUP_NAME
         FROM
         (SELECT
         *

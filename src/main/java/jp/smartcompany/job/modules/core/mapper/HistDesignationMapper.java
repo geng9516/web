@@ -43,4 +43,18 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
                                              @Param("searchDate") Date pdSearchDate,
                                              @Param("language") String psLanguage);
 
+        List<EvaluatorBO> selectWithSection(
+                @Param("custId") String psCustId,
+                @Param("userId") String psUserId,
+                @Param("sectionId") String psSectionId,
+                @Param("searchDate") Date pdSearchDate,
+                @Param("language") String sLanguage);
+
+        List<EvaluatorBO> selectSectionChief(
+                @Param("custId") String psCustId,
+                @Param("compId") String compId,
+                @Param("sectionId") String sectionId,
+                @Param("searchDate")Date pdSearchDate,
+                @Param("language") String sLanguage);
+
 }

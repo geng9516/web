@@ -40,5 +40,15 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
 
         List<EvaluatorBO> selectAllEvaluator(String psCustomerId,String psUserId,Date pdSearchDate,String psLanguage);
 
+        List<EvaluatorBO> selectWithSection(
+                String psCustId,String psUserId,String psSectionId,Date pdSearchDate,String sLanguage);
+
+        List<EvaluatorBO> selectSectionChief(
+                        String psCustId,
+                        String compId,
+                        String sectionId,
+                        Date pdSearchDate,
+                        String sLanguage);
+
 
 }

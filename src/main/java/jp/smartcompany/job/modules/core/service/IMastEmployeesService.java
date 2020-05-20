@@ -37,4 +37,9 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
                                   String psLoginUserId,
                                   Date psDate);
 
+    List<MastEmployeesDO> selectEmployByLoginUserId(String psCustid,
+                                  String psCompid,
+                                  String psLoginUserId,
+                                  Date psDate);
+
 }

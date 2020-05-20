@@ -18,6 +18,7 @@ public interface CoreBean {
     String GROUP = "groupBusiness";
     String BASE_SECTION = "baseSectionBusiness";
     String EVALUATOR = "evaluatorBusiness";
+    String SECTION_CHIEF = "sectionChiefBusiness";
   }
 
   interface Controller {

@@ -72,4 +72,22 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
               return baseMapper.selectAllEvaluator(psCustomerId,psUserId, pdSearchDate, psLanguage);
         }
 
+        @Override
+        public List<EvaluatorBO> selectWithSection(
+                String psCustId,String psUserId,String psSectionId,Date pdSearchDate,String sLanguage) {
+                return baseMapper.selectWithSection(
+                        psCustId,psUserId,psSectionId,pdSearchDate,sLanguage);
+        }
+
+        @Override
+        public List<EvaluatorBO> selectSectionChief(
+                String psCustId,
+                String compId,
+                String sectionId,
+                Date pdSearchDate,
+                String sLanguage) {
+                return baseMapper.selectSectionChief(
+                        psCustId,compId,sectionId,pdSearchDate,sLanguage);
+        }
+
 }
