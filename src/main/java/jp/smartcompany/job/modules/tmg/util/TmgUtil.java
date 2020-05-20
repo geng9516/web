@@ -1,5 +1,8 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @author Xiao Wenpeng
  * 勤怠コンテンツで利用される定数や、汎用メソッドを提供するクラスです。
@@ -1940,5 +1943,19 @@ public class TmgUtil {
      * リソースバンドル TERM_SEPARATOR のキー名です。
      */
     public static final String Cs_UTIL_PROPERTY_KYE_TERM_SEPARATOR = "TERM_SEPARATOR";
+
+
+    /** 日付形式1 */
+    public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
+
+    /**
+     * システム日付を返す
+     * @return String システム日付
+     */
+    public static String getSysdate(){
+        SimpleDateFormat sdf = new SimpleDateFormat(Cs_FORMAT_DATE_TYPE1);
+        return sdf.format(new Date());
+    }
+
 
 }
