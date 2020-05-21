@@ -185,21 +185,21 @@ public class PsDBBean {
     public void setSysControl(Hashtable<String,Object> requestHash){
         this.requestHash = requestHash;
 
-//        setCompCode((String)this.requestHash.get("CompCode"));
-//        setGroupID((String)this.requestHash.get("GroupCode"));
-//        setUserCode((String)this.requestHash.get("UserCode"));
-//        setCustID((String)requestHash.get("CustID"));
-//        setTargetUser((String)requestHash.get("EmployeeCode"));
-//        setSystemCode((String)requestHash.get("SystemCode"));
+        setCompCode((String)this.requestHash.get("CompCode"));
+        setGroupID((String)this.requestHash.get("GroupCode"));
+        setUserCode((String)this.requestHash.get("UserCode"));
+        setCustID((String)requestHash.get("CustID"));
+        setTargetUser((String)requestHash.get("EmployeeCode"));
+        setSystemCode((String)requestHash.get("SystemCode"));
 
 //        setPostID((Vector) this.requestHash.get("PostCode"));
 //        setDept((Vector) this.requestHash.get("Dept"));
 
-//        if (this.requestHash.get("CreterialDate") != null) {
-//            setCreterialDate1((String) this.requestHash.get("CreterialDate"));
-//            setCreterialDate2((String) this.requestHash.get("CreterialDate"));
-//        }
-//
+        if (this.requestHash.get("CreterialDate") != null) {
+            setCreterialDate1((String) this.requestHash.get("CreterialDate"));
+            setCreterialDate2((String) this.requestHash.get("CreterialDate"));
+        }
+
 //        setQueriesObject(this.requestHash.get("Queries"));
 
 //        if (this.requestHash.containsKey("ReplacedCompCode")) {
@@ -214,36 +214,36 @@ public class PsDBBean {
 //        } else {
 //            setReplacedUserCode("");
 //        }
-//
-//        if (this.requestHash.containsKey("EmployeeCode") && this.requestHash.get("EmployeeCode") != null) {
-//            setEmployeeCode((String)this.requestHash.get("EmployeeCode"));
-//        } else {
-//            setEmployeeCode((String)this.requestHash.get("UserCode"));
-//        }
-//
-//        setLanguage((String)this.requestHash.get("Language"));
-//
-//        if (this.requestHash.get("targetComp") != null) {
-//            setTargetComp((String)this.requestHash.get("targetComp"));
-//        }
-//        if (this.requestHash.get("sectionid") != null) {
-//            setTargetDept((String)this.requestHash.get("sectionid"));
-//        }
-//        if (this.requestHash.get("compid") != null) {
-//            setTargetComp((String)this.requestHash.get("compid"));
-//        }
-//        if (this.requestHash.get("custid") != null) {
-//            setTargetCust((String)this.requestHash.get("custid"));
-//        }
-//        if (this.targetComp == null) {
-//            this.targetComp = "";
-//            this.targetDept = "";
-//            this.targetCust = "";
-//        } else if (StrUtil.isBlank(targetComp)) {
-//            this.targetComp = "";
-//            this.targetDept = "";
-//            this.targetCust = "";
-//        }
+
+        if (this.requestHash.containsKey("EmployeeCode") && this.requestHash.get("EmployeeCode") != null) {
+            setEmployeeCode((String)this.requestHash.get("EmployeeCode"));
+        } else {
+            setEmployeeCode((String)this.requestHash.get("UserCode"));
+        }
+
+        setLanguage((String)this.requestHash.get("Language"));
+
+        if (this.requestHash.get("targetComp") != null) {
+            setTargetComp((String)this.requestHash.get("targetComp"));
+        }
+        if (this.requestHash.get("sectionid") != null) {
+            setTargetDept((String)this.requestHash.get("sectionid"));
+        }
+        if (this.requestHash.get("compid") != null) {
+            setTargetComp((String)this.requestHash.get("compid"));
+        }
+        if (this.requestHash.get("custid") != null) {
+            setTargetCust((String)this.requestHash.get("custid"));
+        }
+        if (this.targetComp == null) {
+            this.targetComp = "";
+            this.targetDept = "";
+            this.targetCust = "";
+        } else if (StrUtil.isBlank(targetComp)) {
+            this.targetComp = "";
+            this.targetDept = "";
+            this.targetCust = "";
+        }
 
 
 //        Hashtable siteurls = (Hashtable) this.requestHash.get("SitePermission");

@@ -51,14 +51,18 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
-        // todo 根据选择的系统编号和客户编号来获取对应system下的对应信息，现在先默认为01
-        String systemCode = "01";
-        String customerId = "01";
-        httpSession.setAttribute(Constant.SYSTEM_CODE,systemCode);
-        httpSession.setAttribute(Constant.CUSTOMER_ID,customerId);
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
+        String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
+        // customerId固定为01
+        String customerId = "01";
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
+        if (StrUtil.isBlank(systemCode)) {
+            systemCode = systemList.get(0).getMsCsystemidPk();
+            // 默认customerId都为01
+            httpSession.setAttribute(Constant.SYSTEM_CODE, systemCode);
+            httpSession.setAttribute(Constant.CUSTOMER_ID, customerId);
+        }
         // 初始化PsSession对象
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {
@@ -87,8 +91,8 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 登录后且还未设置PsSession里的值则需要进行设置
         Hashtable<String,Object> hashtable = new Hashtable<>();
         if (ShiroUtil.isAuthenticated()){
-            if (StrUtil.isNotBlank(session.getLoginAccount())) {
-                MastAccountDO account = ShiroUtil.getLoginUser();
+            MastAccountDO account = ShiroUtil.getLoginUser();
+            if (StrUtil.isNotBlank(account.getMaCaccount())) {
                 session.setLoginAccount(account.getMaCaccount());
                 session.setLoginCompany(mastSystemDO.getMsCsystemidPk());
                 session.setLoginUser(account.getMaCuserid());
@@ -182,20 +186,21 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
 
         psDBBean.setSysControl(hashtable);
+
     }
 
-
-
+    // 登录后加载角色组和基点组织
     private void executeLoginSequence(List<MastSystemDO> systemList, String language) {
         if (CollUtil.isEmpty(systemList)){
             throw new GlobalException("Master not found");
         }
-        // 获取系统角色组组
+        // 获取系统角色组
         groupBusiness.getGroupList(language,systemList);
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();
     }
 
+    // 加载系统菜单
     private void loadMenus(HttpServletRequest request, String systemCode, String customerId, List<MastSystemDO> systemList) {
         // 获取用户拥有的用户组（测试时注释）
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
