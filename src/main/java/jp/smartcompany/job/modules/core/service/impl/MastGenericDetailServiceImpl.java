@@ -6,6 +6,8 @@ import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -163,4 +165,106 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         return workPattern;
     }
 
+    /**
+     * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLを取得する
+     *
+     * @param custID    顧客コード
+     * @param compID     法人コード
+     * @param lang      言語
+     * @param targetDate 　対象日
+     * @return List<MonthlyItemVO>
+     */
+    @Override
+    public List<ItemVO> buildSQLForSelectTmgDispMonthlyItems(String custID, String compID, String lang, String targetDate){
+
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("custID", custID);
+        map.put("compID", compID);
+        map.put("lang", lang);
+        map.put("targetDate", targetDate);
+        return baseMapper.buildSQLForSelectTmgDispMonthlyItems(map);
+    }
+    /**
+     * TMG_DISPDAILYITEMSマスタより取得した日次情報のヘッダー・SQL・表示幅を取得する
+     *
+     * @param custID     顧客コード
+     * @param compID     法人コード
+     * @param lang       言語
+     * @param targetDate 　対象日
+     * @return List
+     */
+    @Override
+    public List<ItemVO> buildSQLForSelectTmgDispDailyItems(String custID, String compID, String lang, String targetDate){
+
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("custID", custID);
+        map.put("compID", compID);
+        map.put("lang", lang);
+        map.put("targetDate", targetDate);
+        return baseMapper.buildSQLForSelectTmgDispDailyItems(map);
+    }
+
+    /**
+     * 　名称マスタから属性コードを取得
+     *
+     * @param custID       顧客コード
+     * @param compCode     法人コード
+     * @param targetUser   対象者
+     * @param language     言語
+     * @param siteId       　サイトID
+     * @param day          　対象日
+     * @param attribute    　属性コードの使用可否
+     * @param categoryCode 　検索対象のカテゴリコード
+     * @return List<MgdAttributeVO>
+     */
+    @Override
+    public List<MgdAttributeVO> buildSQLForSelectgetMgdAttribute(String custID, String compCode, String targetUser, String language,
+                                                          String siteId, String day, String attribute, String categoryCode){
+
+        Map<String, Object> map = MapUtil.newHashMap(8);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("language", language);
+        map.put("siteId", siteId);
+        map.put("day", day);
+        map.put("attribute", attribute);
+        map.put("categoryCode", categoryCode);
+        return baseMapper.buildSQLForSelectgetMgdAttribute(map);
+    }
+
+    /**
+     * 名称マスタから属性コードを取得(エフォート対象者判定用)
+     *
+     * @param custID 顧客コード
+     * @param compCode 法人コード
+     * @param targetUser 対象者
+     * @param language 言語
+     * @param siteId サイトID
+     * @param day 対象日
+     * @param month 対象月
+     * @param type　種別
+     * @param onOff　onOff
+     * @param attribute　使用可否
+     * @param categoryCode　カテゴリーID
+     * @return List<MgdAttributeVO>
+     */
+    @Override
+    public List<MgdAttributeVO> buildSQLForSelectgetMgdAttributeEffort(String custID, String compCode, String targetUser, String language,
+                                                                String siteId, String day, String month, String type, String onOff,
+                                                                String attribute, String categoryCode){
+        Map<String, Object> map = MapUtil.newHashMap(11);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("language", language);
+        map.put("siteId", siteId);
+        map.put("day", day);
+        map.put("month", month);
+        map.put("type", type);
+        map.put("onOff", onOff);
+        map.put("attribute", attribute);
+        map.put("categoryCode", categoryCode);
+        return baseMapper.buildSQLForSelectgetMgdAttributeEffort(map);
+    }
 }

@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeesDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO;
 
 import java.util.Date;
 
@@ -47,4 +48,17 @@ public interface ITmgEmployeesService extends IService<TmgEmployeesDO> {
      * @return String 勤怠種別
      */
     String selectWorkerType(String customerId, String companyId, String employeeId, Date yyyymmdd);
+
+
+    /**
+     * 勤務状況確認欄、健康状態確認欄の使用可否設定の取得
+     *
+     * @param custId 顧客コード
+     * @param compId 法人コード
+     * @param empId 社員番号
+     * @param lang 言語
+     * @param month　対象月
+     * @return IsWorkHealthChkVO
+     */
+    IsWorkHealthChkVO buildIsWorkHealthChk(String custId, String compId, String empId, String lang, String month);
 }

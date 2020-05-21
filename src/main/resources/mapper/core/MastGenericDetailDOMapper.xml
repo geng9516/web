@@ -244,4 +244,70 @@
         AND     R1.MGD_CLANGUAGE_CK         =   'ja'
         ;
     </select>
+
+    <select id="buildSQLForSelectTmgDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
+        SELECT
+            MGD_CHEADER,
+            MGD_CSQL,
+            MGD_CCOLUMNKEY
+        FROM
+            TMG_V_MGD_DISPMONTHLYITEMS
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{targetDate,jdbcType=DATE}
+        AND MGD_DEND >=  #{targetDate,jdbcType=DATE}
+        ORDER BY
+            MGD_NSEQ
+    </select>
+
+    <select id="buildSQLForSelectTmgDispDailyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
+        SELECT
+            MGD_CHEADER,
+            MGD_CSQL,
+            MGD_NWIDTH,
+            MGD_CCOLUMNID
+        FROM
+            TMG_V_MGD_DISPDAILYITEMS
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{targetDate,jdbcType=DATE}
+        AND MGD_DEND >=  #{targetDate,jdbcType=DATE}
+        ORDER BY
+            MGD_NSEQ
+    </select>
+
+    <select id="buildSQLForSelectgetMgdAttribute"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO">
+        SELECT
+            ATTRIBUTE_URL,
+            ITEM_NAME,
+            CATEGORY_CODE,
+            CATEGORY_NAME,
+            ITEM_CODE,
+            ITEM_TYPE,
+            ATTRIBUTE_ADDLIMIT,
+            TMG_F_GET_MGD_C(#{categoryCode} ,#{day}, 1,#{custID},#{compCode},#{language}) as MGD_C
+        FROM
+            TABLE(TMG_F_GET_RESULTATTRIBUTE(#{custID},#{compCode},#{targetUser},#{siteId},#{categoryCode},#{day},#{attribute})
+    </select>
+
+    <select id="buildSQLForSelectgetMgdAttributeEffort"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO">
+        SELECT
+            ATTRIBUTE_URL,
+            ITEM_NAME,
+            CATEGORY_CODE,
+            CATEGORY_NAME,
+            ITEM_CODE,
+            ITEM_TYPE
+        FROM
+            TABLE(TMG_F_GET_RESULTATTRIBUTE(#{custID},#{compCode},#{targetUser},#{siteId},#{categoryCode},#{day},#{attribute}))
+        WHERE
+            TMG_F_GET_EMPLOYEE_ATTRIBUTE(#{custID} ,#{compCode},#{targetUser},#{month},#{type}) = #{onOff}
+    </select>
+
 </mapper>
