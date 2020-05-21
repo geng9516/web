@@ -2,4 +2,129 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyMapper">
 
+    <select id="buildSQLForSelectMonthlyOverTime" resultType="string">
+        SELECT
+          TMG_F_GET_SUM_OVERTIME(TMO_CEMPLOYEEID, TMO_DYYYYMM, TMO_CCUSTOMERID, TMO_CCOMPANYID) AS OVERTIME
+        FROM
+          TMG_MONTHLY
+        WHERE
+          TMO_CCUSTOMERID = #{custID}
+        AND TMO_CCOMPANYID =  #{compCode}
+        AND TMO_CEMPLOYEEID = #{targetUser}
+        AND TMO_DYYYYMM = TO_DATE(#{month,jdbcType=DATE})
+     </select>
+    <select id="buildSQLForSelectDispMonthlyList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO">
+        SELECT
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY/MM/DD') AS CODE,
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY') || '年' || TO_CHAR(t.TMO_DYYYYMM, 'MM') || '月' AS VAL
+        FROM
+            TMG_MONTHLY t
+        WHERE
+            TMO_CCUSTOMERID = #{custId}
+        AND TMO_CCOMPANYID = #{compId}
+        AND TMO_CEMPLOYEEID = #{empId}
+        AND TMO_DYYYYMM  <![CDATA[<=]]> TRUNC(to_date(#{baseDate}), 'MM')
+        ORDER BY
+            t.TMO_DYYYYMM DESC
+    </select>
+
+    <select id="buildSQLForSelectMonthlyLink"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO">
+        SELECT
+            (
+                SELECT
+                    to_char(max(TMO_DYYYYMM), 'yyyy/MM/dd') TMO_DYYYYMM         <!-- 前月 -->
+                FROM
+                    TMG_MONTHLY
+                WHERE
+                    TMO_CEMPLOYEEID = #{targetUser}
+                AND TMO_DYYYYMM        <![CDATA[<]]>  #{month}
+                AND TMO_CCOMPANYID = #{compCode}
+                AND TMO_CCUSTOMERID = #{custID}
+            ) PREVIOUS_MONTH,
+            (
+                SELECT
+                    to_char(min(TMO_DYYYYMM), 'yyyy/MM/dd') TMO_DYYYYMM           <!-- 翌月 -->
+                FROM
+                    TMG_MONTHLY
+                WHERE
+                    TMO_CEMPLOYEEID = #{targetUser}
+                AND TMO_DYYYYMM > #{month}
+                AND TMO_CCOMPANYID = #{compCode}
+                AND TMO_CCUSTOMERID = #{custID}
+            ) NEXT_MONTH
+        FROM DUAL
+    </select>
+
+    <select id="buildSQLForSelectCalendar" resultType="hashmap">
+        SELECT
+            TCA_CHOLFLG01,
+            TCA_CHOLFLG02,
+            TCA_CHOLFLG03,
+            TCA_CHOLFLG04,
+            TCA_CHOLFLG05,
+            TCA_CHOLFLG06,
+            TCA_CHOLFLG07,
+            TCA_CHOLFLG08,
+            TCA_CHOLFLG09,
+            TCA_CHOLFLG10,
+            TCA_CHOLFLG11,
+            TCA_CHOLFLG12,
+            TCA_CHOLFLG13,
+            TCA_CHOLFLG14,
+            TCA_CHOLFLG15,
+            TCA_CHOLFLG16,
+            TCA_CHOLFLG17,
+            TCA_CHOLFLG18,
+            TCA_CHOLFLG19,
+            TCA_CHOLFLG20,
+            TCA_CHOLFLG21,
+            TCA_CHOLFLG22,
+            TCA_CHOLFLG23,
+            TCA_CHOLFLG24,
+            TCA_CHOLFLG25,
+            TCA_CHOLFLG26,
+            TCA_CHOLFLG27,
+            TCA_CHOLFLG28,
+            TCA_CHOLFLG29,
+            TCA_CHOLFLG30,
+            TCA_CHOLFLG31
+        FROM
+            TABLE(
+                TMG_F_GET_CALENDAR_LIST(
+                    #{custID},
+                    #{compCode},
+                    #{targetUser},
+                    #{sectionid},
+                    #{groupid},
+                    #{year}
+                )
+            )
+        WHERE
+            TCA_CCUSTOMERID = #{custID}
+        AND TCA_CCOMPANYID = #{compCode}
+        AND TCA_DSTARTDATE  <![CDATA[<]]> #{month,jdbcType=DATE}
+        AND TCA_DENDDATE >= #{month,jdbcType=DATE}
+        AND TCA_DYYYYMM = #{month,jdbcType=DATE}
+    </select>
+
+    <select id="buildSQLForSelectMonthly" resultType="hashmap">
+        SELECT
+            to_char(TMO_DYYYYMM, 'yyyy/MM/dd') TMO_DYYYYMM,      <!-- 年月 -->
+            TMO_CSTATUSFLG,                                      <!-- ステータスフラグ -->
+            TMG_F_IS_FIXED_MONTHLY(TMO_CEMPLOYEEID, TMO_DYYYYMM, TMO_CCUSTOMERID, TMO_CCOMPANYID) <!-- 月次確定判定情報-->
+        <!-- 表示項目のselect句を取得し、joinでカンマ結合する -->
+        <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
+            ${params}
+        </foreach>
+        FROM
+            TMG_MONTHLY
+        WHERE
+            TMO_CEMPLOYEEID  = #{targetUser}
+        AND TMO_DYYYYMM      = #{month,jdbcType=DATE}
+        AND TMO_CCOMPANYID   = #{compCode}
+        AND TMO_CCUSTOMERID  = #{custID}
+    </select>
+
 </mapper>

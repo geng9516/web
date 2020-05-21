@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.TmgEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
@@ -95,5 +96,28 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
             return teDo.getTemCworktypeid();
         }
         return null;
+    }
+
+    /**
+     * 勤務状況確認欄、健康状態確認欄の使用可否設定の取得
+     *
+     * @param custId 顧客コード
+     * @param compId 法人コード
+     * @param empId 社員番号
+     * @param lang 言語
+     * @param month　対象月
+     * @return IsWorkHealthChkVO
+     */
+    @Override
+    public IsWorkHealthChkVO buildIsWorkHealthChk(String custId, String compId, String empId, String lang, String month){
+
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        map.put("empId", empId);
+        map.put("lang", lang);
+        map.put("month", month);
+
+        return baseMapper.buildIsWorkHealthChk(map);
     }
 }

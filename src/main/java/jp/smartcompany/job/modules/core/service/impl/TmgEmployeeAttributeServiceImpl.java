@@ -1,10 +1,15 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeeAttributeDO;
 import jp.smartcompany.job.modules.core.mapper.TmgEmployeeAttributeMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeeAttributeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.TmgEmployeeAttributeVO;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -15,6 +20,111 @@ import org.springframework.stereotype.Repository;
  * @since 2020-04-16
  */
 @Repository
-        public class TmgEmployeeAttributeServiceImpl extends ServiceImpl<TmgEmployeeAttributeMapper, TmgEmployeeAttributeDO> implements ITmgEmployeeAttributeService {
+public class TmgEmployeeAttributeServiceImpl extends ServiceImpl<TmgEmployeeAttributeMapper, TmgEmployeeAttributeDO> implements ITmgEmployeeAttributeService {
 
-        }
+    /**
+     * [勤怠]基本情報属性を検索
+     *
+     * @param custID              顧客コード
+     * @param compCode            法人コード
+     * @param date                今日
+     * @param targetUser          　対象者
+     * @param month               　対象月
+     * @param psType              　種別
+     * @param overHoursReasonType 　比較対象種別
+     * @return List<TmgEmployeeAttributeVO>
+     */
+    @Override
+    public List<TmgEmployeeAttributeVO> buildSQLForSelectTmgEmployeeAttribute(String custID, String compCode, String date, String targetUser, String month, String psType, String overHoursReasonType) {
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("date", date);
+        map.put("targetUser", targetUser);
+        map.put("month", month);
+        map.put("psType", psType);
+        map.put("overHoursReasonType", overHoursReasonType);
+
+        return baseMapper.buildSQLForSelectTmgEmployeeAttribute(map);
+
+    }
+
+    /**
+     * 画面初期表示時に月45時間の申請事由の存在チェックを行い、
+     * システム年月が表示対象年月を過ぎているため遅延理由の登録が必要な場合に、
+     * 遅延理由の入力欄＝有効、かつ、メール送信＝未送信、のレコードを作成します
+     *
+     * @param psType     種別
+     * @param modifierProgramId      modifierProgramId
+     * @param custId     顧客コード
+     * @param compCode   法人コード
+     * @param targetUser 対象者
+     * @param month      対象月
+     * @param userCode   変更者
+     * @param onOff      ONOFF
+     * @param view       view
+     * @param mailUnsend mailUnsend
+     */
+    @Override
+    public void buildSQLForInsertTmgEmployeeAttributeActDisp(String psType, String modifierProgramId, String custId, String compCode
+            , String targetUser, String month, String userCode, String onOff, String view, String mailUnsend) {
+
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("psType", psType);
+        map.put("modifierProgramId", modifierProgramId);
+        map.put("custId", custId);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("month", month);
+        map.put("userCode", userCode);
+        map.put("onOff", onOff);
+        map.put("view", view);
+        map.put("mailUnsend", mailUnsend);
+
+        baseMapper.buildSQLForInsertTmgEmployeeAttributeActDisp(map);
+    }
+
+    /**
+     * 画面初期表示時に月45時間の申請事由の存在チェックを行い、
+     * システム年月が表示対象年月を過ぎているため遅延理由の登録が必要な場合に、
+     * 遅延理由の入力欄＝有効、かつ、メール送信＝未送信、のレコードを作成します
+     *
+     * なお、
+     * 　　月45時間のレコードが既に存在する　＆　データが無効、
+     * の場合はこのUPDATE文を返します。
+     * レコードが存在しない場合は、buildSQLForInsertTmgEmployeeAttributeActDispがコールされ、INSERT文が返されます。
+     *
+     * なお、「データが無効」な状態になるのは、下記2つの場合です
+     * ・画面表示時の自動生成によりレコードが作成され、その後、画面から変更をしていない場合
+     * ・一旦申請を上げた後、取り下げを行った場合
+     *
+     * ※このメソッド自体は、単にUPDATE文を返すだけであり、↑の諸々の判定は親メソッドmonthSumOverWorkで実施します
+     * @param userCode　更新者
+     * @param custId　顧客コード
+     * @param compCode　法人コード
+     * @param targetUser　対象者
+     * @param month　対象月
+     * @param type　種別
+     * @param modifierProgramId　更新プログラムID
+     * @param view　view
+     * @param mailUnsend　mailUnsend
+     */
+    @Override
+    public void buildSQLForUpdateTmgEmployeeAttribute(String userCode, String custId, String compCode , String targetUser, String month,String type,String modifierProgramId,String view,String mailUnsend){
+
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("userCode", userCode);
+        map.put("custId", custId);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("month", month);
+        map.put("type", type);
+        map.put("modifierProgramId", modifierProgramId);
+        map.put("view", view);
+        map.put("mailUnsend", mailUnsend);
+
+        baseMapper.buildSQLForUpdateTmgEmployeeAttribute(map);
+    }
+
+
+}
