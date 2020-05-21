@@ -46,7 +46,7 @@ public class AttendanceBookDTO {
     /**
      * 該当年月
      */
-    private Date tmaDyyyymm;
+    private String tmaDyyyymm;
 
     /**
      * 出勤区分：1日
@@ -361,57 +361,57 @@ public class AttendanceBookDTO {
     /**
      * 合計時間数
      */
-    private Long tmoNcalc008;
+    private Long col1;
 
     /**
      * 年休取得日数
      */
-    private Long tmaNpaidUsedDays;
+    private Long col2;
 
     /**
      * 年休取得時間
      */
-    private Long tmoNpaidUsedHours;
+    private Long col3;
 
     /**
      * 年休残日数
      */
-    private Long tmoNpaidRestDays;
+    private Long col4;
 
     /**
      * 年休残時間
      */
-    private Long tmoNpaidRestHours;
+    private Long col5;
 
     /**
      * 病休取得日数
      */
-    private Long tmoNsichnessUsedDays;
+    private Long col6;
 
     /**
      * 病休取得時間数
      */
-    private Long tmoNsichnessUsedHours;
+    private Long col7;
 
     /**
      * 特休取得日数
      */
-    private Long tmoNspecialUsedDays;
+    private Long col8;
 
     /**
      * 特休取得時間数
      */
-    private Long tmoNspecialUsedHours;
+    private Long col9;
 
     /**
      * 欠勤日数
      */
-    private Long tmoNcalc011;
+    private Long col10;
 
     /**
      * 欠勤時間数
      */
-    private Long tmoNcalc012;
+    private Long col11;
 
 
 }

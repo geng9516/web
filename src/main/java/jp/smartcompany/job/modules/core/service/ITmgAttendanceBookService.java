@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.dto.MastGenericDetailDTO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +26,12 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param dyyyymmdd      2020/05/14
      * @param firstDayOfYear 2020/01/01
      * @param employeeId     34370889
+     * @param compCode       01
+     * @param custId         01
+     * @param language       ja
      * @return
      */
-    AttendanceDateInfoDTO selectDateInfo(String dyyyymmdd, String firstDayOfYear, String employeeId);
+    AttendanceDateInfoDTO selectDateInfo(String dyyyymmdd, String firstDayOfYear, String employeeId, String compCode, String custId, String language);
 
 
     /**
@@ -37,9 +41,11 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param employeeId  34370889
      * @param preMonthDay 2020/04/01
      * @param nextYearDay 2021/04/01
+     * @param compCode    01
+     * @param custId      01
      * @return
      */
-    AttendanceEndueTimeInfoDTO selectEndueTimeInfo(String dyyyymmdd, String employeeId, String preMonthDay, String nextYearDay);
+    AttendanceEndueTimeInfoDTO selectEndueTimeInfo(String dyyyymmdd, String employeeId, String preMonthDay, String nextYearDay, String compCode, String custId);
 
 
     /**
@@ -48,9 +54,12 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param employeeId  34370889
      * @param curMonthDay 2020/05/01
      * @param nextYearDay 2021/04/01
+     * @param compCode    01
+     * @param custId      01
+     * @param list        出勤簿月単位集計項目
      * @return
      */
-    List<AttendanceBookDTO> selectAttendanceBookList(String employeeId, String curMonthDay, String nextYearDay);
+    List<AttendanceBookDTO> selectAttendanceBookList(String employeeId, String curMonthDay, String nextYearDay, String compCode, String custId, List<String> list);
 
 
     /**
@@ -60,9 +69,11 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param modifieruserId 46402406
      * @param yearLastDay    2020/12/31
      * @param comment        contentmsg
+     * @param compCode       01
+     * @param custId         01
      * @return true:success    false:fail
      */
-    boolean updateComment(String employeeId, String modifieruserId, String yearLastDay, String comment);
+    boolean updateComment(String employeeId, String modifieruserId, String yearLastDay, String comment, String compCode, String custId);
 
 
     /**
@@ -70,8 +81,20 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      *
      * @param employeeId
      * @param yearLastDay
+     * @param compCode    01
+     * @param custId      01
      * @return
      */
-    HashMap<String, String> selectComment(String employeeId, String yearLastDay);
+    HashMap<String, String> selectComment(String employeeId, String yearLastDay, String compCode, String custId);
+
+
+    /**
+     * 出勤簿月単位集計項目 データ部取得クエリ構築
+     *
+     * @param items       TMG_ATTENDANCEITEMS
+     * @param displayLine 5
+     * @return
+     */
+    List<MastGenericDetailDTO> selectTotalDataQueryList(String items, int displayLine);
 
 }
