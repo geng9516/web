@@ -81,7 +81,9 @@ public class TmgOrgTree {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         dataArray1 = entityList;
     }

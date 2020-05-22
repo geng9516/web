@@ -8,8 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest(classes = NextJobApplication.class)
 class TmgEmpListTest {
@@ -39,6 +37,19 @@ class TmgEmpListTest {
     @Test
     void createEmpList003() throws Exception {
 
+        tmgEmpList.createEmpList("'"+"01"+"'", "'"+"01"+"'","'"+"201000000000"+"'","to_date('2010/05/18', 'yyyy/mm/dd')","to_date('2020/05/20', 'yyyy/mm/dd')","'"+"ja"+"'",true,true,true) ;
+        tmgEmpList.getDataArrayBetween("2020/05/03", "2020/05/01");
+    }
+
+    @Test
+    void createEmpList004() throws Exception {
+
         tmgEmpList.createWardEmpList("'"+"01"+"'", "'"+"01"+"'","'"+"TMG_ITEMS|ScheduleCheck"+"'","to_date('2019/11/10', 'yyyy/mm/dd')","to_date('2020/05/20', 'yyyy/mm/dd')",true) ;
+    }
+
+    @Test
+    void createEmpList005() throws Exception {
+        tmgEmpList.createEmpList("'"+"01"+"'", "'"+"01"+"'","'"+"201000000000"+"'","to_date('2010/05/18', 'yyyy/mm/dd')","to_date('2020/05/20', 'yyyy/mm/dd')","'"+"ja"+"'",true,true,true) ;
+        //tmgEmpList.buildSQLForSelectEmpListFromDualTableObject(true);
     }
 }

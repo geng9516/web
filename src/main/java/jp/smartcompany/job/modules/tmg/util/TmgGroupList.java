@@ -112,7 +112,9 @@ public class TmgGroupList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         dataArray = entityList;
     }

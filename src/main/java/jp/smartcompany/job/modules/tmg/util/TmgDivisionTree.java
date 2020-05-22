@@ -83,7 +83,9 @@ public class TmgDivisionTree {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         dataArray1 = entityList;
 
@@ -97,7 +99,9 @@ public class TmgDivisionTree {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         gsRootSection = rootSection.getStr("MO_CSECTIONID_CK");
         gbAllDivision = (sExists == null || "".equals(sExists));

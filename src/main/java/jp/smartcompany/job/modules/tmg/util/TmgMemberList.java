@@ -159,7 +159,9 @@ public class TmgMemberList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         dataArray = entityList;
@@ -196,7 +198,9 @@ public class TmgMemberList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         gvSearchDataArray = entityList;
     }
@@ -222,7 +226,9 @@ public class TmgMemberList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する

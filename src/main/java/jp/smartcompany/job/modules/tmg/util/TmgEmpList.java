@@ -181,7 +181,9 @@ public class TmgEmpList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         dataArray = entityList;
      }
@@ -216,7 +218,9 @@ public class TmgEmpList {
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
 
       setSearchDataArray(entityList);
