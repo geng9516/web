@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 
 import java.util.Date;
 import java.util.List;
@@ -73,5 +74,18 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
          * @exception
          */
         List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date);
+
+
+        /**
+         * 基準日時点の超勤限度時間取得用
+         *
+         * @param custID 顧客コード
+         * @param compCode 法人コード
+         * @param targetSec 部署コード
+         * @param day　基準日
+         * @return LimitOfBasedateVO
+         */
+        LimitOfBasedateVO buildSQLForLimitOfBasedate(String custID, String compCode, String targetSec, String day);
+
 
 }

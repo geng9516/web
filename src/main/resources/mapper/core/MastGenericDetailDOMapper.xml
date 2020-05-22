@@ -292,7 +292,7 @@
             ATTRIBUTE_ADDLIMIT,
             TMG_F_GET_MGD_C(#{categoryCode} ,#{day}, 1,#{custID},#{compCode},#{language}) as MGD_C
         FROM
-            TABLE(TMG_F_GET_RESULTATTRIBUTE(#{custID},#{compCode},#{targetUser},#{siteId},#{categoryCode},#{day},#{attribute})
+            TABLE(TMG_F_GET_RESULTATTRIBUTE(#{custID},#{compCode},#{targetUser},#{siteId},#{categoryCode},#{day},#{attribute}))
     </select>
 
     <select id="buildSQLForSelectgetMgdAttributeEffort"
@@ -309,5 +309,71 @@
         WHERE
             TMG_F_GET_EMPLOYEE_ATTRIBUTE(#{custID} ,#{compCode},#{targetUser},#{month},#{type}) = #{onOff}
     </select>
+
+    <select id="buildSQLSelectGetMgdCsparechar4"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO">
+        SELECT
+            MGD_CMASTERCODE,
+            DECODE(MGD_CSPARECHAR5,'0','1','0') AS  MGD_CSPARECHAR5 <!--本来は1=出勤日なのだが、JS側で逆に判定してしまっているので、やむなく変換。後で直すべし-->
+        FROM
+            TABLE(TMG_F_GET_EMPLOYEES_WORKDAY_A(#{custCode},#{compCode},'ja'))
+    </select>
+    <select id="buildSQLForSelectGenericDetail"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO">
+        SELECT
+            MGD_CMASTERCODE
+            ,MGD_CGENERICDETAILDESC
+        FROM
+            TABLE(
+                TMG_SELECT_WORKINGID_R_LIST(
+                    #{targetUser},
+                    #{day} ,
+                    #{custID} ,
+                    #{targetComp} ,
+                    #{language}
+                )
+            )
+    </select>
+
+    <select id="buildSQLForSelectTmgVMgdMaxLengthCheck" resultType="string">
+        SELECT
+            MGD_MAX_LENGTH
+        FROM
+            TMG_V_MGD_MAX_LENGTH_CHECK
+        WHERE
+            MGD_CCUSTOMERID       = #{custID}
+        AND MGD_CCOMPANYID_CK_FK  = #{compID}
+        AND MGD_CLANGUAGE_CK      = #{lang}
+        AND MGD_DSTART_CK      <![CDATA[<=]]> #{targetDate}
+        AND MGD_DEND             >= #{targetDate}
+        AND MGD_MASTER_CODE       = #{masterCode}
+    </select>
+
+    <select id="buildSQLForSelectgetMgdDescriptions" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO">
+        SELECT
+            MGD_CMASTERCODE
+            , MGD_CGENERICDETAILDESC
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND MGD_CLANGUAGE_CK = 'ja'
+        AND MGD_CGENERICGROUPID = #{groupId}
+        AND MGD_DSTART_CK <![CDATA[<=]]>  #{day}
+        AND MGD_DEND >=  #{day}
+        <choose>
+            <when test="groupId =='TMG_BUSINESS_TRIP'">
+                ORDER BY MGD_CMASTERCODE
+            </when>
+            <when test="groupId =='TMG_OVERHOURSREASON'">
+                ORDER BY MGD_NSPARENUM1
+            </when>
+            <otherwise>
+                ORDER BY MGD_NSPARENUM2
+            </otherwise>
+        </choose>
+    </select>
+
 
 </mapper>

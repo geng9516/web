@@ -56,9 +56,50 @@ public class TmgResultsBean {
     private final ITmgDailyService iTmgDailyService;
 
     /**
-     * v
+     * ITmgDailyService
+     */
+    private final ITmgCompanyService iTmgCompanyService;
+
+    /**
+     * ITmgDailyDetailService
+     */
+    private final ITmgDailyDetailService iTmgDailyDetailService;
+
+    /**
+     * IMastOrganisationService
+     */
+    private final IMastOrganisationService iMastOrganisationService;
+
+    /**
+     * TmgReferList
      */
     private TmgReferList referList = null;
+
+
+    // サイト識別子
+
+    public static final String SITE_TI = "TMG_INP";             // 勤怠入力サイト
+    public static final String SITE_TP = "TMG_PERM";            // 勤怠承認サイト
+    public static final String SITE_TA = "TMG_ADMIN";           // 勤怠管理サイト
+
+    // 月別一覧画面表示
+    public static final String ACT_DISP_RMONTHLY = "ACT_DISP_RMONTHLY";
+    public static final String ACT_EDITINP_RDAILY      = "ACT_EDITINP_RDAILY";     // 日別登録画面表示
+
+    // 勤務状況確認
+    public static final String TYPE_ITEM_WORK_STATUS        = "TMG_ITEMS|WorkStatus";
+    // 健康状態確認
+    public static final String TYPE_ITEM_HEALTH_STATUS      = "TMG_ITEMS|HealthStatus";
+
+    // 出張区分ドロップボックス
+    public static final String GROUPID_TMG_BUSINESS_TRIP    = "TMG_BUSINESS_TRIP";
+
+    // 属性コードの使用可否
+    public static final String ATTRIBUTE_ENABLE_ONLY = "1"; // 計算用項目は表示しない
+    public static final String CATEGORY_NONDUTY          = "TMG_CATEGORY|NonDuty";          // 非勤務
+    public static final String CATEGORY_OVERHOURS        = "TMG_CATEGORY|Overhours";        // 超過勤務
+    private final static String Cs_YES = "yes";
+
 
     private void setSysControl(){
         psDBBean.setCustID("01");
@@ -105,118 +146,194 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 getToday(),
-                psDBBean.getSiteId()
+                psDBBean.getSiteId(),
+                psDBBean.getLanguage()
         );
-//        vQuery.add(buildSQLForSelectDetail(0, true));            // 詳細:欠勤離籍以外
-//        vQuery.add(buildSQL_Select_Company(psDBBean.getCustID(), psDBBean.getCompCode(), getDay()));        // 予定出社・退社時間の基準値
-//        vQuery.add(buildSQL_Select_getMgdCsparechar4(getCustID(), getCompCode()));        // 出勤日判定用
-//
-//        // 非勤務ドロップダウン用
-//        List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
-//                psDBBean.getCustID(),
-//                psDBBean.getCompCode(),
-//                psDBBean.getTargetUser(),
-//                psDBBean.getLanguage(),
-//                psDBBean.getSiteId(),
-//                getDay(),
-//                ATTRIBUTE_ENABLE_ONLY,
-//                CATEGORY_NONDUTY);
-//        modelMap.addAttribute("categoryNonduty", categoryNonduty);
-//
-//        // 超過勤務ドロップダウン用
-//        List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
-//                psDBBean.getCustID(),
-//                psDBBean.getCompCode(),
-//                psDBBean.getTargetUser(),
-//                psDBBean.getLanguage(),
-//                psDBBean.getSiteId(),
-//                getDay(),
-//                ATTRIBUTE_ENABLE_ONLY,
-//                CATEGORY_OVERHOURS);
-//        modelMap.addAttribute("categoryOverhours", categoryOverhours);
-//
-//
-//
-//
-//        vQuery.add(buildSQLForSelectDetailNonDuty(false));        // 詳細：非勤務
-//        vQuery.add(buildSQLForSelectDetailOverhours(false));    // 詳細：超過勤務
-//        vQuery.add(buildSQLForSelectgetMgdDescriptions(GROUPID_TMG_BUSINESS_TRIP));        // 出張区分ドロップダウン用
-//        // ▼2010/07/20 isolsuzuki #1044【障害報告：nttw-269】裁量労働について
-//        // 裁量労働-勤務状況の状態を取得
-//        // 勤務状況
-//        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(psDBBean.getCustID()
-//                , psDBBean.getCompCode()
-//                , getToday()
-//                , psDBBean.getTargetUser()
-//                , getMonth()
-//                , TYPE_ITEM_WORK_STATUS
-//                , TYPE_ITEM_OVERHOURS_REASON);
-//        modelMap.addAttribute("workStatus", workStatus);
-//
-//        vQuery.add(
-//                buildSQLForSelectGenericDetail(
-//                        getCustID()),
-//                        getTargetComp()),
-//                        escDBString(getTargetUser()),
-//                        toDBDate(getDay()),
-//                        escDBString(getLanguage())
-//                )
-//        );      // 就業区分マスタ
-//
-//        vQuery.add(buildSQLForLimitOfBasedate());                     // 日次超勤限度時間取得
-//        vQuery.add(buildSQLForSelectTargetForOverTime());             // 超過勤務対象有無取得,
-//        vQuery.add(buildSQLForSelectDetail(3, true));                 // 休憩予定取得
-//        vQuery.add(buildSQLForSelectTmgVMgdMaxLengthCheck(escDBString(getCustID()),
-//                escDBString(getTargetComp()), escDBString(getLanguage()), toDBDate(getDay()),
-//                escDBString(TmgUtil.Cs_MGD_TMG_MAX_LENGTH_CHECK_TMG_MAX_LENGTH_CHECK)));  // コメント欄の最大値取得
-//
-//        try {
-//            psResult = (ps.core.PsResult)getValuesforMultiquery(vQuery, BEAN_DESC);
-//
-//            // 裁量労働-勤務状況の値を格納
-//            if (this.valueAtColumnRow(25, 0, 0) != null) {
-//                this.isDiscretionWorkFixForDB = this.valueAtColumnRow(25, 0, 0).equals("TMG_ONOFF|1");
-//            } else {
-//                this.isDiscretionWorkFixForDB = false;
-//            }
-//
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        // ▲2010/07/20 isolsuzuki #1044【障害報告：nttw-269】裁量労働について
+        modelMap.addAttribute("dailyEditVO", dailyEditVO);
+
+        // 詳細:欠勤離籍以外
+        List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                0,
+                true
+        );
+        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
+
+
+        // 予定出社・退社時間の基準値
+        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
+        modelMap.addAttribute("companyVO", companyVO);
+
+        // 出勤日判定用
+        List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
+        modelMap.addAttribute("companyVO", companyVO);
+
+        // 非勤務ドロップダウン用
+        List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_NONDUTY);
+        modelMap.addAttribute("categoryNonduty", categoryNonduty);
+
+        // 超過勤務ドロップダウン用
+        List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_OVERHOURS);
+        modelMap.addAttribute("categoryOverhours", categoryOverhours);
+
+        // 詳細：非勤務
+        List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage()
+        );
+
+        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
+
+        // 詳細：超過勤務
+        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage(),
+                this.isShowOvertimeNotification()
+        );
+
+        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
+
+        // 出張区分ドロップダウン用
+        List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getDay(),
+                GROUPID_TMG_BUSINESS_TRIP
+        );
+        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
+
+        // 裁量労働-勤務状況の状態を取得
+        // 勤務状況
+        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
+                psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , getToday()
+                , psDBBean.getTargetUser()
+                , getMonth()
+                , TYPE_ITEM_WORK_STATUS
+                , TYPE_ITEM_OVERHOURS_REASON);
+        modelMap.addAttribute("workStatus", workStatus);
+
+        // 就業区分マスタ
+        List<GenericDetailVO> genericDetailVOList =  iMastGenericDetailService.buildSQLForSelectGenericDetail(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage()
+        );
+        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
+
+
+        // 日次超勤限度時間取得
+        // TODO
+//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
+//                ? this.referList.getTargetSec()
+//                : (String) psDBBean.getDept().get(0);
+        String targetSec ="";
+
+        LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                targetSec,
+                getDay()
+        );
+        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
+
+
+        // 超過勤務対象有無取得,
+        String targetForOverTime = iTmgEmployeeAttributeService.buildSQLForSelectTargetForOverTime(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay()
+        );
+        modelMap.addAttribute("targetForOverTime", targetForOverTime);
+
+        // 休憩予定取得
+        List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                3,
+                true
+        );
+        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
+
+        // コメント欄の最大値取得
+        String tmgVMgdMaxLengthCheck = iMastGenericDetailService.buildSQLForSelectTmgVMgdMaxLengthCheck(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getLanguage(),
+                getDay(),
+                TmgUtil.Cs_MGD_TMG_MAX_LENGTH_CHECK_TMG_MAX_LENGTH_CHECK);
+        modelMap.addAttribute("tmgVMgdMaxLengthCheck", tmgVMgdMaxLengthCheck);
+
+        // 裁量労働-勤務状況の値を格納
+        boolean isDiscretionWorkFixForDB = false;
+        if (workStatus.size()>0){
+            isDiscretionWorkFixForDB = workStatus.get(0).getTesCattribute().equals("TMG_ONOFF|1");
+        }
+        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
     }
 
 
-    // サイト識別子
+    /**
+     * システムプロパティから値を取得後、超勤申請の事前事後登録情報を表示利用するかどうか判定し値を返却します
+     *
+     * @return boolean(true:使用する、false:使用しない)
+     */
+    public boolean isShowOvertimeNotification(){
 
-    public static final String SITE_TI = "TMG_INP";             // 勤怠入力サイト
-    public static final String SITE_TP = "TMG_PERM";            // 勤怠承認サイト
-    public static final String SITE_TA = "TMG_ADMIN";           // 勤怠管理サイト
-
-    // 月別一覧画面表示
-    public static final String ACT_DISP_RMONTHLY = "ACT_DISP_RMONTHLY";
-    public static final String ACT_EDITINP_RDAILY      = "ACT_EDITINP_RDAILY";     // 日別登録画面表示
-
-    // 勤務状況確認
-    public static final String TYPE_ITEM_WORK_STATUS        = "TMG_ITEMS|WorkStatus";
-    // 健康状態確認
-    public static final String TYPE_ITEM_HEALTH_STATUS      = "TMG_ITEMS|HealthStatus";
-
-    // エフォート管理
-//    public static final String TYPE_ITEM_EFFORT      = "TMG_ITEMS|Effort";
-
-    // 月45時間を越える超勤の申請理由ドロップボックス
-//    public static final String GROUPID_OVERHOURS_REASON     = "TMG_OVERHOURSREASON";
-//    public static final String CATEGORY_DISCRETIONWORK   = "TMG_CATEGORY|DiscretionWork";   // 裁量労働
-//    public static final String CATEGORY_EFFORTMANAGEMENT = "TMG_CATEGORY|EffortManagement"; // エフォート
-
-    // 属性コードの使用可否
-    public static final String ATTRIBUTE_ENABLE_ONLY = "1"; // 計算用項目は表示しない
-    public static final String CATEGORY_NONDUTY          = "TMG_CATEGORY|NonDuty";          // 非勤務
-    public static final String CATEGORY_OVERHOURS        = "TMG_CATEGORY|Overhours";        // 超過勤務
+        // TODO psDBBean.getSystemProperty 未実装
+        //psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_SHOW_OVERTIMENOTIFICATION);
+        String overtimeNotification = "yes";
 
 
-
+        if (Cs_YES.equalsIgnoreCase(overtimeNotification)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * 月別一覧画面を表示するメソッド
@@ -416,15 +533,6 @@ public class TmgResultsBean {
     }
 
     /**
-     * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLをリストに格納する
-     */
-    public List<ItemVO> setDispMonthlyItems() {
-
-        return iMastGenericDetailService.buildSQLForSelectTmgDispMonthlyItems(psDBBean.getCustID(), psDBBean.getCompCode(),
-                psDBBean.getLanguage(), getDay());
-    }
-
-    /**
      * 表示対象日
      */
     private String gsDay = null;
@@ -439,6 +547,49 @@ public class TmgResultsBean {
     public String getDay() {
         return gsDay;
     }
+
+    /**
+     * 表示対象月
+     */
+    private String gsMonth = null;
+
+    /**
+     * 表示対象月
+     */
+    public void setMonth(String s) {
+        gsMonth = s;
+    }
+
+    public String getMonth() {
+        return gsMonth;
+    }
+    /**
+     * 今日の日付(組織ツリーの基準日がセットされる為、必ずしもgsToday=システム日付ではない)
+     */
+    private String gsToday = null;
+
+    /**
+     * 今日の日付
+     */
+    public void setToday(String s) {
+        gsToday = s;
+    }
+
+    public String getToday() {
+        return gsToday;
+    }
+
+
+
+    /**
+     * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLをリストに格納する
+     */
+    public List<ItemVO> setDispMonthlyItems() {
+
+        return iMastGenericDetailService.buildSQLForSelectTmgDispMonthlyItems(psDBBean.getCustID(), psDBBean.getCompCode(),
+                psDBBean.getLanguage(), getDay());
+    }
+
 
     /**
      * TMG_DISPDAILYITEMSマスタより取得した日次情報のヘッダー・SQL・表示幅をmapに格納する
@@ -469,7 +620,7 @@ public class TmgResultsBean {
 //     */
 //    private final static String SYSPROP_TMG_USE_NTF45OVERTIME = "TMG_USE_NTF45OVERTIME";
 //    private Boolean gbUseNtf45OverTime = null;
-//    private final static String Cs_YES = "yes";
+
 //
 //    /**
 //     * システムプロパティから値を取得後、月45時間を超える超過勤務の申請理由登録機能を使用するか判定し値を返却します
@@ -494,42 +645,11 @@ public class TmgResultsBean {
 //        return gbUseNtf45OverTime;
 //    }
 
-    /**
-     * 表示対象月
-     */
-    private String gsMonth = null;
-
-    /**
-     * 表示対象月
-     */
-    public void setMonth(String s) {
-        gsMonth = s;
-    }
-
-    public String getMonth() {
-        return gsMonth;
-    }
 
     /**
      * 月45時間を越える超勤の申請理由
      */
     public static final String TYPE_ITEM_OVERHOURS_REASON = "TMG_ITEMS|OverhoursReason";
-
-    /**
-     * 今日の日付(組織ツリーの基準日がセットされる為、必ずしもgsToday=システム日付ではない)
-     */
-    private String gsToday = null;
-
-    /**
-     * 今日の日付
-     */
-    public void setToday(String s) {
-        gsToday = s;
-    }
-
-    public String getToday() {
-        return gsToday;
-    }
 
     /**
      * 承認ボタン
