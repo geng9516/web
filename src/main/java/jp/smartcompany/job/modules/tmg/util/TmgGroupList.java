@@ -68,7 +68,6 @@ public class TmgGroupList {
 
     @Autowired
     private DataSource dataSource;
-    private Connection connection;
 
     /**
      * コンストラクタ
@@ -104,6 +103,7 @@ public class TmgGroupList {
                 psDBBean.escDBString(DEFAULT_DATE_FORMAT)
                 );
 
+        Connection connection = null;
         List entityList = null;
         log.info("createGroupList_SQL1：{}",sSQL);
         try {
@@ -111,8 +111,11 @@ public class TmgGroupList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
-
         dataArray = entityList;
     }
 

@@ -44,6 +44,13 @@ class TmgMemberListTest {
     @Test
     void createMemberList003() throws Exception {
 
-        tmgMemberList.isThereEmployeesInSection(new String[]{"306000306110", "306000306120"}, "to_date('2020/05/15', 'yyyy/mm/dd')", "to_date('2020/05/15', 'yyyy/mm/dd')");
+        psDBBean.setCustID("01");
+        psDBBean.setCompCode("01");
+        psDBBean.setUserCode("46402406");
+        psDBBean.setLanguage("ja");
+
+        tmgMemberList.createMemberList("to_date('2020/05/15', 'yyyy/mm/dd')", true);
+
+        tmgMemberList.getDataArrayBetween("2020/05/03", "2020/05/01");
     }
 }

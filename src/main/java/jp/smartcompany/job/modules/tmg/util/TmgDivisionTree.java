@@ -47,7 +47,6 @@ public class TmgDivisionTree {
 
     @Autowired
     private DataSource dataSource;
-    private Connection connection;
 
     /**
      * コンストラクタ
@@ -75,6 +74,7 @@ public class TmgDivisionTree {
         String sExists = "";
         String sSQL =  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
 
+        Connection connection = null;
         List<OrganisationBO> entityList = null;
         log.info("createDivisionTree_SQL1：{}",sSQL);
         try {
@@ -82,6 +82,10 @@ public class TmgDivisionTree {
             entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
         dataArray1 = entityList;
 
@@ -94,6 +98,10 @@ public class TmgDivisionTree {
             rootSection = SqlExecutor.query(connection,sSQL1 ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
         gsRootSection = rootSection.getStr("MO_CSECTIONID_CK");
         gbAllDivision = (sExists == null || "".equals(sExists));
