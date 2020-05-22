@@ -46,7 +46,6 @@ public class TmgOrgTree {
 
     @Autowired
     DataSource dataSource;
-    private Connection connection;
 
     /**
      * コンストラクタ
@@ -73,7 +72,7 @@ public class TmgOrgTree {
 
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
         //String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate, psDBBean.requestHash, psDBBean.session);
-
+        Connection connection = null;
         List<OrganisationBO> entityList = null;
         log.info("createOrgTree_SQL1：{}",sSQL);
         try {
@@ -81,6 +80,8 @@ public class TmgOrgTree {
             entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
         dataArray1 = entityList;
     }

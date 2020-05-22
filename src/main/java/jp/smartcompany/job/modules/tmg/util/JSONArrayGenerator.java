@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.Entity;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -71,11 +72,11 @@ public class JSONArrayGenerator {
      * @param starDateIndex
      * @param endDateIndex
      * @param format
-     * @return Vector
+     * @return List
      * @throws Exception
      */
     public static List selectDataArrayBetween(
-            List dataArray,
+            List<Entity> dataArray,
             Date startDate,
             Date endDate,
             int starDateIndex,
@@ -86,10 +87,21 @@ public class JSONArrayGenerator {
             return dataArray;
         }
         List newDataArray = CollUtil.newArrayList();
-        for(Iterator<List<String>> i = dataArray.iterator(); i.hasNext();){
-            List<String> data = i.next();
-            Date dstart = format.parse(data.get(starDateIndex) );
-            Date dend   = format.parse(data.get(endDateIndex) );
+
+        for (Entity data: dataArray){
+
+            Date dstart = null;
+            Date dend  = null;
+            int i = 0;
+
+            for (Object v: data.values()){
+                if (i == starDateIndex) {
+                    dstart = format.parse(v.toString());
+                } else if (i == endDateIndex) {
+                    dend = format.parse(v.toString() );
+                }
+                i++;
+            }
             // 元のデータのうち、指定された開始日～終了日の範囲にかかっているデータを拾っていく
             // 以上・以下(<= && >=)という条件で拾い上げるので、equalsメソッドによる完全一致も拾う必要がある
             if( (dstart.before(endDate)||dstart.equals(endDate)) &&
@@ -200,7 +212,7 @@ public class JSONArrayGenerator {
         List distinctDataArray = new ArrayList();
         Hashtable hash = new Hashtable();
 
-        for(Iterator i = dataArray.iterator(); i.hasNext();){
+        for (Iterator i = dataArray.iterator(); i.hasNext();){
             List data = (List)i.next();
 
             StringBuffer key = new StringBuffer();

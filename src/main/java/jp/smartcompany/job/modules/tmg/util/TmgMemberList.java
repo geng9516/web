@@ -60,7 +60,6 @@ public class TmgMemberList {
 
     @Autowired
     private DataSource dataSource;
-    private Connection connection;
 
     /**
      * コンストラクタ
@@ -151,6 +150,7 @@ public class TmgMemberList {
                         null,
                         null);
 
+        Connection connection = null;
         List entityList = null;
         log.info("createTreeMemberList_SQL1：{}",sSQL);
         try {
@@ -158,6 +158,8 @@ public class TmgMemberList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
 
         dataArray = entityList;
@@ -185,6 +187,7 @@ public class TmgMemberList {
                         bean.escDBString(DEFAULT_DATE_FORMAT), psSearchItems, psSearchCondition,
                         psSearchData);
 
+        Connection connection = null;
         List entityList = null;
         log.info("createSearchMemberList_SQL2：{}",sSQL);
         try {
@@ -192,6 +195,8 @@ public class TmgMemberList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
         gvSearchDataArray = entityList;
     }
@@ -208,6 +213,7 @@ public class TmgMemberList {
         String sSQL =   buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
                         bean.escDBString(bean.getCompCode()), psBaseDate, bean.escDBString(bean.getLanguage()));
 
+        Connection connection = null;
         Entity entityList = null;
         log.info("getMsgDispLimit4Tree_SQL3：{}",sSQL);
         try {
@@ -215,6 +221,8 @@ public class TmgMemberList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
@@ -784,50 +792,6 @@ public class TmgMemberList {
 
     public String[] getKeyArray() {
         return keyArray;
-    }
-
-
-    /**
-     * dataArrayのデータから、社員情報の有無を判定するメソッド
-     * 引数で渡された日付と、部署コードからdataArrayに社員の情報の有無をbooleanで返すメソッド
-     * 社員の情報がある場合はtrueを、無い場合はfalseを返す。
-     *
-     * @author kawabata in 2007/08/03
-     * @param targetSectionArray  対象部署コード
-     * @param sBaseData           基準日
-     * @param sTargetDate         遡り日付
-     * @return boolean 社員情報あり:true,  社員情報無し:false
-     * @throws Exception
-     */
-    public boolean isThereEmployeesInSection(String[] targetSectionArray, String sBaseData, String sTargetDate) throws Exception {
-        // 日付で絞り込む
-        List targetDataArray = getDataArrayBetween(sBaseData, sTargetDate);
-        // 部署コードで絞り込む
-        targetDataArray = JSONArrayGenerator.selectDataArray(targetDataArray, DEFAULT_KEY_SECID, targetSectionArray);
-
-        return !(targetDataArray == null || targetDataArray.size() == 0);
-    }
-
-    /**
-     /**
-     * dataArrayのデータから、社員情報の有無を判定するメソッド
-     * 引数で渡された日付と、部署コードからdataArrayに社員の情報の有無をbooleanで返すメソッド
-     * 社員の情報がある場合はtrueを、無い場合はfalseを返す。
-     *
-     * @author kawabata in 2007/08/03
-     * @param targetGroupArray  対象部署コード
-     * @param sBaseData           基準日
-     * @param sTargetDate         遡り日付
-     * @return boolean 社員情報あり:true,  社員情報無し:false
-     * @throws Exception
-     */
-    public boolean isThereEmployeesInGroup(String[] targetGroupArray, String sBaseData, String sTargetDate) throws Exception{
-        // 日付で絞り込む
-        List targetDataArray = getDataArrayBetween(sBaseData, sTargetDate);
-        // 部署コードで絞り込む
-        targetDataArray = JSONArrayGenerator.selectDataArray(targetDataArray, DEFAULT_KEY_GROUPID, targetGroupArray);
-
-        return !(targetDataArray == null || targetDataArray.size() == 0);
     }
 
     public List getSearchDataArray() {

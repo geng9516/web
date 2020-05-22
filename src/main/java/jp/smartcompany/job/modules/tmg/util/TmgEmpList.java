@@ -52,7 +52,6 @@ public class TmgEmpList {
     private String beanDesc = null;
     private List dataArray = null;
     private List gvSearchDataArray = null;
-    //private List gvSearchDataArray2 = null;
     private String[] keyArray = null;
 
     /** 検索対象範囲設定を考慮するかどうか */
@@ -63,7 +62,6 @@ public class TmgEmpList {
 
     @Autowired
     DataSource dataSource;
-    private Connection connection;
 
     /**
      * コンストラクタ
@@ -174,6 +172,7 @@ public class TmgEmpList {
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, null, null, null);
 
+        Connection connection = null;
         List entityList = null;
         log.info("createTreeEmpList_SQL1：{}",sSQL);
         try {
@@ -181,6 +180,8 @@ public class TmgEmpList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
         dataArray = entityList;
      }
@@ -206,6 +207,7 @@ public class TmgEmpList {
         String sSQL = buildSQLForSelectEmpList(cust, comp, section, targetStartDate, targetEndDate,
                 language, ifKyeOrAdditionalRole, isJoinTmgEmployees, useManageFLG, psSearchItems,psSearchCondition, psSearchData);
 
+        Connection connection = null;
         List entityList = null;
         log.info("createSearchEmpList_SQL2：{}",sSQL);
         try {
@@ -213,6 +215,8 @@ public class TmgEmpList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            connection.close();
         }
 
       setSearchDataArray(entityList);
@@ -888,7 +892,7 @@ public class TmgEmpList {
      * @return
      */
     public String buildSQLForSelectEmpListFromDualTableObject(boolean pbSelectedSearchTab) throws Exception{
-
+        // TODO: 呼び出し先はTmgDutyHoursBean　交替制勤務割振表　テスト不要
         // 社員番号でdistinctをかけてから、SQLを構築する
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
