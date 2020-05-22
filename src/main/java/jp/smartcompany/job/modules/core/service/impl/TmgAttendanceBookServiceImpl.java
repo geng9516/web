@@ -1,13 +1,11 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import jp.smartcompany.job.modules.core.mapper.TmgAttendanceBookMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.MastGenericDetailDTO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,24 +60,19 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
     }
 
     @Override
-    public boolean updateComment(String employeeId, String modirieruserId, String yearLastDay, String comment, String compCode, String custId) {
+    public void updateComment(String employeeId, String modifieruserId, String yearLastDay, String comment, String compCode, String custId) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("employeeId", employeeId);
-        params.put("modirieruserId", modirieruserId);
+        params.put("modifieruserId", modifieruserId);
         params.put("yearLastDay", yearLastDay);
         params.put("comment", comment);
         params.put("compCode", compCode);
         params.put("custId", custId);
-        try {
-            baseMapper.updateComment(params);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
+        baseMapper.updateComment(params);
     }
 
     @Override
-    public HashMap<String, String> selectComment(String employeeId, String yearLastDay, String compCode, String custId) {
+    public AttendanceBookCommentDTO selectComment(String employeeId, String yearLastDay, String compCode, String custId) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("employeeId", employeeId);
         params.put("yearLastDay", yearLastDay);
@@ -94,5 +87,16 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
         params.put("items", items);
         params.put("displayLine", displayLine);
         return baseMapper.selectTotalDataQueryList(params);
+    }
+
+    @Override
+    public AttendanceBookEmpDTO selectEmployeesBasicInfo(String employeeId, String queryMonthDay, String nextYearDay, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("queryMonthDay", queryMonthDay);
+        params.put("nextYearDay", nextYearDay);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectEmployeesBasicInfo(params);
     }
 }

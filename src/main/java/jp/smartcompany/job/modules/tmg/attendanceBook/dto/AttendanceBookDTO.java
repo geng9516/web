@@ -361,57 +361,57 @@ public class AttendanceBookDTO {
     /**
      * 合計時間数
      */
-    private Long col1;
+    private String col1;
 
     /**
      * 年休取得日数
      */
-    private Long col2;
+    private String col2;
 
     /**
      * 年休取得時間
      */
-    private Long col3;
+    private String col3;
 
     /**
      * 年休残日数
      */
-    private Long col4;
+    private String col4;
 
     /**
      * 年休残時間
      */
-    private Long col5;
+    private String col5;
 
     /**
      * 病休取得日数
      */
-    private Long col6;
+    private String col6;
 
     /**
      * 病休取得時間数
      */
-    private Long col7;
+    private String col7;
 
     /**
      * 特休取得日数
      */
-    private Long col8;
+    private String col8;
 
     /**
      * 特休取得時間数
      */
-    private Long col9;
+    private String col9;
 
     /**
      * 欠勤日数
      */
-    private Long col10;
+    private String col10;
 
     /**
      * 欠勤時間数
      */
-    private Long col11;
+    private String col11;
 
 
 }

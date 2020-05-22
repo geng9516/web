@@ -2,10 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.MastGenericDetailDTO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -62,7 +59,7 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
      * @param params
      * @return
      */
-    HashMap<String, String> selectComment(HashMap<String, String> params);
+    AttendanceBookCommentDTO selectComment(HashMap<String, String> params);
 
     /**
      * 出勤簿月単位集計項目 データ部取得クエリ構築
@@ -72,5 +69,12 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
      */
     List<MastGenericDetailDTO> selectTotalDataQueryList(HashMap<String, Object> params);
 
+    /**
+     * 出勤簿のヘッダ部情報（氏名、所属）等
+     *
+     * @param params
+     * @return
+     */
+    AttendanceBookEmpDTO selectEmployeesBasicInfo(HashMap<String, Object> params);
 
 }

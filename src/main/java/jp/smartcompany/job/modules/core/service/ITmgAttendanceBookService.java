@@ -1,11 +1,9 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.MastGenericDetailDTO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -71,9 +69,8 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param comment        contentmsg
      * @param compCode       01
      * @param custId         01
-     * @return true:success    false:fail
      */
-    boolean updateComment(String employeeId, String modifieruserId, String yearLastDay, String comment, String compCode, String custId);
+    void updateComment(String employeeId, String modifieruserId, String yearLastDay, String comment, String compCode, String custId);
 
 
     /**
@@ -85,7 +82,7 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param custId      01
      * @return
      */
-    HashMap<String, String> selectComment(String employeeId, String yearLastDay, String compCode, String custId);
+    AttendanceBookCommentDTO selectComment(String employeeId, String yearLastDay, String compCode, String custId);
 
 
     /**
@@ -96,5 +93,18 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @return
      */
     List<MastGenericDetailDTO> selectTotalDataQueryList(String items, int displayLine);
+
+
+    /**
+     * 出勤簿のヘッダ部情報（氏名、所属）等
+     *
+     * @param employeeId
+     * @param queryMonthDay
+     * @param nextYearDay
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    AttendanceBookEmpDTO selectEmployeesBasicInfo(String employeeId, String queryMonthDay, String nextYearDay, String compCode, String custId);
 
 }

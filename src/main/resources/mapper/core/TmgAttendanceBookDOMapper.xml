@@ -72,8 +72,8 @@
         <result column="tma_workcontent30" property="tmaWorkcontent30" javaType="java.lang.String"/>
         <result column="tma_worktypeid31" property="tmaWorktypeid31" javaType="java.lang.String"/>
         <result column="tma_workcontent31" property="tmaWorkcontent31" javaType="java.lang.String"/>
-        <result column="col1" property="col1"  javaType="java.lang.String"/>
-        <result column="col2" property="col2"  javaType="java.lang.String"/>
+        <result column="col1" property="col1" javaType="java.lang.String"/>
+        <result column="col2" property="col2" javaType="java.lang.String"/>
         <result column="col3" property="col3" javaType="java.lang.String"/>
         <result column="col4" property="col4" javaType="java.lang.String"/>
         <result column="col5" property="col5" javaType="java.lang.String"/>
@@ -104,6 +104,19 @@
         <result column="mgd_csparechar1" property="mgd_csparechar1" javaType="java.lang.String"/>
         <result column="mgd_csparechar2" property="mgd_csparechar2" javaType="java.lang.String"/>
         <result column="col_name" property="col_name" javaType="java.lang.String"></result>
+    </resultMap>
+
+    <!-- コメント　検索 -->
+    <resultMap id="selectCommentMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookCommentDTO">
+        <result column="tmy_comment" property="tmy_comment" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!-- 操作社員情報 -->
+    <resultMap id="selectEmpInfoMap" type="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookEmpDTO">
+        <result column="empname" property="empname" javaType="java.lang.String"/>
+        <result column="secname" property="secname" javaType="java.lang.String"/>
+        <result column="worktypename" property="worktypename" javaType="java.lang.String"/>
+        <result column="postname" property="postname" javaType="java.lang.String"/>
     </resultMap>
 
     <!-- ディフォルト表示時間を取得する -->
@@ -138,8 +151,8 @@
     <!-- 出勤簿リスト -->
     <select id="selectAttendanceBookList" parameterType="java.util.HashMap" resultMap="AttendanceBookMap">
         select
-        '01' tmaCcustomerid
-        ,'01' tmaCcompanyid
+        #{custId} tmaCcustomerid
+        ,#{compCode} tmaCcompanyid
         ,#{employeeId} tmaCemployeeid
         ,to_char(tma_dyyyymm,'yyyy') dyyyy
         ,to_char(tma_dyyyymm,'MM') dmm
@@ -206,24 +219,24 @@
         ,nvl(tma_workcontent30, ' ') tma_workcontent30
         ,tma_worktypeid31
         ,nvl(tma_workcontent31, ' ') tma_workcontent31
-        <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
+        <foreach collection="list" item="params" index="index" open="," separator="," close="">
             ${params}
         </foreach>
         from tmg_attendance_book,
         tmg_monthly
         where tma_cemployeeid = #{employeeId}
-        and tma_ccompanyid = '01'
+        and tma_ccompanyid = #{compCode}
         and tma_dyyyymm <![CDATA[>=]]>  to_date(#{curMonthDay}, 'yyyy/mm/dd')
         and tma_dyyyymm <![CDATA[<=]]> to_date(#{nextYearDay}, 'yyyy/mm/dd')
-        and tma_ccustomerid = '01'
+        and tma_ccustomerid = #{custId}
         and tmo_ccustomerid = tma_ccustomerid
         and tmo_ccompanyid = tma_ccompanyid
         and tmo_cemployeeid = tma_cemployeeid
         and trunc(tmo_dyyyymm) = trunc(tma_dyyyymm)
         union all
         select
-        '01' tmaCcustomerid
-        ,'01' tmaCcompanyid
+        #{custId} tmaCcustomerid
+        ,#{compCode} tmaCcompanyid
         ,#{employeeId} tmaCemployeeid
         ,to_char(tma_dyyyymm,'yyyy') dyyyy
         ,to_char(tma_dyyyymm,'MM')||'月' dmm
@@ -301,10 +314,10 @@
         ,' '
         ,' '
         ,' '
-        from table(tmg_f_get_attendance_book_list('01', '01', #{employeeId},
+        from table(tmg_f_get_attendance_book_list(#{custId}, #{compCode}, #{employeeId},
         to_date(#{curMonthDay}, 'yyyy/mm/dd'), to_date(#{nextYearDay},'yyyy/mm/dd'))) b
-        where b.tma_ccustomerid = '01'
-        and b.tma_ccompanyid = '01'
+        where b.tma_ccustomerid = #{custId}
+        and b.tma_ccompanyid = #{compCode}
         and b.tma_dyyyymm <![CDATA[>=]]>  to_date(#{curMonthDay}, 'yyyy/mm/dd')
         and b.tma_dyyyymm <![CDATA[<=]]> to_date(#{nextYearDay}, 'yyyy/mm/dd')
         and not exists(select 1
@@ -317,11 +330,11 @@
     </select>
 
     <!-- 摘要編集 -->
-    <update id="updateComment">
+    <update id="updateComment" parameterType="java.util.HashMap">
         merge
           into tmg_yearly y using dual on (dual.dummy is not null
                and y.tmy_cemployeeid = #{employeeId}
-               and y.tmy_nyyyy = to_number(tmg_f_get_the_year(to_date(#{yearLastDay}, 'yyyy/mm/dd'),#{custId}, #{compCode}))
+               and y.tmy_nyyyy = to_number(tmg_f_get_the_year(to_date( #{yearLastDay}, 'yyyy/mm/dd'), #{custId}, #{compCode}))
                and y.tmy_ccompanyid = #{compCode} and y.tmy_ccustomerid = #{custId}) when matched then
         update
            set tmy_comment = #{comment} ,
@@ -338,7 +351,7 @@
     </update>
 
     <!-- コメント　検索 -->
-    <select id="selectComment" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+    <select id="selectComment" parameterType="java.util.HashMap" resultMap="selectCommentMap">
         select tmy_comment from tmg_yearly
          where tmy_cemployeeid = #{employeeId}
            and tmy_nyyyy = to_number(tmg_f_get_the_year(to_date(#{yearLastDay},'yyyy/mm/dd'), #{custId}, #{compCode}))
@@ -358,5 +371,12 @@
           order by mgd_nsparenum1, mgd_nsparenum2
     </select>
 
-
+    <!-- 出勤簿のヘッダ部情報（氏名、所属）等 -->
+    <select id="selectEmployeesBasicInfo" parameterType="java.util.HashMap" resultMap="selectEmpInfoMap">
+        select kanjiname as empname
+            ,sectionname as secname
+            ,worktypename as worktypename
+            ,postname as postname
+        from table(tmg_empattr4ledger_table(tmg_f_get_empattr4ledger(#{custId}, #{compCode}, #{employeeId}, to_date(#{queryMonthDay}, 'yyyy/mm/dd'), to_date(#{nextYearDay}, 'yyyy/mm/dd'))))
+    </select>
 </mapper>

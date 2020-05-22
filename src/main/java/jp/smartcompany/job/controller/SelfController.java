@@ -3,11 +3,10 @@ package jp.smartcompany.job.controller;
 import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceEndueTimeInfoDTO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -39,37 +38,37 @@ public class SelfController {
 
 
     /**
-     * 年次休暇付与日数と付与時間
+     * 年次休暇付与日数, 年次休暇付与日, 摘要info
      *
-     * @param dyyyymmdd
      * @param employeeId
-     * @return
+     * @param year
+     * @param month
+     * @return {"msg":"リクエスト成功","code":0,"data":{"employeeId":"34370889","endueDate":"01月01日","endueDaysHours":"33 5","tmy_comment":"this is a test 20200519","dataTime":"2020/04","queryTime":"2020-05-22 16:21:21"}}
      */
-    @GetMapping("endueTimeInfo")
+    @GetMapping("queryHolidayInfo")
     @ResponseBody
-    public AttendanceEndueTimeInfoDTO endueTimeInfo(@RequestParam("dyyyymmdd") String dyyyymmdd,
-                                                    @RequestParam("employeeId") String employeeId,
-                                                    @RequestParam("year") String year,
-                                                    @RequestParam("month") String month) {
+    public AttendanceBookHolidayInfoVO queryHolidayInfo(@RequestParam("employeeId") String employeeId,
+                                                        @RequestParam("year") String year,
+                                                        @RequestParam("month") String month) {
 
-        return attendanceBookBean.selectEndueTimeInfo(dyyyymmdd, employeeId, year, month);
+        return attendanceBookBean.queryHolidayInfo(employeeId, year, month);
     }
 
     /**
      * 出勤簿リスト
      *
-     * @param dyyyymmdd
      * @param employeeId
+     * @param year
+     * @param month
      * @return
      */
     @GetMapping("attendanceBookList")
     @ResponseBody
-    public List<AttendanceBookDTO> attendanceBookList(@RequestParam("dyyyymmdd") String dyyyymmdd,
-                                                      @RequestParam("employeeId") String employeeId,
+    public List<AttendanceBookDTO> attendanceBookList(@RequestParam("employeeId") String employeeId,
                                                       @RequestParam("year") String year,
                                                       @RequestParam("month") String month) {
 
-        return attendanceBookBean.selectAttendanceBookList(dyyyymmdd, employeeId, year, month);
+        return attendanceBookBean.selectAttendanceBookList(employeeId, year, month);
     }
 
 
@@ -91,18 +90,5 @@ public class SelfController {
         return attendanceBookBean.updateComment(employeeId, modifieruserId, year, comment);
     }
 
-
-    /**
-     * コメント　検索
-     *
-     * @param employeeId
-     * @param year
-     * @return
-     */
-    @GetMapping("selectComment")
-    @ResponseBody
-    public HashMap<String, String> selectComment(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year) {
-        return attendanceBookBean.selectComment(employeeId, year);
-    }
 
 }
