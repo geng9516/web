@@ -4,8 +4,10 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 
 import java.util.Date;
 import java.util.List;
@@ -145,5 +147,46 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
                                                                String siteId, String day, String month, String type, String onOff,
                                                                String attribute, String categoryCode);
 
+    /**
+     * 予備項目4を取得「0:出勤日,それ以外は出勤日ではない」
+     *
+     * @param custCode 顧客コード
+     * @param compCode 法人コード
+     * @return List<MgdCsparechar4VO>
+     */
+    List<MgdCsparechar4VO> buildSQLSelectGetMgdCsparechar4(String custCode, String compCode);
 
+    /**
+     * 就業区分マスタを取得する
+     *
+     * @param custID     顧客コード
+     * @param targetComp 法人コード
+     * @param targetUser 対象者
+     * @param day        　対象日
+     * @param language   　言語
+     * @return List<GenericDetailVO>
+     */
+    List<GenericDetailVO> buildSQLForSelectGenericDetail(String custID, String targetComp, String targetUser, String day, String language);
+
+    /**
+     * 各コメント欄の最大値を名称マスタ詳細より取得
+     * @param custID 顧客コード
+     * @param compID 法人コード
+     * @param lang 言語
+     * @param targetDate 対象日
+     * @param masterCode マスタコード
+     * @return String
+     */
+    String buildSQLForSelectTmgVMgdMaxLengthCheck(String custID, String compID, String lang, String targetDate, String masterCode);
+
+    /**
+     * 名称マスタから属性コードを取得
+     *
+     * @param custID
+     * @param compCode
+     * @param day
+     * @param groupId
+     * @return List<GenericDetailVO>
+     */
+    List<GenericDetailVO> buildSQLForSelectgetMgdDescriptions(String custID, String compCode, String day, String groupId);
 }

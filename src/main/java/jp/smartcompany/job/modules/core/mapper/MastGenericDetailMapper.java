@@ -4,8 +4,10 @@ import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -100,7 +102,25 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
      */
     List<MgdAttributeVO> buildSQLForSelectgetMgdAttributeEffort(Map<String, Object> map);
 
+    /**
+     * 予備項目4を取得「0:出勤日,それ以外は出勤日ではない」
+     */
+    List<MgdCsparechar4VO> buildSQLSelectGetMgdCsparechar4(Map<String, Object> map);
+
+    /**
+     * 就業区分マスタを取得する
+     */
+    List<GenericDetailVO> buildSQLForSelectGenericDetail(Map<String, Object> map);
+
+    /**
+     * 各コメント欄の最大値を名称マスタ詳細より取得
+     */
+    String buildSQLForSelectTmgVMgdMaxLengthCheck(Map<String, Object> map);
 
 
+    /**
+     * 名称マスタから属性コードを取得
+     */
+    List<GenericDetailVO> buildSQLForSelectgetMgdDescriptions(Map<String, Object> map);
 }
 

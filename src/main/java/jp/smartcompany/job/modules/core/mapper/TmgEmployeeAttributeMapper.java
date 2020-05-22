@@ -36,4 +36,9 @@ public interface TmgEmployeeAttributeMapper extends BaseMapper<TmgEmployeeAttrib
      */
     int buildSQLForUpdateTmgEmployeeAttribute(Map<String, Object> map);
 
+    /**
+     * 超過勤務対象有無を取得
+     */
+    String buildSQLForSelectTargetForOverTime(Map<String, Object> map);
+
 }

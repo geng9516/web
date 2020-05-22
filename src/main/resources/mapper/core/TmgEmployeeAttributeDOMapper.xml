@@ -69,4 +69,15 @@
            AND TES_CTYPE       = #{type}
            AND TES_CMODIFIERUSERID = #{userCode}
     </update>
+
+    <select id="buildSQLForSelectTargetForOverTime" resultType="string">
+        SELECT
+            TMG_F_IS_EXCLUDE_OVERTIME(
+                #{targetUser},
+                #{day},
+                #{custID},
+                #{compCode}
+            ) as OVERTIME
+        FROM DUAL
+    </select>
 </mapper>

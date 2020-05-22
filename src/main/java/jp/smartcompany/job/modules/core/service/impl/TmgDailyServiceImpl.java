@@ -6,6 +6,8 @@ import jp.smartcompany.job.modules.core.mapper.TmgDailyMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -54,7 +56,7 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
      * @param custID 法人コード
      * @param compCode 顧客コード
      * @param targetUser　対象者
-     * @param language　元号
+     * @param language　言語
      * @param month　対象月
      * @param manageFlg　管理者フラグ
      * @param list　変動項目リスト
@@ -81,23 +83,78 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
      * @param custId 法人コード
      * @param compCode 顧客コード
      * @param targetUser 対象者
-     * @param day 対象非
+     * @param day 対象日
      * @param today　今日
      * @param siteId　サイトID
+     * @param language　言語
      * @return DailyEditVO
      */
     @Override
-    public DailyEditVO buildSQLForSelectDailyEdit(String custId, String compCode, String targetUser, String day, String today, String siteId){
+    public DailyEditVO buildSQLForSelectDailyEdit(String custId, String compCode, String targetUser, String day, String today, String siteId, String language){
 
-        Map<String, Object> map = MapUtil.newHashMap(5);
+        Map<String, Object> map = MapUtil.newHashMap(6);
         map.put("custId", custId);
         map.put("compCode", compCode);
         map.put("targetUser", targetUser);
         map.put("day", day);
         map.put("today", today);
         map.put("siteId", siteId);
+        map.put("language", language);
 
         return baseMapper.buildSQLForSelectDailyEdit(map);
     }
+
+    /**
+     * 日別詳細情報（非勤務）を取得する
+     *
+     * @param custId 法人コード
+     * @param compCode 顧客コード
+     * @param targetUser 対象者
+     * @param siteId　サイトID
+     * @param day　対象日
+     * @param language　言語
+     * @return
+     */
+    @Override
+    public List<DetailNonDutyVO> buildSQLForSelectDetailNonDuty(String custId, String compCode, String targetUser, String siteId, String day, String language){
+
+        Map<String, Object> map = MapUtil.newHashMap(6);
+        map.put("custId", custId);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("siteId", siteId);
+        map.put("day", day);
+        map.put("language", language);
+
+        return baseMapper.buildSQLForSelectDetailNonDuty(map);
+    }
+
+    /**
+     * 日別詳細情報（超過勤務）を取得する
+     *
+     * @param custId                 法人コード
+     * @param compCode               顧客コード
+     * @param targetUser             対象者
+     * @param siteId                 　サイトID
+     * @param day                    　対象日
+     * @param language               　言語
+     * @param isOvertimeNotification 表示制御
+     * @return
+     */
+    @Override
+    public List<DetailOverhoursVO> buildSQLForSelectDetailOverhours(String custId, String compCode, String targetUser, String siteId, String day, String language, boolean isOvertimeNotification){
+
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("custId", custId);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("siteId", siteId);
+        map.put("day", day);
+        map.put("language", language);
+        map.put("isOvertimeNotification", isOvertimeNotification);
+
+        return baseMapper.buildSQLForSelectDetailOverhours(map);
+    }
+
 
 }

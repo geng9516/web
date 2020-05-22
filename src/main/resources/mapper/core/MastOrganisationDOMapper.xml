@@ -27,4 +27,20 @@
         ORG_TERGET.MO_CSECTIONID_CK;
     </select>
 
+    <select id="buildSQLForLimitOfBasedate" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO">
+        SELECT
+            OT_DAILY_01 AS OT_DAILY,
+            OT_DAILY_01 * 60 AS DAILY_CONV_MINUTE
+        FROM
+            TABLE(
+                    TMG_F_GET_OVERTIMELIMT(
+                        #{custID},
+                        #{compCode},
+                        #{targetSec},
+                        NULL,
+                        #{day}
+                    )
+                )
+    </select>
+
 </mapper>

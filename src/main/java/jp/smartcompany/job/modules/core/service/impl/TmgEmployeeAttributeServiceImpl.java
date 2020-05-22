@@ -126,5 +126,25 @@ public class TmgEmployeeAttributeServiceImpl extends ServiceImpl<TmgEmployeeAttr
         baseMapper.buildSQLForUpdateTmgEmployeeAttribute(map);
     }
 
+    /**
+     * 超過勤務対象有無取得用
+     *
+     * @param custID     顧客コード
+     * @param compCode   法人コード
+     * @param targetUser 対象者
+     * @param day        基準日
+     * @return String
+     */
+    @Override
+    public String buildSQLForSelectTargetForOverTime(String custID, String compCode, String targetUser, String day) {
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("day", day);
+
+        return baseMapper.buildSQLForSelectTargetForOverTime(map);
+    }
+
 
 }

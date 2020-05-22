@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +40,7 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @param custID 法人コード
      * @param compCode 顧客コード
      * @param targetUser　対象者
-     * @param language　元号
+     * @param language　言語
      * @param month　対象月
      * @param manageFlg　管理者フラグ
      * @param list　変動項目リスト
@@ -53,11 +55,39 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @param custId 法人コード
      * @param compCode 顧客コード
      * @param targetUser 対象者
-     * @param day 対象非
+     * @param day 対象日
      * @param today　今日
      * @param siteId　サイトID
+     * @param language　言語
      * @return DailyEditVO
      */
-    DailyEditVO buildSQLForSelectDailyEdit(String custId, String compCode, String targetUser, String day, String today, String siteId);
+    DailyEditVO buildSQLForSelectDailyEdit(String custId, String compCode, String targetUser, String day, String today, String siteId, String language);
+
+    /**
+     * 日別詳細情報（非勤務）を取得する
+     *
+     * @param custId 法人コード
+     * @param compCode 顧客コード
+     * @param targetUser 対象者
+     * @param siteId　サイトID
+     * @param day　対象日
+     * @param language　言語
+     * @return
+     */
+    List<DetailNonDutyVO> buildSQLForSelectDetailNonDuty(String custId, String compCode, String targetUser, String siteId, String day, String language);
+
+    /**
+     * 日別詳細情報（超過勤務）を取得する
+     *
+     * @param custId                 法人コード
+     * @param compCode               顧客コード
+     * @param targetUser             対象者
+     * @param siteId                 　サイトID
+     * @param day                    　対象日
+     * @param language               　言語
+     * @param isOvertimeNotification 表示制御
+     * @return
+     */
+    List<DetailOverhoursVO> buildSQLForSelectDetailOverhours(String custId, String compCode, String targetUser, String siteId, String day, String language, boolean isOvertimeNotification);
 
 }
