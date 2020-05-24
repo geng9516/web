@@ -76,4 +76,14 @@ public interface ITmgEmployeeAttributeService extends IService<TmgEmployeeAttrib
      */
     void buildSQLForUpdateTmgEmployeeAttribute(String userCode, String custId, String compCode , String targetUser, String month,String type,String modifierProgramId,String view,String mailUnsend);
 
+    /**
+     * 超過勤務対象有無取得用
+     *
+     * @param custID     顧客コード
+     * @param compCode   法人コード
+     * @param targetUser 対象者
+     * @param day        基準日
+     * @return String
+     */
+    String buildSQLForSelectTargetForOverTime(String custID, String compCode, String targetUser, String day);
 }

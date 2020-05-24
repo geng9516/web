@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -46,5 +48,19 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
      * @return
      */
     DailyEditVO buildSQLForSelectDailyEdit(Map<String, Object> map);
+    /**
+     * 日別詳細情報（非勤務）を取得する
+     *
+     * @param map
+     * @return
+     */
+    List<DetailNonDutyVO>  buildSQLForSelectDetailNonDuty(Map<String, Object> map);
+    /**
+     * 日別詳細情報（超過勤務）を取得する
+     *
+     * @param map
+     * @return
+     */
+    List<DetailOverhoursVO> buildSQLForSelectDetailOverhours(Map<String, Object> map);
 
 }

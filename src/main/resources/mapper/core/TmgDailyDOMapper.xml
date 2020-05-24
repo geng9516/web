@@ -85,7 +85,7 @@
                 0,
                 TDA_CCUSTOMERID,
                 TDA_CCOMPANYID,
-                sLang
+                #{language}
             ) TDA_CWORKINGID_R_NAME,                                                 <!-- 5 [実績]就業区分名称 -->
             TMG_F_CONV_MIN2HHMI(TDA_NOPEN_N, 0) TDA_NOPEN_N,                    <!-- 6 [申請反映]始業時刻 -->
             TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_N, 0) TDA_NCLOSE_N,                  <!-- 7 [申請反映]終業時刻 -->
@@ -103,12 +103,12 @@
                 <choose>
                     <when test="siteId == 'TMG_INP' ">
                         <!-- 裁量労働でなければそのまま表示 -->
-                        NO_DISCRETION ,
+                        '0' ,
                         TMG_F_CONV_MIN2HHMI(TMG_F_GET_SHOULD_SHOW_TIME(TRUNC(TDA_DYYYYMMDD), TDA_CSTATUSFLG, TDA_NOPEN_TP, TDA_NOPEN_R)),
                     </when>
                     <otherwise>
                         <!-- 裁量労働でなければそのまま表示 -->
-                        NO_DISCRETION ,
+                        '0' ,
                         TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R),
                     </otherwise>
                 </choose>
@@ -125,12 +125,12 @@
                 <choose>
                     <when test="siteId == 'TMG_INP' ">
                         <!-- 裁量労働でなければそのまま表示 -->
-                        NO_DISCRETION,
+                        '0',
                         TMG_F_CONV_MIN2HHMI(TMG_F_GET_SHOULD_SHOW_TIME(TRUNC(TDA_DYYYYMMDD), TDA_CSTATUSFLG, TDA_NCLOSE_TP, TDA_NCLOSE_R)),
                     </when>
                     <otherwise>
                         <!-- 裁量労働でなければそのまま表示 -->
-                        NO_DISCRETION,
+                        '0',
                         TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R),
                     </otherwise>
                 </choose>
@@ -159,7 +159,7 @@
                 TDA_DYYYYMMDD,
                 TDA_CCUSTOMERID,
                 TDA_CCOMPANYID,
-                #{sLang}
+                #{language}
             ) TDA_CBUSINESSTRIPID_R_NAME,                                              <!-- 24 [実績]出張区分名称 -->
             TDA_NREST45_P,                                                             <!-- 25 [予定]休憩45分選択 -->
             TMG_F_CONV_MIN2HHMI(
@@ -178,7 +178,7 @@
                     TDA_CEMPLOYEEID,
                     TRUNC(TDA_DYYYYMMDD)
                 ),
-                NO_DISCRETION ,
+        '0' ,
                 TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R),     <!-- 裁量労働でなければそのまま表示 -->
                 TMG_F_CONV_MIN2HHMI(TDA_NOPEN_R, 0)
             ) as TDA_NOPEN_R_HIDDEN,                                                            <!-- 28 [hidden用]始業時刻 -->
@@ -189,14 +189,14 @@
                     TDA_CEMPLOYEEID,
                     TRUNC(TDA_DYYYYMMDD)
                 ),
-                NO_DISCRETION ,
+                '0' ,
                 TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R),    <!-- 裁量労働でなければそのまま表示 -->
                 TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_R, 0)
             ) as TDA_NCLOSE_R_HIDDEN,                                                         <!-- 29 [hidden用]終業時刻 -->
             NVL(DECODE(
                 TMG_F_GET_TIMEPUNCH_TARGETDATE(TDA_CCUSTOMERID, TDA_CCOMPANYID, TDA_CEMPLOYEEID, SYSDATE),
                 TDA_DYYYYMMDD,
-                TMG_F_GET_NOOVERTIME_DAYS_MSG(TDA_CEMPLOYEEID, TDA_DYYYYMMDD, 1, TDA_CCUSTOMERID, TDA_CCOMPANYID, #{sLang})
+                TMG_F_GET_NOOVERTIME_DAYS_MSG(TDA_CEMPLOYEEID, TDA_DYYYYMMDD, 1, TDA_CCUSTOMERID, TDA_CCOMPANYID, #{language})
             ), ' ') as NO_OVERTIME_DAYS_MSG                                            <!-- 30 ノー残業デー表示メッセージ -->
         FROM
             TMG_DAILY
@@ -206,5 +206,184 @@
         AND TDA_CCOMPANYID  = #{compCode}
         AND TDA_CCUSTOMERID = #{custId}
      </select>
+
+    <select id="buildSQLForSelectDetailNonDuty" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO">
+        SELECT
+            ATTRIBUTE_URL,                                                          <!-- URL-->
+            ITEM_CODE TDAD_CNOTWORKID,                                              <!-- 非勤務区分-->
+            TMG_F_CONV_MIN2HHMI(TDA_NRESTOPEN_R, 0) TDAD_NOPEN,                     <!-- 開始時刻-->
+            TMG_F_CONV_MIN2HHMI(TDA_NRESTCLOSE_R, 0) TDAD_NCLOSE,                   <!-- 終了時刻-->
+            0 TDAD_NDELETEFLG,                                                      <!-- 削除フラグ-->
+            0 TDAD_SEQ,                                                             <!-- SEQ-->
+            '' TDAD_CSPARECHAR1 ,                                                   <!-- 予備文字列1-->
+            0 TDAD_NSPARENUM1 ,                                                     <!-- 予備数値1-->
+            '' TDAD_CCODE01 ,                                                       <!-- 予備コード1-->
+            '' TDAD_CCODE01_NAME,                                                   <!-- 予備コード名-->
+            ITEM_NAME                                                               <!-- マスタ名称-->
+        FROM
+            TMG_DAILY,
+            TABLE(
+                TMG_F_GET_RESULTATTRIBUTE(
+                    #{custId},
+                    #{compCode},
+                    #{targetUser},
+                    #{siteId},
+                    'TMG_CATEGORY|NonDuty',
+                    #{day}
+                )
+            )
+        WHERE
+        TDA_CEMPLOYEEID    = #{targetUser}
+        AND TDA_DYYYYMMDD      = #{day}
+        AND TDA_CCOMPANYID     = #{compCode}
+        AND TDA_CCUSTOMERID    = #{custId}
+        AND TDA_DSTARTDATE     <![CDATA[<=]]>  #{day}
+        AND TDA_DENDDATE       >= #{day}
+        AND TDA_NRESTOPEN_R IS NOT NULL
+        AND TDA_NRESTCLOSE_R IS NOT NULL
+        AND ITEM_CODE = 'TMG_ITEMS|ResultRest'
+
+        UNION
+
+        SELECT
+            ATTRIBUTE_URL,                                                          <!-- URL-->
+            TDAD_CNOTWORKID,                                                        <!-- 非勤務区分-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) TDAD_NOPEN,                          <!-- 開始時刻-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) TDAD_NCLOSE,                        <!-- 終了時刻-->
+            TDAD_NDELETEFLG,                                                        <!-- 削除フラグ-->
+            TDAD_SEQ,                                                               <!-- SEQ-->
+            NVL(TDAD_CSPARECHAR1,'') TDAD_CSPARECHAR1,                              <!-- 予備文字列1-->
+            TDAD_NSPARENUM1 TDAD_NSPARENUM1 ,                                       <!-- 予備数値1-->
+            NVL(TDAD_CCODE01,'') TDAD_CCODE01,                                      <!-- 予備コード1-->
+            TMG_F_GET_MGD(
+                TDAD_CCODE01,
+                TDAD_DYYYYMMDD,
+                TDAD_CCUSTOMERID,
+                TDAD_CCOMPANYID,
+                #{language}
+            ) TDAD_CCODE01_NAME,                                                      <!-- 予備コード1名-->
+            ITEM_NAME                                                                 <!-- マスタ名称-->
+        FROM
+            TMG_DAILY_DETAIL,
+            TABLE(
+                TMG_F_GET_RESULTATTRIBUTE(
+                    #{custId},
+                    #{compCode},
+                    #{targetUser},
+                    #{siteId},
+                    'TMG_CATEGORY|NonDuty',
+                    #{day}
+                )
+            )
+        WHERE
+            TDAD_CEMPLOYEEID   = #{targetUser}
+        AND TDAD_DYYYYMMDD     = #{day}
+        AND TDAD_CCOMPANYID    = #{compCode}
+        AND TDAD_CCUSTOMERID   = #{custId}
+        AND TDAD_CNOTWORKID    = ITEM_CODE
+        ORDER BY
+            TDAD_SEQ
+    </select>
+    <select id="buildSQLForSelectDetailOverhours" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO">
+        SELECT
+            ATTRIBUTE_URL,                          									<!-- URL -->
+            ITEM_CODE TDAD_CNOTWORKID,              									<!--  非勤務区分 -->
+            TMG_F_CONV_MIN2HHMI(TDA_NOPEN_O, 0) TDAD_NOPEN,                    			<!-- 超勤開始時刻 -->
+            TMG_F_CONV_MIN2HHMI(TDA_NCLOSE_O, 0) TDAD_NCLOSE,                 			<!-- 超勤終了時刻 -->
+            0 TDAD_NDELETEFLG,                                      					<!-- 削除フラグ -->
+            0 TDAD_SEQ,     															<!-- SEQ -->
+            TDA_CCOMMENT_O TDAD_CSPARECHAR1,   											<!-- 予備文字列1 -->
+            0 TDAD_NSPARENUM1,  														<!-- 予備数値1 -->
+            '' TDAD_CCODE01 ,  															<!-- 予備コード1 -->
+            '' TDAD_CCODE01_NAME,   													<!-- 予備コード名 -->
+            ITEM_NAME,                                                         			<!-- マスタ名称 -->
+            'TMG_OVERHOUR_STATUS|6' TDAD_CSPARECHAR2,    								<!-- 予備文字列2(申請ステータス) -->
+            TMG_F_GET_MGD(
+                'TMG_OVERHOUR_STATUS|6',
+                #{day},
+                #{compCode},
+                #{custId},
+                #{language}
+            ) AS TDAD_CSPARECHAR2_NAME    												<!-- 申請ステータス名称 -->
+        FROM
+            TMG_DAILY,
+            TABLE
+                (
+                    TMG_F_GET_RESULTATTRIBUTE(
+                        #{custId},
+                        #{compCode},
+                        #{targetUser},
+                        #{siteId},
+                        'TMG_CATEGORY|Overhours',
+                        #{day}
+                    )
+                )
+        WHERE
+            TDA_CEMPLOYEEID    = #{targetUser}
+        AND TDA_DYYYYMMDD      = #{day}
+        AND TDA_CCOMPANYID     = #{compCode}
+        AND TDA_CCUSTOMERID    = #{custId}
+        AND TDA_DSTARTDATE <![CDATA[<=]]> #{day}
+        AND TDA_DENDDATE   >= #{day}
+        AND TDA_NOPEN_O IS NOT NULL
+        AND TDA_NCLOSE_O IS NOT NULL
+        AND ITEM_CODE = 'TMG_ITEMS|Overhours'
+
+        UNION
+
+        SELECT
+            ATTRIBUTE_URL,                                          										<!-- URL -->
+            TDAD_CNOTWORKID,                                        										<!--  非勤務区分 -->
+            TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) TDAD_NOPEN,          										<!-- 超勤開始時刻 -->
+            TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) TDAD_NCLOSE,        										<!-- 超勤終了時刻 -->
+            TDAD_NDELETEFLG,                                        										<!-- 削除フラグ -->
+            TDAD_SEQ,   																					<!-- SEQ -->
+            NVL(TDAD_CSPARECHAR1,'') TDAD_CSPARECHAR1,   													<!-- 予備文字列1 -->
+            TDAD_NSPARENUM1 TDAD_NSPARENUM1 ,   															<!-- 予備数値1 -->
+            NVL(TDAD_CCODE01,'') TDAD_CCODE01,  															<!-- 予備コード1 -->
+            TMG_F_GET_MGD(
+                TDAD_CCODE01,
+                TDAD_DYYYYMMDD,
+                TDAD_CCUSTOMERID,
+                TDAD_CCOMPANYID,
+                #{language}
+            ) TDAD_CCODE01_NAME,    																	<!-- 予備コード名 -->
+            ITEM_NAME                                            										<!-- マスタ名称 -->
+            , NVL(TDAD_CSPARECHAR2, 'TMG_OVERHOUR_STATUS|6') TDAD_CSPARECHAR2,   						<!-- 予備文字列2(申請ステータス) -->
+            TMG_F_GET_MGD(
+                TDAD_CSPARECHAR2
+                ,#{day}
+                ,#{compCode}
+                ,#{custId}
+                ,#{language}
+            )
+            <!--超過勤務の事前事後情報の表示制御がＯＮ設定の場合、事前事後の情報を取得する。-->
+            <if test="isOvertimeNotification == true ">
+                    || '（' || TMG_F_GET_OVERTIME_NOTICEINFO(TDAD_CEMPLOYEEID, TDAD_DYYYYMMDD, TDAD_NOPEN, TDAD_CSPARECHAR3, TDAD_DSPAREDATE1, TDAD_CCUSTOMERID, TDAD_CCOMPANYID) || '）'
+            </if>
+            AS  TDAD_CSPARECHAR2_NAME    																			<!-- 申請ステータス名称 -->
+        FROM
+            TMG_DAILY_DETAIL,
+            TABLE
+                (
+                    TMG_F_GET_RESULTATTRIBUTE(
+                        #{custId},
+                        #{compCode},
+                        #{targetUser},
+                        #{siteId},
+                        'TMG_CATEGORY|Overhours',
+                        #{day}
+                    )
+                )
+        WHERE
+            TDAD_CEMPLOYEEID   = #{targetUser}
+        AND TDAD_DYYYYMMDD     = #{day}
+        AND TDAD_CCOMPANYID    = #{compCode}
+        AND TDAD_CCUSTOMERID   = #{custId}
+        AND TDAD_CNOTWORKID    = ITEM_CODE
+        ORDER BY TDAD_SEQ
+    </select>
+
+
 
 </mapper>

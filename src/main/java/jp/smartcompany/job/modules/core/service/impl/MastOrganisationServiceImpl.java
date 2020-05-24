@@ -1,18 +1,21 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.mapper.MastOrganisationMapper;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -119,4 +122,26 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
         public  List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date) {
                 return baseMapper.selectLowerSection(psCustID,psCompID,psSection,date);
         }
+
+        /**
+         * 基準日時点の超勤限度時間取得用
+         *
+         * @param custID 顧客コード
+         * @param compCode 法人コード
+         * @param targetSec 部署コード
+         * @param day　基準日
+         * @return LimitOfBasedateVO
+         */
+        @Override
+        public LimitOfBasedateVO buildSQLForLimitOfBasedate(String custID, String compCode, String targetSec, String day) {
+
+                Map<String, Object> map = MapUtil.newHashMap(4);
+                map.put("custID", custID);
+                map.put("compCode", compCode);
+                map.put("targetSec", targetSec);
+                map.put("day", day);
+
+                return baseMapper.buildSQLForLimitOfBasedate(map);
+        }
+
 }

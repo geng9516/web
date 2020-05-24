@@ -2,7 +2,12 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -16,4 +21,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgDailyDetailMapper extends BaseMapper<TmgDailyDetailDO> {
 
-        }
+    /**
+     * 日別詳細情報を取得する
+     */
+    List<DailyDetailVO> buildSQLForSelectDetail(Map<String, Object> map);
+
+}
