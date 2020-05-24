@@ -1,9 +1,9 @@
 package jp.smartcompany.job.modules.tmg.util;
 
 
+import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
-import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ public class TmgOrgTree {
     private boolean withTarget = true;
 
     @Autowired
-    DataSource dataSource;
+    private DataSource dataSource;
 
     /**
      * コンストラクタ
@@ -73,11 +73,11 @@ public class TmgOrgTree {
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
         //String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate, psDBBean.requestHash, psDBBean.session);
         Connection connection = null;
-        List<OrganisationBO> entityList = null;
+        List entityList = null;
         log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
+            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -85,7 +85,7 @@ public class TmgOrgTree {
                 connection.close();
             }
         }
-        dataArray1 = entityList;
+        dataArray1 = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate){

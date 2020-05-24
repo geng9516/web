@@ -75,8 +75,8 @@ public class JSONArrayGenerator {
      * @return List
      * @throws Exception
      */
-    public static List selectDataArrayBetween(
-            List<Entity> dataArray,
+    public static List<List<String>> selectDataArrayBetween(
+            List<List<String>> dataArray,
             Date startDate,
             Date endDate,
             int starDateIndex,
@@ -86,22 +86,11 @@ public class JSONArrayGenerator {
         if (startDate.after(endDate)) {
             return dataArray;
         }
-        List newDataArray = CollUtil.newArrayList();
-
-        for (Entity data: dataArray){
-
-            Date dstart = null;
-            Date dend  = null;
-            int i = 0;
-
-            for (Object v: data.values()){
-                if (i == starDateIndex) {
-                    dstart = format.parse(v.toString());
-                } else if (i == endDateIndex) {
-                    dend = format.parse(v.toString() );
-                }
-                i++;
-            }
+        List<List<String>> newDataArray = CollUtil.newArrayList();
+        for(Iterator<List<String>> i = dataArray.iterator(); i.hasNext();){
+            List<String> data = i.next();
+            Date dstart = format.parse(data.get(starDateIndex) );
+            Date dend   = format.parse(data.get(endDateIndex) );
             // 元のデータのうち、指定された開始日～終了日の範囲にかかっているデータを拾っていく
             // 以上・以下(<= && >=)という条件で拾い上げるので、equalsメソッドによる完全一致も拾う必要がある
             if( (dstart.before(endDate)||dstart.equals(endDate)) &&
@@ -622,6 +611,30 @@ public class JSONArrayGenerator {
         }
 
         return sSQL.toString();
+    }
+
+
+    /**
+     * List<Entity></>からList<List<String>へ変換する。そうすると既存共通方法をそのまま利用できる。
+     * @param dataArray
+     * @return List
+     * @throws Exception
+     */
+    public static List entityListTowardList(List<Entity> dataArray) throws Exception{
+
+        List<List<String>> dataList = new ArrayList<List<String>>();
+
+         for (Entity data: dataArray) {
+
+            List<String> record = new ArrayList<String>();
+            for (Object v: data.values()){
+                if (v != null){
+                    record.add(v.toString());
+                }
+            }
+             dataList.add(record);
+        }
+        return dataList;
     }
 
 }
