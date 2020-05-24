@@ -10,3 +10,4 @@ logging:
   level:
     jp.smartcompany.job.modules.core.service: debug
     jp.smartcompany.job.modules.core.mapper: debug
+    jp.smartcompany.job.modules.tmg: debug

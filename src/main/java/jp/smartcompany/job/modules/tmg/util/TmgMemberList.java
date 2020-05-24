@@ -4,6 +4,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Component
 @Slf4j
 public class TmgMemberList {
 
@@ -58,14 +58,12 @@ public class TmgMemberList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param bean
      */
-    @Autowired
     public TmgMemberList(PsDBBean bean) {
         // 下記のコンストラクタのエラー回避のためです。
         this.bean = bean;

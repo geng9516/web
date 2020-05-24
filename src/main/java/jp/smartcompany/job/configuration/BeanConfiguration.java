@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 
 /**
@@ -18,8 +17,6 @@ import javax.sql.DataSource;
 @Import(cn.hutool.extra.spring.SpringUtil.class)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BeanConfiguration {
-
-    private final HttpSession httpSession;
 
     @Bean
     public DataSource dataSource() {

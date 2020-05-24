@@ -109,8 +109,9 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ModelAndView nullPointerException() {
+    public ModelAndView nullPointerException(NullPointerException e) {
         ModelAndView mv = new ModelAndView();
+        e.printStackTrace();
         mv.setViewName("500");
         mv.addObject("error",GlobalResponse.error("NPC異常"));
         return mv;
@@ -124,6 +125,7 @@ public class ExceptionAdvice {
         mv.setViewName("500");
         mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
         if (isTestEnv) {
+            e.printStackTrace();
             String message = e.getMessage();
             if (StrUtil.isNotBlank(message)) {
                 mv.addObject("error",GlobalResponse.error(message));
