@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
-import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
@@ -35,8 +34,6 @@ public class TmgOrgTree {
     private PsDBBean psDBBean;
     private String beanDesc = null;
     private List dataArray = null;
-    private List<OrganisationBO> dataArray1 = null;
-    private List dataArray2 = null;
     private String[] keyArray = null;
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
@@ -80,7 +77,7 @@ public class TmgOrgTree {
                 connection.close();
             }
         }
-        dataArray1 = JSONArrayGenerator.entityListTowardList(entityList);
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate){
@@ -281,8 +278,8 @@ public class TmgOrgTree {
         return dataArray;
     }
 
-    public void setDataArray(List dataArray2) {
-        this.dataArray2 = dataArray2;
+    public void setDataArray(List dataArray) {
+        this.dataArray = dataArray;
     }
 
     public String[] getKeyArray() {
