@@ -485,7 +485,6 @@ public class TmgReferList {
 //            createTreeViewListWard();
         // 勤怠管理サイト } else
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
-            System.out.println("=====");
                 createTreeViewSiteAdmin();
                 // 勤怠承認サイト
         }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
@@ -641,10 +640,10 @@ public class TmgReferList {
         // 対象組織の組織コードをリクエストパラメータから取得
         targetSec_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         // リクエストパラメータに存在しない場合、セッションから取得
-        if(targetSec_admin == null || targetSec_admin.equals("")){
+        if(StrUtil.isBlank(targetSec_admin)){
             targetSec_admin = (String)psDBBean.session.getAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
             // セッションにも存在しない場合、NULLをセット(対象社員もNULLにしておく)
-            if(targetSec_admin == null || targetSec_admin.equals("")){
+            if(StrUtil.isBlank(targetSec_admin)){
                 targetSec_admin = null;
                 targetEmp_admin = null;
             }
@@ -660,7 +659,7 @@ public class TmgReferList {
         }
 
         // 組織が選択されている場合、社員一覧を初期化
-        if(targetSec_admin != null && !"".equals(targetSec_admin)){
+        if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
             if(targetEmp_admin == null || !empList.existsEmp(targetEmp_admin)){

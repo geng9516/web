@@ -206,6 +206,7 @@ public class TmgOrgTree {
         if(dataArray == null){
             return null;
         }
+        log.debug("【getJSONArrayForTreeView里的dataArray:{}】",dataArray);
         try{
             return JSONArrayGenerator.getJSONArrayForTreeView(dataArray,keyArray,1);
         }catch(Exception e){
