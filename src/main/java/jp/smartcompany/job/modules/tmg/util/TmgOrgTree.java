@@ -1,8 +1,8 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
-import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
@@ -69,7 +69,7 @@ public class TmgOrgTree {
         log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
+            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

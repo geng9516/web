@@ -639,4 +639,23 @@ public class JSONArrayGenerator {
         return dataList;
     }
 
+    /**
+     * EntityからListへ変換する。そうすると既存共通方法をそのまま利用できる。
+     * @param dataArray
+     * @return List
+     * @throws Exception
+     */
+    public static List entityTowardList(Entity dataArray) throws Exception{
+            List<String> dataList = new ArrayList<String>();
+            if (null != dataArray) {
+               for (Object v: dataArray.values()){
+                   if (v != null){
+                       dataList.add(v.toString());
+                    } else if (null == v){
+                      dataList.add("");
+                    }
+                }
+             }
+            return dataList;
+    }
 }

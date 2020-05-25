@@ -97,7 +97,9 @@ public class TmgDivisionTree {
                 connection.close();
             }
         }
-        gsRootSection = rootSection.getStr("MO_CSECTIONID_CK");
+
+        //rootSectionがnullの場合、上位組織コード：""で返却する
+        gsRootSection = rootSection == null ? "":rootSection.getStr("MO_CSECTIONID_CK");
         gbAllDivision = (sExists == null || "".equals(sExists));
     }
 
