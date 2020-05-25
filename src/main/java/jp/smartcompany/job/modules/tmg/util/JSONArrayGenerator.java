@@ -630,6 +630,8 @@ public class JSONArrayGenerator {
             for (Object v: data.values()){
                 if (v != null){
                     record.add(v.toString());
+                } else if (null == v){
+                    record.add("");
                 }
             }
              dataList.add(record);
