@@ -1,13 +1,11 @@
 package jp.smartcompany.job.modules.tmg.util;
 
-
-import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
+import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,7 +14,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-@Component
 @Slf4j
 public class TmgOrgTree {
 
@@ -35,7 +32,7 @@ public class TmgOrgTree {
     public static final int DEFAULT_KEY_CUST    = 5;
     public static final int DEFAULT_KEY_COMP    = 6;
 
-    private PsDBBean psDBBean = null;
+    private PsDBBean psDBBean;
     private String beanDesc = null;
     private List dataArray = null;
     private List<OrganisationBO> dataArray1 = null;
@@ -44,14 +41,12 @@ public class TmgOrgTree {
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param psDBBean
      */
-    @Autowired
     public TmgOrgTree(PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         keyArray = DEFAULT_KEY_ARRAY;
@@ -77,7 +72,7 @@ public class TmgOrgTree {
         log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {

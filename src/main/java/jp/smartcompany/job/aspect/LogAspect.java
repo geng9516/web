@@ -122,7 +122,7 @@ public class LogAspect {
     return result;
   }
 
-  @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.job.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
+//  @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.job.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
   public void afterThrowing(JoinPoint point, Throwable e) {
     int maxParamLen = 5000;
 //    EmpBO empBO = ShiroUtil.getLoginEmp();

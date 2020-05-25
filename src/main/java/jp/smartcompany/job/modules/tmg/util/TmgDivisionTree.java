@@ -3,11 +3,10 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Component
 @Slf4j
 public class TmgDivisionTree {
 
@@ -43,14 +41,12 @@ public class TmgDivisionTree {
     private Boolean gbAllDivision;
     private String gsRootSection;
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param psDBBean
      */
-    @Autowired
     public TmgDivisionTree(PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         keyArray = DEFAULT_KEY_ARRAY;

@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.util.SysDateUtil;
 import jp.smartcompany.job.util.SysUtil;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,11 +57,12 @@ import java.util.*;
  */
 @NoArgsConstructor
 @Slf4j
+@ToString
 public class TmgReferList {
 
     private PsDBBean psDBBean;
-    private ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("iTmgMgdMsgSearchTreeViewService");
-    private DataSource dataSource = SpringUtil.getBean("datasource");
+    private ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
+    private DataSource dataSource = SpringUtil.getBean("dataSource");
 
     private String beanDesc = null;
     private String targetDate = null;
@@ -498,8 +500,7 @@ public class TmgReferList {
         Date dDate = new Date();
         String useManage = (String)psDBBean.session.getAttribute(SESSION_KEY_USEMANAGEFLG);
         // 組織ツリー上の再表示ボタンが押下フラグ（押された場合はtrue)
-        String sRefersh = (String)psDBBean.requestHash.get(TREEVIEW_KEY_REFRESH_FLG);
-
+//        String sRefersh = (String)psDBBean.requestHash.get(TREEVIEW_KEY_REFRESH_FLG);
         gcSysdate      = (Date)psDBBean.session.getAttribute(SESSION_KEY_SYSDATE);
         gcPreMonthDate = (Date)psDBBean.session.getAttribute(SESSION_KEY_PRE_MONTH_DATE);
         gcPreYearDate  = (Date)psDBBean.session.getAttribute(SESSION_KEY_PRE_YEAR_DATE);
@@ -1587,7 +1588,7 @@ public class TmgReferList {
      * @return boolean treu:指定したサイトである false:指定したサイトではない
      */
     private boolean isSite(String siteId){
-        return psDBBean.getSiteId().equals(siteId);
+        return StrUtil.equals(psDBBean.getSiteId(),siteId);
     }
 
     /**
