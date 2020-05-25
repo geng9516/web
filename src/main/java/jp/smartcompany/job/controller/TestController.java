@@ -26,11 +26,23 @@ public class TestController {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
-        System.out.println(referList.getJSONArrayForDivisionTree());
-        System.out.println(referList.getJSONArrayForGroupList());
-        System.out.println(referList.getJSONArrayForEmpList());
-        System.out.println(referList.getJSONArrayForMemberList());
-        return GlobalResponse.data(referList.getJSONArrayForOrgTree());
+        String orgTree = referList.getJSONArrayForOrgTree();
+        String divisionTree = referList.getJSONArrayForDivisionTree();
+        String empList = referList.getJSONArrayForEmpList();
+        String memberList = referList.getJSONArrayForMemberList();
+        String groupBySection = referList.getJSONArrayForMemberListGroupBySection();
+        String groupByGroup = referList.getJSONArrayForMemberListGroupByGroup();
+        String groupList = referList.getJSONArrayForGroupList();
+        String sectionList = referList.getJSONArrayForSectionList();
+        System.out.println(orgTree);
+        System.out.println(divisionTree);
+        System.out.println(empList);
+        System.out.println(memberList);
+        System.out.println(groupBySection);
+        System.out.println(groupByGroup);
+        System.out.println(groupList);
+        System.out.println(sectionList);
+        return GlobalResponse.ok();
     }
 
 }

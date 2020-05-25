@@ -66,7 +66,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 初始化PsSession对象
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {
-            httpSession.setAttribute(Constant.PS_SESSION, new PsSession());
+            session = new PsSession();
+            httpSession.setAttribute(Constant.PS_SESSION, session);
+            session.setLoginCustomer(customerId);
         }
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {

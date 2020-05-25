@@ -485,6 +485,7 @@ public class TmgReferList {
 //            createTreeViewListWard();
         // 勤怠管理サイト } else
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
+            System.out.println("=====");
                 createTreeViewSiteAdmin();
                 // 勤怠承認サイト
         }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
@@ -654,6 +655,7 @@ public class TmgReferList {
             createDivTree();
         }
         else {
+            log.debug("【init方法后的createOrgTree方法开始执行】");
             createOrgTree();
         }
 
@@ -799,6 +801,7 @@ public class TmgReferList {
             else{
                 try{
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
+                    log.debug("【调用TmgOrgTress的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
                     orgTree.createOrgTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
                     psDBBean.session.setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
 //                    session.setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);

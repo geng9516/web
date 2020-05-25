@@ -80,7 +80,9 @@ public class TmgOrgTree {
                 connection.close();
             }
         }
+        log.debug("【createOrgTree查询结果：{}】",entityList);
         dataArray1 = JSONArrayGenerator.entityListTowardList(entityList);
+        log.debug("【dataArray1获取结果：{}】",dataArray1);
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate){
