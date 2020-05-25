@@ -7,8 +7,6 @@ import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -216,11 +214,11 @@ public class TmgMemberList {
                         bean.escDBString(bean.getCompCode()), psBaseDate, bean.escDBString(bean.getLanguage()));
 
         Connection connection = null;
-        Entity entityList = null;
+        Entity entity = null;
         log.info("getMsgDispLimit4Tree_SQL3：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
+            entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -230,7 +228,7 @@ public class TmgMemberList {
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
-        return entityList.size() == 0 ?TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
+        return entity == null ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entity.getStr("MGD_NLIMIT");
 
     }
 

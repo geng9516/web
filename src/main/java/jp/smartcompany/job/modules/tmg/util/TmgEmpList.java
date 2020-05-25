@@ -521,17 +521,17 @@ public class TmgEmpList {
                         bean.escDBString(bean.getCompCode()),psBaseDate, bean.escDBString(bean.getLanguage()));
 
         Connection connection;
-        Entity entityList = null;
+        Entity entity = null;
         log.info("getMsgDispLimit4Tree_SQL4："+ sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
+            entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
-        return entityList.size() == 0 ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
+        return entity == null ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entity.getStr("MGD_NLIMIT");
 
     }
 
