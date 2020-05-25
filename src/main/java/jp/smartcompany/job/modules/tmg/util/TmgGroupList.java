@@ -114,7 +114,7 @@ public class TmgGroupList {
                 connection.close();
             }
         }
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     public String buildSQLForSelectGroupList(

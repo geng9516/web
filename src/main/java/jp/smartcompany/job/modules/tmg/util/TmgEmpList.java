@@ -181,7 +181,7 @@ public class TmgEmpList {
                 connection.close();
             }
         }
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
      }
 
     /**
@@ -219,7 +219,7 @@ public class TmgEmpList {
             }
         }
 
-      setSearchDataArray(entityList);
+      setSearchDataArray(JSONArrayGenerator.entityListTowardList(entityList));
 
     }
 
@@ -254,7 +254,7 @@ public class TmgEmpList {
             e.printStackTrace();
         }
 
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     /**
@@ -892,7 +892,7 @@ public class TmgEmpList {
      * @return
      */
     public String buildSQLForSelectEmpListFromDualTableObject(boolean pbSelectedSearchTab) throws Exception{
-        // TODO: 呼び出し先はTmgDutyHoursBean　交替制勤務割振表　テスト不要
+        // TODO: 呼び出し先はTmgDutyHoursBean　交替制勤務割振表
         // 社員番号でdistinctをかけてから、SQLを構築する
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 

@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.tmg.util;
 
-
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
@@ -69,12 +68,11 @@ public class TmgOrgTree {
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
         //String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate, psDBBean.requestHash, psDBBean.session);
         Connection connection = null;
-        List<OrganisationBO> entityList = null;
+        List entityList = null;
         log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new OrganisationEntityListHandler());
-            System.out.println(entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -82,7 +80,7 @@ public class TmgOrgTree {
                 connection.close();
             }
         }
-        dataArray1 = entityList;
+        dataArray1 = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate){

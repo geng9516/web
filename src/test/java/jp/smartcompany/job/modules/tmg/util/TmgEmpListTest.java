@@ -50,6 +50,6 @@ class TmgEmpListTest {
     @Test
     void createEmpList005() throws Exception {
         tmgEmpList.createEmpList("'"+"01"+"'", "'"+"01"+"'","'"+"201000000000"+"'","to_date('2010/05/18', 'yyyy/mm/dd')","to_date('2020/05/20', 'yyyy/mm/dd')","'"+"ja"+"'",true,true,true) ;
-        //tmgEmpList.buildSQLForSelectEmpListFromDualTableObject(true);
+        tmgEmpList.buildSQLForSelectEmpListFromDualTableObject(false);
     }
 }

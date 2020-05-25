@@ -162,7 +162,7 @@ public class TmgMemberList {
             }
         }
 
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
 
     }
 
@@ -200,7 +200,7 @@ public class TmgMemberList {
                 connection.close();
             }
         }
-        gvSearchDataArray = entityList;
+        gvSearchDataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     private String gsDispLimi4Tree = null;
