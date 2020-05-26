@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
@@ -170,10 +171,11 @@ public class TmgEmpList {
 
         Connection connection = null;
         List entityList = null;
-        log.info("createTreeEmpList_SQL1：{}",sSQL);
+        log.info("【createTreeEmpList_SQL1：{}】",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            log.debug("empList结果:{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -182,6 +184,7 @@ public class TmgEmpList {
             }
         }
         dataArray = JSONArrayGenerator.entityListTowardList(entityList);
+        log.debug("【empList的dataArray：{}】",dataArray);
      }
 
     /**
@@ -773,6 +776,7 @@ public class TmgEmpList {
         if(dataArray == null){
             return null;
         }
+        log.debug("【getJSONArrayForTreeViewGroupBySection时的dataArray：{}】", dataArray);
         try{
             // 社員番号と部署コードでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
@@ -784,14 +788,19 @@ public class TmgEmpList {
             int[] groupKey   = { DEFAULT_KEY_SECID };
             int[] groupLabel = { DEFAULT_KEY_SECNIC };
 
-            if(targetSec != null){
+            log.debug("【targetSec:{},distinctDataArray:{}】",targetSec,distinctDataArray);
+
+            if(StrUtil.isNotBlank(targetSec)){
                 String[][] initOpenNodeArray = { {targetSec} };
-                return JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel,initOpenNodeArray);
+                String string = JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel,initOpenNodeArray);
+                log.debug("【treeViewGroupBy:{}】",string);
+                return string;
             }else{
                 return JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel);
             }
 
         }catch(Exception e){
+            e.printStackTrace();
             return null;
         }
     }

@@ -900,6 +900,7 @@ public class TmgReferList {
             String base = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
             String target;
 
+            log.debug("【createEmpList的参数:sectionId:{},targetDate:{}】",targetSection,targetDate);
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);

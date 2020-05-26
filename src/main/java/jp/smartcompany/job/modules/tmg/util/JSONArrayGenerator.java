@@ -423,7 +423,7 @@ public class JSONArrayGenerator {
         for(Iterator i = treeSet.iterator(); i.hasNext();){
             String keyStr = (String)i.next();
             String labelStr = (String)label.get(keyStr);
-            Vector groupDataArray = (Vector)hash.get(keyStr);
+            List groupDataArray = (List)hash.get(keyStr);
 
             String[] data = {keyStr,labelStr,labelStr};
             String[] key  = {keyArray[groupKeyIndex], keyArray[groupLabelIndex], "label"};

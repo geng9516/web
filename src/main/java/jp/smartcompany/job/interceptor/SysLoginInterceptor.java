@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -185,6 +186,20 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put("custid",custId);
         } else if (StrUtil.isNotBlank(session.getLoginCustomer())){
             hashtable.put("custid",session.getLoginCustomer());
+        }
+
+        String targetSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
+        String targetEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+        String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+
+        if (StrUtil.isNotBlank(targetSection)){
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetSection);
+        }
+        if (StrUtil.isNotBlank(targetEmp)){
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetEmp);
+        }
+        if (StrUtil.isNotBlank(targetGroup)){
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
         }
 
         psDBBean.setSysControl(hashtable);

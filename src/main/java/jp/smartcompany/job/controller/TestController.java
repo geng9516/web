@@ -20,11 +20,6 @@ public class TestController {
     private final PsDBBean psDBBean;
     private String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
 
-    // ツリービューを使用する際の、HTMLオブジェクトのIDなどに対する接頭辞
-    public static final String TREEVIEW_OBJ_HEADER_ADMIN       = "TmgReferListTreeViewAdmin";
-    public static final String TREEVIEW_OBJ_HEADER_PERM        = "TmgReferListTreeViewPerm";
-    public static final String TREEVIEW_OBJ_HEADER             = "TmgReferListTreeView";
-
     // 勤怠管理サイト Test  11
     // TmgTreeViewForAdminEmp.jsp
     @GetMapping("rf1")
@@ -44,6 +39,7 @@ public class TestController {
         //	public static final String TREEVIEW_KEY_ADMIN_TARGET_EMP     = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetEmp";
         //	public static final String TREEVIEW_KEY_ADMIN_TARGET_WARD    = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetWard";
         String empList = referList.getJSONArrayForEmpList();
+        // [{data:{secid:'201000201010',secnic:'総務課',label:'総務課'},open:true,child:[{data:{level:'0',label:'吉武 徹 (総務課/課長)',cust:'01',comp:'01',empid:'34370889',empname:'吉武 徹',secid:'201000201010',secnic:'総務課',postid:'301',postname:'課長',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2016/04/01',dend:'2222/12/31',seq:'1',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'吉田 健二 (総務課/課長補佐)',cust:'01',comp:'01',empid:'19225739',empname:'吉田 健二',secid:'201000201010',secnic:'総務課',postid:'305',postname:'課長補佐',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2018/04/01',dend:'2222/12/31',seq:'2',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'加藤 宏二 (総務課/係長)',cust:'01',comp:'01',empid:'57854417',empname:'加藤 宏二',secid:'201000201010',secnic:'総務課',postid:'405',postname:'係長',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2016/04/01',dend:'2222/12/31',seq:'3',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'渡邊 雄二 (総務課/係員)',cust:'01',comp:'01',empid:'19231982',empname:'渡邊 雄二',secid:'201000201010',secnic:'総務課',postid:'421',postname:'係員',workertypeid:'TMG_WORKERTYPE|02',wokertypename:'基盤研_職員 第２種',dstart:'2018/04/01',dend:'2222/12/31',seq:'4',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'遠藤 浩輝 (総務課/常勤研究調整専門員等)',cust:'01',comp:'01',empid:'07755956',empname:'遠藤 浩輝',secid:'201000201010',secnic:'総務課',postid:'ZZL',postname:'常勤研究調整専門員等',workertypeid:'TMG_WORKERTYPE|43',wokertypename:'基盤研_常勤研究調整専門員 第３種',dstart:'2019/04/01',dend:'2222/12/31',seq:'5',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'陶山 聡 (総務課/常勤研究調整専門員等)',cust:'01',comp:'01',empid:'40907319',empname:'陶山 聡',secid:'201000201010',secnic:'総務課',postid:'ZZL',postname:'常勤研究調整専門員等',workertypeid:'TMG_WORKERTYPE|43',wokertypename:'基盤研_常勤研究調整専門員 第３種',dstart:'2019/04/01',dend:'2222/12/31',seq:'6',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'久保 圭江子 (総務課/無期事務補助員)',cust:'01',comp:'01',empid:'26050240',empname:'久保 圭江子',secid:'201000201010',secnic:'総務課',postid:'ZZN',postname:'無期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2008/04/01',dend:'2222/12/31',seq:'7',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'大島 由紀子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'59977466',empname:'大島 由紀子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2019/04/01',dend:'2222/12/31',seq:'8',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'河本 智裕 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'67841708',empname:'河本 智裕',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/04/01',dend:'2222/12/31',seq:'9',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'柴垣 朋子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'77224330',empname:'柴垣 朋子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/01/01',dend:'2222/12/31',seq:'10',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'中川 昌世 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'55276713',empname:'中川 昌世',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/01/01',dend:'2222/12/31',seq:'11',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'西村 智子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'09278924',empname:'西村 智子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/08/01',dend:'2222/12/31',seq:'12',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}}]}]
         System.out.println(empList);
 
         return GlobalResponse.ok();
@@ -70,25 +66,49 @@ public class TestController {
         return GlobalResponse.ok();
     }
 
-    /**
-     * TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
-     *                 true, false, false, true);
-     *         String orgTree = referList.getJSONArrayForOrgTree();
-     *         String divisionTree = referList.getJSONArrayForDivisionTree();
-     *         String empList = referList.getJSONArrayForEmpList();
-     *         String memberList = referList.getJSONArrayForMemberList();
-     *         String groupBySection = referList.getJSONArrayForMemberListGroupBySection();
-     *         String groupByGroup = referList.getJSONArrayForMemberListGroupByGroup();
-     *         String groupList = referList.getJSONArrayForGroupList();
-     *         String sectionList = referList.getJSONArrayForSectionList();
-     *         System.out.println(orgTree);
-     *         System.out.println(divisionTree);
-     *         System.out.println(empList);
-     *         System.out.println(memberList);
-     *         System.out.println(groupBySection);
-     *         System.out.println(groupByGroup);
-     *         System.out.println(groupList);
-     *         System.out.println(sectionList);
-     */
+    // 勤怠承認サイトの Test  11
+    // TmgTreeViewForPermEmp.jsp
+    @GetMapping("rf3")
+    @ResponseBody
+    public GlobalResponse setReferList3() throws Exception {
+        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_DIVLIST, true,
+                true, false, false, true);
+        String memberList = referList.getJSONArrayForMemberList();
+        System.out.println(memberList);
+        String groupBySection = referList.getJSONArrayForMemberListGroupBySection();
+        System.out.println(groupBySection);
+        String groupByGroup = referList.getJSONArrayForMemberListGroupByGroup();
+        System.out.println(groupByGroup);
+        return GlobalResponse.ok();
+    }
+
+    // 勤怠承認サイトの Test  21
+    // TmgTreeViewForPermList.jsp
+    @GetMapping("rf4")
+    @ResponseBody
+    public GlobalResponse setReferList4() throws Exception {
+        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
+        String groupList = referList.getJSONArrayForGroupList();
+        System.out.println(groupList);
+        String sectionList = referList.getJSONArrayForSectionList();
+        System.out.println(sectionList);
+        return GlobalResponse.ok();
+    }
+
+    // 勤怠承認サイトの Test  31
+    // TmgTreeViewForPermListSec.jsp
+    @GetMapping("rf5")
+    @ResponseBody
+    public GlobalResponse setReferList5() throws Exception {
+        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
+                true, false, false, true);
+        String sectionList = referList.getJSONArrayForSectionList();
+        System.out.println(sectionList);
+        return GlobalResponse.ok();
+    }
 
 }
