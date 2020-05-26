@@ -46,6 +46,22 @@
                     </i-col>
                 </Row>
             </div>
+            <Row :gutter="10" class="mt5 mb15 tc">
+                <i-col span="4">
+                  <div class="label spec">年次休暇付与日数</div>
+                  <div class="month-sum">35.0日 2時間</div>
+                </i-col>
+                <i-col span="4">
+                  <div class>
+                    <div class="label spec">年次休暇付与日</div>
+                    <div class="month-sum">01月01日</div>
+                  </div>
+                </i-col>
+                <i-col span="8" class="no-border-radius">
+                  <div class="work-changed-day">摘要</div>
+                  <i-input type="textarea" :autosize="{ maxRows: 2 }" />
+                </i-col>
+              </Row>
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
                 <template slot-scope="{ row }" slot="one">
