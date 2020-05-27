@@ -134,4 +134,19 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("language", language);
         return baseMapper.selectVariationalWorkDays(params);
     }
+
+    @Override
+    public HashMap<String, Object> selectDsipDate(String employeeId, String baseDate, String lastday, String custId, String compCode) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("lastday", lastday);
+        return baseMapper.selectDsipDate(params);
+    }
+
+
+
+
 }

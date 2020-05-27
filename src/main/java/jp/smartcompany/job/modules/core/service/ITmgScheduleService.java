@@ -143,4 +143,19 @@ public interface ITmgScheduleService extends IService<Object> {
      */
     int selectVariationalWorkDays(String employeeId, String targetDate, String custId, String compCode, String language);
 
+
+    /**
+     * 基本労働制対象者の表示開始?終了日の取得する
+     *
+     * @param employeeId
+     * @param baseDate
+     * @param lastday
+     * @param custId
+     * @param compCode
+     * @return
+     */
+    HashMap<String, Object> selectDsipDate(String employeeId, String baseDate, String lastday, String custId, String compCode);
+
+
+
 }

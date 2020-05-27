@@ -68,8 +68,8 @@
         and tmo_dyyyymm = trunc(to_date(#{workYear}), 'mm')
         and tmo_ccompanyid = #{compCode}
         and tmo_ccustomerid = #{custId}
-        and tmo_dstartdate <![CDATA[>=]]>  trunc(to_date(#{workYear}), 'mm')
-        and tmo_denddate <![CDATA[<=]]> trunc(to_date(#{workYear}), 'mm')
+        and tmo_dstartdate <![CDATA[<=]]>  trunc(to_date(#{workYear}), 'mm')
+        and tmo_denddate <![CDATA[>=]]> trunc(to_date(#{workYear}), 'mm')
     </select>
 
     <!-- [勤怠]日別情報より予定データを取得します -->
@@ -254,5 +254,35 @@
                and (trunc(g.mgd_dstart_ck, 'mm') = trunc(to_date(#{targetDate}, 'yyyy/mm/dd'), 'mm')
                     or trunc(g.mgd_dend, 'mm') = trunc(to_date(#{targetDate},'yyyy/mm/dd'), 'mm'))
     </select>
+
+    <!-- 基本労働制対象者の表示開始?終了日の取得する -->
+    <select id="selectDsipDate" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select to_char(trunc(to_date(#{baseDate}), 'day'), 'yyyy/mm/dd') as start_date
+              ,to_char(next_day(last_day(to_date(#{lastday})) - 1, 7),'yyyy/mm/dd') as end_date
+          from tmg_monthly
+         where tmo_cemployeeid = #{employeeId}
+           and tmo_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+           and tmo_ccompanyid = #{compCode}
+           and tmo_ccustomerid = #{custId}
+           and tmo_nmonth_chk_flg is null
+    </select>
+
+    <!-- 月末の次の土曜日まで表示する -->
+    <select id="selectLinkOfNextMonthNextSaturday" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select d.premonth,to_char(last_day(d.premonth), 'yyyy/mm/dd')
+        from (select to_char(min(tmo_dyyyymm), 'yyyy/mm/dd') as premonth
+            from tmg_monthly
+            where tmo_cemployeeid = #{employeeId}
+            and tmo_dyyyymm <![CDATA[>]]> trunc(to_date(#{baseDate}), 'mm')
+            and tmo_dyyyymm <![CDATA[<=]]> add_months(trunc(sysdate, 'mm'), 2)
+            and tmo_ccompanyid = #{compCode}
+            and tmo_ccustomerid = #{custId}
+            and tmo_dstartdate <![CDATA[<=]]> #{baseDate}
+            and tmo_denddate <![CDATA[>=]]> #{baseDate}) d
+            where d.premonth is not null
+    </select>
+
+
+
 
 </mapper>

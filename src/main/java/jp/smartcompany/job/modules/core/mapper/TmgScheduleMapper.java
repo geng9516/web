@@ -102,4 +102,14 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     int selectVariationalWorkDays(HashMap<String, Object> params);
 
+    /**
+     * 基本労働制対象者の表示開始?終了日の取得する
+     *
+     * @param params
+     * @return
+     */
+    HashMap<String, Object> selectDsipDate(HashMap<String, Object> params);
+
+
+
 }
