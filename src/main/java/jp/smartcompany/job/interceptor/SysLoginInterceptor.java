@@ -201,8 +201,14 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
         }
+        String siteId = request.getParameter("psSite");
+        if (StrUtil.isNotBlank(siteId)) {
+            hashtable.put("SiteId", siteId);
+        }
 
         psDBBean.setSysControl(hashtable);
+
+        request.setAttribute("BeanName",psDBBean);
 
     }
 

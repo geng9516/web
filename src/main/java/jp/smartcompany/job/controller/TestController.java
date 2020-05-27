@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -17,14 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TestController {
 
-    private final PsDBBean psDBBean;
     private String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
 
     // 勤怠管理サイト Test  11
     // TmgTreeViewForAdminEmp.jsp
     @GetMapping("rf1")
     @ResponseBody
-    public GlobalResponse setReferList1() throws Exception {
+    public GlobalResponse setReferList1(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                                  true, false, false, true);
@@ -41,7 +41,6 @@ public class TestController {
         String empList = referList.getJSONArrayForEmpList();
         // [{data:{secid:'201000201010',secnic:'総務課',label:'総務課'},open:true,child:[{data:{level:'0',label:'吉武 徹 (総務課/課長)',cust:'01',comp:'01',empid:'34370889',empname:'吉武 徹',secid:'201000201010',secnic:'総務課',postid:'301',postname:'課長',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2016/04/01',dend:'2222/12/31',seq:'1',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'吉田 健二 (総務課/課長補佐)',cust:'01',comp:'01',empid:'19225739',empname:'吉田 健二',secid:'201000201010',secnic:'総務課',postid:'305',postname:'課長補佐',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2018/04/01',dend:'2222/12/31',seq:'2',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'加藤 宏二 (総務課/係長)',cust:'01',comp:'01',empid:'57854417',empname:'加藤 宏二',secid:'201000201010',secnic:'総務課',postid:'405',postname:'係長',workertypeid:'TMG_WORKERTYPE|03',wokertypename:'基盤研_職員 第３種',dstart:'2016/04/01',dend:'2222/12/31',seq:'3',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'渡邊 雄二 (総務課/係員)',cust:'01',comp:'01',empid:'19231982',empname:'渡邊 雄二',secid:'201000201010',secnic:'総務課',postid:'421',postname:'係員',workertypeid:'TMG_WORKERTYPE|02',wokertypename:'基盤研_職員 第２種',dstart:'2018/04/01',dend:'2222/12/31',seq:'4',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'遠藤 浩輝 (総務課/常勤研究調整専門員等)',cust:'01',comp:'01',empid:'07755956',empname:'遠藤 浩輝',secid:'201000201010',secnic:'総務課',postid:'ZZL',postname:'常勤研究調整専門員等',workertypeid:'TMG_WORKERTYPE|43',wokertypename:'基盤研_常勤研究調整専門員 第３種',dstart:'2019/04/01',dend:'2222/12/31',seq:'5',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'陶山 聡 (総務課/常勤研究調整専門員等)',cust:'01',comp:'01',empid:'40907319',empname:'陶山 聡',secid:'201000201010',secnic:'総務課',postid:'ZZL',postname:'常勤研究調整専門員等',workertypeid:'TMG_WORKERTYPE|43',wokertypename:'基盤研_常勤研究調整専門員 第３種',dstart:'2019/04/01',dend:'2222/12/31',seq:'6',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'久保 圭江子 (総務課/無期事務補助員)',cust:'01',comp:'01',empid:'26050240',empname:'久保 圭江子',secid:'201000201010',secnic:'総務課',postid:'ZZN',postname:'無期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2008/04/01',dend:'2222/12/31',seq:'7',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'大島 由紀子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'59977466',empname:'大島 由紀子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2019/04/01',dend:'2222/12/31',seq:'8',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'河本 智裕 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'67841708',empname:'河本 智裕',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/04/01',dend:'2222/12/31',seq:'9',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'柴垣 朋子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'77224330',empname:'柴垣 朋子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/01/01',dend:'2222/12/31',seq:'10',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'中川 昌世 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'55276713',empname:'中川 昌世',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/01/01',dend:'2222/12/31',seq:'11',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}},{data:{level:'0',label:'西村 智子 (総務課/有期事務補助員)',cust:'01',comp:'01',empid:'09278924',empname:'西村 智子',secid:'201000201010',secnic:'総務課',postid:'ZZO',postname:'有期事務補助員',workertypeid:'TMG_WORKERTYPE|91',wokertypename:'基盤研_非常勤（日・時給） フルタイム',dstart:'2016/08/01',dend:'2222/12/31',seq:'12',defaultapplevel:'TMG_APPROVAL_LEVEL|1'}}]}]
         System.out.println(empList);
-
         return GlobalResponse.ok();
     }
 
@@ -49,7 +48,7 @@ public class TestController {
     // TmgTreeViewForAdminList.jsp
     @GetMapping("rf2")
     @ResponseBody
-    public GlobalResponse setReferList2() throws Exception {
+    public GlobalResponse setReferList2(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         // 21 31时使用orgTree
 //        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
@@ -70,7 +69,7 @@ public class TestController {
     // TmgTreeViewForPermEmp.jsp
     @GetMapping("rf3")
     @ResponseBody
-    public GlobalResponse setReferList3() throws Exception {
+    public GlobalResponse setReferList3(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_DIVLIST, true,
                 true, false, false, true);
@@ -87,7 +86,7 @@ public class TestController {
     // TmgTreeViewForPermList.jsp
     @GetMapping("rf4")
     @ResponseBody
-    public GlobalResponse setReferList4() throws Exception {
+    public GlobalResponse setReferList4(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 true, false, false, true);
@@ -102,7 +101,7 @@ public class TestController {
     // TmgTreeViewForPermListSec.jsp
     @GetMapping("rf5")
     @ResponseBody
-    public GlobalResponse setReferList5() throws Exception {
+    public GlobalResponse setReferList5(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
