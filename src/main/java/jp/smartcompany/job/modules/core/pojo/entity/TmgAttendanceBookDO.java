@@ -42,7 +42,7 @@ private static final long serialVersionUID=1L;
         /**
          * 社員番号
          */
-                @TableId(value = "tma_cemployeeid", type = IdType.AUTO)
+                @TableField(value = "tma_cemployeeid")
                 private String tmaCemployeeid;
 
         /**

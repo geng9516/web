@@ -60,7 +60,6 @@ private static final long serialVersionUID=1L;
         /**
          * 年                             gyy
          */
-                @TableId(value = "year", type = IdType.AUTO)
                 private String year;
 
         /**

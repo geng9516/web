@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * txkw_ccustomerid
          */
-    @TableField("txkw_ccustomerid")
+    @TableId(value="txkw_ccustomerid",type = IdType.INPUT)
         private String txkwCcustomerid;
 
         /**

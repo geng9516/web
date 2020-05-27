@@ -42,7 +42,7 @@ private static final long serialVersionUID=1L;
         /**
          * tppa_cemployeeid
          */
-                @TableId(value = "tppa_cemployeeid", type = IdType.AUTO)
+                @TableField(value = "tppa_cemployeeid")
                 private String tppaCemployeeid;
 
         /**

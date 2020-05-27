@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 一括登録id
          */
-    @TableField("tbnl_ntbnid")
+    @TableId(value="tbnl_ntbnid",type = IdType.INPUT)
         private Long tbnlNtbnid;
 
         /**

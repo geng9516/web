@@ -36,7 +36,6 @@ private static final long serialVersionUID=1L;
         /**
          * 開始日
          */
-    @TableField("dstart")
         private Date dstart;
 
         /**
@@ -60,7 +59,6 @@ private static final long serialVersionUID=1L;
         /**
          * 職員番号
          */
-                @TableId(value = "cshainno", type = IdType.AUTO)
                 private String cshainno;
 
         /**

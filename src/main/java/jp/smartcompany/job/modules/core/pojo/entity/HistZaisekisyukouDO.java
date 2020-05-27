@@ -42,7 +42,7 @@ private static final long serialVersionUID=1L;
         /**
          * 職員番号
          */
-                @TableId(value = "hzs_cemployeeid_ck", type = IdType.AUTO)
+                @TableField(value = "hzs_cemployeeid_ck")
                 private String hzsCemployeeidCk;
 
         /**

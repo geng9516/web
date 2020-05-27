@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 更新id
          */
-    @TableField("tdcl_nid")
+    @TableId(value="tdcl_nid",type = IdType.INPUT)
         private Long tdclNid;
 
         /**

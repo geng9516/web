@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * tda_dcreated
          */
-    @TableField("tda_dcreated")
+    @TableId(value="tda_dcreated",type = IdType.INPUT)
         private Date tdaDcreated;
 
         /**

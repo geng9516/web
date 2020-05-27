@@ -60,7 +60,6 @@ private static final long serialVersionUID=1L;
         /**
          * コード種別                         コードを識別する種別
          */
-                @TableId(value = "cde_sybt", type = IdType.AUTO)
                 private String cdeSybt;
 
         /**

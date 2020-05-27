@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * id                                                          tmg_ooto4gw_seq
          */
-    @TableField("tow_nid")
+    @TableId(value="tow_nid",type = IdType.INPUT)
         private Long towNid;
 
         /**

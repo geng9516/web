@@ -36,7 +36,6 @@ private static final long serialVersionUID=1L;
         private String thmCcompanyid;
 
 
-                @TableId(value = "thm_cemployeeid", type = IdType.AUTO)
                 private String thmCemployeeid;
 
     @TableField("thm_dstartdate")

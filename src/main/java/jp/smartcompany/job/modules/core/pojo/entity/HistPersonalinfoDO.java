@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 顧客コード
          */
-    @TableField("hpi_ccustomerid")
+    @TableId(value="hpi_ccustomerid",type = IdType.INPUT)
         private String hpiCcustomerid;
 
         /**

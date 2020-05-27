@@ -60,7 +60,6 @@ private static final long serialVersionUID=1L;
         /**
          * 職員番号
          */
-                @TableId(value = "cshainno", type = IdType.AUTO)
                 private String cshainno;
 
         /**

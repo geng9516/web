@@ -30,13 +30,13 @@ private static final long serialVersionUID=1L;
         /**
          * 作成日
          */
-    @TableField("tph_dcreate")
+    @TableField(value="tph_dcreate")
         private Date tphDcreate;
 
         /**
          * 顧客ｺｰﾄﾞ                        固定：01
          */
-    @TableField("tph_ccustomerid")
+    @TableId(value="tph_ccustomerid",type = IdType.INPUT)
         private String tphCcustomerid;
 
         /**

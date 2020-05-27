@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * 顧客コードﾞ     固定：01
          */
-    @TableField("thnod_ccustomerid")
+    @TableId(value="thnod_ccustomerid",type = IdType.INPUT)
         private String thnodCcustomerid;
 
         /**

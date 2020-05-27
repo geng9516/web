@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * tntf_dcreated
          */
-    @TableField("tntf_dcreated")
+    @TableId(value="tntf_dcreated",type = IdType.INPUT)
         private Date tntfDcreated;
 
         /**

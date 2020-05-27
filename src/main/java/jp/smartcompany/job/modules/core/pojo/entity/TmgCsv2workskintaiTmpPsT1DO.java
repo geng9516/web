@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * tcwp_cemployeeid
          */
-    @TableField("tcwp_cemployeeid")
+    @TableId(value="tcwp_cemployeeid",type = IdType.INPUT)
         private String tcwpCemployeeid;
 
         /**

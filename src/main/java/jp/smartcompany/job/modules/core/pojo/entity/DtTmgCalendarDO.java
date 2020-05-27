@@ -72,7 +72,6 @@ private static final long serialVersionUID=1L;
         /**
          * 該当年月                          yyyy/mm/01
          */
-                @TableId(value = "tca_dyyyymm", type = IdType.AUTO)
                 private Date tcaDyyyymm;
 
         /**
