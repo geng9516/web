@@ -1,14 +1,14 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -18,7 +18,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Component
 @Slf4j
 public class TmgEmpList {
 
@@ -60,14 +59,12 @@ public class TmgEmpList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    @Autowired
-    DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param bean
      */
-    @Autowired
     public TmgEmpList(PsDBBean bean) {
         this.bean = bean;
         this.keyArray = DEFAULT_KEY_ARRAY;
@@ -174,10 +171,11 @@ public class TmgEmpList {
 
         Connection connection = null;
         List entityList = null;
-        log.info("createTreeEmpList_SQL1：{}",sSQL);
+        log.info("【createTreeEmpList_SQL1：{}】",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
+            log.debug("empList结果:{}",entityList);
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -185,7 +183,8 @@ public class TmgEmpList {
                 connection.close();
             }
         }
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
+        log.debug("【empList的dataArray：{}】",dataArray);
      }
 
     /**
@@ -223,7 +222,7 @@ public class TmgEmpList {
             }
         }
 
-      setSearchDataArray(entityList);
+      setSearchDataArray(JSONArrayGenerator.entityListTowardList(entityList));
 
     }
 
@@ -258,7 +257,7 @@ public class TmgEmpList {
             e.printStackTrace();
         }
 
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     /**
@@ -525,17 +524,17 @@ public class TmgEmpList {
                         bean.escDBString(bean.getCompCode()),psBaseDate, bean.escDBString(bean.getLanguage()));
 
         Connection connection;
-        Entity entityList = null;
+        Entity entity = null;
         log.info("getMsgDispLimit4Tree_SQL4："+ sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
+            entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
-        return entityList.size() == 0 ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
+        return entity == null ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entity.getStr("MGD_NLIMIT");
 
     }
 
@@ -777,6 +776,7 @@ public class TmgEmpList {
         if(dataArray == null){
             return null;
         }
+        log.debug("【getJSONArrayForTreeViewGroupBySection时的dataArray：{}】", dataArray);
         try{
             // 社員番号と部署コードでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
@@ -788,14 +788,19 @@ public class TmgEmpList {
             int[] groupKey   = { DEFAULT_KEY_SECID };
             int[] groupLabel = { DEFAULT_KEY_SECNIC };
 
-            if(targetSec != null){
+            log.debug("【targetSec:{},distinctDataArray:{}】",targetSec,distinctDataArray);
+
+            if(StrUtil.isNotBlank(targetSec)){
                 String[][] initOpenNodeArray = { {targetSec} };
-                return JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel,initOpenNodeArray);
+                String string = JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel,initOpenNodeArray);
+                log.debug("【treeViewGroupBy:{}】",string);
+                return string;
             }else{
                 return JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel);
             }
 
         }catch(Exception e){
+            e.printStackTrace();
             return null;
         }
     }
@@ -896,7 +901,7 @@ public class TmgEmpList {
      * @return
      */
     public String buildSQLForSelectEmpListFromDualTableObject(boolean pbSelectedSearchTab) throws Exception{
-        // TODO: 呼び出し先はTmgDutyHoursBean　交替制勤務割振表　テスト不要
+        // TODO: 呼び出し先はTmgDutyHoursBean　交替制勤務割振表
         // 社員番号でdistinctをかけてから、SQLを構築する
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 

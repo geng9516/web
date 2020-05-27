@@ -4,10 +4,9 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -17,7 +16,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-@Component
 @Slf4j
 public class TmgMemberList {
 
@@ -58,14 +56,12 @@ public class TmgMemberList {
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param bean
      */
-    @Autowired
     public TmgMemberList(PsDBBean bean) {
         // 下記のコンストラクタのエラー回避のためです。
         this.bean = bean;
@@ -164,7 +160,7 @@ public class TmgMemberList {
             }
         }
 
-        dataArray = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);
 
     }
 
@@ -202,7 +198,7 @@ public class TmgMemberList {
                 connection.close();
             }
         }
-        gvSearchDataArray = entityList;
+        gvSearchDataArray = JSONArrayGenerator.entityListTowardList(entityList);
     }
 
     private String gsDispLimi4Tree = null;
@@ -218,11 +214,11 @@ public class TmgMemberList {
                         bean.escDBString(bean.getCompCode()), psBaseDate, bean.escDBString(bean.getLanguage()));
 
         Connection connection = null;
-        Entity entityList = null;
+        Entity entity = null;
         log.info("getMsgDispLimit4Tree_SQL3：{}",sSQL);
         try {
             connection = dataSource.getConnection();
-            entityList = SqlExecutor.query(connection,sSQL ,new EntityHandler());
+            entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
         } finally {
@@ -232,7 +228,7 @@ public class TmgMemberList {
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
-        return entityList.size() == 0 ?TmgUtil.Cs_TmgDispLimit4TreeDefault : entityList.getStr("MGD_NLIMIT");
+        return entity == null ? TmgUtil.Cs_TmgDispLimit4TreeDefault : entity.getStr("MGD_NLIMIT");
 
     }
 

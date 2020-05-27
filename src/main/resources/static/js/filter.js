@@ -17,6 +17,6 @@ Vue.filter('addNumDeci', function(e, isDay) {
     if(!isDay) return '0.00'
     return '0.0'
   }
-  if(!isDay) return e.toFixed(2)
-    else return e.toFixed(1)
+  if(!isDay) return parseFloat(e).toFixed(2)
+    else return parseFloat(e).toFixed(1)
 })

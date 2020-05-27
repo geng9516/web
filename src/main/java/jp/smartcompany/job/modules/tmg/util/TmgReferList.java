@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.util.SysDateUtil;
 import jp.smartcompany.job.util.SysUtil;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -56,11 +57,12 @@ import java.util.*;
  */
 @NoArgsConstructor
 @Slf4j
+@ToString
 public class TmgReferList {
 
     private PsDBBean psDBBean;
-    private ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("iTmgMgdMsgSearchTreeViewService");
-    private DataSource dataSource = SpringUtil.getBean("datasource");
+    private ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
+    private DataSource dataSource = SpringUtil.getBean("dataSource");
 
     private String beanDesc = null;
     private String targetDate = null;
@@ -498,8 +500,7 @@ public class TmgReferList {
         Date dDate = new Date();
         String useManage = (String)psDBBean.session.getAttribute(SESSION_KEY_USEMANAGEFLG);
         // 組織ツリー上の再表示ボタンが押下フラグ（押された場合はtrue)
-        String sRefersh = (String)psDBBean.requestHash.get(TREEVIEW_KEY_REFRESH_FLG);
-
+//        String sRefersh = (String)psDBBean.requestHash.get(TREEVIEW_KEY_REFRESH_FLG);
         gcSysdate      = (Date)psDBBean.session.getAttribute(SESSION_KEY_SYSDATE);
         gcPreMonthDate = (Date)psDBBean.session.getAttribute(SESSION_KEY_PRE_MONTH_DATE);
         gcPreYearDate  = (Date)psDBBean.session.getAttribute(SESSION_KEY_PRE_YEAR_DATE);
@@ -639,10 +640,10 @@ public class TmgReferList {
         // 対象組織の組織コードをリクエストパラメータから取得
         targetSec_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         // リクエストパラメータに存在しない場合、セッションから取得
-        if(targetSec_admin == null || targetSec_admin.equals("")){
+        if(StrUtil.isBlank(targetSec_admin)){
             targetSec_admin = (String)psDBBean.session.getAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
             // セッションにも存在しない場合、NULLをセット(対象社員もNULLにしておく)
-            if(targetSec_admin == null || targetSec_admin.equals("")){
+            if(StrUtil.isBlank(targetSec_admin)){
                 targetSec_admin = null;
                 targetEmp_admin = null;
             }
@@ -653,11 +654,12 @@ public class TmgReferList {
             createDivTree();
         }
         else {
+            log.debug("【init方法后的createOrgTree方法开始执行】");
             createOrgTree();
         }
 
         // 組織が選択されている場合、社員一覧を初期化
-        if(targetSec_admin != null && !"".equals(targetSec_admin)){
+        if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
             if(targetEmp_admin == null || !empList.existsEmp(targetEmp_admin)){
@@ -798,6 +800,7 @@ public class TmgReferList {
             else{
                 try{
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
+                    log.debug("【调用TmgOrgTress的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
                     orgTree.createOrgTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
                     psDBBean.session.setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
 //                    session.setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
@@ -897,6 +900,7 @@ public class TmgReferList {
             String base = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
             String target;
 
+            log.debug("【createEmpList的参数:sectionId:{},targetDate:{}】",targetSection,targetDate);
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);
@@ -1587,7 +1591,7 @@ public class TmgReferList {
      * @return boolean treu:指定したサイトである false:指定したサイトではない
      */
     private boolean isSite(String siteId){
-        return psDBBean.getSiteId().equals(siteId);
+        return StrUtil.equals(psDBBean.getSiteId(),siteId);
     }
 
     /**

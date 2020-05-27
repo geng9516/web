@@ -3,12 +3,10 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import jp.smartcompany.job.modules.core.pojo.bo.OrganisationBO;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -17,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-@Component
 @Slf4j
 public class TmgDivisionTree {
 
@@ -38,21 +35,18 @@ public class TmgDivisionTree {
 
     private PsDBBean psDBBean = null;
     private String beanDesc = null;
-    private OrganisationBO dataArray = null;
-    private List dataArray1 = null;
+    private List dataArray = null;
     private String[] keyArray = null;
 
     private Boolean gbAllDivision;
     private String gsRootSection;
 
-    @Autowired
-    private DataSource dataSource;
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ
      * @param psDBBean
      */
-    @Autowired
     public TmgDivisionTree(PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         keyArray = DEFAULT_KEY_ARRAY;
@@ -75,7 +69,7 @@ public class TmgDivisionTree {
         String sSQL =  buildSQLForSelectOrgTree(custId, compCode, language, baseDate, sExists);
 
         Connection connection = null;
-        List<OrganisationBO> entityList = null;
+        List entityList = null;
         log.info("createDivisionTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
@@ -87,7 +81,7 @@ public class TmgDivisionTree {
                 connection.close();
             }
         }
-        dataArray1 = entityList;
+        dataArray = JSONArrayGenerator.entityListTowardList(entityList);;
 
         //最上位組織コードを取得する
         String sSQL1 =  buildSQLForSelectRootSection(custId, compCode, language, baseDate);
@@ -103,7 +97,9 @@ public class TmgDivisionTree {
                 connection.close();
             }
         }
-        gsRootSection = rootSection.getStr("MO_CSECTIONID_CK");
+
+        //rootSectionがnullの場合、上位組織コード：""で返却する
+        gsRootSection = rootSection == null ? "":rootSection.getStr("MO_CSECTIONID_CK");
         gbAllDivision = (sExists == null || "".equals(sExists));
     }
 
@@ -251,11 +247,11 @@ public class TmgDivisionTree {
     }
 
     public String getJSONArrayForTreeView(){
-        if(dataArray1 == null){
+        if(dataArray == null){
             return null;
         }
         try{
-            return JSONArrayGenerator.getJSONArrayForTreeView(dataArray1,keyArray,1);
+            return JSONArrayGenerator.getJSONArrayForTreeView(dataArray,keyArray,1);
         }catch(Exception e){
             return null;
         }
@@ -270,7 +266,7 @@ public class TmgDivisionTree {
      */
     public String getTargetSectionData(String targetSectionId,int keyIndex){
         try{
-            for(Iterator i = dataArray1.iterator(); i.hasNext();){
+            for(Iterator i = dataArray.iterator(); i.hasNext();){
                 ArrayList data = (ArrayList)i.next();
                 if(data.get(DEFAULT_KEY_SECID).equals(targetSectionId)){
                     return (String)data.get(keyIndex);
@@ -321,11 +317,11 @@ public class TmgDivisionTree {
     }
 
     public List getDataArray() {
-        return dataArray1;
+        return dataArray;
     }
 
-    public void setDataArray(List dataArray1) {
-        this.dataArray1 = dataArray1;
+    public void setDataArray(List dataArray) {
+        this.dataArray = dataArray;
     }
 
     public String[] getKeyArray() {

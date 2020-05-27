@@ -21,7 +21,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/favicon","/log/**","/static/**");
-        registry.addInterceptor(sysLoginInterceptor).addPathPatterns("/","/sys/**");
+        registry.addInterceptor(sysLoginInterceptor).addPathPatterns("/","/sys/**","/test/**");
     }
 
     @Override
