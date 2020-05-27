@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgScheduleMapper">
+
+    <!-- 年次休暇残 -->
+    <resultMap id="selectTmgMonthlyMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.NpaidRestDTO">
+        <result column="tmo_npaid_rest_days" property="tmo_npaid_rest_days" javaType="java.lang.String"/>
+        <result column="tmo_npaid_rest_hours" property="tmo_npaid_rest_hours" javaType="java.lang.String"/>
+        <result column="tmo_nmonth_chk_flg" property="tmo_nmonth_chk_flg" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!-- [勤怠]日別情報より予定データを取得します -->
+    <resultMap id="selectScheduleMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.ScheduleDataDTO">
+        <result column="tda_nmmdd" property="tda_nmmdd" javaType="java.lang.String"/>
+        <result column="tda_nmmday" property="tda_nmmday" javaType="java.lang.String"/>
+        <result column="tda_cworkingid_mm" property="tda_cworkingid_mm" javaType="java.lang.String"/>
+        <result column="tda_nopen_p" property="tda_nopen_p" javaType="java.lang.String"/>
+        <result column="tda_nclose_p" property="tda_nclose_p" javaType="java.lang.String"/>
+        <result column="tda_nrestopen_p" property="tda_nrestopen_p" javaType="java.lang.String"/>
+        <result column="tda_nrestclose_p" property="tda_nrestclose_p" javaType="java.lang.String"/>
+        <result column="tda_cmessage" property="tda_cmessage" javaType="java.lang.String"/>
+        <result column="tda_nlock_p" property="tda_nlock_p" javaType="java.lang.String"/>
+        <result column="tda_cworkingid_p" property="tda_cworkingid_p" javaType="java.lang.String"/>
+        <result column="tda_ccustomerid" property="tda_ccustomerid" javaType="java.lang.String"/>
+        <result column="tda_cbusinesstripid_p" property="tda_cbusinesstripid_p" javaType="java.lang.String"/>
+        <result column="tda_cbusinesstripid_mm" property="tda_cbusinesstripid_mm" javaType="java.lang.String"/>
+        <result column="tda_ccomment_p" property="tda_ccomment_p" javaType="java.lang.String"/>
+        <result column="tda_dmmdd" property="tda_dmmdd" javaType="java.lang.String"/>
+        <result column="avgworktime" property="avgworktime" javaType="java.lang.String"/>
+        <result column="mgd_csparechar4" property="mgd_csparechar4" javaType="java.lang.String"/>
+        <result column="timerange" property="timerange" javaType="java.lang.String"/>
+        <result column="duty" property="duty" javaType="java.lang.String"/>
+        <result column="astem_cworktypeid" property="astem_cworktypeid" javaType="java.lang.String"/>
+        <result column="json" property="json" javaType="java.lang.String"/>
+        <result column="holflgCalendar" property="holflgCalendar" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--  対象ユーザー情報 -->
+    <resultMap id="selectTargetUserDetailMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO">
+        <result column="name" property="name" javaType="java.lang.String"/>
+        <result column="dept" property="dept" javaType="java.lang.String"/>
+        <result column="workType" property="workType" javaType="java.lang.String"/>
+        <result column="workTypeCode" property="workTypeCode" javaType="java.lang.String"/>
+        <result column="posi" property="posi" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--  今月の月中有給付与の情報 -->
+    <resultMap id="selectHalfwayPaidHolidayMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.HalfwayPaidHolidayDTO">
+        <result column="tmo_npaid_begining_days" property="tmo_npaid_begining_days" javaType="java.lang.String"/>
+        <result column="tmo_npaid_begining_hours" property="tmo_npaid_begining_hours" javaType="java.lang.String"/>
+        <result column="tmo_npaid_rest_days" property="tmo_npaid_rest_days" javaType="java.lang.String"/>
+        <result column="tmo_npaid_rest_hours" property="tmo_npaid_rest_hours" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--  週勤務パターン -->
+    <resultMap id="selectTmgWeekPatternMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO">
+        <result column="twp_dstartdate" property="twp_dstartdate" javaType="java.lang.String"/>
+        <result column="twp_denddate" property="twp_denddate" javaType="java.lang.String"/>
+        <result column="twp_nid" property="twp_nid" javaType="java.lang.String"/>
+    </resultMap>
+
+
+    <!-- 年次休暇残 -->
+    <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
+        select tmo_npaid_rest_days,tmo_npaid_rest_hours as tmo_npaid_rest_hours,nvl(tmo_nmonth_chk_flg, 0) as tmo_nmonth_chk_flg
+        from tmg_monthly
+        where tmo_cemployeeid = #{employeeId}
+        and tmo_dyyyymm = trunc(to_date(#{workYear}), 'mm')
+        and tmo_ccompanyid = #{compCode}
+        and tmo_ccustomerid = #{custId}
+        and tmo_dstartdate <![CDATA[>=]]>  trunc(to_date(#{workYear}), 'mm')
+        and tmo_denddate <![CDATA[<=]]> trunc(to_date(#{workYear}), 'mm')
+    </select>
+
+    <!-- [勤怠]日別情報より予定データを取得します -->
+    <select id="selectSchedule" parameterType="java.util.HashMap" resultMap="selectScheduleMap">
+        select
+        case when rownum = 1 and to_char(tda_dyyyymmdd, 'dd')<![CDATA[<>]]>'01' then
+        to_char(tda_dyyyymmdd,'mm/dd')
+        when rownum > 1 and to_char(tda_dyyyymmdd, 'dd') = '01' then
+        to_char(tda_dyyyymmdd,'mm/dd')
+        else
+        to_char(tda_dyyyymmdd, 'dd')
+        end as tda_nmmdd ,
+        to_char(tda_dyyyymmdd, 'dy') as tda_nmmday ,
+        tmg_f_get_mgd(tda_cworkingid_p, trunc((to_date(#{dStart})), 'mm')) as tda_cworkingid_mm,
+        nvl(tmg_f_conv_min2hhmi(tda_nopen_p, 0), ' ') as tda_nopen_p ,
+        nvl(tmg_f_conv_min2hhmi(tda_nclose_p, 0), ' ') as tda_nclose_p ,
+        tmg_f_conv_min2hhmi(tda_nrestopen_p, 0) as tda_nrestopen_p ,
+        tmg_f_conv_min2hhmi(tda_nrestclose_p, 0) as tda_nrestclose_p ,
+        nvl(tda_cmessage, ' ') tda_cmessage,
+        greatest(tda_nlock_p,tmg_f_is_fixed_monthly(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid)) as tda_nlock_p ,
+        tda_cworkingid_p ,
+        to_char(tda_dyyyymmdd, 'yyyy/mm/dd') as tda_ccustomerid ,
+        tda_cstatusflg ,
+        tda_cbusinesstripid_p ,
+        tmg_f_get_mgd(tda_cbusinesstripid_p, trunc((to_date(#{dStart})),'mm')) tda_cbusinesstripid_mm,
+        tda_ccomment_p ,
+        to_char(tda_dyyyymmdd, 'mm/dd') tda_dmmdd,
+        nvl(tmg_f_get_avgworktime(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid), '0') as avgworktime,
+        tmg_f_get_employees_workday(tda_cworkingid_p, tda_ccustomerid,tda_ccompanyid) as mgd_csparechar4 ,
+        tmg_f_timerange_table_json(tmg_f_get_timerange_tbl_tdad(tda_ccustomerid, tda_ccompanyid, tda_cemployeeid,tda_dyyyymmdd, #{ctpye_plan}, null)) as timerange,
+        tmg_f_get_dutyresults(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid, #{language}) as duty,
+        tmg_f_get_workertype(tda_cemployeeid, tda_dyyyymmdd) as astem_cworktypeid,
+        tmg_f_timerange_table_json((tmg_f_get_pattern_default(tda_ccustomerid, tda_ccompanyid,tda_cemployeeid, tda_dyyyymmdd)) .timerange) as json,
+        tmg_f_get_holflg_of_calendar(tda_dyyyymmdd, tda_ccustomerid,tda_ccompanyid, tda_cemployeeid) as holflgCalendar
+        from tmg_daily
+        where tda_cemployeeid = #{employeeId}
+        and tda_ccompanyid = #{compCode}
+        and tda_ccustomerid = #{custId}
+        <if test="#{isVariationalWorkDays} eq false">
+            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{startDispDate}, 'yyyy/mm/dd')  <!-- 日曜日 -->
+            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{endDispDate}, 'yyyy/mm/dd')     <!-- 土曜日 -->
+        </if>
+        <if test="#{isVariationalWorkDays} eq true">
+            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')
+            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{dEnd}, 'yyyy/mm/dd')
+        </if>
+        and #{manageflg} <![CDATA[<>]]> tmg_f_is_manageflg(#{employeeId}, trunc(to_date(#{dStart}, 'yyyy/mm/dd')), last_day(to_date(#{dEnd}, 'yyyy/mm/dd')), #{compCode}, #{custId})
+        order by tda_dyyyymmdd
+    </select>
+
+    <!-- 4週間単位の変形労働制職員対応 -->
+    <select id="selectBaseDateOf4WeeksBeforeDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select pre_data.pre_start,pre_data.pre_end
+        from (select to_char (decode(tmg_f_get_basedate_fourweeks(0 ,to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId} , #{compCode} , #{custId}), null, trunc(to_date(#{baseDate}, 'yyyy/mm/dd') - 1,'mm'),
+        tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate},'yyyy/mm/dd') - 1 , null , #{employeeId}, #{compCode} ,#{custId})), 'yyyy/mm/dd') as pre_start
+        ,to_char (decode(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId}, #{compCode} , #{custId}), null, last_day(to_date(#{baseDate}, 'yyyy/mm/dd') - 1),
+        to_date(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId} , #{compCode} , #{custId}), 'yyyy-mm-dd') + 7 * 4 - 1), 'yyyy/mm/dd') as pre_end from dual) pre_data
+        where exists(select 1 from tmg_daily
+        where tda_ccustomerid = #{custId}
+        and tda_ccompanyid = #{compCode}
+        and tda_cemployeeid = #{employeeId}
+        and tda_dyyyymmdd <![CDATA[<=]]> pre_data.pre_end)
+    </select>
+
+    <!-- 翌月リンクを取得 -->
+    <select id="selectLinkOfNextMonth" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select d.nextmonth
+        from (select to_char(max(tmo_dyyyymm), 'yyyy/mm/dd') as nextmonth
+        from tmg_monthly
+        where tmo_cemployeeid = #{employeeId}
+        and tmo_dyyyymm <![CDATA[<]]> trunc(to_date(#{baseDate}), 'mm')
+        and tmo_ccompanyid = #{compCode}
+        and tmo_ccustomerid = #{custId}
+        and tmo_dstartdate <![CDATA[<=]]> #{baseDate}
+        and tmo_denddate <![CDATA[>=]]> #{baseDate}) d
+        where d.nextmonth is not null
+    </select>
+
+    <!-- 前月リンクを取得 -->
+    <select id="selectLinkOfPreMonth" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select d.premonth
+        ,to_char(last_day(d.premonth), 'yyyy/mm/dd') premonthlastday
+        from (select to_char(min(tmo_dyyyymm), 'yyyy/mm/dd') as premonth
+        from tmg_monthly
+        where tmo_cemployeeid = #{employeeId}
+        and tmo_dyyyymm > trunc(to_date(#{baseDate}), 'mm')
+        and tmo_dyyyymm <![CDATA[<=]]> add_months(trunc(sysdate, 'mm'), 2)
+        and tmo_ccompanyid = #{compCode}
+        and tmo_ccustomerid = #{custId}
+        and tmo_dstartdate <![CDATA[<=]]> #{baseDate}
+        and tmo_denddate <![CDATA[>=]]> #{baseDate}) d
+        where d.premonth is not null
+    </select>
+
+    <!--  対象ユーザー情報 -->
+    <select id="selectTargetUserDetail" parameterType="java.util.HashMap" resultMap="selectTargetUserDetailMap">
+        select tmg_f_get_me_name(#{employeeId}, to_date(#{baseDate},'yyyy/mm/dd'), 0, #{compCode} ,#{custId}) as name
+            ,tmg_f_get_mo(#{targetSecCode}, to_date(#{baseDate}, 'yyyy/mm/dd'),0, #{compCode} ,#{custId}) as dept
+            ,tmg_f_get_mgd(tmg_f_get_workertype(#{employeeId}, to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode} ,#{custId}), to_date(#{baseDate}, 'yyyy/mm/dd'), #{compCode} ,#{custId},  #{language}) as workType
+            ,tmg_f_get_workertype(#{employeeId}, to_date(#{baseDate},'yyyy/mm/dd'), #{compCode} ,#{custId}) as workTypeCode
+            ,(select tmg_f_get_mp(d.hd_cpostid_fk, to_date(#{startDispDate},'yyyy/mm/dd'), d.hd_ccustomerid_ck, d.hd_ccompanyid_ck, #{language}) as posi
+              from hist_designation d
+               where d.hd_ccustomerid_ck =  #{compCode}
+               and d.hd_ccompanyid_ck = #{custId}
+               and d.hd_cemployeeid_ck = #{employeeId}
+               and trunc(to_date(#{startDispDate}, 'yyyy/mm/dd')) between d.hd_dstartdate_ck
+               and d.hd_denddate and d.hd_cifkeyoradditionalrole = 0)
+          from dual
+    </select>
+
+    <!--  平日時の勤務時間 -->
+    <select id="selectWorkingHours" parameterType="java.util.HashMap" resultType="java.lang.String">
+         select tmg_f_get_avgworktime( #{employeeId} ,to_date( #{baseDate}, 'yyyy/mm/dd') ,#{compCode} ,#{custId}) as workingHours from dual
+    </select>
+
+    <!--  今月の月中有給付与の情報 -->
+    <select id="selectHalfwayPaidHoliday" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tmo_npaid_begining_days
+            ,tmo_npaid_begining_hours
+            ,tmo_npaid_rest_days
+            ,tmo_npaid_rest_hours
+            ,to_char(tph_dyyyymmdd, 'mm月dd日') tph_dyyyymmdd
+        from tmg_employees ,
+            tmg_monthly ,
+            tmg_paid_holiday
+        where tem_ccustomerid = #{custId}
+        and tem_ccompanyid = #{compCode}
+        and tem_cemployeeid = #{employeeId}
+        and tem_dstartdate <![CDATA[<=]]> trunc(sysdate)
+        and tem_denddate <![CDATA[>=]]> trunc(sysdate)
+        and tem_cworktypeid in ('tmg_workertype|20', 'tmg_workertype|30')
+        and tmo_ccustomerid = tem_ccustomerid
+        and tmo_ccompanyid = tem_ccompanyid
+        and tmo_cemployeeid = tem_cemployeeid
+        and tmo_dstartdate <![CDATA[<=]]> trunc(sysdate)
+        and tmo_denddate <![CDATA[>=]]> trunc(sysdate)
+        and tmo_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+        and tph_ccustomerid = tem_ccustomerid
+        and tph_ccompanyid = tem_ccompanyid
+        and tph_cemployeeid = tem_cemployeeid
+        and tph_dstartdate <![CDATA[<=]]> trunc(sysdate)
+        and tph_denddate <![CDATA[>=]]> trunc(sysdate)
+        and tph_dyyyymm = trunc(to_date(#{baseDate}), 'mm')
+        and tph_dyyyymm <![CDATA[!=]]> tph_dyyyymmdd
+    </select>
+
+    <!--  週勤務パターン -->
+    <select id="selectTmgWeekPattern" parameterType="java.util.HashMap" resultMap="selectTmgWeekPatternMap">
+        select to_char(twp_dstartdate, 'yyyy/mm/dd') as twp_dstartdate
+            ,to_char(twp_denddate , 'yyyy/mm/dd') as twp_denddate
+            ,twp_nid
+        from tmg_week_pattern
+        where twp_ccustomerid = #{custId}
+        and twp_ccompanyid = #{compCode}
+        and twp_cemployeeid = #{employeeId}
+        and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
+        and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
+        order by twp_denddate
+    </select>
+
+    <!-- 基準日時点で４週間の変形労働制対象者か -->
+    <select id="selectVariationalWorkInfo" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select count(1) from mast_generic_detail g
+        where g.mgd_cgenericdetailid_ck = #{employeeId}
+        and g.mgd_ccustomerid =  #{custId}
+        and g.mgd_cgenericgroupid = 'TMG_VARIATIONAL_WORK'
+        and g.mgd_dend >= to_date(#{targetDate}, 'yyyy/mm/dd')
+        and g.mgd_clanguage_ck = #{language}
+        and g.mgd_dstart_ck <![CDATA[<=]]>  to_date(#{targetDate}, 'yyyy/mm/dd')
+        and g.mgd_ccompanyid_ck_fk = #{compCode}
+    </select>
+
+    <!-- 基準日の月に４週間の変形労働制の期間が存在するか -->
+    <select id="selectVariationalWorkDays" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select count(1)
+          from mast_generic_detail g
+             where g.mgd_ccustomerid = #{custId}
+               and g.mgd_ccompanyid_ck_fk = #{compCode}
+               and g.mgd_cgenericgroupid = 'TMG_VARIATIONAL_WORK'
+               and g.mgd_cgenericdetailid_ck =  #{employeeId}
+               and g.mgd_clanguage_ck = #{language}
+               and (trunc(g.mgd_dstart_ck, 'mm') = trunc(to_date(#{targetDate}, 'yyyy/mm/dd'), 'mm')
+                    or trunc(g.mgd_dend, 'mm') = trunc(to_date(#{targetDate},'yyyy/mm/dd'), 'mm'))
+    </select>
+
+</mapper>
