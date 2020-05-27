@@ -26,13 +26,12 @@ public class AttendanceBookController {
     /**
      * ディフォルト表示時間を取得する
      *
-     * @param dyyyymmdd
      * @param employeeId
-     * @return
+     * @return  {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("defaultDate")
-    public AttendanceDateInfoDTO defaultDate(@RequestParam("dyyyymmdd") String dyyyymmdd, @RequestParam("employeeId") String employeeId) {
-        return attendanceBookBean.selectDateInfo(dyyyymmdd, employeeId);
+    public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId) {
+        return attendanceBookBean.selectDateInfo(employeeId);
 
     }
 
@@ -79,7 +78,7 @@ public class AttendanceBookController {
      * @param modifieruserId
      * @param year
      * @param comment
-     * @return
+     * @return {"msg":"リクエスト成功","code":0,"data":true}
      */
     @GetMapping("updateComment")
     @ResponseBody

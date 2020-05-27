@@ -48,20 +48,16 @@ public class AttendanceBookBean {
     /**
      * ディフォルト表示時間を取得する
      *
-     * @param dyyyymmdd  2020/05/14
      * @param employeeId 34370889
      * @return
      */
-    public AttendanceDateInfoDTO selectDateInfo(String dyyyymmdd, String employeeId) {
+    public AttendanceDateInfoDTO selectDateInfo(String employeeId) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
             return null;
         }
-        if (ObjectUtil.isNull(dyyyymmdd) || ObjectUtil.isEmpty(dyyyymmdd)) {
-            dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
-        }
-
+        String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
         String firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
