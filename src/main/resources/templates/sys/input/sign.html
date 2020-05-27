@@ -174,8 +174,8 @@
                     this.isShow = true
                 },
                 async handleStamp(clockType) {
-                    if (clockType === '1') this.data.clockOnTime = formatDate(Date.now())
-                    else this.data.clockOffTime = formatDate(Date.now())
+                    if (clockType === '1') this.data.clockOnTime = Utils.formatDate(Date.now())
+                    else this.data.clockOffTime = Utils.formatDate(Date.now())
                     // try {
                     //   if (clockType === '1') this.checkInLoading = true
                     //   else this.checkOutLoading = true

@@ -1,19 +1,19 @@
 <span th:fragment="deptSelector" class="dept-selector" xmlns:th="http://www.thymeleaf.org"
   style="display:flex;width: calc(15% + 200px);">
   <span class="label">所属</span>
-  <i-button @click="isShow = true" class="input-like-span mr30 cursor grey"
+  <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
     style="width: calc(100% - 120px);border-radius:0">
     {{ showName(deptName) }}
   </i-button>
-  <Drawer title="所属" placement="right" width="500" : closable="false" v-model="isShow">
-    <i-tree class="tree" : data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし"></i-tree>
+  <Drawer title="所属" placement="right" width="500" :closable="false" v-model="deptDrawShow">
+    <Tree class="tree" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし"></Tree>
   </Drawer>
   <script th:inline="javascript" type="text/babel">
     const DEPTSELECTOR = new Vue({
       el: '.dept-selector',
       data() {
         return {
-          isShow: false,
+          deptDrawShow: false,
           treeData: [
             {
               title: '医薬基盤・健康・栄養研究所(0)',
@@ -62,7 +62,7 @@
       methods: {
         handleClickLeaf(e) {
           this.deptName = e[0].title
-          this.isShow = false
+          this.deptDrawShow = false
         },
         showName(e) {
           const result = e.match(/^[\s\S]+(?=\()/g)
