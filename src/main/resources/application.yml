@@ -2,8 +2,9 @@ server:
   port: 6879
   tomcat:
     uri-encoding: UTF-8
-    max-threads: 1000
-    min-spare-threads: 30
+    threads:
+      min-spare: 30
+      max: 1000
   compression:
     enabled: on
     min-response-size: 1024
@@ -20,6 +21,9 @@ server:
   servlet:
     session:
       timeout: 86400
+    encoding:
+      charset: utf-8
+      force: on
 management:
   endpoint:
     health:
@@ -57,10 +61,6 @@ spring:
       # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
       idle-timeout: 600000
       connection-test-query: SELECT 1 FROM DUAL
-  http:
-    encoding:
-      charset: utf-8
-      force: on
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
