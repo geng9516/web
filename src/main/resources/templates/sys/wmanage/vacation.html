@@ -21,9 +21,19 @@
                 </div>
             </div>
             <div class="searchwrap">
-                <div th:replace="layout/deptSelector::deptSelector"></div>
+                <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                        style="width: calc(100% - 120px);border-radius:0">
+                        {{ showName(deptName) }}
+                    </i-button>
+                    <Drawer title="所属" placement="right" width="500" :closable="false" v-model="deptDrawShow">
+                        <Tree class="tree" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                            empty-text="所属データなし"></Tree>
+                    </Drawer>
+                </span>
                 <span style="flex:1"></span>
-              </div>
+            </div>
         </div>
         <div class="content_body">
             <i-table @on-row-click="showDay(arguments)" border :columns="columns" :row-class-name="() => 'select-col'"
@@ -100,16 +110,69 @@
                             ]
                         }
                     ],
-                    data: [[${ #httpServletRequest.getAttribute('vacationDaysList') }]],
+                    data: [[${ vacationDaysList }]],
                     loading: false,
+                    deptDrawShow: false,
+                    treeData: [
+                        {
+                            title: '医薬基盤・健康・栄養研究所(0)',
+                            expand: true,
+                            children: [
+                                {
+                                    title: '(本部) (0)',
+                                    expand: true,
+                                    children: [
+                                        {
+                                            title: '総務部(8)',
+                                            value: 666
+                                        },
+                                        {
+                                            title: '監査担当(0)'
+                                        }
+                                    ]
+                                },
+                                {
+                                    title: '医薬基盤研究所(1)',
+                                    expand: true,
+                                    children: [
+                                        {
+                                            title: '開発振興部(16)'
+                                        },
+                                        {
+                                            title: '難治性疾患研究開発・支援センター(2)',
+                                            expand: true,
+                                            children: [
+                                                {
+                                                    title: '難治性疾患治療開発・支援室(10)'
+                                                },
+                                                {
+                                                    title: '難病資源研究室(6)'
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ],
+                    deptName: '请选择'
                 }
             },
             mounted() {
+                console.log([[${ session }]])
             },
             methods: {
                 showDay() {
-                  //todo: 跳到详情页
-                  location.href="./VacationTablePanel/vacationtablepanel.html";
+                    //todo: 跳到详情页
+                    location.href = "./VacationTablePanel/vacationtablepanel.html";
+                },
+                handleClickLeaf(e) {
+                    this.deptName = e[0].title
+                    this.deptDrawShow = false
+                },
+                showName(e) {
+                    const result = e.match(/^[\s\S]+(?=\()/g)
+                    return (result && result[0]) || e
                 }
             }
         })
