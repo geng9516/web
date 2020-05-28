@@ -1,11 +1,16 @@
 package jp.smartcompany.job.controller;
 
+import cn.hutool.core.date.DateUtil;
+import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -43,12 +48,19 @@ public class SiteWManageController {
      * @return
      */
     @GetMapping("vacation")
-    public String toWManageVacation(@RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+    public String toWManageVacation(
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            @RequestParam("moduleIndex") Integer moduleIndex,
+                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
         paidHolidayBean.actionInitHandler(modelMap);
-        System.out.println(modelMap.getAttribute("vacationDaysList"));
+        String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
+        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
+                true, false, false, true);
+        referList.putReferList(modelMap);
+        modelMap.addAttribute("psDBBean",psDBBean);
         return "sys/wmanage/vacation";
     }
 

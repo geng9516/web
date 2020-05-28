@@ -58,6 +58,9 @@
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
+
+        var jsonDepts = [[${TmgReferListObject.getJSONArrayForOrgTree()}]]
+
         const VACATION = new Vue({
             el: '.vaction-warp',
             data() {
