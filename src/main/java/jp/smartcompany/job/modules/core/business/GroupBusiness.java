@@ -7,6 +7,7 @@ import cn.hutool.db.DbUtil;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.PQueryUserGroupBO;
@@ -61,8 +62,8 @@ public class GroupBusiness {
     }
 
     public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
-        log.debug("【setGroupInfo:{}】",ShiroUtil.getUserId());
         String userId = ShiroUtil.getUserId();
+        log.info("【setGroupInfo:{}】",userId);
         systemList.forEach(system -> {
             String systemCode = system.getMsCsystemidPk();
             List<DBMastGroupBO> mastGroupList = iMastGroupService.getUserGroupByLanguage(language,systemCode);

@@ -1,21 +1,19 @@
 package jp.smartcompany.job.interceptor;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.common.Constant;
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
-import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
+import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -47,7 +45,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
-    private final IMastEmployeesService iMastEmployeesService;
     private final PsDBBean psDBBean;
 
     @Override
@@ -94,18 +91,17 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 登录后且还未设置PsSession里的值则需要进行设置
         Hashtable<String,Object> hashtable = new Hashtable<>();
         if (ShiroUtil.isAuthenticated()){
-            MastAccountDO account = ShiroUtil.getLoginUser();
-            if (StrUtil.isNotBlank(account.getMaCaccount())) {
-                session.setLoginAccount(account.getMaCaccount());
-                session.setLoginCompany(mastSystemDO.getMsCsystemidPk());
-                session.setLoginUser(account.getMaCuserid());
-                session.setLoginCustomer(account.getMaCcustomerid());
-                List<MastEmployeesDO> employeesDOList = iMastEmployeesService.selectEmployByLoginUserId(account.getMaCcustomerid(),mastSystemDO.getMsCsystemidPk(),account.getMaCuserid(), DateUtil.date());
-                if (CollUtil.isNotEmpty(employeesDOList)){
-                    MastEmployeesDO employ = employeesDOList.get(0);
-                    session.setLoginKanjiName(employ.getMeCkanjiname());
-                    session.setLoginEmployee(employ.getMeCemployeeidCk());
-                }
+            LoginAccountBO account = ShiroUtil.getLoginUser();
+            String username = account.getHdCuserid();
+            if (StrUtil.isNotBlank(username)) {
+                session.setLoginAccount(username);
+                session.setLoginCompany(account.getHdCcompanyidCk());
+                session.setLoginUser(username);
+                session.setLoginCustomer(account.getHdCcustomeridCk());
+                session.setLoginKanjiName(account.getHdCemployeeidCk());
+                session.setLoginEmployee(account.getMeCemployeename());
+                List<Designation> designationList = getDesignationList(CollUtil.newArrayList(account));
+                session.setLoginDesignation(designationList);
             }
         }
 
@@ -199,11 +195,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetSection);
             psDBBean.setTargetDept(targetSection);
         }
-        if (ShiroUtil.isAuthenticated()) {
-            System.out.println(session.getLoginBaseSection());
-            System.out.println(session.getLoginDesignation());
-            System.out.println(session.getLoginGroupBaseSection());
-        }
 
         if (StrUtil.isNotBlank(targetEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetEmp);
@@ -223,8 +214,82 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     }
 
+    public List<Designation> getDesignationList(List<LoginAccountBO> lAccountInfoList) {
+        /*
+         * 検索結果を異動歴のListに設定する ※PsSession側の型がArrayListのため、そちらに合わせる
+         */
+        List<Designation> lDesignationList = CollUtil.newArrayList();
+        for (LoginAccountBO accountInfo : lAccountInfoList) {
+            Designation designation = new Designation();
+
+            // 顧客コード
+            designation.setCustomerCode(accountInfo.getHdCcustomeridCk());
+
+            // 法人コード
+            designation.setCompanyCode(accountInfo.getHdCcompanyidCk());
+
+            // 法人内部階層コード
+            designation.setCompanyHierarchy(accountInfo.getMacClayeredcompanyid());
+
+            // 法人並び順
+            designation.setCompanyOrder(accountInfo.getMacNseq().toString());
+
+            // 法人名称
+            designation.setCompanyName(accountInfo.getMacCcompanyname());
+
+            // 社員番号
+            designation.setEmployee(accountInfo.getHdCemployeeidCk());
+
+            // ユーザID
+            designation.setUserid(accountInfo.getHdCuserid());
+
+            // 氏名
+            designation.setName(accountInfo.getMeCemployeename());
+
+            // 氏名カナ
+            designation.setNameKana(accountInfo.getMeCkananame());
+
+            // 組織(所属)コード
+            designation.setSection(accountInfo.getHdCsectionidFk());
+
+            // 組織内部階層コード
+            designation.setSectionHierarchy(accountInfo.getMoClayeredsectionid());
+
+            // 組織並び順
+            designation.setSectionOrder(accountInfo.getMoNseq().toString());
+
+            // 組織名称
+            designation.setSectionName(accountInfo.getMoCsectionname());
+
+            // 役職コード
+            designation.setPostCode(accountInfo.getHdCpostidFk());
+
+            // 役職順位
+            designation.setPostRank(accountInfo.getMapNweightage());
+
+            // 役職名称
+            designation.setPostName(accountInfo.getMapCpostname());
+
+            // 本務兼務区分
+            designation.setAttachRole(accountInfo.getHdCifkeyoradditionalrole());
+
+            // 異動歴開始日
+            designation.setPersonnelChangesBigin(accountInfo.getHdDstartdateCk());
+
+            // 所属長フラグ
+            designation.setBossOrNot(accountInfo.getHdCbossornot());
+
+            // 異動歴リストに追加
+            lDesignationList.add(designation);
+
+        }
+        return lDesignationList;
+    }
+
+
     // 登录后加载角色组和基点组织
     private void executeLoginSequence(List<MastSystemDO> systemList, String language) {
+
         if (CollUtil.isEmpty(systemList)){
             throw new GlobalException("Master not found");
         }

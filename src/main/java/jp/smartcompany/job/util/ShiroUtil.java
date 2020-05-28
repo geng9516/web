@@ -2,6 +2,7 @@ package jp.smartcompany.job.util;
 
 import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.enums.ErrorMessage;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
@@ -16,24 +17,24 @@ public class ShiroUtil {
 		return SecurityUtils.getSubject();
 	}
 
-	public static MastAccountDO getLoginUser() {
-		return (MastAccountDO) SecurityUtils.getSubject().getPrincipal();
+	public static LoginAccountBO getLoginUser() {
+		return (LoginAccountBO) SecurityUtils.getSubject().getPrincipal();
 	}
 
 	public static String getUserId() {
-		MastAccountDO mastAccountDO = getLoginUser();
-		if (mastAccountDO == null){
+		LoginAccountBO loginAccountBO = getLoginUser();
+		if (loginAccountBO == null){
 			throw new GlobalException(ErrorMessage.SESSION_EXPIRE);
 		}
-		return mastAccountDO.getMaCuserid();
+		return loginAccountBO.getHdCuserid();
 	}
 
 	public static String getUsername() {
-		MastAccountDO mastAccountDO = getLoginUser();
-		if (mastAccountDO == null){
+		LoginAccountBO loginAccountBO = getLoginUser();
+		if (loginAccountBO == null){
 			return null;
 		}
-		return mastAccountDO.getMaCaccount();
+		return loginAccountBO.getHdCuserid();
 	}
 
 	public static boolean isAuthenticated() {

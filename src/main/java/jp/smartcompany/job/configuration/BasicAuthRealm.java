@@ -3,6 +3,7 @@ package jp.smartcompany.job.configuration;
 import jp.smartcompany.job.enums.ErrorMessage;
 import jp.smartcompany.job.modules.core.CoreError;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,8 @@ public class BasicAuthRealm extends AuthorizingRealm {
         String digestPassword = new Md5Hash(password).toHex();
         boolean isValid = authBusiness.checkPassword(mastAccountDO,digestPassword);
         if (isValid) {
-          return new SimpleAuthenticationInfo(mastAccountDO,digestPassword,getName());
+          LoginAccountBO loginAccountBO = iMastAccountService.getAccountInfo(username);
+          return new SimpleAuthenticationInfo(loginAccountBO,digestPassword,getName());
         }
         return null;
     }

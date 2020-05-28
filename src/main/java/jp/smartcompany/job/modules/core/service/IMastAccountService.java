@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -19,5 +20,7 @@ public interface IMastAccountService extends IService<MastAccountDO> {
          * @return
          */
         MastAccountDO getByUsername(String username);
+
+        LoginAccountBO getAccountInfo(String username);
 
 }
