@@ -20,7 +20,7 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/favicon","/log/**","/static/**");
+        registry.addInterceptor(auditInterceptor).excludePathPatterns("/login","/favicon.ico","/log/**","/static/**","/error");
         registry.addInterceptor(sysLoginInterceptor).addPathPatterns("/","/sys/**","/test/**");
     }
 
@@ -40,6 +40,8 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/");
+        registry.addResourceHandler("/favicon.ico")
+                .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/favicon.ico");
         super.addResourceHandlers(registry);
 //        registry.addResourceHandler("/upload/**")
 //                .addResourceLocations("file:///D:/IdeaWorkspace/office-next-BE/upload/");

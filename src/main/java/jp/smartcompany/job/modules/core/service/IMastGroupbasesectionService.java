@@ -25,6 +25,6 @@ public interface IMastGroupbasesectionService extends IService<MastGroupbasesect
          * @param date
          * @return
          */
-        List<GroupBaseSectionBO>  getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date);
+        List<GroupBaseSectionBO>  getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, String date);
 
 }

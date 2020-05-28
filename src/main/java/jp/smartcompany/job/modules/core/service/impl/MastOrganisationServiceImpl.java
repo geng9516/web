@@ -65,7 +65,7 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
         }
 
         @Override
-        public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, Date date) {
+        public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, String date) {
                 QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
                 qw.eq("mo_ccustomerid_ck_fk",customerId)
                   .lt("mo_dstart",date).gt("mo_dend",date)

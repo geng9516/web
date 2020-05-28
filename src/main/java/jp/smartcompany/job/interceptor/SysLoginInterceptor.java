@@ -188,15 +188,26 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put("custid",session.getLoginCustomer());
         }
 
+        psDBBean.setTargetComp(session.getLoginCompany());
+        psDBBean.setTargetCust(session.getLoginCustomer());
+
         String targetSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
         String targetEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
         String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
 
         if (StrUtil.isNotBlank(targetSection)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetSection);
+            psDBBean.setTargetDept(targetSection);
         }
+        if (ShiroUtil.isAuthenticated()) {
+            System.out.println(session.getLoginBaseSection());
+            System.out.println(session.getLoginDesignation());
+            System.out.println(session.getLoginGroupBaseSection());
+        }
+
         if (StrUtil.isNotBlank(targetEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetEmp);
+            psDBBean.setTargetUser(targetEmp);
         }
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);

@@ -25,8 +25,6 @@ public class MastSystemServiceImpl extends ServiceImpl<MastSystemMapper, MastSys
         public List<MastSystemDO> getByLang(String language) {
            QueryWrapper<MastSystemDO> qw = SysUtil.query();
            qw.eq("ms_clanguage",language);
-            System.out.println("====");
-            System.out.println(language);
            return list(qw);
         }
 

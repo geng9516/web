@@ -46,7 +46,7 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
          * @param date
          * @return
          */
-        List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId,String conds,Date date);
+        List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId,String conds,String date);
 
         /**
          * 获取父级组织的id

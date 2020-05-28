@@ -23,6 +23,6 @@ public interface MastGroupbasesectionMapper extends BaseMapper<MastGroupbasesect
    List<GroupBaseSectionBO> getBaseSectionByGroupCode(@Param("customerId") String customerId,
                                                       @Param("systemCode") String systemCode,
                                                       @Param("groupCode") String groupCode,
-                                                      @Param("date") Date date);
+                                                      @Param("date") String date);
 
 }

@@ -52,6 +52,7 @@ public class GroupBusiness {
         String groupCheckMode = GROUP_CHECK_MODE_MULTIPLE;
         boolean groupCheckFlag = false;
         iMastSystemService.getByLang(language);
+        log.info("【getGroupList:{}】",language);
         if (groupCheckFlag) {
             setPretreatGroup(language);
         } else {
@@ -60,6 +61,7 @@ public class GroupBusiness {
     }
 
     public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
+        log.debug("【setGroupInfo:{}】",ShiroUtil.getUserId());
         String userId = ShiroUtil.getUserId();
         systemList.forEach(system -> {
             String systemCode = system.getMsCsystemidPk();
@@ -89,6 +91,7 @@ public class GroupBusiness {
                     listLoginGroup.add(loginGroup);
                 }
 
+                log.info("【groupBusiness：{}】",listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
                     PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());

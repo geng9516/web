@@ -20,6 +20,8 @@ import jp.smartcompany.job.util.SysUtil;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.ui.ModelMap;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -459,8 +461,8 @@ public class TmgReferList {
      * このメソッドは、TmgTreeView.jspを使用する場合に実行しなければいけません。<br>
      * このメソッドを実行しなかった場合、TmgTreeView.jspをインクルードしてもツリービューは表示されません。
      */
-    public void putReferList(){
-        psDBBean.requestHash.put(REQUEST_KEY_TMG_REFER_LIST_OBJECT, this);
+    public void putReferList(ModelMap modelMap){
+        modelMap.addAttribute(REQUEST_KEY_TMG_REFER_LIST_OBJECT, this);
     }
 
     private void init() throws Exception{

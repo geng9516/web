@@ -336,7 +336,8 @@ public class PsDBBean {
             String psCustID,  String psCompID,
             String psEmployeeID, String psCreterialDate) {
         String sBaseSection = "";
-        Date date = DateUtil.parse(psCreterialDate, DATE_FORMAT);
+        Date tdate = DateUtil.parse(psCreterialDate,DATE_FORMAT);
+        String date = DateUtil.format(tdate, DATE_FORMAT);
         // ログインユーザの基点組織を取得
         BaseSectionBO bsi = baseSectionBusiness.getBaseSection(date);
         Map<String, Map<String, String>> hbSection = bsi.getHmCompany();
@@ -371,7 +372,8 @@ public class PsDBBean {
             String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
         Map<String,String> mBaseSectionList = MapUtil.newHashMap();
         Date date = DateUtil.parse(sCreterialDate, DATE_FORMAT);
-        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(date);
+        String tdate = DateUtil.format(date,DATE_FORMAT);
+        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(tdate);
         Map<String, String> hBaseSection = bsi.getHmCompany().get("01");
         if (hBaseSection != null) {
             for (Map.Entry<String, String> entry : hBaseSection.entrySet()) {

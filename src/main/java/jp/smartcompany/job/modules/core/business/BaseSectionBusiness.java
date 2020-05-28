@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -14,6 +15,7 @@ import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +29,7 @@ import java.util.Map;
  * @author Xiao Wenpeng
  */
 @Service(CoreBean.Business.BASE_SECTION)
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BaseSectionBusiness {
     private final IMastGroupbasesectionService iMastGroupbasesectionService;
@@ -35,7 +38,8 @@ public class BaseSectionBusiness {
 
     public void getBaseSectionList() {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-        BaseSectionBO baseSection = getBaseSection(DateUtil.date());
+        String date = DateUtil.format(DateUtil.date(),"yyyy/MM/dd");
+        BaseSectionBO baseSection = getBaseSection(date);
         psSession.setLoginBaseSection(baseSection.getHmCompany());
         psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
     }
@@ -45,7 +49,7 @@ public class BaseSectionBusiness {
      * @param date 基準日(yyyy/mm/dd)
      * @return 基点組織情報(法人別とグループ別)
      */
-    public BaseSectionBO getBaseSection(Date date) {
+    public BaseSectionBO getBaseSection(String date) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         String userId = ShiroUtil.getUserId();
         Map<String, List<LoginGroupBO>> hmGroups = psSession.getLoginGroups();
@@ -70,12 +74,14 @@ public class BaseSectionBusiness {
      * @param sSystem システムコード
      * @param date 基準日
      */
-    private void queryBaseSection(String sCustomer, String sSystem, Date date,
+    private void queryBaseSection(String sCustomer, String sSystem, String date,
                                   Map<String, Map<String, String>> hashMapComp,
                                   Map<String, Map<String, String>> hashMapGroup) {
         Map<String, List<GroupBaseSectionBO>> lhmComp = MapUtil.newHashMap(true);
         Map<String, List<GroupBaseSectionBO>> lhmGroup = MapUtil.newHashMap(true);
         queryBaseSectionMaster(sCustomer, sSystem, date, lhmComp, lhmGroup);
+        log.info("hmComp:{}",lhmComp);
+        log.info("hmGroup:{}",lhmGroup);
         hashMapComp.put(sSystem, getBaseSectionByCompany(sCustomer, date, lhmComp));
         hashMapGroup.put(sSystem, getBaseSectionByGroup(sCustomer, date, lhmGroup));
     }
@@ -88,7 +94,7 @@ public class BaseSectionBusiness {
      */
     private void queryBaseSectionMaster(String sCustomer,
                                         String sSystem,
-                                        Date date,
+                                        String date,
                                         Map<String, List<GroupBaseSectionBO>> lhmComp,
                                         Map<String, List<GroupBaseSectionBO>> lhmGroup) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
@@ -123,7 +129,7 @@ public class BaseSectionBusiness {
      * @return 法人別基点組織 <法人, 基点組織情報>
      */
     public Map<String, String> getBaseSectionByCompany(String sCustomer,
-                                                       Date tsDate,
+                                                       String tsDate,
                                                        Map<String, List<GroupBaseSectionBO>> lhmSectionId) {
         Map<String,String> lhmBase = MapUtil.newHashMap(true);
         for (Map.Entry <String, List<GroupBaseSectionBO>> e : lhmSectionId.entrySet()) {
@@ -143,7 +149,7 @@ public class BaseSectionBusiness {
      * @param lBaseSection 法人別基点組織マスタ <法人コード, List<基点組織マスタ>>
      * @return
      */
-    public String createBaseSectionString(String sCustomer, String sCompany,Date tsDate, List<GroupBaseSectionBO> lBaseSection) {
+    public String createBaseSectionString(String sCustomer, String sCompany,String tsDate, List<GroupBaseSectionBO> lBaseSection) {
         // リストの生成
         StringBuilder sbList = new StringBuilder();
         sbList.append(sCompany + "#");	// 法人コード + "#"
@@ -179,7 +185,7 @@ public class BaseSectionBusiness {
      */
     public Map<String, String> getBaseSectionByGroup(
             String sCustomer,
-            Date tsDate,
+            String tsDate,
             Map<String, List<GroupBaseSectionBO>> lhmLayeredId) {
         Map<String, String> lhmGroupBase = MapUtil.newHashMap(true);
         for (Map.Entry<String, List<GroupBaseSectionBO>> e : lhmLayeredId
@@ -201,7 +207,7 @@ public class BaseSectionBusiness {
      * @param lBaseSection グループ別基点組織マスタ <グループコード, List<基点組織マスタ>>
      * @return
      */
-    private String getLayerdBaseSectionString(String sCustomer, Date tsDate,
+    private String getLayerdBaseSectionString(String sCustomer, String tsDate,
                                          List<GroupBaseSectionBO> lBaseSection) {
         StringBuffer sbList = new StringBuffer();
         if (lBaseSection.size() <= 0) {
@@ -237,7 +243,7 @@ public class BaseSectionBusiness {
      * @return 基点組織以下の下位組織
      */
     private List<BaseSectionOrganisationBO> getOrganisationBelow(
-            String sCustomer, Date tsDate,
+            String sCustomer, String tsDate,
             List<GroupBaseSectionBO> lBaseSection) {
         StringBuilder sbWhere = new StringBuilder(" AND ( ");
         for (int i = 0; i < lBaseSection.size(); i++) {

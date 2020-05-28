@@ -22,7 +22,7 @@ import java.util.List;
 public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasesectionMapper, MastGroupbasesectionDO> implements IMastGroupbasesectionService {
 
   @Override
-  public List<GroupBaseSectionBO> getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date) {
+  public List<GroupBaseSectionBO> getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, String date) {
        return baseMapper.getBaseSectionByGroupCode(customerId, systemCode, groupCode, date);
   }
 

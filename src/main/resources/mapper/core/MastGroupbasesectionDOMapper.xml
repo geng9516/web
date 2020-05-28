@@ -15,13 +15,13 @@
         MGBS_CCUSTOMERID = #{customerId}
         AND MGBS_CSYSTEMID = #{systemCode}
         AND MGBS_CGROUPID = #{groupCode}
-        AND MGBS_DSTARTDATE <![CDATA[ <= ]]> #{date}
-        AND MGBS_DENDDATE >= #{date}
+        AND MGBS_DSTARTDATE <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND MGBS_DENDDATE >= to_date(#{date},'yyyy/mm/dd')
         AND MO_CCUSTOMERID_CK_FK = MGBS_CCUSTOMERID
         AND MO_CCOMPANYID_CK_FK = MGBS_CCOMPANYID
         AND MO_CSECTIONID_CK = MGBS_CSECTIONID
-        AND MO_DSTART <![CDATA[ <= ]]> #{date}
-        AND MO_DEND >= #{date}
+        AND MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND MO_DEND >= to_date(#{date},'yyyy/mm/dd')
     </select>
 
 </mapper>
