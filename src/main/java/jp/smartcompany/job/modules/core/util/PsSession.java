@@ -38,8 +38,9 @@ public class PsSession implements Serializable {
     private List<Designation> loginDesignation;
     // 当前用户所属用户组
     private Map<String, List<LoginGroupBO>> loginGroups;
-
+    //  ログインユーザの基点組織情報
     private Map<String, Map<String, String>> loginBaseSection;
+    // 基点組織情報キャッシュ(基準日毎)
     private Map<String, Map<String, String>> loginGroupBaseSection;
 
 }
