@@ -379,4 +379,5 @@
             ,postname as postname
         from table(tmg_empattr4ledger_table(tmg_f_get_empattr4ledger(#{custId}, #{compCode}, #{employeeId}, to_date(#{queryMonthDay}, 'yyyy/mm/dd'), to_date(#{nextYearDay}, 'yyyy/mm/dd'))))
     </select>
+
 </mapper>

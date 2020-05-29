@@ -282,6 +282,16 @@
             where d.premonth is not null
     </select>
 
+    <!-- 起算日を取得します -->
+    <select id="selectDetailPeriod"  parameterType="java.util.HashMap" resultType="java.lang.String">
+        select to_char(tmg_4calc_get_startdate_4weeks( #{custId},#{compCode},TRUNC(SYSDATE),#{employeeId})) as detailPeriod from dual
+    </select>
+
+    <!-- 表示基準日が4週間単位の変形労働に則っているか -->
+    <select id="selectIsStart4weeks" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select 1 from dual where mod(#{targetDate}-to_date(#{detailPeriod},'yyyy/MM/dd'),7*4)=0
+    </select>
+
 
 
 
