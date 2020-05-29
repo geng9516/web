@@ -188,7 +188,7 @@ public class AttendanceBookBean {
         String queryMonth = year + "/" + month;
         String queryMonthDay = queryMonth + "/01";
         //2021/04/01
-        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 12), DYYYYMM) + "/01";
+        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
         List<String> results = this.selectTotalDataQueryList();
@@ -246,7 +246,7 @@ public class AttendanceBookBean {
 
         String queryMonth = year + "/" + month;
         String queryMonthDay = queryMonth + "/01";
-        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 12), DYYYYMM) + "/01";
+        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
         AttendanceBookEmpDTO attendanceBookEmpDTO = iTmgAttendanceBookService.selectEmployeesBasicInfo(employeeId, queryMonthDay, nextYearDay, compCode, custId);
@@ -285,7 +285,7 @@ public class AttendanceBookBean {
         //2020/04/01
         String preYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, -1), DYYYYMM) + "/01";
         //2021/04/01
-        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 12), DYYYYMM) + "/01";
+        String nextYearDay = DateUtil.format(DateUtil.parse(queryMonth, DYYYYMM).offset(DateField.MONTH, 11), DYYYYMM) + "/01";
         //2020/12/31
         String yearLastDay = year + "/12/31";
         String compCode = psDBBean.getCompCode();
