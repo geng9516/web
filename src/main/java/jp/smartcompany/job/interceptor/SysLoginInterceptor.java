@@ -98,8 +98,8 @@ public class SysLoginInterceptor implements HandlerInterceptor {
                 session.setLoginCompany(account.getHdCcompanyidCk());
                 session.setLoginUser(username);
                 session.setLoginCustomer(account.getHdCcustomeridCk());
-                session.setLoginKanjiName(account.getHdCemployeeidCk());
-                session.setLoginEmployee(account.getMeCemployeename());
+                session.setLoginKanjiName(account.getMeCemployeename());
+                session.setLoginEmployee(account.getHdCemployeeidCk());
                 List<Designation> designationList = getDesignationList(CollUtil.newArrayList(account));
                 session.setLoginDesignation(designationList);
             }
