@@ -15,7 +15,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
+
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -166,7 +169,7 @@ public class AttendanceBookBean {
      * @param month      04
      * @return
      */
-    public List<AttendanceBookDTO> selectAttendanceBookList(String employeeId, String year, String month) {
+    private List<AttendanceBookDTO> selectAttendanceBookDto(String employeeId, String year, String month) {
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
             return null;
@@ -192,8 +195,31 @@ public class AttendanceBookBean {
         List<AttendanceBookDTO> attendanceBookDTOList = iTmgAttendanceBookService.selectAttendanceBookList(employeeId, queryMonthDay, nextYearDay, compCode, custId, results);
 
         return attendanceBookDTOList;
-
     }
+
+
+    /**
+     * 出勤簿リストDTO2VO
+     *
+     * @param employeeId 　　34370889
+     * @param year       2020
+     * @param month      04
+     * @return
+     */
+    public  List<HashMap<String, List>> selectAttendanceBookList(String employeeId, String year, String month) {
+
+        List<AttendanceBookDTO> attendanceBookDTOS = this.selectAttendanceBookDto(employeeId, year, month);
+        List<HashMap<String, List>> results = null;
+        if (attendanceBookDTOS.size() > 0) {
+            results = this.convert(AttendanceBookDTO.class, attendanceBookDTOS);
+            /*for (int i = 0; i < results.size(); i++) {
+                HashMap<String, List> stringListHashMap =  results.get(i);
+
+            }*/
+        }
+        return results;
+    }
+
 
     /**
      * 出勤簿のヘッダ部情報（氏名、所属）等
@@ -277,9 +303,60 @@ public class AttendanceBookBean {
 
     }
 
+    /**
+     * 行を列に変わる
+     *
+     * @param clazz
+     * @param list
+     * @param <T>
+     * @return
+     */
+    private <T> List convert(Class<T> clazz, List<T> list) {
+        List<ArrayList> result;
+        Field[] fields = clazz.getDeclaredFields();
+        result = new ArrayList<>(fields.length);
+        for (int i = 0; i < fields.length; i++) {
+           /* if (fields[i].getName().equals("tmaCcustomerid") || fields[i].getName().equals("tmaCcompanyid") || fields[i].getName().equals("tmaCemployeeid") || fields[i].getName().equals("dyyyy") || fields[i].getName().equals("dmm") || fields[i].getName().equals("tmaDyyyymm")) {
+                continue;
+            }*/
+            result.add(new ArrayList());
+        }
+        for (T t : list) {
+            for (int i = 0; i < fields.length; i++) {
+              /*  if (fields[i].getName().equals("tmaCcustomerid") || fields[i].getName().equals("tmaCcompanyid") || fields[i].getName().equals("tmaCemployeeid") || fields[i].getName().equals("dyyyy") || fields[i].getName().equals("dmm") || fields[i].getName().equals("tmaDyyyymm")) {
+                    continue;
+                }*/
 
+                ArrayList l = result.get(i);
+                Field field = fields[i];
+                field.setAccessible(true);
+                try {
+                    l.add(field.get(t));
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return this.convertTarget(clazz, result);
+    }
 
-
+    private <T> List convertTarget(Class<T> clazz, List<ArrayList> list) {
+        List<HashMap<String, List>> result = new ArrayList<HashMap<String, List>>();
+        HashMap<String, List> data = null;
+        Field[] fields = clazz.getDeclaredFields();
+        int size = list.size();
+        if (fields.length != size) {
+            logger.error("target count not match");
+            return null;
+        }
+        for (int i = 0; i < fields.length; i++) {
+            Field field = fields[i];
+            data = new HashMap<String, List>();
+            data.put(field.getName(), (List) list.get(i));
+            result.add(data);
+        }
+        return result;
+    }
 
 
 }

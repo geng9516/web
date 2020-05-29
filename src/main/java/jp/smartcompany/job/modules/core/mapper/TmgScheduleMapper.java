@@ -111,5 +111,13 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
     HashMap<String, Object> selectDsipDate(HashMap<String, Object> params);
 
 
+    /**
+     * 月末の次の土曜日まで表示する
+     *
+     * @param params
+     * @return
+     */
+    HashMap<String, Object> selectLinkOfNextMonthNextSaturday(HashMap<String, Object> params);
+
 
 }

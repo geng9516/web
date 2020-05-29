@@ -1,12 +1,12 @@
 package jp.smartcompany.job.controller;
 
 import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -63,9 +63,9 @@ public class AttendanceBookController {
      */
     @GetMapping("attendanceBookList")
     @ResponseBody
-    public List<AttendanceBookDTO> attendanceBookList(@RequestParam("employeeId") String employeeId,
-                                                      @RequestParam("year") String year,
-                                                      @RequestParam("month") String month) {
+    public List<HashMap<String, List>> attendanceBookList(@RequestParam("employeeId") String employeeId,
+                                                           @RequestParam("year") String year,
+                                                           @RequestParam("month") String month) {
 
         return attendanceBookBean.selectAttendanceBookList(employeeId, year, month);
     }

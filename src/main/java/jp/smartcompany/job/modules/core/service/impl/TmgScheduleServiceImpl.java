@@ -146,7 +146,16 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.selectDsipDate(params);
     }
 
+    @Override
+    public HashMap<String, Object> selectLinkOfNextMonthNextSaturday(String employeeId, String baseDate, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
 
+        return baseMapper.selectLinkOfNextMonthNextSaturday(params);
+    }
 
 
 }
