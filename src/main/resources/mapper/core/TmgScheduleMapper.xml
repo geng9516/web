@@ -269,7 +269,7 @@
 
     <!-- 月末の次の土曜日まで表示する -->
     <select id="selectLinkOfNextMonthNextSaturday" parameterType="java.util.HashMap" resultType="java.util.HashMap">
-        select d.premonth,to_char(last_day(d.premonth), 'yyyy/mm/dd')
+        select d.premonth,to_char(last_day(d.premonth), 'yyyy/mm/dd') as premonth_lastday
         from (select to_char(min(tmo_dyyyymm), 'yyyy/mm/dd') as premonth
             from tmg_monthly
             where tmo_cemployeeid = #{employeeId}

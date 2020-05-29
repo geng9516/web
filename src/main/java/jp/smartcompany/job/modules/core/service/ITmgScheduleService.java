@@ -157,5 +157,15 @@ public interface ITmgScheduleService extends IService<Object> {
     HashMap<String, Object> selectDsipDate(String employeeId, String baseDate, String lastday, String custId, String compCode);
 
 
+    /**
+     * 月末の次の土曜日まで表示する
+     *
+     * @param employeeId
+     * @param baseDate
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    HashMap<String, Object> selectLinkOfNextMonthNextSaturday(String employeeId, String baseDate, String compCode, String custId);
 
 }
