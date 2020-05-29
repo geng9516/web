@@ -1,6 +1,9 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -1948,6 +1951,12 @@ public class TmgUtil {
     /** 日付形式1 */
     public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
+    /** 今月 */
+    public static final int Cs_PARAM_THIS_MONTH = -1;
+
+    /** 日付形式2 */
+    private static final String Cs_FORMAT_SLASH = "/";
+
     /**
      * システム日付を返す
      * @return String システム日付
@@ -1955,6 +1964,30 @@ public class TmgUtil {
     public static String getSysdate(){
         SimpleDateFormat sdf = new SimpleDateFormat(Cs_FORMAT_DATE_TYPE1);
         return sdf.format(new Date());
+    }
+
+    /**
+     * 引数で指定された値分だけ基準日の月を移動します。
+     * @param date 基準日 (「yyyy/mm/dd」形式の文字列)
+     * @param mvValue 移動したい値()
+     * @return String 移動した年月日 - ※日は月初(1日)になります。
+     */
+    public static String getFirstDayOfMonth(String date, int mvValue) {
+        Date objDate = null;
+
+        try {
+            String ymd[] = StringUtils.split(date, Cs_FORMAT_SLASH);
+            Calendar calendar = Calendar.getInstance();
+
+            // カレンダーに年月日を設定
+            calendar.set(Integer.parseInt(ymd[0]), Integer.parseInt(ymd[1]) + mvValue, 1);
+
+            objDate = calendar.getTime();
+
+        } catch (Exception e) {
+            e.printStackTrace(); // 念の為
+        }
+        return new SimpleDateFormat(Cs_FORMAT_DATE_TYPE1).format(objDate);
     }
 
 

@@ -76,6 +76,15 @@ const Utils = {
     return newObj
   },
   /**
+   * 将不规范的JSON规范化
+   * 给与键名双引号，键值单引号转双引号
+   * @param data 递归的数据
+   *
+   */
+  convertToData: function (data) {
+    return JSON.parse(data.replace(/([a-z]+)(?=:)/gi,'\"$1\"').replace(/'/g,'\"'))
+  },
+  /**
    * プラス・マイナス月份
    * @param {date} date
    * @returns {Function}
