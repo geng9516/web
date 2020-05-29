@@ -19,7 +19,7 @@
         <result column="tda_nrestopen_p" property="tda_nrestopen_p" javaType="java.lang.String"/>
         <result column="tda_nrestclose_p" property="tda_nrestclose_p" javaType="java.lang.String"/>
         <result column="tda_cmessage" property="tda_cmessage" javaType="java.lang.String"/>
-        <result column="tda_nlock_p" property="tda_nlock_p" javaType="java.lang.String"/>
+        <result column="tda_nlock_p" property="tda_nlock_p" javaType="java.lang.Integer"/>
         <result column="tda_cworkingid_p" property="tda_cworkingid_p" javaType="java.lang.String"/>
         <result column="tda_ccustomerid" property="tda_ccustomerid" javaType="java.lang.String"/>
         <result column="tda_cbusinesstripid_p" property="tda_cbusinesstripid_p" javaType="java.lang.String"/>
@@ -75,7 +75,7 @@
     <!-- [勤怠]日別情報より予定データを取得します -->
     <select id="selectSchedule" parameterType="java.util.HashMap" resultMap="selectScheduleMap">
         select
-        case when rownum = 1 and to_char(tda_dyyyymmdd, 'dd')<![CDATA[<>]]>'01' then
+        case when rownum = 1 and to_char(tda_dyyyymmdd, 'dd')<![CDATA[!=]]>'01' then
         to_char(tda_dyyyymmdd,'mm/dd')
         when rownum > 1 and to_char(tda_dyyyymmdd, 'dd') = '01' then
         to_char(tda_dyyyymmdd,'mm/dd')
@@ -108,15 +108,15 @@
         where tda_cemployeeid = #{employeeId}
         and tda_ccompanyid = #{compCode}
         and tda_ccustomerid = #{custId}
-        <if test="#{isVariationalWorkDays} eq false">
+        <if test="isVariationalWorkDays == false">
             and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{startDispDate}, 'yyyy/mm/dd')  <!-- 日曜日 -->
             and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{endDispDate}, 'yyyy/mm/dd')     <!-- 土曜日 -->
         </if>
-        <if test="#{isVariationalWorkDays} eq true">
+        <if test="isVariationalWorkDays == true">
             and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')
             and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{dEnd}, 'yyyy/mm/dd')
         </if>
-        and #{manageflg} <![CDATA[<>]]> tmg_f_is_manageflg(#{employeeId}, trunc(to_date(#{dStart}, 'yyyy/mm/dd')), last_day(to_date(#{dEnd}, 'yyyy/mm/dd')), #{compCode}, #{custId})
+        and #{manageflg} <![CDATA[!=]]> tmg_f_is_manageflg(#{employeeId}, trunc(to_date(#{dStart}, 'yyyy/mm/dd')), last_day(to_date(#{dEnd}, 'yyyy/mm/dd')), #{compCode}, #{custId})
         order by tda_dyyyymmdd
     </select>
 

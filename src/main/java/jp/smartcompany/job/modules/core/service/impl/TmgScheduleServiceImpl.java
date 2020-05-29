@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -27,13 +28,15 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public ScheduleDataDTO selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, String manageflg, String employeeId, String compCode, String custId, String language) {
+    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
         HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("ctpye_plan", ctpye_plan);
         params.put("employeeId", employeeId);
         params.put("startDispDate", startDispDate);
         params.put("endDispDate", endDispDate);
         params.put("dStart", dStart);
         params.put("dEnd", dEnd);
+        params.put("isVariationalWorkDays", isVariationalWorkDays);
         params.put("manageflg", manageflg);
         params.put("compCode", compCode);
         params.put("custId", custId);
@@ -155,6 +158,23 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("custId", custId);
 
         return baseMapper.selectLinkOfNextMonthNextSaturday(params);
+    }
+
+    @Override
+    public String selectDetailPeriod(String employeeId, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectDetailPeriod(params);
+    }
+
+    @Override
+    public String selectIsStart4weeks(String targetDate, String detailPeriod) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("targetDate", targetDate);
+        params.put("detailPeriod", detailPeriod);
+        return baseMapper.selectIsStart4weeks(params);
     }
 
 

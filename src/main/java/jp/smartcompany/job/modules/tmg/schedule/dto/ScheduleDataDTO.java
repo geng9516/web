@@ -22,7 +22,7 @@ public class ScheduleDataDTO {
     private String tda_nrestopen_p;
     private String tda_nrestclose_p;
     private String tda_cmessage;
-    private String tda_nlock_p;
+    private Integer tda_nlock_p;
     private String tda_cworkingid_p;
     private String tda_ccustomerid;
     private String tda_cstatusflg;

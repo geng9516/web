@@ -1,10 +1,12 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -28,7 +30,8 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    ScheduleDataDTO selectSchedule(HashMap<String, Object> params);
+    @SqlParser(filter=true)
+    List<ScheduleDataDTO> selectSchedule(HashMap<String, Object> params);
 
     /**
      * 4週間単位の変形労働制職員対応
@@ -119,5 +122,20 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     HashMap<String, Object> selectLinkOfNextMonthNextSaturday(HashMap<String, Object> params);
 
+    /**
+     * 起算日を取得します
+     *
+     * @param params
+     * @return
+     */
+    String selectDetailPeriod(HashMap<String, Object> params);
+
+    /**
+     * 表示基準日が4週間単位の変形労働に則っているか
+     *
+     * @param params
+     * @return
+     */
+    String selectIsStart4weeks(HashMap<String, Object> params);
 
 }

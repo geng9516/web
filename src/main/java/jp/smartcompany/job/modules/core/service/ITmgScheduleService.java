@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -38,7 +39,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param language
      * @return
      */
-    ScheduleDataDTO selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, String manageflg, String employeeId, String compCode, String custId, String language);
+    List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language);
 
     /**
      * 4週間単位の変形労働制職員対応
@@ -167,5 +168,24 @@ public interface ITmgScheduleService extends IService<Object> {
      * @return
      */
     HashMap<String, Object> selectLinkOfNextMonthNextSaturday(String employeeId, String baseDate, String compCode, String custId);
+
+    /**
+     * 起算日を取得します
+     *
+     * @param employeeId
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    String selectDetailPeriod(String employeeId, String compCode, String custId);
+
+    /**
+     * 表示基準日が4週間単位の変形労働に則っているか
+     *
+     * @param targetDate
+     * @param detailPeriod
+     * @return
+     */
+    String selectIsStart4weeks(String targetDate, String detailPeriod);
 
 }
