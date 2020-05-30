@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${curYear}年${curMonth}月 ～ ${curYear + 1}年${curMonth - 1}月）` }}
+                        {{ `出勤簿 （${Utils.formatDate(defaultDate.dispterm_start,'yyyy年mm月')}～ ${Utils.formatDate(defaultDate.dispterm_end,'yyyy年mm月')}）` }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -23,12 +23,13 @@
             </div>
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
-                <i-select v-model="curMonth" class="mr30" @on-change="handleStartMonth">
+                <i-select v-model="+defaultDate.mgd_ndefault_month" class="mr30" @on-change="handleStartMonth">
                     <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1"></i-option>
                 </i-select>
-                <div th:replace="layout/deptSelector::deptSelector"></div>
+                <span class="label">所属</span>
+                <span class="input-like-span width15">{{ sectionName }}</span>
                 <span class="label">氏名</span>
-                <span class="input-like-span width15">{{ `佐藤 雅彦` }}</span>
+                <span class="input-like-span width15">{{ kanjiName }}</span>
             </div>
         </div>
         <div class="content_body">
@@ -49,17 +50,17 @@
             <Row :gutter="10" class="mt5 mb15 tc">
                 <i-col span="4">
                   <div class="label spec">年次休暇付与日数</div>
-                  <div class="month-sum">35.0日 2時間</div>
+                  <div class="month-sum">{{ endueDaysHours }}</div>
                 </i-col>
                 <i-col span="4">
                   <div class>
                     <div class="label spec">年次休暇付与日</div>
-                    <div class="month-sum">01月01日</div>
+                    <div class="month-sum">{{ endueDate }}</div>
                   </div>
                 </i-col>
                 <i-col span="8" class="no-border-radius">
                   <div class="work-changed-day">摘要</div>
-                  <i-input type="textarea" :autosize="{ maxRows: 2 }" />
+                  <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment"/>
                 </i-col>
               </Row>
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
@@ -128,15 +129,13 @@
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
-        const aliURL = 'https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func'
-
         const WORK_YEAR_SCHEDULE = new Vue({
             el: '.workyearschedule-warp',
             data() {
                 return {
                     monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
-                    curYear: 2020,
-                    curMonth: 4,
+                    defaultDate:{},
+                    queryHolidayInfo:{},
                     tableHead: [],
                     loading: false,
                     tableData: [],
@@ -151,12 +150,36 @@
                     showPre: true,
                     index: 0,
                     comment: '',
-                    contentScrollTop: 0
+                    contentScrollTop: 0,
+
+                    kanjiName: [[${ session.psSession.loginKanjiName }]],
+                    loginEmployee: [[${ session.psSession.loginEmployee }]],
+                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName}]],
+                    query: {
+                        employeeId: [[${ session.psSession.loginEmployee }]],
+                        year: '' ,
+                        month: ''
+                    },
+                    endueDate: '',
+                    endueDaysHours: '',
+                    tmyComment: ''
                 }
             },
-            mounted() {
-                this.getTableHead()
-                this.getTableData()
+            async mounted() {
+                // this.getTableHead()
+                // this.getTableData()
+                console.log([[${ session }]])
+                console.log([[${ session.psSession.loginDesignation[0]}]])
+                console.log([[${ session.psSession.loginDesignation[0].sectionName}]])
+
+                console.log([[${ session.psSession.loginKanjiName }]])
+                console.log([[${ session.psSession.loginEmployee }]])
+
+                await this.getdefaultDate()
+
+                await this.getqueryHolidayInfo()
+
+                await this.getTableData()
             },
             computed: {
                 tableHeadFixed() {
@@ -248,28 +271,53 @@
                 }
             },
             methods: {
-                async getTableHead() {
-                    this.loading = true
-                    try {
-                        const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableHead`, { month: this.curMonth })
-                        this.tableHead = data
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.loading = false
-                    }
+                async getdefaultDate() {
+                    const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
+                    this.defaultDate= data
+                    console.log(data)
+                    this.query.year = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
+                    this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
                 },
+                async getqueryHolidayInfo() {
+                    const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
+                    this.queryHolidayInfo= data
+                    this.endueDate = this.queryHolidayInfo.endueDate
+                    this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
+                    this.tmyComment = this.queryHolidayInfo.tmy_comment
+                    console.log(data)
+                    console.log(this.endueDate)
+                    console.log(this.endueDaysHours)
+                    console.log(this.tmyComment)
+                },
+
                 async getTableData() {
-                    const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableData`)
+                    const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                     this.tableData = data
+                    console.log("test")
+                    console.log(data)
                 },
+                // async getTableHead() {
+                //     this.loading = true
+                //     try {
+                //         const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableHead`, { month: this.curMonth })
+                //         this.tableHead = data
+                //     } catch (error) {
+                //         return
+                //     } finally {
+                //         this.loading = false
+                //     }
+                // },
+                // async getTableData() {
+                //     const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableData`)
+                //     this.tableData = data
+                // },
                 handleDatePicker() { },
                 preYear() {
                     this.curYear = 2019
                 },
                 handleStartMonth(e) {
                     this.titleStartMonth = e
-                    this.getTableHead()
+                    // this.getTableHead()
                 },
                 nextYear() {
                     this.curYear = 2020
