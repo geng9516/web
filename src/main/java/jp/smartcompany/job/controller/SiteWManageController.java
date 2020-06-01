@@ -47,7 +47,7 @@ public class SiteWManageController {
      * @param modelMap
      * @return
      */
-    @GetMapping("vacation")
+    @RequestMapping("vacation")
     public String toWManageVacation(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex,
