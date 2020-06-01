@@ -3,14 +3,4 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgErrmsgMapper">
 
 
-    <delete id="deleteByProgramId">
-        DELETE FROM
-            TMG_ERRMSG
-        WHERE TER_CCUSTOMERID = #{custId}
-        AND   TER_CCOMPANYID  = #{compId}
-        AND   TER_CMODIFIERUSERID    = #{employeeId}
-        AND   TER_CMODIFIERPROGRAMID = #{programId}
-        ;
-    </delete>
-
 </mapper>
