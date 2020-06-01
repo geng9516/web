@@ -2,6 +2,11 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO;
 
@@ -17,6 +22,32 @@ import java.util.List;
  * @since 2020-04-16
  */
 public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
+
+
+        /**
+         * 月別情報を取得するSQLを返す
+         *
+         * @param customerId    顧客コード
+         * @param companyId     法人コード
+         * @param yyyymmdd      基準日
+         * @param employeeId 　社員ID
+         * @param params 　select sql
+         * @return String パターン
+         */
+
+        Map<String,Object> selectMonthlyDisp(String customerId, String companyId, Date yyyymmdd, String employeeId,String[] params);
+
+        /**
+         * 今月の月中有給付与に関する情報を返すSQL
+         *
+         * @param customerId    顧客コード
+         * @param companyId     法人コード
+         * @param employeeId 　社員ID
+         * @return List<paidHolidayThisMonthInfoVo> パターン
+         */
+
+        List<paidHolidayThisMonthInfoVo>  selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId);
+
 
 
     /**

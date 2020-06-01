@@ -1,5 +1,12 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+        import cn.hutool.core.map.MapUtil;
+        import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
+        import jp.smartcompany.job.modules.core.mapper.TmgMonthlyMapper;
+        import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
+        import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+        import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
+        import org.springframework.stereotype.Repository;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import jp.smartcompany.job.modules.core.mapper.TmgMonthlyMapper;
@@ -8,6 +15,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO;
 import org.springframework.stereotype.Repository;
+
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
+        import java.util.List;
+        import java.util.Map;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +34,7 @@ import java.util.Map;
  * @since 2020-04-16
  */
 @Repository
-public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMonthlyDO> implements ITmgMonthlyService {
+        public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMonthlyDO> implements ITmgMonthlyService {
 
     /**
      * 該当の職員・年月の超過勤務時間数の合計を取得する
@@ -138,4 +150,45 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
         return baseMapper.buildSQLForSelectMonthly(map);
     }
 
+
+        /**
+         * 月別情報を取得するSQLを返すs
+         *
+         * @param customerId    顧客コード
+         * @param companyId     法人コード
+         * @param yyyymmdd      基準日
+         * @param employeeId 　社員ID
+         * @param params 　select sql
+         * @return String パターン
+         */
+        @Override
+        public Map<String,Object> selectMonthlyDisp(String customerId, String companyId, Date yyyymmdd, String employeeId,String[] params){
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                String dateString = formatter.format(yyyymmdd);
+                Map<String,Object> selectMonthlyDispList = baseMapper.selectMonthlyDisp("'"+customerId+"'","'"+companyId+"'", "'" +dateString+"'","'"+employeeId+"'",params);
+
+                return selectMonthlyDispList;
+        }
+
+
+        /**
+         * 今月の月中有給付与に関する情報を返すSQL
+         *
+         * @param customerId    顧客コード
+         * @param companyId     法人コード
+         * @param employeeId 　社員ID
+         * @return List<paidHolidayThisMonthInfoVo> パターン
+         */
+
+        @Override
+        public List<paidHolidayThisMonthInfoVo> selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId){
+                Map<String, Object> map = MapUtil.newHashMap(3);
+                map.put("customerId", customerId);
+                map.put("companyId", companyId);
+                map.put("employeeId", employeeId);
+
+                List<paidHolidayThisMonthInfoVo> list = baseMapper.selectPaidHolidayThisMonthInfo(map);
+
+                return list;
+        }
 }

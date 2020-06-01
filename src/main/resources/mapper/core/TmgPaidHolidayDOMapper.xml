@@ -50,6 +50,39 @@
 
       </select>
 
-
-
+    <select id="selectNenjikyukazannissu"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo" >
+        SELECT
+            NREST_DAYS,
+            NREST_HOURS,
+            CTYPE,
+            CDESC,
+            TO_CHAR(DBEGIN, 'YYYY/MM/DD') as DBEGIN,
+            TO_CHAR(DEND, 'YYYY/MM/DD') as DEND
+        FROM (
+        TMG_SELECT_HOLIDAY_REST(
+                                #{params.custId},
+                                #{params.compId},
+                                <choose>
+                                    <when test="detailFlg==1 ">
+                                        (
+                                        SELECT
+                                            DISTINCT TNTF_CEMPLOYEEID
+                                        FROM
+                                            TMG_NOTIFICATION
+                                        WHERE
+                                            TNTF_CCUSTOMERID=#{params.custId}
+                                        AND TNTF_CCOMPANYID=#{params.compId}
+                                        AND TNTF_CNTFNO=#{params.ntfNo}
+                                        ),
+                                     </when>
+                                    <otherwise>
+                                        #{params.targetUser},
+                                    </otherwise>
+                                </choose>
+                                TRUNC(#{params.todayD,jdbcType=DATE})
+                                )
+        )
+        WHERE
+            TRUNC(DBEGIN) <![CDATA[<=]]> TRUNC(#{params.todayD,jdbcType=DATE})
+    </select>
 </mapper>

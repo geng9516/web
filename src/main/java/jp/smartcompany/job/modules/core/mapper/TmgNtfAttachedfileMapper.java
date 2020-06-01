@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfAttachedfileDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +19,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgNtfAttachedfileMapper extends BaseMapper<TmgNtfAttachedfileDO> {
 
+        /**添付ファイル一覧*/
+        List<TmgNtfAttachedfileDO>  selectFileDisp(@Param("custId")String custId,
+                                                   @Param("compId")String compId,
+                                                   @Param("ntfNo")String ntfNo);
         }

@@ -120,7 +120,6 @@ public class TmgResultsBean {
     public void actDispRmonthly(ModelMap modelMap) {
         this.setSysControl();
 
-
         if (psDBBean.getTargetUser() != null && psDBBean.getTargetUser().length() != 0) {
 
             showMonthly(modelMap);
@@ -578,8 +577,6 @@ public class TmgResultsBean {
     public String getToday() {
         return gsToday;
     }
-
-
 
     /**
      * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLをリストに格納する

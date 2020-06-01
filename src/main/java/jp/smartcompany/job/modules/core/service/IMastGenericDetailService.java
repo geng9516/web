@@ -4,6 +4,11 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
@@ -11,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -189,4 +195,125 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @return List<GenericDetailVO>
      */
     List<GenericDetailVO> buildSQLForSelectgetMgdDescriptions(String custID, String compCode, String day, String groupId);
+
+    /**
+     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param language 　言語
+     * @return String パターン
+     */
+    List<TmgDispItemsDto> selectDispMonthlyItems(String customerId, String companyId, Date yyyymmdd, String language);
+
+    /**
+    * 勤怠/名称マスタ]就業登録/承認・日次情報表示項目
+    *
+    * @param customerId    顧客コード
+    * @param companyId     法人コード
+    * @param yyyymmdd      基準日
+    * @param language 　言語
+    * @return String パターン
+    */
+    List<TmgDispItemsDto> selectDispDailyItems(String customerId, String companyId, Date yyyymmdd, String language);
+
+    /**
+    * 申請一覧画面用 申請区分マスタ取得SQL
+    *
+    * @param customerId    顧客コード
+    * @param companyId     法人コード
+    * @param yyyymmdd      基準日
+    * @param language 　言語
+    * @return String パターン
+    */
+
+    List<mgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language);
+
+    /**
+     * マスタを取得するSQL
+     *
+
+     * @param sql 　sql
+     * @return map
+     */
+
+    List<Map<String,Object>> selectGenericDetail(String sql);
+
+
+
+    /**
+     * 指定された申請種類の表示タイプを取得する
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param ntfId      申請種類
+     * @param language 　言語
+     * @return int
+     */
+
+   int selectNtfDispType(String customerId, String companyId, String language,String ntfId);
+
+    /**
+      * 「HH:MI60」形式の文字列を分(Minute)情報に変換
+      * @param hhmi     「HH:MI60」形式の文字列
+      * @return int
+     */
+   Long tmgFConvHhmi2Min(String hhmi);
+
+     /**
+      * 「HH:MI60」形式の文字列を分(Minute)情報に変換
+      * @param mon
+      * @param tue
+      * @param wed
+      * @param thu
+      * @param fri
+      * @param sat
+      * @param sun
+      * @return int
+      */
+     Long toDayofWeek(String mon,String tue,String wed,String thu,String fri,String sat,String sun);
+
+    /**
+     * 決裁レベル取得SQL返却メソッド
+     * @param custId
+     * @param compId
+     * @param language
+     * @param today
+     * @param approvelLevel
+     * @param piMode
+     * @return String
+     */
+    String selectApprovelLevel(String custId,String compId,String language,String today,String approvelLevel,int piMode);
+
+    /**
+     * 申請画面用 申請区分マスタ取得SQL
+     * @param custId
+     * @param compId
+     * @param baseDate
+     * @param employeeId
+     * @param language
+     * @param siteId
+     * @return String
+     */
+    List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId);
+
+    /**
+     * 画面項目名称の設定マスタ
+     * @param custId
+     * @param compId
+     * @param language
+     * @return String
+     */
+    mgdNtfPropVo selectMasterNtfProp(String custId, String compId,  String language);
+
+    /**現在日付を取得するクエリ文を生成します*/
+    String selectSysdate();
+
+    /**年度を取得するSQLを返す*/
+    int selectYear(String custId,String compId);
+
+    /**
+     * 年度開始終了日を取得するSQLを返す
+     */
+    dateDto selectDate(String custId, String compId, int year,String baseDate);
 }

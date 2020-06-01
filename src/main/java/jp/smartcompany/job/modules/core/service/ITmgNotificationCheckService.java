@@ -13,4 +13,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgNotificationCheckService extends IService<TmgNotificationCheckDO> {
 
+        /**TMG_F_CHECK_NOTIFICATION*/
+        String  tmgFCheckNotification(String ntfNo,String custId,String compId,String siteId);
         }

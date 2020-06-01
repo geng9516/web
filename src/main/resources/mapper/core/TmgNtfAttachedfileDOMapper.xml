@@ -1,5 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgNtfAttachedfileMapper">
-
+    <select id="selectFileDisp" resultType="jp.smartcompany.job.modules.core.pojo.entity.TmgNtfAttachedfileDO">
+        SELECT
+            TNAF_CNTFNO,
+            TNAF_CFILENAME,
+            TNAF_NSEQ
+        FROM
+            TMG_NTF_ATTACHEDFILE
+        WHERE
+        <choose>
+            <when test='ntfNo!=null and ntfNo!=""'>
+                TNAF_CNTFNO=#{ntfNo}
+             </when>
+            <otherwise>
+                TNAF_CNTFNO=(
+                    SELECT
+                        TNTF_CNTFNO
+                    FROM
+                        TMG_NOTIFICATION
+                    WHERE
+                        TNTF_CCUSTOMERID=#{custId}
+                    AND TNTF_CCOMPANYID=#{compId}
+                    AND TNTF_CNTFNO=#{ntfNo}
+                )
+            </otherwise>
+        </choose>
+        ORDER BY
+        TNAF_NSEQ
+    </select>
 </mapper>

@@ -2,6 +2,10 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.ntfActionLogVo;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +16,17 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2020-04-16
  */
 public interface ITmgNtfactionlogService extends IService<TmgNtfactionlogDO> {
+
+        /**
+         * 申請ログを取得するクエリ文を生成します
+         *
+         * @param  psDate     基準日
+         * @param  psLanguage 言語区分
+         * @param  psCustId   顧客コード
+         * @param  psCompCode 法人コード
+         * @param  psNtfNo    申請番号
+         * @return List<ntfActionLogVo>
+         */
+        List<ntfActionLogVo> selectNtfActionLog(Date psDate, String psLanguage, String psCustId, String psCompCode, String psNtfNo);
 
         }

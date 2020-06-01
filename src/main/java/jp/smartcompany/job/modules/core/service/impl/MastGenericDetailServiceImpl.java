@@ -1,11 +1,17 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
@@ -79,14 +85,14 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
             map.put("endDate", endDate);
             map.put("checkCtype", checkCtype);
             map.put("csTypeNull", csTypeNull);
-
+                                
 
             ttRList =baseMapper.tmgFExcludeTerm(map);
-
+                                
             return  ttRList;
       }
 
-
+                
       /**
        * 非常勤年休ルールを取得
        *
@@ -100,22 +106,22 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
        @Override
        public int selectNenkyuRuleT(String customerId, String companyId, String employeeId
                , Date yyyymmdd, Date beginDateWork) {
-
+                        
                Map<String, Object> map = MapUtil.newHashMap(3);
                map.put("companyId", companyId);
                map.put("yyyymmdd", yyyymmdd);
                map.put("employeeId", employeeId);
-
+                        
                // 年休ルールを取得
                Integer nenkyu = baseMapper.selectNenkyuRuleT(map);
-
+                        
                // データが無い場合、名称マスタを参照する様に設定
                if (nenkyu == null) {
                        nenkyu = baseMapper.selectNenkyuRuleT2(map);
                }
                return nenkyu;
        }
-
+                
        /**
         * 汎用マスタから予備日付を取得
         *
@@ -129,7 +135,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         */
        @Override
        public MastGenericDetailDO selectMastGenericDetailDO(String customerId, String companyId, String wsGroupId, String wsDetailId, String language, Date wdKijun) {
-
+                        
                Map<String, Object> map = MapUtil.newHashMap(6);
                map.put("customerId", customerId);
                map.put("companyId", companyId);
@@ -167,6 +173,196 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         return workPattern;
     }
 
+
+    /**
+     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param language 　言語
+     * @return String パターン
+     */
+    @Override
+    public List<TmgDispItemsDto> selectDispMonthlyItems(String customerId, String companyId, Date yyyymmdd, String language){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("customerId", customerId);
+        map.put("companyId", companyId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("language", language);
+        //
+        List<TmgDispItemsDto> tmgDispMonthlyItemsDtoList = baseMapper.selectDispMonthlyItems(map);
+
+
+        return tmgDispMonthlyItemsDtoList;
+    }
+
+
+    /**
+     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param language 　言語
+     * @return String パターン
+     */
+    @Override
+    public List<TmgDispItemsDto> selectDispDailyItems(String customerId, String companyId, Date yyyymmdd, String language){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("customerId", customerId);
+        map.put("companyId", companyId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("language", language);
+        //
+        List<TmgDispItemsDto> tmgDispDailyItemsDtoList = baseMapper.selectDispDailyItems(map);
+
+
+        return tmgDispDailyItemsDtoList;
+    }
+
+
+    /**
+     * 申請一覧画面用 申請区分マスタ取得SQL
+     *
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param yyyymmdd      基準日
+     * @param language 　言語
+     * @return String パターン
+     */
+    @Override
+    public List<mgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("customerId", customerId);
+        map.put("companyId", companyId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("language", language);
+        //
+        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = baseMapper.selectMasterTmgNtfTypeDispAppList(map);
+
+        return mgdNtfTypeDispAppVoList;
+    }
+
+
+    /**
+     * マスタを取得するSQL
+     *
+
+     * @param sql 　sql
+     * @return map
+     */
+
+    @Override
+    public List<Map<String,Object>> selectGenericDetail(String sql){
+
+        List<Map<String,Object>> mgdList = baseMapper.selectGenericDetail(sql);
+        return mgdList;
+    }
+
+
+
+    /**
+     * 指定された申請種類の表示タイプを取得する
+     * @param customerId    顧客コード
+     * @param companyId     法人コード
+     * @param ntfId      申請種類
+     * @param language 　言語
+     * @return int
+     */
+    @Override
+    public int selectNtfDispType(String customerId, String companyId, String language,String ntfId){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("customerId", customerId);
+        map.put("companyId", companyId);
+        map.put("ntfId", ntfId);
+        map.put("language", language);
+        //
+        int inputCtl = baseMapper.selectNtfDispType(map);
+
+        return inputCtl;
+    }
+
+
+    /**
+     * 「HH:MI60」形式の文字列を分(Minute)情報に変換
+     * @param hhmi     「HH:MI60」形式の文字列
+     * @return int
+     */ @Override
+    public  Long tmgFConvHhmi2Min(String hhmi){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("hhmi", hhmi);
+        //
+        Long min = baseMapper.tmgFConvHhmi2Min(map);
+
+        return min;
+    }
+
+
+    @Override
+    public  Long toDayofWeek(String mon,String tue,String wed,String thu,String fri,String sat,String sun){
+        String sql=null;
+         if(!StrUtil.hasEmpty(mon)||
+                 !StrUtil.hasEmpty(tue)||
+                 !StrUtil.hasEmpty(wed)||
+                 !StrUtil.hasEmpty(thu)||
+                 !StrUtil.hasEmpty(fri)||
+                 !StrUtil.hasEmpty(sat)||
+                 !StrUtil.hasEmpty(sun)){
+
+             if(StrUtil.hasEmpty(mon)){
+                 mon="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 tue="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 wed="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 thu="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 fri="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 sat="null";
+             }
+             if(StrUtil.hasEmpty(mon)){
+                 sun="null";
+             }
+             sql=mon+","+tue+","+wed+","+thu+","+fri+","+sat+","+sun;
+         }else{
+             sql="";
+         }
+        Long num = baseMapper.toDayofWeek(sql);
+        return num;
+    }
+
+    /**
+     * 決裁レベル取得SQL返却メソッド
+     * @param custId
+     * @param compId
+     * @param language
+     * @param today
+     * @param approvelLevel
+     * @param piMode
+     * @return String
+     */
+    @Override
+    public String selectApprovelLevel(String custId,String compId,String language,String today,String approvelLevel,int piMode){
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        map.put("language", language);
+        map.put("today", today);
+        map.put("approvelLevel", approvelLevel);
+        map.put("piMode", piMode);
+        //
+        String Level = baseMapper.selectApprovelLevel(map);
+
+        return Level;
+    }
     /**
      * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLを取得する
      *
@@ -348,5 +544,65 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         map.put("groupId", groupId);
 
         return baseMapper.buildSQLForSelectgetMgdDescriptions(map);
+    }
+
+    /**
+     * 申請画面用 申請区分マスタ取得SQL
+     * @param custId
+     * @param compId
+     * @param baseDate
+     * @param employeeId
+     * @param language
+     * @param siteId
+     * @return String
+     */
+    @Override
+    public List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId){
+        Map<String, Object> map = MapUtil.newHashMap(5);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        map.put("baseDate", baseDate);
+        map.put("employeeId", employeeId);
+        map.put("language", language);
+        map.put("siteId", siteId);
+
+        return baseMapper.selectMasterTmgNtfType(map);
+    }
+
+    /**
+     * 画面項目名称の設定マスタ
+     * @param custId
+     * @param compId
+     * @param language
+     * @return String
+     */
+    @Override
+    public mgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language){
+        Map<String, Object> map = MapUtil.newHashMap(5);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        map.put("language", language);
+
+        return baseMapper.selectMasterNtfProp(map);
+    }
+
+    /**現在日付を取得するクエリ文を生成します*/
+    @Override
+    public String selectSysdate(){
+        return baseMapper.selectSysdate();
+    }
+
+    /**年度を取得するSQLを返す*/
+    @Override
+    public int selectYear(String custId,String compId){
+        return baseMapper.selectYear( custId, compId);
+    }
+
+    /**
+     * 年度開始終了日を取得するSQLを返す
+     */
+    @Override
+    public dateDto selectDate(String custId, String compId,int year, String baseDate){
+        return baseMapper.selectDate( custId, compId,year,baseDate);
     }
 }

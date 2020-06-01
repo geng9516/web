@@ -8,6 +8,8 @@ import jp.smartcompany.job.modules.core.mapper.HistDesignationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
@@ -90,4 +92,45 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                         psCustId,compId,sectionId,pdSearchDate,sLanguage);
         }
 
+
+        /**ヘッダ情報(新規申請用)を取得するSQLを生成します。*/
+        @Override
+        public employeeDetailVo selectemployeeDetail(String custId, String compId, String employeeId, String language){
+                Map<String, Object> map = MapUtil.newHashMap(5);
+                map.put("custId", custId);
+                map.put("compId", compId);
+                map.put("employeeId", employeeId);
+                map.put("language", language);
+
+                return baseMapper.selectemployeeDetail(map);
+        }
+
+
+        @Override
+        public employeeDetailVo selectemployee(String custId, String compId, String employeeId, String language,String sectionId){
+                Map<String, Object> map = MapUtil.newHashMap(5);
+                map.put("custId", custId);
+                map.put("compId", compId);
+                map.put("employeeId", employeeId);
+                map.put("language", language);
+                map.put("sectionId", sectionId);
+                return baseMapper.selectemployee(map);
+        }
+
+        /**
+         * 職員一覧を取得するSQLを返す
+         * */
+        @Override
+        public List<employeeListVo> selectemployeeList(String custId,String compId,String date,String sql){
+                return baseMapper.selectemployeeList(custId,compId,date,sql);
+        }
+
+
+        /**
+         * 所属名
+         * */
+        @Override
+        public String selectSectionNAme(String custId,String compId,Date date,String sectionId){
+                return baseMapper.selectSectionNAme(custId,compId,date,sectionId);
+        }
 }

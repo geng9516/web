@@ -6,6 +6,9 @@ import jp.smartcompany.job.modules.core.service.ITmgErrmsgService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * [勤怠]エラーメッセージ格納テーブル 服务实现类
@@ -17,4 +20,5 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class TmgErrmsgServiceImpl extends ServiceImpl<TmgErrmsgMapper, TmgErrmsgDO> implements ITmgErrmsgService {
 
-        }
+
+}

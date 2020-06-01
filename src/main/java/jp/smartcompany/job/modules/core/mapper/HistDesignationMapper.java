@@ -4,6 +4,8 @@ import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -57,4 +59,21 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
                 @Param("searchDate")Date pdSearchDate,
                 @Param("language") String sLanguage);
 
+        /**
+         * ヘッダ情報(新規申請用)を取得するSQLを生成します。
+         */
+        employeeDetailVo selectemployeeDetail(Map<String, Object> map);
+
+
+        employeeDetailVo selectemployee(Map<String, Object> map);
+
+        List<employeeListVo> selectemployeeList(@Param("custId")String custId,
+                                                @Param("compId")String compId,
+                                                @Param("date")String date,
+                                                @Param("sql")String sql);
+
+        String  selectSectionNAme(@Param("custId")String custId,
+                                                @Param("compId")String compId,
+                                                @Param("date")Date date,
+                                                @Param("sectionId")String sectionId);
 }

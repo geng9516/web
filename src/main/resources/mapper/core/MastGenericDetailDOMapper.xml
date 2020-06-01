@@ -245,6 +245,144 @@
         ;
     </select>
 
+
+    <select id="selectDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">
+        SELECT
+        MGD_CHEADER,
+        MGD_CSQL,
+        MGD_CCOLUMNKEY
+        FROM
+        TMG_V_MGD_DISPMONTHLYITEMS
+        WHERE
+        MGD_CCUSTOMERID          =   #{customerId}
+        AND     MGD_CCOMPANYID_CK_FK     =   #{companyId}
+        AND     MGD_DSTART_CK            <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     MGD_DEND                 >=  #{yyyymmdd,jdbcType=DATE}
+        AND     MGD_CLANGUAGE_CK         =   #{language}
+        ORDER BY
+            MGD_NSEQ
+        ;
+    </select>
+
+
+
+    <select id="selectDispDailyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">
+        SELECT
+        MGD_CHEADER,
+        MGD_CSQL,
+        MGD_CCOLUMNKEY
+        FROM
+        TMG_V_MGD_DISPDAILYITEMS
+        WHERE
+        MGD_CCUSTOMERID          =   #{customerId}
+        AND     MGD_CCOMPANYID_CK_FK     =   #{companyId}
+        AND     MGD_DSTART_CK            <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND     MGD_DEND                 >=  #{yyyymmdd,jdbcType=DATE}
+        AND     MGD_CLANGUAGE_CK         =   #{language}
+        ORDER BY
+            MGD_NSEQ;
+    </select>
+
+
+
+    <select id="selectMasterTmgNtfTypeDispAppList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo">
+        SELECT
+        G.MGD_CMASTERCODE AS GROUP_ID,
+        G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
+        T1.MGD_CMASTERCODE AS NTFI_D,
+        T1.MGD_CGENERICDETAILDESC AS NTF_NAME,
+        T1.MGD_NSPARENUM2 AS VIEW_TYPE,
+        T1.MGD_CSPARECHAR3 AS CONFIM_COMMENT,
+        T2.MGD_CSPARECHAR3 AS BIKO,
+        T2.MGD_NSPARENUM2 AS CONFIRM_FILE
+        FROM
+        MAST_GENERIC_DETAIL G,
+        MAST_GENERIC_DETAIL T1,
+        MAST_GENERIC_DETAIL T2
+        WHERE
+            G.MGD_CCUSTOMERID = #{companyId}
+        AND G.MGD_CCOMPANYID_CK_FK = #{companyId}
+        AND G.MGD_CGENERICGROUPID = 'TMG_NTFGROUP'
+        AND G.MGD_CLANGUAGE_CK = #{language}
+        AND G.MGD_DSTART_CK <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
+        AND G.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_CCUSTOMERID = G.MGD_CCUSTOMERID
+        AND T2.MGD_CCOMPANYID_CK_FK = G.MGD_CCOMPANYID_CK_FK
+        AND T2.MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+        AND T2.MGD_CLANGUAGE_CK = G.MGD_CLANGUAGE_CK
+        AND T2.MGD_DSTART_CK <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T2.MGD_CSPARECHAR1 = G.MGD_CMASTERCODE
+        AND T1.MGD_CCUSTOMERID = T2.MGD_CCUSTOMERID
+        AND T1.MGD_CCOMPANYID_CK_FK = T2.MGD_CCOMPANYID_CK_FK
+        AND T1.MGD_CGENERICGROUPID = 'TMG_NTFTYPE'
+        AND T1.MGD_CLANGUAGE_CK = T2.MGD_CLANGUAGE_CK
+        AND T1.MGD_DSTART_CK <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
+        AND T1.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
+        AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
+        ORDER BY
+        G.MGD_NSPARENUM1,
+        T2.MGD_NSPARENUM1;
+    </select>
+
+    <select id="selectGenericDetail" parameterType="java.lang.String" resultType="map">
+        ${sql}
+    </select>
+
+
+    <select id="selectNtfDispType" resultType="int">
+        SELECT
+            MGD_NINPUTCTL
+        FROM
+            TMG_V_MGD_NTFTYPES
+        WHERE
+            MGD_CCUSTOMERID=#{customerId}
+        AND MGD_CCOMPANYID_CK_FK=#{companyId}
+        AND MGD_CLANGUAGE_CK=#{language}
+        AND SYSDATE BETWEEN MGD_DSTART_CK AND MGD_DEND
+        AND MGD_CNTFTYPE=#{ntfId}
+    </select>
+
+    <select id="tmgFConvHhmi2Min" resultType="long">
+        SELECT
+            TMG_F_CONV_HHMI2MIN(#{hhmi})
+        FROM
+            dual
+    </select>
+
+
+    <select id="toDayofWeek" parameterType="java.lang.String" resultType="long">
+        Select TMG_DAYOFWEEK.TO_DAYOFWEEK(${sql}) FROM DUAL
+    </select>
+
+
+    <select id="selectApprovelLevel" resultType="java.lang.String">
+        SELECT MGD_CMASTERCODE FROM MAST_GENERIC_DETAIL
+        WHERE  MGD_CCUSTOMERID=#{custId}
+        AND    MGD_CCOMPANYID_CK_FK=#{compId}
+        AND    MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
+        AND    MGD_CLANGUAGE_CK=#{language}
+        AND    MGD_DSTART_CK=#{today}
+        AND    MGD_DEND=#{today}
+        AND    MGD_NSPARENUM1=(
+                        SELECT
+                            MIN(MGD_NSPARENUM1)
+                        WHERE
+                            MAST_GENERIC_DETAIL
+                        WHERE MGD_CCUSTOMERID=#{custId}
+                        AND   MGD_CCOMPANYID_CK_FK=#{compId}
+                        AND   MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
+                        AND   MGD_CLANGUAGE_CK=#{language}
+                        AND   MGD_DSTART_CK=#{today}
+                        AND   MGD_DEND=#{today}
+                        <if test="piMode==0">
+                            AND   MGD_NSPARENUM1 > #{approvelLevel}
+                        </if>
+
+        )
+
+    </select>
+
     <select id="buildSQLForSelectTmgDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
         SELECT
             MGD_CHEADER,
@@ -375,5 +513,128 @@
         </choose>
     </select>
 
+    <select id="selectMasterTmgNtfType" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo">
+        SELECT
+        G.MGD_CMASTERCODE AS G_MGD_CMASTERCODE,
+        G.MGD_CGENERICDETAILDESC AS G_MGD_CGENERICDETAILDESC,
+        T1.MGD_CMASTERCODE AS T1_MGD_CMASTERCODE,
+        T1.MGD_CGENERICDETAILDESC AS T1_MGD_MGD_CGENERICDETAILDESC,
+        T1.MGD_NSPARENUM2 AS T1_MGD_MGD_NSPARENUM2,
+        T1.MGD_CSPARECHAR3 AS T1_MGD_CSPARECHAR3,
+        T2.MGD_CSPARECHAR3 AS T2_MGD_CSPARECHAR3,
+        T2.MGD_NSPARENUM2 AS T2_MGD_NSPARENUM2,
+        (
+            SELECT
+            TMG_F_GET_MGD_N ( MGD_CSPARECHAR2, to_date( '${baseDate}', 'yyyy/mm/dd' ), 1, T1.MGD_CCUSTOMERID, T1.MGD_CCOMPANYID_CK_FK )
+            FROM
+            MAST_GENERIC_DETAIL
+            WHERE
+            MGD_CCUSTOMERID = T1.MGD_CCUSTOMERID
+            AND MGD_CCOMPANYID_CK_FK = T1.MGD_CCOMPANYID_CK_FK
+            AND MGD_CGENERICGROUPID = 'TMG_NTFAPPROVE_LEVEL'
+            AND MGD_CLANGUAGE_CK = '${language}'
+            AND MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND MGD_CSPARECHAR1 = T1.MGD_CMASTERCODE
+        ) AS SPARECHAR2,
+        (
+            SELECT
+            TMG_F_GET_MGD ( MGD_CSPARECHAR2, to_date( '${baseDate}', 'yyyy/mm/dd' ), T1.MGD_CCUSTOMERID, T1.MGD_CCOMPANYID_CK_FK, '${language}')
+            FROM
+            MAST_GENERIC_DETAIL
+            WHERE
+            MGD_CCUSTOMERID = T1.MGD_CCUSTOMERID
+            AND MGD_CCOMPANYID_CK_FK = T1.MGD_CCOMPANYID_CK_FK
+            AND MGD_CGENERICGROUPID = 'TMG_NTFAPPROVE_LEVEL'
+            AND MGD_CLANGUAGE_CK = '${language}'
+            AND MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND MGD_CSPARECHAR1 = T1.MGD_CMASTERCODE
+        ) AS GENERICDETAILDESC
+        FROM
+        MAST_GENERIC_DETAIL G,
+        MAST_GENERIC_DETAIL T1,
+        MAST_GENERIC_DETAIL T2
+        WHERE
+        G.MGD_CCUSTOMERID = '${custId}'
+        AND G.MGD_CCOMPANYID_CK_FK =  '${compId}'
+        AND G.MGD_CGENERICGROUPID = 'TMG_NTFGROUP'
+        AND G.MGD_CLANGUAGE_CK =  '${language}'
+        AND G.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND G.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND T2.MGD_CCUSTOMERID = G.MGD_CCUSTOMERID
+        AND T2.MGD_CCOMPANYID_CK_FK = G.MGD_CCOMPANYID_CK_FK
+        AND T2.MGD_CGENERICGROUPID = 'TMG_NTFTYPE2'
+        AND T2.MGD_CLANGUAGE_CK = G.MGD_CLANGUAGE_CK
+        AND T2.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND T2.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND T2.MGD_CSPARECHAR1 = G.MGD_CMASTERCODE
+        AND T1.MGD_CCUSTOMERID = T2.MGD_CCUSTOMERID
+        AND T1.MGD_CCOMPANYID_CK_FK = T2.MGD_CCOMPANYID_CK_FK
+        AND T1.MGD_CGENERICGROUPID = 'TMG_NTFTYPE'
+        AND T1.MGD_CLANGUAGE_CK = T2.MGD_CLANGUAGE_CK
+        AND T1.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND T1.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
+        AND T1.MGD_CMASTERCODE IN (
+        SELECT
+        MGD_CSPARECHAR2
+        FROM
+        MAST_GENERIC_DETAIL R
+        WHERE
+        R.MGD_CCUSTOMERID = T1.MGD_CCUSTOMERID
+        AND R.MGD_CCOMPANYID_CK_FK = T1.MGD_CCOMPANYID_CK_FK
+        AND R.MGD_CGENERICGROUPID = 'TMG_NTF_RELATION'
+        AND R.MGD_CLANGUAGE_CK = T1.MGD_CLANGUAGE_CK
+        AND R.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND R.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+        AND R.MGD_CSPARECHAR1 = TMG_F_GET_WORKERTYPE ('${employeeId}', to_date( '${baseDate}', 'yyyy/mm/dd' ), '${custId}', '${compId}')
+        AND R.MGD_NSPARENUM1 = 1
+        )
+        AND INSTR( T1.MGD_CSPARECHAR5, '${siteId}' ) > 0
+        ORDER BY
+        G.MGD_NSPARENUM1,
+        T2.MGD_NSPARENUM1
+        ;
+    </select>
 
+    <select id="selectMasterNtfProp" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo">
+        SELECT
+            MGD_NTFTYPEID,
+            MGD_PROPID,
+            MGD_DISPNAME
+        FROM
+            TMG_V_MGD_NTF_PROP
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+            AND MGD_CCOMPANYID_CK_FK = #{compId}
+            AND SYSDATE BETWEEN MGD_DSTART_CK
+            AND MGD_DEND
+            AND MGD_CLANGUAGE_CK = #{language}
+        ORDER BY
+            MGD_NTFTYPEID,
+            MGD_PROPID;
+    </select>
+
+    <select id="selectSysdate" resultType="java.lang.String">
+        SELECT TO_CHAR(SYSDATE, 'yyyy/mm/dd') FROM DUAL;
+    </select>
+
+    <select id="selectYear" resultType="int">
+        SELECT
+            TMG_F_GET_THE_YEAR(TRUNC(SYSDATE),#{custId},#{compId})
+        FROM
+            DUAL
+            ;
+    </select>
+
+
+    <select id="selectDate" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto">
+        SELECT TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},0,'${baseDate}','${custId}','${compId}')) AS START_DATE,
+               TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},1,'${baseDate}','${custId}','${compId}')) AS END_DATE,
+               '${baseDate}' AS BASE_DATE
+        FROM
+            DUAL
+        ;
+    </select>
 </mapper>

@@ -2,7 +2,10 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -22,4 +25,7 @@ public interface TmgPaidHolidayMapper extends BaseMapper<TmgPaidHolidayDO> {
 
 
         List<Date> selectNykLoseDate(Map<String, Object> map);
+
+
+        List<restYearPaidHolidayVo> selectNenjikyukazannissu(@Param("params") paramNotificationListDto params, @Param("detailFlg")int detailFlg);
         }

@@ -2,6 +2,8 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import cn.hutool.core.date.DateUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -1947,6 +1949,13 @@ public class TmgUtil {
      */
     public static final String Cs_UTIL_PROPERTY_KYE_TERM_SEPARATOR = "TERM_SEPARATOR";
 
+
+    /** 最大日付 */
+    public static final Date minDate = DateUtil.parse("1900-01-01");
+
+
+    /** 最小日付 */
+    public static final Date maxDate = DateUtil.parse("2020-12-31");
 
     /** 日付形式1 */
     public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";

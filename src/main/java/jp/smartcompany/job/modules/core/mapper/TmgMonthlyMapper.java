@@ -2,9 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,4 +64,21 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
      */
     HashMap buildSQLForSelectMonthly(Map<String, Object> map);
 
-}
+
+
+        /**
+         * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
+         */
+
+        Map<String,Object> selectMonthlyDisp(@Param("customerId") String customerId,
+                                             @Param("companyId") String companyId,
+                                             @Param("yyyymmdd") String yyyymmdd,
+                                             @Param("employeeId") String employeeId,
+                                             @Param("array")String[] params);
+
+
+        /**
+         * 今月の月中有給付与に関する情報を返すSQL
+         */
+        List<paidHolidayThisMonthInfoVo>  selectPaidHolidayThisMonthInfo(Map<String,Object> map);
+        }
