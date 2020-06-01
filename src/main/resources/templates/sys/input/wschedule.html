@@ -23,7 +23,7 @@
             </div>
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
-                <i-select v-model="+defaultDate.mgd_ndefault_month" class="mr30" @on-change="handleStartMonth">
+                <i-select v-model="query.month" class="mr30" @on-change="handleStartMonth($event)">
                     <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1"></i-option>
                 </i-select>
                 <span class="label">所属</span>
@@ -158,7 +158,7 @@
                     query: {
                         employeeId: [[${ session.psSession.loginEmployee }]],
                         year: '' ,
-                        month: ''
+                        month: 0
                     },
                     endueDate: '',
                     endueDaysHours: '',
@@ -277,16 +277,25 @@
                     this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
                     this.defaultDate= data
-                    console.log(data)
+                    this.query.month =  +this.defaultDate.mgd_ndefault_month
+                    console.log("testxxxxx")
+                    console.log(this.query.month)
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
                     this.query.year = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
-                    this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
+                    // this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
                     this.queryHolidayInfo= data
+                    // 年次休暇付与日数
                     this.endueDate = this.queryHolidayInfo.endueDate
+
+                    // 年次休暇付与日
                     this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
+
+                    // 摘要
                     this.tmyComment = this.queryHolidayInfo.tmy_comment
+
                     console.log(data)
                     console.log(this.endueDate)
                     console.log(this.endueDaysHours)
@@ -298,6 +307,7 @@
                         // 第一条是表头, 且需要去除空值intDay
                         this.tableData = data.slice(1)
                         this.tableHead = Object.values(data[0]).filter(e=>e)
+                        console.log(data)
                     } catch (error) {
                         return
                     } finally {
@@ -330,9 +340,14 @@
                 preYear() {
                     this.curYear = 2019
                 },
-                handleStartMonth(e) {
+                async  handleStartMonth(e) {
                     this.titleStartMonth = e
-                    // this.getTableHead()
+                    console.log("handleStartMonth1");
+                    console.log(e);
+
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
+                    console.log("handleStartMonth2");
                 },
                 nextYear() {
                     this.curYear = 2020
