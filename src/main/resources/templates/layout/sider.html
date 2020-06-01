@@ -4,7 +4,7 @@
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.menuId ? 'actived-menu' : ''"
-            :key="item.menu.menuId" @click="handleMenuGroupChange(item.menu.menuId,item.menu.pageId)">
+            :key="item.menu.menuId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true"
                 :style="{fill: curMenu === item.menuId ? 'rgb(45, 140, 240)' : 'white'}">
                 <use :xlink:href="`#${item.icon || 'cat'}`"></use>
@@ -19,7 +19,7 @@
     <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
         <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.menuId"
             :class="curMenu === e.menu.menuId ? 'actived-menu' : ''"
-            @click.native="handleMenuGroupChange(e.menu.menuId)">
+            @click.native="handleMenuGroupChange(e)">
             <div v-show="curMenu === e.menu.menuId">
                 <menu-item v-for="(t, i) of e.secondMenuList" :key="t.menuId" :name="t.menuId"
                     @click.native="handleSubMenuClick(t, i)">
@@ -52,9 +52,9 @@
                 this.siteId = this.topNavs[0].menu.pageId
             },
             methods: {
-                handleMenuGroupChange(menuId,pageId) {
-                    this.siteId = pageId
-                    this.curMenu = menuId
+                handleMenuGroupChange(item) {
+                    this.siteId = item.menu.pageId
+                    this.curMenu = item.menu.menuId
                 },
                 handleSubMenuClick(e, i) {
                     this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}`
