@@ -27,7 +27,7 @@
                         style="width: calc(100% - 120px);border-radius:0">
                         {{ showName(deptName) }}
                     </i-button>
-                    <Drawer title="所属" placement="right" width="700" :closable="false" v-model="deptDrawShow">
+                    <Drawer class="" title="組織を選択してください" placement="right" width="700" :closable="false" v-model="deptDrawShow">
                         <Tree class="tree" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
                     </Drawer>
@@ -112,9 +112,16 @@
                     ],
                     data: [[${ vacationDaysList }]],
                     loading: false,
+                    referListObject:{
+                        TREEVIEW_KEY_ADMIN_TARGET_SECTION:'',
+                        TREEVIEW_KEY_ADMIN_TARGET_EMP:'',
+                        TREEVIEW_KEY_RECORD_DATE:'',
+                        TREEVIEW_KEY_REFRESH_FLG:''
+                    },
                     deptDrawShow: false,
+                    requestURL:location.href.split('?')[0],
                     treeData: [],
-                    deptName: '選んでください'
+                    deptName: [[${ TmgReferListObject.getTargetSec() }]] || '選んでください'
                 }
             },
             mounted() {
@@ -122,6 +129,7 @@
                 // 先将数据转为标准格式，再转为可用数据
                 this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
                 console.log(this.treeData)
+                console.log([[${ TmgReferListObject.getJSONArrayForEmpList() }]])
             },
             methods: {
                 convertTreeData(treeData) {
@@ -147,9 +155,13 @@
                     //todo: 跳到详情页
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
                 },
-                handleClickLeaf(e) {
+                async handleClickLeaf(e) {
                     this.deptName = e[0].title
+                    console.log(e)
                     this.deptDrawShow = false
+                    this.referListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION = e[0].secid
+                    await this.http.postForm(this.requestURL,this.referListObject)
+                    location.href= this.requestURL;
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)
