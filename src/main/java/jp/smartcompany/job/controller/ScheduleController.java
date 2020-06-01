@@ -1,8 +1,7 @@
 package jp.smartcompany.job.controller;
 
-import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
-import jp.smartcompany.job.modules.tmg.schedule.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +19,15 @@ public class ScheduleController {
     @Autowired
     private TmgScheduleBean tmgScheduleBean;
 
-
-    @GetMapping("selectPaidHolidayInfo")
+    @GetMapping("selectScheduleInfo")
     @ResponseBody
-    public PaidHolidayVO selectPaidHolidayInfo(@RequestParam("employeeId") String employeeId,
-                                               @RequestParam("year") String year,
-                                               @RequestParam("month") String month, ModelMap modelMap) throws Exception {
+    public ScheduleInfoVO selectScheduleInfo(@RequestParam("employeeId") String employeeId,
+                                             @RequestParam("year") String year,
+                                             @RequestParam("month") String month, ModelMap modelMap) throws Exception {
         //初期化
         tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
         return tmgScheduleBean.selectPaidHolidayInfo(year, month, employeeId);
+        
     }
 
 

@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.tmg.schedule.dto.NpaidRestDTO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.ScheduleDataDTO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -583,7 +584,7 @@ public class TmgScheduleBean {
      * @param employeeId
      * @return
      */
-    public PaidHolidayVO selectPaidHolidayInfo(String year, String month, String employeeId) {
+    public ScheduleInfoVO selectPaidHolidayInfo(String year, String month, String employeeId) {
         PaidHolidayVO paidHolidayVO = new PaidHolidayVO();
         List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _baseDate, _targetCompCode, _targetCustCode);
@@ -632,7 +633,11 @@ public class TmgScheduleBean {
         String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
         paidHolidayVO.setDateOfRecord(dateOfRecord);
 
-        return paidHolidayVO;
+        ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
+        scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
+        scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
+
+        return scheduleInfoVO;
     }
 
     /**
