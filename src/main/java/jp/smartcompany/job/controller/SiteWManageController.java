@@ -51,7 +51,8 @@ public class SiteWManageController {
     public String toWManageVacation(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam(value = "moduleIndex",required = false) Integer moduleIndex,
-                                 @RequestParam(value = "menuId",required = false) Long menuId, ModelMap modelMap) throws Exception {
+            @RequestParam(value = "menuId",required = false) Long menuId,
+            ModelMap modelMap) throws Exception {
         if (moduleIndex!=null) {
             modelMap.addAttribute("moduleIndex", moduleIndex)
                     .addAttribute("menuId", menuId);
