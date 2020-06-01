@@ -209,6 +209,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
 
         psDBBean.setSysControl(hashtable);
+        log.info("【psSite:{}】",psDBBean.getSiteId());
 
         request.setAttribute("BeanName",psDBBean);
 
@@ -318,6 +319,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 //        List<String> groupCodes = CollUtil.newArrayList("4","7");
         List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);
         List<TMenuDO> topNavs = CollUtil.addAllIfNotContains(topMenus,CollUtil.newArrayList());
+        log.info("【topNavs:{}】",topNavs);
         // 第一种菜单展现方式，每一个主菜单都对应有一个主页
 //        List<TMenuDO> secondMenus = itGroupMenuService.listSecondMenuByGroupCode(groupCodes, systemCode,customerId);
 //        List<TMenuDO> secondNavs = CollUtil.addAllIfNotContains(secondMenus,CollUtil.newArrayList());

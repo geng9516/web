@@ -4,7 +4,7 @@
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.menuId ? 'actived-menu' : ''"
-            :key="item.menu.menuId" @click="handleMenuGroupChange(item.menu.menuId)">
+            :key="item.menu.menuId" @click="handleMenuGroupChange(item.menu.menuId,item.menu.pageId)">
             <svg class="cursor i-svg" aria-hidden="true"
                 :style="{fill: curMenu === item.menuId ? 'rgb(45, 140, 240)' : 'white'}">
                 <use :xlink:href="`#${item.icon || 'cat'}`"></use>
@@ -45,16 +45,19 @@
                     curMenu: 1000,
                     toUrl: '',
                     showSider: false,
+                    siteId: ''
                 }
             },
             mounted() {
+                this.siteId = this.topNavs[0].menu.pageId
             },
             methods: {
-                handleMenuGroupChange(e) {
-                    this.curMenu = e
+                handleMenuGroupChange(menuId,pageId) {
+                    this.siteId = pageId
+                    this.curMenu = menuId
                 },
                 handleSubMenuClick(e, i) {
-                    this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}`
+                    this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}`
                     this.showSider = false
                     this.switchFrame()
                 },
