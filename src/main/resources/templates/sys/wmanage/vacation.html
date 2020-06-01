@@ -113,10 +113,10 @@
                     data: [[${ vacationDaysList }]],
                     loading: false,
                     referListObject:{
-                        TREEVIEW_KEY_ADMIN_TARGET_SECTION:'',
-                        TREEVIEW_KEY_ADMIN_TARGET_EMP:'',
-                        TREEVIEW_KEY_RECORD_DATE:'',
-                        TREEVIEW_KEY_REFRESH_FLG:''
+                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]:'',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]]:'',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]:'',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]:''
                     },
                     deptDrawShow: false,
                     requestURL:location.href.split('?')[0],
@@ -129,6 +129,8 @@
                 // 先将数据转为标准格式，再转为可用数据
                 this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
                 console.log(this.treeData)
+                console.log([[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]])
+                console.log([[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]])
                 console.log([[${ TmgReferListObject.getJSONArrayForEmpList() }]])
             },
             methods: {
@@ -156,10 +158,9 @@
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
                 },
                 async handleClickLeaf(e) {
-                    this.deptName = e[0].title
-                    console.log(e)
                     this.deptDrawShow = false
-                    this.referListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION = e[0].secid
+                    const section = [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    this.referListObject[section] = e[0].secid
                     await this.http.postForm(this.requestURL,this.referListObject)
                     location.href= this.requestURL;
                 },
