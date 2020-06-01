@@ -50,10 +50,12 @@ public class SiteWManageController {
     @RequestMapping("vacation")
     public String toWManageVacation(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+            @RequestParam(value = "moduleIndex",required = false) Integer moduleIndex,
+                                 @RequestParam(value = "menuId",required = false) Long menuId, ModelMap modelMap) throws Exception {
+        if (moduleIndex!=null) {
+            modelMap.addAttribute("moduleIndex", moduleIndex)
+                    .addAttribute("menuId", menuId);
+        }
         paidHolidayBean.actionInitHandler(modelMap);
         String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
         psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
