@@ -81,4 +81,12 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
          * 今月の月中有給付与に関する情報を返すSQL
          */
         List<paidHolidayThisMonthInfoVo>  selectPaidHolidayThisMonthInfo(Map<String,Object> map);
-        }
+
+    /**
+     * 月別情報を確定/確定解除する
+     * @param map Map
+     * @return Map
+     */
+    int buildSQLForUpdateMonthly(Map<String, Object> map);
+
+}

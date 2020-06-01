@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.mapper.TmgDailyCheckMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyCheckService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.DailyCheckDto;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -15,6 +16,17 @@ import org.springframework.stereotype.Repository;
  * @since 2020-04-16
  */
 @Repository
-        public class TmgDailyCheckServiceImpl extends ServiceImpl<TmgDailyCheckMapper, TmgDailyCheckDO> implements ITmgDailyCheckService {
+public class TmgDailyCheckServiceImpl extends ServiceImpl<TmgDailyCheckMapper, TmgDailyCheckDO> implements ITmgDailyCheckService {
 
-        }
+    /**
+     * 日別情報チェックを追加する
+     *
+     * @param dailyCheckDto 　DailyCheckDto
+     * @return 件数
+     */
+    @Override
+    public int buildSQLForInsertDailyCheck(DailyCheckDto dailyCheckDto) {
+
+        return baseMapper.buildSQLForInsertDailyCheck(dailyCheckDto);
+    }
+}

@@ -9,10 +9,7 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 
 import java.util.Date;
 import java.util.List;
@@ -304,7 +301,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @param language
      * @return String
      */
-    mgdNtfPropVo selectMasterNtfProp(String custId, String compId,  String language);
+    mgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language);
 
     /**現在日付を取得するクエリ文を生成します*/
     String selectSysdate();
@@ -315,5 +312,12 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     /**
      * 年度開始終了日を取得するSQLを返す
      */
-    dateDto selectDate(String custId, String compId, int year,String baseDate);
+    dateDto selectDate(String custId, String compId, int year, String baseDate);
+
+    /**
+     * 日付関連情報を取得
+     *
+     * @return TodayThisMonthVO
+     */
+    TodayThisMonthVO buildSQLForSelectDate();
 }

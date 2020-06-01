@@ -2,8 +2,10 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -17,5 +19,23 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TmgErrmsgMapper extends BaseMapper<TmgErrmsgDO> {
 
+    /**
+     * エラーメッセージを取得する
+     */
+    ErrMsgDto buildSQLForSelectErrMsg(Map<String, Object> map);
 
-        }
+    /**
+     * エラーメッセージをインサートする
+     */
+    int buildSQLForInsertNoErrMsg(Map<String, Object> map);
+
+    /**
+     * 月次承認処理時、エラーチェックを行った結果をエラーメッセージテーブルへ登録する
+     */
+    int buildSQLForInsertErrMsgForMonthlyApproval(Map<String, Object> map);
+
+    /**
+     * エラーメッセージをインサートする
+     */
+    int buildSQLForInsertErrMsg(Map<String, Object> map);
+}

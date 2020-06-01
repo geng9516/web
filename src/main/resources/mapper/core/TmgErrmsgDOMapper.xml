@@ -2,15 +2,103 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgErrmsgMapper">
 
-
-    <delete id="deleteByProgramId">
-        DELETE FROM
+    <select id="buildSQLForSelectErrMsg" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto">
+        SELECT
+            TER_CERRCODE,
+            NULL AS MESSAGE
+        FROM
             TMG_ERRMSG
-        WHERE TER_CCUSTOMERID = #{custId}
-        AND   TER_CCOMPANYID  = #{compId}
-        AND   TER_CMODIFIERUSERID    = #{employeeId}
-        AND   TER_CMODIFIERPROGRAMID = #{programId}
-        ;
-    </delete>
-
+        WHERE
+            TER_CCUSTOMERID = #{custID}
+        AND TER_CCOMPANYID = #{compCode}
+        AND TER_CMODIFIERUSERID = #{userCode}
+    </select>
+    <insert id="buildSQLForInsertNoErrMsg">
+        INSERT INTO TMG_ERRMSG (
+            TER_CCUSTOMERID,
+            TER_CCOMPANYID,
+            TER_DSTARTDATE,
+            TER_DENDDATE,
+            TER_CMODIFIERUSERID,
+            TER_DMODIFIEDDATE,
+            TER_CMODIFIERPROGRAMID,
+            TER_CERRCODE,
+            TER_CLANGUAGE
+        ) VALUES (
+            #{custId},
+            #{compId},
+            to_date('1900/01/01','yyyy/mm/dd'),
+            to_date('2222/12/31','yyyy/mm/dd'),
+            #{userId},
+            sysdate,
+            #{programId},
+            0,
+            #{lang}
+        )
+    </insert>
+    <insert id="buildSQLForInsertErrMsgForMonthlyApproval">
+        INSERT INTO TMG_ERRMSG
+    	(
+    	    TER_CCUSTOMERID,
+    	    TER_CCOMPANYID,
+    	    TER_DSTARTDATE,
+    	    TER_DENDDATE,
+    	    TER_CMODIFIERUSERID,
+    	    TER_DMODIFIEDDATE,
+    	    TER_CMODIFIERPROGRAMID,
+    	    TER_CERRCODE,
+    	    TER_CLANGUAGE
+    	)
+    	SELECT
+    	    #{custID},
+    	    #{compCode},
+    	    TO_DATE('1900/01/01', 'YYYY/MM/DD'),
+    	    TO_DATE('2222/12/31', 'YYYY/MM/DD'),
+    	    #{userCode}  ,
+    	    SYSDATE,
+    	    #{programId},
+    	    TMG_F_CHECK_MONTHLY(
+    	        #{txtCemployeeid},
+    	        #{txtDyyyymm},
+    	        #{custID} ,
+    	        #{compCode}
+    	    ),
+    	    #{language}
+    	FROM
+    	   DUAL
+    </insert>
+    <insert id="buildSQLForInsertErrMsg">
+        INSERT INTO
+            TMG_ERRMSG
+        (
+            TER_CCUSTOMERID,
+            TER_CCOMPANYID,
+            TER_DSTARTDATE,
+            TER_DENDDATE,
+            TER_CMODIFIERUSERID,
+            TER_DMODIFIEDDATE,
+            TER_CMODIFIERPROGRAMID,
+            TER_CERRCODE,
+            TER_CLANGUAGE
+        )
+        SELECT
+            #{custID},
+            #{compCode},
+            to_date('1900/01/01','yyyy/mm/dd'),
+            to_date('2222/12/31','yyyy/mm/dd'),
+            #{userCode},
+            sysdate,
+            #{programId},
+            <!-->エラーチェック-->
+            TMG_F_CHECK_DAILY(
+                #{targetUser} ,             <!--社員番号-->
+                #{day} ,                    <!--勤務日-->
+                '650',                      <!--チェックタイプ(勤怠承認時)-->
+                #{custID},                  <!--顧客コード-->
+                #{compCode}                 <!--法人コード-->
+            ),
+            #{language}
+        FROM
+            DUAL
+    </insert>
 </mapper>

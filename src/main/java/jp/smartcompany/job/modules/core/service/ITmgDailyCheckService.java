@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.DailyCheckDto;
 
 /**
  * <p>
@@ -13,4 +14,12 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgDailyCheckService extends IService<TmgDailyCheckDO> {
 
-        }
+    /**
+     * 日別情報チェックを追加する
+     *
+     * @param dailyCheckDto 　DailyCheckDto
+     * @return 件数
+     */
+    int buildSQLForInsertDailyCheck(DailyCheckDto dailyCheckDto);
+
+}

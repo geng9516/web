@@ -112,4 +112,18 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
      */
     HashMap buildSQLForSelectMonthly(String custID, String compCode, String targetUser, String month, List<String> list);
 
+    /**
+     * 月別情報を確定/確定解除する
+     *
+     * @param custId            顧客コード
+     * @param compCode          法人コード
+     * @param targetUser        対象者
+     * @param month             対象月
+     * @param userCode          更新者
+     * @param modifierProgramId 　更新プログラムID
+     * @param statusApproved    　　状態
+     * @return 件数
+     */
+    int buildSQLForUpdateMonthly(String custId, String compCode, String targetUser, String month, String userCode, String modifierProgramId, String statusApproved);
+
 }

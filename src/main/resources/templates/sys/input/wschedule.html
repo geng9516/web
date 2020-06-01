@@ -180,6 +180,8 @@
                 await this.getqueryHolidayInfo()
 
                 await this.getTableData()
+
+                // await this.getTableHead()
             },
             computed: {
                 tableHeadFixed() {
@@ -289,13 +291,21 @@
                     console.log(this.endueDaysHours)
                     console.log(this.tmyComment)
                 },
-
                 async getTableData() {
                     const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                     this.tableData = data
                     console.log("test")
                     console.log(data)
+                    console.log(data[0])
+                    this.tableHead = data[0]
                 },
+                // async getTableHead() {
+                //     this.loading = true
+                //     // const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
+                //     // this.tableHead = data[0]
+                //     console.log("getTableHead")
+                //     console.log( this.tableHead)
+                // },
                 // async getTableHead() {
                 //     this.loading = true
                 //     try {
