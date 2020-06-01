@@ -34,7 +34,7 @@ import java.util.Map;
  * @since 2020-04-16
  */
 @Repository
-        public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMonthlyDO> implements ITmgMonthlyService {
+public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMonthlyDO> implements ITmgMonthlyService {
 
     /**
      * 該当の職員・年月の超過勤務時間数の合計を取得する
@@ -191,4 +191,31 @@ import java.util.Map;
 
                 return list;
         }
+    /**
+     * 月別情報を確定/確定解除する
+     *
+     * @param custId            顧客コード
+     * @param compCode          法人コード
+     * @param targetUser        対象者
+     * @param month             対象月
+     * @param userCode          更新者
+     * @param modifierProgramId 　更新プログラムID
+     * @param statusApproved    　　状態
+     * @return 件数
+     */
+    @Override
+    public int buildSQLForUpdateMonthly(String custId, String compCode, String targetUser, String month, String userCode, String modifierProgramId, String statusApproved){
+
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("custId", custId);
+        map.put("compCode", compCode);
+        map.put("targetUser", targetUser);
+        map.put("month", month);
+        map.put("userCode", userCode);
+        map.put("modifierProgramId", modifierProgramId);
+        map.put("statusApproved", statusApproved);
+
+        return baseMapper.buildSQLForUpdateMonthly(map);
+    }
+
 }

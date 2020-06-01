@@ -144,7 +144,7 @@
         and e.mgd_csparechar2 = d.knmei_cde
         and e.mgd_csparechar3 = d.kmkbn_cde
         where
-        and d.ccompkb        = #{companyId}
+            d.ccompkb        = #{companyId}
         and d.dstart         <![CDATA[<=]]> #{yyyymmdd,jdbcType=DATE}
         and d.dend          >= #{yyyymmdd,jdbcType=DATE}
         and d.cshainno       = #{employeeId}
@@ -637,4 +637,12 @@
             DUAL
         ;
     </select>
+    <select id="buildSQLForSelectDate" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.TodayThisMonthVO">
+        SELECT
+            to_char(trunc(sysdate), 'yyyy/MM/dd') as TODAY,
+            to_char(trunc(sysdate, 'mm'), 'yyyy/MM/dd') AS THIS_MONTH
+        FROM DUAL
+    </select>
+
+
 </mapper>

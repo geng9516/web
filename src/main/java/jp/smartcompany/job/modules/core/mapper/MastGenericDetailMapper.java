@@ -12,6 +12,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -31,59 +32,59 @@ import java.util.Map;
 public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO> {
 
 
-        /**
-         * 非常勤年休ルールを取得
-         *
-         * @param map 検索条件
-         * @return int 年休ルール
-         */
-        int selectNenkyuRuleH(Map<String, Object> map);
+    /**
+     * 非常勤年休ルールを取得
+     *
+     * @param map 検索条件
+     * @return int 年休ルール
+     */
+    int selectNenkyuRuleH(Map<String, Object> map);
 
-        /**
-         * 非常勤年休ルールを取得
-         *
-         * @param map 検索条件
-         * @return int 年休ルール
-         */
-        int selectNenkyuRuleH2(Map<String, Object> map);
+    /**
+     * 非常勤年休ルールを取得
+     *
+     * @param map 検索条件
+     * @return int 年休ルール
+     */
+    int selectNenkyuRuleH2(Map<String, Object> map);
 
-        /**
-         * 常勤年休ルールを取得
-         *
-         * @param map 検索条件
-         * @return int 年休ルール
-         */
-        int selectNenkyuRuleT(Map<String, Object> map);
+    /**
+     * 常勤年休ルールを取得
+     *
+     * @param map 検索条件
+     * @return int 年休ルール
+     */
+    int selectNenkyuRuleT(Map<String, Object> map);
 
-        /**
-         * 常勤年休ルールを取得
-         *
-         * @param map 検索条件
-         * @return int 年休ルール
-         */
-        int selectNenkyuRuleT2(Map<String, Object> map);
+    /**
+     * 常勤年休ルールを取得
+     *
+     * @param map 検索条件
+     * @return int 年休ルール
+     */
+    int selectNenkyuRuleT2(Map<String, Object> map);
 
-        /**
-         * 名称マスタを取得
-         *
-         * @param map 検索条件
-         * @return MastGenericDetailDO 名称マスタ
-         */
-        MastGenericDetailDO selectMastGenericDetailDO(Map<String, Object> map);
+    /**
+     * 名称マスタを取得
+     *
+     * @param map 検索条件
+     * @return MastGenericDetailDO 名称マスタ
+     */
+    MastGenericDetailDO selectMastGenericDetailDO(Map<String, Object> map);
 
-        /**
-         * 2つの歴の引き算
-         *
-         * @param map 検索条件
-         * @return TmgTermRow 除外期間
-         */
-        List<TmgTermRow> tmgFExcludeTerm(Map<String, Object> map);
+    /**
+     * 2つの歴の引き算
+     *
+     * @param map 検索条件
+     * @return TmgTermRow 除外期間
+     */
+    List<TmgTermRow> tmgFExcludeTerm(Map<String, Object> map);
 
 
-        /**
-         * ワークタイプのデフォルトパターンを検索
-         */
-        String selectWorkPattern(Map<String, Object> map);
+    /**
+     * ワークタイプのデフォルトパターンを検索
+     */
+    String selectWorkPattern(Map<String, Object> map);
 
         /**
          * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
@@ -202,4 +203,10 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                        @Param("compId")String compId,
                        @Param("year")int year,
                        @Param("baseDate")String baseDate);
+
+    /**
+     * 日付関連情報を取得
+     */
+    TodayThisMonthVO buildSQLForSelectDate();
 }
+

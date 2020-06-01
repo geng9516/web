@@ -1,13 +1,21 @@
 package jp.smartcompany.job.modules.tmg.tmgresults;
 
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.*;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
+import jp.smartcompany.job.modules.tmg.util.CommonUI;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
+import jp.smartcompany.job.util.SysUtil;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
@@ -25,6 +33,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgResultsBean {
+
     /**
      * PsDBBean
      */
@@ -71,55 +80,176 @@ public class TmgResultsBean {
     private final IMastOrganisationService iMastOrganisationService;
 
     /**
+     * ITmgDailyCheckService
+     */
+    private final ITmgDailyCheckService iTmgDailyCheckService;
+
+    /**
+     * ITmgDailyDetailCheckService
+     */
+    private final ITmgDailyDetailCheckService iTmgDailyDetailCheckService;
+
+    /**
+     * ITmgErrmsgService
+     */
+    private final ITmgErrmsgService iTmgErrmsgService;
+
+    /**
+     * ITmgTriggerService
+     */
+    private final ITmgTriggerService iTmgTriggerService;
+    /**
      * TmgReferList
      */
     private TmgReferList referList = null;
 
-
     // サイト識別子
+    /**
+     * 勤怠入力サイト
+     */
+    public static final String SITE_TI = "TMG_INP";
 
-    public static final String SITE_TI = "TMG_INP";             // 勤怠入力サイト
-    public static final String SITE_TP = "TMG_PERM";            // 勤怠承認サイト
-    public static final String SITE_TA = "TMG_ADMIN";           // 勤怠管理サイト
-
-    // 月別一覧画面表示
+    /**
+     * 月別一覧画面表示
+     */
     public static final String ACT_DISP_RMONTHLY = "ACT_DISP_RMONTHLY";
-    public static final String ACT_EDITINP_RDAILY      = "ACT_EDITINP_RDAILY";     // 日別登録画面表示
 
-    // 勤務状況確認
-    public static final String TYPE_ITEM_WORK_STATUS        = "TMG_ITEMS|WorkStatus";
-    // 健康状態確認
-    public static final String TYPE_ITEM_HEALTH_STATUS      = "TMG_ITEMS|HealthStatus";
+    /**
+     * 日別登録画面表示
+     */
+    public static final String ACT_EDITINP_RDAILY = "ACT_EDITINP_RDAILY";
 
-    // 出張区分ドロップボックス
-    public static final String GROUPID_TMG_BUSINESS_TRIP    = "TMG_BUSINESS_TRIP";
+    /**
+     * 月別一覧画面_月次承認
+     */
+    public static final String ACT_FIXED = "ACT_FIXED";
+
+    /**
+     * 月別一覧画面_月次承認解除
+     */
+    public static final String ACT_RESCISSION = "ACT_RESCISSION";
+
+    /**
+     * 勤務状況確認
+     */
+    public static final String TYPE_ITEM_WORK_STATUS = "TMG_ITEMS|WorkStatus";
+
+    /**
+     * 健康状態確認
+     */
+    public static final String TYPE_ITEM_HEALTH_STATUS = "TMG_ITEMS|HealthStatus";
+
+    /**
+     * 出張区分ドロップボックス
+     */
+    public static final String GROUPID_TMG_BUSINESS_TRIP = "TMG_BUSINESS_TRIP";
 
     // 属性コードの使用可否
-    public static final String ATTRIBUTE_ENABLE_ONLY = "1"; // 計算用項目は表示しない
-    public static final String CATEGORY_NONDUTY          = "TMG_CATEGORY|NonDuty";          // 非勤務
-    public static final String CATEGORY_OVERHOURS        = "TMG_CATEGORY|Overhours";        // 超過勤務
+    /**
+     * 計算用項目は表示しない
+     */
+    public static final String ATTRIBUTE_ENABLE_ONLY = "1";
+
+    /**
+     * 非勤務
+     */
+    public static final String CATEGORY_NONDUTY = "TMG_CATEGORY|NonDuty";
+
+    /**
+     * 超過勤務
+     */
+    public static final String CATEGORY_OVERHOURS = "TMG_CATEGORY|Overhours";
+
+    /**
+     * YES
+     */
     private final static String Cs_YES = "yes";
 
+    /**
+     * 未入力
+     */
+    public static final String STATUS_UNINPUT = "TMG_DATASTATUS|0";
 
-    private void setSysControl(){
-        psDBBean.setCustID("01");
-        psDBBean.setCompCode("01");
-        psDBBean.setLanguage("ja");
-        psDBBean.setTargetUser("34370889");
-        this.setDay("2019/09/01");
-        this.setToday("2019/09/01");
-        this.setMonth("2019/09/01");
-        psDBBean.setTargetComp("01");
-        psDBBean.setTargetCust("01");
+    /**
+     * 承認済
+     */
+    public static final String STATUS_APPROVED = "TMG_DATASTATUS|5";
 
+    /**
+     * LOG出力用ディスクリプタ
+     */
+    private final String BEAN_DESC = "TmgResults";
+
+    /**
+     * 表示対象日
+     */
+    private String gsDay = null;
+
+    /**
+     * 表示対象日
+     */
+    public void setDay(String s) {
+        gsDay = s;
+    }
+
+    public String getDay() {
+        return gsDay;
     }
 
     /**
-     * 入力サイト > 日別登録画面表示 > ACT_DISP_RMONTHLY
+     * 表示対象月
+     */
+    private String gsMonth = null;
+
+    /**
+     * 表示対象月
+     */
+    public void setMonth(String s) {
+        gsMonth = s;
+    }
+
+    public String getMonth() {
+        return gsMonth;
+    }
+
+    /**
+     * 今日の日付(組織ツリーの基準日がセットされる為、必ずしもgsToday=システム日付ではない)
+     */
+    private String gsToday = null;
+
+    /**
+     * 今日の日付
+     */
+    public void setToday(String s) {
+        gsToday = s;
+    }
+
+    public String getToday() {
+        return gsToday;
+    }
+
+    /**
+     * 今月
+     */
+    private String gsThisMonth = null;
+
+    public void setThisMonth(String s) {
+        gsThisMonth = s;
+    }
+
+    public String getThisMonth() {
+        return gsThisMonth;
+    }
+
+
+    /**
+     * 入力サイト・承認サイト・管理サイト
+     * 月別一覧画面
+     * ACT_DISP_RMONTHLY
      */
     public void actDispRmonthly(ModelMap modelMap) {
-        this.setSysControl();
 
+        this.execute(modelMap);
         if (psDBBean.getTargetUser() != null && psDBBean.getTargetUser().length() != 0) {
 
             showMonthly(modelMap);
@@ -127,211 +257,96 @@ public class TmgResultsBean {
     }
 
     /**
-     * 入力サイト > 月別一覧画面 > ACT_DISP_RMONTHLY
+     * 入力サイト・承認サイト
+     * 日別登録画面
+     * ACT_EDITINP_RDAILY
      */
     public void actEditinpRdaily(ModelMap modelMap) {
 
+        this.execute(modelMap);
         this.showInp(modelMap);
     }
-    private void showInp(ModelMap modelMap) {
-
-        // 打刻反映処理
-        execReflectionTimePunch(ACT_EDITINP_RDAILY);
-
-        // 日別
-        DailyEditVO dailyEditVO =iTmgDailyService.buildSQLForSelectDailyEdit(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                getToday(),
-                psDBBean.getSiteId(),
-                psDBBean.getLanguage()
-        );
-        modelMap.addAttribute("dailyEditVO", dailyEditVO);
-
-        // 詳細:欠勤離籍以外
-        List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getLanguage(),
-                0,
-                true
-        );
-        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
-
-
-        // 予定出社・退社時間の基準値
-        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
-        modelMap.addAttribute("companyVO", companyVO);
-
-        // 出勤日判定用
-        List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("companyVO", companyVO);
-
-        // 非勤務ドロップダウン用
-        List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
-                getDay(),
-                ATTRIBUTE_ENABLE_ONLY,
-                CATEGORY_NONDUTY);
-        modelMap.addAttribute("categoryNonduty", categoryNonduty);
-
-        // 超過勤務ドロップダウン用
-        List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
-                getDay(),
-                ATTRIBUTE_ENABLE_ONLY,
-                CATEGORY_OVERHOURS);
-        modelMap.addAttribute("categoryOverhours", categoryOverhours);
-
-        // 詳細：非勤務
-        List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
-                this.getDay(),
-                psDBBean.getLanguage()
-        );
-
-        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
-
-        // 詳細：超過勤務
-        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
-                this.getDay(),
-                psDBBean.getLanguage(),
-                this.isShowOvertimeNotification()
-        );
-
-        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
-
-        // 出張区分ドロップダウン用
-        List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                getDay(),
-                GROUPID_TMG_BUSINESS_TRIP
-        );
-        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
-
-        // 裁量労働-勤務状況の状態を取得
-        // 勤務状況
-        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
-                psDBBean.getCustID()
-                , psDBBean.getCompCode()
-                , getToday()
-                , psDBBean.getTargetUser()
-                , getMonth()
-                , TYPE_ITEM_WORK_STATUS
-                , TYPE_ITEM_OVERHOURS_REASON);
-        modelMap.addAttribute("workStatus", workStatus);
-
-        // 就業区分マスタ
-        List<GenericDetailVO> genericDetailVOList =  iMastGenericDetailService.buildSQLForSelectGenericDetail(
-                psDBBean.getCustID(),
-                psDBBean.getTargetComp(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getLanguage()
-        );
-        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
-
-
-        // 日次超勤限度時間取得
-        // TODO
-//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
-//                ? this.referList.getTargetSec()
-//                : (String) psDBBean.getDept().get(0);
-        String targetSec ="";
-
-        LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                targetSec,
-                getDay()
-        );
-        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
-
-
-        // 超過勤務対象有無取得,
-        String targetForOverTime = iTmgEmployeeAttributeService.buildSQLForSelectTargetForOverTime(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay()
-        );
-        modelMap.addAttribute("targetForOverTime", targetForOverTime);
-
-        // 休憩予定取得
-        List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getLanguage(),
-                3,
-                true
-        );
-        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
-
-        // コメント欄の最大値取得
-        String tmgVMgdMaxLengthCheck = iMastGenericDetailService.buildSQLForSelectTmgVMgdMaxLengthCheck(
-                psDBBean.getCustID(),
-                psDBBean.getTargetComp(),
-                psDBBean.getLanguage(),
-                getDay(),
-                TmgUtil.Cs_MGD_TMG_MAX_LENGTH_CHECK_TMG_MAX_LENGTH_CHECK);
-        modelMap.addAttribute("tmgVMgdMaxLengthCheck", tmgVMgdMaxLengthCheck);
-
-        // 裁量労働-勤務状況の値を格納
-        boolean isDiscretionWorkFixForDB = false;
-        if (workStatus.size()>0){
-            isDiscretionWorkFixForDB = workStatus.get(0).getTesCattribute().equals("TMG_ONOFF|1");
-        }
-        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
-    }
-
 
     /**
-     * システムプロパティから値を取得後、超勤申請の事前事後登録情報を表示利用するかどうか判定し値を返却します
-     *
-     * @return boolean(true:使用する、false:使用しない)
+     * 入力サイト
+     * 日別登録画面
+     * ACT_EDITINP_UDAILY
      */
-    public boolean isShowOvertimeNotification(){
+    public void actEditinpUdaily(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        this.updateDaily(dto);
+        this.showMonthly(modelMap);
+    }
 
-        // TODO psDBBean.getSystemProperty 未実装
-        //psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_SHOW_OVERTIMENOTIFICATION);
-        String overtimeNotification = "yes";
+    /**
+     * 入力サイト
+     * 日別登録画面
+     * ACT_EDITINP_UCOMMENT
+     */
+    public void actEditinpUcomment(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        updateInp(dto);
+        showMonthly(modelMap);
+    }
 
+    /**
+     * 承認サイト・管理サイト
+     * 日別登録・承認画面
+     * ACT_EDITPERM_UPERMIT
+     * <p>
+     * 承認
+     */
+    public void actEditpermUpermit(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        updateDaily(dto);
+        showMonthly(modelMap);
+    }
 
-        if (Cs_YES.equalsIgnoreCase(overtimeNotification)) {
-            return true;
-        } else {
-            return false;
-        }
+    /**
+     * 承認サイト・管理サイト
+     * 日別登録・承認画面
+     * ACT_REMANDS
+     */
+    public void actRemands(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        updateRemandsStatus(dto);
+        showMonthly(modelMap);
+    }
+
+    /**
+     * 管理サイト
+     * 日別承認画面
+     * ACT_EDITPERM_RDAILY
+     */
+    public void actEditpermRdaily(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        showPerm(modelMap);
+    }
+
+    /**
+     * 管理サイト
+     * 月別一覧画面
+     * ACT_FIXED
+     * <p>
+     * 月次承認[承認]
+     */
+    public void actFixed(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        updateMonth();
+        showMonthly(modelMap);
+    }
+
+    /**
+     * 管理サイト
+     * 月別一覧画面
+     * ACT_RESCISSION
+     * <p>
+     * 月次承認[承認解除]
+     */
+    public void actRescission(ModelMap modelMap, TmgResultsDto dto) {
+        this.execute(modelMap);
+        updateMonth();
+        showMonthly(modelMap);
     }
 
     /**
@@ -342,15 +357,23 @@ public class TmgResultsBean {
         // 月次情報表示項目を取得しセット
         List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems();
 
-        // TODO 月次情報表示項目設定の実装がまだです
         List<String> monthlyItems = new ArrayList<String>();
+        List<Map> monthlyTilteMapList = new ArrayList<Map>();
         for (ItemVO dispMonthlyItem : dispMonthlyItems) {
+
             monthlyItems.add(dispMonthlyItem.getMgdCsql() + " AS " + dispMonthlyItem.getMgdCcolumnkey());
+            Map monthlyTilteMap = new HashMap();
+            monthlyTilteMap.put("title", dispMonthlyItem.getMgdCheader());
+            monthlyTilteMap.put("key", dispMonthlyItem.getMgdCcolumnkey());
+            monthlyTilteMapList.add(monthlyTilteMap);
         }
+        modelMap.addAttribute("monthlyTilteMapList", monthlyTilteMapList);
 
         // 日次情報表示項目を取得しセット
         List<ItemVO> dispDailyItems = this.setDispDailyItems();
-        // TODO 日次情報表示項目設定の実装がまだです
+
+        List<Map> dailyTittleMapList = this.setMapList(dispDailyItems);
+        modelMap.addAttribute("dailyTittleMapList", dailyTittleMapList);
 
         List<String> dailyItems = new ArrayList<String>();
         for (ItemVO dispDailyItem : dispDailyItems) {
@@ -362,7 +385,7 @@ public class TmgResultsBean {
         // execOverHours45();
 
         // 打刻反映処理
-        execReflectionTimePunch(ACT_DISP_RMONTHLY);
+        execReflectionTimePunch();
 
         // 勤務状況確認、健康状態確認の使用可否設定を行います。 TODO 削除待ち
         // setEditableWorkHealthChk();
@@ -492,7 +515,7 @@ public class TmgResultsBean {
 //        modelMap.addAttribute("mgdAttributeEffortList", mgdAttributeEffortList);
 
         // 12 表示月遷移リスト情報取得
-        List<DispMonthlyVO> dispMonthlyVOList =  iTmgMonthlyService.buildSQLForSelectDispMonthlyList(
+        List<DispMonthlyVO> dispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispMonthlyList(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
@@ -531,51 +554,969 @@ public class TmgResultsBean {
         }
     }
 
-    /**
-     * 表示対象日
-     */
-    private String gsDay = null;
+    private void showInp(ModelMap modelMap) {
 
-    /**
-     * 表示対象日
-     */
-    public void setDay(String s) {
-        gsDay = s;
+        // 打刻反映処理
+        execReflectionTimePunch();
+
+        // 日別
+        DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                getToday(),
+                psDBBean.getSiteId(),
+                psDBBean.getLanguage()
+        );
+        modelMap.addAttribute("dailyEditVO", dailyEditVO);
+
+        // 詳細:欠勤離籍以外
+        List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                0,
+                true
+        );
+        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
+
+        // 予定出社・退社時間の基準値
+        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
+        modelMap.addAttribute("companyVO", companyVO);
+
+        // 出勤日判定用
+        List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
+        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
+
+        // 非勤務ドロップダウン用
+        List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_NONDUTY);
+        modelMap.addAttribute("categoryNonduty", categoryNonduty);
+
+        // 超過勤務ドロップダウン用
+        List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_OVERHOURS);
+        modelMap.addAttribute("categoryOverhours", categoryOverhours);
+
+        // 詳細：非勤務
+        List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage()
+        );
+
+        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
+
+        // 詳細：超過勤務
+        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage(),
+                this.isShowOvertimeNotification()
+        );
+
+        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
+
+        // 出張区分ドロップダウン用
+        List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getDay(),
+                GROUPID_TMG_BUSINESS_TRIP
+        );
+        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
+
+        // 裁量労働-勤務状況の状態を取得
+        // 勤務状況
+        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
+                psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , getToday()
+                , psDBBean.getTargetUser()
+                , getMonth()
+                , TYPE_ITEM_WORK_STATUS
+                , TYPE_ITEM_OVERHOURS_REASON);
+        modelMap.addAttribute("workStatus", workStatus);
+
+        // 就業区分マスタ
+        List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage()
+        );
+        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
+
+        // 日次超勤限度時間取得
+        // TODO
+//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
+//                ? this.referList.getTargetSec()
+//                : (String) psDBBean.getDept().get(0);
+        String targetSec = "";
+
+        LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                targetSec,
+                getDay()
+        );
+        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
+
+
+        // 超過勤務対象有無取得,
+        String targetForOverTime = iTmgEmployeeAttributeService.buildSQLForSelectTargetForOverTime(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay()
+        );
+        modelMap.addAttribute("targetForOverTime", targetForOverTime);
+
+        // 休憩予定取得
+        List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                3,
+                true
+        );
+        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
+
+        // コメント欄の最大値取得
+        String tmgVMgdMaxLengthCheck = iMastGenericDetailService.buildSQLForSelectTmgVMgdMaxLengthCheck(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getLanguage(),
+                getDay(),
+                TmgUtil.Cs_MGD_TMG_MAX_LENGTH_CHECK_TMG_MAX_LENGTH_CHECK);
+        modelMap.addAttribute("tmgVMgdMaxLengthCheck", tmgVMgdMaxLengthCheck);
+
+        // 裁量労働-勤務状況の値を格納
+        boolean isDiscretionWorkFixForDB = false;
+        if (workStatus.size() > 0) {
+            isDiscretionWorkFixForDB = workStatus.get(0).getTesCattribute().equals("TMG_ONOFF|1");
+        }
+        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
     }
 
-    public String getDay() {
-        return gsDay;
+    /**
+     *
+     */
+    private void updateDaily(TmgResultsDto dto) {
+        // 日付関連取得
+        this.getDate();
+
+        // 表示対象者 TODO
+        //psDBBean.setTargetUser(psDBBean.getReqParam("txtCEMPLOYEEID"));
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck();
+
+        // 日別
+        DailyCheckDto dailyCheckDto = new DailyCheckDto();
+        dailyCheckDto.setCustID(psDBBean.getCustID());
+        dailyCheckDto.setCompCode(psDBBean.getCompCode());
+        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
+        dailyCheckDto.setDay(this.getDay());
+        dailyCheckDto.setUserCode(psDBBean.getUserCode());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        // TODO
+        //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
+        dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
+
+        dailyCheckDto.setHoliday(dto.getHoliday());
+        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
+        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+
+        // 詳細
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                // TODO
+                //psDBBean.getReqParam("txtAction")
+                ACT_DISP_RMONTHLY
+        );
+
+        // 画面非表示項目
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckNotDisp(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                // TODO
+                //psDBBean.getReqParam("txtAction")
+                ACT_DISP_RMONTHLY,
+                // TODO
+                //psDBBean.getSiteId()
+                "TMG_INP"
+        );
+
+        int i = 1;
+        // 非勤務
+        for (DetailDto nonDuty : dto.getNonDutyList()) {
+            DetailCheckDto nonDutyDetailCheckDto = new DetailCheckDto();
+            nonDutyDetailCheckDto.setCustID(psDBBean.getCustID());
+            nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            nonDutyDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            nonDutyDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            nonDutyDetailCheckDto.setTxtAction(psDBBean.getReqParam("txtAction"));
+            nonDutyDetailCheckDto.setDay(this.getDay());
+            nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
+            nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
+            nonDutyDetailCheckDto.setItemCode(nonDuty.getTxtTDAD_CNOTWORKID());
+            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTxtTDAD_NOPEN());
+            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTxtTDAD_NCLOSE());
+            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTxtTDAD_CSPARECHAR1());
+            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTxtTDAD_NSPARENUM1());
+            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTxtTDAD_CCODE01());
+            nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
+            nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
+            nonDutyDetailCheckDto.setHasAuthority(nonDuty.getTxtHasAuthorityOverhours());
+            nonDutyDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
+            i++;
+        }
+
+        i = 1;
+        // 超過勤務
+        for (DetailDto overHours : dto.getOverHoursList()) {
+            DetailCheckDto overHoursDetailCheckDto = new DetailCheckDto();
+            overHoursDetailCheckDto.setCustID(psDBBean.getCustID());
+            overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            overHoursDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            overHoursDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            overHoursDetailCheckDto.setTxtAction(psDBBean.getReqParam("txtAction"));
+            overHoursDetailCheckDto.setDay(this.getDay());
+            overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
+            overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
+            overHoursDetailCheckDto.setItemCode(overHours.getTxtTDAD_CNOTWORKID());
+            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTxtTDAD_NOPEN());
+            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTxtTDAD_NCLOSE());
+            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTxtTDAD_CSPARECHAR1());
+            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTxtTDAD_NSPARENUM1());
+            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTxtTDAD_CCODE01());
+            overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
+            overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
+            overHoursDetailCheckDto.setHasAuthority(overHours.getTxtHasAuthorityOverhours());
+            overHoursDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
+            i++;
+        }
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+
+        // エラーメッセージ追加
+        iTmgErrmsgService.buildSQLForInsertNoErrMsg(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                BEAN_DESC + "_" + psDBBean.getReqParam("txtAction"),
+                psDBBean.getLanguage());
+
+        // エラーメッセージ取得
+        ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getTargetUser());
+
+
+        String action = psDBBean.getReqParam("txtAction");
+        if (action == null || action.length() == 0) {
+            action = ACT_DISP_RMONTHLY;
+        }
+        // トリガー追加
+        iTmgTriggerService.buildSQLForInsertTrigger(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                action
+        );
+
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck();
+    }
+
+    private void updateInp(TmgResultsDto dto) {
+
+        String action = psDBBean.getReqParam("txtAction");
+        if (action == null || action.length() == 0) {
+            action = ACT_DISP_RMONTHLY;
+        }
+
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // 日別
+        DailyCheckDto dailyCheckDto = new DailyCheckDto();
+        dailyCheckDto.setCustID(psDBBean.getCustID());
+        dailyCheckDto.setCompCode(psDBBean.getCompCode());
+        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
+        dailyCheckDto.setDay(this.getDay());
+        dailyCheckDto.setUserCode(psDBBean.getUserCode());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        // TODO
+        //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
+        dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
+
+        dailyCheckDto.setHoliday(dto.getHoliday());
+        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
+        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+
+        // トリガー追加
+        iTmgTriggerService.buildSQLForInsertTrigger(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                action
+        );
+
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
     }
 
     /**
-     * 表示対象月
+     * 差戻処理を行うメソッド
+     *
+     * @return なし
      */
-    private String gsMonth = null;
+    private void updateRemandsStatus(TmgResultsDto dto) {
 
-    /**
-     * 表示対象月
-     */
-    public void setMonth(String s) {
-        gsMonth = s;
+        String action = psDBBean.getReqParam("txtAction");
+        if (StrUtil.isEmpty(action)) {
+
+            action = ACT_DISP_RMONTHLY;
+        }
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // 日別
+        DailyCheckDto dailyCheckDto = new DailyCheckDto();
+        dailyCheckDto.setCustID(psDBBean.getCustID());
+        dailyCheckDto.setCompCode(psDBBean.getCompCode());
+        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
+        dailyCheckDto.setDay(this.getDay());
+        dailyCheckDto.setUserCode(psDBBean.getUserCode());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        // TODO
+        //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
+        dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
+
+        dailyCheckDto.setHoliday(dto.getHoliday());
+        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
+        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+
+        // トリガー追加
+        iTmgTriggerService.buildSQLForInsertTrigger(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                action
+        );
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // エラーチェック削除
+        //buildSQLForDeleteDailyCheck
+        this.buildSQLForDeleteDailyCheck();
     }
 
-    public String getMonth() {
-        return gsMonth;
-    }
     /**
-     * 今日の日付(組織ツリーの基準日がセットされる為、必ずしもgsToday=システム日付ではない)
+     * 日別承認画面を表示するメソッド
      */
-    private String gsToday = null;
+    private void showPerm(ModelMap modelMap) {
+
+        // 打刻反映処理
+        execReflectionTimePunch();
+
+        // 日別
+        DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                getToday(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                psDBBean.getLanguage()
+        );
+        modelMap.addAttribute("dailyEditVO", dailyEditVO);
+        // 詳細:欠勤離籍以外
+        List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                0,
+                false
+        );
+        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
+        // 社員情報
+        //vQuery.add(buildSQLForSelectEmployee());
+        // 就業区分マスタ
+        List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage()
+        );
+        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
+
+        // 予定出社・退社時間の基準値
+        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
+        modelMap.addAttribute("companyVO", companyVO);
+
+        // 出勤日判定用
+        List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
+        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
+
+        // 非勤務ドロップダウン用
+        List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_NONDUTY);
+        modelMap.addAttribute("categoryNonduty", categoryNonduty);
+
+        // 超過勤務ドロップダウン用
+        List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_OVERHOURS);
+        modelMap.addAttribute("categoryOverhours", categoryOverhours);
+
+        // 詳細：非勤務
+        List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage()
+        );
+
+        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
+
+        // 詳細：超過勤務
+        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                // TODO
+                //psDBBean.getSiteId(),
+                "TMG_INP",
+                this.getDay(),
+                psDBBean.getLanguage(),
+                this.isShowOvertimeNotification()
+        );
+        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
+
+        // 出張区分ドロップダウン用
+        List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getDay(),
+                GROUPID_TMG_BUSINESS_TRIP
+        );
+        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
+
+        // 日次超勤限度時間取得
+        // TODO
+//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
+//                ? this.referList.getTargetSec()
+//                : (String) psDBBean.getDept().get(0);
+        String targetSec = "";
+
+        LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                targetSec,
+                getDay()
+        );
+        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
+
+        // 超過勤務対象有無取得,
+        String targetForOverTime = iTmgEmployeeAttributeService.buildSQLForSelectTargetForOverTime(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay()
+        );
+        modelMap.addAttribute("targetForOverTime", targetForOverTime);
+
+        // 休憩予定取得
+        List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                3,
+                true
+        );
+        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
+
+    }
 
     /**
-     * 今日の日付
+     * 月次(承認・解除)処理を行うメソッド
      */
-    public void setToday(String s) {
-        gsToday = s;
+    private void updateMonth() {
+
+        // 月次承認
+        // 初期化
+        String sStatusApproved = "";
+        String sModifierProgramId = "";
+
+        if (ACT_FIXED.equals(psDBBean.getReqParam("txtAction"))) {
+            sModifierProgramId = BEAN_DESC + "_" + ACT_FIXED;
+            sStatusApproved = STATUS_APPROVED;
+        } else if (ACT_RESCISSION.equals(psDBBean.getReqParam("txtAction"))) {
+            sModifierProgramId = BEAN_DESC + "_" + ACT_RESCISSION;
+            sStatusApproved = STATUS_UNINPUT;
+        }
+
+        iTmgMonthlyService.buildSQLForUpdateMonthly(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getMonth(),
+                psDBBean.getUserCode(),
+                sModifierProgramId,
+                sStatusApproved);
     }
 
-    public String getToday() {
-        return gsToday;
+    /**
+     * 月次承認時エラーチェックAjax
+     */
+    public void getAjaxCheckForMonthlyApproval() {
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+
+        // エラーメッセージ追加
+        iTmgErrmsgService.buildSQLForInsertErrMsgForMonthlyApproval(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                BEAN_DESC + "_" + psDBBean.getReqParam("txtAction"),
+                psDBBean.getLanguage(),
+                psDBBean.getReqParam("txtCEMPLOYEEID"),
+                psDBBean.getReqParam("txtDYYYYMM")
+        );
+
+        // エラーメッセージ取得
+        ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser());
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+    }
+
+    /**
+     * 承認SQLを返すメソッド
+     *
+     * @return Vector  SQL
+     */
+    public void getSQLVecForAjax(TmgResultsDto dto) {
+
+        // 日付関連取得
+        getDate();
+
+        // 表示対象者
+        psDBBean.setTargetUser(psDBBean.getReqParam("txtCEMPLOYEEID"));
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck();
+
+        // 日別
+        DailyCheckDto dailyCheckDto = new DailyCheckDto();
+        dailyCheckDto.setCustID(psDBBean.getCustID());
+        dailyCheckDto.setCompCode(psDBBean.getCompCode());
+        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
+        dailyCheckDto.setDay(this.getDay());
+        dailyCheckDto.setUserCode(psDBBean.getUserCode());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
+        dailyCheckDto.setHoliday(dto.getHoliday());
+        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
+        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                psDBBean.getReqParam("txtAction")
+        );
+
+        // 画面非表示項目
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckNotDisp(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                psDBBean.getReqParam("txtAction"),
+                psDBBean.getSiteId()
+        );
+
+        int i = 1;
+        // 非勤務
+        for (DetailDto nonDuty : dto.getNonDutyList()) {
+            DetailCheckDto nonDutyDetailCheckDto = new DetailCheckDto();
+            nonDutyDetailCheckDto.setCustID(psDBBean.getCustID());
+            nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            nonDutyDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            nonDutyDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            nonDutyDetailCheckDto.setTxtAction(psDBBean.getReqParam("txtAction"));
+            nonDutyDetailCheckDto.setDay(this.getDay());
+            nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
+            nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
+            nonDutyDetailCheckDto.setItemCode(nonDuty.getTxtTDAD_CNOTWORKID());
+            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTxtTDAD_NOPEN());
+            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTxtTDAD_NCLOSE());
+            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTxtTDAD_CSPARECHAR1());
+            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTxtTDAD_NSPARENUM1());
+            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTxtTDAD_CCODE01());
+            nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
+            nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
+            nonDutyDetailCheckDto.setHasAuthority(nonDuty.getTxtHasAuthorityOverhours());
+            nonDutyDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
+            i++;
+        }
+
+        i = 1;
+        // 超過勤務
+        for (DetailDto overHours : dto.getOverHoursList()) {
+            DetailCheckDto overHoursDetailCheckDto = new DetailCheckDto();
+            overHoursDetailCheckDto.setCustID(psDBBean.getCustID());
+            overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            overHoursDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            overHoursDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            overHoursDetailCheckDto.setTxtAction(psDBBean.getReqParam("txtAction"));
+            overHoursDetailCheckDto.setDay(this.getDay());
+            overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
+            overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
+            overHoursDetailCheckDto.setItemCode(overHours.getTxtTDAD_CNOTWORKID());
+            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTxtTDAD_NOPEN());
+            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTxtTDAD_NCLOSE());
+            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTxtTDAD_CSPARECHAR1());
+            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTxtTDAD_NSPARENUM1());
+            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTxtTDAD_CCODE01());
+            overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
+            overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
+            overHoursDetailCheckDto.setHasAuthority(overHours.getTxtHasAuthorityOverhours());
+            overHoursDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
+            i++;
+        }
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+
+        // エラーメッセージ追加
+        iTmgErrmsgService.buildSQLForInsertErrMsg(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                BEAN_DESC + "_" + psDBBean.getReqParam("txtAction"),
+                psDBBean.getLanguage(),
+                psDBBean.getTargetUser(),
+                getDay()
+        );
+
+        // エラーメッセージ取得
+        ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser());
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck();
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck();
+    }
+
+
+    /**
+     * 月次一覧、また日次登録（承認）画面表示時の打刻反映処理
+     */
+    private void execReflectionTimePunch() {
+
+        String action = psDBBean.getReqParam("txtAction");
+
+        // メニューから初期の月次一覧画面表示時はアクションが未設定なので、月次一覧画面表示アクションを設定する。
+        if (StrUtil.isEmpty(action)) {
+
+            action = ACT_DISP_RMONTHLY;
+        }
+
+        // 打刻反映処理対象の期間を取得
+        String stDate;        // 開始日
+        String endDate;        // 終了日
+
+        if (action.equals(ACT_DISP_RMONTHLY)) {
+
+            // 表示月のカレンダークラス
+            Calendar cal = Calendar.getInstance();
+            cal.set(Integer.parseInt(getMonth().split("/")[0]),
+                    Integer.parseInt(getMonth().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
+                    Integer.parseInt(getMonth().split("/")[2]), 0, 0);
+            // 日付を月末日にする。
+            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+
+            // 運用月のカレンダークラス
+            Calendar sysCal = Calendar.getInstance();
+            sysCal.set(Integer.parseInt(TmgUtil.getSysdate().split("/")[0]),
+                    Integer.parseInt(TmgUtil.getSysdate().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
+                    Integer.parseInt(TmgUtil.getSysdate().split("/")[2]), 0, 0);
+
+            // 運用日 <= 表示月末日の場合、表示月が運用月なので運用日を打刻反映処理の期間終了日とする。（未来については打刻反映処理対象外なので）
+            if (sysCal.compareTo(cal) <= 0) {
+
+                // 運用月の月初～運用日までを対象期間とする。
+                stDate = sysCal.get(Calendar.YEAR) + "/" + (sysCal.get(Calendar.MONTH) + 1) + "/" + sysCal.getMinimum(Calendar.DATE);
+                endDate = sysCal.get(Calendar.YEAR) + "/" + (sysCal.get(Calendar.MONTH) + 1) + "/" + sysCal.get(Calendar.DATE);
+            } else {
+
+                // 表示月の月初～月末までを対象期間とする。
+                stDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getMinimum(Calendar.DATE);
+                endDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getActualMaximum(Calendar.DATE);
+            }
+
+        } else {
+
+            // 日次画面を表示する場合は打刻反映処理の対象が表示日のみなので開始、終了日共に表示日とする。
+            stDate = getDay();
+            endDate = getDay();
+        }
+
+        // 打刻反映処理
+        iTmgTriggerService.buildSQLForInsertTriggerByTimePunch(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getUserCode(),
+                action, stDate, endDate);
+
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(action);
+
+        // TODO 未実装
+//        TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEAN_DESC), session, BEAN_DESC);
+    }
+
+    /**
+     * 日付関連情報を取得するメソッド
+     */
+    private void getDate() {
+
+        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
+
+        // 今日の日付
+        setToday(todayThisMonthVO.getToday());
+        setThisMonth(todayThisMonthVO.getThisMonth());
+
+        // 表示対象月
+        // TODO 画面パラメータ
+        if (psDBBean.getReqParam("txtDYYYYMM") == null || "".equals(psDBBean.getReqParam("txtDYYYYMM"))) {  // 初回起動時
+            setMonth(getThisMonth());
+        } else {
+            setMonth(psDBBean.getReqParam("txtDYYYYMM"));
+        }
+
+        // 表示対象日
+        if (psDBBean.getReqParam("txtDYYYYMMDD") == null || "".equals(psDBBean.getReqParam("txtDYYYYMMDD"))) {
+            setDay(getToday());
+        } else {
+            setDay(psDBBean.getReqParam("txtDYYYYMMDD"));
+        }
+
+    }
+
+    /**
+     * 一覧のタイトル様式設定
+     *
+     * @param mgdDispDailyItemsVOList
+     * @return List<Map>
+     */
+    private List<Map> setMapList(List<ItemVO> mgdDispDailyItemsVOList) {
+
+        List<Map> titles = new ArrayList<Map>();
+
+        Map title = new HashMap();
+        title.put(CommonUI.TITLE, "日");
+        title.put(CommonUI.KEY, "TDA_DYYYYMMDD_DD");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        title = new HashMap();
+        title.put(CommonUI.TITLE, "曜日");
+        title.put(CommonUI.KEY, "TDA_DYYYYMMDD_DY");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        title = new HashMap();
+        title.put(CommonUI.TITLE, "承認");
+        title.put(CommonUI.KEY, "TDA_CSTATUSFLG");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        title = new HashMap();
+        title.put(CommonUI.TITLE, "届");
+        title.put(CommonUI.KEY, "TDA_CNTFSTATUSFLG");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        title = new HashMap();
+        title.put(CommonUI.TITLE, "区分");
+        title.put(CommonUI.KEY, "TDA_CWORKINGID_R");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        for (ItemVO mgdDispDailyItemsVO : mgdDispDailyItemsVOList) {
+            title = new HashMap();
+            title.put(CommonUI.TITLE, mgdDispDailyItemsVO.getMgdCheader());
+            title.put(CommonUI.KEY, mgdDispDailyItemsVO.getMgdCcolumnid());
+            //     title.put(CommonUI.WIDTH, mgdDispDailyItemsVO.getMgdNwidth());
+            title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+            titles.add(title);
+        }
+        title = new HashMap();
+        title.put(CommonUI.TITLE, "備考");
+        title.put(CommonUI.KEY, "TDA_CCOMMENT_P");
+        title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        titles.add(title);
+
+        return titles;
+
+    }
+
+    /**
+     * システムプロパティから値を取得後、超勤申請の事前事後登録情報を表示利用するかどうか判定し値を返却します
+     *
+     * @return boolean(true : 使用する 、 false : 使用しない)
+     */
+    public boolean isShowOvertimeNotification() {
+
+        // TODO psDBBean.getSystemProperty 未実装
+        //psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_SHOW_OVERTIMENOTIFICATION);
+        String overtimeNotification = "yes";
+
+        if (Cs_YES.equalsIgnoreCase(overtimeNotification)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -587,7 +1528,6 @@ public class TmgResultsBean {
                 psDBBean.getLanguage(), getDay());
     }
 
-
     /**
      * TMG_DISPDAILYITEMSマスタより取得した日次情報のヘッダー・SQL・表示幅をmapに格納する
      */
@@ -596,52 +1536,6 @@ public class TmgResultsBean {
         return iMastGenericDetailService.buildSQLForSelectTmgDispDailyItems(psDBBean.getCustID(), psDBBean.getCompCode(),
                 psDBBean.getLanguage(), getDay());
     }
-
-//
-//    /**
-//     * 起動時に「月45時間を超える超過勤務の申請理由」用の処理を実行するか
-//     * チェックし、必要に応じて実行する
-//     */
-//    // TODO　削除待ち
-//    private void execOverHours45() {
-//
-//        if (isUseNtf45OverTime()) {
-//
-//            overHours45(ACT_DISP_RMONTHLY);
-//            overHours45ViewCheck();
-//        }
-//    }
-//
-//    /**
-//     * システムプロパティ：就業入力サイトでの月45時間を超える超過勤務の申請理由登録機能を使用するか判定し制御します
-//     */
-//    private final static String SYSPROP_TMG_USE_NTF45OVERTIME = "TMG_USE_NTF45OVERTIME";
-//    private Boolean gbUseNtf45OverTime = null;
-
-//
-//    /**
-//     * システムプロパティから値を取得後、月45時間を超える超過勤務の申請理由登録機能を使用するか判定し値を返却します
-//     *
-//     * @return boolean(true : 使用する 、 false : 使用しない)
-//     */
-//    // TODO 画面表示用
-//    public boolean isUseNtf45OverTime() {
-//
-//        if (gbUseNtf45OverTime == null) {
-//
-//            // TODO
-//            String sEdiTableResult4Inp = psDBBean.getSystemProperty(SYSPROP_TMG_USE_NTF45OVERTIME);
-//
-//            if (sEdiTableResult4Inp != null && Cs_YES.equalsIgnoreCase(sEdiTableResult4Inp)) {
-//                gbUseNtf45OverTime = true;
-//            } else {
-//                gbUseNtf45OverTime = false;
-//            }
-//        }
-//
-//        return gbUseNtf45OverTime;
-//    }
-
 
     /**
      * 月45時間を越える超勤の申請理由
@@ -654,7 +1548,7 @@ public class TmgResultsBean {
     // TODO 画面表示判断用
     public boolean approvalBtn = false;
 
-    private final String BEAN_DESC = "TmgResults";     // LOG出力用ディスクリプタ
+
     public static final String ACT_APPL_OVERHOURS = "ACT_APPL_OVERHOURS";     // 月別一覧画面_月45時間を越える超勤の申請
 
     /**
@@ -735,7 +1629,7 @@ public class TmgResultsBean {
      * @return 合計超勤時間
      */
     private double monthSumOverWork() {
-        // ▼ 2010/07/22 isolsuzuki #1122 【障害報告：nttw-341】超勤４５Ｈ超えのカウントに
+
         // 当メソッド内の処理をTMG_F_GET_SUM_OVERTIMEを使用する様に一新
 
         List<String> OverTimeList = iTmgMonthlyService.buildSQLForSelectMonthlyOverTime(psDBBean.getCustID()
@@ -749,7 +1643,7 @@ public class TmgResultsBean {
         } else {
             return 0.0;
         }
-        // ▲ 2010/07/22 isolsuzuki #1122 【障害報告：nttw-341】超勤４５Ｈ超えのカウントに
+
     }
 
     /**
@@ -812,66 +1706,6 @@ public class TmgResultsBean {
     }
 
     /**
-     * 月次一覧、また日次登録（承認）画面表示時の打刻反映処理
-     */
-    private void execReflectionTimePunch(String act) {
-
-        String action = act;
-
-        // メニューから初期の月次一覧画面表示時はアクションが未設定なので、月次一覧画面表示アクションを設定する。
-        if (StrUtil.isEmpty(action)) {
-
-            action = ACT_DISP_RMONTHLY;
-        }
-
-        // 打刻反映処理対象の期間を取得
-        String stDate;        // 開始日
-        String endDate;        // 終了日
-
-        if (action.equals(ACT_DISP_RMONTHLY)) {
-
-            // 表示月のカレンダークラス
-            Calendar cal = Calendar.getInstance();
-            cal.set(Integer.parseInt(getMonth().split("/")[0]),
-                    Integer.parseInt(getMonth().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
-                    Integer.parseInt(getMonth().split("/")[2]), 0, 0);
-            // 日付を月末日にする。
-            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
-
-            // 運用月のカレンダークラス
-            Calendar sysCal = Calendar.getInstance();
-            sysCal.set(Integer.parseInt(TmgUtil.getSysdate().split("/")[0]),
-                    Integer.parseInt(TmgUtil.getSysdate().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
-                    Integer.parseInt(TmgUtil.getSysdate().split("/")[2]), 0, 0);
-
-            // 運用日 <= 表示月末日の場合、表示月が運用月なので運用日を打刻反映処理の期間終了日とする。（未来については打刻反映処理対象外なので）
-            if (sysCal.compareTo(cal) <= 0) {
-
-                // 運用月の月初～運用日までを対象期間とする。
-                stDate = sysCal.get(Calendar.YEAR) + "/" + (sysCal.get(Calendar.MONTH) + 1) + "/" + sysCal.getMinimum(Calendar.DATE);
-                endDate = sysCal.get(Calendar.YEAR) + "/" + (sysCal.get(Calendar.MONTH) + 1) + "/" + sysCal.get(Calendar.DATE);
-            } else {
-
-                // 表示月の月初～月末までを対象期間とする。
-                stDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getMinimum(Calendar.DATE);
-                endDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getActualMaximum(Calendar.DATE);
-            }
-
-        } else {
-
-            // 日次画面を表示する場合は打刻反映処理の対象が表示日のみなので開始、終了日共に表示日とする。
-            stDate = getDay();
-            endDate = getDay();
-        }
-
-        // 打刻反映処理 TODO trigger なし，実装待ち
-//        Vector vQuery = new Vector();
-//        vQuery.add(buildSQLForInsertTriggerByTimePunch(action, stDate, endDate));
-//        vQuery.add(buildSQLForDeleteTrigger());
-//        TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEAN_DESC), session, BEAN_DESC);
-    }
-
-    /**
      * 勤務状況確認欄の使用判定変数
      */
     // TODO 画面表示用
@@ -924,10 +1758,14 @@ public class TmgResultsBean {
      */
     private void setEditableWorkHealthChk() {
 
-        String custId = psDBBean.getTargetCust(); // 表示対象職員の顧客コード
-        String compId = psDBBean.getTargetComp(); // 表示対象職員の法人コード
-        String empId = psDBBean.getTargetUser(); // 表示対象職員の職員番号
-        String lang = psDBBean.getLanguage();   // 言語区分
+        // 表示対象職員の顧客コード
+        String custId = psDBBean.getTargetCust();
+        // 表示対象職員の法人コード
+        String compId = psDBBean.getTargetComp();
+        // 表示対象職員の職員番号
+        String empId = psDBBean.getTargetUser();
+        // 言語区分
+        String lang = psDBBean.getLanguage();
 
         IsWorkHealthChkVO IsWorkHealthChkVO = iTmgEmployeesService.buildIsWorkHealthChk(custId, compId, empId, lang, getMonth());
 
@@ -994,7 +1832,7 @@ public class TmgResultsBean {
     }
 
     /**
-     * 県境状況確認の確定ボタンを表示するか
+     * 健康状況確認の確定ボタンを表示するか
      */
     // TODO 画面判断用
     public boolean isKenkojotaiKakunin() {
@@ -1039,277 +1877,286 @@ public class TmgResultsBean {
 
         return retval;
     }
-//
-//    /**
-//     * 勤務状況確認の未確認対象期間を警告表示する期間メッセージを取得する。
-//     * @return
-//     */
-//    // TODO 画面表示用
-//    public String getMsgWorkChkUnfinishConf() {
-//
-//        String custId = psDBBean.getTargetCust(); // 表示対象職員の顧客コード
-//        String compId = psDBBean.getTargetComp(); // 表示対象職員の法人コード
-//        String empId  = psDBBean.getTargetUser(); // 表示対象職員の職員番号
-//
-//        Vector vQuery = new Vector();
-//        vQuery.add(buildMsgWorkChkUnfinishConf(custId, compId, empId, getToday()));
-//
-//        String sMsg = null;
-//        try {
-//
-//            PsResult res = (ps.core.PsResult)getValuesforMultiquery(vQuery, BEAN_DESC);
-//
-//            Vector vQrys = res.getResult();
-//            Vector vRows = (Vector)vQrys.get(0);
-//            for(int i = 0; i < vRows.size(); i++){
-//                Vector vCols = (Vector)vRows.get(i);
-//                sMsg   = (String)vCols.get(0);
-//            }
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
-//
-//        // 検索結果がなければ、空文字を返却する。
-//        if (StrUtil.isEmpty(sMsg)) {
-//            return "";
-//        }
-//        return sMsg;
-//    }
-//
-//    /**
-//     * 健康状態確認の未確認対象期間を警告表示する期間メッセージを取得する。
-//     * @return
-//     */
-//    // TODO 画面表示用
-//    public String getMsgHealthChkUnfinishConf() {
-//
-//        String custId = psDBBean.getTargetCust(); // 表示対象職員の顧客コード
-//        String compId = psDBBean.getTargetComp(); // 表示対象職員の法人コード
-//        String empId  = psDBBean.getTargetUser(); // 表示対象職員の職員番号
-//
-//        Vector vQuery = new Vector();
-//        vQuery.add(buildMsgHealthChkUnfinishConf(custId, compId, empId, getToday()));
-//
-//        String sMsg = null;
-//        try {
-//
-//            PsResult res = (ps.core.PsResult)getValuesforMultiquery(vQuery, BEAN_DESC);
-//
-//            Vector vQrys = res.getResult();
-//            Vector vRows = (Vector)vQrys.get(0);
-//            for(int i = 0; i < vRows.size(); i++){
-//                Vector vCols = (Vector)vRows.get(i);
-//                sMsg   = (String)vCols.get(0);
-//            }
-//        } catch(Exception e){
-//            e.printStackTrace();
-//        }
-//
-//        // 検索結果がなければ、空文字を返却する。
-//        if (StrUtil.isEmpty(sMsg)) {
-//            return "";
-//        }
-//        return sMsg;
-//    }
-//
-//    /**
-//     * 勤怠シートの参照権限(基準月)
-//     */
-//    // TODO 画面表示用
-//    boolean _authorityMonth = false;
-//
-//    /**
-//     * 勤怠シートの参照権限(基準日の翌月)設定メソッド
-//     */
-//    public void setAuthorityMonth(boolean bValue) {
-//        _authorityMonth = bValue;
-//    }
-//
-//    /**
-//     * 勤怠シートの参照権限(基準日の翌月)取得メソッド
-//     */
-//    public boolean getAuthorityMonth() {
-//        return _authorityMonth;
-//    }
-//
 
-//
-//    private static final String FORMAT_ZERO = "00";
-//
-//    /**
-//     * 承認権限(月次)があるかどうか
-//     *
-//     * @param sEmp  社員番号
-//     * @param sDate 日付
-//     * @return boolean true:権限有り/false:なし
-//     * @throws boolean
-//     */
-//    // TODO 画面表示用
-//    public boolean isMonthlyApproval(String sEmp, String sDate) {
-//
-//        // 承認サイトのみ判定を行う
-//        if (!TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
-//            return true;
-//        }
-//
-//        try {
-//            Calendar cal = new GregorianCalendar(Integer.parseInt(getMonth().substring(0, 4)),
-//                    Integer.parseInt(getMonth().substring(5, 7)) - 1, 1);
-//            return referList.hasAuthorityAtEmployee(sDate,
-//                    getMonth().substring(0, 8) + new DecimalFormat(FORMAT_ZERO).format((double) cal.getActualMaximum(Calendar.DAY_OF_MONTH)),
-//                    sEmp, TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL);
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
-//
-//    /**
-//     * 就業承認/月別一覧画面で、日次一括承認機能を利用するかどうか判定し値を返却します
-//     * ※使用サイトが入力サイトの場合、必ずfalseを返します。
-//     *
-//     * @return boolean(true : 使用する 、 false : 使用しない)
-//     */
-//    // TODO 画面表示用
-//    public boolean isAllApprovalDaily() {
-//
-//        return isUseBulkPerm4Results() && !TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId());
-//    }
-//
-//    /**
-//     * システムプロパティ：就業承認/月別一覧画面で、日次一括承認機能を利用するかどうか制御します
-//     */
-//    private final String SYSPROP_TMG_USE_BULKPERM4RESULTS = "TMG_USE_BULKPERM4RESULTS";
-//    private Boolean gbUseBulkPerm4Results = null;
-//
-//    /**
-//     * システムプロパティから値を取得後、就業承認/月別一覧画面で、日次一括承認機能を利用するかどうか判定し値を返却します
-//     *
-//     * @return boolean(true : 使用する 、 false : 使用しない)
-//     */
-//    public boolean isUseBulkPerm4Results() {
-//
-//        if (gbUseBulkPerm4Results == null) {
-//
-//            String gUseBulkPerm4Results = psDBBean.getSystemProperty(SYSPROP_TMG_USE_BULKPERM4RESULTS);
-//
-//            if (gUseBulkPerm4Results != null && Cs_YES.equalsIgnoreCase(gUseBulkPerm4Results)) {
-//                gbUseBulkPerm4Results = true;
-//            } else {
-//                gbUseBulkPerm4Results = false;
-//            }
-//        }
-//        return gbUseBulkPerm4Results;
-//    }
-//
-//    // TODO 画面表示用
-//    private String gsThisMonth = null;  // 今月
-//
-//    /**
-//     * 今月
-//     */
-//    public void setThisMonth(String s) {
-//        gsThisMonth = s;
-//    }
-//
-//    public String getThisMonth() {
-//        return gsThisMonth;
-//    }
-//
-//    /**
-//     * 勤務状況確認の開始月
-//     */
-//    // TODO 画面表示用
-//    public int getKinmujokyoEnd() {
-//        int retval = 0;
-//
-//        //表示中の月
-//        String sMonth = getMonth();
-//        Date dMonth;
-//        try {
-//            dMonth = DateFormat.getDateInstance().parse(sMonth);
-//        } catch (Exception e) {
-//            // TODO: handle exception
-//            e.printStackTrace();
-//            return 0;
-//        }
-//        Calendar cMonth = new GregorianCalendar();
-//        cMonth.setTime(dMonth);
-//
-//        //表示開始の日付
-//        int iMonth = cMonth.get(Calendar.MONTH) + 1;
-//        iMonth = ((int) ((iMonth + 2) / 3)) * 3;
-//
-//        retval = iMonth;
-//
-//        return retval;
-//    }
-//
-//    /**
-//     * 勤怠シートの参照権限(基準日の翌月)
-//     */
-//    // TODO 画面表示用
-//    boolean _authorityNextMonth = false;
-//
-//    /**
-//     * 勤怠シートの参照権限(基準月)設定メソッド
-//     */
-//    public void setAuthorityNextMonth(boolean bValue) {
-//        _authorityNextMonth = bValue;
-//    }
-//
-//    /**
-//     * 勤怠シートの参照権限(基準月)取得メソッド
-//     */
-//    public boolean getAuthorityNextMonth() {
-//        return _authorityNextMonth;
-//    }
-//
-//    /**
-//     * 基準日が過去日付か判定して値を返却
-//     *
-//     * @return boolean
-//     * @author
-//     */
-//    // TODO 画面表示用
-//    public boolean getCheckToDayFlg() {
-//        if (referList != null) {
-//            if (referList.isCheckToDayFlg() == false) {
-//                if (compareDateString(getThisMonth(), getMonth()) == 0) {
-//                    return referList.isCheckToDayFlg();
-//                }
-//            }
-//        }
-//        return true;
-//    }
-//
-//    /**
-//     * 日付比較用
-//     *
-//     * @param str1
-//     * @param str2
-//     * @return
-//     */
-//    public int compareDateString(String str1, String str2) {
-//        //nullだったりyyyy/mm/dd以外の時は-1より小さい値を返す
-//        if (str1 == null || str2 == null) {
-//            return -2;
-//        }
-//        Date date1;
-//        Date date2;
-//        try {
-//            date1 = DateFormat.getDateInstance().parse(str1);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return -3;
-//        }
-//        try {
-//            date2 = DateFormat.getDateInstance().parse(str2);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return -4;
-//        }
-//        return date1.compareTo(date2);
-//    }
+    /**
+     * メイン処理
+     */
+    public void execute(ModelMap modelMap) {
 
+        //TODO 削除待ち
+        //this.setSysControl();
+
+        // 日付関連取得
+        getDate();
+
+        // 組織ツリー情報での再構築
+        this.setOrganizationTreeInf(modelMap);
+
+        // URL(psTargetUser部分)を書換えられた場合の対策
+        // TODO
+        //if(TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        //}
+        try {
+
+        // ■初期表示時：
+        //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
+        //   勤怠登録承認コンテンツの参照権限をチェックする。
+        //   参照権限がある場合は、問題なく勤怠登録承認を表示する。
+        //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
+        //   1ヶ月遡った月の参照権限があればその月の勤怠登録承認を表示し、
+        //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+        //   メッセージを画面へ表示する。
+        // ■初期表示以外：
+        //   選択した組織、(もしくはグループ)の対象年月時点での勤怠登録承認コンテンツの参照権限をチェックする。
+        //   権限があれば問題なく勤怠登録承認を表示する。
+        //   権限が無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+        //   メッセージを画面へ表示する。
+        //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+        //     権限が無いのと同じ扱いとする。
+        // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
+        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
+            String sAction     = psDBBean.getReqParam("txtAction");
+            String sTargetSec  = getReferList().getTargetSec();
+            // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
+            // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
+            if((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && (sAction == null || sAction.length() == 0))
+                    || (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && !(sTargetSec == null || sTargetSec.length() == 0) && (sAction == null || sAction.length() == 0))) {
+                // 参照権限チェック(現在時点での年月)
+                if (getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) {
+                    setAuthorityMonth(CB_CAN_REFER);
+
+                    // 参照権限が無い場合は、1ヶ月過去のシートの権限をチェックする。
+                } else {
+                    String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
+
+                    // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
+                    setReferList(sPrevMonth, TmgReferList.TREEVIEW_TYPE_EMP,modelMap);
+
+                    // 参照権限の設定:
+                    // 初期表示時の対象年月の時点の参照権限が無い場合に、
+                    // 1ヶ月過去の参照権限を判定し参照権限がある場合は1ヶ月過去のシートを参照する。
+                    // 権限が無い場合は、参照できない。
+                    if(getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth)) {
+
+                        // 対象年月が現在の年月の場合、1ヶ月過去の年月を対象年月に設定します
+                        // このif文は、現在「部署A」を選択していて対象年月が変更された状態で「組織B」を選択しなおすと
+                        // 「組織B」の現在日付時点の年月と、その年月-1ヶ月時点での参照権限をチェックします。
+                        // その際に、変更後対象年月が現在年月でない場合にも現在年月-1ヶ月を設定されるのを防ぐ為
+                        // 「対象年月が現在の年月の場合」という条件を実装しています。
+                        if(getThisMonth().equals(getMonth())) {
+                            // 対象年月を1ヶ月過去に設定します
+                            setMonth(sPrevMonth);
+                        }
+                        setAuthorityMonth(CB_CAN_REFER);
+                    } else {
+                        // 対象年月を元に戻します
+                        setReferList(getMonth(), TmgReferList.TREEVIEW_TYPE_EMP,modelMap);
+
+                        setAuthorityMonth(CB_CANT_REFER);
+                    }
+                }
+
+                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+                // 翌月の権限があればリンク「>」を画面に表示する。
+                // 権限が無い場合は「>」を表示しない。
+                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+                //   権限が無いのと同じ扱いとする。
+                String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
+                if(getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
+                    setAuthorityNextMonth(CB_CAN_REFER);
+                } else {
+                    setAuthorityNextMonth(CB_CANT_REFER);
+                }
+
+                // 初期表示時以外
+                // ※組織を選択していないときは権限チェックを行わない。
+                // 　勤怠管理サイトで組織未選択時に権限チェックを行うとえらーで落ちてしまうので
+                // 　それを防ぐ為に「組織を選択しているとき」という条件を実装しています。
+            } else if(!(sTargetSec == null || sTargetSec.length() == 0)) {
+                // 参照権限の判定：設定(当月分)
+                // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
+                String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
+                if((getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) ||
+                        (getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth))) {
+                    setAuthorityMonth(CB_CAN_REFER);
+                } else {
+                    setAuthorityMonth(CB_CANT_REFER);
+                }
+
+                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+                // 翌月の権限があればリンク「>」を画面に表示する。
+                // 権限が無い場合は「>」を表示しない。
+                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+                //   権限が無いのと同じ扱いとする。
+                String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
+                if(getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
+                    setAuthorityNextMonth(CB_CAN_REFER);
+                } else {
+                    setAuthorityNextMonth(CB_CANT_REFER);
+                }
+
+            }
+            // その他のサイトの場合
+        } else {
+            setAuthorityMonth(CB_CAN_REFER);
+            setAuthorityNextMonth(CB_CAN_REFER);
+        }
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    /** リクエストキー - 再表示ボタン使用判定用 */
+    private static final String TREEVIEW_KEY_REFRESH_FLG  = "txtTmgReferListTreeViewRefreshFlg";
+
+    /**
+     * 組織情報再構築するメソッド
+     * @param
+     * @return  なし
+     * @throws
+     */
+    private void setOrganizationTreeInf(ModelMap modelMap){
+
+        try {
+            // 表示対象者
+            //if( !SITE_TI.equals(psDBBean.getSiteId()) ) {
+            if( SITE_TI.equals(psDBBean.getSiteId()) ) {
+                // 勤怠承認・管理サイト
+                setReferList(TmgReferList.TREEVIEW_TYPE_EMP, modelMap);   // 汎用参照リスト
+                psDBBean.setTargetUser(referList.getTargetEmployee());
+                // 当日・当月日付の情報を再格納する
+                if (referList.getRecordDate() != null){
+                    setToday(referList.getRecordDate());
+                    setThisMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(),TmgUtil.Cs_PARAM_THIS_MONTH));
+                }
+                // 組織ツリー基準日情報チェック(再表示ボタンが押されたかも判定)
+                if (referList.getRecordDate() == null ||
+                        (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) == null || "".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG)))){
+                    // 表示対象月
+                    if( psDBBean.getReqParam("txtDYYYYMM") == null || "".equals(psDBBean.getReqParam("txtDYYYYMM"))) {  // 初回起動時
+                        setMonth(getThisMonth());
+                    } else {
+                        setMonth(psDBBean.getReqParam("txtDYYYYMM"));
+                    }
+                } else {
+                    // 組織ツリーの基準日を使用
+                    setMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(),TmgUtil.Cs_PARAM_THIS_MONTH));
+                }
+            }
+
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+
+        return;
+
+    }
+    /** 1ヵ月後 */
+    private static final int PARAM_NEXT_MONTH =  0;
+    /** 今月 */
+    private static final int PARAM_THIS_MONTH = -1;
+    /** 1ヶ月前 */
+    private static final int PARAM_PREV_MONTH = -2;
+    /** 参照権限：参照可能 */
+    private static final boolean CB_CAN_REFER = true;
+    /** 参照権限：参照不可能  */
+    private static final boolean CB_CANT_REFER = false;
+    /**
+     * 生成したReferListを返す
+     * @return _referList
+     */
+    public TmgReferList getReferList(){
+        return referList;
+    }
+    /** 勤怠シートの参照権限(基準日の翌月) */
+    boolean _authorityNextMonth       = false;
+    /** 勤怠シートの参照権限(基準月) */
+    boolean _authorityMonth           = false;
+    /** 勤怠シートの参照権限(基準日の翌月)設定メソッド */
+    public void setAuthorityMonth(boolean bValue) {
+        _authorityMonth = bValue;
+    }
+    /** 勤怠シートの参照権限(基準日の翌月)取得メソッド */
+    public boolean getAuthorityMonth() {
+        return _authorityMonth;
+    }
+    /** 勤怠シートの参照権限(基準月)設定メソッド */
+    public void setAuthorityNextMonth(boolean bValue) {
+        _authorityNextMonth = bValue;
+    }
+    /** 勤怠シートの参照権限(基準月)取得メソッド */
+    public boolean getAuthorityNextMonth() {
+        return _authorityNextMonth;
+    }
+
+    /**
+     * 汎用参照リストの処理をするメソッド
+     * @param   iTree ツリータイプ
+     * @return  なし
+     * @throws
+     */
+    private void setReferList(int iTree, ModelMap modelMap){
+
+        try{
+            referList = new TmgReferList(psDBBean, BEAN_DESC, getThisMonth(), iTree, true, true, false, false, true);
+            referList.putReferList(modelMap);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+    /**
+     * 汎用参照リストの処理をするメソッド
+     * @param   sDate ツリータイプ
+     * @return  なし
+     * @throws
+     */
+    private void setReferList(String sDate, int iTree,ModelMap modelMap){
+
+        try{
+            referList = new TmgReferList(psDBBean, BEAN_DESC, sDate, iTree, true, true, false, false, true);
+            referList.putReferList(modelMap);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * エラーチェック削除
+     */
+    private void buildSQLForDeleteDailyCheck(){
+        iTmgDailyCheckService.getBaseMapper().delete(SysUtil.<TmgDailyCheckDO>query().eq("TDA_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TDA_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TDA_CMODIFIERUSERID", psDBBean.getUserCode()));
+    }
+
+    /**
+     * エラーチェック削除
+     */
+    private void buildSQLForDeleteDetailCheck(){
+        iTmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query().eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TDAD_CMODIFIERUSERID", psDBBean.getUserCode()));
+    }
+
+    /**
+     * エラーメッセージ削除
+     */
+    private void buildSQLForDeleteErrMsg(){
+        iTmgErrmsgService.getBaseMapper().delete(SysUtil.<TmgErrmsgDO>query().eq("TER_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TER_CCOMPANYID", psDBBean.getCompCode()).eq("TER_CMODIFIERUSERID", psDBBean.getUserCode()));
+    }
+
+    /**
+     * トリガー削除
+     */
+    private void buildSQLForDeleteTrigger(String action){
+        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID", BEAN_DESC + "_" + action));
+    }
 
 }

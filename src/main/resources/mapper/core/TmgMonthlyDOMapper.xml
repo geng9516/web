@@ -176,5 +176,20 @@
         AND TMO_CCOMPANYID   = #{compCode}
         AND TMO_CCUSTOMERID  = #{custID}
     </select>
+    <update id="buildSQLForUpdateMonthly">
+       UPDATE
+            TMG_MONTHLY M
+        SET
+            M.TMO_CMODIFIERUSERID    = #{userCode}
+            ,M.TMO_DMODIFIEDDATE      = sysdate
+            ,M.TMO_CMODIFIERPROGRAMID = #{modifierProgramId}
+            ,M.TMO_CSTATUSFLG         = #{statusApproved}
+        WHERE
+            TMO_CEMPLOYEEID          = #{targetUser}
+        AND TMO_DYYYYMM              = #{month}
+        AND TMO_CCUSTOMERID          = #{custId}
+        AND TMO_CCOMPANYID           = #{compCode}
+        AND TMO_CSTATUSFLG          != #{statusApproved}
+    </update>
 
 </mapper>

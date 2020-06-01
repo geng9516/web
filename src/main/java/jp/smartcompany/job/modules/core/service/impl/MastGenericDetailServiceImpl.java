@@ -16,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -85,14 +86,14 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
             map.put("endDate", endDate);
             map.put("checkCtype", checkCtype);
             map.put("csTypeNull", csTypeNull);
-                                
+
 
             ttRList =baseMapper.tmgFExcludeTerm(map);
-                                
+
             return  ttRList;
       }
 
-                
+
       /**
        * 非常勤年休ルールを取得
        *
@@ -106,22 +107,22 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
        @Override
        public int selectNenkyuRuleT(String customerId, String companyId, String employeeId
                , Date yyyymmdd, Date beginDateWork) {
-                        
+
                Map<String, Object> map = MapUtil.newHashMap(3);
                map.put("companyId", companyId);
                map.put("yyyymmdd", yyyymmdd);
                map.put("employeeId", employeeId);
-                        
+
                // 年休ルールを取得
                Integer nenkyu = baseMapper.selectNenkyuRuleT(map);
-                        
+
                // データが無い場合、名称マスタを参照する様に設定
                if (nenkyu == null) {
                        nenkyu = baseMapper.selectNenkyuRuleT2(map);
                }
                return nenkyu;
        }
-                
+
        /**
         * 汎用マスタから予備日付を取得
         *
@@ -135,7 +136,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         */
        @Override
        public MastGenericDetailDO selectMastGenericDetailDO(String customerId, String companyId, String wsGroupId, String wsDetailId, String language, Date wdKijun) {
-                        
+
                Map<String, Object> map = MapUtil.newHashMap(6);
                map.put("customerId", customerId);
                map.put("companyId", companyId);
@@ -526,13 +527,13 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         return baseMapper.buildSQLForSelectTmgVMgdMaxLengthCheck(map);
     }
 
-    /**
+     /**
      * 名称マスタから属性コードを取得
      *
-     * @param custID
-     * @param compCode
-     * @param day
-     * @param groupId
+     * @param custID 顧客コード
+     * @param compCode 法人コード
+     * @param day 基準日
+     * @param groupId　グループID
      * @return List<GenericDetailVO>
      */
     @Override
@@ -604,5 +605,15 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public dateDto selectDate(String custId, String compId,int year, String baseDate){
         return baseMapper.selectDate( custId, compId,year,baseDate);
+    }
+
+    /**
+     * 日付関連情報を取得
+     *
+     * @return TodayThisMonthVO
+     */
+    @Override
+    public TodayThisMonthVO buildSQLForSelectDate() {
+        return baseMapper.buildSQLForSelectDate();
     }
 }

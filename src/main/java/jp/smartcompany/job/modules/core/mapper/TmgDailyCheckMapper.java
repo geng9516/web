@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.DailyCheckDto;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -16,4 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgDailyCheckMapper extends BaseMapper<TmgDailyCheckDO> {
 
-        }
+    int buildSQLForInsertDailyCheck(DailyCheckDto dailyCheckDto);
+}

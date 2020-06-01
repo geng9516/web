@@ -1,5 +1,166 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDailyCheckMapper">
+    <insert id="buildSQLForInsertDailyCheck">
+        INSERT INTO
+            TMG_DAILY_CHECK
+        (
+            TDA_CCUSTOMERID,
+            TDA_CCOMPANYID,
+            TDA_CEMPLOYEEID,
+            TDA_DSTARTDATE,
+            TDA_DENDDATE,
+            TDA_CMODIFIERUSERID,
+            TDA_DMODIFIEDDATE,
+            TDA_CMODIFIERPROGRAMID,
+            TDA_NYYYY,
+            TDA_DYYYYMM,
+            TDA_DYYYYMMDD,
+            TDA_CSTATUSFLG,
+            TDA_CNTFSTATUSFLG,
+            TDA_CERRCODE,
+            TDA_CERRMSG,
+            TDA_NOPEN_TP,
+            TDA_NCLOSE_TP,
+            TDA_CHOLFLG,
+            TDA_CWORKINGID_P,
+            TDA_CWORKINGNAME_P,
+            TDA_NOPEN_P,
+            TDA_NCLOSE_P,
+            TDA_NRESTOPEN_P,
+            TDA_NRESTCLOSE_P,
+            TDA_CMODIFIERUSERID_P,
+            TDA_DMODIFIEDDATE_P,
+            TDA_NLOCK_P,
+            TDA_NREST45_P,
+            TDA_NOPEN_N,
+            TDA_NCLOSE_N,
+            TDA_NRESTOPEN_N,
+            TDA_NRESTCLOSE_N,
+            TDA_CMODIFIERUSERID_N,
+            TDA_DMODIFIEDDATE_N,
+            TDA_NOPEN_O,
+            TDA_NCLOSE_O,
+            TDA_CCOMMENT_O,
+            TDA_CMODIFIERUSERID_O,
+            TDA_DMODIFIEDDATE_O,
+            TDA_CWORKINGID_R,
+            TDA_CWORKINGNAME_R,
+            TDA_NOPEN_R,
+            TDA_NCLOSE_R,
+            TDA_NRESTOPEN_R,
+            TDA_NRESTCLOSE_R,
+            TDA_COWNCOMMENT_R,
+            TDA_CBOSSCOMMENT_R,
+            TDA_CMODIFIERUSERID_R,
+            TDA_DMODIFIEDDATE_R,
+            TDA_CMESSAGE,
+            TDA_CBUSINESSTRIPID_P,
+            TDA_CBUSINESSTRIPID_R,
+            TDA_CPATTERNID,
+            TDA_CCOMMENT_P,
+            TDA_CREFNTFNO,
+            TDA_CWORKINGID_P_PRE,
+            TDA_DSUBSTITUTED
+        )
+        SELECT
+            TDA_CCUSTOMERID,
+            TDA_CCOMPANYID,
+            TDA_CEMPLOYEEID,
+            TDA_DSTARTDATE,
+            TDA_DENDDATE,
+            #{userCode} ,
+            sysdate,
+            'TmgResults _' || #{action} ,
+            TDA_NYYYY,
+            TDA_DYYYYMM,
+            TDA_DYYYYMMDD,
+            <choose>
+                <when test="action =='ACT_EDITPERM_UPERMIT'">
+                    DECODE(TDA_CSTATUSFLG, 'TMG_DATASTATUS|9', TDA_CSTATUSFLG, 'TMG_DATASTATUS|5'),
+                </when>
+                <when test="action =='ACT_REMANDS'">
+                    'TMG_DATASTATUS|3',
+                </when>
+                <otherwise>
+                    TDA_CSTATUSFLG,
+                </otherwise>
+            </choose>
+            TDA_CNTFSTATUSFLG,
+            TDA_CERRCODE,
+            TDA_CERRMSG,
+            TDA_NOPEN_TP,
+            TDA_NCLOSE_TP,
+            TDA_CHOLFLG,
+            TDA_CWORKINGID_P,
+            TDA_CWORKINGNAME_P,
+            TDA_NOPEN_P,
+            TDA_NCLOSE_P,
+            TDA_NRESTOPEN_P,
+            TDA_NRESTCLOSE_P,
+            TDA_CMODIFIERUSERID_P,
+            TDA_DMODIFIEDDATE_P,
+            TDA_NLOCK_P,
+            TDA_NREST45_P,
+            TDA_NOPEN_N,
+            TDA_NCLOSE_N,
+            TDA_NRESTOPEN_N,
+            TDA_NRESTCLOSE_N,
+            TDA_CMODIFIERUSERID_N,
+            TDA_DMODIFIEDDATE_N,
+            null,
+            null,
+            null,
+            null,
+            null,
+            <choose>
+                <when test="holiday == null">
+                    #{tdaCworkingidR},
+                </when>
 
+                <otherwise>
+                    TDA_CWORKINGID_R,
+                </otherwise>
+            </choose>
+            TDA_CWORKINGNAME_R,
+            TMG_F_CONV_HHMI2MIN(#{tdaNopenR}),
+            TMG_F_CONV_HHMI2MIN(#{tdaNcloseR}),
+            null,
+            null,
+            <choose>
+                <when test="action =='ACT_REMANDS'">
+                    TDA_COWNCOMMENT_R,
+                    #{tdaCbosscommentR},
+                    TDA_CMODIFIERUSERID_R,
+                    TDA_DMODIFIEDDATE_R,
+                </when>
+                <when test="siteId =='TMG_PERM' or siteId =='TMG_ADMIN'">
+                    TDA_COWNCOMMENT_R,
+                    #{tdaCbosscommentR},
+                    #{userCode} ,
+                    SYSDATE,
+                </when>
+                <otherwise>
+                    #{tdaCowncommentR},
+                    TDA_CBOSSCOMMENT_R,
+                    TDA_CMODIFIERUSERID_R,
+                    TDA_DMODIFIEDDATE_R,
+                </otherwise>
+            </choose>
+            TDA_CMESSAGE,
+            TDA_CBUSINESSTRIPID_P,
+            #{mgdCbusinessTrip} ,
+            TDA_CPATTERNID,
+            TDA_CCOMMENT_P,
+            TDA_CREFNTFNO,
+            TDA_CWORKINGID_P_PRE,
+            TDA_DSUBSTITUTED
+        FROM
+            TMG_DAILY
+        WHERE
+            TDA_CEMPLOYEEID    = #{targetUser}
+        AND TDA_DYYYYMMDD      = #{day}
+        AND TDA_CCOMPANYID     = #{compCode}
+        AND TDA_CCUSTOMERID    = #{custID}
+    </insert>
 </mapper>

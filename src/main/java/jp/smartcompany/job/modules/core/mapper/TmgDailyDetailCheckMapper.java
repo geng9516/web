@@ -1,8 +1,12 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.DetailCheckDto;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -16,4 +20,22 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgDailyDetailCheckMapper extends BaseMapper<TmgDailyDetailCheckDO> {
 
-        }
+    /**
+     * 日別詳細情報チェック(申請関係)を追加する
+     */
+    int buildSQLForInsertDetailCheckEtc(Map<String, Object> map);
+
+    /**
+     * 日別詳細情報チェック(画面非表示項目)を追加する
+     */
+    int buildSQLForInsertDetailCheckNotDisp(Map<String, Object> map);
+
+    /**
+     * 日別詳細情報チェックを追加する
+     *
+     * @param detailCheckDto DetailCheckDto
+     * @return 件数
+     */
+    int buildSQLForInsertDetailCheck(DetailCheckDto detailCheckDto);
+}
+
