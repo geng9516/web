@@ -55,22 +55,22 @@ public class AttendanceBookBean {
      * 検索結果をJSONへマッピングする際のキー文字列(この文字列をキーとした連想配列が作成される)
      */
     public static final String[] DEFAULT_KEY_ARRAY = {
-            "intDay","one","two","three","four","five","six","seven",
-            "eight","nine","ten","eleven","twelve"};
+            "intDay", "one", "two", "three", "four", "five", "six", "seven",
+            "eight", "nine", "ten", "eleven", "twelve"};
 
     /**
      * 検索結果のキー文字列(この文字列をキーとした連想配列が作成される)
      */
     public static final String[] ATTENDANCEBOOK_KEY_ARRAY = {"dmm",
-            "col1","col2","col3","col4","col5","col6","col7","col8","col9","col10","col11",
-            "tmaWorkcontent01","tmaWorkcontent02","tmaWorkcontent03","tmaWorkcontent04",
-            "tmaWorkcontent05","tmaWorkcontent06","tmaWorkcontent07","tmaWorkcontent08",
-            "tmaWorkcontent09","tmaWorkcontent10","tmaWorkcontent11","tmaWorkcontent12",
-            "tmaWorkcontent13","tmaWorkcontent14","tmaWorkcontent15","tmaWorkcontent16",
-            "tmaWorkcontent17","tmaWorkcontent18","tmaWorkcontent19","tmaWorkcontent20",
-            "tmaWorkcontent21","tmaWorkcontent22","tmaWorkcontent23","tmaWorkcontent24",
-            "tmaWorkcontent25","tmaWorkcontent26","tmaWorkcontent27","tmaWorkcontent28",
-            "tmaWorkcontent29","tmaWorkcontent30","tmaWorkcontent31"};
+            "col1", "col2", "col3", "col4", "col5", "col6", "col7", "col8", "col9", "col10", "col11",
+            "tmaWorkcontent01", "tmaWorkcontent02", "tmaWorkcontent03", "tmaWorkcontent04",
+            "tmaWorkcontent05", "tmaWorkcontent06", "tmaWorkcontent07", "tmaWorkcontent08",
+            "tmaWorkcontent09", "tmaWorkcontent10", "tmaWorkcontent11", "tmaWorkcontent12",
+            "tmaWorkcontent13", "tmaWorkcontent14", "tmaWorkcontent15", "tmaWorkcontent16",
+            "tmaWorkcontent17", "tmaWorkcontent18", "tmaWorkcontent19", "tmaWorkcontent20",
+            "tmaWorkcontent21", "tmaWorkcontent22", "tmaWorkcontent23", "tmaWorkcontent24",
+            "tmaWorkcontent25", "tmaWorkcontent26", "tmaWorkcontent27", "tmaWorkcontent28",
+            "tmaWorkcontent29", "tmaWorkcontent30", "tmaWorkcontent31"};
 
     /**
      * ディフォルト表示時間を取得する
@@ -162,8 +162,12 @@ public class AttendanceBookBean {
     private AttendanceBookCommentDTO selectComment(String employeeId, String year, String yearLastDay, String compCode, String custId) {
 
         AttendanceBookCommentDTO attendanceBookCommentDTO = iTmgAttendanceBookService.selectComment(employeeId, yearLastDay, compCode, custId);
-        attendanceBookCommentDTO.setDyyyy(year);
-        attendanceBookCommentDTO.setEmployeeId(employeeId);
+        if (null != attendanceBookCommentDTO) {
+            attendanceBookCommentDTO.setDyyyy(year);
+            attendanceBookCommentDTO.setEmployeeId(employeeId);
+        } else {
+            logger.error("コメントが空です");
+        }
 
         return attendanceBookCommentDTO;
     }
@@ -230,45 +234,57 @@ public class AttendanceBookBean {
      * @param month      04
      * @return
      */
-    public  List<LinkedHashMap<String, String>> selectAttendanceBookList(String employeeId, String year, String month) {
+    public List<LinkedHashMap<String, String>> selectAttendanceBookList(String employeeId, String year, String month) {
 
         List<AttendanceBookDTO> attendanceBookDTOS = this.selectAttendanceBookDto(employeeId, year, month);
-        List<LinkedHashMap<String, String>>  resultListConverted = new ArrayList<LinkedHashMap<String, String>>();
+        List<LinkedHashMap<String, String>> resultListConverted = new ArrayList<LinkedHashMap<String, String>>();
         int MONTH_DAY = 1;
-        for (int j= 0; j < 43; j++){
+        for (int j = 0; j < 43; j++) {
             LinkedHashMap listHashMap = new LinkedHashMap();
             for (int i = 0; i < attendanceBookDTOS.size(); i++) {
-              map = BeanMap.create(attendanceBookDTOS.get(i));
-              switch(j){
+                map = BeanMap.create(attendanceBookDTOS.get(i));
+                switch (j) {
                     case 0:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0],"");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "");
+                        break;
                     case 1:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0],"合計時間数");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "合計時間数");
+                        break;
                     case 2:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0],"年休取得 日");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "年休取得 日");
+                        break;
                     case 3:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"時");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
+                        break;
                     case 4:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"年休残 日");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "年休残 日");
+                        break;
                     case 5:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"時");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
+                        break;
                     case 6:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"病休 日");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "病休 日");
+                        break;
                     case 7:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"時");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
+                        break;
                     case 8:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"特休 日");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "特休 日");
+                        break;
                     case 9:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"時");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
+                        break;
                     case 10:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"欠勤 日");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "欠勤 日");
+                        break;
                     case 11:
-                      listHashMap.put(DEFAULT_KEY_ARRAY[0],"時");break;
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
+                        break;
                     default:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0],String.valueOf(MONTH_DAY++/12));
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12));
                 }
 
-                listHashMap.put(DEFAULT_KEY_ARRAY[i+1],map.get(ATTENDANCEBOOK_KEY_ARRAY[j]));
+                listHashMap.put(DEFAULT_KEY_ARRAY[i + 1], map.get(ATTENDANCEBOOK_KEY_ARRAY[j]));
 
             }
             resultListConverted.add(listHashMap);
