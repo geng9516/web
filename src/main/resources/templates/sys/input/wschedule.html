@@ -169,11 +169,11 @@
                 // this.getTableHead()
                 // this.getTableData()
                 console.log([[${ session }]])
-                console.log([[${ session.psSession.loginDesignation[0]}]])
-                console.log([[${ session.psSession.loginDesignation[0].sectionName}]])
+                // console.log([[${ session.psSession.loginDesignation[0]}]])
+                // console.log([[${ session.psSession.loginDesignation[0].sectionName}]])
 
-                console.log([[${ session.psSession.loginKanjiName }]])
-                console.log([[${ session.psSession.loginEmployee }]])
+                // console.log([[${ session.psSession.loginKanjiName }]])
+                // console.log([[${ session.psSession.loginEmployee }]])
 
                 await this.getdefaultDate()
 
@@ -274,6 +274,7 @@
             },
             methods: {
                 async getdefaultDate() {
+                    this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
                     this.defaultDate= data
                     console.log(data)
@@ -292,12 +293,16 @@
                     console.log(this.tmyComment)
                 },
                 async getTableData() {
-                    const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
-                    this.tableData = data
-                    console.log("test")
-                    console.log(data)
-                    console.log(data[0])
-                    this.tableHead = data[0]
+                    try {
+                        const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
+                        // 第一条是表头, 且需要去除空值intDay
+                        this.tableData = data.slice(1)
+                        this.tableHead = Object.values(data[0]).filter(e=>e)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
                 },
                 // async getTableHead() {
                 //     this.loading = true
