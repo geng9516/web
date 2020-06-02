@@ -124,4 +124,14 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      */
     List<dailyDetailVo> selectDailyDetail(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
                                           String pYYYYMMDD, String pLangage,String empListSql,List<dispOverTimeItemsDto> itemsSql);
+
+    /**
+     * 日別一覧データを取得する
+     *
+     * @param targetDate 表示対象日
+     * @param empSql     対象者取得SQL
+     * @param list       　動態項目
+     * @return
+     */
+    List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list);
 }

@@ -198,4 +198,17 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
         return baseMapper.selectDailyDetail(  pCustCode,  pCompCode,  sectionCode,  pYYYYMM,
                  pYYYYMMDD, pLangage,empListSql,itemsSql);
     }
+
+    /**
+     * 日別一覧データを取得する
+     *
+     * @param targetDate 表示対象日
+     * @param empSql     対象者取得SQL
+     * @param list       　動態項目
+     * @return
+     */
+    @Override
+    public List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list){
+        return baseMapper.buildSQLForSelectTmgDaily(targetDate, empSql, list);
+    }
 }

@@ -644,4 +644,18 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public List<dispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate, String language){
         return baseMapper.selectDispOverTimeItems( custID,  compID,  baseDate, language);
     }
+
+    /**
+     * 承認状況欄へ表示するヘッダー名称・select句・表示順をTMG_DISPPERMSTATLISTマスタより取得
+     *
+     * @param custID 顧客コード
+     * @param compID 法人コード
+     * @param lang   言語
+     * @return List<ItemVO>
+     */
+    @Override
+    public List<ItemVO> buildSQLForSelectTmgDisppermstatlist(String custID, String compID, String lang){
+        return baseMapper.buildSQLForSelectTmgDisppermstatlist( custID,  compID,  lang);
+
+    }
 }

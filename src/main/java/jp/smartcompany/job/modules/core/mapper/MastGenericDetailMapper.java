@@ -224,5 +224,12 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                                        @Param("compID")String compID,
                                                        @Param("baseDate")String baseDate,
                                                        @Param("language")String language);
+
+    /**
+     * 承認状況欄へ表示するヘッダー名称・select句・表示順をTMG_DISPPERMSTATLISTマスタより取得
+     */
+    List<ItemVO> buildSQLForSelectTmgDisppermstatlist(@Param("custID") String custID,
+                                                      @Param("compID") String compID,
+                                                      @Param("lang") String lang);
 }
 

@@ -331,4 +331,14 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * 超過勤務命令情報表示項目ヘッダー・select句・表示順をTMG_DISPOVERTIMEINSTマスタより取得
      */
     List<dispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate,String language);
+
+    /**
+     * 承認状況欄へ表示するヘッダー名称・select句・表示順をTMG_DISPPERMSTATLISTマスタより取得
+     *
+     * @param custID 顧客コード
+     * @param compID 法人コード
+     * @param lang   言語
+     * @return List<ItemVO>
+     */
+    List<ItemVO> buildSQLForSelectTmgDisppermstatlist(String custID, String compID, String lang);
 }

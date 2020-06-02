@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.job.util.SysUtil;
@@ -390,6 +391,8 @@ public class PermStatListBean {
      */
     public void actEditDairy(ModelMap modelMap) {
 
+        executeReadTmgDaily(modelMap);
+
     }
 
     /**
@@ -428,7 +431,34 @@ public class PermStatListBean {
 
     }
 
+    /**
+     * 日別一覧表示の為のプロセスを実行します。
+     * @param modelMap
+     */
+    private void executeReadTmgDaily(ModelMap modelMap) {
 
+        // 組織の職員取得ｓｑｌ
+        String empSql = getReferList().buildSQLForSelectEmployees();
+
+        // 打刻反映処理
+        execReflectionTimePunch(empSql);
+
+        // 承認状況表示項目を取得しセット
+        List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(),psDBBean.getCompCode(), psDBBean.getLanguage());
+        List<String> monthlyItems = new ArrayList<String>();
+        for (ItemVO itemVO : itemVOList) {
+            monthlyItems.add(itemVO.getMgdCsql() + " AS " + itemVO.getTempColumnid());
+        }
+        // TODO　タイトル未実装
+
+        // 承認状況欄情報
+        List<HashMap> tmgDailyMapList = iTmgDailyService.buildSQLForSelectTmgDaily(_reqDYYYYMMDD,empSql,monthlyItems);
+        modelMap.addAttribute("tmgDailyMapList",tmgDailyMapList);
+
+        // 所属情報
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), _loginCustId, _loginCompCode);
+        modelMap.addAttribute("sectionName",sectionName);
+    }
 
     /**
      * 月別一覧表示の為のプロセスを実行します。
