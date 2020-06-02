@@ -187,18 +187,19 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         psDBBean.setTargetComp(session.getLoginCompany());
         psDBBean.setTargetCust(session.getLoginCustomer());
 
-        String targetSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
-        String targetEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+        String targetAdminSection = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+        String targetAdminEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
         String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
 
-        if (StrUtil.isNotBlank(targetSection)){
-            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetSection);
-            psDBBean.setTargetDept(targetSection);
+        if (StrUtil.isNotBlank(targetAdminSection)){
+            hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,targetAdminSection);
+            log.info("【当前选中部门：{}】",targetAdminSection);
+            psDBBean.setTargetDept(targetAdminSection);
         }
 
-        if (StrUtil.isNotBlank(targetEmp)){
-            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetEmp);
-            psDBBean.setTargetUser(targetEmp);
+        if (StrUtil.isNotBlank(targetAdminEmp)){
+            hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,targetAdminEmp);
+            psDBBean.setTargetUser(targetAdminEmp);
         }
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
@@ -209,6 +210,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
 
         psDBBean.setSysControl(hashtable);
+        log.info("【psSite:{}】",psDBBean.getSiteId());
 
         request.setAttribute("BeanName",psDBBean);
 
@@ -318,6 +320,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 //        List<String> groupCodes = CollUtil.newArrayList("4","7");
         List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);
         List<TMenuDO> topNavs = CollUtil.addAllIfNotContains(topMenus,CollUtil.newArrayList());
+        log.info("【topNavs:{}】",topNavs);
         // 第一种菜单展现方式，每一个主菜单都对应有一个主页
 //        List<TMenuDO> secondMenus = itGroupMenuService.listSecondMenuByGroupCode(groupCodes, systemCode,customerId);
 //        List<TMenuDO> secondNavs = CollUtil.addAllIfNotContains(secondMenus,CollUtil.newArrayList());
