@@ -79,13 +79,31 @@ public class AttendanceBookBean {
      * @return
      */
     public AttendanceDateInfoDTO selectDateInfo(String employeeId) {
+        String year = DateUtil.thisYear() + "";
+        return this.selectDateInfo(employeeId, year);
+    }
+
+    /**
+     * ディフォルト表示時間を取得する
+     *
+     * @param employeeId 34370889
+     * @param year       2020
+     * @return
+     */
+    public AttendanceDateInfoDTO selectDateInfo(String employeeId, String year) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
             return null;
         }
         String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
-        String firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
+        String firstDayOfYear = "";
+        if (null != year && !"".equals(year)) {
+            firstDayOfYear = year + "/01/01";
+        } else {
+            firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
+        }
+
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
         String language = psDBBean.getLanguage();
