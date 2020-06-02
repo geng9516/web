@@ -82,7 +82,8 @@ const Utils = {
    *
    */
   convertToData: function (data) {
-    return JSON.parse(data.replace(/([a-z]+)(?=:)/gi,'\"$1\"').replace(/'/g,'\"'))
+    if (!data) return
+    return JSON.parse(data.replace(/([a-z]+)(?=:)/gi, '\"$1\"').replace(/'/g, '\"'))
   },
   /**
    * プラス・マイナス月份

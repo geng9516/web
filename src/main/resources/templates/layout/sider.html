@@ -3,6 +3,7 @@
     <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/sider.min.css`">
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
+        <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
         <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.menuId ? 'actived-menu' : ''"
             :key="item.menu.menuId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true"
@@ -16,6 +17,7 @@
             </svg>
         </li>
     </ul>
+    <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
         <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.menuId"
             :class="curMenu === e.menu.menuId ? 'actived-menu' : ''"
