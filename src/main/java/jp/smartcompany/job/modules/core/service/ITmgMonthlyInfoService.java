@@ -6,6 +6,10 @@ import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo;
 
 import java.util.List;
+import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
+import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,6 +20,29 @@ import java.util.List;
  * @since 2020-04-16
  */
 public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
+
+    /**
+     * 勤怠データ件数
+     *
+     * @param empSql 対象者取得SQL
+     * @param date   　対象月
+     * @return
+     */
+    int buildSQLForSelectTmgMonthlyInfoCount(String empSql, String date);
+
+    /**
+     * 表示する職員氏名と、承認ステータス状態を取得する
+     *
+     * @param custId   顧客コード
+     * @param compId   法人コード
+     * @param baseDate 　対象年月
+     * @param lang     　言語
+     * @param today    　今日
+     * @param empSql   　対象者取得ｓql
+     * @param list     　承認ステータス状態項目
+     */
+    List<TmgMonthlyInfoVO> buildSQLForSelectTmgMonthlyInfo(String custId, String compId, String baseDate, String lang, String today, String empSql, List<ColNameDto> list);
+
 
         /**
          * [勤怠]月単位日別情報より、表示対象社員の超過勤務命令・実績時間を取得。

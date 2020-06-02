@@ -4,10 +4,14 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyInfoDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo;
+import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -20,6 +24,15 @@ import java.util.List;
 
 @Mapper
 public interface TmgMonthlyInfoMapper extends BaseMapper<TmgMonthlyInfoDO> {
+
+    /**
+     * 勤怠データ件数
+     */
+    int buildSQLForSelectTmgMonthlyInfoCount(Map<String, Object> map);
+    /**
+     * 表示する職員氏名と、承認ステータス状態を取得する
+     */
+    List<TmgMonthlyInfoVO> buildSQLForSelectTmgMonthlyInfo(Map<String, Object> map);
 
 
         List<monthlyInfoOtVo>  selectMonthlyInfoOtr(@Param("custId")String custId,
