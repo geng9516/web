@@ -30,7 +30,7 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    @SqlParser(filter=true)
+    @SqlParser(filter = true)
     List<ScheduleDataDTO> selectSchedule(HashMap<String, Object> params);
 
     /**
@@ -138,4 +138,28 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     String selectIsStart4weeks(HashMap<String, Object> params);
 
+    /**
+     * [区分]汎用マスタより区分コンボボックスの選択値を取得します
+     *
+     * @param params
+     * @return
+     */
+    List<HashMap<String, Object>> selectGenericDetail(HashMap<String, Object> params);
+
+
+    /**
+     * [出張]汎用マスタより出張区分コンボボックスの選択値を取得します
+     *
+     * @param params
+     * @return
+     */
+    List<HashMap<String, Object>> selectBusinessTrip(HashMap<String, Object> params);
+
+    /**
+     * 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用)
+     *
+     * @param params
+     * @return
+     */
+    List<HashMap<String, Object>> selectWorkPatternIkkatu(HashMap<String, Object> params);
 }
