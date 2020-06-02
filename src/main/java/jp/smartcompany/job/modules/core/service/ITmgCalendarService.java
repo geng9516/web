@@ -2,7 +2,11 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,4 +22,13 @@ public interface ITmgCalendarService extends IService<TmgCalendarDO> {
          */
         calendarDto selectCalendar(String custId,String compId,int year,String baseDate);
 
+        /**
+         * 対象勤務年月の1ヶ月間の日付・曜日を取得
+         */
+        List<oneMonthDetailVo>  selectDayCount(String baseDay);
+
+        /**
+         * カレンダーテーブルより休日フラグを取得。
+         */
+        List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate);
         }

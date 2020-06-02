@@ -524,9 +524,7 @@ public class TmgResultsBean {
         modelMap.addAttribute("dispMonthlyVOList", dispMonthlyVOList);
 
         // 勤怠承認・管理サイトは社員情報も
-        // TODO getSiteId 問題がある
-        //if (!SITE_TI.equals(psDBBean.getSiteId())) {
-        if (!SITE_TI.equals(null)) {
+        if (!SITE_TI.equals(psDBBean.getSiteId())) {
 
             // TODO 画面未使用（削除待ち）
             //vQuery.add(buildSQLForSelectCountNotApproval());              // 13 未承認データ
@@ -597,9 +595,7 @@ public class TmgResultsBean {
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
                 psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_NONDUTY);
@@ -611,9 +607,7 @@ public class TmgResultsBean {
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
                 psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_OVERHOURS);
@@ -624,9 +618,7 @@ public class TmgResultsBean {
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage()
         );
@@ -638,9 +630,7 @@ public class TmgResultsBean {
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage(),
                 this.isShowOvertimeNotification()
@@ -680,11 +670,9 @@ public class TmgResultsBean {
         modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
 
         // 日次超勤限度時間取得
-        // TODO
-//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
-//                ? this.referList.getTargetSec()
-//                : (String) psDBBean.getDept().get(0);
-        String targetSec = "";
+        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
+                ? this.referList.getTargetSec()
+                : (String) psDBBean.getDept().get(0);
 
         LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
                 psDBBean.getCustID(),
@@ -792,9 +780,8 @@ public class TmgResultsBean {
                 // TODO
                 //psDBBean.getReqParam("txtAction")
                 ACT_DISP_RMONTHLY,
-                // TODO
-                //psDBBean.getSiteId()
-                "TMG_INP"
+                psDBBean.getSiteId()
+
         );
 
         int i = 1;
@@ -1013,9 +1000,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 getToday(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 psDBBean.getLanguage()
         );
         modelMap.addAttribute("dailyEditVO", dailyEditVO);
@@ -1056,9 +1041,7 @@ public class TmgResultsBean {
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
                 psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_NONDUTY);
@@ -1070,9 +1053,7 @@ public class TmgResultsBean {
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
                 psDBBean.getLanguage(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_OVERHOURS);
@@ -1083,9 +1064,7 @@ public class TmgResultsBean {
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage()
         );
@@ -1097,9 +1076,7 @@ public class TmgResultsBean {
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
-                // TODO
-                //psDBBean.getSiteId(),
-                "TMG_INP",
+                psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage(),
                 this.isShowOvertimeNotification()
@@ -1116,11 +1093,10 @@ public class TmgResultsBean {
         modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
 
         // 日次超勤限度時間取得
-        // TODO
-//        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
-//                ? this.referList.getTargetSec()
-//                : (String) psDBBean.getDept().get(0);
-        String targetSec = "";
+
+        String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
+                ? this.referList.getTargetSec()
+                : (String) psDBBean.getDept().get(0);
 
         LimitOfBasedateVO limitOfBasedateVO = iMastOrganisationService.buildSQLForLimitOfBasedate(
                 psDBBean.getCustID(),
@@ -1883,9 +1859,6 @@ public class TmgResultsBean {
      */
     public void execute(ModelMap modelMap) {
 
-        //TODO 削除待ち
-        //this.setSysControl();
-
         // 日付関連取得
         getDate();
 
@@ -1893,10 +1866,10 @@ public class TmgResultsBean {
         this.setOrganizationTreeInf(modelMap);
 
         // URL(psTargetUser部分)を書換えられた場合の対策
-        // TODO
-        //if(TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
+
+        if(TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
             psDBBean.setTargetUser(psDBBean.getUserCode());
-        //}
+        }
         try {
 
         // ■初期表示時：
@@ -2021,8 +1994,8 @@ public class TmgResultsBean {
 
         try {
             // 表示対象者
-            //if( !SITE_TI.equals(psDBBean.getSiteId()) ) {
-            if( SITE_TI.equals(psDBBean.getSiteId()) ) {
+            if( !SITE_TI.equals(psDBBean.getSiteId()) ) {
+
                 // 勤怠承認・管理サイト
                 setReferList(TmgReferList.TREEVIEW_TYPE_EMP, modelMap);   // 汎用参照リスト
                 psDBBean.setTargetUser(referList.getTargetEmployee());
