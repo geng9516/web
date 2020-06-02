@@ -5,7 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.springframework.stereotype.Repository;
 
@@ -20,30 +20,30 @@ import java.util.List;
  * @since 2020-04-16
  */
 @Repository
-        public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCalendarDO> implements ITmgCalendarService {
+public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCalendarDO> implements ITmgCalendarService {
 
 
-        /**
-         * 前翌年度有無判定を取得するSQLを返す
-         */
-        @Override
-        public calendarDto selectCalendar(String custId, String compId, int year, String baseDate){
-                return baseMapper.selectCalendar( custId, compId,year,baseDate);
-        }
+    /**
+     * 前翌年度有無判定を取得するSQLを返す
+     */
+    @Override
+    public calendarDto selectCalendar(String custId, String compId, int year, String baseDate) {
+        return baseMapper.selectCalendar(custId, compId, year, baseDate);
+    }
 
-        /**
-         * 対象勤務年月の1ヶ月間の日付・曜日を取得
-         */
-        @Override
-        public List<oneMonthDetailVo> selectDayCount(String baseDay){
-                return baseMapper.selectDayCount( baseDay);
-        }
+    /**
+     * 対象勤務年月の1ヶ月間の日付・曜日を取得
+     */
+    @Override
+    public List<OneMonthDetailVo> selectDayCount(String baseDay) {
+        return baseMapper.selectDayCount(baseDay);
+    }
 
-        /**
-         * カレンダーテーブルより休日フラグを取得。
-         */
-        @Override
-        public List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate){
-                return baseMapper.selectGetCalendarList( custId,  compId,  secId,  groupId,  targetYYYY,  sBaseDate);
-        }
-        }
+    /**
+     * カレンダーテーブルより休日フラグを取得。
+     */
+    @Override
+    public List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
+        return baseMapper.selectGetCalendarList(custId, compId, secId, groupId, targetYYYY, sBaseDate);
+    }
+}

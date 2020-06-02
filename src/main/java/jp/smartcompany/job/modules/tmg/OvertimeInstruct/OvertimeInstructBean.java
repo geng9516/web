@@ -1,8 +1,6 @@
 package jp.smartcompany.job.modules.tmg.OvertimeInstruct;
 
 
-import jp.smartcompany.job.modules.core.pojo.entity.TmgCompanyDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.paramOvertimeInstructDto;
@@ -10,7 +8,6 @@ import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.*;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.CompanyVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import jp.smartcompany.job.util.SysUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,7 +38,7 @@ public class OvertimeInstructBean {
 
     public void actionExecuteDispResult(ModelMap modelMap) {
         // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<oneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
         // 1 カレンダーテーブルより休日フラグを取得
         List<calenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
                 param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
@@ -68,7 +65,7 @@ public class OvertimeInstructBean {
         param.setTargetGroup("");
         param.setTargetSec("");
         // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<oneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
         // 1 カレンダーテーブルより休日フラグを取得
         List<calenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
                 param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());

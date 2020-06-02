@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class oneMonthDetailVo {
+public class OneMonthDetailVo {
     /***/
     private String seq;
     /**曜日*/

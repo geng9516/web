@@ -16,7 +16,7 @@
     </select>
 
 
-    <select id="selectDayCount" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo">
+    <select id="selectDayCount" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo">
         SELECT
             TO_NUMBER( TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dd' ) ),
             TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dy' ),
