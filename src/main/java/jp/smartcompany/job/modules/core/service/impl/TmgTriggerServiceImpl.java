@@ -73,4 +73,34 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
         return baseMapper.buildSQLForInsertTrigger(map);
     }
 
+
+    /**
+     * 月次一覧、また日次承認画面表示時打刻反映処理　トリガーに追加する
+     * 　月次一覧画面表示時：表示対象月で運用日以前の打刻反映対象となる全ての日のレコード分登録します。
+     * 　日次承認画面表示時：表示対象日の打刻反映対象となる日のレコードを登録します。
+     * <p>
+     * TMG_DAILYから打刻未反映のデータを対象に処理するので、打刻反映対象のデータが無い場合はトリガーへ登録されないので打刻反映処理は実施されません。
+     * ※月次一覧、日次承認表示時の打刻反映処理以外では使用を想定していないので使用しないで下さい。
+     *
+     * @param userCode ユーザコード
+     * @param action   アクション
+     * @param stDate   打刻反映処理対象開始日
+     * @param endDate  打刻反映処理対象終了日
+     * @param empSql   選択した組織のすべて職員取得SQL
+     * @return int
+     */
+    @Override
+    public int buildSQLForInsertTmgTriggerByTimePunch(String userCode, String action, String stDate, String endDate, String empSql) {
+        Map<String, Object> map = MapUtil.newHashMap(5);
+
+        map.put("userCode", userCode);
+        map.put("action", action);
+        map.put("stDate", stDate);
+        map.put("endDate", endDate);
+        map.put("empSql", empSql);
+
+        return baseMapper.buildSQLForInsertTmgTriggerByTimePunch(map);
+    }
+
+
 }

@@ -126,4 +126,14 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
      */
     int buildSQLForUpdateMonthly(String custId, String compCode, String targetUser, String month, String userCode, String modifierProgramId, String statusApproved);
 
+
+    /**
+     * 表示月遷移リスト情報を取得する]
+     *
+     * @param baseDate 対象日
+     * @param empSql   対象者取得sql
+     * @return List<DispMonthlyVO>
+     */
+    List<DispMonthlyVO> buildSQLForSelectDispTmgMonthlyList(String baseDate, String empSql);
+
 }

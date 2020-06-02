@@ -176,6 +176,24 @@
         AND TMO_CCOMPANYID   = #{compCode}
         AND TMO_CCUSTOMERID  = #{custID}
     </select>
+    <select id="buildSQLForSelectDispTmgMonthlyList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO">
+        SELECT
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY/MM/DD') AS CODE,  <!-- 0 コード（年月日）-->
+            TO_CHAR(t.TMO_DYYYYMM, 'YYYY') || '年' || TO_CHAR(t.TMO_DYYYYMM, 'MM') || '月' AS VAL  <!-- 1 値（表示値）-->
+        FROM
+            TMG_MONTHLY t,
+            ( ${empSql}) v
+        WHERE
+            TMO_CCUSTOMERID = v.cust
+        AND TMO_CCOMPANYID  = v.comp
+        AND TMO_CEMPLOYEEID = v.EMPID
+        AND TMO_DYYYYMM    <![CDATA[<]]> #{baseDate} <!-- 基準日年月以下-->
+        GROUP BY
+            t.TMO_DYYYYMM
+        ORDER BY
+            t.TMO_DYYYYMM DESC
+    </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE
             TMG_MONTHLY M
