@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${Utils.formatDate(defaultDate.dispterm_start,'yyyy年mm月')}～ ${Utils.formatDate(defaultDate.dispterm_end,'yyyy年mm月')}）` }}
+                        {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -40,7 +40,7 @@
                             <Icon type="ios-arrow-back"></Icon>
                             前年
                         </i-button>
-                        <i-button type="text" @click="nextMonth">今年</i-button>
+                        <i-button type="text" @click="nextMonth" :disabled="showPre">今年</i-button>
                     </i-col>
                     <i-col span="13" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-add-circle">印刷</i-button>
@@ -135,6 +135,7 @@
                 return {
                     monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
                     defaultDate:{},
+                    queryDate:{},
                     queryHolidayInfo:{},
                     tableHead: [],
                     loading: false,
@@ -162,18 +163,16 @@
                     },
                     endueDate: '',
                     endueDaysHours: '',
-                    tmyComment: ''
+                    tmyComment: '',
+
+                    fromYYYYMM: '',
+                    toYYYYMM: '',
+                    titleStartMonth: ''
                 }
             },
             async mounted() {
-                // this.getTableHead()
-                // this.getTableData()
+                console.log("session")
                 console.log([[${ session }]])
-                // console.log([[${ session.psSession.loginDesignation[0]}]])
-                // console.log([[${ session.psSession.loginDesignation[0].sectionName}]])
-
-                // console.log([[${ session.psSession.loginKanjiName }]])
-                // console.log([[${ session.psSession.loginEmployee }]])
 
                 await this.getdefaultDate()
 
@@ -181,7 +180,6 @@
 
                 await this.getTableData()
 
-                // await this.getTableHead()
             },
             computed: {
                 tableHeadFixed() {
@@ -278,11 +276,35 @@
                     const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
                     this.defaultDate= data
                     this.query.month =  +this.defaultDate.mgd_ndefault_month
-                    console.log("testxxxxx")
+                    console.log("getdefaultDate")
                     console.log(this.query.month)
-                    console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
+                    // console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
                     this.query.year = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
                     // this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_start,'mm'))
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_end,'yyyy'))
+
+                    // this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
+                    // this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
+                    this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy年mm月')
+                    this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end,'yyyy年mm月')
+
+                },
+                async getqueryDate() {
+                    this.loading = true
+                    const { data } = await this.http.get(`sys/attendanceBook/queryDate`, this.query)
+                    this.queryDate= data
+                    this.query.month =  +Utils.formatDate(this.queryDate.dispterm_start,'mm')
+
+                    console.log("getqueryDate1")
+                    console.log(this.query.month)
+                    console.log(this.queryDate)
+
+                    this.query.year = Utils.formatDate(this.queryDate.dispterm_start,'yyyy')
+                    this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start,'yyyy年mm月')
+                    this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end,'yyyy年mm月')
+                    console.log("getqueryDate2")
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
@@ -314,43 +336,29 @@
                         this.loading = false
                     }
                 },
-                // async getTableHead() {
-                //     this.loading = true
-                //     // const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
-                //     // this.tableHead = data[0]
-                //     console.log("getTableHead")
-                //     console.log( this.tableHead)
-                // },
-                // async getTableHead() {
-                //     this.loading = true
-                //     try {
-                //         const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableHead`, { month: this.curMonth })
-                //         this.tableHead = data
-                //     } catch (error) {
-                //         return
-                //     } finally {
-                //         this.loading = false
-                //     }
-                // },
-                // async getTableData() {
-                //     const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableData`)
-                //     this.tableData = data
-                // },
                 handleDatePicker() { },
                 preYear() {
                     this.curYear = 2019
+                    console.log("preYear")
+                    console.log(this.query.year)
                 },
-                async  handleStartMonth(e) {
+                handleStartMonth: Debounce(async function(e) {
                     this.titleStartMonth = e
                     console.log("handleStartMonth1");
-                    console.log(e);
+                    console.log(this.titleStartMonth);
+                    console.log(this.query.employeeId);
+                    console.log(this.query.year);
+                    console.log(this.query.month);
 
+                    await this.getqueryDate()
                     await this.getqueryHolidayInfo()
                     await this.getTableData()
                     console.log("handleStartMonth2");
-                },
+                }),
                 nextYear() {
                     this.curYear = 2020
+                    console.log("nextYear")
+                    console.log(this.curYear)
                 },
                 rowClass(row) {
                     // 表格变色
@@ -376,13 +384,33 @@
                         return 'red'
                     }
                 },
-                preMonth() {
+                async　preMonth() {
                     this.showPre = false
                     this.$emit('pre')
+
+                    this.curYear = 2019
+                    this.query.year　= +this.query.year-1
+                    console.log("preMonth")
+                    console.log(this.query.year)
+                    console.log(this.query.month)
+
+                    await this.getqueryDate()
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
                 },
-                nextMonth() {
+                async　nextMonth() {
                     this.showPre = true
                     this.$emit('next')
+
+                    this.curYear = 2020
+                    this.query.year　= +this.query.year+1
+                    console.log("nextMonth")
+                    console.log(this.query.year)
+                    console.log(this.query.month)
+
+                    await this.getqueryDate()
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
                 },
                 refresh() {
                     this.$emit('refresh')
