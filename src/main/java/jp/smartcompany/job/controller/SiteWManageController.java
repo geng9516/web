@@ -57,11 +57,10 @@ public class SiteWManageController {
             modelMap.addAttribute("moduleIndex", moduleIndex)
                     .addAttribute("menuId", menuId);
         }
-        paidHolidayBean.actionInitHandler(modelMap);
         String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
-        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
+        paidHolidayBean.actionInitHandler(modelMap,referList.buildSQLForSelectEmployees());
         referList.putReferList(modelMap);
         modelMap.addAttribute("psDBBean",psDBBean);
         return "sys/wmanage/vacation";

@@ -30,7 +30,7 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      */
     Date selectBegindateWork(String customerId, String companyId, String employeeId, Date yyyymmdd);
 
-    List<PaidHolidayInitVO> listPaidHolidayInit();
+    List<PaidHolidayInitVO> listPaidHolidayInit(String empSql);
 
     List<String> selectUserIdList(String psCustid,
                                   String psCompid,

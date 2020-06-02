@@ -20,8 +20,8 @@ public class PaidholidayBean {
      * 一覧の検索
      * @param modelMap
      */
-    public void actionInitHandler(ModelMap modelMap) {
-         modelMap.addAttribute("vacationDaysList",iMastEmployeesService.listPaidHolidayInit());
+    public void actionInitHandler(ModelMap modelMap,String empSql) {
+         modelMap.addAttribute("vacationDaysList",iMastEmployeesService.listPaidHolidayInit(empSql));
     }
 
 }

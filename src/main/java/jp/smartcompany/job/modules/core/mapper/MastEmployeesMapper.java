@@ -29,6 +29,6 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
      */
     Date selectBegindateWork(Map<String, Object> map);
 
-    List<PaidHolidayInitVO> selectPaidHolidayInit();
+    List<PaidHolidayInitVO> selectPaidHolidayInit(String empSql);
 
 }

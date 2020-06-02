@@ -776,7 +776,6 @@ public class TmgEmpList {
         if(dataArray == null){
             return null;
         }
-        log.debug("【getJSONArrayForTreeViewGroupBySection时的dataArray：{}】", dataArray);
         try{
             // 社員番号と部署コードでdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = {
@@ -784,16 +783,11 @@ public class TmgEmpList {
                     DEFAULT_KEY_SECID
             };
             List distinctDataArray = JSONArrayGenerator.distinctDataArray(dataArray, distinctKeyArray);
-
             int[] groupKey   = { DEFAULT_KEY_SECID };
             int[] groupLabel = { DEFAULT_KEY_SECNIC };
-
-            log.debug("【targetSec:{},distinctDataArray:{}】",targetSec,distinctDataArray);
-
             if(StrUtil.isNotBlank(targetSec)){
                 String[][] initOpenNodeArray = { {targetSec} };
                 String string = JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel,initOpenNodeArray);
-                log.debug("【treeViewGroupBy:{}】",string);
                 return string;
             }else{
                 return JSONArrayGenerator.getJSONArrayForTreeViewGroupBy(distinctDataArray,keyArray,groupKey,groupLabel);
@@ -875,7 +869,6 @@ public class TmgEmpList {
      * @return
      */
     public String buildSearchDataArraySQLForSelectEmpListFromDual() throws Exception{
-
         // 社員番号でdistinctをかけてから、SQLを構築する
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
