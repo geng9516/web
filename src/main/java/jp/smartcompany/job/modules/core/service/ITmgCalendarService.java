@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public interface ITmgCalendarService extends IService<TmgCalendarDO> {
         /**
          * 対象勤務年月の1ヶ月間の日付・曜日を取得
          */
-        List<oneMonthDetailVo>  selectDayCount(String baseDay);
+        List<OneMonthDetailVo>  selectDayCount(String baseDay);
 
         /**
          * カレンダーテーブルより休日フラグを取得。

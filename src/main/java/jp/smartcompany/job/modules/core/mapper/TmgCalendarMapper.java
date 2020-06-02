@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -29,7 +29,7 @@ public interface TmgCalendarMapper extends BaseMapper<TmgCalendarDO> {
                                    @Param("baseDate")String baseDate);
 
 
-        List<oneMonthDetailVo>  selectDayCount(@Param("baseDate")String baseDate);
+        List<OneMonthDetailVo>  selectDayCount(@Param("baseDate")String baseDate);
 
 
 

@@ -5,7 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.oneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.springframework.stereotype.Repository;
 
@@ -35,7 +35,7 @@ import java.util.List;
          * 対象勤務年月の1ヶ月間の日付・曜日を取得
          */
         @Override
-        public List<oneMonthDetailVo> selectDayCount(String baseDay){
+        public List<OneMonthDetailVo> selectDayCount(String baseDay){
                 return baseMapper.selectDayCount( baseDay);
         }
 
