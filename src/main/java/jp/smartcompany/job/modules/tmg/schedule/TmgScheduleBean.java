@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.schedule;
 
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
@@ -663,5 +664,89 @@ public class TmgScheduleBean {
         return String.valueOf(WorkingHourOfMonth);
 
     }
+
+    /**
+     * 翌月リンクを取得
+     *
+     * @param employeeId
+     * @return
+     */
+    public HashMap<String, Object> selectLinkOfNextMonth(String employeeId) {
+        String nextMonth = iTmgScheduleService.selectLinkOfNextMonth(employeeId, _baseDate, _targetCustCode, _targetCompCode);
+        HashMap<String, Object> result = new HashMap<String, Object>();
+        result.put("nextMonth", nextMonth);
+        return result;
+    }
+
+    /**
+     * 前月リンクを取得
+     *
+     * @param employeeId
+     * @return
+     */
+    public HashMap<String, Object> selectLinkOfPreMonth(String employeeId) {
+
+        return iTmgScheduleService.selectLinkOfPreMonth(employeeId, _baseDate, _targetCustCode, _targetCompCode);
+    }
+
+    /**
+     * ディフォルト時間
+     *
+     * @return
+     */
+    public HashMap<String, Object> getDefaultDate() {
+        HashMap<String, Object> result = new HashMap<String, Object>();
+        result.put("defaultYear", DateUtil.format(DateUtil.nextMonth(), "yyyy"));
+        result.put("defaultMonth", DateUtil.format(DateUtil.nextMonth(), "MM"));
+        return result;
+    }
+
+    /**
+     * [区分]汎用マスタより区分コンボボックスの選択値を取得します
+     *
+     * @return
+     */
+    private List<HashMap<String, Object>> selectGenericDetail() {
+        return iTmgScheduleService.selectGenericDetail(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
+    }
+
+    /**
+     * [出張]汎用マスタより出張区分コンボボックスの選択値を取得します
+     *
+     * @return
+     */
+    private List<HashMap<String, Object>> selectBusinessTrip() {
+        return iTmgScheduleService.selectBusinessTrip(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
+    }
+
+    /**
+     * 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用)
+     *
+     * @param sectionid
+     * @param groupid
+     * @return
+     */
+    private List<HashMap<String, Object>> selectWorkPatternIkkatu(String sectionid, String groupid) {
+        return iTmgScheduleService.selectWorkPatternIkkatu(_targetCompCode, _targetCustCode, sectionid, groupid, _baseDate);
+    }
+
+    /**
+     * [区分][出張][勤務パターン]
+     *
+     * @param sectionid
+     * @param groupid
+     * @return
+     */
+    public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid) {
+        List<HashMap<String, Object>>  kubunnList = this.selectGenericDetail();
+        List<HashMap<String, Object>>  syuccyouList = this.selectBusinessTrip();
+        List<HashMap<String, Object>>  workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
+        HashMap<String, Object> results = new HashMap<String, Object>();
+        results.put("kubunnList", kubunnList);
+        results.put("syuccyouList", syuccyouList);
+        results.put("workPatternList", workPatternList);
+        return results;
+    }
+
 
 }

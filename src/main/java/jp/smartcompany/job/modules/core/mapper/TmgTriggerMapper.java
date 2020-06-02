@@ -23,4 +23,9 @@ public interface TmgTriggerMapper extends BaseMapper<TmgTriggerDO> {
      */
     int buildSQLForInsertTrigger(Map<String, Object> map);
 
+    /**
+     * 月次一覧、また日次承認画面表示時打刻反映処理　トリガーに追加する
+     */
+    int buildSQLForInsertTmgTriggerByTimePunch(Map<String, Object> map);
+
 }

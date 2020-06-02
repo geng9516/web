@@ -283,7 +283,7 @@
     </select>
 
     <!-- 起算日を取得します -->
-    <select id="selectDetailPeriod"  parameterType="java.util.HashMap" resultType="java.lang.String">
+    <select id="selectDetailPeriod" parameterType="java.util.HashMap" resultType="java.lang.String">
         select to_char(tmg_4calc_get_startdate_4weeks( #{custId},#{compCode},TRUNC(SYSDATE),#{employeeId})) as detailPeriod from dual
     </select>
 
@@ -292,7 +292,44 @@
         select 1 from dual where mod(#{targetDate}-to_date(#{detailPeriod},'yyyy/MM/dd'),7*4)=0
     </select>
 
+    <!-- [区分]汎用マスタより区分コンボボックスの選択値を取得します -->
+    <select id="selectGenericDetail" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select mgd_cmastercode,mgd_cgenericdetaildesc
+        from mast_generic_detail
+        where mgd_ccustomerid = #{custId}
+        and mgd_ccompanyid_ck_fk = #{compCode}
+        and mgd_clanguage_ck = #{language}
+        and mgd_cgenericgroupid = 'TMG_WORK'
+        and mgd_nsparenum1 = 9
+        and mgd_dstart_ck <![CDATA[<=]]> #{baseDate}
+        and mgd_dend <![CDATA[>=]]> #{baseDate}
+        order by mgd_cmastercode
+    </select>
 
+    <!--[出張]汎用マスタより出張区分コンボボックスの選択値を取得します -->
+    <select id="selectBusinessTrip" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select mgd_cmastercode,mgd_cgenericdetaildesc
+        from mast_generic_detail
+        where mgd_ccustomerid = #{custId}
+        and mgd_ccompanyid_ck_fk = #{compCode}
+        and mgd_clanguage_ck = #{language}
+        and mgd_cgenericgroupid = 'TMG_BUSINESS_TRIP'
+        and mgd_dstart_ck <![CDATA[<=]]> #{baseDate}
+        and mgd_dend <![CDATA[>=]]> #{baseDate}
+        order by mgd_cmastercode
+    </select>
 
+    <!-- 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用) -->
+    <select id="selectWorkPatternIkkatu" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+         select 'TMG_PATTERN|' as cpatternid
+            ,'(変更しない)' as cpatternname
+            ,null as json
+          from dual
+        union
+        select 'TMG_PATTERN|' || cpatternid as cpatternid
+            ,cpatternname
+            ,tmg_f_timerange_table_json(timerange) as json
+          from table(tmg_f_get_tmg_pattern_list(#{custId}, #{compCode}, #{sectionid},#{groupid}, #{baseDate}))
+    </select>
 
 </mapper>

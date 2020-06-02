@@ -27,9 +27,19 @@
                         style="width: calc(100% - 120px);border-radius:0">
                         {{ showName(deptName) }}
                     </i-button>
-                    <Drawer class="" title="組織を選択してください" placement="right" width="700" :closable="false" v-model="deptDrawShow">
-                        <Tree class="tree" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                    <Drawer class="tc" title="組織を選択してください" placement="right" width="700" :closable="false"
+                        v-model="deptDrawShow">
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
+                        <Tree class="tree mt2" :data="empTreeData" 　empty-text="社員データなし"></Tree>
                     </Drawer>
                 </span>
                 <span style="flex:1"></span>
@@ -112,43 +122,46 @@
                     ],
                     data: [[${ vacationDaysList }]],
                     loading: false,
-                    referListObject:{
-                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]:'',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]]:'',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]:'',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]:''
+                    referListObject: {
+                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]: '',
+                        [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]: ''
                     },
-                    deptDrawShow: false,
-                    requestURL:location.href.split('?')[0],
+                    deptDrawShow: true,
+                    requestURL: location.href.split('?')[0],
                     treeData: [],
-                    deptName: [[${ TmgReferListObject.getTargetSec() }]] || '選んでください'
+                    empTreeData: [],
+                    defaultDeptId: [[${ TmgReferListObject.getTargetSec() }]],
+                    deptName: '選んでください'
                 }
             },
             mounted() {
                 console.log([[${ session }]])
                 // 先将数据转为标准格式，再转为可用数据
                 this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
-                console.log(this.treeData)
-                console.log([[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]])
-                console.log([[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]])
-                console.log([[${ TmgReferListObject.getJSONArrayForEmpList() }]])
+                // 同上，且注意数组里第一项是所属信息，child里面才是人
+                this.empTreeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForEmpList() }]]))
+                if (this.defaultDeptId && this.treeData.length > 0) {
+                    this.getDeptName(this.treeData)
+                }
             },
             methods: {
-                convertTreeData(treeData) {
+                convertTreeData(treeData = []) {
                     return treeData.map(e => {
                         const children = e.child || e.childen
                         if (children) {
                             return {
                                 ...e.data,
-                                title: e.data.secname,
+                                title: e.data.label,
                                 // 前两层级默认展开方便查看
-                                expand: e.data.level < 2,
+                                expand: e.data.level < 2 || !e.data.level,
                                 children: this.convertTreeData(children)
                             }
                         } else {
                             return {
                                 ...e.data,
-                                title: e.data.secname
+                                title: e.data.label
                             }
                         }
                     })
@@ -157,12 +170,25 @@
                     //todo: 跳到详情页
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
                 },
+                getDeptName(data) {
+                    // 根据id遍历找出deptName
+                    data.forEach(e => {
+                        if (e.secid === this.defaultDeptId) {
+                            this.deptName = e.label
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptName(children)
+                            }
+                        }
+                    })
+                },
                 async handleClickLeaf(e) {
                     this.deptDrawShow = false
                     const section = [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
-                    await this.http.postForm(this.requestURL,this.referListObject)
-                    location.href= this.requestURL;
+                    await this.http.postForm(this.requestURL, this.referListObject)
+                    location.href = this.requestURL;
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)

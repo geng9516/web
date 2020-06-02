@@ -1,0 +1,243 @@
+.boder {
+  border-right: 1px solid var(--border-grey);
+  border-bottom: 1px solid var(--border-grey);
+  border-left: 1px solid var(--border-grey);
+  border-radius: 3px;
+}
+.head-info {
+  background: #e7e7e7;
+}
+.link-span {
+  font-size: 12px;
+  color: var(--login-input-border-active);
+  cursor: pointer;
+}
+.card-title {
+  color: var(--grey);
+  font-weight: 700;
+}
+.ivu-switch {
+  margin: 5px 15px 0 0;
+  width: 68px;
+  height: 28px;
+  .ivu-switch-inner {
+    line-height: 27px;
+    font-size: 1.2rem;
+  }
+  &:after {
+    top: 2px;
+    left: -2px;
+    width: 22px;
+    height: 22px;
+  }
+  &.ivu-switch-checked:after {
+    left: 46px;
+    top: 2px;
+  }
+}
+.custom-radio {
+  padding: 8px 13px;
+  border-radius: 28px;
+  color: var(--grey);
+  border: 1px solid #dcdee2;
+  font-size: 14px;
+  box-shadow: 5px 6px 2px 0px var(--light-grey);
+  &.ivu-radio {
+    display: none;
+  }
+
+  &.ivu-radio-wrapper-checked {
+    color: var(--login-input-border-active);
+    border-color: var(--login-input-border-active);
+    box-shadow: 5px 6px 2px 0px var(--light-blue);
+  }
+}
+
+.datepicker-single {
+  width: 100%;
+}
+.datepicker-double {
+  width: 45%;
+}
+.custom {
+  display: flex;
+}
+
+  .ivu-progress-success .ivu-progress-bg,
+  .ivu-progress-bg {
+    background: var(--primary-background);
+    box-shadow: 1px 1px 4px 0px var(--box-shadow);
+  }
+  .table-icon {
+    vertical-align: baseline;
+  }
+.right-info {
+  &.ivu-alert-info {
+    top: -8px;
+    padding: 8px 16px;
+    background: var(--white);
+    border: 1px dashed var(--form-border-dash);
+  }
+}
+.error-info {
+  color: var(--red);
+  margin-top: 10px;
+  border: var(--error-border);
+}
+
+.ivu-divider + .ivu-radio-group {
+  width: 100%;
+}
+.paid-vacation {
+  float: right;
+  color: var(--theme-blue);
+  background-color: var(--light-blue);
+  padding: 1px 6px;
+  border-radius: 50%;
+  &:before {
+    content: '有';
+  }
+}
+.card {
+  width: 800px;
+  backface-visibility: hidden;
+  transition: all 1.5s;
+  box-shadow: rgba(50, 50, 50, 0.2) 0 0 15px;
+  &.card-two {
+    position: absolute;
+    width: 800px;
+    opacity: 0;
+    // 将滚动条隐藏
+    overflow-x: hidden;
+    min-height: 80vh;
+   .ivu-card-body {
+      padding-bottom: 0;
+    }
+  }
+}
+.rotate-180 {
+  transform: rotateY(-180deg);
+  .ivu-select-dropdown {
+    animation: dispear 1s forwards ease-in-out;
+  }
+}
+.rotate-360 {
+  opacity: 1 !important;
+  transform: rotateY(-360deg);
+}
+.label {
+  line-height: 32px;
+  background-color: var(--form-label);
+  color: var(--white);
+}
+.btn {
+  margin-top: 20px;
+}
+@keyframes dispear {
+  100% {
+    opacity: 0;
+  }
+}
+.content_body {
+  margin-bottom: 0;
+}
+.show {
+  opacity: 1;
+  transition: opacity 0.1s 0.5s;
+}
+.not-show {
+  opacity: 0;
+}
+.vacation-type-warp {
+  padding: 6px 6px 3px;
+  border: 1px solid rgb(219, 240, 255);
+  background: rgba(240, 250, 255, 0.349);
+}
+
+
+.apply-status {
+  display: inline-block;
+  width: 24px;
+  border-radius: 50%;
+  box-shadow: 0px 1px 2px 0px var(--box-shadow);
+  &:after {
+    position: relative;
+    left: 4px;
+  }
+  &.ok {
+    color: var(--theme-blue);
+    background-color: var(--light-blue);
+    &:after {
+      content: '済';
+    }
+  }
+  &.deny {
+    color: var(--red);
+    background-color: var(--light-pink);
+    &:after {
+      content: '否';
+    }
+  }
+  &.ing {
+    color: var(--text-green);
+    background-color: var(--table-td-hover);
+    &:after {
+      content: '申';
+    }
+  }
+}
+
+.apply-history-list {
+  background: linear-gradient(to bottom, #ccc 80%, transparent 100%) no-repeat left 19px top 15px/1px 100%;
+  text-align: left;
+  position: relative;
+  right: -32px;
+  max-height: 70vh;
+  overflow-y: scroll;
+  color: var(--grey);
+  .title {
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .description {
+    font-size: 14px;
+    word-break: break-word;
+  }
+  .with-dot {
+    &::before {
+      display: block;
+      content: '';
+      position: relative;
+      left: 12px;
+      top: 19px;
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px var(--light-blue);
+      background: var(--primary-background);
+    }
+    &.deny::before {
+      background: var(--error-background);
+    }
+    &.ing::before {
+      background: var(--success-background);
+    }
+    &.cancel::before {
+      background: linear-gradient(120deg, var(--user-avatar-background), var(--text-light-grey));
+    }
+    &:hover::before {
+      animation: twinkleBluepot 1s ease infinite alternate;
+    }
+  }
+}
+@keyframes twinkleBluepot {
+  from {
+    box-shadow: 0 0 0 4px var(--light-blue);
+  }
+  50% {
+    box-shadow: 0 0 4px 7px var(--light-blue);
+  }
+  to {
+    box-shadow: 0 0 0 4px var(--light-blue);
+  }
+}

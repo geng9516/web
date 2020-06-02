@@ -27,14 +27,27 @@ public class AttendanceBookController {
      * ディフォルト表示時間を取得する
      *
      * @param employeeId
-     * @return  {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
+     * @param year
+     * @param month
+     * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
+     */
+    @GetMapping("queryDate")
+    public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year,@RequestParam("month") String month) {
+        return attendanceBookBean.selectDateInfo(employeeId, year,month);
+
+    }
+
+    /**
+     * ディフォルト表示時間を取得する
+     *
+     * @param employeeId
+     * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("defaultDate")
     public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId) {
         return attendanceBookBean.selectDateInfo(employeeId);
 
     }
-
 
     /**
      * 年次休暇付与日数, 年次休暇付与日, 摘要info
@@ -64,8 +77,8 @@ public class AttendanceBookController {
     @GetMapping("attendanceBookList")
     @ResponseBody
     public List<LinkedHashMap<String, String>> attendanceBookList(@RequestParam("employeeId") String employeeId,
-                                                                      @RequestParam("year") String year,
-                                                                      @RequestParam("month") String month) {
+                                                                  @RequestParam("year") String year,
+                                                                  @RequestParam("month") String month) {
 
         return attendanceBookBean.selectAttendanceBookList(employeeId, year, month);
     }

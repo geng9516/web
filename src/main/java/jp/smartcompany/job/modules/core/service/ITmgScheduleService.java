@@ -188,4 +188,41 @@ public interface ITmgScheduleService extends IService<Object> {
      */
     String selectIsStart4weeks(String targetDate, String detailPeriod);
 
+
+    /**
+     * [区分]汎用マスタより区分コンボボックスの選択値を取得します
+     *
+     * @param language
+     * @param baseDate
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    List<HashMap<String, Object>> selectGenericDetail(String language, String baseDate, String compCode, String custId);
+
+
+    /**
+     * [出張]汎用マスタより出張区分コンボボックスの選択値を取得します
+     *
+     * @param language
+     * @param baseDate
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    List<HashMap<String, Object>> selectBusinessTrip(String language, String baseDate, String compCode, String custId);
+
+    /**
+     * 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用)
+     * @param compCode
+     * @param custId
+     * @param sectionid
+     * @param groupid
+     * @param baseDate
+     * @return
+     */
+    List<HashMap<String, Object>> selectWorkPatternIkkatu( String compCode, String custId, String sectionid,String groupid, String baseDate);
+
+
+
 }

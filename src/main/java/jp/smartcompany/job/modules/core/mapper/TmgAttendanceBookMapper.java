@@ -28,6 +28,13 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
      */
     AttendanceDateInfoDTO selectDateInfo(HashMap<String, String> params);
 
+    /**
+     * 表示時間を取得する
+     *
+     * @param params
+     * @return
+     */
+    AttendanceDateInfoDTO selectTargetDateInfo(HashMap<String, String> params);
 
     /**
      * 年次休暇付与日数と付与時間

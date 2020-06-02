@@ -177,5 +177,36 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.selectIsStart4weeks(params);
     }
 
+    @Override
+    public List<HashMap<String, Object>> selectGenericDetail(String language, String baseDate, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("language", language);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectGenericDetail(params);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> selectBusinessTrip(String language, String baseDate, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("language", language);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectBusinessTrip(params);
+    }
+
+    @Override
+    public List<HashMap<String, Object>> selectWorkPatternIkkatu(String compCode, String custId, String sectionid, String groupid, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("baseDate", baseDate);
+        params.put("sectionid", sectionid);
+        params.put("groupid", groupid);
+        params.put("custId", custId);
+        return baseMapper.selectWorkPatternIkkatu(params);
+    }
+
 
 }
