@@ -4,8 +4,12 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * <p>
@@ -27,4 +31,19 @@ import org.springframework.stereotype.Repository;
                 return baseMapper.selectCalendar( custId, compId,year,baseDate);
         }
 
+        /**
+         * 対象勤務年月の1ヶ月間の日付・曜日を取得
+         */
+        @Override
+        public List<OneMonthDetailVo> selectDayCount(String baseDay){
+                return baseMapper.selectDayCount( baseDay);
+        }
+
+        /**
+         * カレンダーテーブルより休日フラグを取得。
+         */
+        @Override
+        public List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate){
+                return baseMapper.selectGetCalendarList( custId,  compId,  secId,  groupId,  targetYYYY,  sBaseDate);
+        }
         }

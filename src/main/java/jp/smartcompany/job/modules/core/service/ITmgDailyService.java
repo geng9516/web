@@ -2,6 +2,9 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
@@ -90,4 +93,35 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      */
     List<DetailOverhoursVO> buildSQLForSelectDetailOverhours(String custId, String compCode, String targetUser, String siteId, String day, String language, boolean isOvertimeNotification);
 
+
+
+    /**
+     * [勤怠]日別集計情報より、表示対象社員の指定期間内の時間外労働時間、休日労働時間、超勤時間合計時間を集計して取得する
+     * 引数には事前にescDBStringを使用しクエリにて使用出来る様にエスケープをかけて下さい。
+     *
+     * @param  custId      顧客ID
+     * @param  compId      法人ID
+     * @param  userID      職員ID
+     * @param  sBaseDBDate 基準日(日付型変換)
+     * @param  sMonthsNum  遡り月数
+     * @return SQL文
+     */
+    List<monthlyInfoOverSumVo> selectMonthlyOverSum(String custId, String compId, String userID, String sBaseDBDate,String sMonthsNum);
+
+
+
+    /**
+     * [勤怠]日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得。
+     *
+     * @param  pCustCode   顧客コード
+     * @param  pCompCode   法人コード
+     * @param  sectionCode 組織ＩＤ
+     * @param  pYYYYMM     対象年月
+     * @param  pYYYYMMDD   対象年月日
+     * @param  pDBYYYYMMDD 対象年月日（ＤＢ検索用にエスケープ済(')）
+     * @param  pLangage    言語区分
+     * @return SQL文
+     */
+    List<dailyDetailVo> selectDailyDetail(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
+                                          String pYYYYMMDD, String pLangage,String empListSql,List<dispOverTimeItemsDto> itemsSql);
 }

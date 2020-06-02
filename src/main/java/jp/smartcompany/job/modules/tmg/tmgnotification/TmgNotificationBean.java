@@ -26,21 +26,22 @@ import java.util.*;
 
 /**
  * 休暇・休出申請bean -> 对应旧就业的ps.c01.tmg.PaidHoliday.TmgNotificationBean
+ *
  * @author Wang Ziyue
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class TmgNotificationBean{
+public class TmgNotificationBean {
 
-    public final TmgReferList referList= null; // 汎用参照リスト;
+    public final TmgReferList referList = null; // 汎用参照リスト;
     public final PsDBBean psDBBean;
     public final IMastGenericDetailService iMastGenericDetailService;
     public final ITmgNotificationService iTmgNotificationService;
     public final ITmgPaidHolidayService iTmgPaidHolidayService;
     public final ITmgMonthlyService iTmgMonthlyService;
     public final ITmgErrmsgService iTmgErrmsgService;
-    public final ITmgNotificationCheckService  iTmgNotificationCheckService;
-    public final ITmgTriggerService  iTmgTriggerService;
+    public final ITmgNotificationCheckService iTmgNotificationCheckService;
+    public final ITmgTriggerService iTmgTriggerService;
     private final IHistDesignationService iHistDesignationService;
     private final ITmgNtfAttachedfileService iTmgNtfAttachedfileService;
     private final ITmgNtfactionlogService iTmgNtfactionlogService;
@@ -48,57 +49,66 @@ public class TmgNotificationBean{
 
 
     // アクション
-    public static final String ACT_DISPINP_RLIST            = "ACT_DispInp_RList";            // 一覧表示(本人)
-    public static final String ACT_MAKEAPPLY_RDETAIL        = "ACT_MakeApply_RDetail";        // 新規申請表示
-    public static final String ACT_MAKEAPPLY_CAPPLY         = "ACT_MakeApply_CAppl";          // 新規申請
-    public static final String ACT_EDITAPPLY_RDETAIL        = "ACT_EditApply_RDetail";        // 取下表示(本人)
-    public static final String ACT_EDITPERMAPPLY_RDETAIL    = "ACT_EditPermApply_RDetail";    // 取下表示(承認者)
-    public static final String ACT_EDITAPPLY_UWITHDRAW      = "ACT_EditApply_UWithdraw";      // 申請取下(本人)
-    public static final String ACT_EDITPERMAPPLY_UWITHDRAW  = "ACT_EditPermApply_UWithdraw";  // 申請取下(承認者)
-    public static final String ACT_EDITAPPLY_UDEL           = "ACT_EditApply_UDel";           // 申請全取消
-    public static final String ACT_DISPPERM_RLIST           = "ACT_DispPerm_RList";           // 一覧表示(承認者)
-    public static final String ACT_ALTERAPPLY_RDETAIL       = "ACT_AlterApply_RDetail";       // 代理申請表示
-    public static final String ACT_ALTERAPPLY_CAPPLY        = "ACT_AlterApply_CAppl";         // 代理申請
-    public static final String ACT_EDITPERM_RDETAIL         = "ACT_EditPerm_RDetail";         // 承認却下表示
-    public static final String ACT_EDITPERM_UPERMIT         = "ACT_EditPerm_UPermit";         // 承認
-    public static final String ACT_EDITPERM_UREJECT         = "ACT_EditPerm_UReject";         // 申請却下
-    public static final String ACT_EDITCANCEL_RDETAIL       = "ACT_EditCancel_RDetail";       // 申請解除表示
-    public static final String ACT_EDITCANCEL_UCANCEL       = "ACT_EditCancel_UCancel";       // 申請解除
-    public static final String ACT_DISPDETAIL_RDETAIL       = "ACT_DispDetail_RDetail";       // 詳細表示
+    public static final String ACT_DISPINP_RLIST = "ACT_DispInp_RList";            // 一覧表示(本人)
+    public static final String ACT_MAKEAPPLY_RDETAIL = "ACT_MakeApply_RDetail";        // 新規申請表示
+    public static final String ACT_MAKEAPPLY_CAPPLY = "ACT_MakeApply_CAppl";          // 新規申請
+    public static final String ACT_EDITAPPLY_RDETAIL = "ACT_EditApply_RDetail";        // 取下表示(本人)
+    public static final String ACT_EDITPERMAPPLY_RDETAIL = "ACT_EditPermApply_RDetail";    // 取下表示(承認者)
+    public static final String ACT_EDITAPPLY_UWITHDRAW = "ACT_EditApply_UWithdraw";      // 申請取下(本人)
+    public static final String ACT_EDITPERMAPPLY_UWITHDRAW = "ACT_EditPermApply_UWithdraw";  // 申請取下(承認者)
+    public static final String ACT_EDITAPPLY_UDEL = "ACT_EditApply_UDel";           // 申請全取消
+    public static final String ACT_DISPPERM_RLIST = "ACT_DispPerm_RList";           // 一覧表示(承認者)
+    public static final String ACT_ALTERAPPLY_RDETAIL = "ACT_AlterApply_RDetail";       // 代理申請表示
+    public static final String ACT_ALTERAPPLY_CAPPLY = "ACT_AlterApply_CAppl";         // 代理申請
+    public static final String ACT_EDITPERM_RDETAIL = "ACT_EditPerm_RDetail";         // 承認却下表示
+    public static final String ACT_EDITPERM_UPERMIT = "ACT_EditPerm_UPermit";         // 承認
+    public static final String ACT_EDITPERM_UREJECT = "ACT_EditPerm_UReject";         // 申請却下
+    public static final String ACT_EDITCANCEL_RDETAIL = "ACT_EditCancel_RDetail";       // 申請解除表示
+    public static final String ACT_EDITCANCEL_UCANCEL = "ACT_EditCancel_UCancel";       // 申請解除
+    public static final String ACT_DISPDETAIL_RDETAIL = "ACT_DispDetail_RDetail";       // 詳細表示
     public static final String ACT_DISPDETAIL_RDETAILCANCEL = "ACT_DispDetail_RDetailCancel"; // 申請解除(本人)
-    public static final String ACT_REMAKEAPPLY_CAPPLY       = "ACT_ReMakeApply_CAppl";        // 再申請
-    public static final String ACT_ALTERLISTAPPLY_CAPPLY    = "ACT_ALTERLISTAPPLY_CAPPLY";    // 一括
-    public static final String ACT_IM_REDIRECT              = "ACT_IM_REDIRECT";              // イントラマート側へのリダイレクト用JSP
-    public static final String ACT_EDITPERM_USENDBACK       = "ACT_EditPerm_USendBack";       // 差戻し
+    public static final String ACT_REMAKEAPPLY_CAPPLY = "ACT_ReMakeApply_CAppl";        // 再申請
+    public static final String ACT_ALTERLISTAPPLY_CAPPLY = "ACT_ALTERLISTAPPLY_CAPPLY";    // 一括
+    public static final String ACT_IM_REDIRECT = "ACT_IM_REDIRECT";              // イントラマート側へのリダイレクト用JSP
+    public static final String ACT_EDITPERM_USENDBACK = "ACT_EditPerm_USendBack";       // 差戻し
     //public static final String ACT_CHANGE_DISASTER          = "ACT_CHANGE_DISASTER";          // 労災申請ステータス変更
-    public static final String ACT_UPDATE_ITEM              = "ACT_UPDATE_ITEM";              // 承認後更新
+    public static final String ACT_UPDATE_ITEM = "ACT_UPDATE_ITEM";              // 承認後更新
 
-    /** 職種/申請リレーションが有効な状態 */
+    /**
+     * 職種/申請リレーションが有効な状態
+     */
     public static final String FLG_NTF_RELATION_ENABLE = "1";
 
     public static final String BEAN_DESC = "TmgNotification"; // LOG出力用ディスクリプタ
-    private static final String DATA_SEPARATOR01       = "_";               // データ区切り文字(_)
+    private static final String DATA_SEPARATOR01 = "_";               // データ区切り文字(_)
     // 日付フォーマット
-    public static final String DATE_FORMAT      = "yyyy/MM/dd";
-    public static final String DATETIME_FORMAT  = "yyyy/MM/dd hh24:mi";
-    public static final String DATE_FORMAT_DISP	= "yyyy\"年\"MM\"月\"dd\"日\"";
+    public static final String DATE_FORMAT = "yyyy/MM/dd";
+    public static final String DATETIME_FORMAT = "yyyy/MM/dd hh24:mi";
+    public static final String DATE_FORMAT_DISP = "yyyy\"年\"MM\"月\"dd\"日\"";
 
     // ステータス
-    public static final String STATUS_WITHDRAW    = "TMG_NTFSTATUS|0";  // 取下
-    public static final String STATUS_WAIT        = "TMG_NTFSTATUS|2";  // 承認待ち
-    public static final String STATUS_REJECT      = "TMG_NTFSTATUS|3";  // 却下
-    public static final String STATUS_PERM        = "TMG_NTFSTATUS|5";  // 承認済
+    public static final String STATUS_WITHDRAW = "TMG_NTFSTATUS|0";  // 取下
+    public static final String STATUS_WAIT = "TMG_NTFSTATUS|2";  // 承認待ち
+    public static final String STATUS_REJECT = "TMG_NTFSTATUS|3";  // 却下
+    public static final String STATUS_PERM = "TMG_NTFSTATUS|5";  // 承認済
 
 
-    /** 初期処理判定フラグ */
+    /**
+     * 初期処理判定フラグ
+     */
     private static final int INITIAL_TREATMENT = 0;
 
-    /** リクエストキー - 再表示ボタン使用判定用 */
-    private static final String TREEVIEW_KEY_REFRESH_FLG  = "txtTmgReferListTreeViewRefreshFlg";
+    /**
+     * リクエストキー - 再表示ボタン使用判定用
+     */
+    private static final String TREEVIEW_KEY_REFRESH_FLG = "txtTmgReferListTreeViewRefreshFlg";
 
 
-    /**全局参数使用*/
-    paramNotificationListDto param=new paramNotificationListDto();
+    /**
+     * 全局参数使用
+     */
+    paramNotificationListDto param = new paramNotificationListDto();
+
     /**
      * 参数设置
      * setSysControl
@@ -106,9 +116,8 @@ public class TmgNotificationBean{
      * setTargetUser
      * setSearchNtfTerm
      * execute部分
-     *
      */
-    private void paramSetting(){
+    private void paramSetting() {
 
         //基本信息
         param.setCompId(psDBBean.getCustID());
@@ -122,7 +131,7 @@ public class TmgNotificationBean{
          * 今日の日付を返す(基準日があればその日付)
          */
 
-        if (referList != null){
+        if (referList != null) {
             param.setToday(referList.getRecordDate());
         } else {
             param.setToday(TmgUtil.getSysdate());
@@ -159,13 +168,13 @@ public class TmgNotificationBean{
         // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
         if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(param.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(param.getSiteId())) {
 
-            String sAction           = param.getAction();
-            String sTargetSec        = referList.getTargetSec();
+            String sAction = param.getAction();
+            String sTargetSec = referList.getTargetSec();
             String sStartDateSysdate = TmgUtil.getSysdate();
 
             // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
             // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
-            if((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(param.getSiteId()) && (sAction == null || sAction.length() == 0))
+            if ((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(param.getSiteId()) && (sAction == null || sAction.length() == 0))
                     || (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(param.getSiteId()) && !(sTargetSec == null || sTargetSec.length() == 0) && (sAction == null || sAction.length() == 0))) {
 
                 // 参照権限チェック(現在時点での年度)
@@ -207,16 +216,17 @@ public class TmgNotificationBean{
 
     /**
      * 表示対象期間パラメータを設定する。
-     * @return  なし
+     *
+     * @return なし
      */
-    private void setSearchNtfTerm(){
+    private void setSearchNtfTerm() {
 
         // 検索条件・申請期間（申請期間検索機能が使用できる場合）
         //todo
         //if (isNtfTermUseCond()) {
         if (true) {
             String sBegin = psDBBean.getReqParam("txtNtfTermBegin");
-            String sEnd   = psDBBean.getReqParam("txtNtfTermEnd");
+            String sEnd = psDBBean.getReqParam("txtNtfTermEnd");
             /*
              * 初期表示時、または組織ツリー再検索を行った場合は、
              * 検索条件として、基準日年度の年度開始日と年度終了日を条件として指定する。
@@ -228,8 +238,8 @@ public class TmgNotificationBean{
 
                 try {
                     sBegin = param.getGsStartDate();
-                    sEnd   = param.getGsEndDate();
-                } catch(Exception e) {
+                    sEnd = param.getGsEndDate();
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -260,72 +270,82 @@ public class TmgNotificationBean{
 
     /**
      * 検索パラメータを取得するメソッド
-     * @return  なし
+     *
+     * @return なし
      */
-    private void setParamSearch(){
+    private void setParamSearch() {
 
         // 検索条件・申請内容
         String sType = psDBBean.getReqParam("search_type");
-        if( sType == null ) { sType = ""; }
+        if (sType == null) {
+            sType = "";
+        }
         param.setType(sType);
 
         // 検索条件・申請選択状態
         String sSearchTypeIdx = psDBBean.getReqParam("searchTypeIdx");
-        if( sSearchTypeIdx == null ) { sSearchTypeIdx = ""; }
+        if (sSearchTypeIdx == null) {
+            sSearchTypeIdx = "";
+        }
         param.setSearchTypeIdx(sSearchTypeIdx);
 
         // 検索条件・状態
         String sStatus = psDBBean.getReqParam("search_status");
 
         // 申請一覧（本人）用検索パラメータを取得するメソッド(返すものは常に承認済・取下・却下(選択不可))
-        if(param.getAction() == ACT_DISPINP_RLIST && sStatus == null){
+        if (param.getAction() == ACT_DISPINP_RLIST && sStatus == null) {
+            sStatus = STATUS_WAIT;
+        } else if (sStatus == null) {
             sStatus = STATUS_WAIT;
         }
-        else if( sStatus == null ) { sStatus = STATUS_WAIT; }
         param.setStatus(sStatus);
 
         // 検索条件・氏名
         String sEmp = psDBBean.getReqParam("search_emp");
-        if( sEmp == null ) { sEmp = ""; }
+        if (sEmp == null) {
+            sEmp = "";
+        }
         param.setSearchEmp(sEmp);
 
         // 承認者
         String sEvaluater = psDBBean.getReqParam("search_evaluater");
-        if( sEvaluater == null ) { sEvaluater = ""; }
+        if (sEvaluater == null) {
+            sEvaluater = "";
+        }
         param.setEvaluator(sEvaluater);
 
         // ページ
         int iPage = 1;
         String sPage = psDBBean.getReqParam("page");
-        if (sPage != null){
+        if (sPage != null) {
             try {
                 iPage = Integer.parseInt(sPage);
-            } catch( Exception e ) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
         param.setPage(iPage);
 
         String sTargetEmpId = psDBBean.getReqParam("targetEmpId");
-       param.setSTargetEmpId(sTargetEmpId);
+        param.setSTargetEmpId(sTargetEmpId);
 
     }
 
 
     /**
      * カレンダー関連情報を取得するメソッド
-     * @return  int	年度
-
+     *
+     * @return int    年度
      */
     private void getCalender() {
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
         // 検索
-       // 年度開始・終了日
-        dateDto dateDto=iMastGenericDetailService.selectDate(param.getCustId(),param.getCompId(),param.getYear(),param.getToday());
+        // 年度開始・終了日
+        dateDto dateDto = iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), param.getYear(), param.getToday());
         // 前翌年度有無判定
-        calendarDto calendarDto=iTmgCalendarService.selectCalendar(param.getCustId(),param.getCompId(),param.getYear(),param.getToday());
+        calendarDto calendarDto = iTmgCalendarService.selectCalendar(param.getCustId(), param.getCompId(), param.getYear(), param.getToday());
 
         try {
 
@@ -335,19 +355,19 @@ public class TmgNotificationBean{
             param.setToday(dateDto.getBaseDate());
             param.setTodayD(sdf.parse(dateDto.getBaseDate()));
             // 前翌年度
-            Date dMin   = sdf.parse(calendarDto.getMinMonth());
-            Date dMax   = sdf.parse(calendarDto.getMaxMonth());
+            Date dMin = sdf.parse(calendarDto.getMinMonth());
+            Date dMax = sdf.parse(calendarDto.getMaxMonth());
             Date dStart = sdf.parse(calendarDto.getStartYearDate());
-            Date dEnd   = sdf.parse(calendarDto.getEndYearDate());
+            Date dEnd = sdf.parse(calendarDto.getEndYearDate());
 
-            if( dMin.before(dStart) ) {
+            if (dMin.before(dStart)) {
                 param.setGbNextYear(true);
             }
-            if( dMax.after(dEnd) ) {
+            if (dMax.after(dEnd)) {
                 param.setGbNextYear(true);
             }
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -356,21 +376,20 @@ public class TmgNotificationBean{
 
     /**
      * パラメータを取得するメソッド
-     * @param   piPBranchingProcess
-     * 0:初期処理、1:組織ツリー情報使用処理
-     * @return  なし
-
+     *
+     * @param piPBranchingProcess 0:初期処理、1:組織ツリー情報使用処理
+     * @return なし
      */
-    private void getParam(int piPBranchingProcess){
-        int year=iMastGenericDetailService.selectYear(param.getCustId(),param.getCompId());
+    private void getParam(int piPBranchingProcess) {
+        int year = iMastGenericDetailService.selectYear(param.getCustId(), param.getCompId());
         // 初期処理
-        if (piPBranchingProcess == INITIAL_TREATMENT){
+        if (piPBranchingProcess == INITIAL_TREATMENT) {
             // 今年度
             param.setYear(year);
             // 年度
             try {
                 param.setThisYear(Integer.parseInt(psDBBean.getReqParam("year")));
-            } catch (Exception e){
+            } catch (Exception e) {
                 // 取得出来なかったらDBより取得
                 param.setYear(year);
             }
@@ -378,10 +397,10 @@ public class TmgNotificationBean{
         // 組織ツリー情報取得後再構築を行う
         else {
             // 組織ツリー基準日情報チェック
-            if (referList.getRecordDate() != null){
-                param.setYear( Integer.parseInt(referList.getRecordDate().substring(0, 4)));
+            if (referList.getRecordDate() != null) {
+                param.setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
                 // TODO 再表示ボタン使用判定
-                if (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) != null && !"".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))){
+                if (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) != null && !"".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
                     param.setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
                 }
             }
@@ -389,99 +408,116 @@ public class TmgNotificationBean{
     }
 
 
-
     /**
      * 一覧表示(本人)
-     * @param modelMap
-     * showDispInp
+     *
+     * @param modelMap showDispInp
      */
     public void actionDispInp(ModelMap modelMap) {
 
         paramSetting();
 
-        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE",null,"MGD_CMASTERCODE"));
+        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
         //0 一覧
-        List<notificationListVo> notificationListVoList=iTmgNotificationService.selectNotificationList(param);
+        List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
+        modelMap.addAttribute("notificationListVoList", notificationListVoList);
         //2 申請ステータスマスタ
-        List<Map<String ,Object>> mgdList=iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
-
+        List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        modelMap.addAttribute("mgdList", mgdList);
         //1 申請区分マスタ
-        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList=iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(param.getCompId(),param.getCustId(), DateTime.now(),param.getLang());
+        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(param.getCompId(), param.getCustId(), DateTime.now(), param.getLang());
+        modelMap.addAttribute("mgdNtfTypeDispAppVoList", mgdNtfTypeDispAppVoList);
         //3年次休暇残日数及び時間
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList= iTmgPaidHolidayService.selectNenjikyukazannissu(param,0);
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
         //4 今月の月中有給付与の情報
-        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList=iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(),param.getCustId(),param.getTargetUser());
-
+        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(), param.getCustId(), param.getTargetUser());
+        modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);
     }
 
     /**
      * 詳細表示の処理をするメソッド
-     * @return  なし
+     *
+     * @return なし
      * showDetail
      */
-    public void actionShowDetail(ModelMap modelMap){
+    public void actionShowDetail(ModelMap modelMap) {
         paramSetting();
 
 
         param.setNtfNo("46402406|12967");
 
-        if(StrUtil.hasEmpty(param.getNtfNo())){
+        if (StrUtil.hasEmpty(param.getNtfNo())) {
             return;
         }
         // 0 一覧
-        notificationDetailVo notificationDetailVo=iTmgNotificationService.selectNotificationDetail(param);
+        notificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
+        modelMap.addAttribute("notificationDetailVo", notificationDetailVo);
         // 1 申請区分マスタ
-        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVos=iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
-                param.getCompId(),param.getToday(),param.getTargetUser(),param.getLang(),param.getSiteId());
-
+        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVos = iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
+                param.getCompId(), param.getToday(), param.getTargetUser(), param.getLang(), param.getSiteId());
+        modelMap.addAttribute("mgdTmgNtfTypeVos", mgdTmgNtfTypeVos);
         // 2 年次休暇残日数及び時間
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList= iTmgPaidHolidayService.selectNenjikyukazannissu(param,1);
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 1);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
         // 3 今月の月中有給付与に関する情報を返すSQL
-        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList=iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCustId(),param.getCompId(),param.getTargetUser());
+        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCustId(), param.getCompId(), param.getTargetUser());
+        modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);
         // 4 申請区分略称を取得
-        String ntfName=iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(),param.getNtfNo());
+        String ntfName = iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(), param.getNtfNo());
+        modelMap.addAttribute("ntfName", ntfName);
         // 5 添付ファイル
-        List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList=iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(),param.getCompId(),param.getNtfNo());
+        List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(), param.getCompId(), param.getNtfNo());
+        modelMap.addAttribute("tmgNtfAttachedfileDoList", tmgNtfAttachedfileDoList);
         // 6 SYSDATE取得
-        String sysdate=iMastGenericDetailService.selectSysdate();
+        String sysdate = iMastGenericDetailService.selectSysdate();
+        modelMap.addAttribute("sysdate", sysdate);
         // 7 申請ログ
-        List<ntfActionLogVo> tmgNtfactionlogDOList=iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(),param.getLang(),param.getCustId(),param.getCompId(),param.getNtfNo());
+        List<ntfActionLogVo> tmgNtfactionlogDOList = iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo());
+        modelMap.addAttribute("tmgNtfactionlogDOList", tmgNtfactionlogDOList);
         // 8 労災申請更新アクション
         // 9 画面項目名称の設定マスタ
-        mgdNtfPropVo mgdNtfPropVo=iMastGenericDetailService.selectMasterNtfProp(param.getCustId(),param.getCompId(),param.getLang());
+        mgdNtfPropVo mgdNtfPropVo = iMastGenericDetailService.selectMasterNtfProp(param.getCustId(), param.getCompId(), param.getLang());
+        modelMap.addAttribute("mgdNtfPropVo", mgdNtfPropVo);
     }
 
     /**
      * 新規申請表示の処理をするメソッド
      *
-     * @return  なし
+     * @return なし
      * showMakeApply
      */
-    public void actionShowMakeApply(ModelMap modelMap){
+    public void actionShowMakeApply(ModelMap modelMap) {
         paramSetting();
 
         // 0 申請区分マスタ
-        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS=iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
-                param.getCompId(),param.getToday(),param.getTargetUser(),param.getLang(),param.getSiteId());
-
+        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS = iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
+                param.getCompId(), param.getToday(), param.getTargetUser(), param.getLang(), param.getSiteId());
+        modelMap.addAttribute("mgdTmgNtfTypeVoS", mgdTmgNtfTypeVoS);
         //1 年次休暇残日数及び時間
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList= iTmgPaidHolidayService.selectNenjikyukazannissu(param,0);
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
         //2 今月の月中有給付与に関する情報を返すSQL
-        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList=iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(),param.getCustId(),param.getTargetUser());
+        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(), param.getCustId(), param.getTargetUser());
+        modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);
         // 3 シーケンス採番
-        String seq=iTmgNotificationService.selectNotificationSeq();
+        String seq = iTmgNotificationService.selectNotificationSeq();
+        modelMap.addAttribute("seq", seq);
         // 4 ヘッダ情報(新規申請用)
-        employeeDetailVo employeeDetailVo=iHistDesignationService.selectemployeeDetail(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getLang());
+        employeeDetailVo employeeDetailVo = iHistDesignationService.selectemployeeDetail(param.getCustId(), param.getCompId(), param.getTargetUser(), param.getLang());
+        modelMap.addAttribute("employeeDetailVo", employeeDetailVo);
         // 5 画面項目名称の設定マスタ
-        mgdNtfPropVo mgdNtfPropVo=iMastGenericDetailService.selectMasterNtfProp(param.getCustId(),param.getCompId(),param.getLang());
+        mgdNtfPropVo mgdNtfPropVo = iMastGenericDetailService.selectMasterNtfProp(param.getCustId(), param.getCompId(), param.getLang());
+        modelMap.addAttribute("mgdNtfPropVo", mgdNtfPropVo);
     }
 
     /**
      * 代理申請(再申請)表示の処理をするメソッド
-     * @return  なし
+     *
+     * @return なし
      * showAlterReApply
      */
-    public void actionShowAlterReApply(ModelMap modelMap){
+    public void actionShowAlterReApply(ModelMap modelMap) {
         paramSetting();
 
         // 組織が選択されているか
@@ -493,107 +529,119 @@ public class TmgNotificationBean{
             return;
         }
         // 0 申請詳細
-        notificationDetailVo notificationDetailVo=iTmgNotificationService.selectNotificationDetail(param);
+        notificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
+        modelMap.addAttribute("notificationDetailVo", notificationDetailVo);
         // 1 申請区分マスタ
-        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS=iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
-                param.getCompId(),param.getToday(),param.getTargetUser(),param.getLang(),param.getSiteId());
+        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS = iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
+                param.getCompId(), param.getToday(), param.getTargetUser(), param.getLang(), param.getSiteId());
+        modelMap.addAttribute("mgdTmgNtfTypeVoS", mgdTmgNtfTypeVoS);
         //2 年次休暇残日数及び時間]]
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList= iTmgPaidHolidayService.selectNenjikyukazannissu(param,0);
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
         // 3 今月の月中有給付与に関する情報を返すSQL
-        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList=iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(),param.getCustId(),param.getTargetUser());
+        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(), param.getCustId(), param.getTargetUser());
+        modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);
         // 4 職員情報
-        employeeDetailVo employeeDetailVo=iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getLang(),referList.getTargetSec());
+        employeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(), param.getCompId(), param.getTargetUser(), param.getLang(), referList.getTargetSec());
+        modelMap.addAttribute("employeeDetailVo", employeeDetailVo);
         // 5 シーケンス採番
-        String seq=iTmgNotificationService.selectNotificationSeq();
+        String seq = iTmgNotificationService.selectNotificationSeq();
+        modelMap.addAttribute("seq", seq);
         // 6 添付ファイル
-        List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList=iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(),param.getCompId(),param.getNtfNo());
+        List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(), param.getCompId(), param.getNtfNo());
+        modelMap.addAttribute("tmgNtfAttachedfileDoList", tmgNtfAttachedfileDoList);
         // 7 SYSDATE取得(yyyy/mm/dd)
-        String sysdate=iMastGenericDetailService.selectSysdate();
+        String sysdate = iMastGenericDetailService.selectSysdate();
+        modelMap.addAttribute("sysdate", sysdate);
         // 8 申請ログ
-        List<ntfActionLogVo> tmgNtfactionlogDOList=iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(),param.getLang(),param.getCustId(),param.getCompId(),param.getNtfNo());
+        List<ntfActionLogVo> tmgNtfactionlogDOList = iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo());
+        modelMap.addAttribute("tmgNtfactionlogDOList", tmgNtfactionlogDOList);
         // 9 画面項目名称の設定マスタ
-        mgdNtfPropVo mgdNtfPropVo=iMastGenericDetailService.selectMasterNtfProp(param.getCustId(),param.getCompId(),param.getLang());
+        mgdNtfPropVo mgdNtfPropVo = iMastGenericDetailService.selectMasterNtfProp(param.getCustId(), param.getCompId(), param.getLang());
+        modelMap.addAttribute("mgdNtfPropVo", mgdNtfPropVo);
     }
 
     /**
      * 新規申請・再申請・代理申請
-     * @param modelMap
-     *makeApply
+     *
+     * @param modelMap makeApply
      */
     public void actionMakeApply(ModelMap modelMap) {
         paramSetting();
 
-        if(param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
-        }else if(param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)){
+        } else if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
             param.setTargetUser(param.getUserCode());
         }
 
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
-        int deleteErrMsg=deleteErrMsg();
-        int deleteNotificationCheck=deleteNotificationnCheck();
+        int deleteErrMsg = deleteErrMsg();
+        int deleteNotificationCheck = deleteNotificationnCheck();
 
-        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
             // 再申請の場合は、再申請用
-            int insertNotificationCheckUpdate=insertNotificationCheckUpdate();
+            int insertNotificationCheckUpdate = insertNotificationCheckUpdate();
             //int insertErrMsgUpdate=insertErrMsgUpdate(param);
         }
 
-        if(param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 新規申請の場合は、新規申請用
-            int insertNotificationCheckUpdate=insertNotificationCheckNew();
+            int insertNotificationCheckUpdate = insertNotificationCheckNew();
             //int insertErrMsgUpdate=deleteNotificationnCheck(param);
         }
 
-        int insertErrmsg=insertErrMsg();
-        int insertTrigger=insertTrigger();
-        String selectErrMsg=selectErrCode();
-        int deleteTrigger=deleteTrigger();
-        int deleteErrMsgAfter=deleteErrMsg();
-        int deleteNotificationCheckAfter=deleteNotificationnCheck();
+        int insertErrmsg = insertErrMsg();
+        int insertTrigger = insertTrigger();
+        String selectErrMsg = selectErrCode();
+        int deleteTrigger = deleteTrigger();
+        int deleteErrMsgAfter = deleteErrMsg();
+        int deleteNotificationCheckAfter = deleteNotificationnCheck();
     }
 
     /**
      * 申請取下の処理をするメソッド
-     * @return  なし
+     *
+     * @return なし
      * editWithdraw
      */
-    public void actionEditWithdraw(ModelMap modelMap){
+    public void actionEditWithdraw(ModelMap modelMap) {
         paramSetting();
 
         // 申請取下
-        int updateNotificationWithdraw=updateNotificationWithdraw();
-        int insertTrigger=insertTrigger();
-        int deleteTrigger=deleteTrigger();
+        int updateNotificationWithdraw = updateNotificationWithdraw();
+        int insertTrigger = insertTrigger();
+        int deleteTrigger = deleteTrigger();
     }
 
     /**
      * 申請取消時、データ更新処理を行います。
-     * @return  なし
+     *
+     * @return なし
      * updateApply
      */
-    public void actionUpdateApply(ModelMap modelMap){
+    public void actionUpdateApply(ModelMap modelMap) {
         paramSetting();
 
-        String tempTargetUser =param.getTargetUser();
-        String tempUserCode   = param.getUserCode();
+        String tempTargetUser = param.getTargetUser();
+        String tempUserCode = param.getUserCode();
         param.setTargetUser("");
 
         // TMG_ERRMSGテーブルにゴミが残っているといつまでも正常に処理されなくなる可能性があるため
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
-        int deleteErrMsg=deleteErrMsg();
-        int deleteNotificationCheck=deleteNotificationnCheck();
-        int insertNotificationCheckUpdate=insertNotificationCheckUpdate();
-        int insertErrmsg=insertErrMsg();
-        int insertTrigger=insertTrigger();
-        String selectErrMsg=selectErrCode();
-        int deleteTrigger=deleteTrigger();
-        int deleteErrMsgAfter=deleteErrMsg();
-        int deleteNotificationCheckAfter=deleteNotificationnCheck();
+        int deleteErrMsg = deleteErrMsg();
+        int deleteNotificationCheck = deleteNotificationnCheck();
+        int insertNotificationCheckUpdate = insertNotificationCheckUpdate();
+        int insertErrmsg = insertErrMsg();
+        int insertTrigger = insertTrigger();
+        String selectErrMsg = selectErrCode();
+        int deleteTrigger = deleteTrigger();
+        int deleteErrMsgAfter = deleteErrMsg();
+        int deleteNotificationCheckAfter = deleteNotificationnCheck();
 
 
-        if(!isPartOfReserveApplication()){
+        if (!isPartOfReserveApplication()) {
 
             //requestHash.put(PARAMERTER_KEY_ACTION, ACT_MAKEAPPLY_CAPPLY);
             //TODO
@@ -603,17 +651,17 @@ public class TmgNotificationBean{
             // 開始日を登録
             //requestHash.put("begin", doCalcForTypeStringOfDate(getReqParm("txtDCancelEnd"), 1, Calendar.DATE));
             // end は部分解除した元レコードの終了日をendとして持っているので設定しない
-             deleteErrMsg=deleteErrMsg();
-             deleteNotificationCheck=deleteNotificationnCheck();
+            deleteErrMsg = deleteErrMsg();
+            deleteNotificationCheck = deleteNotificationnCheck();
 
-             int insertNotificationCheckPartOfReApp=insertNotificationCheckPartOfReApp(tempUserCode);
-             int insertErrMsgNew=insertErrMsgNew();
+            int insertNotificationCheckPartOfReApp = insertNotificationCheckPartOfReApp(tempUserCode);
+            int insertErrMsgNew = insertErrMsgNew();
 
-             insertTrigger=insertTrigger();
-             selectErrMsg=selectErrCode();
-             deleteTrigger=deleteTrigger();
-             deleteErrMsgAfter=deleteErrMsg();
-             deleteNotificationCheckAfter=deleteNotificationnCheck();
+            insertTrigger = insertTrigger();
+            selectErrMsg = selectErrCode();
+            deleteTrigger = deleteTrigger();
+            deleteErrMsgAfter = deleteErrMsg();
+            deleteNotificationCheckAfter = deleteNotificationnCheck();
 
         }
         param.setTargetUser(tempTargetUser);
@@ -622,10 +670,11 @@ public class TmgNotificationBean{
 
     /**
      * 一覧表示(承認者)の処理をするメソッド
-     * @return  なし
-     *   showDispPerm
+     *
+     * @return なし
+     * showDispPerm
      */
-    public void actionShowDispPerm(ModelMap modelMap){
+    public void actionShowDispPerm(ModelMap modelMap) {
         paramSetting();
         //todo
        /* if(StrUtil.hasEmpty(param.getEmployeeListSql())){
@@ -635,60 +684,75 @@ public class TmgNotificationBean{
             return;
         }
         */
-        //0 一覧
         checkEmp();
-        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE",null,"MGD_CMASTERCODE"));
-        List<notificationListVo> notificationListVoList=iTmgNotificationService.selectNotificationList(param);
+        //0 一覧
+        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
+        List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
+        modelMap.addAttribute("notificationListVoList", notificationListVoList);
         // 1 申請区分マスタ
-        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS=iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
-                param.getCompId(),param.getToday(),param.getTargetUser(),param.getLang(),param.getSiteId());
+        List<mgdTmgNtfTypeVo> mgdTmgNtfTypeVoS = iMastGenericDetailService.selectMasterTmgNtfType(param.getCustId(),
+                param.getCompId(), param.getToday(), param.getTargetUser(), param.getLang(), param.getSiteId());
+        modelMap.addAttribute("mgdTmgNtfTypeVoS", mgdTmgNtfTypeVoS);
         //2 申請ステータスマスタ
-        List<Map<String ,Object>> mgdList=iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        modelMap.addAttribute("mgdList", mgdList);
         // TODO 3 職員一覧
         //List<employeeListVo> employeeListVos=iHistDesignationService.selectemployeeList(param.getCustId(),param.getCompId(),param.getToday(),param.getEmployeeListSql());
+        //modelMap.addAttribute("employeeListVos", employeeListVos);
         // TODO 4 所属名
         //String sectionNAme=iHistDesignationService.selectSectionNAme(param.getCustId(),param.getCompId(),param.getTodayD(),referList.getTargetSec());
+        //modelMap.addAttribute("sectionNAme", sectionNAme);
         // TODO 5 件数
         //int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
+        //modelMap.addAttribute("selectNotificationCount", selectNotificationCount);
         // 6 遡り期限
-        String selectBackLimit=iTmgNotificationService.selectBackLimit(param.getCustId(),param.getCompId(),param.getTargetUser());;
+        String selectBackLimit = iTmgNotificationService.selectBackLimit(param.getCustId(), param.getCompId(), param.getTargetUser());
+        ;
+        //modelMap.addAttribute("selectBackLimit", selectBackLimit);
         // 7 SYSDATE取得
-        String nowDate=iMastGenericDetailService.selectSysdate();
+        String nowDate = iMastGenericDetailService.selectSysdate();
+        //modelMap.addAttribute("nowDate", nowDate);
 
     }
 
     /**
      * 承認後更新
      * updateItem
-     * @exception
      *
+     * @throws
      */
     private void actionUpdateItem(ModelMap modelMap) {
         paramSetting();
 
-        int updateNotificationItem= iTmgNotificationService.updateNotificationItem(param);
+        int updateNotificationItem = iTmgNotificationService.updateNotificationItem(param);
     }
 
 
     /**
      * 本人取下処理の後画面表示処理をするメソッド
-     * @return  なし
+     *
+     * @return なし
      * showWithdraw
      */
-    private void actionShowWithdraw(){
+    private void actionShowWithdraw(ModelMap modelMap) {
         paramSetting();
 
         //0 一覧
-        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE",null,"MGD_CMASTERCODE"));
-        List<notificationListVo> notificationListVoList=iTmgNotificationService.selectNotificationList(param);
+        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
+        List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
+        modelMap.addAttribute("notificationListVoList", notificationListVoList);
         //2 申請区分マスタ
-        List<Map<String ,Object>> mgdTypeList=iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFTYPE, "asc"));
+        List<Map<String, Object>> mgdTypeList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFTYPE, "asc"));
+        modelMap.addAttribute("mgdTypeList", mgdTypeList);
         //2 申請ステータスマスタ
-        List<Map<String ,Object>> mgdStatusList=iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        List<Map<String, Object>> mgdStatusList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        modelMap.addAttribute("mgdStatusList", mgdStatusList);
         //3 年次休暇残日数及び時間
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList= iTmgPaidHolidayService.selectNenjikyukazannissu(param,0);
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
         //4 今月の月中有給付与の情報
-        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList=iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(),param.getCustId(),param.getTargetUser());
+        List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(), param.getCustId(), param.getTargetUser());
+        modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);
 
     }
 
@@ -696,14 +760,14 @@ public class TmgNotificationBean{
     /**
      * 職員リストにEmpの職員番号があるかをチェックし、なければEmpをクリアする。
      */
-    private void checkEmp(){
-        if(param.getSearchEmp() == null || param.getSearchEmp().equals("")){
+    private void checkEmp() {
+        if (param.getSearchEmp() == null || param.getSearchEmp().equals("")) {
             return;
         }
         // 検索
-        List<employeeListVo> employeeListVos=iHistDesignationService.selectemployeeList(param.getCustId(),param.getCompId(),param.getToday(),param.getEmployeeListSql());
-        for (employeeListVo vo:employeeListVos){
-            if(param.getSearchEmp().equals(vo.getTntfCemployeeid())){
+        List<employeeListVo> employeeListVos = iHistDesignationService.selectemployeeList(param.getCustId(), param.getCompId(), param.getToday(), param.getEmployeeListSql());
+        for (employeeListVo vo : employeeListVos) {
+            if (param.getSearchEmp().equals(vo.getTntfCemployeeid())) {
                 return;
             }
         }
@@ -717,14 +781,15 @@ public class TmgNotificationBean{
      *
      * @return String
      */
-    private String selectNtfName(){
-        return iTmgNotificationService.selectNtfName(param.getCustId(),param.getCompId(),param.getNtfNo());
+    private String selectNtfName() {
+        return iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(), param.getNtfNo());
     }
 
     /**
      * 指定された日付、計算値をjava.util.Calendarで算出し文字列で返します。
-     * @param date 指定された日付
-     * @param mvVal 計算値
+     *
+     * @param date   指定された日付
+     * @param mvVal  計算値
      * @param mvMode {@link java.util.Calendar}の定数値
      * @return 「yyyy/MM/dd」形式の日付を表す文字列
      */
@@ -746,10 +811,10 @@ public class TmgNotificationBean{
      */
     private Calendar getCalendarOfTypeStringOfDate(String date) {
         int[] dates = new int[3];
-        GregorianCalendar cal = (GregorianCalendar)Calendar.getInstance();
+        GregorianCalendar cal = (GregorianCalendar) Calendar.getInstance();
         dates = divideDate(date);
         // 指定された日付でカレンダーオブジェクトを生成
-        cal.set(dates[0], (dates[1]-1), dates[2]);
+        cal.set(dates[0], (dates[1] - 1), dates[2]);
         return cal;
     }
 
@@ -760,7 +825,7 @@ public class TmgNotificationBean{
         int[] dates = new int[3];
         try {
             StringTokenizer st = new StringTokenizer(date, "/");
-            for(int i = 0; st.hasMoreTokens(); i++) {
+            for (int i = 0; st.hasMoreTokens(); i++) {
                 dates[i] = Integer.parseInt(st.nextToken());
             }
         } catch (NumberFormatException e) {
@@ -772,13 +837,14 @@ public class TmgNotificationBean{
 
     /**
      * 申請状態の更新をするSQLを返す
-
-     *                 buildSQLForUpdateNotificationWithdraw
+     * <p>
+     * buildSQLForUpdateNotificationWithdraw
+     *
      * @return String      SQL文
      */
     private int updateNotificationWithdraw() {
 
-        TmgNotificationDO tmgNotificationDO=new TmgNotificationDO();
+        TmgNotificationDO tmgNotificationDO = new TmgNotificationDO();
         tmgNotificationDO.setTntfCmodifieruserid(param.getUserCode());
         tmgNotificationDO.setTntfDmodifieddate(DateTime.now());
         tmgNotificationDO.setTntfCmodifierprogramid(BEAN_DESC + "_" + param.getAction());
@@ -788,51 +854,52 @@ public class TmgNotificationBean{
         tmgNotificationDO.setTntfCntfaction(param.getNtfAction());
 
 
-        QueryWrapper<TmgNotificationDO> tnDo=new QueryWrapper<TmgNotificationDO>();
+        QueryWrapper<TmgNotificationDO> tnDo = new QueryWrapper<TmgNotificationDO>();
         tnDo.eq("TNTF_CCUSTOMERID", param.getCustId());
         tnDo.eq("TNTF_CCOMPANYID", param.getCompId());
         tnDo.eq("TNTF_CNTFNO", param.getNtfNo());
 
-        return iTmgNotificationService.getBaseMapper().update(tmgNotificationDO,tnDo);
+        return iTmgNotificationService.getBaseMapper().update(tmgNotificationDO, tnDo);
     }
 
     /**
      * 新規申請時にチェック処理を行うSQL文を返す
      * 登録時は、イントラマート側の更新が必要になるが、チェック結果によって更新の可否が分かれるため
      * 内容は、就業側のチェック処理のみ
-     * @return  Vector	SQL
+     *
+     * @return Vector    SQL
      */
     public String getSQLVecForAjaxNewCheck() throws IOException {
 
-        if(param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
-        }else if(param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)){
+        } else if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
             param.setTargetUser(param.getUserCode());
         }
 
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
-        int deleteErrMsg=deleteErrMsg();
-        int deleteNotificationCheck=deleteNotificationnCheck();
+        int deleteErrMsg = deleteErrMsg();
+        int deleteNotificationCheck = deleteNotificationnCheck();
 
-        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
             // 再申請の場合は、再申請用
-            int insertNotificationCheckUpdate=insertNotificationCheckUpdate();
-            int insertErrMsgUpdate=insertErrMsgUpdate();
+            int insertNotificationCheckUpdate = insertNotificationCheckUpdate();
+            int insertErrMsgUpdate = insertErrMsgUpdate();
         }
 
-        if(param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)){
+        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 新規申請の場合は、新規申請用
-            int insertNotificationCheckUpdate=insertNotificationCheckNew();
-            int insertErrMsgUpdate=deleteNotificationnCheck();
+            int insertNotificationCheckUpdate = insertNotificationCheckNew();
+            int insertErrMsgUpdate = deleteNotificationnCheck();
         }
 
-        int insertErrmsg=insertErrMsg();
+        int insertErrmsg = insertErrMsg();
 
-        String selectErrMsg=selectErrCode();
+        String selectErrMsg = selectErrCode();
 
-        int deleteErrMsgAfter=deleteErrMsg();
-        int deleteNotificationCheckAfter=deleteNotificationnCheck();
+        int deleteErrMsgAfter = deleteErrMsg();
+        int deleteNotificationCheckAfter = deleteNotificationnCheck();
 
         return selectErrMsg;
     }
@@ -840,53 +907,55 @@ public class TmgNotificationBean{
 
     /**
      * エラーメッセージを削除するSQLを返す
-     *buildSQLForDeleteNotificationnCheck
+     * buildSQLForDeleteNotificationnCheck
+     *
      * @return String SQL文
      */
     private int deleteNotificationnCheck() {
         // アクション識別子の取得
         String sAction = param.getAction();
         // 起動時
-        if(sAction == null){
-            if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP) ) {
-                sAction = ACT_DISPINP_RLIST;	// 一覧表示(本人)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
+        if (sAction == null) {
+            if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+                sAction = ACT_DISPINP_RLIST;    // 一覧表示(本人)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
             }
         }
 
         Map errMsg = new HashMap();
-        errMsg.put("TNTF_CMODIFIERUSERID",param.getUserCode());
-        errMsg.put("TNTF_CMODIFIERPROGRAMID",BEAN_DESC + "_" +sAction);
+        errMsg.put("TNTF_CMODIFIERUSERID", param.getUserCode());
+        errMsg.put("TNTF_CMODIFIERPROGRAMID", BEAN_DESC + "_" + sAction);
 
         return iTmgNotificationCheckService.getBaseMapper().deleteByMap(errMsg);
     }
 
     /**
      * エラーメッセージを削除するSQLを返す
-     *buildSQLForDeleteErrMsg
+     * buildSQLForDeleteErrMsg
+     *
      * @return String SQL文
      */
     private int deleteErrMsg() {
         // アクション識別子の取得
         String sAction = param.getAction();
         // 起動時
-        if(sAction == null){
-            if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP) ) {
-                sAction = ACT_DISPINP_RLIST;	// 一覧表示(本人)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
+        if (sAction == null) {
+            if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+                sAction = ACT_DISPINP_RLIST;    // 一覧表示(本人)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
             }
         }
         Map errMsg = new HashMap();
-        errMsg.put("TER_CCUSTOMERID",param.getCustId());
-        errMsg.put("TER_CCOMPANYID",param.getCompId());
-        errMsg.put("TER_CMODIFIERUSERID",param.getUserCode());
-        errMsg.put("TER_CMODIFIERPROGRAMID",BEAN_DESC + "_" +sAction);
+        errMsg.put("TER_CCUSTOMERID", param.getCustId());
+        errMsg.put("TER_CCOMPANYID", param.getCompId());
+        errMsg.put("TER_CMODIFIERUSERID", param.getUserCode());
+        errMsg.put("TER_CMODIFIERPROGRAMID", BEAN_DESC + "_" + sAction);
 
         return iTmgErrmsgService.getBaseMapper().deleteByMap(errMsg);
     }
@@ -894,15 +963,16 @@ public class TmgNotificationBean{
 
     /**
      * エラーチェックに追加するSQLを返す
-     *buildSQLForInsertNotificationCheckNew
+     * buildSQLForInsertNotificationCheckNew
+     *
      * @return int   SQL文
      */
-    private int  insertNotificationCheckNew(){
+    private int insertNotificationCheckNew() {
         // 初期化
         boolean bLevelCheckFlg = false;
         boolean bSubstitute = isSubstituted(); // 申請が振替タイプか判定
 
-        TmgNotificationCheckDO tncDo=new  TmgNotificationCheckDO();
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         //基本情報
         tncDo.setTntfCcustomerid(param.getCustId());
@@ -914,23 +984,23 @@ public class TmgNotificationBean{
         tncDo.setTntfCmodifieruserid(param.getUserCode());
         tncDo.setTntfDmodifieddate(DateTime.now());
         //action
-        if( param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) ) {	// 新規申請
+        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {    // 新規申請
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_MAKEAPPLY_CAPPLY);
-        } else {	// 代理申請
+        } else {    // 代理申請
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_ALTERAPPLY_CAPPLY);
         }
         //シーケンス
         tncDo.setTntfNseq(Long.parseLong(param.getSeq()));
-        tncDo.setTntfCntfno(param.getUserCode()+"|"+param.getSeq());
+        tncDo.setTntfCntfno(param.getUserCode() + "|" + param.getSeq());
 
 
         if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {// 新規申請
             tncDo.setTntfCstatusflg(STATUS_WAIT);
         } else {// 代理申請
             // 決裁レベル判定用
-            bLevelCheckFlg = hasCheckApprovelLevel(param.getFinalApprovalLevel(), param.getApprovalLevel(),param.getSiteId());
+            bLevelCheckFlg = hasCheckApprovelLevel(param.getFinalApprovalLevel(), param.getApprovalLevel(), param.getSiteId());
             // 承認済判定 管理サイトからの承認は即承認済に
-            if (bLevelCheckFlg){
+            if (bLevelCheckFlg) {
                 tncDo.setTntfCstatusflg(STATUS_PERM); // 承認済
             } else {
                 tncDo.setTntfCstatusflg(STATUS_WAIT);// 承認待ち
@@ -941,25 +1011,25 @@ public class TmgNotificationBean{
 
         tncDo.setTntfDbegin(param.getBegin());
         // 代休の場合は休出日(開始)を終了日にセットし、代休(終了日)を代休カラムにセットする
-        if( bSubstitute ){
+        if (bSubstitute) {
             tncDo.setTntfDend(param.getBegin());
-        }else{
+        } else {
             tncDo.setTntfDend(param.getEnd());
         }
 
         //非取り消しの場合
         tncDo.setTntfDcancel(null);
 
-        if(!StrUtil.hasEmpty(param.getTimeOpen())){
+        if (!StrUtil.hasEmpty(param.getTimeOpen())) {
             tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeOpen()));
         }
-        if(!StrUtil.hasEmpty(param.getTimeClose())){
+        if (!StrUtil.hasEmpty(param.getTimeClose())) {
             tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeClose()));
         }
-        if(!StrUtil.hasEmpty(param.getTimezoneOpen())){
+        if (!StrUtil.hasEmpty(param.getTimezoneOpen())) {
             tncDo.setTntfNtimezoneOpen(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTimezoneOpen()));
         }
-        if(!StrUtil.hasEmpty(param.getTimezoneClose())){
+        if (!StrUtil.hasEmpty(param.getTimezoneClose())) {
             tncDo.setTntfNtimezoneClose(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTimezoneClose()));
         }
 
@@ -972,7 +1042,7 @@ public class TmgNotificationBean{
         tncDo.setTntfNfri(Long.parseLong(param.getFri()));
         tncDo.setTntfNsat(Long.parseLong(param.getSat()));
         tncDo.setTntfNsun(Long.parseLong(param.getSun()));
-        if(StrUtil.hasEmpty(param.getNoreserved())){
+        if (StrUtil.hasEmpty(param.getNoreserved())) {
             tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(param.getMon(),
                     param.getTue(),
                     param.getWed(),
@@ -980,8 +1050,8 @@ public class TmgNotificationBean{
                     param.getFri(),
                     param.getSat(),
                     param.getSun()));
-        }else{
-            tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(null,null,null,null,null,null,null));
+        } else {
+            tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(null, null, null, null, null, null, null));
         }
 
         tncDo.setTntfCtype(param.getTypeNew());
@@ -999,24 +1069,24 @@ public class TmgNotificationBean{
         tncDo.setTntfCcancelcomment(null);
 
         // 代休の場合は休出日(開始)を終了日にセットし、代休(終了日)を代休カラムにセットする
-        if(bSubstitute){
+        if (bSubstitute) {
             tncDo.setTntfDdaikyu(param.getEnd());
         }
 
         // 傷病名
-        if(!StrUtil.hasEmpty(param.getTxtSickName())){
+        if (!StrUtil.hasEmpty(param.getTxtSickName())) {
             tncDo.setTntfCsickName(param.getTxtSickName());
         }
         // 労災申請
-        if(!StrUtil.hasEmpty(param.getSickApply())){
+        if (!StrUtil.hasEmpty(param.getSickApply())) {
             tncDo.setTntfCdisaster(param.getSickApply());
         }
         //起算日
-        if(param.getTxtPeriod()!=null){
+        if (param.getTxtPeriod() != null) {
             tncDo.setTntfDperiodDate(param.getTxtPeriod());
         }
         //加算日数
-        if(!StrUtil.hasEmpty(param.getTxtAddDate())){
+        if (!StrUtil.hasEmpty(param.getTxtAddDate())) {
             tncDo.setTntfNuapperAddition(Long.parseLong(param.getTxtAddDate()));
         }
 
@@ -1041,7 +1111,7 @@ public class TmgNotificationBean{
             tncDo.setTntfCapprovalLevel(getApprovelLevel(1));
         } else {// 代理申請
             // 承認済判定 管理サイトからの承認は即承認済に
-            if (bLevelCheckFlg){
+            if (bLevelCheckFlg) {
                 tncDo.setTntfCapprovalLevel(null);
             } else {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(0));
@@ -1058,40 +1128,41 @@ public class TmgNotificationBean{
 
     /**
      * エラーチェックに追加するSQLを返す
-     *buildSQLForInsertNotificationCheckUpdate
+     * buildSQLForInsertNotificationCheckUpdate
+     *
      * @return int   SQL文
      */
-    private int  insertNotificationCheckUpdate(){
+    private int insertNotificationCheckUpdate() {
 
-        TmgNotificationCheckDO tncDo=new TmgNotificationCheckDO();
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         //元データを取り
-        QueryWrapper<TmgNotificationDO> queryWrapper=new QueryWrapper<TmgNotificationDO>();
+        QueryWrapper<TmgNotificationDO> queryWrapper = new QueryWrapper<TmgNotificationDO>();
         queryWrapper.eq("TNTF_CCUSTOMERID", param.getCustId());
         queryWrapper.eq("TNTF_CCOMPANYID", param.getCompId());
         queryWrapper.eq("TNTF_CNTFNO", param.getNtfNo());
-        TmgNotificationDO tnDo=iTmgNotificationService.getBaseMapper().selectOne(queryWrapper);
+        TmgNotificationDO tnDo = iTmgNotificationService.getBaseMapper().selectOne(queryWrapper);
         //更新データ
         // 再申請
-        if(param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
-            tncDo=reApplySetDo(tnDo);
-        //全取消
-        }else if(param.getAction().equals(ACT_EDITAPPLY_UDEL)){
-            tncDo=delApplu(tnDo);
-        // 承認・他
-        }else{
-            tncDo=applyOrConfirm(tnDo);
+        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
+            tncDo = reApplySetDo(tnDo);
+            //全取消
+        } else if (param.getAction().equals(ACT_EDITAPPLY_UDEL)) {
+            tncDo = delApplu(tnDo);
+            // 承認・他
+        } else {
+            tncDo = applyOrConfirm(tnDo);
         }
 
         // 承認か解除(部分取り消し、全取り消し)か？
-        if(!(param.getAction().equals(ACT_EDITPERM_UPERMIT) ||
+        if (!(param.getAction().equals(ACT_EDITPERM_UPERMIT) ||
                 param.getAction().equals(ACT_EDITCANCEL_UCANCEL) ||
-                param.getAction().equals(ACT_EDITAPPLY_UDEL) )){
+                param.getAction().equals(ACT_EDITAPPLY_UDEL))) {
             tncDo.setTntfDcancel(null);
             tncDo.setTntfDcancelend(null);
         }
         // 承認・管理からの再申請に対応する為
-        if(!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))){
+        if (!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))) {
             // 承認か解除であれば、承認者コメント、取消コメントのカラムをINSERTに指定する
             tncDo.setTntfCboss(null);
             tncDo.setTntfCbosscomment(null);
@@ -1105,20 +1176,20 @@ public class TmgNotificationBean{
     /**
      * 部分申請解除.エラーチェックに追加するSQLを返す
      *
-     * @param   employeeId 承認者職員番号
-     * @return  int       SQL文
+     * @param employeeId 承認者職員番号
+     * @return int       SQL文
      */
-    private int insertNotificationCheckPartOfReApp(String employeeId){
+    private int insertNotificationCheckPartOfReApp(String employeeId) {
 
         //元データを取り
-        QueryWrapper<TmgNotificationDO> queryWrapper=new QueryWrapper<TmgNotificationDO>();
+        QueryWrapper<TmgNotificationDO> queryWrapper = new QueryWrapper<TmgNotificationDO>();
         queryWrapper.eq("TNTF_CCUSTOMERID", param.getCustId());
         queryWrapper.eq("TNTF_CCOMPANYID", param.getCompId());
         queryWrapper.eq("TNTF_CNTFNO", param.getNtfNo());
-        TmgNotificationDO tnDo=iTmgNotificationService.getBaseMapper().selectOne(queryWrapper);
+        TmgNotificationDO tnDo = iTmgNotificationService.getBaseMapper().selectOne(queryWrapper);
 
-        int seq=Integer.parseInt(iTmgNotificationService.selectNotificationSeq());
-        TmgNotificationCheckDO tncDo=new TmgNotificationCheckDO();
+        int seq = Integer.parseInt(iTmgNotificationService.selectNotificationSeq());
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         tncDo.setTntfCcustomerid(param.getCustId());
         tncDo.setTntfCcompanyid(param.getCompId());
@@ -1128,8 +1199,8 @@ public class TmgNotificationBean{
         tncDo.setTntfCmodifieruserid(param.getUserCode());
         tncDo.setTntfDmodifieddate(DateTime.now());
         tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_MAKEAPPLY_CAPPLY);
-        tncDo.setTntfNseq((long)seq);
-        tncDo.setTntfCntfno(param.getUserCode()+"|"+seq);
+        tncDo.setTntfNseq((long) seq);
+        tncDo.setTntfCntfno(param.getUserCode() + "|" + seq);
         tncDo.setTntfCstatusflg(STATUS_PERM);
         tncDo.setTntfCalteremployeeid(param.getUserCode());
         tncDo.setTntfDnotification(DateTime.now());
@@ -1183,12 +1254,12 @@ public class TmgNotificationBean{
     /**
      * 再申請
      * update用entity処理
-     * */
-    public TmgNotificationCheckDO reApplySetDo(TmgNotificationDO tnDo){
+     */
+    public TmgNotificationCheckDO reApplySetDo(TmgNotificationDO tnDo) {
 
         boolean bSubstitute = isSubstituted(); // 申請が振替タイプか判定
 
-        TmgNotificationCheckDO tncDo=new TmgNotificationCheckDO();
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         tncDo.setTntfCcustomerid(tnDo.getTntfCcustomerid());
         tncDo.setTntfCcompanyid(tnDo.getTntfCcompanyid());
@@ -1205,11 +1276,11 @@ public class TmgNotificationBean{
         tncDo.setTntfCntfno(tnDo.getTntfCntfno());
 
         // 入力サイトは承認済みにする
-        if(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+        if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
             tncDo.setTntfCstatusflg(STATUS_WAIT);//承認待ち
-        }else{
+        } else {
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())){
+            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
                 tncDo.setTntfCstatusflg(STATUS_PERM);
             } else {
                 tncDo.setTntfCstatusflg(STATUS_WAIT); //承認待ち
@@ -1223,24 +1294,24 @@ public class TmgNotificationBean{
 
 
         // 代休の場合は休出日(開始)を終了日にセットし、代休(終了日)を代休カラムにセットする
-        if( bSubstitute ){
+        if (bSubstitute) {
             tncDo.setTntfDend(param.getBegin());
-        }else{
+        } else {
             tncDo.setTntfDend(param.getEnd());
         }
 
         //tncDo.setTntfDcancel();
 
-        if(!StrUtil.hasEmpty(param.getTimeOpen())){
+        if (!StrUtil.hasEmpty(param.getTimeOpen())) {
             tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeOpen()));
         }
-        if(!StrUtil.hasEmpty(param.getTimeClose())){
+        if (!StrUtil.hasEmpty(param.getTimeClose())) {
             tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeClose()));
         }
-        if(!StrUtil.hasEmpty(param.getTimezoneOpen())){
+        if (!StrUtil.hasEmpty(param.getTimezoneOpen())) {
             tncDo.setTntfNtimezoneOpen(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTimezoneOpen()));
         }
-        if(!StrUtil.hasEmpty(param.getTimezoneClose())){
+        if (!StrUtil.hasEmpty(param.getTimezoneClose())) {
             tncDo.setTntfNtimezoneClose(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTimezoneClose()));
         }
 
@@ -1252,7 +1323,7 @@ public class TmgNotificationBean{
         tncDo.setTntfNfri(Long.parseLong(param.getFri()));
         tncDo.setTntfNsat(Long.parseLong(param.getSat()));
         tncDo.setTntfNsun(Long.parseLong(param.getSun()));
-        if(StrUtil.hasEmpty(param.getNoreserved())){
+        if (StrUtil.hasEmpty(param.getNoreserved())) {
             tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(param.getMon(),
                     param.getTue(),
                     param.getWed(),
@@ -1260,8 +1331,8 @@ public class TmgNotificationBean{
                     param.getFri(),
                     param.getSat(),
                     param.getSun()));
-        }else{
-            tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(null,null,null,null,null,null,null));
+        } else {
+            tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(null, null, null, null, null, null, null));
         }
 
 
@@ -1269,7 +1340,7 @@ public class TmgNotificationBean{
         tncDo.setTntfCowncomment(param.getOwncomment());
 
         // 承認・管理からの再申請に対応する為
-        if(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+        if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
             //画面情報
             tncDo.setTntfCboss(param.getUserCode());
             tncDo.setTntfCbosscomment(param.getBosscomment());
@@ -1278,9 +1349,9 @@ public class TmgNotificationBean{
             tncDo.setTntfCcancelcomment(null);
         }
         // 代休の場合は休出日(開始)を終了日にセットし、代休(終了日)を代休カラムにセットする
-        if( bSubstitute ){
+        if (bSubstitute) {
             tncDo.setTntfDdaikyu(param.getEnd());
-        }else{
+        } else {
             tncDo.setTntfDdaikyu(null);
         }
 
@@ -1308,13 +1379,13 @@ public class TmgNotificationBean{
 
 
         // レベル判定
-        if (Boolean.valueOf(param.getFinalApprovalLevel())){
+        if (Boolean.valueOf(param.getFinalApprovalLevel())) {
             tncDo.setTntfCapprovalLevel(null);
         } else {
             // 承認・管理からの再申請に対応する為
-            if(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+            if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(0));
-            }else{
+            } else {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(1));
             }
         }
@@ -1328,10 +1399,10 @@ public class TmgNotificationBean{
     /**
      * 全取消
      * update用entity処理
-     * */
-    public TmgNotificationCheckDO delApplu(TmgNotificationDO tnDo){
+     */
+    public TmgNotificationCheckDO delApplu(TmgNotificationDO tnDo) {
         //update用entity処理
-        TmgNotificationCheckDO tncDo=new TmgNotificationCheckDO();
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         tncDo.setTntfCcustomerid(tnDo.getTntfCcustomerid());
         tncDo.setTntfCcompanyid(tnDo.getTntfCcompanyid());
@@ -1401,9 +1472,9 @@ public class TmgNotificationBean{
     /**
      * 承認・他
      * update用entity処理
-     * */
-    public TmgNotificationCheckDO applyOrConfirm(TmgNotificationDO tnDo){
-        TmgNotificationCheckDO tncDo=new TmgNotificationCheckDO();
+     */
+    public TmgNotificationCheckDO applyOrConfirm(TmgNotificationDO tnDo) {
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
 
         tncDo.setTntfCcustomerid(tnDo.getTntfCcustomerid());
         tncDo.setTntfCcompanyid(tnDo.getTntfCcompanyid());
@@ -1414,9 +1485,9 @@ public class TmgNotificationBean{
         tncDo.setTntfCmodifieruserid(param.getUserCode());
         tncDo.setTntfDmodifieddate(DateTime.now());
 
-        if( param.getAction().equals(ACT_EDITCANCEL_UCANCEL) ) {	// 解除
+        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) {    // 解除
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_EDITCANCEL_UCANCEL);
-        } else {	// 承認
+        } else {    // 承認
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_EDITPERM_UPERMIT);
         }
 
@@ -1424,11 +1495,11 @@ public class TmgNotificationBean{
         tncDo.setTntfCntfno(tnDo.getTntfCntfno());
 
         //ステータス
-        if(param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) { // 解除日=開始日の場合は取消となる
+        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) { // 解除日=開始日の場合は取消となる
             tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
-        }else{
+        } else {
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())){
+            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
                 tncDo.setTntfCstatusflg(STATUS_PERM);
             } else {
                 tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
@@ -1440,11 +1511,11 @@ public class TmgNotificationBean{
         tncDo.setTntfDbegin(tnDo.getTntfDbegin());
         tncDo.setTntfDend(tnDo.getTntfDend());
 
-        if(param.getAction().equals(ACT_EDITPERM_UPERMIT)){
+        if (param.getAction().equals(ACT_EDITPERM_UPERMIT)) {
             tncDo.setTntfDcancel(tnDo.getTntfDcancel());
             tncDo.setTntfDcancelend(tnDo.getTntfDcancelend());
         }
-        if(param.getAction().equals(ACT_EDITCANCEL_UCANCEL)){
+        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) {
             tncDo.setTntfDcancel(param.getCancel());
             tncDo.setTntfDcancelend(param.getTxtDCancelEnd());
         }
@@ -1466,14 +1537,14 @@ public class TmgNotificationBean{
         tncDo.setTntfCowncomment(tnDo.getTntfCowncomment());
 
 
-        if(param.getAction().equals(ACT_EDITPERM_UPERMIT)){
+        if (param.getAction().equals(ACT_EDITPERM_UPERMIT)) {
             tncDo.setTntfCboss(param.getUserCode());
             tncDo.setTntfCbosscomment(param.getBosscomment());
             tncDo.setTntfDboss(DateTime.now());
             tncDo.setTntfCcancel(tnDo.getTntfCcancel());
             tncDo.setTntfCcancelcomment(tnDo.getTntfCcancelcomment());
         }
-        if(param.getAction().equals(ACT_EDITCANCEL_UCANCEL)){
+        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) {
             tncDo.setTntfCboss(tnDo.getTntfCboss());
             tncDo.setTntfCbosscomment(tnDo.getTntfCbosscomment());
             tncDo.setTntfDboss(tnDo.getTntfDboss());
@@ -1496,14 +1567,14 @@ public class TmgNotificationBean{
         tncDo.setTntfNnumberOfTarget(tnDo.getTntfNnumberOfTarget());
         tncDo.setTntfCntfnoMoto(tnDo.getTntfCntfnoMoto());
 
-        if( param.getAction().equals(ACT_EDITPERM_UPERMIT) ) {   // 承認
+        if (param.getAction().equals(ACT_EDITPERM_UPERMIT)) {   // 承認
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())){
+            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
                 tncDo.setTntfCapprovalLevel(null);
             } else {
                 tncDo.setTntfCapprovalLevel(getApprovelLevel(0));
             }
-        } else{
+        } else {
             tncDo.setTntfCapprovalLevel(null);
         }
 
@@ -1515,12 +1586,13 @@ public class TmgNotificationBean{
 
     /**
      * 指定された申請種類の表示タイプを取得する
-     *buildSQLForNtfDispType
+     * buildSQLForNtfDispType
+     *
      * @return int inputCtl
      */
     private int selectNtfDispType() {
 
-        int inputCtl=iMastGenericDetailService.selectNtfDispType(param.getCustId(),param.getCompId(),param.getLang(),param.getTypeNew());
+        int inputCtl = iMastGenericDetailService.selectNtfDispType(param.getCustId(), param.getCompId(), param.getLang(), param.getTypeNew());
         return inputCtl;
     }
 
@@ -1531,7 +1603,7 @@ public class TmgNotificationBean{
      */
     public boolean isSubstituted() {
 
-        int sDispType=selectNtfDispType();
+        int sDispType = selectNtfDispType();
 
         // 取得した表示タイプを２進数変換
         String sBinaryDispType = Integer.toBinaryString(sDispType);
@@ -1550,28 +1622,29 @@ public class TmgNotificationBean{
 
     /**
      * エラーメッセージ(更新)に追加する
-     *buildSQLForInsertErrMsgUpdate
+     * buildSQLForInsertErrMsgUpdate
+     *
      * @return int
      */
-    private int  insertErrMsgUpdate(){
+    private int insertErrMsgUpdate() {
 
         // 処理モードに合致したプログラムＩＤを設定する
         String sProgramId = "";
 
         // 申請解除、または申請取消
-        if(ACT_EDITCANCEL_UCANCEL.equals(param.getAction()) || ACT_EDITAPPLY_UDEL.equals(param.getAction())) {
+        if (ACT_EDITCANCEL_UCANCEL.equals(param.getAction()) || ACT_EDITAPPLY_UDEL.equals(param.getAction())) {
             sProgramId = BEAN_DESC + "_" + param.getAction();
 
             // 再申請
-        } else if(ACT_REMAKEAPPLY_CAPPLY.equals(param.getAction()) ) {
-            sProgramId = BEAN_DESC + "_" + ACT_REMAKEAPPLY_CAPPLY ;
+        } else if (ACT_REMAKEAPPLY_CAPPLY.equals(param.getAction())) {
+            sProgramId = BEAN_DESC + "_" + ACT_REMAKEAPPLY_CAPPLY;
 
             // 承認
         } else {
-            sProgramId =BEAN_DESC + "_" + ACT_EDITPERM_UPERMIT ;
+            sProgramId = BEAN_DESC + "_" + ACT_EDITPERM_UPERMIT;
         }
 
-        TmgErrmsgDO tmgErrmsgDO=new  TmgErrmsgDO();
+        TmgErrmsgDO tmgErrmsgDO = new TmgErrmsgDO();
         tmgErrmsgDO.setTerCcustomerid(param.getCustId());
         tmgErrmsgDO.setTerCcompanyid(param.getCompId());
         tmgErrmsgDO.setTerDstartdate(TmgUtil.minDate);
@@ -1580,7 +1653,7 @@ public class TmgNotificationBean{
         tmgErrmsgDO.setTerDmodifieddate(DateTime.now());
         tmgErrmsgDO.setTerCmodifierprogramid(sProgramId);
         tmgErrmsgDO.setTerCerrcode(iTmgNotificationCheckService.tmgFCheckNotification(param.getNtfNo(),
-                param.getCustId(),param.getCompId(),param.getSiteId()));
+                param.getCustId(), param.getCompId(), param.getSiteId()));
         tmgErrmsgDO.setTerClanguage(param.getLang());
         return iTmgErrmsgService.getBaseMapper().insert(tmgErrmsgDO);
     }
@@ -1588,10 +1661,11 @@ public class TmgNotificationBean{
 
     /**
      * エラーメッセージ(新規)に追加するS
-     *buildSQLForInsertErrMsgNe
+     * buildSQLForInsertErrMsgNe
+     *
      * @return int
      */
-    private int insertErrMsgNew(){
+    private int insertErrMsgNew() {
 
         // 処理モードに合致したプログラムＩＤを設定する
         String sProgramId = "";
@@ -1604,7 +1678,7 @@ public class TmgNotificationBean{
             sProgramId = BEAN_DESC + "_" + ACT_ALTERAPPLY_CAPPLY;
         }
 
-        TmgErrmsgDO tmgErrmsgDO=new  TmgErrmsgDO();
+        TmgErrmsgDO tmgErrmsgDO = new TmgErrmsgDO();
         tmgErrmsgDO.setTerCcustomerid(param.getCustId());
         tmgErrmsgDO.setTerCcompanyid(param.getCompId());
         tmgErrmsgDO.setTerDstartdate(TmgUtil.minDate);
@@ -1613,10 +1687,10 @@ public class TmgNotificationBean{
         tmgErrmsgDO.setTerDmodifieddate(DateTime.now());
         tmgErrmsgDO.setTerCmodifierprogramid(sProgramId);
 
-        QueryWrapper<TmgNotificationCheckDO> tncDo=new QueryWrapper<TmgNotificationCheckDO>();
+        QueryWrapper<TmgNotificationCheckDO> tncDo = new QueryWrapper<TmgNotificationCheckDO>();
         tncDo.eq("TNTF_CMODIFIERUSERID", param.getUserCode());
         tncDo.eq("TNTF_CMODIFIERPROGRAMID", sProgramId);
-        TmgNotificationCheckDO tmgNotificationCheckDO=iTmgNotificationCheckService.getBaseMapper().selectOne(tncDo);
+        TmgNotificationCheckDO tmgNotificationCheckDO = iTmgNotificationCheckService.getBaseMapper().selectOne(tncDo);
 
         tmgErrmsgDO.setTerCerrcode(iTmgNotificationCheckService.tmgFCheckNotification(tmgNotificationCheckDO.getTntfCntfno(),
                 tmgNotificationCheckDO.getTntfCcustomerid(),
@@ -1631,14 +1705,15 @@ public class TmgNotificationBean{
 
     /**
      * エラーメッセージテーブルへ登録する
-     *buildSQLForInsertErrMsg
+     * buildSQLForInsertErrMsg
+     *
      * @return int
      */
-    private int insertErrMsg(){
+    private int insertErrMsg() {
 
-        String sProgramId=BEAN_DESC + "_"+param.getAction();
+        String sProgramId = BEAN_DESC + "_" + param.getAction();
 
-        TmgErrmsgDO tmgErrmsgDO=new  TmgErrmsgDO();
+        TmgErrmsgDO tmgErrmsgDO = new TmgErrmsgDO();
         tmgErrmsgDO.setTerCcustomerid(param.getCustId());
         tmgErrmsgDO.setTerCcompanyid(param.getCompId());
         tmgErrmsgDO.setTerDstartdate(TmgUtil.minDate);
@@ -1654,23 +1729,24 @@ public class TmgNotificationBean{
 
     /**
      * エラーメッセージを取得する
-     *buildSQLForSelectErrMsg
+     * buildSQLForSelectErrMsg
+     *
      * @return String SQL文
      */
-    private String selectErrCode(){
+    private String selectErrCode() {
         // アクション識別子の取得
         String sAction = param.getAction();
         // 起動時
-        if(sAction == null){
-            if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP) ) {
-                sAction = ACT_DISPINP_RLIST;	// 一覧表示(本人)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
+        if (sAction == null) {
+            if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+                sAction = ACT_DISPINP_RLIST;    // 一覧表示(本人)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
             }
         }
-        QueryWrapper<TmgErrmsgDO> teDo=new QueryWrapper<TmgErrmsgDO>();
+        QueryWrapper<TmgErrmsgDO> teDo = new QueryWrapper<TmgErrmsgDO>();
         teDo.eq("TER_CMODIFIERPROGRAMID", BEAN_DESC + "_" + sAction);
         teDo.eq("TER_CMODIFIERUSERID", param.getUserCode());
         return iTmgErrmsgService.getBaseMapper().selectOne(teDo).getTerCerrcode();
@@ -1678,11 +1754,12 @@ public class TmgNotificationBean{
 
     /**
      * トリガーを削除する
-     *buildSQLForDeleteTrigger
-     * @return  String SQL文
+     * buildSQLForDeleteTrigger
+     *
+     * @return String SQL文
      */
-    private int deleteTrigger(){
-        QueryWrapper<TmgTriggerDO> ttDo=new QueryWrapper<TmgTriggerDO>();
+    private int deleteTrigger() {
+        QueryWrapper<TmgTriggerDO> ttDo = new QueryWrapper<TmgTriggerDO>();
         ttDo.eq("TTR_CMODIFIERPROGRAMID", BEAN_DESC + "_" + param.getAction());
         ttDo.eq("TTR_CMODIFIERUSERID", param.getUserCode());
         return iTmgTriggerService.getBaseMapper().delete(ttDo);
@@ -1690,21 +1767,22 @@ public class TmgNotificationBean{
 
     /**
      * トリガー用テーブルへInsertする
-     *buildSQLForInsertTmgTrigger
+     * buildSQLForInsertTmgTrigger
+     *
      * @return String SQL文
      */
-    private int insertTrigger(){
+    private int insertTrigger() {
         String paramNftNo;
         //アクション識別子の取得
         String sAction = param.getAction();
         // 起動時
-        if(sAction == null){
-            if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP) ) {
-                sAction = ACT_DISPINP_RLIST;	// 一覧表示(本人)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
-            } else if( param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) ) {
-                sAction = ACT_DISPPERM_RLIST;	// 一覧表示(承認者)
+        if (sAction == null) {
+            if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+                sAction = ACT_DISPINP_RLIST;    // 一覧表示(本人)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
+            } else if (param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                sAction = ACT_DISPPERM_RLIST;    // 一覧表示(承認者)
             }
         }
 
@@ -1714,7 +1792,7 @@ public class TmgNotificationBean{
             paramNftNo = param.getNtfNo();
         }
 
-        TmgTriggerDO tmgTriggerDO=new TmgTriggerDO();
+        TmgTriggerDO tmgTriggerDO = new TmgTriggerDO();
         tmgTriggerDO.setTtrCcustomerid(param.getCustId());
         tmgTriggerDO.setTtrCcompanyid(param.getCompId());
         tmgTriggerDO.setTtrCemployeeid(param.getTargetUser());
@@ -1738,8 +1816,7 @@ public class TmgNotificationBean{
      */
     private boolean isPartOfReserveApplication() {
         if (ACT_EDITCANCEL_UCANCEL.equals(param.getAction())
-                && param.getTxtDCancelEnd()!=null)
-        {
+                && param.getTxtDCancelEnd() != null) {
             return true;
         } else {
             return false;
@@ -1749,34 +1826,35 @@ public class TmgNotificationBean{
     /**
      * マスタを取得するSQLを返す
      * <p>
-     * 	グループIDが「申請種類」かつ、アクションが「新規申請表示」か「代理申請表示」の場合は、
-     *  抽出条件として検索対象職員の職種/申請リレーションを指定する。
-     *  「職種/申請リレーション」は職種別に申請可能な「申請区分」を定義したマスタです。
+     * グループIDが「申請種類」かつ、アクションが「新規申請表示」か「代理申請表示」の場合は、
+     * 抽出条件として検索対象職員の職種/申請リレーションを指定する。
+     * 「職種/申請リレーション」は職種別に申請可能な「申請区分」を定義したマスタです。
      * </p>
-     * @param   sGroupID          :グループID
-     * @param   sOrder          :ソート順
-     * @param   sColum          :取得項目
-     * @return  String          :SQL
+     *
+     * @param sGroupID :グループID
+     * @param sOrder   :ソート順
+     * @param sColum   :取得項目
+     * @return String          :SQL
      */
-    private String buildSQLForSelectGenericDetail(String sGroupID, String sOrder , String sColum) {
+    private String buildSQLForSelectGenericDetail(String sGroupID, String sOrder, String sColum) {
 
         StringBuffer sSQL = new StringBuffer();
         sSQL.append(" SELECT  ");
-        if( sColum == null ){
+        if (sColum == null) {
             sSQL.append("     D1.MGD_CMASTERCODE, ");
             sSQL.append("     D1.MGD_CGENERICDETAILDESC, ");
             sSQL.append("     D1.MGD_NSPARENUM2, ");
             sSQL.append("     D1.MGD_CSPARECHAR3 ");
-        }else{
-            sSQL.append( sColum );
+        } else {
+            sSQL.append(sColum);
         }
         sSQL.append(" FROM  ");
         sSQL.append("     MAST_GENERIC_DETAIL D1");
         sSQL.append(" WHERE  ");
-        sSQL.append("     D1.MGD_CCUSTOMERID          = '" + param.getCustId()+"'");
-        sSQL.append(" AND D1.MGD_CCOMPANYID_CK_FK     = '" + param.getCompId()+"'");
-        sSQL.append(" AND D1.MGD_CLANGUAGE_CK         = '" + param.getLang()+"'");
-        sSQL.append(" AND D1.MGD_CGENERICGROUPID      = '" + sGroupID+"'");
+        sSQL.append("     D1.MGD_CCUSTOMERID          = '" + param.getCustId() + "'");
+        sSQL.append(" AND D1.MGD_CCOMPANYID_CK_FK     = '" + param.getCompId() + "'");
+        sSQL.append(" AND D1.MGD_CLANGUAGE_CK         = '" + param.getLang() + "'");
+        sSQL.append(" AND D1.MGD_CGENERICGROUPID      = '" + sGroupID + "'");
         sSQL.append(" AND D1.MGD_DSTART_CK           <= TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "') ");
         sSQL.append(" AND D1.MGD_DEND                >= TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "') ");
 
@@ -1789,27 +1867,27 @@ public class TmgNotificationBean{
             sSQL.append("         FROM ");
             sSQL.append("             MAST_GENERIC_DETAIL D2");
             sSQL.append("         WHERE ");
-            sSQL.append("             D2.MGD_CCUSTOMERID          = '" + param.getCustId()+"'");
-            sSQL.append("         AND D2.MGD_CCOMPANYID_CK_FK     = '" + param.getCompId()+"'");
-            sSQL.append("         AND D2.MGD_CGENERICGROUPID      = '" + TmgUtil.Cs_MGD_NTF_RELATION+"'");
-            sSQL.append("         AND D2.MGD_CLANGUAGE_CK         = '" + param.getLang()+"'");
+            sSQL.append("             D2.MGD_CCUSTOMERID          = '" + param.getCustId() + "'");
+            sSQL.append("         AND D2.MGD_CCOMPANYID_CK_FK     = '" + param.getCompId() + "'");
+            sSQL.append("         AND D2.MGD_CGENERICGROUPID      = '" + TmgUtil.Cs_MGD_NTF_RELATION + "'");
+            sSQL.append("         AND D2.MGD_CLANGUAGE_CK         = '" + param.getLang() + "'");
             sSQL.append("         AND D2.MGD_DSTART_CK           <= TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "') ");
-            sSQL.append("         AND D2.MGD_DEND                >= TO_DATE('" + param.getToday()+ "', '" + DATE_FORMAT + "') ");
+            sSQL.append("         AND D2.MGD_DEND                >= TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "') ");
             sSQL.append("         AND D2.MGD_CSPARECHAR1 = TMG_F_GET_WORKERTYPE( ");
-            sSQL.append("                                 '"+param.getTargetUser()+"', TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "'), '"
-                    +param.getCustId()+"' , '"+param.getCompId()+"'");
+            sSQL.append("                                 '" + param.getTargetUser() + "', TO_DATE('" + param.getToday() + "', '" + DATE_FORMAT + "'), '"
+                    + param.getCustId() + "' , '" + param.getCompId() + "'");
             sSQL.append("                             )  "); //-- 対象職員の勤怠職種
-            sSQL.append("         AND D2.MGD_NSPARENUM1 = "+FLG_NTF_RELATION_ENABLE); //-- 職種/申請リレーションフラグ
+            sSQL.append("         AND D2.MGD_NSPARENUM1 = " + FLG_NTF_RELATION_ENABLE); //-- 職種/申請リレーションフラグ
             sSQL.append(" ) ");
         }
         // 現在のサイトで申請可能な休暇を取得する(一覧は除く)
-        if( sGroupID.equals(TmgUtil.Cs_MGD_NTFTYPE)
+        if (sGroupID.equals(TmgUtil.Cs_MGD_NTFTYPE)
                 && sAction != null
                 && !sAction.equals(ACT_DISPINP_RLIST)
-        ){
+        ) {
             sSQL.append(" AND instr(D1.MGD_CSPARECHAR5,'" + param.getSiteId() + "') > 0 ");
         }
-        if( sOrder != null ){
+        if (sOrder != null) {
             sSQL.append(" ORDER BY  ");
             sSQL.append("     D1.MGD_CGENERICDETAILID_CK " + sOrder);
         }
@@ -1820,49 +1898,51 @@ public class TmgNotificationBean{
     /**
      * マスタを取得するSQLを返す
      * <p>
-     * 	グループIDが「申請種類」かつ、アクションが「新規申請表示」か「代理申請表示」の場合は、
-     *  抽出条件として検索対象職員の職種/申請リレーションを指定する。
-     *  「職種/申請リレーション」は職種別に申請可能な「申請区分」を定義したマスタです。
+     * グループIDが「申請種類」かつ、アクションが「新規申請表示」か「代理申請表示」の場合は、
+     * 抽出条件として検索対象職員の職種/申請リレーションを指定する。
+     * 「職種/申請リレーション」は職種別に申請可能な「申請区分」を定義したマスタです。
      * </p>
-     * @param   sGroupID        :グループID
-     * @param   sOrder          :ソート順
-     * @return  String          :SQL
+     *
+     * @param sGroupID :グループID
+     * @param sOrder   :ソート順
+     * @return String          :SQL
      */
-    private String buildSQLForSelectGenericDetail( String sGroupID, String sOrder) {
+    private String buildSQLForSelectGenericDetail(String sGroupID, String sOrder) {
         StringBuffer sSQL = new StringBuffer();
-        sSQL.append( buildSQLForSelectGenericDetail(sGroupID,sOrder ,null) );
+        sSQL.append(buildSQLForSelectGenericDetail(sGroupID, sOrder, null));
         return new String(sSQL);
     }
 
 
     /**
      * 決裁レベル取得SQL返却メソッド
-     *getApprovelLevelSQL
-     * @param  piMode 0:次の決裁レベル取得用、1:一番小さい決裁レベル取得用
+     * getApprovelLevelSQL
+     *
+     * @param piMode 0:次の決裁レベル取得用、1:一番小さい決裁レベル取得用
      * @return String SQL文
      */
     private String getApprovelLevel(int piMode) {
 
-        return iMastGenericDetailService.selectApprovelLevel(param.getCustId(),param.getCompId(),param.getLang(),param.getToday(),param.getApprovalLevel(),piMode);
+        return iMastGenericDetailService.selectApprovelLevel(param.getCustId(), param.getCompId(), param.getLang(), param.getToday(), param.getApprovalLevel(), piMode);
 
     }
 
     /**
      * 決裁レベルチェック
      *
-     * @param   psFinalApprovalLevel
-     * @param   psApprovalLevel
-     * @return  boolean true/false
+     * @param psFinalApprovalLevel
+     * @param psApprovalLevel
+     * @return boolean true/false
      */
-    public boolean hasCheckApprovelLevel(String psFinalApprovalLevel, String psApprovalLevel,String siteId) {
+    public boolean hasCheckApprovelLevel(String psFinalApprovalLevel, String psApprovalLevel, String siteId) {
 
-        if(siteId.equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+        if (siteId.equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
             return true;
         }
 
         if (Integer.valueOf(psFinalApprovalLevel).intValue() <= Integer.valueOf(psApprovalLevel).intValue()) {
             return true;
-        } else{
+        } else {
             return false;
         }
     }

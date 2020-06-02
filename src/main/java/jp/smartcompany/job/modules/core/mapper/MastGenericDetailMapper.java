@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
@@ -208,5 +209,20 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
      * 日付関連情報を取得
      */
     TodayThisMonthVO buildSQLForSelectDate();
+
+    /**
+     * 36協定における月の超勤限度時間表示用名称取得
+    */
+    String selectLimit(@Param("custId")String custId,
+                       @Param("compId")String compId,
+                       @Param("baseDate")String baseDate,
+                       @Param("sLang")String sLang,
+                       @Param("masterCode")String masterCode);
+
+
+    List<dispOverTimeItemsDto> selectDispOverTimeItems(@Param("custId")String custID,
+                                                       @Param("compID")String compID,
+                                                       @Param("baseDate")String baseDate,
+                                                       @Param("language")String language);
 }
 

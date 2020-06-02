@@ -2,10 +2,14 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
 import java.util.List;
@@ -62,5 +66,25 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
      * @return
      */
     List<DetailOverhoursVO> buildSQLForSelectDetailOverhours(Map<String, Object> map);
+
+
+
+
+    List<monthlyInfoOverSumVo> selectMonthlyOverSum(@Param("custId")String custId,
+                                                    @Param("compId")String compId,
+                                                    @Param("userID")String userID,
+                                                    @Param("sBaseDBDate")String sBaseDBDate,
+                                                    @Param("sMonthsNum")String sMonthsNum);
+
+
+
+    List<dailyDetailVo> selectDailyDetail(@Param("custId")String custId,
+                                          @Param("compId")String compId,
+                                          @Param("sectionId")String sectionId,
+                                          @Param("baseMonth")String baseMonth,
+                                          @Param("baseDay")String baseDay,
+                                          @Param("pLanguage")String pLanguage,
+                                          @Param("empListSql")String empListSql,
+                                          @Param("itemsSql")List<dispOverTimeItemsDto> itemsSql);
 
 }
