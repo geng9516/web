@@ -112,6 +112,9 @@ public class AttendanceBookBean {
         if (null == month || "".equals(month)) {
             month = DateUtil.thisMonth() + "";
         }
+        if (month.length() == 1) {
+            month = "0" + month;
+        }
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
         String language = psDBBean.getLanguage();
