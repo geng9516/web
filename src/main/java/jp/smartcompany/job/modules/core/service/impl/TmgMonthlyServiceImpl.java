@@ -218,4 +218,22 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
         return baseMapper.buildSQLForUpdateMonthly(map);
     }
 
+    /**
+     * 表示月遷移リスト情報を取得する
+     *
+     * @param baseDate 対象日
+     * @param empSql   対象者取得sql
+     * @return List<DispMonthlyVO>
+     */
+    @Override
+    public List<DispMonthlyVO> buildSQLForSelectDispTmgMonthlyList(String baseDate, String empSql) {
+
+        Map<String, Object> map = MapUtil.newHashMap(2);
+        map.put("baseDate", baseDate);
+        map.put("empSql", empSql);
+
+        return baseMapper.buildSQLForSelectDispTmgMonthlyList(map);
+    }
+
+
 }

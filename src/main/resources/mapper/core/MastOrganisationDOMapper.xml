@@ -42,5 +42,17 @@
                     )
                 )
     </select>
+    <select id="buildSQLForSelectEmployeeDetail" resultType="java.lang.String">
+        SELECT
+            TMG_F_GET_MO(
+                #{sectionId},
+                #{today},
+                0,
+                #{custId},
+                #{compCode}
+            )
+		FROM
+		    DUAL
+    </select>
 
 </mapper>

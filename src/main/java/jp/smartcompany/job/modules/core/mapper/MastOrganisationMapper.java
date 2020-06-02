@@ -31,4 +31,9 @@ public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
       */
      LimitOfBasedateVO buildSQLForLimitOfBasedate(Map<String, Object> map);
 
+     /**
+      * 職員情報を取得する
+      */
+     String buildSQLForSelectEmployeeDetail(Map<String, Object> map);
+
 }

@@ -89,4 +89,10 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
      */
     int buildSQLForUpdateMonthly(Map<String, Object> map);
 
+
+    /**
+     * 表示月遷移リスト情報を取得する
+     */
+    List<DispMonthlyVO> buildSQLForSelectDispTmgMonthlyList(Map<String, Object> map);
+
 }
