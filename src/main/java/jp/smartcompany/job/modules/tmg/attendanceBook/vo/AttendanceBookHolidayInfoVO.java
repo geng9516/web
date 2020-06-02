@@ -55,9 +55,13 @@ public class AttendanceBookHolidayInfoVO {
      * @param attendanceBookCommentDTO
      */
     public AttendanceBookHolidayInfoVO(AttendanceEndueTimeInfoDTO attendanceEndueTimeInfoDTO, AttendanceBookCommentDTO attendanceBookCommentDTO) {
-        this.endueDate = attendanceEndueTimeInfoDTO.getEndueDate();
-        this.endueDaysHours = attendanceEndueTimeInfoDTO.getEndueDays() + "日 " + attendanceEndueTimeInfoDTO.getEndueHours() + "時間";
-        this.tmy_comment = attendanceBookCommentDTO.getTmy_comment();
+        if (null != attendanceEndueTimeInfoDTO) {
+            this.endueDate = attendanceEndueTimeInfoDTO.getEndueDate();
+            this.endueDaysHours = attendanceEndueTimeInfoDTO.getEndueDays() + "日 " + attendanceEndueTimeInfoDTO.getEndueHours() + "時間";
+        }
+        if (null != attendanceBookCommentDTO) {
+            this.tmy_comment = attendanceBookCommentDTO.getTmy_comment();
+        }
         this.queryTime = DateUtil.now();
     }
 
