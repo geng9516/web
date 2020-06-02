@@ -27,7 +27,7 @@
                         style="width: calc(100% - 120px);border-radius:0">
                         {{ showName(deptName) }}
                     </i-button>
-                    <Drawer class="tc" title="組織を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
                         v-model="deptDrawShow">
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -46,7 +46,7 @@
             </div>
         </div>
         <div class="content_body">
-            <i-table @on-row-click="showDay(arguments)" border :columns="columns" :row-class-name="() => 'select-col'"
+            <i-table @on-row-click="showDay(arguments)" no-data-text="所属を選択して下さい。" border :columns="columns" :row-class-name="() => 'select-col'"
                 :disabled-hover="true" :data="data" :loading="loading">
                 <template slot-scope="{ row }" slot="investDaysSum">
                     <span>{{ row.investDaysSum | addNumDeci(true) }}</span>
@@ -129,7 +129,6 @@
                         [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]: ''
                     },
                     deptDrawShow: true,
-                    requestURL: location.href.split('?')[0],
                     treeData: [],
                     empTreeData: [],
                     defaultDeptId: [[${ TmgReferListObject.getTargetSec() }]],
@@ -187,8 +186,8 @@
                     this.deptDrawShow = false
                     const section = [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
-                    await this.http.postForm(this.requestURL, this.referListObject)
-                    location.href = this.requestURL;
+                    await this.http.postForm(location.href, this.referListObject)
+                    location.href = location.href
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)
