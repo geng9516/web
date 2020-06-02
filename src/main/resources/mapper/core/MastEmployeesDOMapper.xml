@@ -16,7 +16,7 @@
     </select>
 
     <!--年次休假管理一览-->
-    <select id="selectPaidHolidayInit" resultType="jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO">
+    <select id="selectPaidHolidayInit" resultType="jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO" statementType="STATEMENT">
         select h.TPH_CEMPLOYEEID,
                (
                  select e.ME_CKANJINAME from MAST_EMPLOYEES e
@@ -54,30 +54,8 @@
                 TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(h.TPH_NTHROUGHOUT_HOURS, 0) + NVL(h.TPH_NADJUST_HOURS_TO, 0), 1) as throughout_hours_sum
                 from TMG_PAID_HOLIDAY h,
                 (
-                    SELECT '34370889' as empid,'吉武 徹' as empname,1 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '19225739' as empid,'吉田 健二' as empname,2 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '57854417' as empid,'加藤 宏二' as empname,3 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '19231982' as empid,'渡邊 雄二' as empname,4 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '07755956' as empid,'遠藤 浩輝' as empname,5 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '40907319' as empid,'陶山 聡' as empname,6 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '26050240' as empid,'久保 圭江子' as empname,7 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '59977466' as empid,'大島 由紀子' as empname,8 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '67841708' as empid,'河本 智裕' as empname,9 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '77224330' as empid,'柴垣 朋子' as empname,10 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '55276713' as empid,'中川 昌世' as empname,11 as seq,'01' as cust,'01' as comp FROM DUAL
-                    UNION ALL
-                    SELECT '09278924' as empid,'西村 智子' as empname,12 as seq,'01' as cust,'01' as comp FROM DUAL
-               ) a
+                   ${value}
+                ) a
                where h.TPH_DYYYYMMDD =
                 (
                   select max(h2.TPH_DYYYYMMDD) from TMG_PAID_HOLIDAY h2

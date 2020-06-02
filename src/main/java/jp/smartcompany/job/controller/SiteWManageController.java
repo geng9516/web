@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -57,11 +56,10 @@ public class SiteWManageController {
             modelMap.addAttribute("moduleIndex", moduleIndex)
                     .addAttribute("menuId", menuId);
         }
-        paidHolidayBean.actionInitHandler(modelMap);
         String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
-        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
+        paidHolidayBean.actionInitHandler(modelMap,referList.buildSQLForSelectEmployees());
         referList.putReferList(modelMap);
         modelMap.addAttribute("psDBBean",psDBBean);
         return "sys/wmanage/vacation";

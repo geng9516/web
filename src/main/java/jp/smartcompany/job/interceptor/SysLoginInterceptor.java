@@ -187,20 +187,36 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         psDBBean.setTargetComp(session.getLoginCompany());
         psDBBean.setTargetCust(session.getLoginCustomer());
 
+        // 管理Site的选中员工和部门
         String targetAdminSection = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         String targetAdminEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
+
+        // 承认Site的选中员工和部门
+        String targetPermSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
+        String targetPermEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+
         String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
 
         if (StrUtil.isNotBlank(targetAdminSection)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,targetAdminSection);
-            log.info("【当前选中部门：{}】",targetAdminSection);
             psDBBean.setTargetDept(targetAdminSection);
         }
-
         if (StrUtil.isNotBlank(targetAdminEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,targetAdminEmp);
             psDBBean.setTargetUser(targetAdminEmp);
         }
+
+        if (StrUtil.isNotBlank(targetPermSection)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetPermSection);
+            psDBBean.setTargetDept(targetPermSection);
+        }
+        if (StrUtil.isNotBlank(targetPermEmp)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
+            psDBBean.setTargetDept(targetPermEmp);
+        }
+
+
+
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
         }

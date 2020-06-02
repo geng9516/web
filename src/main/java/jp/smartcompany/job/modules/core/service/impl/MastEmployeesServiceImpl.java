@@ -48,8 +48,8 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     }
 
     @Override
-    public List<PaidHolidayInitVO> listPaidHolidayInit() {
-        return baseMapper.selectPaidHolidayInit();
+    public List<PaidHolidayInitVO> listPaidHolidayInit(String empSql) {
+        return baseMapper.selectPaidHolidayInit(empSql);
     }
 
     @Override

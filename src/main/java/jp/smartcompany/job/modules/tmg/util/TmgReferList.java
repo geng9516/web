@@ -902,7 +902,8 @@ public class TmgReferList {
             String base = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
             String target;
 
-            log.debug("【createEmpList的参数:sectionId:{},targetDate:{}】",targetSection,targetDate);
+            System.out.println(gcPreYearDate);
+            log.debug("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);
@@ -918,9 +919,11 @@ public class TmgReferList {
                         this.gbUseManageFLG
                 );
                 if (target.equals(psDBBean.session.getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
+                    System.out.println("++++target.equals");
                     empList.setSearchDataArray((List)psDBBean.session.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
                     empList.setDispLimit4Tree((String)psDBBean.session.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
                 } else {
+                    System.out.println("----isSelectedSearchTab");
                     if (isSelectedSearchTab()){
                         empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
                                 "'"+targetSection+"'", target, base, "'"+psDBBean.getLanguage()+"'", true,
@@ -994,6 +997,8 @@ public class TmgReferList {
         }
         // 使用するデータを、SYSDATE-targetDateの範囲に絞り込みます
         empList.setDataArray(empList.getDataArrayBetween(pSdf.format(gcSysdate.getTime()),targetDate));
+        System.out.println("createEmpList4TreeView");
+        System.out.println(empList.getDataArray());
     }
 
     /**
@@ -1223,6 +1228,7 @@ public class TmgReferList {
         String sSQL = null;
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             if(treeViewType == TREEVIEW_TYPE_LIST || treeViewType == TREEVIEW_TYPE_LIST_SEC || treeViewType == TREEVIEW_TYPE_LIST_WARD){
+                log.debug("【buildSQLForSelectEmployees：isSelectedSearchTab-{}】",isSelectedSearchTab());
                 sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectEmpList() : buildSQLForSelectEmpList();
             }
         }else
@@ -1303,6 +1309,7 @@ public class TmgReferList {
      */
     private String buildSearchDataArraySQLForSelectEmpList(){
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
+            log.debug("buildSearchDataArraySQLForSelectEmpList执行");
             if (empList == null) {
                 return null;
             }
