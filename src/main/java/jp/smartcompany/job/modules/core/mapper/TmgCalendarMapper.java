@@ -23,20 +23,19 @@ import java.util.List;
 public interface TmgCalendarMapper extends BaseMapper<TmgCalendarDO> {
 
 
-        calendarDto selectCalendar(@Param("custId")String custId,
-                                   @Param("compId")String compId,
-                                   @Param("year")int year,
-                                   @Param("baseDate")String baseDate);
+    calendarDto selectCalendar(@Param("custId") String custId,
+                               @Param("compId") String compId,
+                               @Param("year") int year,
+                               @Param("baseDate") String baseDate);
 
 
-        List<OneMonthDetailVo>  selectDayCount(@Param("baseDate")String baseDate);
+    List<OneMonthDetailVo> selectDayCount(@Param("baseDate") String baseDate);
 
 
-
-        List<calenderVo> selectGetCalendarList(@Param("custId")String custId,
-                                               @Param("compId")String compId,
-                                               @Param("secId")String secId,
-                                               @Param("groupId")String groupId,
-                                               @Param("targetYYYY")String targetYYYY,
-                                               @Param("sBaseDate")String sBaseDate);
-        }
+    List<calenderVo> selectGetCalendarList(@Param("custId") String custId,
+                                           @Param("compId") String compId,
+                                           @Param("secId") String secId,
+                                           @Param("groupId") String groupId,
+                                           @Param("targetYYYY") String targetYYYY,
+                                           @Param("sBaseDate") String sBaseDate);
+}

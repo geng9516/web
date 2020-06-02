@@ -17,18 +17,18 @@ import java.util.List;
  * @since 2020-04-16
  */
 public interface ITmgCalendarService extends IService<TmgCalendarDO> {
-        /**
-         * 前翌年度有無判定を取得するSQLを返す
-         */
-        calendarDto selectCalendar(String custId,String compId,int year,String baseDate);
+    /**
+     * 前翌年度有無判定を取得するSQLを返す
+     */
+    calendarDto selectCalendar(String custId, String compId, int year, String baseDate);
 
-        /**
-         * 対象勤務年月の1ヶ月間の日付・曜日を取得
-         */
-        List<OneMonthDetailVo>  selectDayCount(String baseDay);
+    /**
+     * 対象勤務年月の1ヶ月間の日付・曜日を取得
+     */
+    List<OneMonthDetailVo> selectDayCount(String baseDay);
 
-        /**
-         * カレンダーテーブルより休日フラグを取得。
-         */
-        List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate);
-        }
+    /**
+     * カレンダーテーブルより休日フラグを取得。
+     */
+    List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate);
+}
