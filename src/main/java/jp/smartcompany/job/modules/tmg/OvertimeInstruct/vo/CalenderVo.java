@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class calenderVo {
+public class CalenderVo {
 
     private String tcaCholflg01;
     private String tcaCholflg02;

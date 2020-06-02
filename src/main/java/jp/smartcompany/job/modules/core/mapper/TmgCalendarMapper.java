@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,7 +32,7 @@ public interface TmgCalendarMapper extends BaseMapper<TmgCalendarDO> {
     List<OneMonthDetailVo> selectDayCount(@Param("baseDate") String baseDate);
 
 
-    List<calenderVo> selectGetCalendarList(@Param("custId") String custId,
+    List<CalenderVo> selectGetCalendarList(@Param("custId") String custId,
                                            @Param("compId") String compId,
                                            @Param("secId") String secId,
                                            @Param("groupId") String groupId,

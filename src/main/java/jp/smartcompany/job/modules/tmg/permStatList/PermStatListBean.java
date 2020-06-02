@@ -4,6 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.CalenderVo;
+import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
@@ -99,6 +101,11 @@ public class PermStatListBean {
      * ITmgMonthlyInfoService
      */
     private final ITmgMonthlyInfoService iTmgMonthlyInfoService;
+
+    /**
+     * ITmgMonthlyInfoService
+     */
+    private final ITmgCalendarService iTmgCalendarService;
     /**
      * TmgReferList
      */
@@ -473,13 +480,17 @@ public class PermStatListBean {
                 empSql,
                 colNameList
         );
-//
-//        // 1 カレンダー情報の取得
-//        buildSQLForSelectTMG_CALENDER();
-//
-//        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
-//        buildSQLForSelectTMG_V_DAYCOUNT();
-//
+        modelMap.addAttribute("tmgMonthlyInfoVOList",tmgMonthlyInfoVOList);
+
+        // 1 カレンダー情報の取得
+        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), _referList.getTargetSec(), _referList.getTargetGroup(), getReqDYYYYMM().substring(0,4), getReqDYYYYMM());
+        modelMap.addAttribute("calenderVoList",calenderVoList);
+
+        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
+        modelMap.addAttribute("oneMonthDetailVoList",oneMonthDetailVoList);
+
         // 3 表示対象月の前月データを持つ職員数
         int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
         modelMap.addAttribute("tmgMonthlyInfoPrevCount",tmgMonthlyInfoPrevCount);
@@ -495,7 +506,6 @@ public class PermStatListBean {
         // 6 表示月遷移リスト情報取得
         List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
         modelMap.addAttribute("cispMonthlyVOList",cispMonthlyVOList);
-
 
     }
 

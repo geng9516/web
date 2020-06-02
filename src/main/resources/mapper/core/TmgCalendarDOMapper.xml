@@ -27,7 +27,7 @@
             TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 <![CDATA[<=]]> TRUNC( Last_day( TO_DATE(#{baseDate}) ) );
     </select>
 
-    <select id="selectGetCalendarList"  resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo">
+    <select id="selectGetCalendarList"  resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.CalenderVo">
         SELECT
             TCA_CHOLFLG01,
             TCA_CHOLFLG02,

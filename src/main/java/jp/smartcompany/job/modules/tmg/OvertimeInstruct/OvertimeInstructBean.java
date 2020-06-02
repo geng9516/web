@@ -40,7 +40,7 @@ public class OvertimeInstructBean {
         // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
         // 1 カレンダーテーブルより休日フラグを取得
-        List<calenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
+        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
                 param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
         // 2 表示対象社員の今月分の一日毎の超過勤務実績時間を取得
         List<monthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(param.getCustId(), param.getCompId(), param.getTargetSec(),
@@ -67,7 +67,7 @@ public class OvertimeInstructBean {
         // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
         // 1 カレンダーテーブルより休日フラグを取得
-        List<calenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
+        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
                 param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
         // 2 表示対象社員の超過勤務命令時間を取得
         //buildSQLForSelectTMG_MONTHLY_INFO_OTI
