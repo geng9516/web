@@ -3,9 +3,7 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper">
 
 
-
-
-    <select id="tmgFExcludeTerm" resultType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow" >
+    <select id="tmgFExcludeTerm" resultType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow">
         with PL_TERM_A as (SELECT
         NULL::TEXT AS CTYPE,
         #{startDate,jdbcType=DATE} ::Date as DOPEN,
@@ -64,7 +62,7 @@
         ORDER BY CTYPE, DOPEN
     </select>
 
-    <select id="selectNenkyuRuleH" resultType="int" >
+    <select id="selectNenkyuRuleH" resultType="int">
         select
             e.mgd_nsparenum1
         from
@@ -87,7 +85,7 @@
         and e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
     </select>
 
-    <select id="selectNenkyuRuleH2" resultType="int" >
+    <select id="selectNenkyuRuleH2" resultType="int">
         select
             e.mgd_nsparenum1
         from
@@ -131,7 +129,7 @@
         and d.cshainno       =  #{employeeId}
     </select>
 
-    <select id="selectNenkyuRuleT" resultType="int" >
+    <select id="selectNenkyuRuleT" resultType="int">
         select
             e.mgd_nsparenum1
         from
@@ -154,7 +152,7 @@
         and e.mgd_cgenericgroupid = 'TMG_WORKERTYPE_MA'
     </select>
 
-    <select id="selectNenkyuRuleT2" resultType="int" >
+    <select id="selectNenkyuRuleT2" resultType="int">
         select
             e.mgd_nsparenum1
         from
@@ -200,7 +198,8 @@
         and e.mgd_csparechar3 is null
     </select>
 
-    <select id="selectMastGenericDetailDO" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO">
+    <select id="selectMastGenericDetailDO"
+            resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO">
         select
             mgd_csparechar1,    -- //予備文字列1
             mgd_csparechar2,    -- //予備文字列2
@@ -265,7 +264,6 @@
     </select>
 
 
-
     <select id="selectDispDailyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">
         SELECT
         MGD_CHEADER,
@@ -284,8 +282,8 @@
     </select>
 
 
-
-    <select id="selectMasterTmgNtfTypeDispAppList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo">
+    <select id="selectMasterTmgNtfTypeDispAppList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo">
         SELECT
         G.MGD_CMASTERCODE AS GROUP_ID,
         G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
@@ -358,26 +356,26 @@
 
     <select id="selectApprovelLevel" resultType="java.lang.String">
         SELECT MGD_CMASTERCODE FROM MAST_GENERIC_DETAIL
-        WHERE  MGD_CCUSTOMERID=#{custId}
-        AND    MGD_CCOMPANYID_CK_FK=#{compId}
-        AND    MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
-        AND    MGD_CLANGUAGE_CK=#{language}
-        AND    MGD_DSTART_CK=#{today}
-        AND    MGD_DEND=#{today}
-        AND    MGD_NSPARENUM1=(
-                        SELECT
-                            MIN(MGD_NSPARENUM1)
-                        WHERE
-                            MAST_GENERIC_DETAIL
-                        WHERE MGD_CCUSTOMERID=#{custId}
-                        AND   MGD_CCOMPANYID_CK_FK=#{compId}
-                        AND   MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
-                        AND   MGD_CLANGUAGE_CK=#{language}
-                        AND   MGD_DSTART_CK=#{today}
-                        AND   MGD_DEND=#{today}
-                        <if test="piMode==0">
-                            AND   MGD_NSPARENUM1 > #{approvelLevel}
-                        </if>
+        WHERE MGD_CCUSTOMERID=#{custId}
+        AND MGD_CCOMPANYID_CK_FK=#{compId}
+        AND MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
+        AND MGD_CLANGUAGE_CK=#{language}
+        AND MGD_DSTART_CK=#{today}
+        AND MGD_DEND=#{today}
+        AND MGD_NSPARENUM1=(
+        SELECT
+        MIN(MGD_NSPARENUM1)
+        WHERE
+        MAST_GENERIC_DETAIL
+        WHERE MGD_CCUSTOMERID=#{custId}
+        AND MGD_CCOMPANYID_CK_FK=#{compId}
+        AND MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
+        AND MGD_CLANGUAGE_CK=#{language}
+        AND MGD_DSTART_CK=#{today}
+        AND MGD_DEND=#{today}
+        <if test="piMode==0">
+            AND MGD_NSPARENUM1 > #{approvelLevel}
+        </if>
 
         )
 
@@ -451,10 +449,10 @@
     <select id="buildSQLSelectGetMgdCsparechar4"
             resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO">
         SELECT
-            MGD_CMASTERCODE,
-            DECODE(MGD_CSPARECHAR5,'0','1','0') AS  MGD_CSPARECHAR5 <!--本来は1=出勤日なのだが、JS側で逆に判定してしまっているので、やむなく変換。後で直すべし-->
+        MGD_CMASTERCODE,
+        DECODE(MGD_CSPARECHAR5,'0','1','0') AS MGD_CSPARECHAR5 <!--本来は1=出勤日なのだが、JS側で逆に判定してしまっているので、やむなく変換。後で直すべし-->
         FROM
-            TABLE(TMG_F_GET_EMPLOYEES_WORKDAY_A(#{custCode},#{compCode},'ja'))
+        TABLE(TMG_F_GET_EMPLOYEES_WORKDAY_A(#{custCode},#{compCode},'ja'))
     </select>
     <select id="buildSQLForSelectGenericDetail"
             resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO">
@@ -487,19 +485,20 @@
         AND MGD_MASTER_CODE       = #{masterCode}
     </select>
 
-    <select id="buildSQLForSelectgetMgdDescriptions" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO">
+    <select id="buildSQLForSelectgetMgdDescriptions"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO">
         SELECT
-            MGD_CMASTERCODE
-            , MGD_CGENERICDETAILDESC
+        MGD_CMASTERCODE
+        , MGD_CGENERICDETAILDESC
         FROM
-            MAST_GENERIC_DETAIL
+        MAST_GENERIC_DETAIL
         WHERE
-            MGD_CCUSTOMERID = #{custID}
+        MGD_CCUSTOMERID = #{custID}
         AND MGD_CCOMPANYID_CK_FK = #{compCode}
         AND MGD_CLANGUAGE_CK = 'ja'
         AND MGD_CGENERICGROUPID = #{groupId}
         AND MGD_DSTART_CK <![CDATA[<=]]>  #{day}
-        AND MGD_DEND >=  #{day}
+        AND MGD_DEND >= #{day}
         <choose>
             <when test="groupId =='TMG_BUSINESS_TRIP'">
                 ORDER BY MGD_CMASTERCODE
@@ -642,6 +641,36 @@
             to_char(trunc(sysdate), 'yyyy/MM/dd') as TODAY,
             to_char(trunc(sysdate, 'mm'), 'yyyy/MM/dd') AS THIS_MONTH
         FROM DUAL
+    </select>
+    <select id="selectLimit" resultType="java.lang.String">
+        SELECT
+            MGD_NTHRESHOLD1
+        FROM
+            TMG_V_MGD_LIMIT
+        WHERE      MGD_CCUSTOMERID      = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_DSTART_CK       <![CDATA[<=]]> #{baseDate}
+        AND MGD_DEND            >= #{baseDate}
+        AND MGD_CLANGUAGE_CK     = #{sLang}
+        AND MGD_CMASTERCODE      = #{masterCode}
+        ;
+    </select>
+    <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto">
+        SELECT
+            MGD_CHEADER,
+            MGD_CSQL,
+            MGD_NWIDTH,
+            MGD_CCOLUMNID
+        FROM
+            TMG_V_MGD_DISPOVERTIMEITEMS
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+         AND MGD_CLANGUAGE_CK = #{language}
+        AND MGD_DSTART_CK       <![CDATA[<=]]> #{baseDate}
+        AND MGD_DEND            >= #{baseDate}
+        ORDER BY
+            MGD_NSEQ
     </select>
 
 
