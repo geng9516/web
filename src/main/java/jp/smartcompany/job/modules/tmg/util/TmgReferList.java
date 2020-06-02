@@ -63,25 +63,41 @@ import java.util.*;
 public class TmgReferList {
 
     private PsDBBean psDBBean;
-    private ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
-    private DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
+    private final DataSource dataSource = SpringUtil.getBean("dataSource");
 
-    private String beanDesc = null;
-    private String targetDate = null;
+    // psApp参数
+    private String beanDesc;
+    // 目标日期
+    private String targetDate;
+    // 树状菜单类型
     private int treeViewType = -1;
-    private boolean isJoinTmgEmployees = true; // TMG_EMPLOYEEと結合するかどうか
+    // TMG_EMPLOYEEと結合するかどうか
+    private boolean isJoinTmgEmployees = true;
     private boolean gbAllDivision = false;
-    private boolean gbUseManageFLG = false; // 管理対象者外を表示するかどうか（ture：表示する false：表示しない）
-    private boolean gbIsSetTargetDate = false; // 引数として渡したtargetDateを基準日として扱うか(true：基準日に設定する false：設定しない）
-    private String gsEditorGroupCode = null;	//編集担当者のグループコード
-    private boolean gbUseSearcjEmp = false; // 組織ツリー検索機能を使用判定用(true:使用、false:使用しない)
+    // 管理対象者外を表示するかどうか（ture：表示する false：表示しない）
+    private boolean gbUseManageFLG = false;
+    // 引数として渡したtargetDateを基準日として扱うか(true：基準日に設定する false：設定しない）
+    private boolean gbIsSetTargetDate = false;
+    // 編集担当者のグループコード
+    private String gsEditorGroupCode;
+    // 組織ツリー検索機能を使用判定用(true:使用、false:使用しない)
+    private boolean gbUseSearcjEmp = false;
 
-    // リスト作成のための各種オブジェクト
-    private TmgOrgTree orgTree  = null; // 勤怠管理サイト用:組織ツリー
-    private TmgDivisionTree  divTree    = null; // 勤怠管理サイト用:部局ツリー
-    private TmgEmpList  empList    = null; // 勤怠管理サイト用:社員一覧
-    private TmgGroupList groupList  = null; // 勤怠承認サイト用:グループ一覧
-    private TmgMemberList memberList = null; // 勤怠承認サイト用:メンバー一覧
+    /**
+      *リスト作成のための各種オブジェクト
+      */
+    // 勤怠管理サイト用:組織ツリー
+    private TmgOrgTree orgTree  = null;
+    // 勤怠管理サイト用:部局ツリー
+    private TmgDivisionTree  divTree    = null;
+    // 勤怠管理サイト用:社員一覧
+    private TmgEmpList  empList    = null;
+
+    // 勤怠承認サイト用:グループ一覧
+    private TmgGroupList groupList  = null;
+    // 勤怠承認サイト用:メンバー一覧
+    private TmgMemberList memberList = null;
 
     /**
      *  検索対象日付をセッションに登録する際のキーです。
@@ -174,17 +190,12 @@ public class TmgReferList {
     private String targetSec_admin = null;
     private String targetEmp_admin = null;
 
-    // 勤怠管理サイトにおいて、画面上で選択された勤務先グループを保持する
-    private String targetWard_admin = null;
-
     // 勤怠承認サイトにおいて、画面上で選択された部署・グループ・社員・ビューを保持する
     private String targetSec_perm = null;
     private String targetGroup_perm = null;
     private String targetMember_perm = null;
     private String selectedView_perm = null;
 
-    // 勤怠承認サイトにおいて、画面上で選択された勤務先グループを保持する
-    private String targetWard_perm = null;
 
     // オブジェクト生成時の「SYSDATE」をGrecorianCalendarで保持する（クエリ作成などに使用する）
     private Date gcSysdate = null;
@@ -2718,24 +2729,6 @@ public class TmgReferList {
         }
     }
 
-    /**
-     * 勤怠管理サイトおよび勤怠承認サイトにおいて、選択された勤務先グループの勤務先グループコードを返します。
-     * 勤怠管理サイトにおいて、勤務先グループが選択されていない状態の場合、nullを返します。
-     * それ以外の場合は、nullを返します。
-     * @return String 勤務先グループコード
-     */
-    public String getTargetWard() {
-        if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)
-                        || this.treeViewType == TREEVIEW_TYPE_LIST_WARD
-        ){
-            return targetWard_admin;
-        }else
-        if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)){
-            return targetWard_perm;
-        }else{
-            return null;
-        }
-    }
 
     /**
      * 勤怠管理サイトおよび勤怠承認サイトにおいて、選択された部署の部署略称を返します。
@@ -2757,31 +2750,6 @@ public class TmgReferList {
             return sSecName;
         } else if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
             return groupList.getTargetSectionName(targetSec_perm);
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * 勤怠管理サイトおよび勤怠承認サイトにおいて、選択された勤務先グループの名称を返します。
-     * 勤怠管理サイトにおいて、勤務先グループが選択されていない状態の場合、nullを返します。
-     * それ以外の場合は、nullを返します。
-     * @return String 勤務先グループ名
-     */
-    public String getTargetWardName() {
-        // 初期化
-        String sWardName = null;
-        // サイト判定
-        if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
-            // 部局か組織か判定を行う
-            if (orgTree != null){
-                sWardName = orgTree.getTargetSectionNameNoCounts(targetWard_admin);
-            } else {
-                sWardName = divTree.getTargetSectionNameNoCounts(targetWard_admin);
-            }
-            return sWardName;
-        } else if (psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM)){
-            return groupList.getTargetSectionName(targetWard_perm);
         } else {
             return null;
         }

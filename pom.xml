@@ -25,6 +25,7 @@
         <itext.version>7.1.11</itext.version>
         <servlet.version>4.0.1</servlet.version>
         <jdom.version>2.0.6</jdom.version>
+        <thymeleaf.shiro.version>2.0.0</thymeleaf.shiro.version>
     </properties>
 
     <dependencies>
@@ -55,6 +56,12 @@
             <artifactId>spring-boot-configuration-processor</artifactId>
             <optional>true</optional>
         </dependency>
+        <dependency>
+            <groupId>com.github.theborakompanioni</groupId>
+            <artifactId>thymeleaf-extras-shiro</artifactId>
+            <version>${thymeleaf.shiro.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>

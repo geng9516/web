@@ -1,5 +1,6 @@
 package jp.smartcompany.job.configuration;
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import cn.hutool.core.map.MapUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
@@ -139,6 +140,11 @@ public class ShiroConfiguration {
         // 散列的次数，相当于 md5(md5(""));
         hashedCredentialsMatcher.setHashIterations(1);
         return hashedCredentialsMatcher;
+    }
+
+    @Bean
+    public ShiroDialect shiroDialect(){
+        return new ShiroDialect();
     }
 
 }
