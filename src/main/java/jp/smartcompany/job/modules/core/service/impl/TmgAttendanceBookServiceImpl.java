@@ -36,6 +36,20 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
     }
 
     @Override
+    public AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd,String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language) {
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("dyyyymmdd", dyyyymmdd);
+        params.put("month", month);
+        params.put("firstDayOfYear", firstDayOfYear);
+        params.put("employeeId", employeeId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("language", language);
+        return baseMapper.selectTargetDateInfo(params);
+    }
+
+
+    @Override
     public AttendanceEndueTimeInfoDTO selectEndueTimeInfo(String dyyyymmdd, String employeeId, String preMonthDay, String nextYearDay, String compCode, String custId) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("dyyyymmdd", dyyyymmdd);

@@ -31,6 +31,20 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      */
     AttendanceDateInfoDTO selectDateInfo(String dyyyymmdd, String firstDayOfYear, String employeeId, String compCode, String custId, String language);
 
+    /**
+     * 表示時間を取得する
+     *
+     * @param dyyyymmdd      2020/05/14
+     * @param month          05
+     * @param firstDayOfYear 2020/01/01
+     * @param employeeId     34370889
+     * @param compCode       01
+     * @param custId         01
+     * @param language       ja
+     * @return
+     */
+    AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd,String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language);
+
 
     /**
      * 年次休暇付与日数と付与時間

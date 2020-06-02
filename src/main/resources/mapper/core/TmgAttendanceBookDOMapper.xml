@@ -133,6 +133,20 @@
         and v.mgd_cworkertype = tmg_f_get_workertype(#{employeeId}, to_date(#{dyyyymmdd}, 'yyyy/mm/dd'), mgd_ccustomerid, mgd_ccompanyid)
     </select>
 
+    <!-- 表示時間を取得する  -->
+    <select id="selectTargetDateInfo" resultType="java.util.HashMap" resultMap="selectDateInfoMap">
+        select #{month} as mgd_ndefault_month
+        ,to_char(tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid)), '1', to_date(#{firstDayOfYear}, 'yyyy/mm/dd'), mgd_ccustomerid,mgd_ccompanyid), 'yyyy') || '/' || lpad(#{month}, 2, '0') ||'/01' as dispterm_start
+        ,to_char(add_months(to_date(to_char(tmg_f_get_the_yearzone(to_number(tmg_f_get_the_year(to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid)), '1',to_date(#{firstDayOfYear}, 'yyyy/mm/dd'),mgd_ccustomerid, mgd_ccompanyid), 'yyyy') ||'/' || lpad(#{month}, 2, '0') || '/01'), 11), 'yyyy/mm/dd') as dispterm_end
+        from tmg_v_mgd_first_month v
+        where v.mgd_ccustomerid = #{custId}
+        and v.mgd_ccompanyid = #{compCode}
+        and v.mgd_dstart <![CDATA[<=]]>  to_date(#{dyyyymmdd}, 'yyyy/mm/dd')
+        and v.mgd_dend <![CDATA[>=]]> to_date(#{dyyyymmdd}, 'yyyy/mm/dd')
+        and v.mgd_clanguage = #{language}
+        and v.mgd_cworkertype = tmg_f_get_workertype(#{employeeId}, to_date(#{dyyyymmdd}, 'yyyy/mm/dd'), mgd_ccustomerid,mgd_ccompanyid)
+    </select>
+
     <!-- 年次休暇付与日数と付与時間 -->
     <select id="selectEndueTimeInfo" resultType="jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceBookDTO" resultMap="selectEndueTimeInfoMap">
         select to_char(tph_dyyyymmdd, 'mm') || '月' || to_char(tph_dyyyymmdd,'dd') || '日' endueDate,

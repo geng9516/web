@@ -79,18 +79,24 @@ public class AttendanceBookBean {
      * @return
      */
     public AttendanceDateInfoDTO selectDateInfo(String employeeId) {
-        String year = DateUtil.thisYear() + "";
-        return this.selectDateInfo(employeeId, year);
+        String compCode = psDBBean.getCompCode();
+        String custId = psDBBean.getCustID();
+        String language = psDBBean.getLanguage();
+        String dyyyymmdd = DateUtil.format(new java.util.Date(), DYYYYMMDD);
+        String firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
+
+        AttendanceDateInfoDTO result = iTmgAttendanceBookService.selectDateInfo(dyyyymmdd, firstDayOfYear, employeeId, compCode, custId, language);
+        return result;
     }
 
     /**
-     * ディフォルト表示時間を取得する
+     * 表示時間を取得する
      *
      * @param employeeId 34370889
      * @param year       2020
      * @return
      */
-    public AttendanceDateInfoDTO selectDateInfo(String employeeId, String year) {
+    public AttendanceDateInfoDTO selectDateInfo(String employeeId, String year, String month) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
@@ -103,11 +109,13 @@ public class AttendanceBookBean {
         } else {
             firstDayOfYear = DateUtil.format(DateUtil.beginOfYear(DateUtil.parse(dyyyymmdd)), DYYYYMMDD);
         }
-
+        if (null == month || "".equals(month)) {
+            month = DateUtil.thisMonth() + "";
+        }
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
         String language = psDBBean.getLanguage();
-        AttendanceDateInfoDTO result = iTmgAttendanceBookService.selectDateInfo(dyyyymmdd, firstDayOfYear, employeeId, compCode, custId, language);
+        AttendanceDateInfoDTO result = iTmgAttendanceBookService.selectTargetDateInfo(dyyyymmdd, month, firstDayOfYear, employeeId, compCode, custId, language);
 
         return result;
     }

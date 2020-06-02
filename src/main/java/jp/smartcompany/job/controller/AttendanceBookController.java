@@ -28,11 +28,12 @@ public class AttendanceBookController {
      *
      * @param employeeId
      * @param year
+     * @param month
      * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("queryDate")
-    public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year) {
-        return attendanceBookBean.selectDateInfo(employeeId, year);
+    public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year,@RequestParam("month") String month) {
+        return attendanceBookBean.selectDateInfo(employeeId, year,month);
 
     }
 
