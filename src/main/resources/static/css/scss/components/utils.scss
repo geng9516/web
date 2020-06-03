@@ -261,6 +261,20 @@
     margin-top: 11px;
   }
 }
+.toTopBtn {
+  position: fixed;
+  height: 45px;
+  width: 45px;
+  line-height: 50px;
+  text-align: center;
+  background: var(--toTopBtn-background);
+  border-radius: 25px;
+  right: 15px;
+  bottom: 19px;
+  color: white;
+  cursor: pointer;
+  z-index: 100;
+}
 // 通用class
 .red {
   color: var(--red);

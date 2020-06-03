@@ -66,6 +66,11 @@
             </Row>
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
+
+                <template slot-scope="{ row }" slot="intDay">
+                    <span>{{ row.intDay | turnLine }}</span>
+                </template>
+
                 <template slot-scope="{ row }" slot="one">
                     <span :class="dayRed(row.one)" v-if="+row.intDay == row.intDay">{{ row.one | turnLine }}</span>
                     <span v-if="+row.intDay != row.intDay">{{ row.one.split(TURN_LINE_STR)[0] }}</div>
@@ -194,7 +199,7 @@
                     return [
                         {
                             title: ' ',
-                            key: 'intDay',
+                            slot: 'intDay',
                             width: 100,
                             align: 'right'
                         },
