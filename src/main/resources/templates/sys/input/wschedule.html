@@ -103,7 +103,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)" v-if="+row.intDay == row.intDay">{{ row.seven | turnLine) }}</span>
+                    <span :class="dayRed(row.seven)" v-if="+row.intDay == row.intDay">{{ row.seven | turnLine }}</span>
                     <span v-if="+row.intDay != row.intDay">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
                     <div v-if="+row.intDay != row.intDay" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
