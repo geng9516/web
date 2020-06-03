@@ -26,9 +26,5 @@ const TURN_LINE_STR = "<br>"
 // 换行过滤器
 Vue.filter('turnLine', function (e) {
   if(!e) return
-  if (e.indexOf(TURN_LINE_STR) > -1) {
-    return e.replace(TURN_LINE_STR, '\n')
-  } else {
-    return e
-  }
+  return e.replace(/(\<br\>)+/g, '\n')
 })
