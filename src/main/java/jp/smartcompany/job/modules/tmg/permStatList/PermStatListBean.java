@@ -107,6 +107,11 @@ public class PermStatListBean {
      * ITmgMonthlyInfoService
      */
     private final ITmgCalendarService iTmgCalendarService;
+
+    /**
+     * IMastEmployeesService
+     */
+    private final IMastEmployeesService iMastEmployeesService;
     /**
      * TmgReferList
      */
@@ -404,7 +409,8 @@ public class PermStatListBean {
      * @param modelMap
      */
     public void actMonthlyPermit(ModelMap modelMap) {
-
+        executeUpdateTmgMonthly();
+        executeReadMonthlyList(modelMap);
     }
 
     /**
@@ -417,6 +423,8 @@ public class PermStatListBean {
      */
     public void actPermit(ModelMap modelMap) {
 
+        executeUpdateTmgDaily();
+        executeReadMonthlyList(modelMap);
     }
 
     /**
@@ -428,7 +436,210 @@ public class PermStatListBean {
      * @param modelMap
      */
     public void actRedirect(ModelMap modelMap) {
+        executeRedirect(modelMap);
+    }
 
+
+    /**
+     * 一括承認処理の為のプロセスを実行します。
+     * <p>
+     * 	<ul>
+     * 		<li>更新対象職員のROWIDを取得するSQL文を取得する。</li>
+     * 		<li>結果セットからROWIDを取得し編集する。</li>
+     * 		<li>一括承認対象者を取得するSQL文を取得する。</li>
+     * 		<li>日別テーブルから更新対象者のみ検出し、
+     * 			勤怠トリガーテーブルにレコードを挿入するSQL文を取得する。</li>
+     * 		<li>勤怠トリガーテーブルにレコードを削除するSQL文を取得する。</li>
+     * 		<li>クエリを実行する。</li>
+     * 	</ul>
+     * </p>
+     */
+    private void executeUpdateTmgDaily() {
+
+        String[] empIds = this.getExecuteEmpId();
+
+        String empSql = _referList.buildSQLForSelectEmployees();
+
+        // サイトIDを判定し更新対象の職員番号
+        List<String> empIdList = iMastEmployeesService.selectEmpIdListForTmgDaily(_reqSiteId, _reqDYYYYMMDD, empSql, empIds);
+
+        // 更新対象職員のROWIDを取得する
+        List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
+
+        //  一括承認データを更新する
+        String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
+        iTmgDailyService.buildSQLForUpdateTmgDaily(_loginUserCode, sProgramId, getReqDYYYYMMDD(), empIdList);
+
+        // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
+        // 一括承認データを更新する
+        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(),_loginUserCode,sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
+
+        iTmgTriggerService.buildSQLForInsertTmgTrigger(_loginUserCode, sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
+
+        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TTR_CMODIFIERUSERID", _loginUserCode)
+                .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction ));
+
+        // TODO
+        //TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
+
+    }
+
+    /**
+     * 別コンテンツへのリダイレクトを実行します。
+     * @see TmgReferList#setTargetEmployee(String)
+     */
+    private void executeRedirect(ModelMap modelMap) {
+
+        String sBean = psDBBean.getReqParam(REQ_REDIRECT_BEAN);
+        Hashtable htRequest = new Hashtable();
+        htRequest.put(REQ_ACTION, psDBBean.getReqParam(REQ_REDIRECT_ACTION));
+        htRequest.put(REQ_SECTION_ID, _reqSectionId);
+        htRequest.put(REQ_DYYYYMMDD, _reqDYYYYMMDD);
+        htRequest.put(REQ_DYYYYMM, _reqDYYYYMM);
+        htRequest.put(REQ_CEMPLOYEEID, _reqEmployeeId);
+
+        htRequest.put(REQ_REDIRECT_BEAN, APPLICATION_ID);
+
+        if (psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_EDIT_DAIRY)) {
+            htRequest.put(REQ_REDIRECT_ACTION, ACT_EDIT_DAIRY);
+        } else if (psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_DISP_MONTHLY)) {
+            htRequest.put(REQ_REDIRECT_ACTION, ACT_DISP_MONTHLY);
+        } else { // いずれでもない場合は月別一覧に戻る
+            htRequest.put(REQ_REDIRECT_ACTION, ACT_DISP_MONTHLY);
+        }
+
+        _referList.setTargetEmployee(_reqEmployeeId);
+        modelMap.addAttribute("htRequest", htRequest);
+//        // リダイレクト
+//        TmgUtil.getTmgUtil().setRedirect(sBean, htRequest, this);
+
+    }
+
+
+    /**
+     * 月次就業実績一括承認処理の為のプロセスを実行します。
+     * <p>
+     *  <ul>
+     *      <li>月次情報(ステータス)を更新するSQL文を取得する。</li>
+     *      <li>クエリを実行する。</li>
+     *  </ul>
+     * </p>
+     * @exception Exception
+     */
+    private void executeUpdateTmgMonthly() {
+
+        Vector < String > vQuery   = new Vector < String >();
+
+        String sCustId        = psDBBean.getCustID();
+        String sCompId        = psDBBean.getCompCode();
+        String sDyyyyMm       = getReqDYYYYMM();
+        String sloginUserCode = _loginUserCode;
+        String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
+
+        /*
+         * 更新処理は職員単位で行う。
+         */
+        String[] sEmpId = getExecuteEmpId();
+        for (int i = 0; i < sEmpId.length; i++) {
+
+            /*
+             * 月次承認機能がオンの場合、
+             * 月次承認エラーチェック結果がＯＫの職員のみ更新を行う。
+             */
+            if (isMonthlyApproval() && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
+                continue;
+            }
+
+            // 月次情報の更新
+            iTmgMonthlyInfoService.buildSQLForUpdateTmgMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm, sloginUserCode, sModifierProgramId);
+        }
+
+        // TODO
+        // TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
+
+
+    }
+
+
+    /** システムプロパティ：月次就業実績承認機能を使用するか判定し制御します */
+    private final String SYSPROP_TMG_BULK_MONTHLY_APPROVAL = "TMG_BULK_MONTHLY_APPROVAL";
+    private final String Cs_YES = "yes";
+    private Boolean gbMonthlyApproval = null;
+
+    /**
+     * システムプロパティから値を取得後、月次就業実績承認機能を使用するか判定し値を返却します
+     *
+     * @return boolean(true:使用する、false:使用しない)
+     */
+    public boolean isMonthlyApproval() {
+
+        if (gbMonthlyApproval == null) {
+
+            //TODO
+            //String sMonthlyApproval = psDBBean.getSystemProperty(SYSPROP_TMG_BULK_MONTHLY_APPROVAL);
+            String sMonthlyApproval = "yes";
+
+            if (sMonthlyApproval != null && Cs_YES.equalsIgnoreCase(sMonthlyApproval)) {
+                gbMonthlyApproval = true;
+            } else {
+                gbMonthlyApproval = false;
+            }
+
+        }
+
+        return gbMonthlyApproval;
+    }
+
+
+    /**
+     * 月次承認エラーチェックを行う。
+     *
+     * @param psCustId  顧客コード
+     * @param psCompId  法人コード
+     * @param psEmpId   職員番号
+     * @param psDyyyyMm 対象年月
+     * @return boolean  チェック結果（チェック結果ＯＫ：true、チェック結果ＮＧ：false）
+     */
+    private boolean isCheckMonthly(String psCustId, String psCompId, String psEmpId, String psDyyyyMm) {
+
+        Vector vQuery      = new Vector();
+        StringBuffer sbSql = new StringBuffer();
+        // 月次承認エラーチェックを行う。
+        sbSql.append(" SELECT TMG_F_CHECK_MONTHLY("+ psEmpId + ", " + psDyyyyMm + ", " + psCustId + ", " + psCompId + ") FROM DUAL ");
+        vQuery.add(sbSql);
+
+
+        String sChkRes = iTmgMonthlyService.checkMonthly(psEmpId, psDyyyyMm, psCustId, psCompId);
+
+        // チェック結果エラーがなければ、チェック結果ＯＫとする。
+        if ("0".equals(sChkRes)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 処理対象となる職員の番号を加工して返却
+     * @return 対象職員番号
+     */
+    private String[] getExecuteEmpId() {
+
+        StringBuffer sbWorkEmpId = new StringBuffer();
+        String[] sWorkEmpId = _reqExecuteEmpId.split(",");
+
+//        for (int i = 0; i < sExecuteEmpId.length; i++) {
+//
+//            // 職員番号をＤＢ検索で使用できる様にシングルクォートでエスケープし、カンマ区切りで連結する。
+//            sbWorkEmpId.append(sExecuteEmpId[i]);
+//            sbWorkEmpId.append(",");
+//        }
+//        // 最後のカンマを削除
+//        String sWorkEmpId = sbWorkEmpId.substring(0, sbWorkEmpId.length() - 1);
+
+        return sWorkEmpId;
     }
 
     /**
@@ -861,7 +1072,6 @@ public class PermStatListBean {
      * @param pDate 対象年月日
      */
     private void setReferList(String pDate, ModelMap modelMap) {
-
 
         try {
             _referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);

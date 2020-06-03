@@ -84,4 +84,17 @@ public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
          */
         List<yearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
                                             String sContentId, String sBaseDBDate,String toDay, String sLang,String sql);
-        }
+
+    /**
+     * 月次情報(ステータス)を更新する
+     *
+     * @param custId            顧客ID
+     * @param compId            法人ID
+     * @param empId             職員ID
+     * @param yyyyMm            　対象月
+     * @param loginUserCode     　更新者
+     * @param modifierProgramId 　更新プログラムID
+     * @return 件数
+     */
+    int buildSQLForUpdateTmgMonthly(String custId, String compId, String empId, String yyyyMm, String loginUserCode, String modifierProgramId);
+}

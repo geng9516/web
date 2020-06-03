@@ -30,4 +30,18 @@ public interface ITmgDailyDetailService extends IService<TmgDailyDetailDO> {
      */
     List<DailyDetailVO> buildSQLForSelectDetail(String custID, String compCode, String targetUser, String day, String language, int iMode, boolean bDel);
 
+    /**
+     * 一括承認データを更新する
+     *
+     * @param custID        顧客コード
+     * @param compCode      法人コード
+     * @param loginUserCode 更新者
+     * @param programId     　更新プログラムID
+     * @param yyyymmdd      　対象日
+     * @param empIdList     　更新職員リスト
+     * @param notWorkId     　超過勤務
+     * @return 更新件数
+     */
+    int buildSQLForUpdateTmgDailyDetail(String custID, String compCode, String loginUserCode, String programId, String yyyymmdd, List<String> empIdList, String notWorkId);
+
 }

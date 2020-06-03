@@ -136,4 +136,15 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
      */
     List<DispMonthlyVO> buildSQLForSelectDispTmgMonthlyList(String baseDate, String empSql);
 
+    /**
+     * 月別エラーチェック
+     *
+     * @param empId  職員番号
+     * @param yyyyMm 該当月
+     * @param custId 顧客コード
+     * @param compId 法人コード
+     * @return チェック件数
+     */
+    String checkMonthly(String empId, String yyyyMm, String custId, String compId);
+
 }

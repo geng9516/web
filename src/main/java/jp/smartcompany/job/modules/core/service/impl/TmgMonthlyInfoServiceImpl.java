@@ -58,7 +58,7 @@ import java.util.Map;
     @Override
     public List<TmgMonthlyInfoVO> buildSQLForSelectTmgMonthlyInfo(String custId, String compId, String baseDate, String lang, String today, String empSql, List<ColNameDto> list){
 
-        Map<String, Object> map = MapUtil.newHashMap(2);
+        Map<String, Object> map = MapUtil.newHashMap(7);
         map.put("custId", custId);
         map.put("compId", compId);
         map.put("baseDate", baseDate);
@@ -122,5 +122,28 @@ import java.util.Map;
                          sContentId,  sBaseDate,toDay,  sLang, sql);
         }
 
+    /**
+     * 月次情報(ステータス)を更新する
+     *
+     * @param custId            顧客ID
+     * @param compId            法人ID
+     * @param empId             職員ID
+     * @param yyyyMm            　対象月
+     * @param loginUserCode     　更新者
+     * @param modifierProgramId 　更新プログラムID
+     * @return 件数
+     */
+    @Override
+    public int buildSQLForUpdateTmgMonthly(String custId, String compId, String empId, String yyyyMm, String loginUserCode, String modifierProgramId) {
 
-        }
+        Map<String, Object> map = MapUtil.newHashMap(6);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        map.put("empId", empId);
+        map.put("yyyyMm", yyyyMm);
+        map.put("loginUserCode", loginUserCode);
+        map.put("modifierProgramId", modifierProgramId);
+
+        return baseMapper.buildSQLForUpdateTmgMonthly(map);
+    }
+}

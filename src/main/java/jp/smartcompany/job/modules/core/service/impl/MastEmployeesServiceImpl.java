@@ -79,4 +79,24 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
                 .gt("ME_DENDDATE",psDate);
         return list(qw);
     }
+
+    /**
+     * サイトIDを判定し更新対象の職員番号
+     *
+     * @param siteId   サイトID
+     * @param yyyymmdd 　対象日
+     * @param empsql   　対象職員取得SQL
+     * @param empIds   　画面チェックした職員番号リスト
+     * @return
+     */
+    @Override
+    public List<String> selectEmpIdListForTmgDaily(String siteId, String yyyymmdd, String empsql, String[] empIds) {
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("siteId", siteId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("empsql", empsql);
+        map.put("empIds", empIds);
+
+        return baseMapper.selectEmpIdListForTmgDaily(map);
+    }
 }

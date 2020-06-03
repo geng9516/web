@@ -42,4 +42,14 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
                                   String psLoginUserId,
                                   Date psDate);
 
+    /**
+     * サイトIDを判定し更新対象の職員番号
+     *
+     * @param siteId   サイトID
+     * @param yyyymmdd 　対象日
+     * @param empsql   　対象職員取得SQL
+     * @param empIds   　画面チェックした職員番号リスト
+     * @return
+     */
+    List<String> selectEmpIdListForTmgDaily(String siteId, String yyyymmdd, String empsql, String[] empIds);
 }

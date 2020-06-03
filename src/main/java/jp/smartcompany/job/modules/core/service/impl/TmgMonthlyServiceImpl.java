@@ -235,5 +235,26 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
         return baseMapper.buildSQLForSelectDispTmgMonthlyList(map);
     }
 
+    /**
+     * 月別エラーチェック
+     *
+     * @param empId  職員番号
+     * @param yyyyMm 該当月
+     * @param custId 顧客コード
+     * @param compId 法人コード
+     * @return チェック件数
+     */
+    @Override
+    public String checkMonthly(String empId, String yyyyMm, String custId, String compId){
+
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("empId", empId);
+        map.put("yyyyMm", yyyyMm);
+        map.put("custId", custId);
+        map.put("compId", compId);
+        return baseMapper.checkMonthly(map);
+    }
+
+
 
 }

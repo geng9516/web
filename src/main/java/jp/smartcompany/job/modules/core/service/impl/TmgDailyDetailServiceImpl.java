@@ -49,4 +49,31 @@ public class TmgDailyDetailServiceImpl extends ServiceImpl<TmgDailyDetailMapper,
         return baseMapper.buildSQLForSelectDetail(map);
     }
 
+    /**
+     * 一括承認データを更新する
+     *
+     * @param custID        顧客コード
+     * @param compCode      法人コード
+     * @param loginUserCode 更新者
+     * @param programId     　更新プログラムID
+     * @param yyyymmdd      　対象日
+     * @param empIdList     　更新職員リスト
+     * @param notWorkId     　超過勤務
+     * @return 更新件数
+     */
+    @Override
+    public int buildSQLForUpdateTmgDailyDetail(String custID, String compCode, String loginUserCode, String programId, String yyyymmdd, List<String> empIdList, String notWorkId) {
+        Map<String, Object> map = MapUtil.newHashMap(7);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("loginUserCode", loginUserCode);
+        map.put("programId", programId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("empIdList", empIdList);
+        map.put("notWorkId", notWorkId);
+
+        return baseMapper.buildSQLForUpdateTmgDailyDetail(map);
+
+    }
+
 }

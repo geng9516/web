@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDailyMapper">
+    <update id="buildSQLForUpdateTmgDaily">
+		UPDATE TMG_DAILY
+		SET
+		    TDA_CMODIFIERUSERID    = #{loginUserCode},
+		    TDA_DMODIFIEDDATE      = SYSDATE,
+		    TDA_CMODIFIERPROGRAMID = #{programId},
+		    TDA_CSTATUSFLG         = 'TMG_DATASTATUS|5',
+		    TDA_CMODIFIERUSERID_R  = #{loginUserCode},
+		    TDA_DMODIFIEDDATE_R    = SYSDATE
+		WHERE
+		     TDA_CEMPLOYEEID IN
+            <foreach item="item" collection="empIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+		 AND TDA_DYYYYMMDD    = #{yyyymmdd}
+		 AND TDA_CSTATUSFLG   = 'TMG_DATASTATUS|3'
+    </update>
 
     <select id="buildSQLForSelectCountNotApprovalDay" resultType="string">
         SELECT
@@ -555,6 +572,19 @@
         <!-- 一括承認対象日について管理対象であるか判定-->
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), TRUNC(to_date(#{targetDate},'yyyy/mm/dd'), v.cust, v.comp)
         ORDER BY v.SEQ
+    </select>
+    <select id="buildSQLForSelectObjEmpForUpdate" resultType="java.lang.String">
+		SELECT
+		    ROWID
+		FROM
+		    TMG_DAILY
+		WHERE
+		    TDA_CEMPLOYEEID IN
+            <foreach item="item" collection="empIdList" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+		AND TDA_DYYYYMMDD    = #{yyyymmdd}
+		AND TDA_CSTATUSFLG   = 'TMG_DATASTATUS|3'
     </select>
 
 

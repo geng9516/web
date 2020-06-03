@@ -31,4 +31,8 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
 
     List<PaidHolidayInitVO> selectPaidHolidayInit(String empSql);
 
+    /**
+     * サイトIDを判定し更新対象の職員番号
+     */
+    List<String> selectEmpIdListForTmgDaily(Map<String, Object> map);
 }

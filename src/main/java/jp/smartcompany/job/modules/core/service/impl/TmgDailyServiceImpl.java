@@ -211,4 +211,43 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
     public List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list){
         return baseMapper.buildSQLForSelectTmgDaily(targetDate, empSql, list);
     }
+
+
+    /**
+     * 更新対象職員のROWIDを取得する
+     *
+     * @param empIdList 職員リスト
+     * @param yyyymmdd  　対象日
+     * @return 更新対象rowidリスト
+     */
+    @Override
+    public List<String> buildSQLForSelectObjEmpForUpdate(List<String> empIdList, String yyyymmdd){
+
+
+        Map<String, Object> map = MapUtil.newHashMap(2);
+        map.put("empIdList", empIdList);
+        map.put("yyyymmdd", yyyymmdd);
+
+        return baseMapper.buildSQLForSelectObjEmpForUpdate(map);
+    }
+
+    /**
+     *  一括承認データを更新する
+     * @param loginUserCode 更新者
+     * @param programId　更新プログラムID
+     * @param yyyymmdd　対象日
+     * @param empIdList　対象者リスト
+     * @return 更新件数
+     */
+    @Override
+    public int buildSQLForUpdateTmgDaily(String loginUserCode, String programId, String yyyymmdd, List<String> empIdList) {
+
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("loginUserCode", loginUserCode);
+        map.put("programId", programId);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("empIdList", empIdList);
+
+        return baseMapper.buildSQLForUpdateTmgDaily(map);
+    }
 }

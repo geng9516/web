@@ -60,4 +60,10 @@ public interface TmgMonthlyInfoMapper extends BaseMapper<TmgMonthlyInfoDO> {
                                             @Param("toDay")String toDay,
                                             @Param("sLang")String sLang,
                                             @Param("sql")String sql);
-        }
+
+    /**
+     * 月次情報(ステータス)を更新する
+     */
+    int buildSQLForUpdateTmgMonthly(Map<String, Object> map);
+}
+

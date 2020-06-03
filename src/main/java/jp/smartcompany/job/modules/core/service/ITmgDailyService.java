@@ -134,4 +134,24 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @return
      */
     List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list);
+
+    /**
+     * 更新対象職員のROWIDを取得する
+     *
+     * @param empIdList 職員リスト
+     * @param yyyymmdd  　対象日
+     * @return 更新対象rowidリスト
+     */
+    List<String> buildSQLForSelectObjEmpForUpdate(List<String> empIdList, String yyyymmdd);
+
+
+    /**
+     *  一括承認データを更新する
+     * @param loginUserCode 更新者
+     * @param programId　更新プログラムID
+     * @param yyyymmdd　対象日
+     * @param empIdList　
+     * @return
+     */
+    int buildSQLForUpdateTmgDaily(String loginUserCode, String programId, String yyyymmdd,List<String > empIdList);
 }

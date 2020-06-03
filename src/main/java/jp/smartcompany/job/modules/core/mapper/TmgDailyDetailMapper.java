@@ -26,4 +26,8 @@ public interface TmgDailyDetailMapper extends BaseMapper<TmgDailyDetailDO> {
      */
     List<DailyDetailVO> buildSQLForSelectDetail(Map<String, Object> map);
 
+    /**
+     * 一括承認データを更新する
+     */
+    int buildSQLForUpdateTmgDailyDetail(Map<String, Object> map);
 }
