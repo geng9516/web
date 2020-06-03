@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
@@ -10,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
@@ -132,5 +134,27 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
         @Override
         public String selectSectionNAme(String custId,String compId,Date date,String sectionId){
                 return baseMapper.selectSectionNAme(custId,compId,date,sectionId);
+        }
+
+        /**
+         * 異動歴検索処理
+         *
+         * @param psCustomerId 検索対象の顧客コード
+         * @param psCompanyId 検索対象の法コード
+         * @param psUserId 検索対象のユーザID
+         * @param psDate 対象日
+         *
+         * @return List < HistDesignationEntity >
+         */
+        @Override
+        public List <HistDesignationDO> selectByEmpId(String psCustomerId, String psCompanyId, String psUserId, String psDate) {
+                QueryWrapper<HistDesignationDO> qw = SysUtil.query();
+                Date now = DateUtil.date();
+                String d = DateUtil.format(now, TmgUtil.Cs_FORMAT_DATE_TYPE1);
+                String fDate = SysUtil.transDateNullToDB(d);
+                qw.eq("HD_CUSERID",psUserId)
+                        .lt("HD_DSTARTDATE_CK",fDate)
+                        .gt("HD_DENDDATE",fDate);
+                return list(qw);
         }
 }

@@ -52,13 +52,17 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
     List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, String date);
 
     /**
-     * 获取父级组织的id
+     * <p>
+     * <b>上位組織</b>情報取得（組織指定）
+     * </p>
+     * <div>指定した組織の上位組織リストを返却する。</div>
      *
-     * @param psCustID
-     * @param psCompCode
-     * @param psTargetDept
-     * @param pdSearchDate
-     * @return
+     * @author t-abe
+     * @param customerId 顧客コード
+     * @param compnyId 法人コード
+     * @param sectionId 組織コード
+     * @param searchDate 検索基準日
+     * @return 上位組織情報
      */
     List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate);
 
@@ -102,4 +106,20 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      */
     String buildSQLForSelectEmployeeDetail(String sectionId, String today, String custId, String compCode);
 
+    /**
+     * <p>
+     * <b>下位組織</b>情報取得（組織指定）
+     * </p>
+     * <div>指定した組織の下位組織リストを返却する。 </div>
+     *
+     * @author t-abe
+     * @param customerId 顧客コード
+     * @param compnyId 法人コード
+     * @param sectionId 組織コード
+     * @param searchDate 検索基準日
+     * @return 下位組織情報
+     * @exception
+     */
+    List < String > getSubSection(String customerId, String compnyId, String sectionId,
+                                  Date searchDate);
 }

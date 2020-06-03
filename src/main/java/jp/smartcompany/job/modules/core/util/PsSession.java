@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.util;
 
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
+import jp.smartcompany.job.modules.core.util.appcontrol.TopPageInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -42,5 +43,7 @@ public class PsSession implements Serializable {
     private Map<String, Map<String, String>> loginBaseSection;
     // 基点組織情報キャッシュ(基準日毎)
     private Map<String, Map<String, String>> loginGroupBaseSection;
+    // ログインユーザのアプリケーション起動権限判定結果 ※本番
+    private TopPageInfo loginAppPermission;
 
 }

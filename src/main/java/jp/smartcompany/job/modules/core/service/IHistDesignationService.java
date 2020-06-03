@@ -69,4 +69,16 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
          * 所属名
          * */
         String selectSectionNAme(String custId,String compId,Date date,String sectionId);
+
+        /**
+         * 異動歴検索処理
+         *
+         * @param psCustomerId 検索対象の顧客コード
+         * @param psCompanyId 検索対象の法コード
+         * @param psUserId 検索対象のユーザID
+         * @param psDate 対象日
+         *
+         * @return List < HistDesignationEntity >
+         */
+        List <HistDesignationDO> selectByEmpId(String psCustomerId, String psCompanyId, String psUserId, String psDate);
 }
