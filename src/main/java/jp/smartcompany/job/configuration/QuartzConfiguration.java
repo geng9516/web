@@ -11,10 +11,10 @@ import java.util.Properties;
  * quartz配置
  * @author Xiao Wenpeng
  */
-//@Configuration
+@Configuration
 public class QuartzConfiguration {
 
-//    @Bean
+    @Bean
     public SchedulerFactoryBean schedulerFactoryBean(DataSource dataSource) {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setDataSource(dataSource);
@@ -38,7 +38,7 @@ public class QuartzConfiguration {
 
         factory.setSchedulerName("SmartCompanyScheduler");
         // 延迟执行
-        factory.setStartupDelay(30);
+        factory.setStartupDelay(0);
         factory.setApplicationContextSchedulerContextKey("applicationContextKey");
         //　可选地，QuartzScheduler在启动时更新现有作业，因此您无需在对targetObject进行每次更改后删除qrtz_job_details表中的相应记录。
         factory.setOverwriteExistingJobs(true);
