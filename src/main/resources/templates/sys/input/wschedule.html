@@ -366,13 +366,16 @@
                     console.log(this.curYear)
                 },
                 handleTurnLine(e) {
-                    if (e.indexOf(TURN_LINE_STR) > -1) {
-                        const pre = e.split(TURN_LINE_STR)[0]
-                        const after = e.split(TURN_LINE_STR)[1]
-                        return `${pre}\n${after}`
-                    } else {
-                        return e
-                    }
+                    if (e != null){
+                      if (e.indexOf(TURN_LINE_STR) > -1) {
+                            const pre = e.split(TURN_LINE_STR)[0]
+                            const after = e.split(TURN_LINE_STR)[1]
+                            return `${pre}\n${after}`
+                        } else {
+                            return e
+                        }
+                      }　else {
+                        return e }
                 },
                 rowClass(row) {
                     // 表格变色
