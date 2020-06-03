@@ -169,7 +169,7 @@
         ,#{compCode} tmaCcompanyid
         ,#{employeeId} tmaCemployeeid
         ,to_char(tma_dyyyymm,'yyyy') dyyyy
-        ,to_char(tma_dyyyymm,'MM') dmm
+        ,to_char(tma_dyyyymm,'MM')||'月' dmm
         ,tma_dyyyymm
         ,tma_worktypeid01
         ,nvl(tma_workcontent01, ' ') tma_workcontent01
