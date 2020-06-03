@@ -4,6 +4,8 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
+import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -91,6 +94,11 @@ public class PermStatListBean {
      * ITmgTriggerService
      */
     private final ITmgTriggerService iTmgTriggerService;
+
+    /**
+     * ITmgMonthlyInfoService
+     */
+    private final ITmgMonthlyInfoService iTmgMonthlyInfoService;
     /**
      * TmgReferList
      */
@@ -444,10 +452,27 @@ public class PermStatListBean {
 
         // 打刻反映処理を行う。
         execReflectionTimePunch(empSql);
+        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+        List<ColNameDto> colNameList = new ArrayList<>();
+        for (int i = 1; i <= monthLen; i++) {
+            ColNameDto dto = new ColNameDto();
+            dto.setColName(transDispPermStatus(i));
+            dto.setDisppermStatus("DISPPERM_STATUS" + i);
+            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
+            colNameList.add(dto);
+        }
 
         // 月次一覧表示データを取得する。
-//        // 0 表示月情報の取得
-//        buildSQLForSelectTMG_MONTHLY_INFO(empSql);
+        // 0 表示月情報の取得
+        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getReqDYYYYMM(),
+                psDBBean.getLanguage(),
+                getToDay(),
+                empSql,
+                colNameList
+        );
 //
 //        // 1 カレンダー情報の取得
 //        buildSQLForSelectTMG_CALENDER();
@@ -455,17 +480,21 @@ public class PermStatListBean {
 //        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
 //        buildSQLForSelectTMG_V_DAYCOUNT();
 //
-//        // 3 表示対象月の前月データを持つ職員数
-//        buildSQLForSelectTMG_MONTHLY_INFO_NEXT(TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
-//
-//        // 4 表示対象月の翌月データを持つ職員数
-//        buildSQLForSelectTMG_MONTHLY_INFO_PREV(TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+        // 3 表示対象月の前月データを持つ職員数
+        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+        modelMap.addAttribute("tmgMonthlyInfoPrevCount",tmgMonthlyInfoPrevCount);
+
+        // 4 表示対象月の翌月データを持つ職員数
+        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
+        modelMap.addAttribute("tmgMonthlyInfoNextCount",tmgMonthlyInfoNextCount);
 
         // 5 選択組織名称の取得
-        iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId,getToDay(),_loginCustId,_loginCompCode);
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), _loginCustId, _loginCompCode);
+        modelMap.addAttribute("sectionName",sectionName);
 
         // 6 表示月遷移リスト情報取得
         List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
+        modelMap.addAttribute("cispMonthlyVOList",cispMonthlyVOList);
 
 
     }
@@ -538,7 +567,45 @@ public class PermStatListBean {
         //TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEANDESC), session, BEANDESC);
     }
 
+    /**
+     * 対象月の日数を返す
+     * @param targetDate 対象年月データ
+     * @return int 対象月の日数
+     */
+    public int getActualMaximumOfMonth(String targetDate) {
 
+        String sYear  = "";
+        String sMonth = "";
+
+        StringTokenizer st = new StringTokenizer(targetDate,FORMAT_SLASH,false);
+
+        sYear  = st.nextToken();
+        sMonth = st.nextToken();
+
+        // 対象月の日数を求める
+        Calendar cal = Calendar.getInstance();
+        try {
+            // 対象年をセット
+            cal.set(Calendar.YEAR,  Integer.parseInt(sYear));
+            // 対象月をセット
+            cal.set(Calendar.MONTH, Integer.parseInt(sMonth)-1);
+        } catch (NumberFormatException e) {
+            throw e;
+        }
+
+        int days = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+
+        return days;
+    }
+
+
+
+    private String transDispPermStatus(int dd){
+        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+        String date = nDayFormat.format(dd);
+        return"TMI_CINFO" + date;
+
+    }
     /**
      * メインメソッド。
      */

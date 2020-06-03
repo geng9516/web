@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -115,6 +116,12 @@ public class ExceptionAdvice {
         mv.setViewName("500");
         mv.addObject("error",GlobalResponse.error("NPC異常"));
         return mv;
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public String noHandlerFoundException() {
+        return "404";
     }
 
     @ExceptionHandler({Exception.class})

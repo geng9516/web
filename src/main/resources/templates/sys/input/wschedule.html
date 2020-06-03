@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${Utils.formatDate(defaultDate.dispterm_start,'yyyy年mm月')}～ ${Utils.formatDate(defaultDate.dispterm_end,'yyyy年mm月')}）` }}
+                        {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -24,7 +24,8 @@
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
                 <i-select v-model="query.month" class="mr30" @on-change="handleStartMonth($event)">
-                    <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1"></i-option>
+                    <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
+                    </i-option>
                 </i-select>
                 <span class="label">所属</span>
                 <span class="input-like-span width15">{{ sectionName }}</span>
@@ -40,7 +41,7 @@
                             <Icon type="ios-arrow-back"></Icon>
                             前年
                         </i-button>
-                        <i-button type="text" @click="nextMonth">今年</i-button>
+                        <i-button type="text" @click="nextMonth" :disabled="showPre">今年</i-button>
                     </i-col>
                     <i-col span="13" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-add-circle">印刷</i-button>
@@ -49,93 +50,98 @@
             </div>
             <Row :gutter="10" class="mt5 mb15 tc">
                 <i-col span="4">
-                  <div class="label spec">年次休暇付与日数</div>
-                  <div class="month-sum">{{ endueDaysHours }}</div>
+                    <div class="label spec">年次休暇付与日数</div>
+                    <div class="month-sum">{{ endueDaysHours }}</div>
                 </i-col>
                 <i-col span="4">
-                  <div class>
-                    <div class="label spec">年次休暇付与日</div>
-                    <div class="month-sum">{{ endueDate }}</div>
-                  </div>
+                    <div class>
+                        <div class="label spec">年次休暇付与日</div>
+                        <div class="month-sum">{{ endueDate }}</div>
+                    </div>
                 </i-col>
                 <i-col span="8" class="no-border-radius">
-                  <div class="work-changed-day">摘要</div>
-                  <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment"/>
+                    <div class="work-changed-day">摘要</div>
+                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
-              </Row>
+            </Row>
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
                 <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)">{{ row.one }}</span>
+                    <span :class="dayRed(row.one)">{{ handleTurnLine(row.one) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)">{{ row.two }}</span>
+                    <span :class="dayRed(row.two)">{{ handleTurnLine(row.two) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)">{{ row.three }}</span>
+                    <span :class="dayRed(row.three)">{{ handleTurnLine(row.three) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)">{{ row.four }}</span>
+                    <span :class="dayRed(row.four)">{{ handleTurnLine(row.four) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)">{{ row.five }}</span>
+                    <span :class="dayRed(row.five)">{{ handleTurnLine(row.five) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)">{{ row.six }}</span>
+                    <span :class="dayRed(row.six)">{{ handleTurnLine(row.six) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)">{{ row.seven }}</span>
+                    <span :class="dayRed(row.seven)">{{ handleTurnLine(row.seven) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)">{{ row.eight }}</span>
+                    <span :class="dayRed(row.eight)">{{ handleTurnLine(row.eight) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)">{{ row.nine }}</span>
+                    <span :class="dayRed(row.nine)">{{ handleTurnLine(row.nine) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)">{{ row.ten }}</span>
+                    <span :class="dayRed(row.ten)">{{ handleTurnLine(row.ten) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)">{{ row.eleven }}</span>
+                    <span :class="dayRed(row.eleven)">{{ handleTurnLine(row.eleven) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)">{{ row.twelve }}</span>
+                    <span :class="dayRed(row.twelve)">{{ handleTurnLine(row.twelve) }}</span>
                     <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
                 </template>
             </i-table>
         </div>
     </main>
     <div th:replace="layout/script::common_script"></div>
+    <script th:inline="javascript">
+        // < 无法被babel转义
+        var TURN_LINE_STR = "<br>"
+    </script>
     <script type="text/babel" th:inline="javascript">
         const WORK_YEAR_SCHEDULE = new Vue({
             el: '.workyearschedule-warp',
             data() {
                 return {
                     monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
-                    defaultDate:{},
-                    queryHolidayInfo:{},
+                    defaultDate: {},
+                    queryDate: {},
+                    queryHolidayInfo: {},
                     tableHead: [],
                     loading: false,
                     tableData: [],
@@ -154,26 +160,24 @@
 
                     kanjiName: [[${ session.psSession.loginKanjiName }]],
                     loginEmployee: [[${ session.psSession.loginEmployee }]],
-                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName}]],
+                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
                     query: {
                         employeeId: [[${ session.psSession.loginEmployee }]],
-                        year: '' ,
+                        year: '',
                         month: 0
                     },
                     endueDate: '',
                     endueDaysHours: '',
-                    tmyComment: ''
+                    tmyComment: '',
+
+                    fromYYYYMM: '',
+                    toYYYYMM: '',
+                    titleStartMonth: ''
                 }
             },
             async mounted() {
-                // this.getTableHead()
-                // this.getTableData()
+                console.log("session")
                 console.log([[${ session }]])
-                // console.log([[${ session.psSession.loginDesignation[0]}]])
-                // console.log([[${ session.psSession.loginDesignation[0].sectionName}]])
-
-                // console.log([[${ session.psSession.loginKanjiName }]])
-                // console.log([[${ session.psSession.loginEmployee }]])
 
                 await this.getdefaultDate()
 
@@ -181,7 +185,6 @@
 
                 await this.getTableData()
 
-                // await this.getTableHead()
             },
             computed: {
                 tableHeadFixed() {
@@ -276,17 +279,41 @@
                 async getdefaultDate() {
                     this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
-                    this.defaultDate= data
-                    this.query.month =  +this.defaultDate.mgd_ndefault_month
-                    console.log("testxxxxx")
+                    this.defaultDate = data
+                    this.query.month = +this.defaultDate.mgd_ndefault_month
+                    console.log("getdefaultDate")
                     console.log(this.query.month)
-                    console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
-                    this.query.year = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
+                    // console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
+                    this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
                     // this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy'))
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_start, 'mm'))
+                    console.log(Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy'))
+
+                    // this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
+                    // this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
+                    this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
+                    this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
+
+                },
+                async getqueryDate() {
+                    this.loading = true
+                    const { data } = await this.http.get(`sys/attendanceBook/queryDate`, this.query)
+                    this.queryDate = data
+                    this.query.month = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
+
+                    console.log("getqueryDate1")
+                    console.log(this.query.month)
+                    console.log(this.queryDate)
+
+                    this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
+                    this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
+                    this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
+                    console.log("getqueryDate2")
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
-                    this.queryHolidayInfo= data
+                    this.queryHolidayInfo = data
                     // 年次休暇付与日数
                     this.endueDate = this.queryHolidayInfo.endueDate
 
@@ -306,7 +333,7 @@
                         const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                         // 第一条是表头, 且需要去除空值intDay
                         this.tableData = data.slice(1)
-                        this.tableHead = Object.values(data[0]).filter(e=>e)
+                        this.tableHead = Object.values(data[0]).filter(e => e)
                         console.log(data)
                     } catch (error) {
                         return
@@ -314,43 +341,38 @@
                         this.loading = false
                     }
                 },
-                // async getTableHead() {
-                //     this.loading = true
-                //     // const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
-                //     // this.tableHead = data[0]
-                //     console.log("getTableHead")
-                //     console.log( this.tableHead)
-                // },
-                // async getTableHead() {
-                //     this.loading = true
-                //     try {
-                //         const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableHead`, { month: this.curMonth })
-                //         this.tableHead = data
-                //     } catch (error) {
-                //         return
-                //     } finally {
-                //         this.loading = false
-                //     }
-                // },
-                // async getTableData() {
-                //     const { data } = await this.http.get(`${aliURL}/workYearSchedule/tableData`)
-                //     this.tableData = data
-                // },
                 handleDatePicker() { },
                 preYear() {
                     this.curYear = 2019
+                    console.log("preYear")
+                    console.log(this.query.year)
                 },
-                async  handleStartMonth(e) {
+                handleStartMonth: Debounce(async function (e) {
                     this.titleStartMonth = e
                     console.log("handleStartMonth1");
-                    console.log(e);
+                    console.log(this.titleStartMonth);
+                    console.log(this.query.employeeId);
+                    console.log(this.query.year);
+                    console.log(this.query.month);
 
+                    await this.getqueryDate()
                     await this.getqueryHolidayInfo()
                     await this.getTableData()
                     console.log("handleStartMonth2");
-                },
+                }),
                 nextYear() {
                     this.curYear = 2020
+                    console.log("nextYear")
+                    console.log(this.curYear)
+                },
+                handleTurnLine(e) {
+                    if (e.indexOf(TURN_LINE_STR) > -1) {
+                        const pre = e.split(TURN_LINE_STR)[0]
+                        const after = e.split(TURN_LINE_STR)[1]
+                        return `${pre}\n${after}`
+                    } else {
+                        return e
+                    }
                 },
                 rowClass(row) {
                     // 表格变色
@@ -376,13 +398,33 @@
                         return 'red'
                     }
                 },
-                preMonth() {
+                async　preMonth() {
                     this.showPre = false
                     this.$emit('pre')
+
+                    this.curYear = 2019
+                    this.query.year = +this.query.year - 1
+                    console.log("preMonth")
+                    console.log(this.query.year)
+                    console.log(this.query.month)
+
+                    await this.getqueryDate()
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
                 },
-                nextMonth() {
+                async　nextMonth() {
                     this.showPre = true
                     this.$emit('next')
+
+                    this.curYear = 2020
+                    this.query.year = +this.query.year + 1
+                    console.log("nextMonth")
+                    console.log(this.query.year)
+                    console.log(this.query.month)
+
+                    await this.getqueryDate()
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
                 },
                 refresh() {
                     this.$emit('refresh')

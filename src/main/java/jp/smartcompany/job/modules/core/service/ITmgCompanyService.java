@@ -23,4 +23,5 @@ public interface ITmgCompanyService extends IService<TmgCompanyDO> {
      * @return
      */
     CompanyVO buildSQLSelectCompany(String custCode, String compCode, String targetDate);
+
 }
