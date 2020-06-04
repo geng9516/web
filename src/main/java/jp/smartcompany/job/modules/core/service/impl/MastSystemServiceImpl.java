@@ -1,10 +1,12 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.mapper.MastSystemMapper;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.core.util.searchrange.AppSearchRangeInfoEntity;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +28,16 @@ public class MastSystemServiceImpl extends ServiceImpl<MastSystemMapper, MastSys
            QueryWrapper<MastSystemDO> qw = SysUtil.query();
            qw.eq("ms_clanguage",language);
            return list(qw);
+        }
+
+        @Override
+        public List<TableCombinationTypeDTO> getTableInfo() {
+            return baseMapper.selectTableInfo();
+        }
+
+        @Override
+        public List<AppSearchRangeInfoEntity> selectSearchRangeInfo() {
+            return baseMapper.selectSearchRangeInfo();
         }
 
 }

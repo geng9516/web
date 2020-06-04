@@ -95,4 +95,8 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
      */
     List<DispMonthlyVO> buildSQLForSelectDispTmgMonthlyList(Map<String, Object> map);
 
+    /**
+     * 月別エラーチェック
+     */
+    String checkMonthly(Map<String, Object> map);
 }

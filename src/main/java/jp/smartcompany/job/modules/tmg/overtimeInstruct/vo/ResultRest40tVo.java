@@ -1,4 +1,5 @@
-package jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo;
+package jp.smartcompany.job.modules.tmg.overtimeInstruct.vo;
+
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,5 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class dailyDetailVo {
+public class ResultRest40tVo {
+
+
 }

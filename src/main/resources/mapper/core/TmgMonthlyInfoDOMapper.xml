@@ -1,43 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfoMapper">
+    <update id="buildSQLForUpdateTmgMonthly">
+        UPDATE
+            TMG_MONTHLY
+        SET
+            TMO_CMODIFIERUSERID    = #{loginUserCode},
+            TMO_DMODIFIEDDATE      = SYSDATE,
+            TMO_CMODIFIERPROGRAMID = #{modifierProgramId},
+            TMO_CSTATUSFLG         = 'TMG_DATASTATUS|5'
+        WHERE
+            TMO_CCUSTOMERID        = #{custId}
+        AND TMO_CCOMPANYID         = #{compId}
+        AND TMO_CEMPLOYEEID        = #{empId}
+        AND TMO_DYYYYMM            = #{yyyyMm}
+        AND 0 = (
+                     SELECT
+                         COUNT(*)
+                     FROM
+                         TMG_DAILY
+                     WHERE
+                         TDA_CCUSTOMERID = TMO_CCUSTOMERID
+                     AND TDA_CCOMPANYID  = TMO_CCOMPANYID
+                     AND TDA_CEMPLOYEEID = TMO_CEMPLOYEEID
+                     AND TDA_DYYYYMM     = TMO_DYYYYMM
+                     AND TDA_CSTATUSFLG  NOT IN ('TMG_DATASTATUS|5', 'TMG_DATASTATUS|9')
+                )
+    </update>
 
-    <select id="selectMonthlyInfoOtr" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo">
+    <select id="selectMonthlyInfoOtr" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo">
         SELECT
-        E.EMPID AS EMPID,
-        E.EMPNAME AS EMPNAME,
-        DECODE( TO_NUMBER( TMI_CINFO01 ), 0, NULL, TMI_CINFO01 ) AS TMI_CINFO01,
-        DECODE( TO_NUMBER( TMI_CINFO02 ), 0, NULL, TMI_CINFO02 ) AS TMI_CINFO02,
-        DECODE( TO_NUMBER( TMI_CINFO03 ), 0, NULL, TMI_CINFO03 ) AS TMI_CINFO03,
-        DECODE( TO_NUMBER( TMI_CINFO04 ), 0, NULL, TMI_CINFO04 ) AS TMI_CINFO04,
-        DECODE( TO_NUMBER( TMI_CINFO05 ), 0, NULL, TMI_CINFO05 ) AS TMI_CINFO05,
-        DECODE( TO_NUMBER( TMI_CINFO06 ), 0, NULL, TMI_CINFO06 ) AS TMI_CINFO06,
-        DECODE( TO_NUMBER( TMI_CINFO07 ), 0, NULL, TMI_CINFO07 ) AS TMI_CINFO07,
-        DECODE( TO_NUMBER( TMI_CINFO08 ), 0, NULL, TMI_CINFO08 ) AS TMI_CINFO08,
-        DECODE( TO_NUMBER( TMI_CINFO09 ), 0, NULL, TMI_CINFO09 ) AS TMI_CINFO09,
-        DECODE( TO_NUMBER( TMI_CINFO10 ), 0, NULL, TMI_CINFO10 ) AS TMI_CINFO10,
-        DECODE( TO_NUMBER( TMI_CINFO11 ), 0, NULL, TMI_CINFO11 ) AS TMI_CINFO11,
-        DECODE( TO_NUMBER( TMI_CINFO12 ), 0, NULL, TMI_CINFO12 ) AS TMI_CINFO12,
-        DECODE( TO_NUMBER( TMI_CINFO13 ), 0, NULL, TMI_CINFO13 ) AS TMI_CINFO13,
-        DECODE( TO_NUMBER( TMI_CINFO14 ), 0, NULL, TMI_CINFO14 ) AS TMI_CINFO14,
-        DECODE( TO_NUMBER( TMI_CINFO15 ), 0, NULL, TMI_CINFO15 ) AS TMI_CINFO15,
-        DECODE( TO_NUMBER( TMI_CINFO16 ), 0, NULL, TMI_CINFO16 ) AS TMI_CINFO16,
-        DECODE( TO_NUMBER( TMI_CINFO17 ), 0, NULL, TMI_CINFO17 ) AS TMI_CINFO17,
-        DECODE( TO_NUMBER( TMI_CINFO18 ), 0, NULL, TMI_CINFO18 ) AS TMI_CINFO18,
-        DECODE( TO_NUMBER( TMI_CINFO19 ), 0, NULL, TMI_CINFO19 ) AS TMI_CINFO19,
-        DECODE( TO_NUMBER( TMI_CINFO20 ), 0, NULL, TMI_CINFO20 ) AS TMI_CINFO20,
-        DECODE( TO_NUMBER( TMI_CINFO21 ), 0, NULL, TMI_CINFO21 ) AS TMI_CINFO21,
-        DECODE( TO_NUMBER( TMI_CINFO22 ), 0, NULL, TMI_CINFO22 ) AS TMI_CINFO22,
-        DECODE( TO_NUMBER( TMI_CINFO23 ), 0, NULL, TMI_CINFO23 ) AS TMI_CINFO23,
-        DECODE( TO_NUMBER( TMI_CINFO24 ), 0, NULL, TMI_CINFO24 ) AS TMI_CINFO24,
-        DECODE( TO_NUMBER( TMI_CINFO25 ), 0, NULL, TMI_CINFO25 ) AS TMI_CINFO25,
-        DECODE( TO_NUMBER( TMI_CINFO26 ), 0, NULL, TMI_CINFO26 ) AS TMI_CINFO26,
-        DECODE( TO_NUMBER( TMI_CINFO27 ), 0, NULL, TMI_CINFO27 ) AS TMI_CINFO27,
-        DECODE( TO_NUMBER( TMI_CINFO28 ), 0, NULL, TMI_CINFO28 ) AS TMI_CINFO28,
-        DECODE( TO_NUMBER( TMI_CINFO29 ), 0, NULL, TMI_CINFO29 ) AS TMI_CINFO29,
-        DECODE( TO_NUMBER( TMI_CINFO30 ), 0, NULL, TMI_CINFO30 ) AS TMI_CINFO30,
-        DECODE( TO_NUMBER( TMI_CINFO31 ), 0, NULL, TMI_CINFO31 ) AS TMI_CINFO31,
-        // 超勤時間集計クエリを組込み
+            E.EMPID AS EMPID,
+            E.EMPNAME AS EMPNAME,
+            DECODE( TO_NUMBER( TMI_CINFO01 ), 0, NULL, TMI_CINFO01 ) AS TMI_CINFO01,
+            DECODE( TO_NUMBER( TMI_CINFO02 ), 0, NULL, TMI_CINFO02 ) AS TMI_CINFO02,
+            DECODE( TO_NUMBER( TMI_CINFO03 ), 0, NULL, TMI_CINFO03 ) AS TMI_CINFO03,
+            DECODE( TO_NUMBER( TMI_CINFO04 ), 0, NULL, TMI_CINFO04 ) AS TMI_CINFO04,
+            DECODE( TO_NUMBER( TMI_CINFO05 ), 0, NULL, TMI_CINFO05 ) AS TMI_CINFO05,
+            DECODE( TO_NUMBER( TMI_CINFO06 ), 0, NULL, TMI_CINFO06 ) AS TMI_CINFO06,
+            DECODE( TO_NUMBER( TMI_CINFO07 ), 0, NULL, TMI_CINFO07 ) AS TMI_CINFO07,
+            DECODE( TO_NUMBER( TMI_CINFO08 ), 0, NULL, TMI_CINFO08 ) AS TMI_CINFO08,
+            DECODE( TO_NUMBER( TMI_CINFO09 ), 0, NULL, TMI_CINFO09 ) AS TMI_CINFO09,
+            DECODE( TO_NUMBER( TMI_CINFO10 ), 0, NULL, TMI_CINFO10 ) AS TMI_CINFO10,
+            DECODE( TO_NUMBER( TMI_CINFO11 ), 0, NULL, TMI_CINFO11 ) AS TMI_CINFO11,
+            DECODE( TO_NUMBER( TMI_CINFO12 ), 0, NULL, TMI_CINFO12 ) AS TMI_CINFO12,
+            DECODE( TO_NUMBER( TMI_CINFO13 ), 0, NULL, TMI_CINFO13 ) AS TMI_CINFO13,
+            DECODE( TO_NUMBER( TMI_CINFO14 ), 0, NULL, TMI_CINFO14 ) AS TMI_CINFO14,
+            DECODE( TO_NUMBER( TMI_CINFO15 ), 0, NULL, TMI_CINFO15 ) AS TMI_CINFO15,
+            DECODE( TO_NUMBER( TMI_CINFO16 ), 0, NULL, TMI_CINFO16 ) AS TMI_CINFO16,
+            DECODE( TO_NUMBER( TMI_CINFO17 ), 0, NULL, TMI_CINFO17 ) AS TMI_CINFO17,
+            DECODE( TO_NUMBER( TMI_CINFO18 ), 0, NULL, TMI_CINFO18 ) AS TMI_CINFO18,
+            DECODE( TO_NUMBER( TMI_CINFO19 ), 0, NULL, TMI_CINFO19 ) AS TMI_CINFO19,
+            DECODE( TO_NUMBER( TMI_CINFO20 ), 0, NULL, TMI_CINFO20 ) AS TMI_CINFO20,
+            DECODE( TO_NUMBER( TMI_CINFO21 ), 0, NULL, TMI_CINFO21 ) AS TMI_CINFO21,
+            DECODE( TO_NUMBER( TMI_CINFO22 ), 0, NULL, TMI_CINFO22 ) AS TMI_CINFO22,
+            DECODE( TO_NUMBER( TMI_CINFO23 ), 0, NULL, TMI_CINFO23 ) AS TMI_CINFO23,
+            DECODE( TO_NUMBER( TMI_CINFO24 ), 0, NULL, TMI_CINFO24 ) AS TMI_CINFO24,
+            DECODE( TO_NUMBER( TMI_CINFO25 ), 0, NULL, TMI_CINFO25 ) AS TMI_CINFO25,
+            DECODE( TO_NUMBER( TMI_CINFO26 ), 0, NULL, TMI_CINFO26 ) AS TMI_CINFO26,
+            DECODE( TO_NUMBER( TMI_CINFO27 ), 0, NULL, TMI_CINFO27 ) AS TMI_CINFO27,
+            DECODE( TO_NUMBER( TMI_CINFO28 ), 0, NULL, TMI_CINFO28 ) AS TMI_CINFO28,
+            DECODE( TO_NUMBER( TMI_CINFO29 ), 0, NULL, TMI_CINFO29 ) AS TMI_CINFO29,
+            DECODE( TO_NUMBER( TMI_CINFO30 ), 0, NULL, TMI_CINFO30 ) AS TMI_CINFO30,
+            DECODE( TO_NUMBER( TMI_CINFO31 ), 0, NULL, TMI_CINFO31 ) AS TMI_CINFO31,
         <choose>
             <when test='sContentId == "TMG_CONTENTID|OTR" '>
                 NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0), '0.00')
@@ -49,21 +74,20 @@
                 NVL(TMG_F_GET_SUM_OVERTIME_INST(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST), '0.00')
             </otherwise>
         </choose>
-                                                                  AS OVERTIME
+                                                                    AS OVERTIME
         FROM
         TMG_MONTHLY_INFO,
         ( ${sql}) E
         WHERE
-        TMI_CEMPLOYEEID = E.EMPID
+            TMI_CEMPLOYEEID = E.EMPID
         AND TMI_DYYYYMM = TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' )
         AND TMI_CCONTENTID = #{sContentId}
-        // 対象月について管理対象であるか判定
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE(#{sBaseDate}) ), LAST_DAY( TO_DATE(#{sBaseDate}) ), e.cust, e.comp )
         ORDER BY
-        E.SEQ
-
-
+            E.SEQ
+        ;
     </select>
+
     <select id="selectAftBefBaseDate" resultType="java.lang.String">
         SELECT
             <choose>
@@ -75,7 +99,7 @@
                 </otherwise>
             </choose>
         FROM
-            (#{sql) e,
+            ( ${sql} ) e,
             TMG_MONTHLY_INFO m
         WHERE
             m.TMI_CCUSTOMERID = e.CUST
@@ -92,10 +116,11 @@
         AND m.TMI_DSTARTDATE <![CDATA[<=]]> #{sBaseDate}
         AND m.TMI_DENDDATE >= #{sBaseDate}
         AND 'TMG_MANAGEFLG|0' <![CDATA[<=]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{sBaseDate} ) ), LAST_DAY( TO_DATE( #{sBaseDate}) ), e.cust, e.comp )
+        ;
     </select>
 
 
-    <select id="selectYearlyInfo" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo">
+    <select id="selectYearlyInfo" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.YearlyInfoVo">
         SELECT
             ORVERTIME_RESULT_INFO.SEQ AS SEQ,
             ORVERTIME_RESULT_INFO.EMPID AS TMI_CEMPLOYEEID,
@@ -123,7 +148,7 @@
                             TRUNC(
                                 months_between(
                                     ADD_MONTHS( TRUNC( TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1,
-                                        TMG_F_GET_DATEOF36KYOTEI (　#{custId}, #{compId}, TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 1 )
+                                        TMG_F_GET_DATEOF36KYOTEI (#{custId}, #{compId}, TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 1 )
                                 )
                             ) + 1
                         )
@@ -141,7 +166,7 @@
                 E.CUST AS CUST,
                 E.COMP AS COMP,
                 E.EMPNAME AS EMPNAME,
-                NVL( <choose>
+                 <choose>
                         <when test='sContentId == "TMG_CONTENTID|OTR" '>
                             NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0), '0.00')
                         </when>
@@ -151,10 +176,10 @@
                         <otherwise>
                             NVL(TMG_F_GET_SUM_OVERTIME_INST(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST), '0.00')
                         </otherwise>
-                    </choose>) AS TOTAL_TIMES,
+                 </choose> AS TOTAL_TIMES,
                 DECODE(
                     DECODE(
-                        TO_NUMBER( NVL( <choose>
+                        TO_NUMBER( <choose>
                                             <when test='sContentId == "TMG_CONTENTID|OTR" '>
                                                 NVL(TMG_F_GET_SUM_OVERTIME(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST, 0), '0.00')
                                             </when>
@@ -164,7 +189,8 @@
                                             <otherwise>
                                                 NVL(TMG_F_GET_SUM_OVERTIME_INST(E.EMPID, TMI_DYYYYMM, E.COMP, E.CUST), '0.00')
                                             </otherwise>
-                                        </choose> ),
+                                  </choose>
+                                   ),
                         (
                             SELECT
                                 MGD_NSPARENUM1
@@ -225,15 +251,18 @@
             AND TMI_CCONTENTID = #{sContentId}
             AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{toDay}) ), LAST_DAY( TO_DATE(#{toDay} ) ), e.cust, e.comp )
             )
-        ORVERTIME_RESULT_INFO
+            ORVERTIME_RESULT_INFO
         GROUP BY
             ORVERTIME_RESULT_INFO.SEQ,
             ORVERTIME_RESULT_INFO.EMPID,
             ORVERTIME_RESULT_INFO.CUST,
             ORVERTIME_RESULT_INFO.COMP
         ORDER BY
-            ORVERTIME_RESULT_INFO.SEQ;
+            ORVERTIME_RESULT_INFO.SEQ
+        ;
     </select>
+
+
     <select id="buildSQLForSelectTmgMonthlyInfoCount" resultType="java.lang.Integer">
         SELECT
             COUNT(*)

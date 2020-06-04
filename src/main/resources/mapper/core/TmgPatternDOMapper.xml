@@ -134,4 +134,11 @@
         AND     R2.TPA_CDEFAULTFLG          =   'TMG_ONOFF|1'               -- デフォルトフラグ
         ;
       </select>
+
+    <select id="selectStandardWorkTime" resultType="java.lang.Integer">
+        SELECT
+            TMG_F_GET_TMG_PATTERN (#{customerId}, #{companyId}, NULL, NULL, NULL, #{yyyymmdd} ).NTIME
+        FROM
+            DUAL
+    </select>
 </mapper>

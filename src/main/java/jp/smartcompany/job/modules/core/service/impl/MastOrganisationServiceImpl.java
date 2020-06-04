@@ -164,4 +164,30 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
 
         return baseMapper.buildSQLForSelectEmployeeDetail(map);
     }
+
+    /**
+     * <p>
+     * <b>下位組織</b>情報取得（組織指定）
+     * </p>
+     * <div>指定した組織の下位組織リストを返却する。 </div>
+     *
+     * @author t-abe
+     * @param customerId 顧客コード
+     * @param compnyId 法人コード
+     * @param sectionId 組織コード
+     * @param searchDate 検索基準日
+     * @return 下位組織情報
+     * @exception
+     */
+    @Override
+    public List < String > getSubSection(String customerId, String compnyId, String sectionId,
+                                         Date searchDate) {
+
+        List <String> highLowSectionSysInfoDtolist = selectLowerSection(customerId, compnyId, sectionId, searchDate);
+        if (highLowSectionSysInfoDtolist == null || highLowSectionSysInfoDtolist.size() == 0) {
+            return null;
+        }
+        return highLowSectionSysInfoDtolist;
+    }
+
 }

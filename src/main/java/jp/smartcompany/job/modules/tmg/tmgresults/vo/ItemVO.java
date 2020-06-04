@@ -38,4 +38,20 @@ public class ItemVO {
      * width
      */
     private int mgdNwidth;
+
+    /**
+     * ヘッダキーワード
+     */
+    private String mgdCkeyword;
+
+    /**
+     * データ表示スタイル
+     */
+    private String mgdCdispstyle;
+
+    /**
+     * 臨時カラム名
+     */
+    private String tempColumnid;
+
 }

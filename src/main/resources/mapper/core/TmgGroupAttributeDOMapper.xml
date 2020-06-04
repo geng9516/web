@@ -2,4 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgGroupAttributeMapper">
 
+    <select id="selectLimitOfBaseDate" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.LimitOfBaseDate">
+        SELECT
+            OT_DAILY_01,
+            OT_DAILY_01 * 60 AS DAILY_CONV_MINUTE
+        FROM
+            TABLE ( TMG_F_GET_OVERTIMELIMT ( #{custId},#{compId}, #{sectionId}, NULL, to_date( #{baseDate}, 'yyyy/mm/dd' ) ) )
+        ;
+    </select>
+    <select id="selectOverTimeLimit" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.OverTimeLimitDto">
+        SELECT
+            OT_MONTLY_01,
+            OT_MONTLY_02,
+            OT_MONTLY_03,
+            OT_MONTLY_04,
+            OT_MONTLY_05,
+            OT_YEARLY_01,
+            OT_YEARLY_02,
+            OT_YEARLY_03,
+            OT_YEARLY_04,
+            OT_YEARLY_05,
+            OT_MONTHLY_COUNT,
+            OT_DAILY_01,
+            OT_MONTHLY_AVG
+        FROM
+            TABLE ( TMG_F_GET_OVERTIMELIMT ( #{custId}, #{compId}, ${sectionId}, ${groupId}, TRUNC( SYSDATE ) ) )
+        ;
+    </select>
+    <select id="selectHolidayTimeLimit" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.HolidayTimeLimitDto">
+        SELECT
+            HT_MONTLY_01,
+            HT_MONTLY_02,
+            HT_MONTLY_03,
+            HT_MONTLY_04,
+            HT_MONTLY_05
+        FROM
+            TABLE ( TMG_F_GET_HOLIDAYTIMELIMT ( #{custId}, #{compId}, ${sectionId}, ${groupId}, TRUNC( SYSDATE ) ) )
+        ;
+    </select>
 </mapper>

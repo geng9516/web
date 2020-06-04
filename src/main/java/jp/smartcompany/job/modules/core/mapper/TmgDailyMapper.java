@@ -2,9 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
@@ -70,7 +72,7 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
 
 
 
-    List<monthlyInfoOverSumVo> selectMonthlyOverSum(@Param("custId")String custId,
+    List<MonthlyInfoOverSumVo> selectMonthlyOverSum(@Param("custId")String custId,
                                                     @Param("compId")String compId,
                                                     @Param("userID")String userID,
                                                     @Param("sBaseDBDate")String sBaseDBDate,
@@ -78,13 +80,33 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
 
 
 
-    List<dailyDetailVo> selectDailyDetail(@Param("custId")String custId,
+    List<DailyVo> selectDaily(@Param("custId")String custId,
                                           @Param("compId")String compId,
                                           @Param("sectionId")String sectionId,
                                           @Param("baseMonth")String baseMonth,
                                           @Param("baseDay")String baseDay,
                                           @Param("pLanguage")String pLanguage,
                                           @Param("empListSql")String empListSql,
-                                          @Param("itemsSql")List<dispOverTimeItemsDto> itemsSql);
+                                          @Param("itemsSql")List<DispOverTimeItemsDto> itemsSql);
 
+    /**
+     *日別一覧データを取得する
+     */
+    List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list);
+
+    /**
+     *更新対象職員のROWIDを取得する
+     */
+    List<String> buildSQLForSelectObjEmpForUpdate(Map<String, Object> map);
+
+    /**
+     * 一括承認データを更新する
+     */
+    int buildSQLForUpdateTmgDaily(Map<String, Object> map);
+    List<DailyDetailOverHoursVo> selectDailyDetailOverHours(@Param("custId")String custId,
+                                                            @Param("compId")String compId,
+                                                            @Param("sectionId")String sectionId,
+                                                            @Param("baseDate")String baseDate,
+                                                            @Param("slanguage")String slanguage,
+                                                            @Param("empListSql")String empListSql);
 }

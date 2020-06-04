@@ -4,8 +4,8 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.calenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.springframework.stereotype.Repository;
 
@@ -43,7 +43,7 @@ public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCa
      * カレンダーテーブルより休日フラグを取得。
      */
     @Override
-    public List<calenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
+    public List<CalenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
         return baseMapper.selectGetCalendarList(custId, compId, secId, groupId, targetYYYY, sBaseDate);
     }
 }

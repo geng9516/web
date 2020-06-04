@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
 import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
 import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import jp.smartcompany.job.interceptor.SqlParameter2NullInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -38,6 +39,11 @@ public class MyBatisPlusConfiguration {
     @Bean
     public OracleKeyGenerator oracleKeyGenerator(){
         return new OracleKeyGenerator();
+    }
+
+    @Bean
+    public SqlParameter2NullInterceptor sqlParameter2NullInterceptor() {
+        return new SqlParameter2NullInterceptor();
     }
 
 }

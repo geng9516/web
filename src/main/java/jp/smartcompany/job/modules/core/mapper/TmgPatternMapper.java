@@ -4,7 +4,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgPatternDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDetailRow;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,4 +38,8 @@ public interface TmgPatternMapper extends BaseMapper<TmgPatternDO> {
          * @return List<TmgPatternDetailRow> パターン情報
          */
         int selectChangeTime(Map<String, Object> map);
-        }
+
+        int selectStandardWorkTime(@Param("customerId") String customerId,
+                                   @Param("companyId")String companyId,
+                                   @Param("yyyymmdd")String yyyymmdd);
+}

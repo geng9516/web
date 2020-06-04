@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -102,5 +103,31 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
         return baseMapper.buildSQLForInsertTmgTriggerByTimePunch(map);
     }
 
+    /**
+     * 勤怠トリガーテーブルに挿入するSQL文を返却します。
+     * <p>
+     * 日別テーブルから更新対象者のみ検出し、勤怠トリガーテーブルにレコードを
+     * 挿入します。
+     * </P>
+     *
+     * @param loginUserCode 登録者
+     * @param programId     　登録プログラムID
+     * @param action        　アクション
+     * @param yyyymmdd      　基準日
+     * @param rowIdList     　rowidリスト
+     * @return int
+     */
+    @Override
+    public int buildSQLForInsertTmgTrigger(String loginUserCode, String programId, String action, String yyyymmdd, List<String> rowIdList){
+
+        Map<String, Object> map = MapUtil.newHashMap(5);
+        map.put("loginUserCode", loginUserCode);
+        map.put("programId", programId);
+        map.put("action", action);
+        map.put("yyyymmdd", yyyymmdd);
+        map.put("rowIdList", rowIdList);
+
+        return baseMapper.buildSQLForInsertTmgTrigger(map);
+    }
 
 }

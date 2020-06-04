@@ -43,4 +43,15 @@ public interface ITmgPatternService extends IService<TmgPatternDO> {
          * @return int  日付変更時刻
          */
         int selectChangeTime(String customerId, String companyId,Date yyyymmdd);
+
+
+        /**
+         * 標準の勤務時間数取得用クエリを返す
+         *
+         * @param  customerId   顧客コード
+         * @param  companyId 法人コード
+         * @param  yyyymmdd 対象年月日
+         * @return SQL文
+         */
+        int selectStandardWorkTime(String customerId, String companyId,String yyyymmdd);
         }

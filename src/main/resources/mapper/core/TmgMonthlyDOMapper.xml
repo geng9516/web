@@ -194,6 +194,12 @@
         ORDER BY
             t.TMO_DYYYYMM DESC
     </select>
+    <select id="checkMonthly" resultType="java.lang.String">
+        SELECT
+            TMG_F_CHECK_MONTHLY(#{empId} , #{yyyyMm} ,#{custId},#{compId})
+        FROM
+            DUAL
+    </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE
             TMG_MONTHLY M

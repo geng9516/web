@@ -37,11 +37,11 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <i-col span="11">
-                        <i-button type="text" @click="preMonth" :disabled="!showPre">
+                        <i-button type="text" @click="preYear" :disabled="!showPre">
                             <Icon type="ios-arrow-back"></Icon>
                             前年
                         </i-button>
-                        <i-button type="text" @click="nextMonth" :disabled="showPre">今年</i-button>
+                        <i-button type="text" @click="nextYear" :disabled="showPre">今年</i-button>
                     </i-col>
                     <i-col span="13" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-add-circle">印刷</i-button>
@@ -66,73 +66,86 @@
             </Row>
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
+
+                <template slot-scope="{ row }" slot="intDay">
+                    <span>{{ row.intDay | turnLine }}</span>
+                </template>
+
                 <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)">{{ handleTurnLine(row.one) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.one)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.one | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.one.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)">{{ handleTurnLine(row.two) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.two)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.two | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)">{{ handleTurnLine(row.three) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.three)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.three | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)">{{ handleTurnLine(row.four) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.four)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.four | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)">{{ handleTurnLine(row.five) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.five)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.five | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)">{{ handleTurnLine(row.six) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.six)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.six | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)">{{ handleTurnLine(row.seven) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.seven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.seven | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)">{{ handleTurnLine(row.eight) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.eight)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eight | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)">{{ handleTurnLine(row.nine) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.nine)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.nine | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)">{{ handleTurnLine(row.ten) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.ten)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.ten | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)">{{ handleTurnLine(row.eleven) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.eleven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eleven | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)">{{ handleTurnLine(row.twelve) }}</span>
-                    <div v-if="row.hour" class="divi-hour-line">{{ row.oneHour || row.hour }}</div>
+                    <span :class="dayRed(row.twelve)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.twelve | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
                 </template>
             </i-table>
         </div>
     </main>
     <div th:replace="layout/script::common_script"></div>
-    <script th:inline="javascript">
-        // < 无法被babel转义
-        var TURN_LINE_STR = "<br>"
-    </script>
     <script type="text/babel" th:inline="javascript">
         const WORK_YEAR_SCHEDULE = new Vue({
             el: '.workyearschedule-warp',
@@ -157,7 +170,6 @@
                     index: 0,
                     comment: '',
                     contentScrollTop: 0,
-
                     kanjiName: [[${ session.psSession.loginKanjiName }]],
                     loginEmployee: [[${ session.psSession.loginEmployee }]],
                     sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
@@ -169,22 +181,16 @@
                     endueDate: '',
                     endueDaysHours: '',
                     tmyComment: '',
-
                     fromYYYYMM: '',
+                    contentScrollTop: 0,
+                    isScroll: false,
                     toYYYYMM: '',
                     titleStartMonth: ''
                 }
             },
             async mounted() {
-                console.log("session")
                 console.log([[${ session }]])
-
-                await this.getdefaultDate()
-
-                await this.getqueryHolidayInfo()
-
-                await this.getTableData()
-
+                this.getData(true)
             },
             computed: {
                 tableHeadFixed() {
@@ -195,7 +201,7 @@
                     return [
                         {
                             title: ' ',
-                            key: 'intDay',
+                            slot: 'intDay',
                             width: 100,
                             align: 'right'
                         },
@@ -276,22 +282,18 @@
                 }
             },
             methods: {
+                async getData(isInit) {
+                    if(isInit) await this.getdefaultDate()
+                    else await this.getqueryDate()
+                    await this.getqueryHolidayInfo()
+                    await this.getTableData()
+                },
                 async getdefaultDate() {
                     this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
                     this.defaultDate = data
                     this.query.month = +this.defaultDate.mgd_ndefault_month
-                    console.log("getdefaultDate")
-                    console.log(this.query.month)
-                    // console.log(Utils.formatDate(this.defaultDate.dispterm_start,'yyyy'))
                     this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
-                    // this.query.month = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
-                    console.log(Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy'))
-                    console.log(Utils.formatDate(this.defaultDate.dispterm_start, 'mm'))
-                    console.log(Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy'))
-
-                    // this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'yyyy')
-                    // this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start,'mm')
                     this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
 
@@ -302,14 +304,9 @@
                     this.queryDate = data
                     this.query.month = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
 
-                    console.log("getqueryDate1")
-                    console.log(this.query.month)
-                    console.log(this.queryDate)
-
                     this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
                     this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
-                    console.log("getqueryDate2")
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
@@ -323,57 +320,30 @@
                     // 摘要
                     this.tmyComment = this.queryHolidayInfo.tmy_comment
 
-                    console.log(data)
-                    console.log(this.endueDate)
-                    console.log(this.endueDaysHours)
-                    console.log(this.tmyComment)
                 },
                 async getTableData() {
                     try {
                         const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                         // 第一条是表头, 且需要去除空值intDay
-                        this.tableData = data.slice(1)
+                        // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
+                        this.tableData = data.slice(1).map(e=>{
+                            return {
+                                ...e,
+                                cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 ? {intDay: "sub-title"} : {}
+                            }
+                        })
+                        console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
-                        console.log(data)
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
                     }
                 },
-                handleDatePicker() { },
-                preYear() {
-                    this.curYear = 2019
-                    console.log("preYear")
-                    console.log(this.query.year)
-                },
                 handleStartMonth: Debounce(async function (e) {
                     this.titleStartMonth = e
-                    console.log("handleStartMonth1");
-                    console.log(this.titleStartMonth);
-                    console.log(this.query.employeeId);
-                    console.log(this.query.year);
-                    console.log(this.query.month);
-
-                    await this.getqueryDate()
-                    await this.getqueryHolidayInfo()
-                    await this.getTableData()
-                    console.log("handleStartMonth2");
+                    this.getData()
                 }),
-                nextYear() {
-                    this.curYear = 2020
-                    console.log("nextYear")
-                    console.log(this.curYear)
-                },
-                handleTurnLine(e) {
-                    if (e.indexOf(TURN_LINE_STR) > -1) {
-                        const pre = e.split(TURN_LINE_STR)[0]
-                        const after = e.split(TURN_LINE_STR)[1]
-                        return `${pre}\n${after}`
-                    } else {
-                        return e
-                    }
-                },
                 rowClass(row) {
                     // 表格变色
                     if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
@@ -393,41 +363,15 @@
                     }
                     return 'rest-cell'
                 },
-                compare(a, b) {
-                    if (a !== b) {
-                        return 'red'
-                    }
-                },
-                async　preMonth() {
+                async　preYear() {
                     this.showPre = false
-                    this.$emit('pre')
-
-                    this.curYear = 2019
                     this.query.year = +this.query.year - 1
-                    console.log("preMonth")
-                    console.log(this.query.year)
-                    console.log(this.query.month)
-
-                    await this.getqueryDate()
-                    await this.getqueryHolidayInfo()
-                    await this.getTableData()
+                    this.getData()
                 },
-                async　nextMonth() {
+                async　nextYear() {
                     this.showPre = true
-                    this.$emit('next')
-
-                    this.curYear = 2020
                     this.query.year = +this.query.year + 1
-                    console.log("nextMonth")
-                    console.log(this.query.year)
-                    console.log(this.query.month)
-
-                    await this.getqueryDate()
-                    await this.getqueryHolidayInfo()
-                    await this.getTableData()
-                },
-                refresh() {
-                    this.$emit('refresh')
+                    this.getData()
                 }
             }
         })

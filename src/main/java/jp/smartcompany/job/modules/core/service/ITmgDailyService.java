@@ -2,16 +2,17 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -106,22 +107,53 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @param  sMonthsNum  遡り月数
      * @return SQL文
      */
-    List<monthlyInfoOverSumVo> selectMonthlyOverSum(String custId, String compId, String userID, String sBaseDBDate,String sMonthsNum);
+    List<MonthlyInfoOverSumVo> selectMonthlyOverSum(String custId, String compId, String userID, String sBaseDBDate, String sMonthsNum);
 
 
 
     /**
-     * [勤怠]日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得。
+     * 日別一覧データを取得する
      *
-     * @param  pCustCode   顧客コード
-     * @param  pCompCode   法人コード
-     * @param  sectionCode 組織ＩＤ
-     * @param  pYYYYMM     対象年月
-     * @param  pYYYYMMDD   対象年月日
-     * @param  pDBYYYYMMDD 対象年月日（ＤＢ検索用にエスケープ済(')）
-     * @param  pLangage    言語区分
+     * @param targetDate 表示対象日
+     * @param empSql     対象者取得SQL
+     * @param list       　動態項目
+     * @return
+     */
+    List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list);
+
+    /**
+     * 更新対象職員のROWIDを取得する
+     *
+     * @param empIdList 職員リスト
+     * @param yyyymmdd  　対象日
+     * @return 更新対象rowidリスト
+     */
+    List<String> buildSQLForSelectObjEmpForUpdate(List<String> empIdList, String yyyymmdd);
+
+
+    /**
+     *  一括承認データを更新する
+     * @param loginUserCode 更新者
+     * @param programId　更新プログラムID
+     * @param yyyymmdd　対象日
+     * @param empIdList　
+     * @return
+     */
+    int buildSQLForUpdateTmgDaily(String loginUserCode, String programId, String yyyymmdd,List<String > empIdList);
+
+    List<DailyVo> selectDaily(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
+                              String pYYYYMMDD, String pLangage, String empListSql, List<DispOverTimeItemsDto> itemsSql);
+
+
+    /**
+     * 日別詳細情報（超過勤務）を取得するSQLを返す
+     *
+     * @param  custId       顧客コード
+     * @param  compId       法人コード
+     * @param  sectionId    組織ＩＤ
+     * @param  baseDate  対象年月日（ＤＢ検索用にエスケープ済(')）
+     * @param  slanguage    言語区分
      * @return SQL文
      */
-    List<dailyDetailVo> selectDailyDetail(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
-                                          String pYYYYMMDD, String pLangage,String empListSql,List<dispOverTimeItemsDto> itemsSql);
+    List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String sectionId, String baseDate, String slanguage , String empListSql);
 }

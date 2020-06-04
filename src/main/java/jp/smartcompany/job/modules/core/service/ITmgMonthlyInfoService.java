@@ -2,14 +2,12 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyInfoDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.YearlyInfoVo;
 
 import java.util.List;
 import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
-
-import java.util.List;
 
 /**
  * <p>
@@ -53,7 +51,7 @@ public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
          * @param  sBaseDate   基準日
          * @param  slanguage   言語区分
          * */
-        List<monthlyInfoOtVo> selectMonthlyInfoOtr(String custId, String compId, String sectionId,
+        List<MonthlyInfoOtVo> selectMonthlyInfoOtr(String custId, String compId, String sectionId,
                                                    String sContentId, String sBaseDate, String slanguage, String sql);
 
 
@@ -82,6 +80,20 @@ public interface ITmgMonthlyInfoService extends IService<TmgMonthlyInfoDO> {
          * @param  sLang       言語区分
          * @return SQL文
          */
-        List<yearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
-                                            String sContentId, String sBaseDBDate,String toDay, String sLang,String sql);
-        }
+        List<YearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
+                                            String sContentId, String sBaseDBDate, String toDay, String sLang, String sql);
+
+    /**
+     * 月次情報(ステータス)を更新する
+     *
+     * @param custId            顧客ID
+     * @param compId            法人ID
+     * @param empId             職員ID
+     * @param yyyyMm            　対象月
+     * @param loginUserCode     　更新者
+     * @param modifierProgramId 　更新プログラムID
+     * @return 件数
+     */
+    int buildSQLForUpdateTmgMonthly(String custId, String compId, String empId, String yyyyMm, String loginUserCode, String modifierProgramId);
+
+}

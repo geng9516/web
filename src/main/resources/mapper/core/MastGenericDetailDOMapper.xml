@@ -655,7 +655,7 @@
         AND MGD_CMASTERCODE      = #{masterCode}
         ;
     </select>
-    <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto">
+    <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto">
         SELECT
             MGD_CHEADER,
             MGD_CSQL,
@@ -671,6 +671,25 @@
         AND MGD_DEND            >= #{baseDate}
         ORDER BY
             MGD_NSEQ
+    </select>
+    <select id="buildSQLForSelectTmgDisppermstatlist"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
+        SELECT
+            MGD_CHEADER,
+            MGD_CKEYWORD,
+            MGD_CSQL,
+            MGD_NWIDTH,
+            MGD_CDISPSTYLE,
+            'COLUMNID' || ROWNUM AS TEMP_COLUMNID
+        FROM
+            TMG_V_MGD_DISPPERMSTATLIST
+        WHERE
+            MGD_CCUSTOMERID      = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK     = #{lang}
+        AND MGD_DSTART_CK       <![CDATA[<=]]> SYSDATE
+        AND MGD_DEND            >= SYSDATE
+        ORDER BY MGD_NSEQ
     </select>
 
 
