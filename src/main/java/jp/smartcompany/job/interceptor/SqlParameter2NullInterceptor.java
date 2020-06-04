@@ -37,8 +37,9 @@ public class SqlParameter2NullInterceptor implements Interceptor {
         if (isInterceptor) {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
-            String parsedSql=StrUtil.replace(originalSql,"''","null");
-            metaObject.setValue("delegate.boundSql.sql", parsedSql);
+            String parsedSql1=StrUtil.replace(originalSql,"''","null");
+            String parsedSql2=StrUtil.replace(parsedSql1,",,",",null,");
+            metaObject.setValue("delegate.boundSql.sql", parsedSql2);
         }
         return invocation.proceed();
     }
