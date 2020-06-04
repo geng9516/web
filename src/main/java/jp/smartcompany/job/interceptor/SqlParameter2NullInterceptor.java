@@ -1,7 +1,5 @@
 package jp.smartcompany.job.interceptor;
 
-import cn.hutool.core.util.ReUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -17,8 +15,6 @@ import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.session.ResultHandler;
 
 import java.sql.Statement;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Intercepts({@Signature(
         type = StatementHandler.class,
@@ -34,10 +30,12 @@ public class SqlParameter2NullInterceptor implements Interceptor {
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
         MappedStatement mappedStatement = (MappedStatement)metaObject.getValue("delegate.mappedStatement");
         boolean isInterceptor = SqlCommandType.SELECT == mappedStatement.getSqlCommandType() || StatementType.CALLABLE == mappedStatement.getStatementType();
+        System.out.println("++++");
         if (isInterceptor) {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
             originalSql=originalSql.replaceAll("(,\\s*,)",",null,");
+            originalSql=originalSql.replaceAll("\\(\\)","(null)");
             metaObject.setValue("delegate.boundSql.sql", originalSql);
         }
         return invocation.proceed();
