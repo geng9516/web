@@ -41,15 +41,13 @@
                         </div>
                         <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                               empty-text="所属データなし"></Tree>
-                        <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            社員
-                        </div>
-                        <Tree class="tree mt2" :data="empTreeData" 　empty-text="社員データなし"></Tree>
                     </Drawer>
                 </span>
             <span class="label">氏名</span>
-            <span class="input-like-span width15">{{ kanjiName }}</span>
+            <i-select v-model="kanjiName" class="mr30" @on-change="handleSelector"　placeholder="選んでください">
+                <i-option v-for="(item, i) of empTreeData" :key="i" :label="item.title" :value="item.secid">
+                </i-option>
+            </i-select>
         </div>
     </div>
     <div class="content_body">
@@ -189,7 +187,7 @@
                 index: 0,
                 comment: '',
                 contentScrollTop: 0,
-                kanjiName: [[${ session.psSession.loginKanjiName }]],
+                kanjiName: '',
                 loginEmployee: [[${ session.psSession.loginEmployee }]],
                 sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
                 query: {
@@ -214,7 +212,7 @@
                     [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]: '',
                     [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]: ''
                 },
-                deptDrawShow: true,
+                deptDrawShow: false,
                 treeData: [],
                 empTreeData: [],
                 defaultDeptId: [[${ TmgReferListObject.getTargetSec() }]],
@@ -228,10 +226,12 @@
             // 先将数据转为标准格式，再转为可用数据
             this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
             // 同上，且注意数组里第一项是所属信息，child里面才是人
-            this.empTreeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForEmpList() }]]))
+            this.empTreeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForEmpList() }]]))[0].children
             if (this.defaultDeptId && this.treeData.length > 0) {
                 this.getDeptName(this.treeData)
             }
+            console.log('asdasd')
+            console.log(this.empTreeData)
 
             this.getData(true)
 
@@ -419,7 +419,7 @@
             },
             convertTreeData(treeData = []) {
                 return treeData.map(e => {
-                    const children = e.child || e.childen
+                    const children = e.child || e.children
                     if (children) {
                         return {
                             ...e.data,
@@ -440,6 +440,7 @@
                 //todo: 跳到详情页
                 location.href = "./VacationTablePanel/vacationtablepanel.html";
             },
+            handleSelector() {},
             getDeptName(data) {
                 // 根据id遍历找出deptName
                 data.forEach(e => {
