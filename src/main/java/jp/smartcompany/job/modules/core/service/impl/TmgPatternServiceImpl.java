@@ -76,4 +76,18 @@ import java.util.Map;
 
                 return changeTime;
         }
+
+
+        /**
+         * 標準の勤務時間数取得用クエリを返す
+         *
+         * @param  customerId   顧客コード
+         * @param  companyId 法人コード
+         * @param  yyyymmdd 対象年月日
+         * @return SQL文
+         */
+        @Override
+        public int selectStandardWorkTime(String customerId, String companyId,String yyyymmdd){
+                return baseMapper.selectStandardWorkTime(customerId,companyId,yyyymmdd);
         }
+}

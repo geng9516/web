@@ -2,15 +2,14 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyInfoDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.YearlyInfoVo;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,7 +34,7 @@ public interface TmgMonthlyInfoMapper extends BaseMapper<TmgMonthlyInfoDO> {
     List<TmgMonthlyInfoVO> buildSQLForSelectTmgMonthlyInfo(Map<String, Object> map);
 
 
-        List<monthlyInfoOtVo>  selectMonthlyInfoOtr(@Param("custId")String custId,
+        List<MonthlyInfoOtVo>  selectMonthlyInfoOtr(@Param("custId")String custId,
                                                     @Param("compId")String compId,
                                                     @Param("sectionId")String sectionId,
                                                     @Param("sContentId")String sContentId,
@@ -52,7 +51,7 @@ public interface TmgMonthlyInfoMapper extends BaseMapper<TmgMonthlyInfoDO> {
 
 
 
-        List<yearlyInfoVo> selectYearlyInfo(@Param("custId")String custId,
+        List<YearlyInfoVo> selectYearlyInfo(@Param("custId")String custId,
                                             @Param("compId")String compId,
                                             @Param("sectionId")String sectionId,
                                             @Param("sContentId")String sContentId,

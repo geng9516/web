@@ -400,7 +400,7 @@
         AND TDAD_CNOTWORKID    = ITEM_CODE
         ORDER BY TDAD_SEQ
     </select>
-    <select id="selectMonthlyOverSum" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo">
+    <select id="selectMonthlyOverSum" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo">
         SELECT
             NVL( b.MONTH_ID, '0.00' ) MONTH_ID,
             NVL( a.WEEKDAYS_OVERTIME, '0.00' ) WEEKDAYS_OVERTIME,
@@ -445,19 +445,19 @@
 
 
     </select>
-    <select id="selectDailyDetail" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo">
+    <select id="selectDaily" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo">
         SELECT
-            e.EMPNAME AS TDA_CEMPLOYEEID,
-            TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_N, 0 ) AS TDA_NOPEN_N,
-            TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_N, 0 ) AS TDA_NCLOSE_N,
+            e.EMPNAME AS TDA_CEMPLOYEEID_NAME,
+            TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_N, 0 ) AS TDA_NOPEN_N_C,
+            TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_N, 0 ) AS TDA_NCLOSE_N_C,
             TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_O, 0 ) AS TDA_NOPEN_O,
             TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_O, 0 ) AS TDA_NCLOSE_O,
             TDA_CMESSAGE,
             TDA_CCOMMENT_O,
             TDA_CSTATUSFLG,
             e.EMPID AS TDA_CEMPLOYEEID,
-            TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_TP, 0 ) AS TDA_NOPEN_TP,
-            TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_TP, 0 ) AS TDA_NCLOSE_TP,
+            TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_TP, 0 ) AS TDA_NOPEN_TP_C,
+            TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_TP, 0 ) AS TDA_NCLOSE_TP_C,
             TMG_F_GET_MGD ( TDA_CWORKINGID_R, #{baseDay}, #{custId}, #{compId}, #{pLanguage} ) AS TDA_CWORKINGID_R,
             TMG_F_CONV_MIN2HHMI ( TDA_NRESTOPEN_N, 0 ) AS TDA_NRESTOPEN_N,
             TMG_F_CONV_MIN2HHMI ( TDA_NRESTCLOSE_N, 0 ) AS TDA_NRESTCLOSE_N,
@@ -585,6 +585,55 @@
             </foreach>
 		AND TDA_DYYYYMMDD    = #{yyyymmdd}
 		AND TDA_CSTATUSFLG   = 'TMG_DATASTATUS|3'
+    </select>
+
+    <select id="selectDailyDetailOverHours" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo">
+        SELECT
+            e.EMPID AS TDA_CEMPLOYEEID,
+            TDA_DYYYYMM TDAD_DYYYYMM,
+            TDA_DYYYYMMDD TDAD_DYYYYMMDD,
+            'TMG_ITEMS|Overhours' TDAD_CNOTWORKID,
+            TMG_F_CONV_MIN2HHMI ( TDA_NRESTOPEN_R, 0 ) TDAD_NOPEN,
+            TMG_F_CONV_MIN2HHMI ( TDA_NRESTCLOSE_R, 0 ) TDAD_NCLOSE,
+            TDA_CCOMMENT_O TDAD_CSPARECHAR1,
+            '' AS TDAD_CSPARECHAR2
+        FROM
+            TMG_DAILY,
+            (${empListSql}) e
+        WHERE
+            TDA_CEMPLOYEEID = e.EMPID
+        AND TDA_DYYYYMMDD = to_date(#{baseDate}, 'yyyy/mm/dd' )
+        AND TDA_CCOMPANYID = #{compId}
+        AND TDA_CCUSTOMERID = #{custId}
+        AND TDA_DSTARTDATE <![CDATA[<=]]> to_date( #{baseDate}, 'yyyy/mm/dd' )
+        AND TDA_DENDDATE >= to_date( #{baseDate}, 'yyyy/mm/dd' )
+        AND TDA_NOPEN_O IS NOT NULL
+        AND TDA_NCLOSE_O IS NOT NULL
+
+        UNION
+
+        SELECT
+            e.EMPID AS TDA_CEMPLOYEEID,
+            TDAD_DYYYYMM,
+            TDAD_DYYYYMMDD,
+            TDAD_CNOTWORKID,
+            TMG_F_CONV_MIN2HHMI ( TDAD_NOPEN, 0 ) TDAD_NOPEN,
+            TMG_F_CONV_MIN2HHMI ( TDAD_NCLOSE, 0 ) TDAD_NCLOSE,
+            TDAD_CSPARECHAR1,
+            NVL( TDAD_CSPARECHAR2, 'TMG_OVERHOUR_STATUS|6' )　TDAD_CSPARECHAR2
+        FROM
+            TMG_DAILY_DETAIL,
+            (${empListSql}) e
+        WHERE
+            TDAD_CEMPLOYEEID = e.EMPID
+        AND TDAD_DYYYYMMDD = to_date(#{baseDate}, 'yyyy/mm/dd' )
+        AND TDAD_CCOMPANYID = #{compId}
+        AND TDAD_CCUSTOMERID = #{custId}
+        AND TDAD_CNOTWORKID = 'TMG_ITEMS|Overhours'
+        ORDER BY
+            TDA_CEMPLOYEEID,
+            TDAD_NOPEN
+        ;
     </select>
 
 

@@ -5,9 +5,11 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDO;
 import jp.smartcompany.job.modules.core.mapper.TmgDailyMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.dailyDetailVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
@@ -173,30 +175,10 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
      * @return SQL文
      */
     @Override
-    public List<monthlyInfoOverSumVo> selectMonthlyOverSum(String custId, String compId, String userID, String sBaseDBDate,
+    public List<MonthlyInfoOverSumVo> selectMonthlyOverSum(String custId, String compId, String userID, String sBaseDBDate,
                                                            String sMonthsNum){
         return baseMapper.selectMonthlyOverSum( custId,  compId,  userID,  sBaseDBDate,
                  sMonthsNum);
-    }
-
-
-
-    /**
-     * [勤怠]日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得。
-     *
-     * @param  pCustCode   顧客コード
-     * @param  pCompCode   法人コード
-     * @param  sectionCode 組織ＩＤ
-     * @param  pYYYYMM     対象年月
-     * @param  pYYYYMMDD   対象年月日
-     * @param  pLangage    言語区分
-     * @return SQL文
-     */
-    @Override
-    public List<dailyDetailVo> selectDailyDetail(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
-                                          String pYYYYMMDD, String pLangage,String empListSql,List< dispOverTimeItemsDto > itemsSql){
-        return baseMapper.selectDailyDetail(  pCustCode,  pCompCode,  sectionCode,  pYYYYMM,
-                 pYYYYMMDD, pLangage,empListSql,itemsSql);
     }
 
     /**
@@ -250,4 +232,32 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
 
         return baseMapper.buildSQLForUpdateTmgDaily(map);
     }
+
+
+    /**
+     * 日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得
+     * */
+    @Override
+    public List<DailyVo> selectDaily(String pCustCode, String pCompCode, String sectionCode, String pYYYYMM,
+                                     String pYYYYMMDD, String pLangage, String empListSql, List<DispOverTimeItemsDto> itemsSql) {
+        return baseMapper.selectDaily( pCustCode,  pCompCode,  sectionCode,  pYYYYMM,
+                 pYYYYMMDD,  pLangage,  empListSql, itemsSql);
+    }
+
+    /**
+     * 日別詳細情報（超過勤務）を取得するSQLを返す
+     *
+     s* @param  custId       顧客コード
+     * @param  compId       法人コード
+     * @param  sectionId    組織ＩＤ
+     * @param  baseDate  対象年月日（ＤＢ検索用にエスケープ済(')）
+     * @param  slanguage    言語区分
+     * @return SQL文
+     */
+    @Override
+    public List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String sectionId, String baseDate, String slanguage, String empListSql){
+        return baseMapper.selectDailyDetailOverHours( custId,  compId,  sectionId,  baseDate, slanguage,empListSql);
+    }
+
+
 }

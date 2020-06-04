@@ -1,7 +1,6 @@
-package jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto;
+package jp.smartcompany.job.modules.tmg.overtimeInstruct.dto;
 
 
-import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -15,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class paramOvertimeInstructDto {
+public class ParamOvertimeInstructDto {
 
     /**顧客コード*/
     private String custId;
@@ -45,7 +44,7 @@ public class paramOvertimeInstructDto {
     /**基準日(YYYY)*/
     private String baseDateYYYY;
     /**基準日(YYYYMM)*/
-    private Date bseeDateD;
+    private Date baseDateD;
     /**グループコード*/
     private String targetGroup;
     /**組織コード*/
@@ -58,4 +57,5 @@ public class paramOvertimeInstructDto {
     private String nextMonth      = null;
 
     private String employeeListSql;
+
 }

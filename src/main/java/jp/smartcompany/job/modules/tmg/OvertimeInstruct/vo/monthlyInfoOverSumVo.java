@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo;
+package jp.smartcompany.job.modules.tmg.overtimeInstruct.vo;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class monthlyInfoOverSumVo {
+public class MonthlyInfoOverSumVo {
         //0 対象月
         private String monthId;
         //1 出勤日超勤時間

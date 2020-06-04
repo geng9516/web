@@ -655,7 +655,7 @@
         AND MGD_CMASTERCODE      = #{masterCode}
         ;
     </select>
-    <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto">
+    <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto">
         SELECT
             MGD_CHEADER,
             MGD_CSQL,

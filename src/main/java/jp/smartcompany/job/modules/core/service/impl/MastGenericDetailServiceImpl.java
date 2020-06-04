@@ -6,7 +6,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
@@ -641,7 +641,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * 超過勤務命令情報表示項目ヘッダー・select句・表示順をTMG_DISPOVERTIMEINSTマスタより取得
      */
     @Override
-    public List<dispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate, String language){
+    public List<DispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate, String language){
         return baseMapper.selectDispOverTimeItems( custID,  compID,  baseDate, language);
     }
 

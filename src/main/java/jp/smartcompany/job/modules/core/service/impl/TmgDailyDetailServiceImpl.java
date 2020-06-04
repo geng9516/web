@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailDO;
 import jp.smartcompany.job.modules.core.mapper.TmgDailyDetailMapper;
 import jp.smartcompany.job.modules.core.service.ITmgDailyDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.ResultRest40tVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import org.springframework.stereotype.Repository;
 
@@ -49,6 +50,14 @@ public class TmgDailyDetailServiceImpl extends ServiceImpl<TmgDailyDetailMapper,
         return baseMapper.buildSQLForSelectDetail(map);
     }
 
+
+
+    /**日別詳細情報より勤務予定時間外の休憩開始・終了時間を取得*/
+    /**日別詳細情報より勤務予定時間外の休憩開始・終了時間を取得*/
+    @Override
+    public  List<ResultRest40tVo> selectResultRest40t(String custId, String compId, String baseDate, String sql){
+        return baseMapper.selectResultRest40t( custId,  compId,  baseDate ,sql);
+    }
     /**
      * 一括承認データを更新する
      *

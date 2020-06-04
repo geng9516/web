@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
@@ -220,7 +220,7 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                        @Param("masterCode")String masterCode);
 
 
-    List<dispOverTimeItemsDto> selectDispOverTimeItems(@Param("custId")String custID,
+    List<DispOverTimeItemsDto> selectDispOverTimeItems(@Param("custId")String custID,
                                                        @Param("compID")String compID,
                                                        @Param("baseDate")String baseDate,
                                                        @Param("language")String language);
