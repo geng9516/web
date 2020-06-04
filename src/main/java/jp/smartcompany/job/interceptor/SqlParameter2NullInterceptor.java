@@ -14,12 +14,17 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.session.ResultHandler;
 
+import java.sql.Connection;
 import java.sql.Statement;
 
 @Intercepts({@Signature(
         type = StatementHandler.class,
         method = "query",
         args = {Statement.class, ResultHandler.class}
+),@Signature(
+        type = StatementHandler.class,
+        method = "prepare",
+        args = {Connection.class, Integer.class}
 )})
 public class SqlParameter2NullInterceptor implements Interceptor {
 
@@ -30,7 +35,6 @@ public class SqlParameter2NullInterceptor implements Interceptor {
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
         MappedStatement mappedStatement = (MappedStatement)metaObject.getValue("delegate.mappedStatement");
         boolean isInterceptor = SqlCommandType.SELECT == mappedStatement.getSqlCommandType() || StatementType.CALLABLE == mappedStatement.getStatementType();
-        System.out.println("++++");
         if (isInterceptor) {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();

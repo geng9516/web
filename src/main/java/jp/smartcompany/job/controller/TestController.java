@@ -2,7 +2,10 @@ package jp.smartcompany.job.controller;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.common.GlobalResponse;
+import jp.smartcompany.job.modules.core.service.ITmgMonthlyInfoService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("test")
@@ -109,6 +114,15 @@ public class TestController {
                 true, false, false, true);
         String sectionList = referList.getJSONArrayForSectionList();
         System.out.println(sectionList);
+        return GlobalResponse.ok();
+    }
+
+    private final OvertimeInstructBean overtimeInstructBean;
+
+    @GetMapping("rf6")
+    @ResponseBody
+    public GlobalResponse test6(ModelMap modelMap) {
+       overtimeInstructBean.actionExecuteDispResult(modelMap);
         return GlobalResponse.ok();
     }
 
