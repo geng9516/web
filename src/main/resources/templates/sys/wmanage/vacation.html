@@ -35,11 +35,6 @@
                         </div>
                         <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
-                        <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            社員
-                        </div>
-                        <Tree class="tree mt2" :data="empTreeData" 　empty-text="社員データなし"></Tree>
                     </Drawer>
                 </span>
                 <span style="flex:1"></span>
@@ -128,9 +123,8 @@
                         [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]: ''
                     },
-                    deptDrawShow: true,
+                    deptDrawShow: false,
                     treeData: [],
-                    empTreeData: [],
                     defaultDeptId: [[${ TmgReferListObject.getTargetSec() }]],
                     deptName: '選んでください'
                 }
@@ -140,7 +134,6 @@
                 // 先将数据转为标准格式，再转为可用数据
                 this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
                 // 同上，且注意数组里第一项是所属信息，child里面才是人
-                this.empTreeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForEmpList() }]]))
                 if (this.defaultDeptId && this.treeData.length > 0) {
                     this.getDeptName(this.treeData)
                 }
