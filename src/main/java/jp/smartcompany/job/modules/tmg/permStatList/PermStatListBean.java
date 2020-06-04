@@ -44,29 +44,14 @@ public class PermStatListBean {
     private final IMastGenericDetailService iMastGenericDetailService;
 
     /**
-     * ITmgEmployeeAttributeService
-     */
-    private final ITmgEmployeeAttributeService iTmgEmployeeAttributeService;
-
-    /**
      * ITmgMonthlyService
      */
     private final ITmgMonthlyService iTmgMonthlyService;
 
     /**
-     * ITmgEmployeesService
-     */
-    private final ITmgEmployeesService iTmgEmployeesService;
-
-    /**
      * ITmgDailyService
      */
     private final ITmgDailyService iTmgDailyService;
-
-    /**
-     * ITmgDailyService
-     */
-    private final ITmgCompanyService iTmgCompanyService;
 
     /**
      * ITmgDailyDetailService
@@ -77,21 +62,6 @@ public class PermStatListBean {
      * IMastOrganisationService
      */
     private final IMastOrganisationService iMastOrganisationService;
-
-    /**
-     * ITmgDailyCheckService
-     */
-    private final ITmgDailyCheckService iTmgDailyCheckService;
-
-    /**
-     * ITmgDailyDetailCheckService
-     */
-    private final ITmgDailyDetailCheckService iTmgDailyDetailCheckService;
-
-    /**
-     * ITmgErrmsgService
-     */
-    private final ITmgErrmsgService iTmgErrmsgService;
 
     /**
      * ITmgTriggerService
@@ -117,91 +87,7 @@ public class PermStatListBean {
      */
     private TmgReferList referList = null;
 
-
-    public static final String BEANDESC  = "PermStatListBean";
     public static final String APPLICATION_ID = "PermStatList";
-    public static final String TMG_PERMSTATLIST_PAGE_NAME = "ps.c01.tmg.PermStatList.PermStatList";
-
-    /** プロパティファイル　キー */
-    public static final String PROP_NO_CLOSETP_WITH_OVERTIME = "ERROR_NO_CLOSETP_WITH_OVERTIME";
-    public static final String PROP_NON_APPROVAL_OVERTIME    = "ERROR_NON_APPROVAL_OVERTIME";
-
-    /** クエリインデックス - [勤怠]月単位日別情報 */
-    public static final int IDX_TMG_MONTHLY_INFO      = 0;
-    /** クエリインデックス - [勤怠]全社カレンダー */
-    public static final int IDX_TMG_CALENDAR          = 1;
-    public static final int IDX_TMG_V_DAYCOUNT        = 2;
-    public static final int IDX_TMG_MONTHLY_INFO_NEXT = 3;
-    public static final int IDX_TMG_MONTHLY_INFO_PREV = 4;
-    public static final int IDX_TMG_EMPLOYEE_DETAIL   = 5;
-    public static final int IDX_TMG_DISP_MONTHLY_LIST = 6;
-
-    /** カラムインデックス - [勤怠]月単位日別情報.職員番号 */
-    public static final int COL_MONTHLY_INFO_EMPLOYEEID   = 0;
-    /** カラムインデックス - [勤怠]月単位日別情報.職員氏名 */
-    public static final int COL_MONTHLY_INFO_EMPLOYEENAME = 1;
-    public static final int COL_MONTHLY_STATUSFLG         = 2;   // 月次情報ステータス
-    public static final int COL_MONTHLY_TATUS_NAME        = 3;   // 月次情報ステータス(名称)
-    public static final int COL_DAILY_COUNT               = 4;   // デイリーカウント情報
-    public static final int COL_MONTHLY_LASTDAY           = 5;   // 月末日
-
-    /** クエリインデックス - 日別一括承認画面表示 */
-    public static final int IDX_TMG_DAILY            = 0;
-
-    /** カラムインデックス - 休日フラグ */
-    public static final int COL_TMG_CALENDAR_HOGFLG  = 0;
-
-    public static final int COL_TMG_V_DAYCOUNT_DATE  = 0;
-    public static final int COL_TMG_V_DAYCOUNT_DAY   = 1;
-    public static final int COL_TMG_V_DAYCOUNT_PDATE = 2;
-
-    public static final int COL_CEMPLOYEEID                     = 0; // 0 職員番号
-    public static final int COL_CSTATUSFLG                      = 1; // 1 ステータス
-    public static final int COL_CNOTCLOSETPWITHOVERTIME_EMPNAME = 2; // 2 『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態の職員氏名
-    public static final int COL_CEMPNAME                        = 3; // 3 職員氏名
-    public static final int COL_CNONAPPROVALOVERHOUR_FLG        = 4; // 4 『申請中の超過勤務申請』を持つかどうか判定するフラグ
-
-    /** カラムインデックス - 一括承認画面・承認状況表示項目マスタ */
-    /** (日次情報)ヘッダ文言 */
-    public static final int COL_DISPITEM_NAME    = 0;
-    /** (日次情報)ヘッダキーワード */
-    public static final int COL_DISPITEM_KEYWORD = 1;
-    /** (日次情報)select句用SQL */
-    public static final int COL_DISPITEM_SQL     = 2;
-    /** (日次情報)表示幅 */
-    public static final int COL_DISPITEM_WIDTH   = 3;
-    /** (日次情報)データ表示スタイル */
-    public static final int COL_DISPITEM_STYLE   = 4;
-
-    /** カラムインデックス　表示年月遷移リスト　コード（年月日） */
-    public static final int COL_DISPMONTHLYLIST_CODE = 0;
-
-    /** カラムインデックス　表示年月遷移リスト　値（表示値） */
-    public static final int COL_DISPMONTHLYLIST_VAL = 1;
-
-    // #294 2007/09/18	J.okamoto	承認状況一覧における打刻反映処理対応
-    // ステータス
-    public static final String STATUS_UNCHECKED		= "TMG_DATASTATUS|1";	// 未チェック
-
-    /** 勤怠承認権限を持っていない場合の一文字ステータス */
-    public static final String STATUS_UNAPPLYAUTHORITY = "不";
-
-    /** ステータス関連クラス - 未入力 */
-    public static final String STYLE_CLASS_ST_UNINPUT     = "st_uninput";
-    /** ステータス関連クラス - 未反映 */
-    public static final String STYLE_CLASS_ST_UNCHECKEDI  = "st_unchecked";
-    /** ステータス関連クラス - エラー有り */
-    public static final String STYLE_CLASS_ST_ERROR       = "st_error";
-    /** ステータス関連クラス - 承認待 */
-    public static final String STYLE_CLASS_ST_PENDING     = "st_pending";
-    /** ステータス関連クラス - 承認済 */
-    public static final String STYLE_CLASS_ST_APPROVED    = "st_approved";
-    /** ステータス関連クラス - 確定済み */
-    public static final String STYLE_CLASS_ST_FIXED       = "st_fixed";
-    /** ステータス関連クラス - 権限無し(承認不可) */
-    public static final String STYLE_CLASS_SHONIN_DISABLE = "shonin_disable";
-    /** ステータス関連クラス - 超過勤務命令 */
-    public static final String STYLE_CLASS_CHOKIN         = "chokin";
 
     /** リクエストキー - アクション */
     public static final String REQ_ACTION          = "txtAction";
@@ -224,21 +110,6 @@ public class PermStatListBean {
     /** リクエストキー - 再表示ボタン使用判定用 */
     private static final String TREEVIEW_KEY_REFRESH_FLG  = "txtTmgReferListTreeViewRefreshFlg";
 
-    /** リダイレクト先Bean名 - 勤怠登録・承認申請*/
-    public static final String REDIRECT_RESULTS_BEAN = "TmgResults";
-    /** リダイレクト先アクション識別子 - 月別一覧画面表示 */
-    public static final String REDIRECT_RESULTS_ACT_DISP_RMONTHLY   = TmgResultsBean.ACT_DISP_RMONTHLY;
-    /** リダイレクト先アクション識別子 - 日別承認画面表示 */
-    // TODO
-    //public static final String REDIRECT_RESULTS_ACT_EDITPERM_RDAILY = TmgResultsBean.ACT_EDITPERM_RDAILY;
-
-    /** スタイル - 休日 */
-    public static final String STYLE_DAY_SUN   = "day_sun";
-    /** スタイル - 平日 */
-    public static final String STYLE_DAY_BASIC = "day_basic";
-    /** スタイル - 当日 */
-    public static final String STYLE_DAY_TODAY = "day_today";
-
     /** アクション - 月別一覧画面表示) */
     public static final String ACT_DISP_MONTHLY   = "ACT_DISP_MONTHLY";
     /** アクション - 月別一括承認処理 */
@@ -247,25 +118,14 @@ public class PermStatListBean {
     public static final String ACT_EDIT_DAIRY     = "ACT_EDIT_DAIRY";
     /** アクション - 日別一括承認処理 */
     public static final String ACT_PERMIT         = "ACT_PERMIT";
-    /** アクション - 別コンテンツへのリダイレクト */
-    public static final String ACT_REDIRECT       = "ACT_REDIRECT";
 
 
     /** 汎用参照リスト */
     private TmgReferList _referList = null;
 
-    /** JSP識別子 - Disp */
-    private static final String JSP_DISP     = "Disp";
-    /** JSP識別子 - Edit */
-    private static final String JSP_EDIT     = "Edit";
-    /** JSP識別子 - Redirect */
-    private static final String JSP_REDIRECT = "Redirect";
     /** 日付形式1 */
     private static final String FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
-    /** 日付形式2 */
-    private static final String FORMAT_DATE_TYPE2 = "yyyy'年'M'月'";
-    /** 日付形式3 */
-    private static final String FORMAT_DATE_TYPE3 = "yyyy'年'M'月'd'日'";
+
     private static final String FORMAT_SLASH      = "/";
     private static final String FORMAT_ZERO       = "00";
 
@@ -305,38 +165,6 @@ public class PermStatListBean {
     /** 今月 */
     private String _thisMonth = null;
 
-    /** 裁量労働者以外の判定 */
-    public static final String NO_DISCRETION = "0";
-    /** 裁量労働者の判定 */
-    public static final String DISCRETION = "1";
-
-    /** 日次情報表示項目Map */
-    public HashMap<String, ArrayList<String>> permstatlistItemMap = new HashMap<String, ArrayList<String>>();
-
-    /** 表示項目Mapキー:ヘッダー名称 */
-    public static final String DISPITEM_KEY_HEADER = "header";
-
-    /** 表示項目Mapキー:ヘッダーKeyWord */
-    public static final String DISPITEM_KEY_HKEYWORD = "keyword";
-
-    /** 表示項目Mapキー:職員毎用SQL */
-    public static final String DISPITEM_KEY_SQL = "sql";
-
-    /** 表示項目Mapキー:WIDTH */
-    public static final String DISPITEM_KEY_WIDTH = "width";
-
-    /** 表示項目Mapキー:データスタイル */
-    public static final String DISPITEM_KEY_DATASTYLE = "style";
-
-    /** 承認欄判別マスタ設定キーワード */
-    private static final String DISPITEM_STATUS_KEYWORD = "APPROVALSTATUS";
-
-    /** 氏名欄判別マスタ設定キーワード */
-    private static final String DISPITEM_NAME_KEYWORD = "EMPNAME";
-
-    /** 超勤欄判別マスタ設定キーワード */
-    private static final String DISPITEM_OVERTIME_KEYWORD = "OVERTIME";
-
     /**
      * 対象組織が選択されているかどうかを表します。
      * <p>
@@ -347,7 +175,6 @@ public class PermStatListBean {
      */
     private boolean _isSelectSection = false;
 
-    /* 2007/08/03 	H.Kawabata		参照権限チェック仕様変更対応 */
     /** 勤怠シートの参照権限(基準日の翌月) */
     boolean _authorityNextMonth       = false;
     /** 勤怠シートの参照権限(基準月) */
@@ -356,12 +183,6 @@ public class PermStatListBean {
     private static final boolean CB_CAN_REFER = true;
     /** 参照権限：参照不可能  */
     private static final boolean CB_CANT_REFER = false;
-
-    // 申請ステータス：申請中
-    private static final String STATUS_OVERHOURS_STATUS_0    = "TMG_OVERHOUR_STATUS|0";
-    // 申請ステータス：確認済
-    private static final String STATUS_OVERHOURS_STATUS_5    = "TMG_OVERHOUR_STATUS|5";
-
 
     /**
      * 検索対象年月を返す
@@ -379,7 +200,9 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actDispMonthly(ModelMap modelMap) {
+    public void actDispMonthly(ModelMap modelMap) throws Exception{
+        execute(modelMap);
+        execute(modelMap);
 
         // 月別一覧表示の為のプロセスを実行します。
         executeReadMonthlyList(modelMap);
@@ -604,13 +427,7 @@ public class PermStatListBean {
      */
     private boolean isCheckMonthly(String psCustId, String psCompId, String psEmpId, String psDyyyyMm) {
 
-        Vector vQuery      = new Vector();
-        StringBuffer sbSql = new StringBuffer();
         // 月次承認エラーチェックを行う。
-        sbSql.append(" SELECT TMG_F_CHECK_MONTHLY("+ psEmpId + ", " + psDyyyyMm + ", " + psCustId + ", " + psCompId + ") FROM DUAL ");
-        vQuery.add(sbSql);
-
-
         String sChkRes = iTmgMonthlyService.checkMonthly(psEmpId, psDyyyyMm, psCustId, psCompId);
 
         // チェック結果エラーがなければ、チェック結果ＯＫとする。
@@ -623,21 +440,12 @@ public class PermStatListBean {
 
     /**
      * 処理対象となる職員の番号を加工して返却
+     *
      * @return 対象職員番号
      */
     private String[] getExecuteEmpId() {
 
-        StringBuffer sbWorkEmpId = new StringBuffer();
         String[] sWorkEmpId = _reqExecuteEmpId.split(",");
-
-//        for (int i = 0; i < sExecuteEmpId.length; i++) {
-//
-//            // 職員番号をＤＢ検索で使用できる様にシングルクォートでエスケープし、カンマ区切りで連結する。
-//            sbWorkEmpId.append(sExecuteEmpId[i]);
-//            sbWorkEmpId.append(",");
-//        }
-//        // 最後のカンマを削除
-//        String sWorkEmpId = sbWorkEmpId.substring(0, sbWorkEmpId.length() - 1);
 
         return sWorkEmpId;
     }
@@ -700,18 +508,24 @@ public class PermStatListBean {
 
         // 打刻反映処理を行う。
         execReflectionTimePunch(empSql);
-        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+
+
+
+        // 月次一覧表示データを取得する。
+        // 0 表示月情報の取得
         List<ColNameDto> colNameList = new ArrayList<>();
+
+        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+
         for (int i = 1; i <= monthLen; i++) {
             ColNameDto dto = new ColNameDto();
-            dto.setColName(transDispPermStatus(i));
+            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
             dto.setDisppermStatus("DISPPERM_STATUS" + i);
             dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
             colNameList.add(dto);
         }
 
-        // 月次一覧表示データを取得する。
-        // 0 表示月情報の取得
         List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
@@ -825,6 +639,7 @@ public class PermStatListBean {
      */
     public int getActualMaximumOfMonth(String targetDate) {
 
+
         String sYear  = "";
         String sMonth = "";
 
@@ -849,14 +664,6 @@ public class PermStatListBean {
         return days;
     }
 
-
-
-    private String transDispPermStatus(int dd){
-        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
-        String date = nDayFormat.format(dd);
-        return"TMI_CINFO" + date;
-
-    }
     /**
      * メインメソッド。
      */
@@ -997,23 +804,19 @@ public class PermStatListBean {
             _reqDYYYYMM = getFirstDayOfSysdate();
         }
 
-        try {
-            // TmgReferListの生成
-            setReferList(_reqDYYYYMM, modelMap);
-            // 組織コードの取得
-            _reqSectionId = _referList.getTargetSec();
 
-            // 組織が選択されているか確認
-            if (_reqSectionId == null || _reqSectionId.length() == 0) {
-                _isSelectSection = false;
-            } else {
-                _isSelectSection = true;
-            }
+        // TmgReferListの生成
+        setReferList(_reqDYYYYMM, modelMap);
+        // 組織コードの取得
+        _reqSectionId = _referList.getTargetSec();
 
-        } catch (Exception e) {
-            // TODO
-
+        // 組織が選択されているか確認
+        if (_reqSectionId == null || _reqSectionId.length() == 0) {
+            _isSelectSection = false;
+        } else {
+            _isSelectSection = true;
         }
+
 
         // 検索対象年月の前月
         _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
@@ -1071,14 +874,10 @@ public class PermStatListBean {
      *
      * @param pDate 対象年月日
      */
-    private void setReferList(String pDate, ModelMap modelMap) {
+    private void setReferList(String pDate, ModelMap modelMap)  throws Exception{
 
-        try {
-            _referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
-            _referList.putReferList(modelMap);
-        } catch (Exception e) {
-            // TODO
-        }
+        _referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
+        _referList.putReferList(modelMap);
 
     }
 
