@@ -208,5 +208,102 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.selectWorkPatternIkkatu(params);
     }
 
+    @Override
+    public void deleteDailyCheck(String employeeId, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        baseMapper.deleteDailyCheck(params);
+    }
+
+    @Override
+    public void deleteDailyDetailCheck(String employeeId, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        baseMapper.deleteDailyDetailCheck(params);
+    }
+
+    @Override
+    public void insertTmgDailyCheck(String sLoginUserCode, String tmg_schedule_cmodifierprogramid, boolean isClearResult, String cs_mgd_holflg, String tda_cworkingid_p, String tda_nopen_p, String tda_nclose_p, boolean bNoWorking,
+                                    String tda_cbusinesstripid_p, String tda_ccomment_p, String employeeid, String dyyyymmdd, String compCode, String custId, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sLoginUserCode", sLoginUserCode);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        params.put("isClearResult", isClearResult);
+        params.put("cs_mgd_holflg", cs_mgd_holflg);
+        params.put("tda_cworkingid_p", tda_cworkingid_p);
+        params.put("tda_nopen_p", tda_nopen_p);
+        params.put("tda_nclose_p", tda_nclose_p);
+        params.put("bNoWorking", bNoWorking);
+        params.put("tda_cbusinesstripid_p", tda_cbusinesstripid_p);
+        params.put("tda_ccomment_p", tda_ccomment_p);
+        params.put("employeeid", employeeid);
+        params.put("dyyyymmdd", dyyyymmdd);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("language", language);
+        baseMapper.insertTmgDailyCheck(params);
+    }
+
+    @Override
+    public void insertTmgDailyDetailCheckRest(String custId, String compCode, String employeeId, String minDate, String maxDate, String sLoginUserCode, String tmg_schedule_cmodifierprogramid, String sTargetDate, String sNotWorkId,
+                                              String nRestOpen, String nRestClose, String notworkingid_plan_rest, String notworkingid_notice_rest, String notworkingid_result_rest, boolean isClearResult, boolean isNotWorkId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("minDate", minDate);
+        params.put("maxDate", maxDate);
+        params.put("sLoginUserCode", sLoginUserCode);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        params.put("sTargetDate", sTargetDate);
+        params.put("sNotWorkId", sNotWorkId);
+        params.put("nRestOpen", nRestOpen);
+        params.put("nRestClose", nRestClose);
+        params.put("notworkingid_plan_rest", notworkingid_plan_rest);
+        params.put("notworkingid_notice_rest", notworkingid_notice_rest);
+        params.put("notworkingid_result_rest", notworkingid_result_rest);
+        params.put("isClearResult", isClearResult);
+        params.put("isNotWorkId", isNotWorkId);
+        baseMapper.insertTmgDailyDetailCheckRest(params);
+    }
+
+    @Override
+    public void insertTmgTrigger(String custId, String compCode, String employeeId, String minDate, String maxDate, String sLoginUserCode, String tmg_schedule_cmodifierprogramid, String sTargetDate, String act_editmonthly_uschedule) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("minDate", minDate);
+        params.put("maxDate", maxDate);
+        params.put("sLoginUserCode", sLoginUserCode);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        params.put("sTargetDate", sTargetDate);
+        params.put("act_editmonthly_uschedule", act_editmonthly_uschedule);
+        baseMapper.insertTmgTrigger(params);
+
+    }
+
+    @Override
+    public void deleteTmgTrigger(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        baseMapper.deleteTmgTrigger(params);
+    }
+
+    @Override
+    public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("sLoginUserCode", sLoginUserCode);
+        baseMapper.deleteDetailCheck(params);
+    }
 
 }
