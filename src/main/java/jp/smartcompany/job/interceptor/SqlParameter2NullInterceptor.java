@@ -30,15 +30,11 @@ public class SqlParameter2NullInterceptor implements Interceptor {
         StatementHandler statementHandler = PluginUtils.realTarget(invocation.getTarget());
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
         MappedStatement mappedStatement = (MappedStatement)metaObject.getValue("delegate.mappedStatement");
-        boolean isInterceptor = (
-                SqlCommandType.SELECT == mappedStatement.getSqlCommandType()
-                && StatementType.STATEMENT == mappedStatement.getStatementType()
-        ) || StatementType.CALLABLE == mappedStatement.getStatementType();
+        boolean isInterceptor = SqlCommandType.SELECT == mappedStatement.getSqlCommandType() || StatementType.CALLABLE == mappedStatement.getStatementType();
         if (isInterceptor) {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
-            String parsedSql1=StrUtil.replace(originalSql,"''","null");
-            String parsedSql2=StrUtil.replace(parsedSql1,",,",",null,");
+            String parsedSql2=StrUtil.replace(originalSql,",,",",NULL,");
             metaObject.setValue("delegate.boundSql.sql", parsedSql2);
         }
         return invocation.proceed();
