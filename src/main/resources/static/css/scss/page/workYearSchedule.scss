@@ -42,7 +42,7 @@
   border-left: 1px solid var(--border-grey);
   background-color: white;
 }
-/deep/.change-line span {
+.change-line span {
   white-space: pre-wrap;
 }
 .rest-cell {
