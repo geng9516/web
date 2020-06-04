@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.dto.dispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
@@ -330,7 +330,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     /**
      * 超過勤務命令情報表示項目ヘッダー・select句・表示順をTMG_DISPOVERTIMEINSTマスタより取得
      */
-    List<dispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate,String language);
+    List<DispOverTimeItemsDto> selectDispOverTimeItems(String custID, String compID, String baseDate,String language);
 
     /**
      * 承認状況欄へ表示するヘッダー名称・select句・表示順をTMG_DISPPERMSTATLISTマスタより取得

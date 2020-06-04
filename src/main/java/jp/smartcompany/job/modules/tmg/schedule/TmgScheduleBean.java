@@ -1,13 +1,12 @@
 package jp.smartcompany.job.modules.tmg.schedule;
 
-import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONObject;
+import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.schedule.dto.NpaidRestDTO;
-import jp.smartcompany.job.modules.tmg.schedule.dto.ScheduleDataDTO;
-import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
+import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.text.SimpleDateFormat;
@@ -51,6 +51,16 @@ public class TmgScheduleBean {
      * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(予定(休憩))
      */
     private final String NOTWORKINGID_PLAN_REST = "TMG_ITEMS|PlanRest";
+
+    /**
+     * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(申請(休憩))
+     */
+    public static final String NOTWORKINGID_NOTICE_REST = "TMG_ITEMS|NoticeRest";
+
+    /**
+     * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(実績(休憩))
+     */
+    public static final String NOTWORKINGID_RESULT_REST = "TMG_ITEMS|ResultRest";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"<b>管理対象外</b>"を表すマスターコードです
@@ -169,6 +179,55 @@ public class TmgScheduleBean {
      */
     private String detailPeriod = "";
 
+    /**
+     * 休憩開始時間 key
+     */
+    private final String _restOpen = "restOpen";
+
+    /**
+     * 休憩終了時間 key
+     */
+    private final String _restClose = "restClose";
+
+    /**
+     * 更新プログラムID
+     */
+    public final String TMG_SCHEDULE_CMODIFIERPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
+
+    /**
+     * プログラムID
+     */
+    public final String TMG_SCHEDULE_CPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
+
+    /**
+     * アクションを表すコードです。参照画面.読み出し処理
+     */
+    public final String ACT_DISPMONTHLY_RSCHEDULE = "ACT_DispMonthly_RSchedule";
+
+    /**
+     * アクションを表すコードです。編集画面.読み出し処理
+     */
+    public final String ACT_EDITMONTHLY_RSCHEDULE = "ACT_EditMonthly_RSchedule";
+
+    /**
+     * アクションを表すコードです。編集画面.更新処理
+     */
+    public final String ACT_EDITMONTHLY_USCHEDULE = "ACT_EditMonthly_USchedule";
+
+    /**
+     * データ開始日
+     */
+    public final String Cs_MINDATE = "1900/01/01";
+
+    /**
+     * データ開始日
+     */
+    public final String Cs_MAXDATE = "2222/12/31";
+
+    /**
+     * 実績クリアの可否
+     */
+    public final boolean bClearResult = false;
 
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
@@ -328,38 +387,47 @@ public class TmgScheduleBean {
      * ユーザーの基本情報を設定します。
      */
     private void setBasicUserInfo() {
-        // 顧客コード
-        if (null != psDBBean.getTargetCust() && !"".equals(psDBBean.getTargetCust())) {
-            _targetCustCode = psDBBean.getTargetCust();
-        }
-        // 法人コード
-        if (null != psDBBean.getTargetComp() && !"".equals(psDBBean.getTargetComp())) {
-            _targetCompCode = psDBBean.getTargetComp();
-        }
-        // 言語コード
-        if (null != psDBBean.getLanguage() && !"".equals(psDBBean.getLanguage())) {
-            _loginLanguageCode = psDBBean.getLanguage();
-        }
 
-        // 2019/12/02 NSC.OU 入力サイトで、予定作成画面を表示する対応
-        if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
-            // 対象ユーザー
-            if (null != psDBBean.getTargetUser() && !"".equals(psDBBean.getTargetUser())) {
-                _targetUserCode = psDBBean.getTargetUser();
+        if (null != psDBBean) {
+
+            //login user
+            _loginUserCode = psDBBean.getUserCode();
+
+            // 顧客コード
+            if (null != psDBBean.getTargetCust() && !"".equals(psDBBean.getTargetCust())) {
+                _targetCustCode = psDBBean.getTargetCust();
+            }
+            // 法人コード
+            if (null != psDBBean.getTargetComp() && !"".equals(psDBBean.getTargetComp())) {
+                _targetCompCode = psDBBean.getTargetComp();
+            }
+            // 言語コード
+            if (null != psDBBean.getLanguage() && !"".equals(psDBBean.getLanguage())) {
+                _loginLanguageCode = psDBBean.getLanguage();
+            }
+
+            // 2019/12/02 NSC.OU 入力サイトで、予定作成画面を表示する対応
+            if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
+                // 対象ユーザー
+                if (null != psDBBean.getTargetUser() && !"".equals(psDBBean.getTargetUser())) {
+                    _targetUserCode = psDBBean.getTargetUser();
+                }
+            } else {
+                if (referList == null) {
+                    return;
+                } else {
+                    // 対象ユーザー
+                    if (null != referList.getTargetEmployee() && !"".equals(referList.getTargetEmployee())) {
+                        _targetUserCode = referList.getTargetEmployee();
+                    }
+                    // 組織コード
+                    _targetSecCode = referList.getTargetSec();
+                    // 対象ユーザー所属グループ
+                    _targetGroupCode = referList.getTargetGroup();
+                }
             }
         } else {
-            if (referList == null) {
-                return;
-            } else {
-                // 対象ユーザー
-                if (null != referList.getTargetEmployee() && !"".equals(referList.getTargetEmployee())) {
-                    _targetUserCode = referList.getTargetEmployee();
-                }
-                // 組織コード
-                _targetSecCode = referList.getTargetSec();
-                // 対象ユーザー所属グループ
-                _targetGroupCode = referList.getTargetGroup();
-            }
+            logger.error("psDBBean対象が空です");
         }
 
     }
@@ -738,9 +806,9 @@ public class TmgScheduleBean {
      * @return
      */
     public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid) {
-        List<HashMap<String, Object>>  kubunnList = this.selectGenericDetail();
-        List<HashMap<String, Object>>  syuccyouList = this.selectBusinessTrip();
-        List<HashMap<String, Object>>  workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
+        List<HashMap<String, Object>> kubunnList = this.selectGenericDetail();
+        List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip();
+        List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
         HashMap<String, Object> results = new HashMap<String, Object>();
         results.put("kubunnList", kubunnList);
         results.put("syuccyouList", syuccyouList);
@@ -748,5 +816,193 @@ public class TmgScheduleBean {
         return results;
     }
 
+    /**
+     * データをロードのテストファンクション
+     *
+     * @return
+     */
+    private MonthlyUScheduleEditParaDTO loadData() {
+
+        MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = new MonthlyUScheduleEditParaDTO();
+        monthlyUScheduleEditParaDTO.setLoginUserId("46402406");
+        monthlyUScheduleEditParaDTO.setBaseDate("2020/04/01");
+        monthlyUScheduleEditParaDTO.setDispStartDate("2020/07/01");
+        monthlyUScheduleEditParaDTO.setEndDispDate("2020/04/30");
+        monthlyUScheduleEditParaDTO.setTargetUserId("29042924");
+
+        MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = new MonthlyScheduleEmpInfoDTO();
+        monthlyScheduleEmpInfoDTO.setBussinessTripid("TMG_BUSINESS_TRIP|00");
+        monthlyScheduleEmpInfoDTO.setComment("77777111");
+        monthlyScheduleEmpInfoDTO.setDyyyymmdd("2020/04/02");
+        monthlyScheduleEmpInfoDTO.setNopen("9:00");
+        monthlyScheduleEmpInfoDTO.setNclose("17:30");
+        monthlyScheduleEmpInfoDTO.setWorkId("TMG_WORK|000");
+
+        List<HashMap<String, String>> restList = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> rest1 = new HashMap<String, String>();
+        rest1.put(_restOpen, "12:00");
+        rest1.put(_restClose, "12:46");
+        restList.add(rest1);
+
+        HashMap<String, String> rest2 = new HashMap<String, String>();
+        rest2.put(_restOpen, "12:46");
+        rest2.put(_restClose, "13:00");
+        restList.add(rest2);
+        monthlyScheduleEmpInfoDTO.setRestList(restList);
+        //////////////////////////////////////////////////////
+
+        MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO1 = new MonthlyScheduleEmpInfoDTO();
+        monthlyScheduleEmpInfoDTO1.setBussinessTripid("TMG_BUSINESS_TRIP|00");
+        monthlyScheduleEmpInfoDTO1.setComment("8888111");
+        monthlyScheduleEmpInfoDTO1.setDyyyymmdd("2020/04/03");
+        monthlyScheduleEmpInfoDTO1.setNopen("9:00");
+        monthlyScheduleEmpInfoDTO1.setNclose("17:30");
+        monthlyScheduleEmpInfoDTO1.setWorkId("TMG_WORK|000");
+
+        List<HashMap<String, String>> restList1 = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> rest11 = new HashMap<String, String>();
+        rest11.put(_restOpen, "12:00");
+        rest11.put(_restClose, "13:00");
+        restList1.add(rest11);
+       /* HashMap<String, String> rest21 = new HashMap<String, String>();
+        rest21.put(_restOpen, "12:45");
+        rest21.put(_restClose, "12:51");
+        restList1.add(rest21);*/
+        monthlyScheduleEmpInfoDTO1.setRestList(restList1);
+
+        List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = new ArrayList<MonthlyScheduleEmpInfoDTO>();
+        monthlyScheduleEmpInfoDTOS.add(monthlyScheduleEmpInfoDTO);
+        monthlyScheduleEmpInfoDTOS.add(monthlyScheduleEmpInfoDTO1);
+        monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
+        JSONObject jsonObject = new JSONObject(monthlyUScheduleEditParaDTO);
+        System.out.println("予定作成jsonフォーマット:\n" + jsonObject.toString());
+        return monthlyUScheduleEditParaDTO;
+
+    }
+
+
+    /**
+     * 予定作成更新処理を行います。
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public void executeEditMonthlyUSchedule() {
+
+        //画面から
+        MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = this.loadData();
+
+        if (null == monthlyUScheduleEditParaDTO) {
+            logger.warn("更新データが空です");
+            return;
+        }
+
+        List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = monthlyUScheduleEditParaDTO.getMonthlyScheduleEmpInfoDTOS();
+        if (null == monthlyScheduleEmpInfoDTOS) {
+            logger.warn("予定データが空です");
+            return;
+        }
+
+        // チェックテーブル削除
+        iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
+        iTmgScheduleService.deleteDailyDetailCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
+
+        for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
+            MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
+            //日別情報を更新する(ロット処理)
+            List<HashMap<String, String>> restTime = monthlyScheduleEmpInfoDTO.getRestList();
+            String nRestOpen = "";
+            String nRestClose = "";
+            //対象日
+            String sTargetDate = monthlyScheduleEmpInfoDTO.getDyyyymmdd();
+            boolean bNoWorking = isNoWorkingId(monthlyScheduleEmpInfoDTO.getWorkId());
+
+            //[勤怠]日別情報を更新する
+            iTmgScheduleService.insertTmgDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, bClearResult, Cs_MGD_HOLFLG_0, monthlyScheduleEmpInfoDTO.getWorkId(),
+                    monthlyScheduleEmpInfoDTO.getNopen() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNopen(), monthlyScheduleEmpInfoDTO.getNclose() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNclose(), bNoWorking, monthlyScheduleEmpInfoDTO.getBussinessTripid(), monthlyScheduleEmpInfoDTO.getComment(), monthlyUScheduleEditParaDTO.getTargetUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd(), _targetCompCode, _targetCustCode, _loginLanguageCode);
+
+            // 複数休憩分ループする
+            for (int j = 0; j < restTime.size(); j++) {
+                HashMap<String, String> restTimeHashMap = restTime.get(j);
+                //休憩開始時間
+                nRestOpen = restTimeHashMap.get(_restOpen);
+                //休憩終了時間
+                nRestClose = restTimeHashMap.get(_restClose);
+                if (!ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestClose) && !ObjectUtil.isEmpty(nRestClose)) {
+                    // TMG_DAILY_DETAIL 休憩時間レコード登録：予定
+                    iTmgScheduleService.insertTmgDailyDetailCheckRest(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
+                            Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_PLAN_REST, nRestOpen, nRestClose,
+                            NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_PLAN_REST.equals(NOTWORKINGID_RESULT_REST));
+                    // 就業区分が就業禁止(有給)、就業禁止(無給)以外の場合に申請と実績の休憩レコードを作成する。
+                    if (!isNoWorkingId(monthlyScheduleEmpInfoDTO.getWorkId())) {
+                        // TMG_DAILY_DETAIL 休憩時間レコード登録：申請
+                        iTmgScheduleService.insertTmgDailyDetailCheckRest(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
+                                Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_NOTICE_REST, nRestOpen, nRestClose,
+                                NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_NOTICE_REST.equals(NOTWORKINGID_RESULT_REST));
+
+                        // TMG_DAILY_DETAIL 休憩時間レコード登録：実績
+                        iTmgScheduleService.insertTmgDailyDetailCheckRest(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
+                                Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_RESULT_REST, nRestOpen, nRestClose,
+                                NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_RESULT_REST.equals(NOTWORKINGID_RESULT_REST));
+                    }
+                }
+
+            }
+            iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
+                    Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, ACT_EDITMONTHLY_USCHEDULE);
+            iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
+            iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
+            iTmgScheduleService.deleteDetailCheck(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId());
+        }
+    }
+
+    /**
+     * 指定された就業区分が就業禁止(有給)または就業禁止(無給)かどうかを判断します。
+     *
+     * @param sWorkingId
+     * @return true : 就業禁止(有給)、就業禁止(無給)の場合　false：就業禁止(有給)、就業禁止(無給)以外の場合
+     */
+    private boolean isNoWorkingId(String sWorkingId) {
+
+        if (TmgUtil.Cs_MGD_WORK_200.equals(sWorkingId)
+                || TmgUtil.Cs_MGD_WORK_412.equals(sWorkingId)) {
+
+            // 就業禁止(有給)、就業禁止(無給)の場合
+            return true;
+        } else {
+
+            // 就業禁止(有給)、就業禁止(無給)以外の場合
+            return false;
+        }
+    }
+
+    /**
+     * 開始日 ? 終了日 の日数を返します。
+     *
+     * @param start
+     * @param end
+     * @return 終了日と開始日の差分日数を返す。
+     */
+    private int getDifferenceOfDays(String start, String end) {
+
+        long nStart = 0;
+        long nEnd = 0;
+        int nDifference = 0;
+
+        // データ表示開始日をミリ秒単位で取得
+        nStart = new Long(getCalendarOfTypeStringOfDate(start).getTimeInMillis()).longValue();
+
+        // データ表示終了日をミリ秒単位で取得
+        nEnd = new Long(getCalendarOfTypeStringOfDate(end).getTimeInMillis()).longValue();
+
+        // 終了日と開始日の差分を算出
+        // nDifference = new Long((nEnd - nStart) / (86400000)).intValue();
+        nDifference = new Long((nEnd - nStart) / (1000 * 60 * 60 * 24))
+                .intValue();
+
+        if (nDifference < 0) {
+            nDifference = 0;
+        }
+
+        return nDifference;
+    }
 
 }

@@ -5,15 +5,14 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyInfoDO;
 import jp.smartcompany.job.modules.core.mapper.TmgMonthlyInfoMapper;
 import jp.smartcompany.job.modules.core.service.ITmgMonthlyInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.monthlyInfoOtVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.yearlyInfoVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.YearlyInfoVo;
 import jp.smartcompany.job.modules.tmg.permStatList.dto.ColNameDto;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -80,7 +79,7 @@ import java.util.Map;
          * @param  slanguage   言語区分
          * */
         @Override
-        public List<monthlyInfoOtVo> selectMonthlyInfoOtr(String custId, String compId, String sectionId,
+        public List<MonthlyInfoOtVo> selectMonthlyInfoOtr(String custId, String compId, String sectionId,
                                                           String sContentId, String sBaseDate, String slanguage, String sql){
                 return baseMapper.selectMonthlyInfoOtr( custId,  compId,  sectionId,
                          sContentId,  sBaseDate,  slanguage, sql);
@@ -116,8 +115,8 @@ import java.util.Map;
          * @return SQL文
          */
         @Override
-        public List<yearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
-                                                   String sContentId, String sBaseDate, String toDay,String sLang,String sql){
+        public List<YearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
+                                                   String sContentId, String sBaseDate, String toDay, String sLang, String sql){
                 return baseMapper.selectYearlyInfo( custID,  compID,  sectionID,
                          sContentId,  sBaseDate,toDay,  sLang, sql);
         }

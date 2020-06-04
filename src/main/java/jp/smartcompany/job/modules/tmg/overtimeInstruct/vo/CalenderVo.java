@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo;
+package jp.smartcompany.job.modules.tmg.overtimeInstruct.vo;
 
 import lombok.Getter;
 import lombok.Setter;

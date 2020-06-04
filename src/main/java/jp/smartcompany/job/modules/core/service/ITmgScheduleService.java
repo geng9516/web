@@ -214,6 +214,7 @@ public interface ITmgScheduleService extends IService<Object> {
 
     /**
      * 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用)
+     *
      * @param compCode
      * @param custId
      * @param sectionid
@@ -221,8 +222,103 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param baseDate
      * @return
      */
-    List<HashMap<String, Object>> selectWorkPatternIkkatu( String compCode, String custId, String sectionid,String groupid, String baseDate);
+    List<HashMap<String, Object>> selectWorkPatternIkkatu(String compCode, String custId, String sectionid, String groupid, String baseDate);
 
+    /**
+     * エラーチェックを削除する
+     *
+     * @param employeeId  tda_cmodifieruserid
+     * @param compCode
+     * @param custId
+     */
+    void deleteDailyCheck(String employeeId, String compCode, String custId);
 
+    /**
+     * エラーチェックを削除する
+     *
+     * @param employeeId tda_cmodifieruserid
+     * @param compCode
+     * @param custId
+     */
+    void deleteDailyDetailCheck(String employeeId, String compCode, String custId);
+
+    /**
+     * [勤怠]日別情報を更新する
+     *
+     * @param sLoginUserCode
+     * @param tmg_schedule_cmodifierprogramid
+     * @param isClearResult
+     * @param cs_mgd_holflg
+     * @param tda_cworkingid_p
+     * @param tda_nopen_p
+     * @param tda_nclose_p
+     * @param bNoWorking
+     * @param tda_cbusinesstripid_p
+     * @param tda_ccomment_p
+     * @param employeeid
+     * @param dyyyymmdd
+     * @param compCode
+     * @param custId
+     * @param language
+     */
+    void insertTmgDailyCheck(String sLoginUserCode, String tmg_schedule_cmodifierprogramid, boolean isClearResult, String cs_mgd_holflg, String tda_cworkingid_p,
+                             String tda_nopen_p, String tda_nclose_p, boolean bNoWorking, String tda_cbusinesstripid_p, String tda_ccomment_p, String employeeid,
+                             String dyyyymmdd, String compCode, String custId, String language);
+
+    /**
+     * 日次詳細情報登録（休憩時間：予定）
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param minDate
+     * @param maxDate
+     * @param sLoginUserCode
+     * @param tmg_schedule_cmodifierprogramid
+     * @param sTargetDate
+     * @param sNotWorkId
+     * @param nRestOpen
+     * @param nRestClose
+     * @param notworkingid_plan_rest
+     * @param notworkingid_notice_rest
+     * @param notworkingid_result_rest
+     * @param isClearResult
+     * @param isNotWorkId
+     */
+    void insertTmgDailyDetailCheckRest(String custId, String compCode, String employeeId, String minDate, String maxDate, String sLoginUserCode, String tmg_schedule_cmodifierprogramid, String sTargetDate, String sNotWorkId, String nRestOpen, String nRestClose, String notworkingid_plan_rest, String notworkingid_notice_rest, String notworkingid_result_rest, boolean isClearResult, boolean isNotWorkId);
+
+    /**
+     * 勤怠トリガーテーブルに更新対象のデータを挿入する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param minDate
+     * @param maxDate
+     * @param sLoginUserCode
+     * @param tmg_schedule_cmodifierprogramid
+     * @param sTargetDate
+     * @param act_editmonthly_uschedule
+     */
+    void insertTmgTrigger(String custId, String compCode, String employeeId, String minDate, String maxDate, String sLoginUserCode, String tmg_schedule_cmodifierprogramid, String sTargetDate, String act_editmonthly_uschedule);
+
+    /**
+     * 勤怠トリガーテーブルから該当データを削除する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param tmg_schedule_cmodifierprogramid
+     */
+    void deleteTmgTrigger(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid);
+
+    /**
+     * エラーチェックを削除する
+     *
+     * @param custId
+     * @param compCode
+     * @param sLoginUserCode
+     */
+    void deleteDetailCheck(String custId, String compCode, String sLoginUserCode);
 
 }

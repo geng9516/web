@@ -74,3 +74,5 @@ mybatis-plus:
       update-strategy: not_null
       select-strategy: not_null
     banner: false
+  configuration:
+    jdbc-type-for-null: NULL

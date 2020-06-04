@@ -162,4 +162,55 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @return
      */
     List<HashMap<String, Object>> selectWorkPatternIkkatu(HashMap<String, Object> params);
+
+    /**
+     * エラーチェックを削除する
+     *
+     * @param params
+     */
+    void deleteDailyCheck(HashMap<String, Object> params);
+
+    /**
+     * エラーチェックを削除する
+     *
+     * @param params
+     */
+    void deleteDailyDetailCheck(HashMap<String, Object> params);
+
+    /**
+     * [勤怠]日別情報を更新する
+     *
+     * @param params
+     */
+
+    void insertTmgDailyCheck(HashMap<String, Object> params);
+
+    /**
+     * 日次詳細情報登録（休憩時間：予定）
+     *
+     * @param params
+     */
+    void insertTmgDailyDetailCheckRest(HashMap<String, Object> params);
+
+    /**
+     * 勤怠トリガーテーブルに更新対象のデータを挿入する
+     *
+     * @param params
+     */
+    @SqlParser(filter = true)
+    void insertTmgTrigger(HashMap<String, Object> params);
+
+    /**
+     * 勤怠トリガーテーブルから該当データを削除する
+     *
+     * @param params
+     */
+    void deleteTmgTrigger(HashMap<String, Object> params);
+
+    /**
+     * エラーチェックを削除する
+     *
+     * @param params
+     */
+    void deleteDetailCheck(HashMap<String, Object> params);
 }

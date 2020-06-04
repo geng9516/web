@@ -2,8 +2,8 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.CalenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

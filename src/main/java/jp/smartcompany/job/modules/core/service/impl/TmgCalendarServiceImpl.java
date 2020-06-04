@@ -4,8 +4,8 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.CalenderVo;
-import jp.smartcompany.job.modules.tmg.OvertimeInstruct.vo.OneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
 import org.springframework.stereotype.Repository;
 

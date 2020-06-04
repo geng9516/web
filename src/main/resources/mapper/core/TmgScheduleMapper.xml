@@ -24,7 +24,7 @@
         <result column="tda_ccustomerid" property="tda_ccustomerid" javaType="java.lang.String"/>
         <result column="tda_cbusinesstripid_p" property="tda_cbusinesstripid_p" javaType="java.lang.String"/>
         <result column="tda_cbusinesstripid_mm" property="tda_cbusinesstripid_mm" javaType="java.lang.String"/>
-        <result column="tda_ccomment_p" property="tda_ccomment_p" javaType="java.lang.String"/>
+        <result column="tda_ctda_ccomment_p_p" property="tda_ctda_ccomment_p_p" javaType="java.lang.String"/>
         <result column="tda_dmmdd" property="tda_dmmdd" javaType="java.lang.String"/>
         <result column="avgworktime" property="avgworktime" javaType="java.lang.String"/>
         <result column="mgd_csparechar4" property="mgd_csparechar4" javaType="java.lang.String"/>
@@ -95,7 +95,7 @@
         tda_cstatusflg ,
         tda_cbusinesstripid_p ,
         tmg_f_get_mgd(tda_cbusinesstripid_p, trunc((to_date(#{dStart})),'mm')) tda_cbusinesstripid_mm,
-        tda_ccomment_p ,
+        tda_ctda_ccomment_p_p ,
         to_char(tda_dyyyymmdd, 'mm/dd') tda_dmmdd,
         nvl(tmg_f_get_avgworktime(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid), '0') as avgworktime,
         tmg_f_get_employees_workday(tda_cworkingid_p, tda_ccustomerid,tda_ccompanyid) as mgd_csparechar4 ,
@@ -331,5 +331,192 @@
             ,tmg_f_timerange_table_json(timerange) as json
           from table(tmg_f_get_tmg_pattern_list(#{custId}, #{compCode}, #{sectionid},#{groupid}, #{baseDate}))
     </select>
+
+    <!-- エラーチェックを削除する -->
+    <delete id="deleteDailyCheck" parameterType="java.util.HashMap">
+        delete from tmg_daily_check
+         where tda_ccustomerid = #{custId}
+           and tda_cmodifieruserid = #{employeeId}
+           and tda_ccompanyid = #{compCode}
+    </delete>
+
+    <!-- エラーチェックを削除する -->
+    <delete id="deleteDailyDetailCheck" parameterType="java.util.HashMap">
+        delete from tmg_daily_detail_check
+         where tdad_ccustomerid = #{custId}
+           and tdad_ccompanyid = #{compCode}
+           and tdad_cmodifieruserid = #{employeeId}
+    </delete>
+
+    <!-- [勤怠]日別情報を更新する -->
+    <insert id="insertTmgDailyCheck" parameterType="java.util.HashMap">
+        insert into tmg_daily_check
+        (tda_ccustomerid, tda_ccompanyid, tda_cemployeeid, tda_dstartdate,tda_denddate, tda_cmodifieruserid, tda_dmodifieddate,
+        tda_cmodifierprogramid, tda_nyyyy, tda_dyyyymm, tda_dyyyymmdd,tda_cstatusflg, tda_cholflg, tda_cworkingid_p,
+        tda_nopen_p,tda_nclose_p, tda_nrestopen_p, tda_nrestclose_p,tda_cmodifieruserid_p, tda_dmodifieddate_p, tda_nopen_n,
+        tda_nclose_n,tda_nrestopen_n, tda_nrestclose_n,tda_cmodifieruserid_n, tda_dmodifieddate_n, tda_cworkingid_r,tda_cbusinesstripid_r,
+        tda_nopen_r, tda_nclose_r, tda_nrestopen_r,tda_nrestclose_r, tda_cmodifieruserid_r, tda_dmodifieddate_r,tda_cbusinesstripid_p,
+        tda_ccomment_p, tda_cpatternid)
+        select tda_ccustomerid
+        ,tda_ccompanyid
+        ,tda_cemployeeid
+        ,tda_dstartdate
+        ,tda_denddate
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tmg_schedule_cmodifierprogramid}
+        ,tda_nyyyy
+        ,tda_dyyyymm
+        ,tda_dyyyymmdd
+        <if test="isClearResult == true">
+            ,least(tda_cstatusflg, 'TMG_DATASTATUS|1')
+        </if>
+        <if test="isClearResult == false">
+            ,least(tda_cstatusflg, 'TMG_DATASTATUS|3')
+        </if>
+        ,concat(concat(#{cs_mgd_holflg},'|'), tmg_f_get_mgd_n(#{tda_cworkingid_p}, tda_dyyyymmdd, 2,tda_ccustomerid, tda_ccompanyid, #{language}))
+        ,#{tda_cworkingid_p}
+        ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+        ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        <if test="bNoWorking == true">
+            ,null
+            ,null
+        </if>
+        <if test="bNoWorking == false">
+            ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+            ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+        </if>
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        <if test="isClearResult == true">
+            ,#{tda_cworkingid_p}
+            ,#{tda_cbusinesstripid_p}
+            <if test="bNoWorking == true">
+                <!-- 就業区分が就業禁止(有給)、就業禁止(無給)の場合はTDA_NOPEN_R、TDA_NCLOSE_Rへの始業、終業時間の反映を行わない -->
+                ,null
+                ,null
+            </if>
+            <if test="bNoWorking == false">
+                ,tmg_f_conv_hhmi2min(#{tda_nopen_p})
+                ,tmg_f_conv_hhmi2min(#{tda_nclose_p})
+            </if>
+        </if>
+        <if test="isClearResult == false">
+            <!-- 実績クリア不可の場合、システム日付と更新対象の日付を比較して、システム日付以前であれば実績始業・実績終業の値を据え置き -->
+            ,decode(sign(tda_dyyyymmdd - sysdate), 1, #{tda_cworkingid_p},TDA_CWORKINGID_R)
+            ,decode(sign(tda_dyyyymmdd - sysdate), 1, #{tda_cbusinesstripid_p},TDA_CBUSINESSTRIPID_R)
+            <if test="bNoWorking == true">
+                ,null
+                ,null
+            </if>
+            <if test="bNoWorking == false">
+                ,decode(sign(tda_dyyyymmdd - sysdate), 1,tmg_f_conv_hhmi2min(#{tda_nopen_p}),tda_nopen_r)
+                ,decode(sign(tda_dyyyymmdd - sysdate), 1,tmg_f_conv_hhmi2min(#{tda_nclose_p}),tda_nclose_r)
+            </if>
+        </if>
+        ,null
+        ,null
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tda_cbusinesstripid_p}
+        ,#{tda_ccomment_p}
+        ,tda_cpatternid
+        from tmg_daily
+        where tda_cemployeeid = #{employeeid}
+        and tda_dyyyymmdd = trunc(to_date(#{dyyyymmdd}), 'dd')
+        and tda_ccompanyid = #{compCode}
+        and tda_ccustomerid = #{custId}
+        and tda_dyyyymm = trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_dstartdate <![CDATA[<=]]> trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_denddate <![CDATA[>=]]> trunc(to_date(#{dyyyymmdd}), 'mm')
+        and tda_nlock_p = 0
+
+    </insert>
+    <!-- 日次詳細情報登録（休憩時間：予定） -->
+    <insert id="insertTmgDailyDetailCheckRest" parameterType="java.util.HashMap">
+        insert into tmg_daily_detail_check
+        (tdad_ccustomerid
+        , tdad_ccompanyid
+        , tdad_cemployeeid
+        , tdad_dstartdate
+        , tdad_denddate
+        , tdad_cmodifieruserid
+        , tdad_dmodifieddate
+        , tdad_cmodifierprogramid
+        , tdad_nyyyy
+        , tdad_dyyyymm
+        , tdad_dyyyymmdd
+        , tdad_cnotworkid
+        , tdad_nopen
+        , tdad_nclose
+        , tdad_seq)
+        select #{custId}
+        , #{compCode}
+        ,#{employeeId}
+        ,to_date('1900/01/01', 'yyyy/mm/dd')  <!--データ開始日-->
+        ,to_date('2222/12/31', 'yyyy/mm/dd')  <!--データ終了日-->
+        ,#{sLoginUserCode}
+        ,sysdate
+        ,#{tmg_schedule_cmodifierprogramid}
+        ,to_char(to_date(#{sTargetDate}), 'yyyy')
+        ,trunc(to_date(#{sTargetDate}), 'mm')
+        ,to_date(#{sTargetDate})
+        ,#{sNotWorkId}
+        ,tmg_f_conv_hhmi2min(#{nRestOpen})
+        ,tmg_f_conv_hhmi2min(#{nRestClose})
+        ,(select nvl(max(tdad_seq), 0) + 1
+        from tmg_daily_detail
+        where tdad_ccustomerid = #{custId}
+        and tdad_ccompanyid = #{compCode}
+        and tdad_cemployeeid = #{employeeId}
+        and tdad_dyyyymmdd = to_date(#{sTargetDate})
+        and (tdad_cnotworkid = #{notworkingid_plan_rest}
+        or tdad_cnotworkid = #{notworkingid_notice_rest}
+        or tdad_cnotworkid = #{notworkingid_result_rest}))
+        from dual
+        <!-- 実績クリア不可の場合、システム日付以前なら実績登録を行わない -->
+        <if test="isClearResult == false and isNotWorkId == true">
+            where to_date(#{sTargetDate})>sysdate
+        </if>
+    </insert>
+
+    <!-- 勤怠トリガーテーブルに更新対象のデータを挿入する -->
+    <insert id="insertTmgTrigger" parameterType="java.util.HashMap">
+        insert into tmg_trigger
+        (ttr_ccustomerid , ttr_ccompanyid , ttr_cemployeeid ,
+        ttr_dstartdate , ttr_denddate , ttr_cmodifieruserid ,
+        ttr_dmodifieddate , ttr_cmodifierprogramid , ttr_cprogramid ,
+        ttr_dparameter1 , ttr_cparameter1)
+        values
+        (#{custId} , #{compCode} , #{employeeId},
+        to_date('1900/01/01', 'yyyy/mm/dd'),  <!--データ開始日-->
+        to_date('2222/12/31', 'yyyy/mm/dd'),  <!--データ終了日-->
+        #{sLoginUserCode} , sysdate ,
+        #{tmg_schedule_cmodifierprogramid} ,
+        #{tmg_schedule_cmodifierprogramid} , trunc(to_date(#{sTargetDate}), 'dd'), #{act_editmonthly_uschedule})
+    </insert>
+
+    <!-- 勤怠トリガーテーブルから該当データを削除する -->
+    <delete id="deleteTmgTrigger" parameterType="java.util.HashMap">
+        delete from tmg_trigger
+             where ttr_cmodifierprogramid =#{tmg_schedule_cmodifierprogramid}
+               and ttr_cmodifieruserid = #{employeeId}
+               and ttr_ccustomerid = #{custId}
+               and ttr_ccompanyid = #{compCode}
+    </delete>
+
+    <!-- エラーチェックを削除する -->
+    <delete id="deleteDetailCheck" parameterType="java.util.HashMap">
+        delete from tmg_daily_detail_check
+             where tdad_ccustomerid = #{custId}
+               and tdad_ccompanyid = #{compCode}
+               and tdad_cmodifieruserid = #{sLoginUserCode}
+    </delete>
 
 </mapper>

@@ -1,6 +1,5 @@
 package jp.smartcompany.job.interceptor;
 
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -15,12 +14,17 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.session.ResultHandler;
 
+import java.sql.Connection;
 import java.sql.Statement;
 
 @Intercepts({@Signature(
         type = StatementHandler.class,
         method = "query",
         args = {Statement.class, ResultHandler.class}
+),@Signature(
+        type = StatementHandler.class,
+        method = "prepare",
+        args = {Connection.class, Integer.class}
 )})
 public class SqlParameter2NullInterceptor implements Interceptor {
 
@@ -30,16 +34,13 @@ public class SqlParameter2NullInterceptor implements Interceptor {
         StatementHandler statementHandler = PluginUtils.realTarget(invocation.getTarget());
         MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
         MappedStatement mappedStatement = (MappedStatement)metaObject.getValue("delegate.mappedStatement");
-        boolean isInterceptor = (
-                SqlCommandType.SELECT == mappedStatement.getSqlCommandType()
-                && StatementType.STATEMENT == mappedStatement.getStatementType()
-        ) || StatementType.CALLABLE == mappedStatement.getStatementType();
+        boolean isInterceptor = SqlCommandType.SELECT == mappedStatement.getSqlCommandType() || StatementType.CALLABLE == mappedStatement.getStatementType();
         if (isInterceptor) {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
-            String parsedSql1=StrUtil.replace(originalSql,"''","null");
-            String parsedSql2=StrUtil.replace(parsedSql1,",,",",null,");
-            metaObject.setValue("delegate.boundSql.sql", parsedSql2);
+            originalSql=originalSql.replaceAll("(,\\s*,)",",null,");
+            originalSql=originalSql.replaceAll("\\(\\)","(null)");
+            metaObject.setValue("delegate.boundSql.sql", originalSql);
         }
         return invocation.proceed();
     }

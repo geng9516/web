@@ -93,6 +93,7 @@ public class ScheduleController {
 
     /**
      * [区分][出張][勤務パターン]
+     *
      * @param employeeId
      * @param year
      * @param month
@@ -111,6 +112,29 @@ public class ScheduleController {
         String groupid = "201000201010|000000";
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid);
     }
+
+    /**
+     * 予定作成更新処理を行います
+     *
+     * @param employeeId
+     * @param year
+     * @param month
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("executeEditMonthlyUSchedule")
+    @ResponseBody
+    public HashMap<String, Object> executeEditMonthlyUSchedule(@RequestParam("employeeId") String employeeId,
+                                                               @RequestParam("year") String year,
+                                                               @RequestParam("month") String month,
+                                                               ModelMap modelMap) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.executeEditMonthlyUSchedule();
+        return null;
+    }
+
+
 
 
 }
