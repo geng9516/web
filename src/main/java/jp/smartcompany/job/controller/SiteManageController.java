@@ -58,6 +58,12 @@ public class SiteManageController {
                 .addAttribute("menuId",menuId);
         return "sys/manage/require5days";
     }
-
+    @GetMapping("attendancebook")
+    public String toAttendanceBook(@RequestParam("moduleIndex") Integer moduleIndex,
+                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex)
+                .addAttribute("menuId",menuId);
+        return "sys/manage/attendancebook";
+    }
 
 }
