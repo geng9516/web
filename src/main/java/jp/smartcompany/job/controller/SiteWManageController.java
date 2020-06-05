@@ -3,16 +3,15 @@ package jp.smartcompany.job.controller;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author Xiao Wenpeng
@@ -47,23 +46,30 @@ public class SiteWManageController {
      * @param modelMap
      * @return
      */
-    @RequestMapping("vacation")
+    @GetMapping("vacation")
     public String toWManageVacation(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam(value = "moduleIndex",required = false) Integer moduleIndex,
-            @RequestParam(value = "menuId",required = false) Long menuId,
-            ModelMap modelMap) throws Exception {
-        if (moduleIndex!=null) {
-            modelMap.addAttribute("moduleIndex", moduleIndex)
-                    .addAttribute("menuId", menuId);
-        }
+            @RequestParam(value = "moduleIndex") Integer moduleIndex,
+            @RequestParam(value = "menuId") Long menuId,
+            ModelMap modelMap) {
+        modelMap
+                .addAttribute("moduleIndex",moduleIndex)
+                .addAttribute("menuId",menuId)
+                .addAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION)
+                .addAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
+        return "sys/wmanage/vacation";
+    }
+
+    /**
+     * 年次休暇管理一览界面数据获取
+     */
+    @GetMapping("vacation/list")
+    @ResponseBody
+    public List<PaidHolidayInitVO> wManageVacation(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
-        paidHolidayBean.actionInitHandler(modelMap,referList.buildSQLForSelectEmployees());
-        referList.putReferList(modelMap);
-        modelMap.addAttribute("psDBBean",psDBBean);
-        return "sys/wmanage/vacation";
+        return paidHolidayBean.actionInitHandler(referList.buildSQLForSelectEmployees());
     }
 
     /**
@@ -112,30 +118,15 @@ public class SiteWManageController {
     }
 
     /**
-     * 跳转到 就业承认site 出勤薄
+     * 跳转到 出勤薄
      * @param moduleIndex
      * @param menuId
-     * @param modelMap
      * @return
      */
-//    @RequestMapping("vacation")
     @RequestMapping("attendancebook")
     public String toWManageAttendancebook(
-            @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam(value = "moduleIndex",required = false) Integer moduleIndex,
-            @RequestParam(value = "menuId",required = false) Long menuId,
-            ModelMap modelMap) throws Exception {
-        if (moduleIndex!=null) {
-            modelMap.addAttribute("moduleIndex", moduleIndex)
-                    .addAttribute("menuId", menuId);
-        }
-        psDBBean.requestHash.put("psSite", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
-        String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
-        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
-                true, false, false, true);
-        paidHolidayBean.actionInitHandler(modelMap,referList.buildSQLForSelectEmployees());
-        referList.putReferList(modelMap);
-        modelMap.addAttribute("psDBBean",psDBBean);
+            @RequestParam(value = "moduleIndex") Integer moduleIndex,
+            @RequestParam(value = "menuId") Long menuId) throws Exception {
         return "sys/manage/attendancebook";
     }
 
