@@ -51,10 +51,14 @@ public class SiteWManageController {
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
             @RequestParam(value = "menuId") Long menuId,
-            ModelMap modelMap) {
+            ModelMap modelMap) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
+                true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId)
+                .addAttribute("targetSection",referList.getTargetSec())
                 .addAttribute(TmgReferList.TREEVIEW_KEY_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.TREEVIEW_KEY_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
                 .addAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP)
