@@ -5,7 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.common.Query;
+import jp.smartcompany.boot.common.Query;
 import jp.smartcompany.job.modules.quartz.JobBean;
 import jp.smartcompany.job.modules.quartz.JobConstant;
 import jp.smartcompany.job.modules.quartz.dao.ScheduleJobDao;

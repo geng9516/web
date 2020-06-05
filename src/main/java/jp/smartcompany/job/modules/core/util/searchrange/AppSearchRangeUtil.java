@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.util.searchrange;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.SysInfoBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;

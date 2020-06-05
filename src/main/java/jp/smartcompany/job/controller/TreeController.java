@@ -2,9 +2,7 @@ package jp.smartcompany.job.controller;
 
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.json.JSONArray;
-import cn.hutool.json.JSONUtil;
-import jp.smartcompany.job.common.GlobalResponse;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;

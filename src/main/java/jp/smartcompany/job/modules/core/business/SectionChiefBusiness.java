@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import cn.hutool.core.collection.CollUtil;
-import jp.smartcompany.job.common.Constant;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;

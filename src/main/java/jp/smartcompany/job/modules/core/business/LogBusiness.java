@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import jp.smartcompany.job.common.Query;
+import jp.smartcompany.boot.common.Query;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.service.ErrorAuditService;

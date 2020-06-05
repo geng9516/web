@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.util.searchrange;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.core.util.appcontrol.AbstractInfo;

@@ -1,6 +1,6 @@
 package jp.smartcompany.job.controller;
 
-import jp.smartcompany.job.common.Constant;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import lombok.RequiredArgsConstructor;

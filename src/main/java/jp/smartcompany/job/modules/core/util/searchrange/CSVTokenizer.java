@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.util.searchrange;
 
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 
 import java.util.Enumeration;
 

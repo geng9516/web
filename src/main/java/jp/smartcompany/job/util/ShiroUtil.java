@@ -1,9 +1,8 @@
 package jp.smartcompany.job.util;
 
-import jp.smartcompany.job.common.GlobalException;
-import jp.smartcompany.job.enums.ErrorMessage;
+import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 
