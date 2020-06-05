@@ -52,7 +52,7 @@ public class SiteInputController {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
         TmgResultsDto dto = this.ssss();
-        tgResultsBean.actFixed(modelMap,dto);
+        tgResultsBean.actDispRmonthly(modelMap);
         return "sys/input/addwork";
     }
 

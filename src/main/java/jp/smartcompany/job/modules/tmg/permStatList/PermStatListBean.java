@@ -82,10 +82,6 @@ public class PermStatListBean {
      * IMastEmployeesService
      */
     private final IMastEmployeesService iMastEmployeesService;
-    /**
-     * TmgReferList
-     */
-    private TmgReferList referList = null;
 
     public static final String APPLICATION_ID = "PermStatList";
 
@@ -202,7 +198,6 @@ public class PermStatListBean {
      */
     public void actDispMonthly(ModelMap modelMap) throws Exception{
         execute(modelMap);
-        execute(modelMap);
 
         // 月別一覧表示の為のプロセスを実行します。
         executeReadMonthlyList(modelMap);
@@ -217,8 +212,8 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actEditDairy(ModelMap modelMap) {
-
+    public void actEditDairy(ModelMap modelMap) throws Exception{
+        execute(modelMap);
         executeReadTmgDaily(modelMap);
 
     }
@@ -231,7 +226,8 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actMonthlyPermit(ModelMap modelMap) {
+    public void actMonthlyPermit(ModelMap modelMap) throws Exception {
+        execute(modelMap);
         executeUpdateTmgMonthly();
         executeReadMonthlyList(modelMap);
     }
@@ -244,8 +240,8 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actPermit(ModelMap modelMap) {
-
+    public void actPermit(ModelMap modelMap) throws Exception {
+        execute(modelMap);
         executeUpdateTmgDaily();
         executeReadMonthlyList(modelMap);
     }
@@ -445,6 +441,7 @@ public class PermStatListBean {
      */
     private String[] getExecuteEmpId() {
 
+
         String[] sWorkEmpId = _reqExecuteEmpId.split(",");
 
         return sWorkEmpId;
@@ -455,6 +452,8 @@ public class PermStatListBean {
      * @param modelMap
      */
     private void executeReadTmgDaily(ModelMap modelMap) {
+        // TODO
+        _reqDYYYYMMDD ="2020/01/01";
 
         // 組織の職員取得ｓｑｌ
         String empSql = getReferList().buildSQLForSelectEmployees();
@@ -465,6 +464,7 @@ public class PermStatListBean {
         // 承認状況表示項目を取得しセット
         List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(),psDBBean.getCompCode(), psDBBean.getLanguage());
         List<String> monthlyItems = new ArrayList<String>();
+
         for (ItemVO itemVO : itemVOList) {
             monthlyItems.add(itemVO.getMgdCsql() + " AS " + itemVO.getTempColumnid());
         }
@@ -539,7 +539,7 @@ public class PermStatListBean {
 
         // 1 カレンダー情報の取得
         List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), _referList.getTargetSec(), _referList.getTargetGroup(), getReqDYYYYMM().substring(0,4), getReqDYYYYMM());
+                psDBBean.getCompCode(), _referList.getTargetSec(), psDBBean.escDBString(_referList.getTargetGroup()), getReqDYYYYMM().substring(0,4), getReqDYYYYMM());
         modelMap.addAttribute("calenderVoList",calenderVoList);
 
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
@@ -788,6 +788,7 @@ public class PermStatListBean {
      */
     public void setExecuteParameter(ModelMap modelMap) throws Exception {
 
+
         _sysdate = psDBBean.getSysDate();
         _reqSiteId = psDBBean.getSiteId();
         _loginCustId = psDBBean.getCustID();
@@ -798,6 +799,13 @@ public class PermStatListBean {
         _reqDYYYYMMDD = psDBBean.getReqParam(REQ_DYYYYMMDD);
         _reqEmployeeId = psDBBean.getReqParam(REQ_CEMPLOYEEID);
         _reqExecuteEmpId = psDBBean.getReqParam(REQ_EXECUTEEMPID);
+
+        // TODO パラメータ設定
+        _reqDYYYYMMDD="2020/01/15";
+        _reqExecuteEmpId= "40010001,40070002";
+        _sAction = ACT_PERMIT;
+
+
 
         // 検索対象年月の入力がなければ、現在日付月初を検索対象年月する。
         if (_reqDYYYYMM == null || _reqDYYYYMM.length() == 0) {

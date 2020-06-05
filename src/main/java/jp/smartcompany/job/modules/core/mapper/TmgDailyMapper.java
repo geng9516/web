@@ -92,7 +92,7 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
     /**
      *日別一覧データを取得する
      */
-    List<HashMap> buildSQLForSelectTmgDaily(String targetDate, String empSql, List<String> list);
+    List<HashMap> buildSQLForSelectTmgDaily(@Param("targetDate")String targetDate, @Param("empSql")String empSql, @Param("list") List<String> list);
 
     /**
      *更新対象職員のROWIDを取得する

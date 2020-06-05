@@ -570,7 +570,7 @@
             d.TDA_CEMPLOYEEID = v.EMPID
         AND d.TDA_DYYYYMMDD   = #{targetDate}
         <!-- 一括承認対象日について管理対象であるか判定-->
-        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), TRUNC(to_date(#{targetDate},'yyyy/mm/dd'), v.cust, v.comp)
+        AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), v.cust, v.comp)
         ORDER BY v.SEQ
     </select>
     <select id="buildSQLForSelectObjEmpForUpdate" resultType="java.lang.String">

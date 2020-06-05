@@ -101,7 +101,7 @@ public class SiteManageController {
                                  @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception{
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
-        permStatListBean.actDispMonthly(modelMap);
+        permStatListBean.actRedirect(modelMap);
         return "sys/manage/require5days";
     }
 

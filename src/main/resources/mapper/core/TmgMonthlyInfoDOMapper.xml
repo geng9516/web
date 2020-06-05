@@ -306,7 +306,7 @@
                 )
                 ,' '
             )  AS  ${col.disppermStatusName} 																			<!-- 2予備文字列-->
-            , TMG_F_TRANS_DISPPERMSTATUS(${colName}, TMI_DYYYYMM + #{idx}, TRUNC(SYSDATE))	AS  ${col.disppermStatus} 		 	<!-- 3ステータス区分-->
+            , TMG_F_TRANS_DISPPERMSTATUS(${col.colName}, TMI_DYYYYMM + #{idx}, TRUNC(SYSDATE))	AS  ${col.disppermStatus} 		 	<!-- 3ステータス区分-->
         </foreach>
         FROM
             TMG_MONTHLY_INFO,
