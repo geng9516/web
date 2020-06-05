@@ -59,10 +59,10 @@ public class SiteWManageController {
                 .addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId)
                 .addAttribute("targetSection",referList.getTargetSec())
-                .addAttribute(TmgReferList.TREEVIEW_KEY_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
-                .addAttribute(TmgReferList.TREEVIEW_KEY_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
-                .addAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP)
-                .addAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+                .addAttribute("TREEVIEW_KEY_RECORD_DATE",TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute("TREEVIEW_KEY_REFRESH_FLG",TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute("TREEVIEW_KEY_ADMIN_TARGET_EMP",TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP)
+                .addAttribute("TREEVIEW_KEY_ADMIN_TARGET_SECTION",TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         return "sys/wmanage/vacation";
     }
 
