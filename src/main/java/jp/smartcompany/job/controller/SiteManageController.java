@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -73,6 +74,8 @@ public class SiteManageController {
             @RequestParam("moduleIndex") Integer moduleIndex,
             @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        // 先同样作为管理site的树来看待
+        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         modelMap
