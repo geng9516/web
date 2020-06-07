@@ -94,102 +94,77 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)"
-                        v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.one | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.one.split(TURN_LINE_STR)[0] }}
-        </div>
-        <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}
-        </div>
-        </template>
+                    <span :class="dayRed(row.one)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.one | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.one.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="two" style>
-            <span :class="dayRed(row.two)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.two | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.two.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="two" style>
+                    <span :class="dayRed(row.two)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.two | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.two.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="three">
-            <span :class="dayRed(row.three)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.three | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.three.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="three">
+                    <span :class="dayRed(row.three)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.three | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.three.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="four">
-            <span :class="dayRed(row.four)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.four | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.four.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="four">
+                    <span :class="dayRed(row.four)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.four | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.four.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="five">
-            <span :class="dayRed(row.five)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.five | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.five.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="five">
+                    <span :class="dayRed(row.five)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.five | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.five.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="six">
-            <span :class="dayRed(row.six)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.six | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.six.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="six">
+                    <span :class="dayRed(row.six)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.six | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.six.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="seven">
-            <span :class="dayRed(row.seven)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.seven | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.seven.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="seven">
+                    <span :class="dayRed(row.seven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.seven | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.seven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="eight">
-            <span :class="dayRed(row.eight)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eight | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.eight.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="eight">
+                    <span :class="dayRed(row.eight)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eight | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eight.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="nine">
-            <span :class="dayRed(row.nine)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.nine | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.nine.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="nine">
+                    <span :class="dayRed(row.nine)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.nine | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.nine.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="ten">
-            <span :class="dayRed(row.ten)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.ten | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.ten.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="ten">
+                    <span :class="dayRed(row.ten)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.ten | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.ten.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="eleven">
-            <span :class="dayRed(row.eleven)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eleven | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+                <template slot-scope="{ row }" slot="eleven">
+                    <span :class="dayRed(row.eleven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eleven | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eleven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
+                </template>
 
-        <template slot-scope="{ row }" slot="twelve">
-            <span :class="dayRed(row.twelve)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.twelve | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-        </i-table>
+                <template slot-scope="{ row }" slot="twelve">
+                    <span :class="dayRed(row.twelve)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.twelve | turnLine }}</span>
+                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.twelve.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
+                </template>
+            </i-table>
         </div>
     </main>
     <div th:replace="layout/script::common_script"></div>
