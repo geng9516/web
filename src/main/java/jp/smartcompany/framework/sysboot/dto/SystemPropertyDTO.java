@@ -1,6 +1,7 @@
-package jp.smartcompany.framework.sysboot.bo;
+package jp.smartcompany.framework.sysboot.dto;
 
 import lombok.*;
+import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
@@ -10,10 +11,12 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@ToString
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
-public class SystemProperty implements Serializable {
+@Accessors(chain = true)
+public class SystemPropertyDTO implements Serializable {
 
     private static final long serialVersionUID = -4292291291322476035L;
 

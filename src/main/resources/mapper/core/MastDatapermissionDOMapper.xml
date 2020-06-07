@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastDatapermissionMapper">
 
-    <select id="selectDataPermissionDefs" resultType="jp.smartcompany.job.modules.core.util.searchrange.SearchRangeInfo">
+    <select id="selectDataPermissionDefs" resultType="jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO">
         SELECT	MDPD_CPERMISSIONID,
                   MDPD_NSEQ,
                   MDPD_CANDOR,
@@ -27,7 +27,7 @@
             MDPD_NSEQ;
     </select>
 
-    <select id="selectDataSectionPost" resultType="jp.smartcompany.job.modules.core.util.searchrange.SearchRangeInfo">
+    <select id="selectDataSectionPost" resultType="jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO">
         -- 下位データを持たない「法人のみ」定義データ
         SELECT
             MDSP_CPERMISSIONID,

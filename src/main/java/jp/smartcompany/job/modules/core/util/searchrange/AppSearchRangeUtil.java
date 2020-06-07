@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.core.util.searchrange;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.framework.sysboot.SearchRangeInfoCache;
+import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.SysInfoBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
@@ -83,7 +85,7 @@ public class AppSearchRangeUtil {
 
     private final AppSearchRangeInfoCache appSearchRangeInfoCache;
 
-    private final SearchRangeInfoCache searchRangeInfoCache;
+    private SearchRangeInfoCache searchRangeInfoCache;
 
     /** 異動歴 所属長フラグ*/
     private static final String COL_HD_BOSSORNOT    = "HD_CBOSSORNOT";
@@ -756,12 +758,12 @@ public class AppSearchRangeUtil {
      */
     private String createPermissionQuery(String sPermissionID, String sCustomerID, String sDomainId){
 
-        List <SearchRangeInfo> searchRangeInfoList = CollUtil.newLinkedList();
+        List <SearchRangeInfoDTO> searchRangeInfoDTOList = CollUtil.newLinkedList();
 
         // 組織・役職指定の場合
-        searchRangeInfoList = searchRangeInfoCache.getDataSectionPost(sPermissionID);
+        searchRangeInfoDTOList = searchRangeInfoCache.getDataSectionPost(sPermissionID);
         String sQuery = this.setDataSectionPost(
-                searchRangeInfoList,
+                searchRangeInfoDTOList,
                 TBL_HIST_DESIGNATION);
 
         if (!this.isEmpty(sQuery)) {
@@ -778,8 +780,8 @@ public class AppSearchRangeUtil {
             sQuery = this.setDataPermissionDefs();
         }else{
             // 条件式指定の場合
-            searchRangeInfoList = searchRangeInfoCache.getDataPermissionDefs(sPermissionID);
-            sQuery = this.setDataPermissionDefs(searchRangeInfoList, sCustomerID, sDomainId);
+            searchRangeInfoDTOList = searchRangeInfoCache.getDataPermissionDefs(sPermissionID);
+            sQuery = this.setDataPermissionDefs(searchRangeInfoDTOList, sCustomerID, sDomainId);
         }
         if (!this.isEmpty(sQuery)) {
             return sQuery;
@@ -915,21 +917,21 @@ public class AppSearchRangeUtil {
      *
      * @param   psTableID テーブルID
      */
-    private String setDataSectionPost(List<SearchRangeInfo> searchRangeInfoList, String psTableID) {
+    private String setDataSectionPost(List<SearchRangeInfoDTO> searchRangeInfoDTOList, String psTableID) {
 
         // 値が取得できなかった場合は、処理を抜ける
-        if (searchRangeInfoList == null) {
+        if (searchRangeInfoDTOList == null) {
             return "";
         }
 
         // ▼#2882:検索範囲情報(組織、役職)も、常駐変数分クエリを組立てる
         // 対象テーブル情報(組織、役職)分処理を繰り返す。
         StringBuilder sbWhere = new StringBuilder();
-        for (int i = 0; i < searchRangeInfoList.size(); i++) {
+        for (int i = 0; i < searchRangeInfoDTOList.size(); i++) {
 
-            SearchRangeInfo searchRangeInfo = searchRangeInfoList.get(i);
+            SearchRangeInfoDTO searchRangeInfoDTO = searchRangeInfoDTOList.get(i);
 
-            String sWhere = this.createSectionPostMappingSQL(searchRangeInfo, psTableID);
+            String sWhere = this.createSectionPostMappingSQL(searchRangeInfoDTO, psTableID);
             sbWhere.append(sWhere);
 
             // データが複数存在する場合は、ORで結合する
@@ -985,25 +987,25 @@ public class AppSearchRangeUtil {
      * 検索対象範囲条件定義マスタ(条件式)に設定されている定義内容を元に、
      * 検索対象範囲条件を作成します。(作成した各データは内部変数に格納されます)
      *
-     * @param   searchRangeInfoList        定義ID
+     * @param   searchRangeInfoDTOList        定義ID
      * @param   psCustomerId    顧客コード
      * @param   psDomain        ドメインコード
      */
-    private String setDataPermissionDefs(List<SearchRangeInfo> searchRangeInfoList, String psCustomerId, String psDomain) {
+    private String setDataPermissionDefs(List<SearchRangeInfoDTO> searchRangeInfoDTOList, String psCustomerId, String psDomain) {
 
         // 値が取得できなかった場合は、処理を抜ける
-        if (searchRangeInfoList == null || searchRangeInfoList.isEmpty()) {
+        if (searchRangeInfoDTOList == null || searchRangeInfoDTOList.isEmpty()) {
             return "";
         }
 
         // 対象テーブル情報(条件式)分処理を繰り返す。
         StringBuilder sbTempCond = new StringBuilder();
-        for (int i = 0; i < searchRangeInfoList.size(); i++) {
+        for (int i = 0; i < searchRangeInfoDTOList.size(); i++) {
 
             // 検索対象範囲条件定義マスタ(条件式)より、条件式クエリ情報を取得する
-            SearchRangeInfo searchRangeInfo = searchRangeInfoList.get(i);
-            String sMdpdCtableid = searchRangeInfo.getMdpdCtableid();
-            String sMdCmastertblname = searchRangeInfo.getMdCmastertblname();
+            SearchRangeInfoDTO searchRangeInfoDTO = searchRangeInfoDTOList.get(i);
+            String sMdpdCtableid = searchRangeInfoDTO.getMdpdCtableid();
+            String sMdCmastertblname = searchRangeInfoDTO.getMdCmastertblname();
 
             // FROM句に対象のテーブルを追加
             this.gConditionFromMap.put(sMdpdCtableid, sMdpdCtableid);
@@ -1017,17 +1019,17 @@ public class AppSearchRangeUtil {
 
             String sMasterRecodeQuery = new String();
             // マスタ参照カラムの場合
-            if (searchRangeInfo.getMdpdCmyflag().equals(MY_FLG2) || searchRangeInfo.getMdpdCmyflag().equals(MY_FLG3)) {
+            if (searchRangeInfoDTO.getMdpdCmyflag().equals(MY_FLG2) || searchRangeInfoDTO.getMdpdCmyflag().equals(MY_FLG3)) {
                 // プリセット：MY_FLG = 2 / MY_FLG = 3
-                sMasterRecodeQuery = this.createPreSetSQL(searchRangeInfo);
+                sMasterRecodeQuery = this.createPreSetSQL(searchRangeInfoDTO);
             } else if (!this.isEmpty(sMdCmastertblname) &&
                     (	sMdCmastertblname.equals(QCOMPANY) ||
                             sMdCmastertblname.equals(QSECTION) ||
                             sMdCmastertblname.equals(QPOST) ||
                             sMdCmastertblname.equals(QPOSTNUM)		) ) {
-                sMasterRecodeQuery = this.createMasterSpecialMeaningSQL(searchRangeInfo, psDomain);
+                sMasterRecodeQuery = this.createMasterSpecialMeaningSQL(searchRangeInfoDTO, psDomain);
             } else {
-                sMasterRecodeQuery = this.createNormalSQL(tableCombinationType, searchRangeInfo, psDomain);
+                sMasterRecodeQuery = this.createNormalSQL(tableCombinationType, searchRangeInfoDTO, psDomain);
             }
             sbTempCond.append(sMasterRecodeQuery);
 
@@ -1038,15 +1040,15 @@ public class AppSearchRangeUtil {
     /**
      * 名称マスタ区分が特別な意味を持つ場合のSQLを組み立てます。
      *
-     * @param searchRangeInfo 検索範囲取得DTOクラス
+     * @param searchRangeInfoDTO 検索範囲取得DTOクラス
      * @param psDomain ドメイン
      * @return String SQL
      */
-    private String createMasterSpecialMeaningSQL(SearchRangeInfo searchRangeInfo, String psDomain) {
+    private String createMasterSpecialMeaningSQL(SearchRangeInfoDTO searchRangeInfoDTO, String psDomain) {
 
         // 関連テーブルの情報を取得
-        String sMdpdCtableid = searchRangeInfo.getMdpdCtableid();
-        String sMdCmastertblname = searchRangeInfo.getMdCmastertblname();
+        String sMdpdCtableid = searchRangeInfoDTO.getMdpdCtableid();
+        String sMdCmastertblname = searchRangeInfoDTO.getMdCmastertblname();
         TableCombinationType tableCombinationType = tableCombinationTypeCache.getTableCombinationType(sMdpdCtableid);
 
         // 返却値用
@@ -1054,17 +1056,17 @@ public class AppSearchRangeUtil {
 
         // [AND/OR] [NOT] [(]
         sbQuery.append(PT_SPACE);
-        sbQuery.append(this.toBlank(searchRangeInfo.getMdpdCandor()));
+        sbQuery.append(this.toBlank(searchRangeInfoDTO.getMdpdCandor()));
 
-        if (searchRangeInfo.getMdpdCoperator().equals("!=") || searchRangeInfo.getMdpdCoperator().equals("<>")) {
+        if (searchRangeInfoDTO.getMdpdCoperator().equals("!=") || searchRangeInfoDTO.getMdpdCoperator().equals("<>")) {
             sbQuery.append(" NOT ");
         }
 
         sbQuery.append(PT_SPACE);
-        sbQuery.append(this.toBlank(searchRangeInfo.getMdpdCopenedparenthsis()));
+        sbQuery.append(this.toBlank(searchRangeInfoDTO.getMdpdCopenedparenthsis()));
 
         // 処理対象のデータを準備
-        List<Designation> designationList = this.createMasterSpecialMeaningData(searchRangeInfo);
+        List<Designation> designationList = this.createMasterSpecialMeaningData(searchRangeInfoDTO);
 
         sbQuery.append(PT_OPEN_PAR);
         for (Iterator<Designation> designationIte = designationList.iterator(); designationIte.hasNext();) {
@@ -1076,16 +1078,16 @@ public class AppSearchRangeUtil {
                 // 法人：MAC_CCOMPANYID_CK [=] ''
                 sbQuery.append(tableCombinationType.getCompanyIdColumnName());
                 sbQuery.append(PT_SPACE);
-                sbQuery.append(searchRangeInfo.getMdpdCoperator());
+                sbQuery.append(searchRangeInfoDTO.getMdpdCoperator());
                 sbQuery.append(PT_SPACE);
                 sbQuery.append(this.escDBString(this.toBlank(designation.getCompanyCode())));
             } else if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QSECTION)) {
                 // [IS NULL][IS NOT NULL]時
-                if(searchRangeInfo.getMdpdCoperator().equals(PT_ISNULL) ||
-                        searchRangeInfo.getMdpdCoperator().equals(PT_ISNOTNULL)){
+                if(searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNULL) ||
+                        searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNOTNULL)){
                     sbQuery.append(tableCombinationType.getSectionIdColumnName());
                     sbQuery.append(PT_SPACE);
-                    sbQuery.append(searchRangeInfo.getMdpdCoperator());
+                    sbQuery.append(searchRangeInfoDTO.getMdpdCoperator());
                 }else{
                     // 法人：MO_CCOMPANYID_CK_FK = '' AND
                     sbQuery.append(tableCombinationType.getCompanyIdColumnName());
@@ -1099,11 +1101,11 @@ public class AppSearchRangeUtil {
                 }
             } else if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QPOST)) {
                 // [IS NULL][IS NOT NULL]時
-                if(searchRangeInfo.getMdpdCoperator().equals(PT_ISNULL) ||
-                        searchRangeInfo.getMdpdCoperator().equals(PT_ISNOTNULL)){
+                if(searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNULL) ||
+                        searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNOTNULL)){
                     sbQuery.append(tableCombinationType.getPostIdColumnName());
                     sbQuery.append(PT_SPACE);
-                    sbQuery.append(searchRangeInfo.getMdpdCoperator());
+                    sbQuery.append(searchRangeInfoDTO.getMdpdCoperator());
                 }else{
                     // 法人：MO_CCOMPANYID_CK_FK = '' AND
                     sbQuery.append(tableCombinationType.getCompanyIdColumnName());
@@ -1112,21 +1114,21 @@ public class AppSearchRangeUtil {
                     sbQuery.append(PT_AND);
 
                     // 役職：MAP_NWEIGHTAGE [=] ''
-                    if (searchRangeInfo.getMdpdCoperator().equals("=")){
+                    if (searchRangeInfoDTO.getMdpdCoperator().equals("=")){
                         // 役職に対して[=][!=]の比較に対しては役職コードにて行う
                         sbQuery.append(tableCombinationType.getPostIdColumnName() + PT_SPACE);
-                        sbQuery.append(searchRangeInfo.getMdpdCoperator() + PT_SPACE);
+                        sbQuery.append(searchRangeInfoDTO.getMdpdCoperator() + PT_SPACE);
                         sbQuery.append(this.escDBString(this.toBlank(designation.getPostCode())) + PT_SPACE);
-                    }else if (searchRangeInfo.getMdpdCoperator().equals("!=") ||
-                            searchRangeInfo.getMdpdCoperator().equals("<>")) {
+                    }else if (searchRangeInfoDTO.getMdpdCoperator().equals("!=") ||
+                            searchRangeInfoDTO.getMdpdCoperator().equals("<>")) {
                         // "!="か"<>"の場合は条件が反転するので"="に直す
                         sbQuery.append(tableCombinationType.getPostIdColumnName() + PT_SPACE);
                         sbQuery.append("=" + PT_SPACE);
                         sbQuery.append(this.escDBString(this.toBlank(designation.getPostCode())) + PT_SPACE);
-                    } else if (searchRangeInfo.getMdpdCoperator().equals(">")  ||
-                            searchRangeInfo.getMdpdCoperator().equals(">=") ||
-                            searchRangeInfo.getMdpdCoperator().equals("<")  ||
-                            searchRangeInfo.getMdpdCoperator().equals("<=") ) {
+                    } else if (searchRangeInfoDTO.getMdpdCoperator().equals(">")  ||
+                            searchRangeInfoDTO.getMdpdCoperator().equals(">=") ||
+                            searchRangeInfoDTO.getMdpdCoperator().equals("<")  ||
+                            searchRangeInfoDTO.getMdpdCoperator().equals("<=") ) {
                         // 役職に対して[>][>=][<=][<]の比較に対しては役職順位にて行う
                         sbQuery.append(tableCombinationType.getPostIdColumnName());
                         sbQuery.append(PT_IN);
@@ -1138,7 +1140,7 @@ public class AppSearchRangeUtil {
                         sbQuery.append("AND MP1.MAP_DSTART <= ").append(this.getPsSecurityDate());
                         sbQuery.append("AND MP1.MAP_DEND >= ").append(this.getPsSecurityDate());
                         // 注意：「○○職以上の人」との表現にて、数値的な「50以上」と意味が反転するので右辺と左辺を反対に記述
-                        sbQuery.append("AND MP2.MAP_NWEIGHTAGE " + searchRangeInfo.getMdpdCoperator() + " MP1.MAP_NWEIGHTAGE ");
+                        sbQuery.append("AND MP2.MAP_NWEIGHTAGE " + searchRangeInfoDTO.getMdpdCoperator() + " MP1.MAP_NWEIGHTAGE ");
                         sbQuery.append("AND MP2.MAP_CCUSTOMERID_CK_FK = MP1.MAP_CCUSTOMERID_CK_FK ");
                         sbQuery.append("AND MP2.MAP_CCOMPANYID_CK_FK = MP1.MAP_CCOMPANYID_CK_FK ");
                         sbQuery.append("AND MP2.MAP_CPOSTID_CK = " + this.escDBString(this.toBlank(designation.getPostCode())) + PT_SPACE);
@@ -1150,11 +1152,11 @@ public class AppSearchRangeUtil {
                 }
             } else if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QPOSTNUM)) {
                 // [IS NULL][IS NOT NULL]時
-                if(searchRangeInfo.getMdpdCoperator().equals(PT_ISNULL) ||
-                        searchRangeInfo.getMdpdCoperator().equals(PT_ISNOTNULL)){
+                if(searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNULL) ||
+                        searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNOTNULL)){
                     sbQuery.append(tableCombinationType.getPostIdColumnName());
                     sbQuery.append(PT_SPACE);
-                    sbQuery.append(searchRangeInfo.getMdpdCoperator());
+                    sbQuery.append(searchRangeInfoDTO.getMdpdCoperator());
                 }else{
                     // 役職順位：MAP_NWEIGHTAGE [=] [1]
                     sbQuery.append(tableCombinationType.getPostIdColumnName());
@@ -1167,7 +1169,7 @@ public class AppSearchRangeUtil {
                     sbQuery.append("AND MAP_DSTART <= ").append(this.getPsSecurityDate());
                     sbQuery.append("AND MAP_DEND >= ").append(this.getPsSecurityDate());
                     // チェック用退避
-                    String sCoperator = searchRangeInfo.getMdpdCoperator();
+                    String sCoperator = searchRangeInfoDTO.getMdpdCoperator();
                     // "!="か"<>"の場合は条件が反転するので"="に直す
                     if (sCoperator.equals("!=") || sCoperator.equals("<>")){
                         // 注意：「○○職以上の人」との表現にて、数値的な「50以上」と意味が反転するので右辺と左辺を反対に記述
@@ -1188,33 +1190,33 @@ public class AppSearchRangeUtil {
         sbQuery.append(PT_CLOSE_PAR);
 
         // )
-        sbQuery.append(this.toBlank(searchRangeInfo.getMdpdCclosedparenthsis()));
+        sbQuery.append(this.toBlank(searchRangeInfoDTO.getMdpdCclosedparenthsis()));
 
         return sbQuery.toString();
     }
     /**
      * 名称マスタ区分が特別な意味を持つ場合の検索対象データの取得
      *
-     * @param searchRangeInfo 検索範囲取得DTOクラス
+     * @param searchRangeInfoDTO 検索範囲取得DTOクラス
      * @return String SQL
      */
-    private List<Designation> createMasterSpecialMeaningData(SearchRangeInfo searchRangeInfo) {
+    private List<Designation> createMasterSpecialMeaningData(SearchRangeInfoDTO searchRangeInfoDTO) {
 
         List<Designation> designationList = new LinkedList<Designation>();
 
-        String sMdCmastertblname = searchRangeInfo.getMdCmastertblname();
-        if (searchRangeInfo.getMdpdCmyflag().equals(MY_FLG0)) {
+        String sMdCmastertblname = searchRangeInfoDTO.getMdCmastertblname();
+        if (searchRangeInfoDTO.getMdpdCmyflag().equals(MY_FLG0)) {
             /** 指定値 */
             if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QCOMPANY)) {
                 Designation designation = new Designation();
                 designation.setCustomerCode(this.gPsSession.getLoginCustomer());	// 顧客コード
-                designation.setCompanyCode(searchRangeInfo.getMdpdCcompanyid());	// 法人コード
+                designation.setCompanyCode(searchRangeInfoDTO.getMdpdCcompanyid());	// 法人コード
                 designationList.add(designation);
             } else if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QSECTION)) {
                 Designation designation = new Designation();
                 designation.setCustomerCode(this.gPsSession.getLoginCustomer());	// 顧客コード
-                designation.setCompanyCode(searchRangeInfo.getMdpdCcompanyid());	// 法人コード
-                designation.setSection(this.getDetailId(searchRangeInfo.getMdpdCvalue()));			// 組織コード
+                designation.setCompanyCode(searchRangeInfoDTO.getMdpdCcompanyid());	// 法人コード
+                designation.setSection(this.getDetailId(searchRangeInfoDTO.getMdpdCvalue()));			// 組織コード
                 designationList.add(designation);
             } else if (!this.isEmpty(sMdCmastertblname) && sMdCmastertblname.equals(QPOST)) {
                 // 指定法人に対する役職コードが指定されるので、ログインユーザの自所属内の役職として展開
@@ -1223,13 +1225,13 @@ public class AppSearchRangeUtil {
                     // 初期化
                     Designation newDesignation = new Designation();
                     // nullチェック
-                    if (searchRangeInfo.getMdpdCcompanyid() != null){
+                    if (searchRangeInfoDTO.getMdpdCcompanyid() != null){
                         if (this.gPsSession.getLoginCustomer().equals(designation.getCustomerCode()) &&
-                                searchRangeInfo.getMdpdCcompanyid().equals(designation.getCompanyCode())) {
+                                searchRangeInfoDTO.getMdpdCcompanyid().equals(designation.getCompanyCode())) {
                             newDesignation.setCustomerCode(this.gPsSession.getLoginCustomer());	// 顧客コード
-                            newDesignation.setCompanyCode(searchRangeInfo.getMdpdCcompanyid());	// 法人コード
+                            newDesignation.setCompanyCode(searchRangeInfoDTO.getMdpdCcompanyid());	// 法人コード
                             newDesignation.setSection(designation.getSection());				// 組織コード
-                            newDesignation.setPostCode(this.getDetailId(searchRangeInfo.getMdpdCvalue()));		// 役職コード
+                            newDesignation.setPostCode(this.getDetailId(searchRangeInfoDTO.getMdpdCvalue()));		// 役職コード
                         }
                     }
                     // [IS NULL][IS NOT NULL]の時は空のまま追加(SQL組込時に吸収する)
@@ -1239,15 +1241,15 @@ public class AppSearchRangeUtil {
                 // 初期化
                 Designation designation = new Designation();
                 // nullチェック
-                if (searchRangeInfo.getMdpdCcompanyid() != null && searchRangeInfo.getMdpdCvalue() != null){
+                if (searchRangeInfoDTO.getMdpdCcompanyid() != null && searchRangeInfoDTO.getMdpdCvalue() != null){
                     designation.setCustomerCode(this.gPsSession.getLoginCustomer());	// 顧客コード
-                    designation.setCompanyCode(searchRangeInfo.getMdpdCcompanyid());	// 法人コード
-                    designation.setPostRank(Integer.parseInt(this.getDetailId(searchRangeInfo.getMdpdCvalue())));	// 役職順位
+                    designation.setCompanyCode(searchRangeInfoDTO.getMdpdCcompanyid());	// 法人コード
+                    designation.setPostRank(Integer.parseInt(this.getDetailId(searchRangeInfoDTO.getMdpdCvalue())));	// 役職順位
                 }
                 // [IS NULL][IS NOT NULL]の時は空のまま追加(SQL組込時に吸収する)
                 designationList.add(designation);
             }
-        } else if (searchRangeInfo.getMdpdCmyflag().equals(MY_FLG1)) {
+        } else if (searchRangeInfoDTO.getMdpdCmyflag().equals(MY_FLG1)) {
             /** 検索者の値：異動歴 */
             designationList = this.gPsSession.getLoginDesignation();
         }
@@ -1265,11 +1267,11 @@ public class AppSearchRangeUtil {
                 Designation designation = designationIte.next();
 
                 List<String> tergetSectionList = new LinkedList<String>();
-                if (searchRangeInfo.getMdpdCoperator().equals(">") || searchRangeInfo.getMdpdCoperator().equals(">=")) {
+                if (searchRangeInfoDTO.getMdpdCoperator().equals(">") || searchRangeInfoDTO.getMdpdCoperator().equals(">=")) {
                     // 上位情報
                     tergetSectionList = sysInfoBusiness.getUpperSectionListDeptForSQL(designation.getCustomerCode(),
                             designation.getCompanyCode(), designation.getSection(), this.getPsSecurityDate4DateType());
-                } else if (searchRangeInfo.getMdpdCoperator().equals("<") || searchRangeInfo.getMdpdCoperator().equals("<=")) {
+                } else if (searchRangeInfoDTO.getMdpdCoperator().equals("<") || searchRangeInfoDTO.getMdpdCoperator().equals("<=")) {
                     // 下位情報
                     tergetSectionList = sysInfoBusiness.getLowerSectionListDeptForSQL(designation.getCustomerCode(),
                             designation.getCompanyCode(), designation.getSection(), this.getPsSecurityDate4DateType());
@@ -1283,7 +1285,7 @@ public class AppSearchRangeUtil {
                         // TODO:上位検索で複数件取得している場合、一件目が""で取得される為チェックではじく
                         if (!sSection.equals("")){
                             // [>][<]の時、自組織は含めない
-                            if (!((searchRangeInfo.getMdpdCoperator().equals(">") || searchRangeInfo.getMdpdCoperator().equals("<") ) &&
+                            if (!((searchRangeInfoDTO.getMdpdCoperator().equals(">") || searchRangeInfoDTO.getMdpdCoperator().equals("<") ) &&
                                     sSection.equals(designation.getSection()))){
                                 // 元になった異動歴情報に対象組織を反映
                                 Designation tergetDesignation = new Designation();
@@ -1297,21 +1299,21 @@ public class AppSearchRangeUtil {
                     }
                 }
                 // [>=][<=]の場合は基点部分も対象に含める
-                if (searchRangeInfo.getMdpdCoperator().equals(">=") || searchRangeInfo.getMdpdCoperator().equals("<=")) {
+                if (searchRangeInfoDTO.getMdpdCoperator().equals(">=") || searchRangeInfoDTO.getMdpdCoperator().equals("<=")) {
                     newDesignationList.add(designation);
                 }
                 // [=][<>][IN]の時は自組織のみ追加
-                else if (searchRangeInfo.getMdpdCoperator().equals("=") || searchRangeInfo.getMdpdCoperator().equals("<>") ||
-                        searchRangeInfo.getMdpdCoperator().equals("IN")) {
+                else if (searchRangeInfoDTO.getMdpdCoperator().equals("=") || searchRangeInfoDTO.getMdpdCoperator().equals("<>") ||
+                        searchRangeInfoDTO.getMdpdCoperator().equals("IN")) {
                     newDesignationList.add(designation);
                 }
                 // [IS NULL][IS NOT NULL]の時は自組織のみ追加(SQL組込時に吸収する)
-                else if (searchRangeInfo.getMdpdCoperator().equals(PT_ISNULL) ||
-                        searchRangeInfo.getMdpdCoperator().equals(PT_ISNOTNULL)) {
+                else if (searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNULL) ||
+                        searchRangeInfoDTO.getMdpdCoperator().equals(PT_ISNOTNULL)) {
                     newDesignationList.add(designation);
                 }
                 // [>][<]の場合でからの場合は追加
-                if ((searchRangeInfo.getMdpdCoperator().equals(">") || searchRangeInfo.getMdpdCoperator().equals("<"))
+                if ((searchRangeInfoDTO.getMdpdCoperator().equals(">") || searchRangeInfoDTO.getMdpdCoperator().equals("<"))
                         && newDesignationList.size() == 0) {
                     // 一件も取得できない場合にからで値を作成しておく、まったく値を設定しないとSQL作成時エラー発生
                     Designation tergetNullDesignation = new Designation();
@@ -1558,17 +1560,17 @@ public class AppSearchRangeUtil {
      *
      * 定義区分に応じて異動歴との条件式を作成します。
      *
-     * @param searchRangeInfo 検索範囲取得DTOクラス
+     * @param searchRangeInfoDTO 検索範囲取得DTOクラス
      * @param psTableID テーブルID
      * @return String 異動歴との条件式
      */
-    private String createSectionPostMappingSQL(SearchRangeInfo searchRangeInfo, String psTableID) {
+    private String createSectionPostMappingSQL(SearchRangeInfoDTO searchRangeInfoDTO, String psTableID) {
 
-        String sTypeid		= searchRangeInfo.getMdspCtypeid();
-        String sCompanyId	= searchRangeInfo.getMdspCcompanyid();
-        String sSectionId	= searchRangeInfo.getMdspCsectionid();
-        String sPostId		= searchRangeInfo.getMdspCpostid();
-        String sEmployeeId	= searchRangeInfo.getMdspCemployeeid();
+        String sTypeid		= searchRangeInfoDTO.getMdspCtypeid();
+        String sCompanyId	= searchRangeInfoDTO.getMdspCcompanyid();
+        String sSectionId	= searchRangeInfoDTO.getMdspCsectionid();
+        String sPostId		= searchRangeInfoDTO.getMdspCpostid();
+        String sEmployeeId	= searchRangeInfoDTO.getMdspCemployeeid();
 
         // テーブル情報を取得
         TableCombinationType tableCombinationType
@@ -1642,22 +1644,22 @@ public class AppSearchRangeUtil {
      * 一般カラムの比較条件SQLを生成します
      *
      * @param   tableCombinationType        データディクショナリ(カラム)情報
-     * @param   paSearchRangeInfo   検索データ取得結果
+     * @param   paSearchRangeInfoDTO   検索データ取得結果
      * @param   psDomainId          ドメインコード
      * @return  String              一般のカラムを検索するSQL
      */
-    private String createNormalSQL(TableCombinationType tableCombinationType, SearchRangeInfo paSearchRangeInfo, String psDomainId) {
+    private String createNormalSQL(TableCombinationType tableCombinationType, SearchRangeInfoDTO paSearchRangeInfoDTO, String psDomainId) {
 
         // 検索データ取得
-        String sAndOr = this.toBlank(paSearchRangeInfo.getMdpdCandor());
-        String sOpenedParenthsis = this.toBlank(paSearchRangeInfo.getMdpdCopenedparenthsis());
-        String sTableId = paSearchRangeInfo.getMdpdCtableid();
-        String sColumnId = paSearchRangeInfo.getMdpdCcolumnid();
-        String sOperator = paSearchRangeInfo.getMdpdCoperator();
-        String sValue = paSearchRangeInfo.getMdpdCvalue();
-        String sClosedParenthsis = this.toBlank(paSearchRangeInfo.getMdpdCclosedparenthsis());
-        String sMyFlag = this.toBlank(paSearchRangeInfo.getMdpdCmyflag());
-        String sTypeOfColumn = paSearchRangeInfo.getMdpdCtypeofcolumn();
+        String sAndOr = this.toBlank(paSearchRangeInfoDTO.getMdpdCandor());
+        String sOpenedParenthsis = this.toBlank(paSearchRangeInfoDTO.getMdpdCopenedparenthsis());
+        String sTableId = paSearchRangeInfoDTO.getMdpdCtableid();
+        String sColumnId = paSearchRangeInfoDTO.getMdpdCcolumnid();
+        String sOperator = paSearchRangeInfoDTO.getMdpdCoperator();
+        String sValue = paSearchRangeInfoDTO.getMdpdCvalue();
+        String sClosedParenthsis = this.toBlank(paSearchRangeInfoDTO.getMdpdCclosedparenthsis());
+        String sMyFlag = this.toBlank(paSearchRangeInfoDTO.getMdpdCmyflag());
+        String sTypeOfColumn = paSearchRangeInfoDTO.getMdpdCtypeofcolumn();
         String sMaster = this.getMaseterId(sValue);
 
         StringBuilder sWhere = new StringBuilder();
@@ -1795,13 +1797,13 @@ public class AppSearchRangeUtil {
     /**
      * プリセットデータの条件SQLを生成します
      *
-     * @param   searchRangeInfo 検索範囲取得DTOクラス
+     * @param   searchRangeInfoDTO 検索範囲取得DTOクラス
      * @return  String		プリセット用条件式
      */
-    private String createPreSetSQL(SearchRangeInfo searchRangeInfo)   {
+    private String createPreSetSQL(SearchRangeInfoDTO searchRangeInfoDTO)   {
 
-        String sMyFlag = searchRangeInfo.getMdpdCmyflag();
-        String sPreSetSQL = this.toBlank(searchRangeInfo.getMdpdCvalue());
+        String sMyFlag = searchRangeInfoDTO.getMdpdCmyflag();
+        String sPreSetSQL = this.toBlank(searchRangeInfoDTO.getMdpdCvalue());
 
         StringBuilder sWhere = new StringBuilder();
 
@@ -1831,16 +1833,16 @@ public class AppSearchRangeUtil {
             sPreSetSQL = SysUtil.replaceStringIgnoreCase(sPreSetSQL, "##DATE##",     getPsSecurityDate());
 
             // [AND/OR] [(] ##[TABLE_ID]##.[COLUMN_ID] [=] [SQL] [)]
-            sWhere.append(this.toBlank(searchRangeInfo.getMdpdCandor()));
+            sWhere.append(this.toBlank(searchRangeInfoDTO.getMdpdCandor()));
             sWhere.append(PT_SPACE);
-            sWhere.append(this.toBlank(searchRangeInfo.getMdpdCopenedparenthsis()));
-            sWhere.append(this.atBraceFolderDot(this.toBlank(searchRangeInfo.getMdpdCtableid())));
-            sWhere.append(this.toBlank(searchRangeInfo.getMdpdCcolumnid()));
+            sWhere.append(this.toBlank(searchRangeInfoDTO.getMdpdCopenedparenthsis()));
+            sWhere.append(this.atBraceFolderDot(this.toBlank(searchRangeInfoDTO.getMdpdCtableid())));
+            sWhere.append(this.toBlank(searchRangeInfoDTO.getMdpdCcolumnid()));
             sWhere.append(PT_SPACE);
-            sWhere.append(this.toBlank(searchRangeInfo.getMdpdCoperator()));
+            sWhere.append(this.toBlank(searchRangeInfoDTO.getMdpdCoperator()));
             sWhere.append(PT_SPACE);
             sWhere.append(sPreSetSQL);
-            sWhere.append(this.toBlank(searchRangeInfo.getMdpdCclosedparenthsis()));
+            sWhere.append(this.toBlank(searchRangeInfoDTO.getMdpdCclosedparenthsis()));
 
         } else if (sMyFlag.equals(MY_FLG3)) {
 
@@ -1876,16 +1878,16 @@ public class AppSearchRangeUtil {
                 sTemp = SysUtil.replaceStringIgnoreCase(sTemp, "##DATE##", getPsSecurityDate());
 
                 // プリセット条件式を作成
-                sb.append(this.toBlank(searchRangeInfo.getMdpdCandor()));
+                sb.append(this.toBlank(searchRangeInfoDTO.getMdpdCandor()));
                 sb.append(PT_SPACE);
-                sb.append(this.toBlank(searchRangeInfo.getMdpdCopenedparenthsis()));
-                sb.append(this.atBraceFolderDot(this.toBlank(searchRangeInfo.getMdpdCtableid())));
-                sb.append(this.toBlank(searchRangeInfo.getMdpdCcolumnid()));
+                sb.append(this.toBlank(searchRangeInfoDTO.getMdpdCopenedparenthsis()));
+                sb.append(this.atBraceFolderDot(this.toBlank(searchRangeInfoDTO.getMdpdCtableid())));
+                sb.append(this.toBlank(searchRangeInfoDTO.getMdpdCcolumnid()));
                 sb.append(PT_SPACE);
-                sb.append(this.toBlank(searchRangeInfo.getMdpdCoperator()));
+                sb.append(this.toBlank(searchRangeInfoDTO.getMdpdCoperator()));
                 sb.append(PT_SPACE);
                 sb.append(sTemp);
-                sb.append(this.toBlank(searchRangeInfo.getMdpdCclosedparenthsis()));
+                sb.append(this.toBlank(searchRangeInfoDTO.getMdpdCclosedparenthsis()));
                 sb.append(PT_OR);
 
             }
