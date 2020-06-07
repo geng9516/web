@@ -149,7 +149,6 @@ const Utils = {
   getUrlParam(sUrl, sKey) {
     let result, Oparam = {};
     sUrl.replace(/[\?&]?(\w+)=(\w+)/g, function ($0, $1, $2) {
-        console.log('$0:' + $0 + "     $1:" + $1 + "     $2:" + $2);
         Oparam[$1] === void 0 ? Oparam[$1] = $2 : Oparam[$1] = [].concat(Oparam[$1], $2);
     });
     sKey === void 0 || sKey === '' ? result = Oparam : result = Oparam[sKey] || '';
@@ -202,3 +201,14 @@ const Throttle = (fn, t) => {
     }
   }
 }
+
+window.requestAnimFrame =
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+        window.setTimeout(callback, 1000 / 30);
+    }
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
