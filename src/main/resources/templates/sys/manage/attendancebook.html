@@ -89,80 +89,76 @@
             <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
 
-                <template slot-scope="{ row }" slot="intDay">
-                    <span>{{ row.intDay | turnLine }}</span>
-                </template>
-
                 <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.one | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.one.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.one)" v-if="!row.needTurnLine">{{ row.one | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.two | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.two.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.two)" v-if="!row.needTurnLine">{{ row.two | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.three | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.three.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.three)" v-if="!row.needTurnLine">{{ row.three | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.four | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.four.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.four)" v-if="!row.needTurnLine">{{ row.four | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.five | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.five.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.five)" v-if="!row.needTurnLine">{{ row.five | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.six | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.six.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.six)" v-if="!row.needTurnLine">{{ row.six | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.seven | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.seven.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.seven)" v-if="!row.needTurnLine">{{ row.seven | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eight | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eight.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.eight)" v-if="!row.needTurnLine">{{ row.eight | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.nine | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.nine.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.nine)" v-if="!row.needTurnLine">{{ row.nine | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.ten | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.ten.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.ten)" v-if="!row.needTurnLine">{{ row.ten | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eleven | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eleven.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.eleven)" v-if="!row.needTurnLine">{{ row.eleven | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)" v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.twelve | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.twelve.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
+                    <span :class="dayRed(row.twelve)" v-if="!row.needTurnLine">{{ row.twelve | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
                 </template>
             </i-table>
         </div>
@@ -241,7 +237,7 @@
                     return [
                         {
                             title: ' ',
-                            slot: 'intDay',
+                            key: 'intDay',
                             width: 100,
                             align: 'right'
                         },
@@ -362,14 +358,17 @@
 
                 },
                 async getTableData() {
+                    const turnLine = Vue.filter('turnLine');
                     try {
                         const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                         // 第一条是表头, 且需要去除空值intDay
                         // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
-                        this.tableData = data.slice(1).map(e => {
+                        this.tableData = data.slice(1).map((e, i)=>{
                             return {
                                 ...e,
-                                cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 ? { intDay: "sub-title" } : {}
+                                intDay: turnLine(e.intDay),
+                                needTurnLine:  e.intDay.indexOf(TURN_LINE_STR) > -1 ? true : false,
+                                cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 || i === 0 ? {intDay: 'sub-title'} : {}
                             }
                         })
                         console.log(this.tableData)
