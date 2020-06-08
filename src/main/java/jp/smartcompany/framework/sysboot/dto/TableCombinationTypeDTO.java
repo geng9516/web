@@ -1,13 +1,16 @@
-package jp.smartcompany.job.modules.core.util.searchrange;
+package jp.smartcompany.framework.sysboot.dto;
 
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+/**
+ * @author Xiao Wenpeng
+ */
 @Getter
 @Setter
 @ToString
-public class TableCombinationType {
+public class TableCombinationTypeDTO {
 
     /** テーブルID */
     private String tableName;

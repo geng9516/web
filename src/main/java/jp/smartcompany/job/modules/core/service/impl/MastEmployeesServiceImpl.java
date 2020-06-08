@@ -7,7 +7,7 @@ import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

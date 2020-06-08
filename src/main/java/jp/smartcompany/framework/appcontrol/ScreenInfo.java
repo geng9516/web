@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.util.appcontrol;
+package jp.smartcompany.framework.appcontrol;
 
 import lombok.ToString;
 
@@ -10,20 +10,21 @@ import java.util.Map;
  */
 @ToString
 public class ScreenInfo extends AbstractInfo {
+
     /** ボタン情報クラス */
-    Map ghButtonInfo;
+    private Map<String,ButtonInfo> ghButtonInfo;
 
     /**
      * @return buttonInfo
      */
-    public Map getButtonInfo() {
+    public Map<String,ButtonInfo> getButtonInfo() {
         return ghButtonInfo;
     }
 
     /**
      * @param buttonInfo
      */
-    public void setButtonInfo(Map buttonInfo) {
+    public void setButtonInfo(Map<String,ButtonInfo> buttonInfo) {
         this.ghButtonInfo = buttonInfo;
     }
 }

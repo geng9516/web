@@ -1,4 +1,4 @@
-package jp.smartcompany.job.util;
+package jp.smartcompany.boot.util;
 
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

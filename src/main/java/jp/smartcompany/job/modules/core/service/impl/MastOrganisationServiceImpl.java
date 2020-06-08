@@ -9,7 +9,7 @@ import jp.smartcompany.job.modules.core.mapper.MastOrganisationMapper;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;

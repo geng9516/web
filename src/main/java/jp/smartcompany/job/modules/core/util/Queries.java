@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.core.util;
 
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 
 import java.util.Vector;
 

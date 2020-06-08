@@ -11,7 +11,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.OperationAuditDO;
-import jp.smartcompany.job.util.PageUtil;
+import jp.smartcompany.boot.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

@@ -1,10 +1,10 @@
-package jp.smartcompany.job.modules.core.util.searchrange;
+package jp.smartcompany.framework.sysboot.dto;
 
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import lombok.ToString;
 
 @ToString
-public class AppSearchRangeInfoEntity extends HistGroupdatapermissionDO {
+public class AppSearchRangeInfoDTO extends HistGroupdatapermissionDO {
     /** カラム名(顧客コード) */
     private String customerid;
 

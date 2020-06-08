@@ -2,7 +2,7 @@ package jp.smartcompany.job.controller;
 
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.LogBusiness;
-import jp.smartcompany.job.util.PageUtil;
+import jp.smartcompany.boot.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -10,7 +10,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

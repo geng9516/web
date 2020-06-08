@@ -12,7 +12,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.*;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsSession;
-import jp.smartcompany.job.util.ShiroUtil;
+import jp.smartcompany.boot.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

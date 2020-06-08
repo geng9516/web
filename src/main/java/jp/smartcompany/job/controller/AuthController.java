@@ -3,7 +3,7 @@ package jp.smartcompany.job.controller;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
-import jp.smartcompany.job.util.ShiroUtil;
+import jp.smartcompany.boot.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

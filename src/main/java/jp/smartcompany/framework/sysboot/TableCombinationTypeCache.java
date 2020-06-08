@@ -1,11 +1,13 @@
-package jp.smartcompany.job.modules.core.util.searchrange;
+package jp.smartcompany.framework.sysboot;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.map.MapUtil;
-import jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO;
+import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
-import org.springframework.stereotype.Component;
+import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
+import lombok.extern.slf4j.Slf4j;
 
-import javax.annotation.Resource;
 import java.util.Map;
 import java.util.List;
 
@@ -13,20 +15,18 @@ import java.util.List;
  * テーブル結合条件情報常駐変数キャッシュクラス
  * @author Xiao Wenpeng
  */
-@Component
+@Slf4j
 public class TableCombinationTypeCache {
 
     /** テーブル結合条件情報MAP */
-    private Map<String, TableCombinationType> tableCombinationTypeMap;
-    @Resource
-    private  IMastSystemService iMastSystemService;
+    private final Map<String, TableCombinationTypeDTO> tableCombinationTypeMap = MapUtil.newHashMap();
 
     /**
      * テーブル結合条件情報取得.
      * @param psTableID テーブルID
      * @return TableCombinationType テーブル結合条件情報
      */
-    public TableCombinationType getTableCombinationType(String psTableID) {
+    public TableCombinationTypeDTO getTableCombinationType(String psTableID) {
         return tableCombinationTypeMap.get(psTableID);
     }
 
@@ -34,18 +34,19 @@ public class TableCombinationTypeCache {
      * テーブル結合条件読み込み.
      */
     public void loadTableCombinationType() {
-        tableCombinationTypeMap = MapUtil.newHashMap();
-        List<TableCombinationTypeDTO> tableCombinationTypeDtoList = iMastSystemService.getTableInfo();
-        for (TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDtoList) {
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
+        List<jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO> tableCombinationTypeDTODtoList = iMastSystemService.getTableInfo();
+        for (jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDTODtoList) {
             String sTableName = tableCombinationTypeDto.getTableName();
             String sColumnName = tableCombinationTypeDto.getColumnName();
             if (sColumnName == null) {
                 sColumnName = "";
             }
             if (!tableCombinationTypeMap.containsKey(sTableName)) {
-                TableCombinationType tableCombinationType = new TableCombinationType();
-                tableCombinationType.setTableName(sTableName);
-                tableCombinationTypeMap.put(sTableName, tableCombinationType);
+                TableCombinationTypeDTO tableCombinationTypeDTO = new TableCombinationTypeDTO();
+                tableCombinationTypeDTO.setTableName(sTableName);
+                tableCombinationTypeMap.put(sTableName, tableCombinationTypeDTO);
             }
             if (sColumnName.contains("_DENDOFTRIALEMPLOYMENT")) {
                 /* カラムのネーミングルールに反するので何もしない */
@@ -75,6 +76,8 @@ public class TableCombinationTypeCache {
                 tableCombinationTypeMap.get(sTableName).setIfKeyOrAdditionalRoleColumnName(sColumnName);
             }
         }
+        lruCache.put(ScCacheUtil.TABLE_COMBINATION_TYPE_MAP,tableCombinationTypeMap);
+        log.info("【テーブル結合条件情報取得処理】：{}",tableCombinationTypeMap);
     }
 
 }

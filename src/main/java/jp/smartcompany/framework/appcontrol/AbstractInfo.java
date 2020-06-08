@@ -1,75 +1,74 @@
-package jp.smartcompany.job.modules.core.util.appcontrol;
+package jp.smartcompany.framework.appcontrol;
 
 import lombok.ToString;
 
 /**
- * モジュールの説明を記述
  * @author Xiao Wenpeng
  */
 @ToString
 public abstract class AbstractInfo {
     /** サイトID */
-    String gsSiteID;
+    protected String gsSiteID;
 
     /** アプリケーションID */
-    String gsAppID;
+    protected String gsAppID;
 
     /** サブアプリケーションID */
-    String gsSubAppID;
+    protected String gsSubAppID;
 
     /** 画面ID */
-    String gsScreenID;
+    protected String gsScreenID;
 
     /** ボタンID */
-    String gsButtonID;
+    protected String gsButtonID;
 
     /** 項目名称 */
-    String gsName;
+    protected String gsName;
 
     /** 種別(1:サイト) */
-    String gsType = "1";
+    protected String gsType = "1";
 
     /** 対応バージョン */
-    String gsVersion;
+    protected String gsVersion;
 
     /** 対応システム */
-    String gsSystem;
+    protected String gsSystem;
 
     /** 使用アプリケーションテンプレートID */
-    String gsAppTemplateID;
+    protected String gsAppTemplateID;
 
     /** URL */
-    String gsURL;
+    protected String gsURL;
 
     /** 画像URL */
-    String gsImageURL;
+    protected String gsImageURL;
 
     /** アプリケーション自動起動 */
-    String gsAppAutoLoad;
+    protected String gsAppAutoLoad;
 
     /** オンラインヘルプURL */
-    String gsOnlineHelpURL;
+    protected String gsOnlineHelpURL;
 
     /** ヘルプwindow.open属性 */
-    String gsHelpWindowOpen;
+    protected String gsHelpWindowOpen;
 
     /** サイト説明文 */
-    String gsSiteDirections;
+    protected String gsSiteDirections;
 
     /** デフォルト検索対象者(3:デフォルトなし) */
-    String gsDefSearchObj = "3";
+    protected String gsDefSearchObj = "3";
 
     /** 適用基準日種別(2:システム日付) */
-    String gsBaseDateType = "2";
+    protected String gsBaseDateType = "2";
 
     /** 検索対象範囲適用種別(1:起動時にチェック) */
-    String gsSearchRangeType = "1";
+    protected String gsSearchRangeType = "1";
 
     /** ドメインコード */
-    String gsDomainId;
+    protected String gsDomainId;
 
     /** インラインフレーム表示設定フラグ */
-    String gsIframeFlag;
+    protected String gsIframeFlag;
 
     /**
      * @return siteID
@@ -149,7 +148,6 @@ public abstract class AbstractInfo {
     }
 
     /**
-     * @param appName
      */
     public void setName(String pName) {
         this.gsName = pName;
@@ -247,7 +245,6 @@ public abstract class AbstractInfo {
     }
 
     /**
-     * @param appAutoLoad
      */
     public void setAppAutoLoad(String gsAppAutoLoad) {
         this.gsAppAutoLoad = gsAppAutoLoad;

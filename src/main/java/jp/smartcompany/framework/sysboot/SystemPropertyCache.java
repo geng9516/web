@@ -1,7 +1,9 @@
 package jp.smartcompany.framework.sysboot;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.framework.sysboot.dto.SystemPropertyDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
@@ -18,17 +20,26 @@ import java.util.stream.Collectors;
 @Slf4j
 public class SystemPropertyCache {
 
+
     /** システムプロパティ情報MAP */
-    private final Map<String, SystemPropertyDTO> systemPropertyMap = MapUtil.newHashMap();
+    private Map<String, SystemPropertyDTO> systemPropertyMap = MapUtil.newHashMap();
+    LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
 
     /**
      * システムプロパティ情報取得.
      * @param psKey プロパティ名
      * @return プロパティ値
      */
-    public Object getValue(String psKey) {
+    public Object getSystemProperty(String psKey) {
         Object propValue = null;
-        SystemPropertyDTO systemPropertyDTO = systemPropertyMap.get(psKey);
+        systemPropertyMap = (Map<String, SystemPropertyDTO>)lruCache.get(ScCacheUtil.SYSTEM_PROPERTY_MAP);
+        SystemPropertyDTO systemPropertyDTO;
+        if (systemPropertyMap!=null){
+            systemPropertyDTO = systemPropertyMap.get(psKey);
+        }else {
+            loadSystemProperty();
+            systemPropertyDTO = systemPropertyMap.get(psKey);
+        }
         if (systemPropertyDTO != null) {
             propValue = systemPropertyDTO.getPropValue();
         }
@@ -40,8 +51,15 @@ public class SystemPropertyCache {
      * @param psKey		キー
      * @param psValue	値
      */
-    public void setValue(String psKey, String psValue) {
-        SystemPropertyDTO systemPropertyDTO = systemPropertyMap.get(psKey);
+    public void setSystemProperty(String psKey, String psValue) {
+        systemPropertyMap = (Map<String, SystemPropertyDTO>)lruCache.get(ScCacheUtil.SYSTEM_PROPERTY_MAP);
+        SystemPropertyDTO systemPropertyDTO;
+        if (systemPropertyMap!=null){
+            systemPropertyDTO = systemPropertyMap.get(psKey);
+        } else {
+            loadSystemProperty();
+            systemPropertyDTO = systemPropertyMap.get(psKey);
+        }
         if(systemPropertyDTO != null) {
             systemPropertyDTO.setPropValue(psValue);
         } else {
@@ -51,12 +69,13 @@ public class SystemPropertyCache {
             systemPropertyDTO.setPropValue(psValue);
         }
         systemPropertyMap.put(psKey, systemPropertyDTO);
+        lruCache.put(ScCacheUtil.SYSTEM_PROPERTY_MAP,systemPropertyMap);
     }
 
     /**
      * システムプロパティ読み込み.
      */
-    public void loadSystemProperty() {
+    private void loadSystemProperty() {
         IConfSyscontrolService sysControlService = SpringUtil.getBean("confSyscontrolServiceImpl");
         // 必要な項目だけ転送
         List<ConfSyscontrolDO> controlList = sysControlService.getProperties();
@@ -75,6 +94,7 @@ public class SystemPropertyCache {
             systemPropertyMap.put(key, property);
         }
         log.info("【システムプロパティ：{}】",systemPropertyMap);
+        lruCache.put(ScCacheUtil.SYSTEM_PROPERTY_MAP,systemPropertyMap);
     }
 
 }

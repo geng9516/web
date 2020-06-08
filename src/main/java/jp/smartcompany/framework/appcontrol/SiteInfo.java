@@ -1,4 +1,4 @@
-package jp.smartcompany.job.modules.core.util.appcontrol;
+package jp.smartcompany.framework.appcontrol;
 
 import lombok.ToString;
 
@@ -10,8 +10,10 @@ import java.util.Map;
  */
 @ToString
 public class SiteInfo extends AbstractInfo {
+
     /** アプリケーション情報クラス */
-    Map ghAppInfo;
+    private Map ghAppInfo;
+
 
     /**
      * @return appInfo
@@ -26,4 +28,5 @@ public class SiteInfo extends AbstractInfo {
     public void setAppInfo(Map appInfo) {
         this.ghAppInfo = appInfo;
     }
+
 }

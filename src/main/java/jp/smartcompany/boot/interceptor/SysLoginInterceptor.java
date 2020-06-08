@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.framework.auth.AppAuthJudgmentLogic;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
@@ -17,7 +18,7 @@ import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.util.ShiroUtil;
+import jp.smartcompany.boot.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
     private final PsDBBean psDBBean;
+    private final AppAuthJudgmentLogic appAuthJudgmentLogic;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
@@ -68,14 +70,14 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             httpSession.setAttribute(Constant.PS_SESSION, session);
             session.setLoginCustomer(customerId);
         }
+        configGlobalParameters(request,systemList.get(0));
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {
-            executeLoginSequence(systemList,language);
+            executeLoginSequence(systemList,language,session);
             if (request.getAttribute(Constant.TOP_NAVS) == null) {
                 loadMenus(request, systemCode, customerId, systemList);
             }
         }
-        configGlobalParameters(request,systemList.get(0));
         return true;
     }
 
@@ -215,8 +217,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             psDBBean.setTargetDept(targetPermEmp);
         }
 
-
-
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
         }
@@ -306,13 +306,16 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
 
     // 登录后加载角色组和基点组织
-    private void executeLoginSequence(List<MastSystemDO> systemList, String language) {
+    private void executeLoginSequence(List<MastSystemDO> systemList, String language,PsSession session) {
 
         if (CollUtil.isEmpty(systemList)){
             throw new GlobalException("Master not found");
         }
         // 获取系统角色组
         groupBusiness.getGroupList(language,systemList);
+        // アプリケーション起動判定処理実施(戻り値をセッションに設定)
+        session.setLoginAppPermission(appAuthJudgmentLogic.getAppAuthJudgmentInfo());
+        log.info("【用户登录后的loginPermission:{}】",session.getLoginAppPermission());
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();
     }

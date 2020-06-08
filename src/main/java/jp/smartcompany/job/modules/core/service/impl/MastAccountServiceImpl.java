@@ -8,7 +8,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.mapper.MastAccountMapper;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

@@ -1,9 +1,11 @@
 package jp.smartcompany.framework.sysboot;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -56,6 +58,7 @@ public class SearchRangeInfoCache {
      * 検索対象範囲条件作成
      */
     public void loadSearchRangeInfo() {
+        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
         IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
         List <SearchRangeInfoDTO> lSecPostList = iMastDatapermissionService.selectDataSectionPost();
         List <SearchRangeInfoDTO> lPermDefsList =iMastDatapermissionService.selectDataPermissionDefs();
@@ -64,6 +67,8 @@ public class SearchRangeInfoCache {
         ghmDataPermissionDefs = createSearchRangeInfo(lPermDefsList, false);
         log.info("【検索対象範囲条件取得（組織、役職）】:{}",ghmDataSectionPost);
         log.info("【検索対象範囲条件取得（条件式）】:{}",ghmDataPermissionDefs);
+        lruCache.put(ScCacheUtil.GHM_DATA_SECTION_POST,ghmDataSectionPost);
+        lruCache.put(ScCacheUtil.GHM_DATA_PERMISSION_DEFS,ghmDataPermissionDefs);
     }
 
     /**

@@ -3,7 +3,7 @@ package jp.smartcompany.boot.interceptor;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
-import jp.smartcompany.job.util.IpUtil;
+import jp.smartcompany.boot.util.IpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package jp.smartcompany.job.util;
+package jp.smartcompany.boot.util;
 
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.enums.ErrorMessage;

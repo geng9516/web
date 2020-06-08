@@ -1,21 +1,21 @@
-package jp.smartcompany.job.modules.core.util.appcontrol;
+package jp.smartcompany.framework.appcontrol;
 
 import lombok.ToString;
 
 import java.util.Map;
 
 /**
- * @author Xiao Wenpeng
  * アプリケーション情報格納クラス
+ * @author Xiao Wenpeng
  */
 @ToString
 public class AppInfo extends AbstractInfo{
 
     /** サブアプリケーション情報クラス */
-    Map ghSubAppInfo;
+    private Map ghSubAppInfo;
 
     /** 画面情報クラス */
-    Map ghScreenInfo;
+    private Map ghScreenInfo;
 
 
     /**

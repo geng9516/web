@@ -1,8 +1,5 @@
-package jp.smartcompany.job.util;
+package jp.smartcompany.boot.util;
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.http.HttpUtil;
-import cn.hutool.json.JSONUtil;
 import javax.servlet.http.HttpServletRequest;
 
 /**

@@ -24,7 +24,7 @@
 	   ) ORDER BY TABLE_NAME,COLUMN_ID;
     </select>
 
-	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.job.modules.core.util.searchrange.AppSearchRangeInfoEntity">
+	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO">
 		-- HIST_GROUPDATAPERMISSION 常駐変数化用
 		SELECT
 		HGP_CCUSTOMERID,

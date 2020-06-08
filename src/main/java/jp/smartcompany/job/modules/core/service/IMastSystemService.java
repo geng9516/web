@@ -1,9 +1,9 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
 import jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.core.util.searchrange.AppSearchRangeInfoEntity;
 
 import java.util.List;
 
@@ -26,6 +26,6 @@ public interface IMastSystemService extends IService<MastSystemDO> {
 
         List<TableCombinationTypeDTO> getTableInfo();
 
-        List<AppSearchRangeInfoEntity> selectSearchRangeInfo();
+        List<AppSearchRangeInfoDTO> selectSearchRangeInfo();
 
 }

@@ -1,4 +1,4 @@
-package jp.smartcompany.job.util;
+package jp.smartcompany.boot.util;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.Getter;

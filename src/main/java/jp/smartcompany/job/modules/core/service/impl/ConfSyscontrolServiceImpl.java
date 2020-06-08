@@ -5,7 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.mapper.ConfSyscontrolMapper;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
