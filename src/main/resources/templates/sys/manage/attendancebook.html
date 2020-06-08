@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
+                        {{  fromYYYYMM ? `出勤簿（${fromYYYYMM}～ ${toYYYYMM}）` : '出勤簿' }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -86,7 +86,7 @@
                     <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
             </Row>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" no-data-text="所属を選択して下さい。" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
 
                 <template slot-scope="{ row }" slot="one">
@@ -242,74 +242,74 @@
                             align: 'right'
                         },
                         {
-                            title: this.tableHead[0],
+                            title: this.tableHead[0] || ' ',
                             minWidth: 70,
                             slot: 'one',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[1],
+                            title: this.tableHead[1] || ' ',
                             minWidth: 70,
                             slot: 'two',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[2],
+                            title: this.tableHead[2] || ' ',
                             slot: 'three',
                             minWidth: 70,
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[3],
+                            title: this.tableHead[3] || ' ',
                             minWidth: 70,
                             slot: 'four',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[4],
+                            title: this.tableHead[4] || ' ',
                             minWidth: 70,
                             key: 'minusTime',
                             slot: 'five',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[5],
+                            title: this.tableHead[5] || ' ',
                             minWidth: 70,
                             slot: 'six',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[6],
+                            title: this.tableHead[6] || ' ',
                             minWidth: 70,
                             slot: 'seven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[7],
+                            title: this.tableHead[7] || ' ',
                             minWidth: 70,
                             slot: 'eight',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[8],
+                            title: this.tableHead[8] || ' ',
                             minWidth: 70,
                             slot: 'nine',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[9],
+                            title: this.tableHead[9] || ' ',
                             minWidth: 70,
                             slot: 'ten',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[10],
+                            title: this.tableHead[10] || ' ',
                             minWidth: 70,
                             slot: 'eleven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[11],
+                            title: this.tableHead[11] || ' ',
                             minWidth: 70,
                             slot: 'twelve',
                             align: 'center'
