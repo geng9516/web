@@ -70,6 +70,13 @@
             </div>
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
+                <template slot-scope="{ row }" slot="intDay">
+                    <div style="position: relative;">
+                        <span :class="row._index === 0 ? '' : 'mr15 sum-title-divi'">{{ row.intDay.split('日')[0].trim() }}</span>
+                        <div style="position: absolute;top: -13px;left: 72px;" v-if="row._index !== 0">日</div>
+                        <div class="divi-hour-line-small" style="position: absolute;top: 15px;left: 72px;" v-if="row._index !== 0">時</div>
+                    </div>
+                </template>
 
                 <template slot-scope="{ row }" slot="one">
                     <span :class="dayRed(row.one)" v-if="!row.needTurnLine">{{ row.one | turnLine }}</span>
@@ -150,6 +157,9 @@
             </div>
             <i-table :show-header="false" no-data-text=" " border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
+                <template slot-scope="{ row }" slot="intDay">
+                    <span>{{ row.intDay }}</span>
+                </template>
 
                 <template slot-scope="{ row }" slot="one">
                     <span :class="dayRed(row.one)">{{ row.one | turnLine }}</span>
@@ -261,9 +271,9 @@
                     return [
                         {
                             title: ' ',
-                            key: 'intDay',
+                            slot: 'intDay',
                             width: 100,
-                            align: 'right'
+                            align: 'center'
                         },
                         {
                             title: this.tableHead[0] || '',

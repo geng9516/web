@@ -81,6 +81,19 @@
       padding-top: 2px;
       padding-bottom: 2px;
     }
+    .ivu-table-cell {
+      overflow: visible;
+    }
+    .ivu-table-row {
+      td:first-child {
+        // 强行着色
+        background-color: var(--light-blue-l) !important;
+        color: var(--theme-blue) !important;
+        .ivu-table-cell {
+          line-height: 26px;
+        }
+      }
+    }
   }
   // 日间表格 激活class
   tr {
@@ -108,12 +121,7 @@
   }
   .sub-title {
     background-color: var(--light-blue-l) !important;
-    // border-bottom-color: var(--light-grey);
     color: var(--theme-blue) !important;
-    .ivu-table-cell {
-      // hack 出勤簿的换行的字间距
-      line-height: 26px;
-    }
   }
   .rest-title {
     background-color: var(--table-td-hover) !important;
