@@ -70,6 +70,7 @@ public class DeptStatListBean {
      * ACT_DISP_RLIST
      */
     public void actDispRlist(ModelMap modelMap) throws Exception {
+        execute(modelMap);
 
         // 組織が選択されてる場合
         if (referList.getTargetSec() != null) {
@@ -79,14 +80,23 @@ public class DeptStatListBean {
     }
 
     /**
+     * 承認サイト・管理サイト
+     * 部署別統計情
+     * <p>
+     * ACT_DISP_CDOWNLOAD
+     */
+    public void actDispCdownload(ModelMap modelMap) throws Exception {
+        execute(modelMap);
+        executeDownloadDownload();
+    }
+
+    /**
      * 勤怠トリガーテーブルへのインサート処理を実行します。
      *
      * @since rev:1319 #175
      */
     private void executeInsertTmgTrigger() {
 
-        // クエリ格納オブジェクト
-        Vector vQuery = new Vector();
         // ログインユーザコード
         String pLoginUserCode = psDBBean.getUserCode();
 
@@ -104,7 +114,6 @@ public class DeptStatListBean {
                 .eq("TTR_CCOMPANYID", (psDBBean.getCompCode())));
 
         //TmgUtil.checkInsertErrors(setInsertValues(vQuery, beanDesc), session, beanDesc);
-
     }
 
     /**
@@ -120,22 +129,24 @@ public class DeptStatListBean {
 
         List<Map> dispItemsList = new ArrayList<>();
         Map title = new HashMap();
-        title.put(CommonUI.TITLE,"氏名");
-        title.put(CommonUI.WIDTH,CommonUI.WIDTH_100);
+        title.put(CommonUI.TITLE, "氏名");
+        title.put(CommonUI.WIDTH, CommonUI.WIDTH_100);
+        title.put(CommonUI.KEY,"EMPNAME");
         dispItemsList.add(title);
-        for(DispItemsDto dispItemsDto :dispItemsDtoList){
+        for (DispItemsDto dispItemsDto : dispItemsDtoList) {
             title = new HashMap();
-            title.put(CommonUI.TITLE,"氏名");
-            title.put(CommonUI.WIDTH,CommonUI.WIDTH_36);
+            title.put(CommonUI.TITLE, dispItemsDto.getMgdCitemname());
+            title.put(CommonUI.KEY,dispItemsDto.getTempColumnid());
+            title.put(CommonUI.WIDTH, CommonUI.WIDTH_36);
         }
 
-        modelMap.addAttribute("dispItemsList",dispItemsList);
+        modelMap.addAttribute("dispItemsList", dispItemsList);
 
         //対象部署に属する社員全ての合計値を取得
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate);
         sectionMap.put("EMPNAME", "合計");
-        int count = (int)sectionMap.get("CNT");
-        modelMap.addAttribute("count",count);
+        int count = (int) sectionMap.get("CNT");
+        modelMap.addAttribute("count", count);
 
         //社員別のデータを取得
         int startSeq = (getPage() - 1) * LINE_PER_PAGE + 1;
@@ -145,15 +156,15 @@ public class DeptStatListBean {
         List<Map> sectionAndEmployyesMap = new ArrayList<Map>();
         sectionAndEmployyesMap.add(sectionMap);
         sectionAndEmployyesMap.addAll(employyesMap);
-        modelMap.addAttribute("sectionAndEmployyesMap",sectionAndEmployyesMap);
+        modelMap.addAttribute("sectionAndEmployyesMap", sectionAndEmployyesMap);
 
         //前月リンクを取得
         preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
-        modelMap.addAttribute("preMonth",preMonth);
+        modelMap.addAttribute("preMonth", preMonth);
 
         //翌月リンクを取得
         nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
-        modelMap.addAttribute("nextMonth",nextMonth);
+        modelMap.addAttribute("nextMonth", nextMonth);
 
     }
 
@@ -171,16 +182,6 @@ public class DeptStatListBean {
 
     public int getPage() {
         return giPage;
-    }
-
-    /**
-     * 承認サイト・管理サイト
-     * 部署別統計情
-     * <p>
-     * ACT_DISP_CDOWNLOAD
-     */
-    public void actDispCdownload(ModelMap modelMap) throws Exception {
-        executeDownloadDownload();
     }
 
     /**
