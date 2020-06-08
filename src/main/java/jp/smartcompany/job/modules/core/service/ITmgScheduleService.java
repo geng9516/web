@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -116,9 +117,10 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param baseDate
      * @param custId
      * @param compCode
+     * @param isAfter
      * @return
      */
-    TmgWeekPatternDTO selectTmgWeekPattern(String employeeId, String baseDate, String custId, String compCode);
+    List<TmgWeekPatternDTO> selectTmgWeekPattern(String employeeId, String baseDate, String custId, String compCode, boolean isAfter);
 
     /**
      * 基準日時点で４週間の変形労働制対象者か
@@ -227,7 +229,7 @@ public interface ITmgScheduleService extends IService<Object> {
     /**
      * エラーチェックを削除する
      *
-     * @param employeeId  tda_cmodifieruserid
+     * @param employeeId tda_cmodifieruserid
      * @param compCode
      * @param custId
      */
@@ -313,6 +315,26 @@ public interface ITmgScheduleService extends IService<Object> {
     void deleteTmgTrigger(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid);
 
     /**
+     * エラーメッセージを削除する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param tmg_schedule_cmodifierprogramid
+     */
+    void deleteErrMsg(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid);
+
+    /**
+     * 週勤務パターンチェックを削除する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param tmg_schedule_cmodifierprogramid
+     */
+    void deleteWeekPatternCheck(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid);
+
+    /**
      * エラーチェックを削除する
      *
      * @param custId
@@ -320,5 +342,74 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param sLoginUserCode
      */
     void deleteDetailCheck(String custId, String compCode, String sLoginUserCode);
+
+
+    /**
+     * 週勤務パターンを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @param twp_nid
+     * @return
+     */
+    TmgWeekPatternVO selectCsvReference(String custId, String compCode, String language, String employeeId, int twp_nid);
+
+    /**
+     * 週勤務パターンリストを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param employeeId
+     * @return
+     */
+    List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId);
+
+    /**
+     * [勤怠]週次勤務パターン（エラーチェック用）登録
+     *
+     * @param tmgWeekPatternCheckDTO
+     */
+    void insertTmgWeekPatternCheck(TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO);
+
+    /**
+     * エラーメッセージに追加する
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param employeeId
+     * @param modifieruserid
+     * @param modifierprogramid
+     * @param minDate
+     * @param maxDate
+     */
+    void insertErrMsg(String custId, String compCode, String language, String employeeId, String modifieruserid, String modifierprogramid, String minDate, String maxDate);
+
+
+    /**
+     * エラーメッセージを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param modifieruserid
+     * @param modifierprogramid
+     * @return
+     */
+    String selectErrMsg(String custId, String compCode, String modifieruserid, String modifierprogramid);
+
+    /**
+     * トリガーに追加する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param sLoginUserCode
+     * @param modifierprogramid
+     * @param sAction
+     */
+    void insertTrigger(String custId, String compCode, String employeeId, String sLoginUserCode, String modifierprogramid, String sAction);
 
 }

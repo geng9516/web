@@ -1,12 +1,15 @@
 package jp.smartcompany.job.controller;
 
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
+import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -23,6 +26,7 @@ public class ScheduleController {
 
     /**
      * 公休日数	基準日数	基準時間	年次休暇残　と　　勤務予定 リスト
+     * 　http://localhost:6879/sys/schedule/selectScheduleInfo?employeeId=29042924&year=2020&month=04
      *
      * @param employeeId
      * @param year
@@ -43,6 +47,7 @@ public class ScheduleController {
     }
 
     /**
+     * http://localhost:6879/sys/schedule/defaultDate
      * ディフォルト時間
      *
      * @return
@@ -55,6 +60,7 @@ public class ScheduleController {
 
     /**
      * 翌月リンクを取得
+     * 　http://localhost:6879/sys/schedule/selectLinkOfNextMonth?employeeId=29042924&year=2020&month=04
      *
      * @param employeeId
      * @param year
@@ -74,6 +80,7 @@ public class ScheduleController {
 
     /**
      * 前月リンクを取得
+     * 　http://localhost:6879/sys/schedule/selectLinkOfPreMonth?employeeId=29042924&year=2020&month=04
      *
      * @param employeeId
      * @param year
@@ -93,6 +100,7 @@ public class ScheduleController {
 
     /**
      * [区分][出張][勤務パターン]
+     * 　http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=29042924&year=2020&month=04
      *
      * @param employeeId
      * @param year
@@ -115,6 +123,7 @@ public class ScheduleController {
 
     /**
      * 予定作成更新処理を行います
+     * 　http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=29042924&year=2020&month=04
      *
      * @param employeeId
      * @param year
@@ -134,7 +143,93 @@ public class ScheduleController {
         return null;
     }
 
+    /**
+     * 週勤務パターンを取得する
+     * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=29042924&year=2020&month=04&twp_nid=663
+     *
+     * @param year
+     * @param month
+     * @param employeeId
+     * @param twp_nid
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("selectWeekPatternInfo")
+    @ResponseBody
+    public TmgWeekPatternVO selectCsvReference(@RequestParam("year") String year,
+                                               @RequestParam("month") String month,
+                                               @RequestParam("employeeId") String employeeId,
+                                               @RequestParam("twp_nid") int twp_nid,
+                                               ModelMap modelMap) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        return tmgScheduleBean.selectCsvReference(employeeId, twp_nid);
+    }
 
+
+    /**
+     * 週勤務パターンlistを取得する
+     * http://localhost:6879/sys/schedule/selectWeekPatternInfoList?employeeId=29042924&year=2020&month=04
+     *
+     * @param year
+     * @param month
+     * @param employeeId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("selectWeekPatternInfoList")
+    @ResponseBody
+    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("year") String year,
+                                                         @RequestParam("month") String month,
+                                                         @RequestParam("employeeId") String employeeId,
+                                                         ModelMap modelMap) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        return tmgScheduleBean.selectCsvReference(employeeId);
+    }
+
+
+    /**
+     * 週勤務パターンを取得する
+     * http://localhost:6879/sys/schedule/selectTmgWeekPatternList?employeeId=29042924&year=2020&month=04
+     *
+     * @param year
+     * @param month
+     * @param employeeId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("selectTmgWeekPatternList")
+    @ResponseBody
+    public List<TmgWeekPatternDTO> selectTmgWeekPattern(@RequestParam("year") String year,
+                                                        @RequestParam("month") String month,
+                                                        @RequestParam("employeeId") String employeeId,
+                                                        ModelMap modelMap) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        return tmgScheduleBean.selectTmgWeekPattern(year, month);
+    }
+
+
+    /**
+     * 週勤務パターン登録画面　登録処理
+     * http://localhost:6879/sys/schedule/executeMakeWeekPattern?employeeId=29042924&year=2020&month=04
+     *
+     * @param year
+     * @param month
+     * @param employeeId
+     * @param modelMap
+     */
+    @GetMapping("executeMakeWeekPattern")
+    @ResponseBody
+    public void executeMakeWeekPattern_UWPtn(@RequestParam("year") String year,
+                                             @RequestParam("month") String month,
+                                             @RequestParam("employeeId") String employeeId,
+                                             ModelMap modelMap) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.executeMakeWeekPattern_UWPtn();
+    }
 
 
 }
