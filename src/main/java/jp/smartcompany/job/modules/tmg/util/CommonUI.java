@@ -95,6 +95,12 @@ public class CommonUI {
     public final static int WIDTH_70 = 70;
 
     /**
+     * 列幅　100
+     */
+    public final static int WIDTH_100 = 100;
+
+
+    /**
      * 最小列幅　50 TODO サンプル
      */
     public final static int MIN_WIDTH_50 = 50;

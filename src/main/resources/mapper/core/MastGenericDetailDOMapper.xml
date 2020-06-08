@@ -691,6 +691,42 @@
         AND MGD_DEND            >= SYSDATE
         ORDER BY MGD_NSEQ
     </select>
+    <select id="buildSQLForSelectTmgDeptstatcsvitems"
+            resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
+        SELECT
+            MGD_CHEADER,
+            MGD_CSQL || ' AS ' || 'COL' || MGD_NSEQ AS MGD_CSQL,
+            'COL' || MGD_NSEQ AS TEMP_COLUMNID
+        FROM
+            TMG_V_MGD_DEPTSTATCSVITEMS
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{targetDate}
+        AND MGD_DEND >= #{targetDate}
+        ORDER BY
+            MGD_NSEQ
+    </select>
+    <select id="buildSQLForSelectTmgDispdeptStatlist"
+            resultType="jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto">
+        SELECT
+            MGD_CITEMNAME,
+            MGD_CSQL || ' AS ' || 'COL' || MGD_NSEQ AS MGD_CSQL,
+            MGD_CTOTALSQL || ' AS ' || 'COL' || MGD_NSEQ AS MGD_CTOTALSQL,
+            MGD_NWIDTH,
+            'COL' || MGD_NSEQ AS TEMP_COLUMNID
+        FROM
+            TMG_V_MGD_DISPDEPTSTATLIST
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{targetDate}
+        AND MGD_DEND >= #{targetDate}
+        ORDER BY
+            MGD_NSEQ
+    </select>
 
 
 </mapper>

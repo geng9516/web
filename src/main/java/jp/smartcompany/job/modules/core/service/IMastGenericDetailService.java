@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
@@ -341,4 +342,27 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @return List<ItemVO>
      */
     List<ItemVO> buildSQLForSelectTmgDisppermstatlist(String custID, String compID, String lang);
+
+    /**
+     * CSV出力ヘッダー・項目取得
+     *
+     * @param custID     顧客コード
+     * @param compID     法人コード
+     * @param lang       言語
+     * @param targetDate 対処日
+     * @return List<ItemVO>
+     */
+    List<ItemVO> buildSQLForSelectTmgDeptstatcsvitems(String custID, String compID, String lang, String targetDate);
+
+    /**
+     * 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅の項目取得
+     *
+     * @param custID     顧客コード
+     * @param compID     法人コード
+     * @param lang       言語
+     * @param targetDate 対処日
+     * @return List<DispItemsDto>
+     */
+    List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate);
+
 }

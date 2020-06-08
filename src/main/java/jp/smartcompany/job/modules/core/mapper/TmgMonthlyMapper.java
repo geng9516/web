@@ -99,4 +99,23 @@ public interface TmgMonthlyMapper extends BaseMapper<TmgMonthlyDO> {
      * 月別エラーチェック
      */
     String checkMonthly(Map<String, Object> map);
+
+    /**
+     * 共通：画面に表示する職員一覧のデータを取得する
+     */
+    Map buildSQLSelectSection(Map<String, Object> map);
+
+    /**
+     * 前月リンク取得用
+     */
+    String buildSQLSelectLinkOfPreMonth(@Param("empsql")String empsql, @Param("baseDate")String baseDate);
+    /**
+     * 翌月リンク取得用
+     */
+    String buildSQLSelectLinkOfNextMonth(@Param("empsql")String empsql, @Param("baseDate")String baseDate);
+
+    /**
+     * [勤怠]社員別のデータを取得
+     */
+    List<Map> buildSQLSelectEmployyes(Map<String, Object> map);
 }

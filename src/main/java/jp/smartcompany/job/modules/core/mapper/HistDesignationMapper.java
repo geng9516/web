@@ -76,4 +76,9 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
                                                 @Param("compId")String compId,
                                                 @Param("date")Date date,
                                                 @Param("sectionId")String sectionId);
+
+        /**
+         * CSV出力用データを取得
+         */
+        List<Map> buildSQLForSelectCSVOutputImage(Map<String, Object> map);
 }

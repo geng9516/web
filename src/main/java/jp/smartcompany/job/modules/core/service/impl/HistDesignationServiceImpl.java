@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.job.util.SysUtil;
 import org.springframework.stereotype.Repository;
@@ -157,4 +158,23 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                         .gt("HD_DENDDATE",fDate);
                 return list(qw);
         }
+
+        /**
+         * CSV出力用データを取得
+         *
+         * @param targetDate   対象日
+         * @param headerList 　検索項目
+         * @param empsql     　対象者取得sql
+         * @return List<Map>
+         */
+        @Override
+        public List<Map> buildSQLForSelectCSVOutputImage(String targetDate, List<ItemVO> headerList, String empsql) {
+
+                Map<String, Object> map = MapUtil.newHashMap(3);
+                map.put("targetDate", targetDate);
+                map.put("headerList", headerList);
+                map.put("empsql", empsql);
+                return baseMapper.buildSQLForSelectCSVOutputImage(map);
+        }
+
 }

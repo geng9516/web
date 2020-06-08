@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
@@ -231,5 +232,20 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     List<ItemVO> buildSQLForSelectTmgDisppermstatlist(@Param("custID") String custID,
                                                       @Param("compID") String compID,
                                                       @Param("lang") String lang);
+
+    /**
+     * CSV出力ヘッダー・項目取得
+     */
+    List<ItemVO> buildSQLForSelectTmgDeptstatcsvitems(@Param("custID") String custID,
+                                                      @Param("compID") String compID,
+                                                      @Param("lang") String lang,
+                                                      @Param("targetDate") String targetDate);
+    /**
+     * 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅の項目取得
+     */
+    List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(@Param("custID") String custID,
+                                                            @Param("compID") String compID,
+                                                            @Param("lang") String lang,
+                                                            @Param("targetDate") String targetDate);
 }
 
