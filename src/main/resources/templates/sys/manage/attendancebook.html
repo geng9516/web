@@ -224,7 +224,7 @@
             async mounted() {
 
                 console.log([[${ session }]])
-                this.getData(true)
+                // this.getData(true)
                 this.getOrgTree()
 
             },
@@ -373,6 +373,7 @@
                         })
                         console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
+                        this.getDeptName(this.treeData)
                     } catch (error) {
                         return
                     } finally {
@@ -384,6 +385,8 @@
                         const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
                         this.treeData = Utils.convertTreeData(Utils.convertToData(data))
+
+                        this.getDeptName(this.treeData)
                     } catch (error) {
                         return
                     } finally {
@@ -475,12 +478,19 @@
                     const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
                     this.defaultDeptId = e[0].secid
-                    this.getTableData()
+                    // this.getTableData()
                     this.getEmpList()
                 },
                 // todo: 点完员工树干什么
-                handleClickEmpLeaf() {
+                handleClickEmpLeaf(e) {
                     this.deptDrawShow = false
+
+                    this.loginEmployee = e[0].empid
+                    this.sectionName = e[0].secnic
+                    this.query.employeeId = e[0].empid
+                    this.kanjiName = e[0].empname
+
+                    this.getData(true)
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)
