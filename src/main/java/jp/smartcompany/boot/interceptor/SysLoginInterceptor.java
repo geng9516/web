@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.framework.auth.AppAuthJudgmentLogic;
+import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
@@ -47,7 +47,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
     private final PsDBBean psDBBean;
-    private final AppAuthJudgmentLogic appAuthJudgmentLogic;
+    private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
@@ -314,7 +314,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 获取系统角色组
         groupBusiness.getGroupList(language,systemList);
         // アプリケーション起動判定処理実施(戻り値をセッションに設定)
-        session.setLoginAppPermission(appAuthJudgmentLogic.getAppAuthJudgmentInfo());
+        session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
         log.info("【用户登录后的loginPermission:{}】",session.getLoginAppPermission());
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();

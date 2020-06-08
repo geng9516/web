@@ -1,4 +1,4 @@
-package jp.smartcompany.framework.auth.impl;
+package jp.smartcompany.framework.auth.business.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
@@ -9,7 +9,7 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.framework.appcontrol.*;
-import jp.smartcompany.framework.auth.AppAuthJudgmentLogic;
+import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
 import jp.smartcompany.framework.sysboot.dto.AppAuthJudgmentDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
@@ -23,8 +23,8 @@ import java.util.*;
  * アプリケーション起動権限判定Logicクラス
  * @author Xiao Wenpeng
  */
-@Service("appAuthJudgmentLogic")
-public class AppAuthJudgmentLogicImpl implements AppAuthJudgmentLogic {
+@Service
+public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
 
     /** エラーメッセージ用 .*/
     private static final String ERR_SESSION_LANGUAGE = "LANGUAGE";
