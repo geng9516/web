@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
@@ -657,5 +658,34 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public List<ItemVO> buildSQLForSelectTmgDisppermstatlist(String custID, String compID, String lang){
         return baseMapper.buildSQLForSelectTmgDisppermstatlist( custID,  compID,  lang);
 
+    }
+
+
+    /**
+     * CSV出力ヘッダー・項目取得
+     *
+     * @param custID     顧客コード
+     * @param compID     法人コード
+     * @param lang       言語
+     * @param targetDate 対処日
+     * @return List<ItemVO>
+     */
+    @Override
+    public List<ItemVO> buildSQLForSelectTmgDeptstatcsvitems(String custID, String compID, String lang, String targetDate) {
+        return baseMapper.buildSQLForSelectTmgDeptstatcsvitems(custID, compID, lang, targetDate);
+    }
+
+    /**
+     * 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅の項目取得
+     *
+     * @param custID     顧客コード
+     * @param compID     法人コード
+     * @param lang       言語
+     * @param targetDate 対処日
+     * @return List<DispItemsDto>
+     */
+    @Override
+    public List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate) {
+        return baseMapper.buildSQLForSelectTmgDispdeptStatlist(custID, compID, lang, targetDate);
     }
 }

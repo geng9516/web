@@ -317,8 +317,43 @@ public class AttendanceBookBean {
 
             }
             resultListConverted.add(listHashMap);
+
         }
-        return resultListConverted;
+
+        List<LinkedHashMap<String, String>> resultListMerged = new ArrayList<LinkedHashMap<String, String>>();
+        // 2行と3行、4行と5行・・・11行と12行をマージする
+        for (int k = 0; k < resultListConverted.size();k++) {
+            switch (k) {
+                case 2:
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    break;
+                case 3:
+                    break;
+                case 4:
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    break;
+                case 7:
+                    break;
+                case 8:
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    break;
+                case 9:
+                    break;
+                case 10:
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    break;
+                case 11:
+                    break;
+                default:
+                    resultListMerged.add(resultListConverted.get(k));
+            }
+        }
+        return resultListMerged;
     }
 
     /**
@@ -456,6 +491,20 @@ public class AttendanceBookBean {
             result.add(data);
         }
         return result;
+    }
+
+    /**
+     * 同じkeyであれば、listHashMap1.value+<br>+listHashMap2.value
+     * @param listHashMap1
+     * @param listHashMap2
+     * @return listHashMap
+     */
+    private LinkedHashMap listHashMapMerge(LinkedHashMap listHashMap1, LinkedHashMap listHashMap2) {
+        LinkedHashMap listHashMap = new LinkedHashMap();
+        for (int i = 0; i < 13; i++) {
+            listHashMap.put(DEFAULT_KEY_ARRAY[i],listHashMap1.get(DEFAULT_KEY_ARRAY[i]) +"<br>"+listHashMap2.get(DEFAULT_KEY_ARRAY[i]));
+        }
+        return  listHashMap;
     }
 
 

@@ -550,4 +550,25 @@ public class PsDBBean {
         }
     }
 
+    protected boolean bDownload = false;
+    protected String gsAttachmentType = null;
+    public void setDownload(boolean bDownload) {
+        this.bDownload = bDownload;
+
+        this.gsAttachmentType = null;
+    }
+    protected String sDownloadContentType = null;
+    public void setDownloadContentType(String sDownloadContentType) {
+        this.sDownloadContentType = sDownloadContentType;
+    }
+    protected byte[] bytDownload = null;
+    public void setDownloadStream(byte[] bytDownload) {
+        this.bytDownload = bytDownload;
+    }
+    protected String sDownloadFileName = null;
+    public void setDownloadFileName(String sDownloadFileName) {
+        this.sDownloadFileName = sDownloadFileName;
+    }
+
+
 }

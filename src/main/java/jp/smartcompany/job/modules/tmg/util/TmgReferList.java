@@ -62,6 +62,14 @@ import java.util.*;
 @ToString
 public class TmgReferList {
 
+    // 返回给前端使用的树状参数键名，前端用来作为公共参数的建明
+    public static final String ATTR_TREEVIEW_RECORD_DATE = "TREEVIEW_KEY_RECORD_DATE";
+    public static final String ATTR_TREEVIEW_REFRESH_FLG = "TREEVIEW_KEY_REFRESH_FLG";
+    public static final String ATTR_TREEVIEW_ADMIN_TARGET_EMP = "TREEVIEW_KEY_ADMIN_TARGET_EMP";
+    public static final String ATTR_TREEVIEW_ADMIN_TARGET_SECTION = "TREEVIEW_KEY_ADMIN_TARGET_SECTION";
+    public static final String ATTR_TREEVIEW_PERM_TARGET_EMP = "TREEVIEW_KEY_PERM_TARGET_EMP";
+    public static final String ATTR_TREEVIEW_PERM_TARGET_SECTION = "TREEVIEW_KEY_PERM_TARGET_SECTION";
+
     private PsDBBean psDBBean;
     private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
     private final DataSource dataSource = SpringUtil.getBean("dataSource");
@@ -149,7 +157,6 @@ public class TmgReferList {
     // リクエストパラメータorセッションに登録する際のキー(勤怠管理サイト用)
     public static final String TREEVIEW_KEY_ADMIN_TARGET_SECTION = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetSection";
     public static final String TREEVIEW_KEY_ADMIN_TARGET_EMP     = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetEmp";
-    public static final String TREEVIEW_KEY_ADMIN_TARGET_WARD    = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetWard";
 
     // リクエストパラメータorセッションに登録する際のキー(勤怠承認サイト用)
     public static final String TREEVIEW_KEY_PERM_TARGET_SECTION  = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetSection";

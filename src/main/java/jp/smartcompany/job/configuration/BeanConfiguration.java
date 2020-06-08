@@ -1,13 +1,12 @@
 package jp.smartcompany.job.configuration;
 
-import cn.hutool.db.ds.DSFactory;
+import cn.hutool.cache.CacheUtil;
+import cn.hutool.cache.impl.LRUCache;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-
-import javax.sql.DataSource;
 
 /**
  * 系统公共配置
@@ -19,8 +18,8 @@ import javax.sql.DataSource;
 public class BeanConfiguration {
 
     @Bean
-    public DataSource dataSource() {
-        return DSFactory.get();
+    public LRUCache<Object,Object> scCache() {
+        return CacheUtil.newLRUCache(500);
     }
 
 }

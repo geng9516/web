@@ -18,7 +18,7 @@
             #{item}
             </foreach>
         AND TDAD_DYYYYMMDD    = #{yyyymmdd}
-        AND TDAD_CNOTWORKID   = {notWorkId}
+        AND TDAD_CNOTWORKID   = #{notWorkId}
         <!-- ステータスが申請中の場合のみ更新対象とする-->
         AND TDAD_CSPARECHAR2  = 'TMG_OVERHOUR_STATUS|0'
     </update>

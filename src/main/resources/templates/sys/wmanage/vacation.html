@@ -35,19 +35,14 @@
                         </div>
                         <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
-                        <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            社員
-                        </div>
-                        <Tree class="tree mt2" :data="empTreeData" 　empty-text="社員データなし"></Tree>
                     </Drawer>
                 </span>
                 <span style="flex:1"></span>
             </div>
         </div>
         <div class="content_body">
-            <i-table @on-row-click="showDay(arguments)" no-data-text="所属を選択して下さい。" border :columns="columns" :row-class-name="() => 'select-col'"
-                :disabled-hover="true" :data="data" :loading="loading">
+            <i-table @on-row-click="showDay(arguments)" no-data-text="所属を選択して下さい。" border :columns="columns"
+                :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
                 <template slot-scope="{ row }" slot="investDaysSum">
                     <span>{{ row.investDaysSum | addNumDeci(true) }}</span>
                 </template>
@@ -120,50 +115,48 @@
                             ]
                         }
                     ],
-                    data: [[${ vacationDaysList }]],
+                    data: [],
                     loading: false,
                     referListObject: {
-                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_RECORD_DATE }]]: '',
-                        [[${ TmgReferListObject.TREEVIEW_KEY_REFRESH_FLG }]]: ''
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                        [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                        [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite')
                     },
-                    deptDrawShow: true,
+                    deptDrawShow: false,
                     treeData: [],
-                    empTreeData: [],
-                    defaultDeptId: [[${ TmgReferListObject.getTargetSec() }]],
+                    defaultDeptId: '',
                     deptName: '選んでください'
                 }
             },
             mounted() {
                 console.log([[${ session }]])
-                // 先将数据转为标准格式，再转为可用数据
-                this.treeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForOrgTree() }]]))
-                // 同上，且注意数组里第一项是所属信息，child里面才是人
-                this.empTreeData = this.convertTreeData(Utils.convertToData([[${ TmgReferListObject.getJSONArrayForEmpList() }]]))
-                if (this.defaultDeptId && this.treeData.length > 0) {
-                    this.getDeptName(this.treeData)
-                }
+                this.getOrgTree()
             },
             methods: {
-                convertTreeData(treeData = []) {
-                    return treeData.map(e => {
-                        const children = e.child || e.childen
-                        if (children) {
-                            return {
-                                ...e.data,
-                                title: e.data.label,
-                                // 前两层级默认展开方便查看
-                                expand: e.data.level < 2 || !e.data.level,
-                                children: this.convertTreeData(children)
-                            }
-                        } else {
-                            return {
-                                ...e.data,
-                                title: e.data.label
-                            }
-                        }
-                    })
+                async getTableData() {
+                    try {
+                        this.loading = true
+                        const { data } = await this.http.get('sys/wmanage/vacation/list', this.referListObject)
+                        this.data = data
+                        this.getDeptName(this.treeData)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async getOrgTree() {
+                    try {
+                        const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
+                        // 先将数据转为标准格式，再转为可用数据
+                        this.treeData = Utils.convertTreeData(Utils.convertToData(data))
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
                 },
                 showDay() {
                     //todo: 跳到详情页
@@ -184,10 +177,10 @@
                 },
                 async handleClickLeaf(e) {
                     this.deptDrawShow = false
-                    const section = [[${ TmgReferListObject.TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
-                    await this.http.postForm(location.href, this.referListObject)
-                    location.href = location.href
+                    this.defaultDeptId = e[0].secid
+                    this.getTableData()
                 },
                 showName(e) {
                     const result = e.match(/^[\s\S]+(?=\()/g)

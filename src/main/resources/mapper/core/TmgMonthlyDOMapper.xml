@@ -200,6 +200,70 @@
         FROM
             DUAL
     </select>
+    <select id="buildSQLSelectSection" resultType="java.util.Map">
+        SELECT
+            COUNT(1) AS CNT
+            <foreach collection="dispItemsDtoList" item="dispItems" index="index" open="," separator="," close="" >
+                ${dispItems.mgdCtotalsql}
+            </foreach>
+        FROM
+            (${empsql}) e,
+            TMG_MONTHLY m
+        WHERE
+            m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM   =TRUNC( TO_DATE(#{baseDate}),'MM')
+        AND m.TMO_CCOMPANYID  = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+        ORDER BY
+            e.SEQ
+    </select>
+    <select id="buildSQLSelectLinkOfPreMonth" resultType="java.lang.String">
+        SELECT
+            TO_CHAR(MAX(TMO_DYYYYMM),'YYYY/MM/DD')
+        FROM
+            ( ${empsql}) e,
+            TMG_MONTHLY m
+        WHERE
+            m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM    <![CDATA[<]]> TRUNC( TO_DATE(#{baseDate}),'MM')
+        AND m.TMO_CCOMPANYID  = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+    </select>
+    <select id="buildSQLSelectLinkOfNextMonth" resultType="java.lang.String">
+        SELECT
+            TO_CHAR(MIN(m.TMO_DYYYYMM),'YYYY/MM/DD')
+        FROM
+            ( ${empsql}) e,
+            TMG_MONTHLY m
+        WHERE
+        m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM   > TRUNC( TO_DATE(#{baseDate}),'MM')
+        AND m.TMO_CCOMPANYID  = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+        AND m.TMO_DYYYYMM    <![CDATA[<]]> TRUNC(SYSDATE, 'MM') <!-- システム日付より未来は表示対象外とする-->
+    </select>
+    <select id="buildSQLSelectEmployyes" resultType="java.util.Map">
+        SELECT
+            o.*
+        FROM (
+                SELECT
+                    ROW_NUMBER() OVER (ORDER BY e.SEQ) AS SEQ,
+                    e.EMPNAME AS EMPNAME
+                    <foreach collection="dispItemsDtoList" item="item" index="index" open="," separator="," close="">
+                        ${item.mgdCsql}
+                    </foreach>
+                FROM
+                    (${empsql}) e,
+                    TMG_MONTHLY m
+                WHERE
+                    m.TMO_CEMPLOYEEID = e.EMPID
+                AND m.TMO_DYYYYMM   = TRUNC( TO_DATE(#{baseDate}),'MM')
+                AND m.TMO_CCOMPANYID  = e.COMP
+                AND m.TMO_CCUSTOMERID = e.CUST
+            ) o
+        WHERE
+            o.SEQ between #{startSeq} and  #{endSeq}
+    </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE
             TMG_MONTHLY M

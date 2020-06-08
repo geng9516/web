@@ -59,7 +59,6 @@ public class TmgGroupList {
     private PsDBBean psDBBean = null;
     private String beanDesc = null;
     private List dataArray = null;
-    private List dataArray1 = null;
     private String[] keyArray = null;
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
@@ -359,7 +358,7 @@ public class TmgGroupList {
     }
 
     public void setDataArray(List dataArray) {
-        this.dataArray1 = dataArray;
+        this.dataArray = dataArray;
     }
 
     public String[] getKeyArray() {

@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
+                        {{  fromYYYYMM ? `出勤簿（${fromYYYYMM}～ ${toYYYYMM}）` : '出勤簿' }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -23,12 +23,34 @@
             </div>
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
-                <i-select v-model="query.month" class="mr30" @on-change="handleStartMonth($event)">
+                <i-select v-model="query.month" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)">
                     <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
                     </i-option>
                 </i-select>
-                <span class="label">所属</span>
-                <span class="input-like-span width15">{{ sectionName }}</span>
+                <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                        style="width: calc(100% - 120px);border-radius:0">
+                        {{ showName(deptName) }}
+                    </i-button>
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                        v-model="deptDrawShow">
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
+                            empty-text="所属データなし"></Tree>
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Spin size="large" fix v-if="emplistLoading"></Spin>
+                        </div>
+                    </Drawer>
+                </span>
                 <span class="label">氏名</span>
                 <span class="input-like-span width15">{{ kanjiName }}</span>
             </div>
@@ -37,7 +59,7 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <i-col span="11">
-                        <i-button type="text" @click="preYear" :disabled="!showPre">
+                        <i-button type="text" @click="preYear" :disabled="!showPre || !selectDisabled">
                             <Icon type="ios-arrow-back"></Icon>
                             前年
                         </i-button>
@@ -64,149 +86,79 @@
                     <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
             </Row>
-            <div class="titlenorm mb10 mt10" style="font-size:15px">
-                <Icon type="logo-buffer"></Icon>
-                合計
-            </div>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
-                :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
-                <template slot-scope="{ row }" slot="intDay">
-                    <div style="position: relative;">
-                        <span :class="row._index === 0 ? '' : 'mr15 sum-title-divi'">{{ row.intDay.split('日')[0].trim() }}</span>
-                        <div style="position: absolute;top: -13px;left: 72px;" v-if="row._index !== 0">日</div>
-                        <div class="divi-hour-line-small" style="position: absolute;top: 15px;left: 72px;" v-if="row._index !== 0">時</div>
-                    </div>
-                </template>
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
+                :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
 
                 <template slot-scope="{ row }" slot="one">
                     <span :class="dayRed(row.one)" v-if="!row.needTurnLine">{{ row.one | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="two" style>
                     <span :class="dayRed(row.two)" v-if="!row.needTurnLine">{{ row.two | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="three">
                     <span :class="dayRed(row.three)" v-if="!row.needTurnLine">{{ row.three | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="four">
                     <span :class="dayRed(row.four)" v-if="!row.needTurnLine">{{ row.four | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="five">
                     <span :class="dayRed(row.five)" v-if="!row.needTurnLine">{{ row.five | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="six">
                     <span :class="dayRed(row.six)" v-if="!row.needTurnLine">{{ row.six | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
                     <span :class="dayRed(row.seven)" v-if="!row.needTurnLine">{{ row.seven | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eight">
                     <span :class="dayRed(row.eight)" v-if="!row.needTurnLine">{{ row.eight | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="nine">
                     <span :class="dayRed(row.nine)" v-if="!row.needTurnLine">{{ row.nine | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="ten">
                     <span :class="dayRed(row.ten)" v-if="!row.needTurnLine">{{ row.ten | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eleven">
                     <span :class="dayRed(row.eleven)" v-if="!row.needTurnLine">{{ row.eleven | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
+                    <span v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="twelve">
                     <span :class="dayRed(row.twelve)" v-if="!row.needTurnLine">{{ row.twelve | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-            </i-table>
-
-            <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData.length > 0">
-                <Icon type="logo-buffer"></Icon>
-                カレンダー
-            </div>
-            <i-table :show-header="false" no-data-text=" " border :columns="columns"
-                :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
-                <template slot-scope="{ row }" slot="intDay">
-                    <span>{{ row.intDay }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)">{{ row.one | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)">{{ row.two | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)">{{ row.three | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)">{{ row.four | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)">{{ row.five | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)">{{ row.six | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)">{{ row.seven | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)">{{ row.eight | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)">{{ row.nine | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)">{{ row.ten | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)">{{ row.eleven | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)">{{ row.twelve | turnLine }}</span>
+                    <span v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</span>
+                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
                 </template>
             </i-table>
         </div>
@@ -236,14 +188,15 @@
                     },
                     isShow: false,
                     showPre: true,
+                    selectDisabled: false,
                     index: 0,
                     comment: '',
                     contentScrollTop: 0,
-                    kanjiName: [[${ session.psSession.loginKanjiName }]],
-                    loginEmployee: [[${ session.psSession.loginEmployee }]],
-                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
+                    kanjiName: '',
+                    loginEmployee: '',
+                    sectionName: '',
                     query: {
-                        employeeId: [[${ session.psSession.loginEmployee }]],
+                        employeeId: '',
                         year: '',
                         month: 0
                     },
@@ -255,12 +208,29 @@
                     isScroll: false,
                     toYYYYMM: '',
                     titleStartMonth: '',
-                    tableDataSum:[]
+                    data: [],
+                    loading: false,
+                    emplistLoading: false,
+                    referListObject: {
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                        [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                        [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite')
+                    },
+                    deptDrawShow: false,
+                    treeData: [],
+                    empTreeData: [],
+                    defaultDeptId: '',
+                    deptName: '選んでください'
                 }
             },
             async mounted() {
+
                 console.log([[${ session }]])
-                this.getData(true)
+                // this.getData(true)
+                this.getOrgTree()
+
             },
             computed: {
                 tableHeadFixed() {
@@ -271,79 +241,79 @@
                     return [
                         {
                             title: ' ',
-                            slot: 'intDay',
+                            key: 'intDay',
                             width: 100,
-                            align: 'center'
+                            align: 'right'
                         },
                         {
-                            title: this.tableHead[0] || '',
+                            title: this.tableHead[0] || ' ',
                             minWidth: 70,
                             slot: 'one',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[1] || '',
+                            title: this.tableHead[1] || ' ',
                             minWidth: 70,
                             slot: 'two',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[2] || '',
+                            title: this.tableHead[2] || ' ',
                             slot: 'three',
                             minWidth: 70,
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[3] || '',
+                            title: this.tableHead[3] || ' ',
                             minWidth: 70,
                             slot: 'four',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[4] || '',
+                            title: this.tableHead[4] || ' ',
                             minWidth: 70,
                             key: 'minusTime',
                             slot: 'five',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[5] || '',
+                            title: this.tableHead[5] || ' ',
                             minWidth: 70,
                             slot: 'six',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[6] || '',
+                            title: this.tableHead[6] || ' ',
                             minWidth: 70,
                             slot: 'seven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[7] || '',
+                            title: this.tableHead[7] || ' ',
                             minWidth: 70,
                             slot: 'eight',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[8] || '',
+                            title: this.tableHead[8] || ' ',
                             minWidth: 70,
                             slot: 'nine',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[9] || '',
+                            title: this.tableHead[9] || ' ',
                             minWidth: 70,
                             slot: 'ten',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[10] || '',
+                            title: this.tableHead[10] || ' ',
                             minWidth: 70,
                             slot: 'eleven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[11] || '',
+                            title: this.tableHead[11] || ' ',
                             minWidth: 70,
                             slot: 'twelve',
                             align: 'center'
@@ -353,7 +323,7 @@
             },
             methods: {
                 async getData(isInit) {
-                    if(isInit) await this.getdefaultDate()
+                    if (isInit) await this.getdefaultDate()
                     else await this.getqueryDate()
                     await this.getqueryHolidayInfo()
                     await this.getTableData()
@@ -397,8 +367,7 @@
                         const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                         // 第一条是表头, 且需要去除空值intDay
                         // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
-                        // 拆成两份表格
-                        this.tableDataSum = data.slice(1,7).map((e, i)=>{
+                        this.tableData = data.slice(1).map((e, i)=>{
                             return {
                                 ...e,
                                 intDay: turnLine(e.intDay),
@@ -406,13 +375,37 @@
                                 cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 || i === 0 ? {intDay: 'sub-title'} : {}
                             }
                         })
-                        this.tableData = data.slice(7)
                         console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
+                        this.getDeptName(this.treeData)
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
+                    }
+                },
+                async getOrgTree() {
+                    try {
+                        const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
+                        // 先将数据转为标准格式，再转为可用数据
+                        this.treeData = Utils.convertTreeData(Utils.convertToData(data))
+
+                        this.getDeptName(this.treeData)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async getEmpList() {
+                    try {
+                        this.emplistLoading = true
+                        const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
+                        this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.emplistLoading = false
                     }
                 },
                 handleStartMonth: Debounce(async function (e) {
@@ -438,14 +431,15 @@
                     }
                     return 'rest-cell'
                 },
+
                 handleScroll: Throttle(function(e) {
                     this.contentScrollTop = e.target.scrollTop
                     if (e.target.scrollTop > 200) {
                         this.isScroll = true
                     } else {
                         this.isScroll = false
-                        }
-                    }, 50),
+                    }
+                }, 50),
                 toTop() {
                     const animateMachine = requestAnimationFrame(this.toTop)
                     this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
@@ -462,6 +456,65 @@
                     this.showPre = true
                     this.query.year = +this.query.year + 1
                     this.getData()
+                },
+                convertTreeData(treeData = []) {
+                    return treeData.map(e => {
+                        const children = e.child || e.children
+                        if (children) {
+                            return {
+                                ...e.data,
+                                title: e.data.label,
+                                // 前两层级默认展开方便查看
+                                expand: e.data.level < 2 || !e.data.level,
+                                children: this.convertTreeData(children)
+                            }
+                        } else {
+                            return {
+                                ...e.data,
+                                title: e.data.label
+                            }
+                        }
+                    })
+                },
+                showDay() {
+                    //todo: 跳到详情页
+                    location.href = "./VacationTablePanel/vacationtablepanel.html";
+                },
+                handleSelector() { },
+                getDeptName(data) {
+                    // 根据id遍历找出deptName
+                    data.forEach(e => {
+                        if (e.secid === this.defaultDeptId) {
+                            this.deptName = e.label
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptName(children)
+                            }
+                        }
+                    })
+                },
+                async handleClickLeaf(e) {
+                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    this.referListObject[section] = e[0].secid
+                    this.defaultDeptId = e[0].secid
+                    // this.getTableData()
+                    this.getEmpList()
+                },
+                // todo: 点完员工树干什么
+                handleClickEmpLeaf(e) {
+                    this.deptDrawShow = false
+
+                    this.loginEmployee = e[0].empid
+                    this.sectionName = e[0].secnic
+                    this.query.employeeId = e[0].empid
+                    this.kanjiName = e[0].empname
+                    this.selectDisabled = true,
+                    this.getData(true)
+                },
+                showName(e) {
+                    const result = e.match(/^[\s\S]+(?=\()/g)
+                    return (result && result[0]) || e
                 }
             }
         })

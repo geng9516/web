@@ -442,4 +442,25 @@
             DUAL
 
     </select>
+    <select id="buildSQLForSelectCSVOutputImage" resultType="java.util.Map">
+
+        SELECT
+        <foreach collection="headerList" item="header" index="index" open="" close="" separator=",">
+            ${header.tempColumnid}
+        </foreach>
+        FROM
+            HIST_DESIGNATION HD,
+            (${empsql}) e,
+            TMG_MONTHLY m
+        WHERE
+            m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM    = TRUNC( TO_DATE(#{targetDate}),'MM')
+        AND m.TMO_CCOMPANYID  = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+        AND HD.HD_CCUSTOMERID_CK(+) = m.TMO_CCUSTOMERID
+        AND HD.HD_CCOMPANYID_CK(+) = m.TMO_CCOMPANYID
+        AND HD.HD_CEMPLOYEEID_CK(+) = m.TMO_CEMPLOYEEID
+        AND HD.HD_DSTARTDATE_CK(+) <![CDATA[<=]]> m.TMO_DYYYYMM
+        AND HD.HD_DENDDATE(+) >= m.TMO_DYYYYMM
+    </select>
 </mapper>

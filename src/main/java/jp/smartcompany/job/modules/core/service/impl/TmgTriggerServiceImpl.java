@@ -130,4 +130,23 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
         return baseMapper.buildSQLForInsertTmgTrigger(map);
     }
 
+    /**
+     *[勤怠]トリガーの挿入
+     * @param loginUserCode 登録者
+     * @param pWorkDate　基準日（今日）
+     * @param empsql　組織内すべて職員取得sqｌ
+     * @param baseDate　基準日（対象日）
+     * @return 件数
+     */
+    @Override
+    public int buildSQLInsertTrigger(String loginUserCode,  String pWorkDate,String empsql, String baseDate){
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("loginUserCode", loginUserCode);
+        map.put("pWorkDate", pWorkDate);
+        map.put("empsql", empsql);
+        map.put("baseDate", baseDate);
+
+        return baseMapper.buildSQLInsertTrigger(map);
+    }
+
 }

@@ -7,9 +7,11 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -81,4 +83,15 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
          * @return List < HistDesignationEntity >
          */
         List <HistDesignationDO> selectByEmpId(String psCustomerId, String psCompanyId, String psUserId, String psDate);
+
+
+        /**
+         * CSV出力用データを取得
+         *
+         * @param targetDate   対象日
+         * @param headerList 　検索項目
+         * @param empsql     　対象者取得sql
+         * @return List<Map>
+         */
+        List<Map> buildSQLForSelectCSVOutputImage(String targetDate, List<ItemVO> headerList, String empsql);
 }

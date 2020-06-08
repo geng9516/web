@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.tmgresults;
 
 import cn.hutool.core.util.StrUtil;
+import com.sun.xml.internal.bind.v2.TODO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
@@ -353,6 +354,9 @@ public class TmgResultsBean {
      * 月別一覧画面を表示するメソッド
      */
     private void showMonthly(ModelMap modelMap) {
+
+//        TODO
+        setMonth("2019/10/01");
 
         // 月次情報表示項目を取得しセット
         List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems();
@@ -1431,38 +1435,45 @@ public class TmgResultsBean {
 
         Map title = new HashMap();
         title.put(CommonUI.TITLE, "日");
-        title.put(CommonUI.KEY, "TDA_DYYYYMMDD_DD");
+        title.put(CommonUI.SLOT, "TDA_DYYYYMMDD_DD");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.WIDTH, CommonUI.WIDTH_25);
+
         titles.add(title);
 
         title = new HashMap();
         title.put(CommonUI.TITLE, "曜日");
-        title.put(CommonUI.KEY, "TDA_DYYYYMMDD_DY");
+        title.put(CommonUI.SLOT, "TDA_DYYYYMMDD_DY");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.WIDTH, CommonUI.WIDTH_25);
         titles.add(title);
 
         title = new HashMap();
         title.put(CommonUI.TITLE, "承認");
-        title.put(CommonUI.KEY, "TDA_CSTATUSFLG");
+        title.put(CommonUI.SLOT, "TDA_CSTATUSFLG_NAME");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.WIDTH, CommonUI.WIDTH_25);
         titles.add(title);
 
         title = new HashMap();
         title.put(CommonUI.TITLE, "届");
-        title.put(CommonUI.KEY, "TDA_CNTFSTATUSFLG");
+        title.put(CommonUI.SLOT, "TDA_CNTFSTATUSFLG_NAME");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.WIDTH, CommonUI.WIDTH_25);
         titles.add(title);
 
         title = new HashMap();
         title.put(CommonUI.TITLE, "区分");
-        title.put(CommonUI.KEY, "TDA_CWORKINGID_R");
+        title.put(CommonUI.SLOT, "TDA_CWORKINGID_R_NAME");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_36);
         titles.add(title);
 
         for (ItemVO mgdDispDailyItemsVO : mgdDispDailyItemsVOList) {
             title = new HashMap();
             title.put(CommonUI.TITLE, mgdDispDailyItemsVO.getMgdCheader());
             title.put(CommonUI.KEY, mgdDispDailyItemsVO.getMgdCcolumnid());
+            title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_36);
             //     title.put(CommonUI.WIDTH, mgdDispDailyItemsVO.getMgdNwidth());
             title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
             titles.add(title);
@@ -1471,6 +1482,7 @@ public class TmgResultsBean {
         title.put(CommonUI.TITLE, "備考");
         title.put(CommonUI.KEY, "TDA_CCOMMENT_P");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
+        title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_70);
         titles.add(title);
 
         return titles;

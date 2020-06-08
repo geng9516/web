@@ -5,6 +5,7 @@ package jp.smartcompany.job.modules.core.service.impl;
         import jp.smartcompany.job.modules.core.mapper.TmgMonthlyMapper;
         import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
         import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+        import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
         import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
         import org.springframework.stereotype.Repository;
 import cn.hutool.core.map.MapUtil;
@@ -255,6 +256,67 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
         return baseMapper.checkMonthly(map);
     }
 
+    /**
+     * 共通：画面に表示する職員一覧のデータを取得する
+     *
+     * @param dispItemsDtoList 検索項目
+     * @param empsql       　職員取得SQL
+     * @param baseDate     　基準日
+     * @return Map
+     */
+    @Override
+    public Map buildSQLSelectSection(List<DispItemsDto> dispItemsDtoList, String empsql, String baseDate){
 
+        Map<String, Object> map = MapUtil.newHashMap(3);
+        map.put("dispItemsDtoList", dispItemsDtoList);
+        map.put("empsql", empsql);
+        map.put("baseDate", baseDate);
+        return baseMapper.buildSQLSelectSection(map);
+    }
+
+    /**
+     * 前月リンク取得用
+     *
+     * @param empsql   職員取得ｓｑｌ
+     * @param baseDate 　基準日
+     * @return 最小月
+     */
+    @Override
+    public String buildSQLSelectLinkOfPreMonth(String empsql, String baseDate) {
+        return baseMapper.buildSQLSelectLinkOfPreMonth(empsql, baseDate);
+    }
+
+    /**
+     * 翌月リンク取得用
+     *
+     * @param empsql   　職員取得ｓｑｌ
+     * @param baseDate 　基準日
+     * @return 最大月
+     */
+    @Override
+    public String buildSQLSelectLinkOfNextMonth(String empsql, String baseDate) {
+        return baseMapper.buildSQLSelectLinkOfNextMonth(empsql, baseDate);
+    }
+
+    /**
+     * [勤怠]社員別のデータを取得
+     *
+     * @param dispItemsDtoList
+     * @param empsql           職員取得ｓｑｌ
+     * @param baseDate         基準日
+     * @param startSeq         開始レコード
+     * @param endSeq           　終了レコード
+     * @return List<Map>
+     */
+    @Override
+    public List<Map> buildSQLSelectEmployyes(List<DispItemsDto> dispItemsDtoList, String empsql, String baseDate, int startSeq, int endSeq){
+        Map<String, Object> map = MapUtil.newHashMap(5);
+        map.put("dispItemsDtoList", dispItemsDtoList);
+        map.put("empsql", empsql);
+        map.put("baseDate", baseDate);
+        map.put("startSeq", startSeq);
+        map.put("endSeq", endSeq);
+        return baseMapper.buildSQLSelectEmployyes(map);
+    }
 
 }

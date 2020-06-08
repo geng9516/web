@@ -87,139 +87,33 @@
                 就業実績
             </div>
             <div class="month-sum tl">
-                <div class="son">
-                    <span class="label-monthSum">勤務日数</span>
-                    <span class="num">{{ 17 }}</span>
+
+                <div class="son" v-for="(item, i) of monthlyTilteMapList" :key="i">
+                    <span class="label-monthSum">{{item.title | turnLine}}</span>
+                    <span class="num">{{monthlyMap[item.key]}}</span>
                 </div>
-                <div class="son">
-                    <span class="label-monthSum">勤務時間</span>
-                    <span class="num">{{ 180 }}</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">欠勤</span>
-                    <span class="num urgent">1</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">欠勤時数</span>
-                    <span class="num urgent">02:00</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">減額時間</span>
-                    <span class="num urgent"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超25</span>
-                    <span class="num">20:00</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超50 通常</span>
-                    <span class="num">10:00</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超50 45h超</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超75</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超100</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超125</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超135</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超150 通常</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超150 45h超</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超160 通常</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">超175</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">休日超135</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">休日超150</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">休日超175</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">夜25</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">年休</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">時間休</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">年休残日数</span>
-                    <span class="num">20.0</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">年休残時数</span>
-                    <span class="num">30.0</span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">病休取得日数</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">病休取得時数</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">特休取得日数</span>
-                    <span class="num"></span>
-                </div>
-                <div class="son">
-                    <span class="label-monthSum">特休取得時数</span>
-                    <span class="num"></span>
-                </div>
+
             </div>
             <i-table class="long-table" @on-row-click="showDay(arguments)" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="data" :loading="loading">
-                <template slot-scope="{ row }" slot="intDay">
-                    <span :class="dayRed(row)">{{ row.intDay }}</span>
+                <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
+                    <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DD }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="dayOfWeek">
-                    <span :class="dayRed(row)">{{ row.dayOfWeek }}</span>
+                <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DY">
+                    <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DY }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="wordkDivision">
-                    <span :class="dayRed(row)">{{ row.wordkDivision }}</span>
+                <template slot-scope="{ row }" slot="TDA_CWORKINGID_R_NAME">
+                    <span :class="dayRed(row)">{{ row.TDA_CWORKINGID_R_NAME }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="workApplyStatus">
-                    <span v-if="row.workApplyStatus === 1" class="confirm-sytle ing">待</span>
-                    <span v-if="row.workApplyStatus === 2" class="confirm-sytle">済</span>
-                    <span v-if="row.workApplyStatus === 3" class="confirm-sytle undo">エ</span>
+                <template slot-scope="{ row }" slot="TDA_CSTATUSFLG_NAME">
+                    <span v-if="row.TDA_CSTATUSFLG_NAME === '待'" class="confirm-sytle ing">待</span>
+                    <span v-if="row.TDA_CSTATUSFLG_NAME === '済'" class="confirm-sytle">済</span>
+                    <span v-if="row.TDA_CSTATUSFLG_NAME === 'エ'" class="confirm-sytle undo">エ</span>
                 </template>
-                <template slot-scope="{ row }" slot="restApplyStatus">
-                    <span v-if="row.restApplyStatus === 1" class="confirm-sytle ing">待</span>
-                    <span v-if="row.restApplyStatus === 2" class="confirm-sytle">済</span>
-                    <span v-if="row.restApplyStatus === 3" class="confirm-sytle undo">エ</span>
+                <template slot-scope="{ row }" slot="TDA_CNTFSTATUSFLG_NAME">
+                    <span v-if="row.TDA_CNTFSTATUSFLG_NAME === '待'" class="confirm-sytle ing">待</span>
+                    <span v-if="row.TDA_CNTFSTATUSFLG_NAME === '済'" class="confirm-sytle">済</span>
+                    <span v-if="row.TDA_CNTFSTATUSFLG_NAME === 'エ'" class="confirm-sytle undo">エ</span>
                 </template>
             </i-table>
             <!-- 就业承认需要的点开每行出来的Drawer
@@ -243,484 +137,15 @@
                     curDate: new Date(),
                     isConfirm: false,
                     loading: false,
-                    columns: [
-                        {
-                            title: '日付',
-                            slot: 'intDay',
-                            width: 25,
-                            align: 'center'
-                        },
-                        {
-                            title: '曜日',
-                            slot: 'dayOfWeek',
-                            width: 25,
-                            align: 'center'
-                        },
-                        {
-                            title: '承認',
-                            slot: 'workApplyStatus',
-                            width: 25,
-                            align: 'center'
-                        },
-                        {
-                            title: '届',
-                            slot: 'restApplyStatus',
-                            width: 25,
-                            align: 'center'
-                        },
-                        {
-                            title: '区分',
-                            minWidth: 36,
-                            slot: 'wordkDivision',
-                            align: 'center'
-                        },
-                        {
-                            title: '勤務予定',
-                            align: 'center',
-                            children: [
-                                {
-                                    title: '始業',
-                                    align: 'center',
-                                    minWidth: 36,
-                                    key: 'workStartFinal'
-                                },
-                                {
-                                    title: '終業',
-                                    minWidth: 36,
-                                    key: 'workEndFinal',
-                                    align: 'center'
-                                }
-                            ]
-                        },
-                        {
-                            title: '打刻時刻',
-                            align: 'center',
-                            className: 'checkin',
-                            children: [
-                                {
-                                    title: '始業',
-                                    minWidth: 36,
-                                    className: 'checkin',
-                                    key: 'workStartReal',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '終業',
-                                    minWidth: 36,
-                                    className: 'checkin',
-                                    key: 'workEndReal',
-                                    align: 'center'
-                                }
-                            ]
-                        },
-                        {
-                            title: '就業',
-                            align: 'center',
-                            children: [
-                                {
-                                    title: '始業',
-                                    minWidth: 36,
-                                    key: 'workStartReal',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '終業',
-                                    minWidth: 36,
-                                    key: 'workEndReal',
-                                    align: 'center'
-                                }
-                            ]
-                        },
-                        {
-                            title: '勤務\n日数',
-                            minWidth: 36,
-                            key: 'workDays',
-                            align: 'center'
-                        },
-                        {
-                            title: '勤務\n時間',
-                            minWidth: 36,
-                            key: 'vacationDivision',
-                            align: 'center'
-                        },
-                        {
-                            title: '超25',
-                            minWidth: 36,
-                            key: 'workTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超50',
-                            minWidth: 36,
-                            children: [
-                                {
-                                    title: '通常',
-                                    minWidth: 36,
-                                    key: 'overTime',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '45h超',
-                                    minWidth: 36,
-                                    key: 'overTime',
-                                    align: 'center'
-                                }
-                            ],
-                            key: 'overTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超75',
-                            minWidth: 36,
-                            key: 'nightTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超100',
-                            minWidth: 36,
-                            key: 'nightTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超125',
-                            minWidth: 36,
-                            key: 'nightTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超135',
-                            minWidth: 36,
-                            key: 'nightTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超150',
-                            minWidth: 36,
-                            children: [
-                                {
-                                    title: '通常',
-                                    minWidth: 36,
-                                    key: 'overTime',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '45h超',
-                                    minWidth: 36,
-                                    key: 'overTime',
-                                    align: 'center'
-                                }
-                            ],
-                            key: 'overTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '超160',
-                            minWidth: 36,
-                            key: 'overWork160',
-                            align: 'center'
-                        },
-                        {
-                            title: '超175',
-                            minWidth: 36,
-                            key: 'nightTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '休日',
-                            minWidth: 36,
-                            children: [
-                                {
-                                    title: '超135',
-                                    minWidth: 36,
-                                    className: 'urgent',
-                                    key: 'nightTime',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '超150',
-                                    className: 'urgent',
-                                    minWidth: 36,
-                                    key: 'nightTime',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '超160',
-                                    className: 'urgent',
-                                    minWidth: 36,
-                                    key: 'nightTime',
-                                    align: 'center'
-                                },
-                                {
-                                    title: '超175',
-                                    className: 'urgent',
-                                    minWidth: 36,
-                                    key: 'nightTime',
-                                    align: 'center'
-                                }
-                            ],
-                            className: 'urgent',
-                            key: 'lateTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '夜25',
-                            minWidth: 36,
-                            key: 'correctReason',
-                            align: 'center'
-                        },
-                        {
-                            title: '減額\n時間',
-                            minWidth: 36,
-                            key: 'minusTime',
-                            align: 'center'
-                        },
-                        {
-                            title: '備考',
-                            minWidth: 70,
-                            key: 'remark',
-                            tooltip: true,
-                            align: 'center'
+                    columns:  [[${ dailyTittleMapList }]].map(e=> {
+                        return {
+                            ...e,
+                            title: e.title.replace(TURN_LINE_STR, '\n')
                         }
-                    ],
-                    data: [
-                        { intDay: 1, dayOfWeek: '日', wordkDivision: '休', dayDivisionCode: 3, workApplyStatus: 2, restApplyStatus: 2 },
-                        {
-                            intDay: 2,
-                            dayOfWeek: '月',
-                            wordkDivision: '出勤',
-                            workApplyStatus: 2,
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 3,
-                            dayOfWeek: '火',
-                            workApplyStatus: 1,
-                            wordkDivision: '出勤',
-                            restApplyStatus: 1,
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:15',
-                            workEndReal: '19:17',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 4,
-                            dayOfWeek: '水',
-                            workApplyStatus: 2,
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:17',
-                            workEndReal: '19:30',
-                            vacationDivision: '09:00'
-                        },
-                        {
-                            intDay: 5,
-                            dayOfWeek: '木',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workApplyStatus: 2,
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 6,
-                            dayOfWeek: '金',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workApplyStatus: 2,
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        { intDay: 7, dayOfWeek: '土', wordkDivision: '休', dayDivisionCode: 3 },
-                        { intDay: 8, dayOfWeek: '日', wordkDivision: '休', dayDivisionCode: 3 },
-                        {
-                            intDay: 9,
-                            dayOfWeek: '月',
-                            wordkDivision: '出勤',
-                            restApplyStatus: 3,
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 10,
-                            dayOfWeek: '火',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            restApplyStatus: 1,
-                            workStartReal: '09:15',
-                            workEndReal: '19:17',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 11,
-                            dayOfWeek: '水',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            restApplyStatus: 2,
-                            workEndFinal: '18:30',
-                            workStartReal: '09:17',
-                            workEndReal: '19:30',
-                            vacationDivision: '09:00'
-                        },
-                        {
-                            intDay: 12,
-                            dayOfWeek: '木',
-                            wordkDivision: '出勤',
-                            workApplyStatus: 1,
-                            overWork160: '02:30',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '23:15',
-                            vacationDivision: '12:45'
-                        },
-                        {
-                            intDay: 13,
-                            dayOfWeek: '金',
-                            wordkDivision: '出勤',
-                            workApplyStatus: 3,
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        { intDay: 14, dayOfWeek: '土', wordkDivision: '休', dayDivisionCode: 3 },
-                        { intDay: 15, dayOfWeek: '日', wordkDivision: '休', dayDivisionCode: 3 },
-                        {
-                            intDay: 16,
-                            dayOfWeek: '月',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workApplyStatus: 2,
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 17,
-                            dayOfWeek: '火',
-                            wordkDivision: '振替',
-                            remark: '振替は03/21',
-                            workApplyStatus: 2,
-                            restApplyStatus: 2,
-                            minusTime: '08:00'
-                        },
-                        {
-                            intDay: 18,
-                            dayOfWeek: '水',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workApplyStatus: 2,
-                            workEndFinal: '18:30',
-                            workStartReal: '09:17',
-                            workEndReal: '19:30',
-                            vacationDivision: '09:00'
-                        },
-                        {
-                            intDay: 19,
-                            dayOfWeek: '木',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workApplyStatus: 1,
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 20,
-                            dayOfWeek: '金',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 21,
-                            dayOfWeek: '土',
-                            wordkDivision: '休出',
-                            dayDivisionCode: 3,
-                            workApplyStatus: 2,
-                            workStartReal: '10:30',
-                            workEndReal: '16:30',
-                            vacationDivision: '06:00'
-                        },
-                        { intDay: 22, dayOfWeek: '日', wordkDivision: '休', dayDivisionCode: 3 },
-                        {
-                            intDay: 23,
-                            dayOfWeek: '月',
-                            wordkDivision: '出勤',
-                            workApplyStatus: 2,
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:25',
-                            workEndReal: '19:15',
-                            vacationDivision: '08:45'
-                        },
-                        {
-                            intDay: 24,
-                            today: true,
-                            dayOfWeek: '火',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30',
-                            workStartReal: '09:15'
-                        },
-                        {
-                            intDay: 25,
-                            dayOfWeek: '水',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30'
-                        },
-                        {
-                            intDay: 26,
-                            dayOfWeek: '木',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30'
-                        },
-                        {
-                            intDay: 27,
-                            dayOfWeek: '金',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30'
-                        },
-                        { intDay: 28, dayOfWeek: '土', wordkDivision: '休', dayDivisionCode: 3 },
-                        { intDay: 29, dayOfWeek: '日', wordkDivision: '休', dayDivisionCode: 3 },
-                        {
-                            intDay: 30,
-                            dayOfWeek: '月',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30'
-                        },
-                        {
-                            intDay: 31,
-                            dayOfWeek: '火',
-                            wordkDivision: '出勤',
-                            workStartFinal: '09:30',
-                            workEndFinal: '18:30'
-                        }
-                    ],
+                    }),
+                    data: [[${ dailyMapList }]],
+                    monthlyTilteMapList:[[${monthlyTilteMapList }]],
+                    monthlyMap:[[${monthlyMap }]],
                     monthSum: {},
                     dailyShow: true,
                     rawData: [],
@@ -730,11 +155,14 @@
                     },
                     isShow: false,
                     index: 0,
+                    isConfirm: false,
                     comment: ''
 
                 }
             },
             created() {
+                console.log(this.monthlyTilteMapList)
+                console.log(this.monthlyMap)
             },
             computed: {
             },
@@ -762,7 +190,7 @@
                     return 'select-col sat'
                 },
                 dayRed(e) {
-                    const dayOfWeek = e.dayOfWeek
+                    const dayOfWeek = e.TDA_DYYYYMMDD_DY
                     if (!dayOfWeek) {
                         return
                     }

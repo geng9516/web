@@ -86,6 +86,30 @@ const Utils = {
     return JSON.parse(data.replace(/([a-z]+)(?=:)/gi, '\"$1\"').replace(/'/g, '\"'))
   },
   /**
+   * 通用转化所属选择器data
+   * @param treeData 标准树形数据
+   *
+   */
+  convertTreeData(treeData = []) {
+    return treeData.map(e => {
+        const children = e.child || e.children
+        if (children) {
+            return {
+                ...e.data,
+                title: e.data.label,
+                // 前两层级默认展开方便查看
+                expand: e.data.level < 2 || !e.data.level,
+                children: this.convertTreeData(children)
+            }
+        } else {
+            return {
+                ...e.data,
+                title: e.data.label
+            }
+        }
+    })
+  },
+  /**
    * プラス・マイナス月份
    * @param {date} date
    * @returns {Function}
@@ -116,7 +140,20 @@ const Utils = {
     return Array(end - start + 1)
       .fill(0)
       .map((v, i) => i + start)
-  }
+  },
+  /**
+   * 获取指定URL参数
+   * @param {sUrl, sKey} string
+   * @returns {value}
+   */
+  getUrlParam(sUrl, sKey) {
+    let result, Oparam = {};
+    sUrl.replace(/[\?&]?(\w+)=(\w+)/g, function ($0, $1, $2) {
+        Oparam[$1] === void 0 ? Oparam[$1] = $2 : Oparam[$1] = [].concat(Oparam[$1], $2);
+    });
+    sKey === void 0 || sKey === '' ? result = Oparam : result = Oparam[sKey] || '';
+    return result;
+},
 }
 // 为了简便写法，不和Utils放一起了
 /**
@@ -164,3 +201,14 @@ const Throttle = (fn, t) => {
     }
   }
 }
+
+window.requestAnimFrame =
+    window.requestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.oRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||
+    function(callback) {
+        window.setTimeout(callback, 1000 / 30);
+    }
+window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;

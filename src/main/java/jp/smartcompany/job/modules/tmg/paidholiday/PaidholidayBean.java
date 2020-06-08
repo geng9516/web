@@ -1,10 +1,13 @@
 package jp.smartcompany.job.modules.tmg.paidholiday;
 
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
+
+import java.util.List;
 
 /**
  * 年次休假管理处理bean -> 对应旧就业的ps.c01.tmg.PaidHoliday.PaidHolidayBean
@@ -18,10 +21,9 @@ public class PaidholidayBean {
 
     /**
      * 一覧の検索
-     * @param modelMap
      */
-    public void actionInitHandler(ModelMap modelMap,String empSql) {
-         modelMap.addAttribute("vacationDaysList",iMastEmployeesService.listPaidHolidayInit(empSql));
+    public List<PaidHolidayInitVO> actionInitHandler(String empSql) {
+         return iMastEmployeesService.listPaidHolidayInit(empSql);
     }
 
 }

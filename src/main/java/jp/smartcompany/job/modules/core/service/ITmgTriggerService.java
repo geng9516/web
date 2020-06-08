@@ -75,4 +75,14 @@ public interface ITmgTriggerService extends IService<TmgTriggerDO> {
      */
     int buildSQLForInsertTmgTrigger(String loginUserCode, String programId, String action, String yyyymmdd, List<String> rowIdList);
 
+    /**
+     *[勤怠]トリガーの挿入
+     * @param loginUserCode 登録者
+     * @param pWorkDate　基準日（今日）
+     * @param empsql　組織内すべて職員取得sqｌ
+     * @param baseDate　基準日（対象日）
+     * @return 件数
+     */
+    int buildSQLInsertTrigger(String loginUserCode,  String pWorkDate,String empsql, String baseDate);
+
 }

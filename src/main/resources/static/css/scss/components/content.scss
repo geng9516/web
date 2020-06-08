@@ -5,9 +5,9 @@
   align-items: center
 }
 .content {
-  // 这里减去的就是sider的paddingtop撑起的header的50高度，少一是为了隐藏sider最上处的激活线
-  max-height: calc(100vh - 51px);
+  max-height: calc(100vh);
   background-color: var(--white);
+  overflow-y: auto;
   .content_head {
     padding: 12px 25px 12px 12px;
     border-bottom: solid 1px var(--border-grey);

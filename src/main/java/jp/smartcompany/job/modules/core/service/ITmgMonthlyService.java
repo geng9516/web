@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
 
 import java.util.Date;
@@ -147,4 +148,43 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
      */
     String checkMonthly(String empId, String yyyyMm, String custId, String compId);
 
+    /**
+     * 共通：画面に表示する職員一覧のデータを取得する
+     *
+     * @param dispItemsDtoList 検索項目
+     * @param empsql       　職員取得SQL
+     * @param baseDate     　基準日
+     * @return Map
+     */
+    Map buildSQLSelectSection(List<DispItemsDto> dispItemsDtoList, String empsql, String baseDate);
+
+    /**
+     * 前月リンク取得用
+     *
+     * @param empsql   職員取得ｓｑｌ
+     * @param baseDate 　基準日
+     * @return 最小月
+     */
+    String buildSQLSelectLinkOfPreMonth(String empsql, String baseDate);
+
+    /**
+     * 翌月リンク取得用
+     *
+     * @param empsql   　職員取得ｓｑｌ
+     * @param baseDate 　基準日
+     * @return 最大月
+     */
+    String buildSQLSelectLinkOfNextMonth(String empsql, String baseDate);
+
+    /**
+     * [勤怠]社員別のデータを取得
+     *
+     * @param dispItemsDtoList
+     * @param empsql           職員取得ｓｑｌ
+     * @param baseDate         基準日
+     * @param startSeq         開始レコード
+     * @param endSeq           　終了レコード
+     * @return List<Map>
+     */
+    List<Map> buildSQLSelectEmployyes(List<DispItemsDto> dispItemsDtoList, String empsql, String baseDate, int startSeq, int endSeq);
 }

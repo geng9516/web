@@ -19,12 +19,13 @@ public class JSONArrayGenerator {
      * @return Vector 「条件のカラム=条件の値[0] and 条件のカラム=条件の値[1] ... 条件のカラム=条件の値[n]」となるレコードの配列
      * @throws Exception
      */
-    public static List<String> selectDataArray(List<String> dataArray, int keyIndex, String[] keyDataArray) throws Exception{
-        List<String> newDataArray = CollUtil.newArrayList();
-        for (String s : dataArray) {
-            for (int i = 0; i < keyDataArray.length; i++) {
-                if (StrUtil.equals(s,keyDataArray[i])) {
-                    newDataArray.add(s);
+    public static List selectDataArray(List dataArray, int keyIndex, String[] keyDataArray) throws Exception{
+        List newDataArray = new ArrayList();
+        for(Iterator i = dataArray.iterator(); i.hasNext();){
+            List data = (List)i.next();
+            for(int j = 0; j < keyDataArray.length; j++){
+                if( ((String)data.get(keyIndex)).equals(keyDataArray[j]) ){
+                    newDataArray.add(data);
                     break;
                 }
             }

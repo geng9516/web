@@ -40,6 +40,8 @@ public class SqlParameter2NullInterceptor implements Interceptor {
             String originalSql = boundSql.getSql();
             originalSql=originalSql.replaceAll("(,\\s*,)",",null,");
             originalSql=originalSql.replaceAll("\\(\\)","(null)");
+            originalSql=originalSql.replaceAll("(\\(\\s*,)","(null,");
+            originalSql=originalSql.replaceAll("(,\\s*\\))",",null)");
             metaObject.setValue("delegate.boundSql.sql", originalSql);
         }
         return invocation.proceed();
