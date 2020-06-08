@@ -23,7 +23,7 @@
             </div>
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
-                <i-select v-model="query.month" class="mr30" @on-change="handleStartMonth($event)">
+                <i-select v-model="query.month" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)">
                     <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
                     </i-option>
                 </i-select>
@@ -59,7 +59,7 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <i-col span="11">
-                        <i-button type="text" @click="preYear" :disabled="!showPre">
+                        <i-button type="text" @click="preYear" :disabled="!showPre && selectDisabled">
                             <Icon type="ios-arrow-back"></Icon>
                             前年
                         </i-button>
@@ -188,14 +188,15 @@
                     },
                     isShow: false,
                     showPre: true,
+                    selectDisabled: false,
                     index: 0,
                     comment: '',
                     contentScrollTop: 0,
                     kanjiName: '',
-                    loginEmployee: [[${ session.psSession.loginEmployee }]],
-                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
+                    loginEmployee: '',
+                    sectionName: '',
                     query: {
-                        employeeId: [[${ session.psSession.loginEmployee }]],
+                        employeeId: '',
                         year: '',
                         month: 0
                     },
@@ -508,7 +509,7 @@
                     this.sectionName = e[0].secnic
                     this.query.employeeId = e[0].empid
                     this.kanjiName = e[0].empname
-
+                    this.selectDisabled = true,
                     this.getData(true)
                 },
                 showName(e) {
