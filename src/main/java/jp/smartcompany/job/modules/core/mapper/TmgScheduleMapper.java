@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -87,7 +88,7 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    TmgWeekPatternDTO selectTmgWeekPattern(HashMap<String, Object> params);
+    List<TmgWeekPatternDTO> selectTmgWeekPattern(HashMap<String, Object> params);
 
     /**
      * 基準日時点で４週間の変形労働制対象者か
@@ -213,4 +214,68 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      */
     void deleteDetailCheck(HashMap<String, Object> params);
+
+
+    /**
+     * 週勤務パターンを取得する
+     *
+     * @param params
+     * @return
+     */
+    TmgWeekPatternVO selectCsvReference(HashMap<String, Object> params);
+
+    /**
+     * 　週勤務パターンリストを取得する
+     *
+     * @param params
+     * @return
+     */
+    List<TmgWeekPatternVO> selectCsvReferenceList(HashMap<String, Object> params);
+
+
+    /**
+     * エラーメッセージを削除する
+     *
+     * @param params
+     */
+    void deleteErrMsg(HashMap<String, Object> params);
+
+    /**
+     * 　週勤務パターンチェックを削除する
+     *
+     * @param params
+     */
+    void deleteWeekPatternCheck(HashMap<String, Object> params);
+
+    /**
+     * [勤怠]週次勤務パターン（エラーチェック用）登録
+     *
+     * @param tmgWeekPatternCheckDTO
+     */
+    @SqlParser(filter = true)
+    void insertTmgWeekPatternCheck(TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO);
+
+    /**
+     * エラーメッセージに追加する
+     *
+     * @param params
+     */
+    void insertErrMsg(HashMap<String, Object> params);
+
+    /**
+     * エラーメッセージを取得する
+     *
+     * @param params
+     * @return
+     */
+    String selectErrMsg(HashMap<String, Object> params);
+
+    /**
+     * トリガーに追加する
+     *
+     * @param params
+     */
+    void insertTrigger(HashMap<String, Object> params);
+
+
 }

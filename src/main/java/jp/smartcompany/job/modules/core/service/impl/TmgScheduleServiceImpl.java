@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.TmgScheduleMapper;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -107,12 +108,13 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public TmgWeekPatternDTO selectTmgWeekPattern(String employeeId, String baseDate, String custId, String compCode) {
+    public List<TmgWeekPatternDTO> selectTmgWeekPattern(String employeeId, String baseDate, String custId, String compCode, boolean isAfter) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("baseDate", baseDate);
         params.put("compCode", compCode);
         params.put("custId", custId);
+        params.put("isAfter", isAfter);
         return baseMapper.selectTmgWeekPattern(params);
     }
 
@@ -298,6 +300,26 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
+    public void deleteErrMsg(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        baseMapper.deleteErrMsg(params);
+    }
+
+    @Override
+    public void deleteWeekPatternCheck(String custId, String compCode, String employeeId, String tmg_schedule_cmodifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("tmg_schedule_cmodifierprogramid", tmg_schedule_cmodifierprogramid);
+        baseMapper.deleteWeekPatternCheck(params);
+    }
+
+    @Override
     public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
@@ -305,5 +327,86 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("sLoginUserCode", sLoginUserCode);
         baseMapper.deleteDetailCheck(params);
     }
+
+    @Override
+    public TmgWeekPatternVO selectCsvReference(String custId, String compCode, String language, String employeeId, int twp_nid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("twp_nid", twp_nid);
+        params.put("language", language);
+        return baseMapper.selectCsvReference(params);
+    }
+
+    /**
+     * 週勤務パターンリストを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param employeeId
+     * @return
+     */
+    @Override
+    public List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("language", language);
+        return baseMapper.selectCsvReferenceList(params);
+    }
+
+
+    /**
+     * [勤怠]週次勤務パターン（エラーチェック用）登録
+     *
+     * @param tmgWeekPatternCheckDTO
+     */
+    @Override
+    public void insertTmgWeekPatternCheck(TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO) {
+        baseMapper.insertTmgWeekPatternCheck(tmgWeekPatternCheckDTO);
+    }
+
+    @Override
+    public void insertErrMsg(String custId, String compCode, String language, String employeeId, String modifieruserid, String modifierprogramid, String minDate, String maxDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("modifieruserid", modifieruserid);
+        params.put("language", language);
+        params.put("modifierprogramid", modifierprogramid);
+        params.put("minDate", minDate);
+        params.put("maxDate", maxDate);
+        baseMapper.insertErrMsg(params);
+
+    }
+
+    @Override
+    public String selectErrMsg(String custId, String compCode, String modifieruserid, String modifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("modifieruserid", modifieruserid);
+        params.put("modifierprogramid", modifierprogramid);
+        return baseMapper.selectErrMsg(params);
+    }
+
+    @Override
+    public void insertTrigger(String custId, String compCode, String employeeId, String sLoginUserCode, String modifierprogramid, String sAction) {
+
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("sLoginUserCode", sLoginUserCode);
+        params.put("modifierprogramid", modifierprogramid);
+        params.put("employeeId", employeeId);
+        params.put("sAction", sAction);
+        baseMapper.insertTrigger(params);
+
+    }
+
 
 }

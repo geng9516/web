@@ -14,9 +14,19 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TmgWeekPatternDTO {
-
+    /**
+     * ﾃﾞｰﾀ開始日
+     */
     private String twp_dstartdate;
+
+    /**
+     * ﾃﾞｰﾀ終了日
+     */
     private String twp_denddate;
+
+    /**
+     * データid
+     */
     private String twp_nid;
 
 }
