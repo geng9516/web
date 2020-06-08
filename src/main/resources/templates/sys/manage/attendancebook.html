@@ -7,7 +7,7 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
-    <main class="content workyearschedule-warp">
+    <main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
         <div class="content_head">
             <div class="header">
                 <div class="title1">
@@ -86,7 +86,7 @@
                     <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
             </Row>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" no-data-text="所属を選択して下さい。" border :columns="columns"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
 
                 <template slot-scope="{ row }" slot="one">
@@ -162,6 +162,9 @@
                 </template>
             </i-table>
         </div>
+        <span class="toTopBtn" @click="toTop" v-show="isScroll">
+            <Icon size="24" type="md-arrow-round-up" />
+        </span>
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
@@ -426,6 +429,22 @@
                         return 'rest-cell year-rest'
                     }
                     return 'rest-cell'
+                },
+
+                handleScroll: Throttle(function(e) {
+                    this.contentScrollTop = e.target.scrollTop
+                    if (e.target.scrollTop > 200) {
+                        this.isScroll = true
+                    } else {
+                        this.isScroll = false
+                    }
+                }, 50),
+                toTop() {
+                    const animateMachine = requestAnimationFrame(this.toTop)
+                    this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                    if (this.$refs.layout.scrollTop === 0) {
+                        cancelAnimationFrame(animateMachine)
+                    }
                 },
                 async　preYear() {
                     this.showPre = false
