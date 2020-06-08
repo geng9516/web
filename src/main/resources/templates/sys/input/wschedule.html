@@ -66,7 +66,7 @@
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
-                合計
+                月出勤情報統計
             </div>
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
@@ -153,7 +153,7 @@
 
             <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData.length > 0">
                 <Icon type="logo-buffer"></Icon>
-                カレンダー
+                月出勤情報明細
             </div>
             <i-table :show-header="false" no-data-text=" " border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
