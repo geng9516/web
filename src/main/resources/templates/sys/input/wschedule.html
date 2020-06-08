@@ -64,79 +64,139 @@
                     <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
             </Row>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
-                :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
+            <div class="titlenorm mb10 mt10" style="font-size:15px">
+                <Icon type="logo-buffer"></Icon>
+                合計
+            </div>
+            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
+                :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
 
                 <template slot-scope="{ row }" slot="one">
                     <span :class="dayRed(row.one)" v-if="!row.needTurnLine">{{ row.one | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="two" style>
                     <span :class="dayRed(row.two)" v-if="!row.needTurnLine">{{ row.two | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="three">
                     <span :class="dayRed(row.three)" v-if="!row.needTurnLine">{{ row.three | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="four">
                     <span :class="dayRed(row.four)" v-if="!row.needTurnLine">{{ row.four | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="five">
                     <span :class="dayRed(row.five)" v-if="!row.needTurnLine">{{ row.five | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="six">
                     <span :class="dayRed(row.six)" v-if="!row.needTurnLine">{{ row.six | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="seven">
                     <span :class="dayRed(row.seven)" v-if="!row.needTurnLine">{{ row.seven | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eight">
                     <span :class="dayRed(row.eight)" v-if="!row.needTurnLine">{{ row.eight | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="nine">
                     <span :class="dayRed(row.nine)" v-if="!row.needTurnLine">{{ row.nine | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="ten">
                     <span :class="dayRed(row.ten)" v-if="!row.needTurnLine">{{ row.ten | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="eleven">
                     <span :class="dayRed(row.eleven)" v-if="!row.needTurnLine">{{ row.eleven | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
                 </template>
 
                 <template slot-scope="{ row }" slot="twelve">
                     <span :class="dayRed(row.twelve)" v-if="!row.needTurnLine">{{ row.twelve | turnLine }}</span>
-                    <span v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</span>
-                    <div v-if="row.needTurnLine" class="divi-hour-line">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
+                </template>
+            </i-table>
+
+            <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData.length > 0">
+                <Icon type="logo-buffer"></Icon>
+                カレンダー
+            </div>
+            <i-table :show-header="false" no-data-text=" " border :columns="columns"
+                :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
+
+                <template slot-scope="{ row }" slot="one">
+                    <span :class="dayRed(row.one)">{{ row.one | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="two" style>
+                    <span :class="dayRed(row.two)">{{ row.two | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="three">
+                    <span :class="dayRed(row.three)">{{ row.three | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="four">
+                    <span :class="dayRed(row.four)">{{ row.four | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="five">
+                    <span :class="dayRed(row.five)">{{ row.five | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="six">
+                    <span :class="dayRed(row.six)">{{ row.six | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="seven">
+                    <span :class="dayRed(row.seven)">{{ row.seven | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="eight">
+                    <span :class="dayRed(row.eight)">{{ row.eight | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="nine">
+                    <span :class="dayRed(row.nine)">{{ row.nine | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="ten">
+                    <span :class="dayRed(row.ten)">{{ row.ten | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="eleven">
+                    <span :class="dayRed(row.eleven)">{{ row.eleven | turnLine }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="twelve">
+                    <span :class="dayRed(row.twelve)">{{ row.twelve | turnLine }}</span>
                 </template>
             </i-table>
         </div>
@@ -184,7 +244,8 @@
                     contentScrollTop: 0,
                     isScroll: false,
                     toYYYYMM: '',
-                    titleStartMonth: ''
+                    titleStartMonth: '',
+                    tableDataSum:[]
                 }
             },
             async mounted() {
@@ -205,74 +266,74 @@
                             align: 'right'
                         },
                         {
-                            title: this.tableHead[0],
+                            title: this.tableHead[0] || '',
                             minWidth: 70,
                             slot: 'one',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[1],
+                            title: this.tableHead[1] || '',
                             minWidth: 70,
                             slot: 'two',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[2],
+                            title: this.tableHead[2] || '',
                             slot: 'three',
                             minWidth: 70,
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[3],
+                            title: this.tableHead[3] || '',
                             minWidth: 70,
                             slot: 'four',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[4],
+                            title: this.tableHead[4] || '',
                             minWidth: 70,
                             key: 'minusTime',
                             slot: 'five',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[5],
+                            title: this.tableHead[5] || '',
                             minWidth: 70,
                             slot: 'six',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[6],
+                            title: this.tableHead[6] || '',
                             minWidth: 70,
                             slot: 'seven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[7],
+                            title: this.tableHead[7] || '',
                             minWidth: 70,
                             slot: 'eight',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[8],
+                            title: this.tableHead[8] || '',
                             minWidth: 70,
                             slot: 'nine',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[9],
+                            title: this.tableHead[9] || '',
                             minWidth: 70,
                             slot: 'ten',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[10],
+                            title: this.tableHead[10] || '',
                             minWidth: 70,
                             slot: 'eleven',
                             align: 'center'
                         },
                         {
-                            title: this.tableHead[11],
+                            title: this.tableHead[11] || '',
                             minWidth: 70,
                             slot: 'twelve',
                             align: 'center'
@@ -326,8 +387,8 @@
                         const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
                         // 第一条是表头, 且需要去除空值intDay
                         // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
-                        // needTurnLine辅助表格副标题着色，兼顾其他行换行
-                        this.tableData = data.slice(1).map((e, i)=>{
+                        // 拆成两份表格
+                        this.tableDataSum = data.slice(1,7).map((e, i)=>{
                             return {
                                 ...e,
                                 intDay: turnLine(e.intDay),
@@ -335,6 +396,7 @@
                                 cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 || i === 0 ? {intDay: 'sub-title'} : {}
                             }
                         })
+                        this.tableData = data.slice(7)
                         console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
                     } catch (error) {

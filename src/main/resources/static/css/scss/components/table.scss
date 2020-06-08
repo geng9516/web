@@ -74,6 +74,14 @@
       }
     }
   }
+  // 合计表头
+  .sum-table & {
+    td
+    {
+      padding-top: 2px;
+      padding-bottom: 2px;
+    }
+  }
   // 日间表格 激活class
   tr {
     &.select-col:hover td {
