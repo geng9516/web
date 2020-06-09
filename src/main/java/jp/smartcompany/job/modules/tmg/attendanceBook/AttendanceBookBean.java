@@ -247,8 +247,8 @@ public class AttendanceBookBean {
          * 管理サイト：　TMG_ADMIN
          *　承認サイト：　TMG_PERM
          */
-      //  String siteId = psDBBean.getSiteId();
-        String siteId = "TMG_ADMIN";
+        String siteId = psDBBean.getSiteId();
+      //  String siteId = "TMG_ADMIN";
         if (null == siteId || "".equals(siteId)) {
             logger.warn("編集権限なし");
             return false;
