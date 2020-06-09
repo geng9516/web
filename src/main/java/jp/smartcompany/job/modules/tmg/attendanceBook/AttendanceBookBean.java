@@ -435,7 +435,7 @@ public class AttendanceBookBean {
                         listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
                         break;
                     default:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12));
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12)+"日");
                 }
 
                 listHashMap.put(DEFAULT_KEY_ARRAY[i + 1], map.get(ATTENDANCEBOOK_KEY_ARRAY[j]));
