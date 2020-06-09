@@ -4,7 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.mapper.MastDatapermissionMapper;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.core.util.searchrange.SearchRangeInfo;
+import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,12 +21,12 @@ import java.util.List;
 public class MastDatapermissionServiceImpl extends ServiceImpl<MastDatapermissionMapper, MastDatapermissionDO> implements IMastDatapermissionService {
 
         @Override
-        public List<SearchRangeInfo> selectDataPermissionDefs() {
+        public List<SearchRangeInfoDTO> selectDataPermissionDefs() {
                 return baseMapper.selectDataPermissionDefs();
         }
 
         @Override
-        public List<SearchRangeInfo> selectDataSectionPost() {
+        public List<SearchRangeInfoDTO> selectDataSectionPost() {
                 return baseMapper.selectDataSectionPost();
         }
 

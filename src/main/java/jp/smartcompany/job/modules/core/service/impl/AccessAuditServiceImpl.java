@@ -8,7 +8,7 @@ import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.mapper.AccessAuditMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 /**

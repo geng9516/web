@@ -14,7 +14,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import jp.smartcompany.job.modules.tmg.util.CommonUI;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;

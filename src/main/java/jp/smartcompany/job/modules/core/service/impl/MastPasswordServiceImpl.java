@@ -5,7 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.mapper.MastPasswordMapper;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;

@@ -13,13 +13,12 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * <p>

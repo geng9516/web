@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.tmg.schedule;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;

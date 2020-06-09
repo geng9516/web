@@ -1,13 +1,11 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import jp.smartcompany.job.modules.core.mapper.TmgAttendanceBookMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;

@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.tmg.attendanceBook;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;

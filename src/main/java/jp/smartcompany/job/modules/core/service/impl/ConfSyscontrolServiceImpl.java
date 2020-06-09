@@ -5,9 +5,10 @@ import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.mapper.ConfSyscontrolMapper;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,7 +20,7 @@ import java.util.Map;
  * @since 2020-04-16
  */
 @Repository
-        public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper, ConfSyscontrolDO> implements IConfSyscontrolService {
+public class ConfSyscontrolServiceImpl extends ServiceImpl<ConfSyscontrolMapper, ConfSyscontrolDO> implements IConfSyscontrolService {
 
         /**
          * システムプロパティを取得する
@@ -59,5 +60,16 @@ import java.util.Map;
                 String  propertyValue = baseMapper.selectPropertyValueNotFound(map);
 
                 return propertyValue;
+        }
+
+        /**
+         * 读取SysControl全部的值
+         * @return
+         */
+        @Override
+        public List<ConfSyscontrolDO> getProperties() {
+             return list(SysUtil.<ConfSyscontrolDO>query()
+                     .select("CS_CCUSTOMERID","CS_CPROPERTYNAME","CS_CPROPERTYVALUE ")
+                     .orderByAsc("CS_CPROPERTYNAME","CS_CCUSTOMERID"));
         }
 }

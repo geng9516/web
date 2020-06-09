@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.quartz.pojo.dto.ScheduleJobDTO;
 import jp.smartcompany.job.modules.quartz.pojo.entity.ScheduleJobDO;
 import jp.smartcompany.job.modules.quartz.pojo.enums.JobState;
-import jp.smartcompany.job.util.PageUtil;
+import jp.smartcompany.boot.util.PageUtil;
 
 import java.util.List;
 import java.util.Map;

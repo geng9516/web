@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.quartz;
 
-import jp.smartcompany.job.enums.ResponseMessage;
+import jp.smartcompany.boot.enums.ResponseMessage;
 
 /**
  * @author Xiao Wenpeng

@@ -5,12 +5,13 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,6 +59,7 @@ public class PsDBBean {
     private final IHistDesignationService iHistDesignationService;
     public final HttpSession session;
     private final HttpServletRequest request;
+    private ScCacheUtil scCacheUtil;
 
     // 日付フォーマット
     private final String DATE_FORMAT = "yyyy/MM/dd";
@@ -570,5 +572,12 @@ public class PsDBBean {
         this.sDownloadFileName = sDownloadFileName;
     }
 
+    /**
+     * システムプロパティ情報を取得します<br>
+     * @return プロパティ値
+     */
+    public String getSystemProperty(String sSysPropertyKey) {
+        return scCacheUtil.getSystemProperty(sSysPropertyKey);
+    }
 
 }
