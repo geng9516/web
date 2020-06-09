@@ -1,4 +1,4 @@
-package jp.smartcompany.job.controller;
+package jp.smartcompany.controller;
 
 
 import cn.hutool.core.date.DateUtil;

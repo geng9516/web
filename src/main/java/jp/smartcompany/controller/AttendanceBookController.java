@@ -1,4 +1,4 @@
-package jp.smartcompany.job.controller;
+package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;

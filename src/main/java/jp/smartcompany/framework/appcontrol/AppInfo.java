@@ -12,37 +12,37 @@ import java.util.Map;
 public class AppInfo extends AbstractInfo{
 
     /** サブアプリケーション情報クラス */
-    private Map ghSubAppInfo;
+    private Map<String,SubAppInfo> ghSubAppInfo;
 
     /** 画面情報クラス */
-    private Map ghScreenInfo;
+    private Map<String,ScreenInfo> ghScreenInfo;
 
 
     /**
      * @return subAppInfo
      */
-    public Map getSubAppInfo() {
+    public Map<String,SubAppInfo> getSubAppInfo() {
         return ghSubAppInfo;
     }
 
     /**
      * @param subAppInfo
      */
-    public void setSubAppInfo(Map subAppInfo) {
+    public void setSubAppInfo(Map<String,SubAppInfo> subAppInfo) {
         this.ghSubAppInfo = subAppInfo;
     }
 
     /**
      * @return screenInfo
      */
-    public Map getScreenInfo() {
+    public Map<String,ScreenInfo> getScreenInfo() {
         return ghScreenInfo;
     }
 
     /**
      * @param screenInfo
      */
-    public void setScreenInfo(Map screenInfo) {
+    public void setScreenInfo(Map<String,ScreenInfo> screenInfo) {
         this.ghScreenInfo = screenInfo;
     }
 

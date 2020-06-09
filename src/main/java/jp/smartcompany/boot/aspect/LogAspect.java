@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -121,7 +122,7 @@ public class LogAspect {
     return result;
   }
 
-//  @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.job.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
+  @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
   public void afterThrowing(JoinPoint point, Throwable e) {
     int maxParamLen = 5000;
 //    EmpBO empBO = ShiroUtil.getLoginEmp();

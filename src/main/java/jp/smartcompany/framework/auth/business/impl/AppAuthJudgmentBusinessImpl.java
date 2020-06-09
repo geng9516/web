@@ -232,7 +232,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
             Map<String, Object> hAppForSite,
             TopPageInfo topPageInfo) {
         // App情報（トップページ配下用）
-        Map<String, Object> hAppForTop = MapUtil.newHashMap(true);
+        Map<String, AppInfo> hAppForTop = MapUtil.newHashMap(true);
         // 設定済み情報 削除用リスト
         List<String> lDelList =CollUtil.newArrayList();
         for (String s : hAppForSite.keySet()) {
@@ -318,13 +318,12 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
             Map<String, Object> hAppAuthInfo,
             Map hSubord,
             String sType) {
-        Map<String, Object> hSubordInfo; // 配下となるmap
         for (String s : hmAppAuthJudgment.keySet()) {
             for (int nCnt = 0; nCnt < hmAppAuthJudgment.size(); nCnt++) {
                 if (TYPE_SITE.equals(sType)) {
                     // サイト配下のapp情報を設定
                     SiteInfo appAuth = (SiteInfo) hmAppAuthJudgment.get(s);
-                    hSubordInfo = comparesMapKey(hSubord, s,
+                    Map<String, AppInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_SITE,
                             appAuth.getSiteID());
                     if (hSubordInfo.size() > 0) {
@@ -335,7 +334,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
 
                     // ダイアログ配下の画面情報を設定
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
-                    hSubordInfo = comparesMapKey(hSubord, s,
+                    Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_DIALOG_APP,
                             appAuth.getAppID());
                     if (hSubordInfo.size() > 0) {
@@ -346,7 +345,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
 
                     // アプリ配下のサブアプリ情報を設定
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
-                    hSubordInfo = comparesMapKey(hSubord, s,
+                    Map<String, SubAppInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             APP_FOR_SUB,
                             appAuth.getAppID());
                     if (hSubordInfo.size() > 0) {
@@ -357,7 +356,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
 
                     // アプリ配下の画面情報を設定
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
-                    hSubordInfo = comparesMapKey(hSubord, s,
+                    Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             APP_FOR_SCR,
                             appAuth.getAppID());
                     if (hSubordInfo.size() > 0) {
@@ -368,7 +367,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
 
                     // サブアプリ配下の画面情報を設定
                     SubAppInfo appAuth = (SubAppInfo) hmAppAuthJudgment.get(s);
-                    hSubordInfo = comparesMapKey(hSubord, s,
+                    Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_SUB_APP,
                             appAuth.getSubAppID());
                     if (hSubordInfo.size() > 0) {

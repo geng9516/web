@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
 
 /**
+ * PsTableCombinationType -> PsTableCombinationTypeLogic
  * @author Xiao Wenpeng
  */
 public class PsTableCombinationType {

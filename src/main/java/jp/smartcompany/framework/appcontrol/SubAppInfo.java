@@ -13,20 +13,20 @@ import java.util.Map;
 public class SubAppInfo extends AbstractInfo {
 
     /** 画面情報クラス */
-    Map ghScreenInfo;
+    Map<String,ScreenInfo> ghScreenInfo;
 
 
     /**
      * @return screenInfo
      */
-    public Map getScreenInfo() {
+    public Map<String,ScreenInfo> getScreenInfo() {
         return ghScreenInfo;
     }
 
     /**
      * @param screenInfo
      */
-    public void setScreenInfo(Map screenInfo) {
+    public void setScreenInfo(Map<String,ScreenInfo> screenInfo) {
         this.ghScreenInfo = screenInfo;
     }
 

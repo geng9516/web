@@ -1,4 +1,4 @@
-package jp.smartcompany.job.controller;
+package jp.smartcompany.controller;
 
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.job.modules.core.CoreBean;

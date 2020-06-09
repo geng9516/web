@@ -10,7 +10,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication(scanBasePackages = {
    "jp.smartcompany.boot",
    "jp.smartcompany.job",
-   "jp.smartcompany.framework"
+   "jp.smartcompany.framework",
+   "jp.smartcompany.controller"
 })
 public class NextJobApplication {
 

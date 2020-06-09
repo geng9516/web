@@ -1,4 +1,4 @@
-package jp.smartcompany.job.controller;
+package jp.smartcompany.controller;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;

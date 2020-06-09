@@ -30,7 +30,7 @@ public class SystemPropertyCache {
      * @param psKey プロパティ名
      * @return プロパティ値
      */
-    public Object getSystemProperty(String psKey) {
+    public String getSystemProperty(String psKey) {
         Object propValue = null;
         systemPropertyMap = (Map<String, SystemPropertyDTO>)lruCache.get(ScCacheUtil.SYSTEM_PROPERTY_MAP);
         SystemPropertyDTO systemPropertyDTO;
@@ -43,7 +43,7 @@ public class SystemPropertyCache {
         if (systemPropertyDTO != null) {
             propValue = systemPropertyDTO.getPropValue();
         }
-        return propValue;
+        return (String)propValue;
     }
 
     /**

@@ -14,6 +14,7 @@ public class TableCombinationTypeDTO {
 
     /** テーブルID */
     private String tableName;
+    private String columnName;
     /** IDカラム */
     private String idColumnName;
     /** 顧客コードカラム */

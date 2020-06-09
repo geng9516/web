@@ -12,20 +12,20 @@ import java.util.Map;
 public class SiteInfo extends AbstractInfo {
 
     /** アプリケーション情報クラス */
-    private Map ghAppInfo;
+    private Map<String,AppInfo> ghAppInfo;
 
 
     /**
      * @return appInfo
      */
-    public Map getAppInfo() {
+    public Map<String,AppInfo> getAppInfo() {
         return ghAppInfo;
     }
 
     /**
      * @param appInfo
      */
-    public void setAppInfo(Map appInfo) {
+    public void setAppInfo(Map<String,AppInfo> appInfo) {
         this.ghAppInfo = appInfo;
     }
 

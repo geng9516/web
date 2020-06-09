@@ -36,8 +36,8 @@ public class TableCombinationTypeCache {
     public void loadTableCombinationType() {
         LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
         IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
-        List<jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO> tableCombinationTypeDTODtoList = iMastSystemService.getTableInfo();
-        for (jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDTODtoList) {
+        List<TableCombinationTypeDTO> tableCombinationTypeDTODtoList = iMastSystemService.getTableInfo();
+        for (TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDTODtoList) {
             String sTableName = tableCombinationTypeDto.getTableName();
             String sColumnName = tableCombinationTypeDto.getColumnName();
             if (sColumnName == null) {

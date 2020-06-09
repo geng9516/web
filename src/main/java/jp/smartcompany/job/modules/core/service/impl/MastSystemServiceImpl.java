@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
-import jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO;
+import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.mapper.MastSystemMapper;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;

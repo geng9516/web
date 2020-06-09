@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
-import jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO;
+import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 

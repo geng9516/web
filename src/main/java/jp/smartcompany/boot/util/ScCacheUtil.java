@@ -102,8 +102,8 @@ public class ScCacheUtil {
     /**
      * システムプロパティ情報取得
      */
-    public Object getSystemProperty(String psKey) {
-        SystemPropertyCache systemPropertyCache = new SystemPropertyCache();
+    public String getSystemProperty(String psKey) {
+       SystemPropertyCache systemPropertyCache = new SystemPropertyCache();
        return systemPropertyCache.getSystemProperty(psKey);
     }
 

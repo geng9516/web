@@ -19,7 +19,7 @@ public class TopPageInfo extends AbstractInfo {
     /**
      * アプリケーション情報
      */
-    private Map ghAppInfo;
+    private Map<String,AppInfo> ghAppInfo;
 
     /**
      * ダイアログアプリケーション情報
@@ -44,14 +44,14 @@ public class TopPageInfo extends AbstractInfo {
     /**
      * @return appInfo
      */
-    public Map getAppInfo() {
+    public Map<String,AppInfo> getAppInfo() {
         return ghAppInfo;
     }
 
     /**
      * @param appInfo
      */
-    public void setAppInfo(Map appInfo) {
+    public void setAppInfo(Map<String,AppInfo> appInfo) {
         this.ghAppInfo = appInfo;
     }
 

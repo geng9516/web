@@ -1,4 +1,4 @@
-package jp.smartcompany.job.controller;
+package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.LogBusiness;

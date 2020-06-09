@@ -5,6 +5,7 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
@@ -58,6 +59,7 @@ public class PsDBBean {
     private final IHistDesignationService iHistDesignationService;
     public final HttpSession session;
     private final HttpServletRequest request;
+    private ScCacheUtil scCacheUtil;
 
     // 日付フォーマット
     private final String DATE_FORMAT = "yyyy/MM/dd";
@@ -548,6 +550,14 @@ public class PsDBBean {
         } else {
             this.creterialDate = (value.replace('/', '-') + " 00:00:00");
         }
+    }
+
+    /**
+     * システムプロパティ情報を取得します<br>
+     * @return プロパティ値
+     */
+    public String getSystemProperty(String sSysPropertyKey) {
+        return scCacheUtil.getSystemProperty(sSysPropertyKey);
     }
 
 }
