@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -32,8 +33,10 @@ public class AttendanceBookController {
      * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("queryDate")
-    public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year,@RequestParam("month") String month) {
-        return attendanceBookBean.selectDateInfo(employeeId, year,month);
+    public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year, @RequestParam("month") String month, ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, modelMap);
+        return attendanceBookBean.selectDateInfo(employeeId, year, month);
 
     }
 
@@ -44,7 +47,9 @@ public class AttendanceBookController {
      * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("defaultDate")
-    public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId) {
+    public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId, ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(null, null, employeeId, modelMap);
         return attendanceBookBean.selectDateInfo(employeeId);
 
     }
@@ -61,8 +66,9 @@ public class AttendanceBookController {
     @ResponseBody
     public AttendanceBookHolidayInfoVO queryHolidayInfo(@RequestParam("employeeId") String employeeId,
                                                         @RequestParam("year") String year,
-                                                        @RequestParam("month") String month) {
-
+                                                        @RequestParam("month") String month, ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, month, employeeId, modelMap);
         return attendanceBookBean.queryHolidayInfo(employeeId, year, month);
     }
 
@@ -78,8 +84,9 @@ public class AttendanceBookController {
     @ResponseBody
     public List<LinkedHashMap<String, String>> attendanceBookList(@RequestParam("employeeId") String employeeId,
                                                                   @RequestParam("year") String year,
-                                                                  @RequestParam("month") String month) {
-
+                                                                  @RequestParam("month") String month, ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, month, employeeId, modelMap);
         return attendanceBookBean.selectAttendanceBookList(employeeId, year, month);
     }
 
@@ -98,8 +105,27 @@ public class AttendanceBookController {
     public boolean updateComment(@RequestParam("employeeId") String employeeId,
                                  @RequestParam("modifieruserId") String modifieruserId,
                                  @RequestParam("year") String year,
-                                 @RequestParam("comment") String comment) {
+                                 @RequestParam("comment") String comment, ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, modelMap);
         return attendanceBookBean.updateComment(employeeId, modifieruserId, year, comment);
+    }
+
+    /**
+     * 権限処理　（コメント更新）
+     * http://localhost:6879/sys/attendanceBook/isEnableEditField?employeeId=46402406&year=2019
+     * @param employeeId targetUser
+     * @param year
+     * @return true:権限があり    false:権限がない
+     */
+    @GetMapping("isEnableEditField")
+    @ResponseBody
+    public boolean isEnableEditField(@RequestParam("employeeId") String employeeId,
+                                     @RequestParam("year") String year,
+                                     ModelMap modelMap) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, modelMap);
+        return attendanceBookBean.isEnableEditField(year);
     }
 
 
