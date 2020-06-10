@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -259,5 +260,27 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
         return baseMapper.selectDailyDetailOverHours( custId,  compId,  sectionId,  baseDate, slanguage,empListSql);
     }
 
+
+    /**
+     * [勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
+     *
+     * @param custID       顧客コード
+     * @param compCode     法人コード
+     * @param dispUserCode 対象者
+     * @param searchStart  　開始日
+     * @param searchEnd    　終了日
+     * @return 年次有給休暇
+     */
+    @Override
+    public List<PaidHolidayVO> buildSQLForSelectPaidHoliday(String custID, String compCode, String dispUserCode, String searchStart, String searchEnd) {
+        Map<String, Object> map = MapUtil.newHashMap(5);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("dispUserCode", dispUserCode);
+        map.put("searchStart", searchStart);
+        map.put("searchEnd", searchEnd);
+
+        return baseMapper.buildSQLForSelectPaidHoliday(map);
+    }
 
 }
