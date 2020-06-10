@@ -1,11 +1,9 @@
 package jp.smartcompany.job.modules.core.service;
 
-import jp.smartcompany.job.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 
-import java.util.HashMap;
 import java.util.List;
 
 /**

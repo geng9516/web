@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.quartz.util;
 
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.quartz.JobConstant;
 import jp.smartcompany.job.modules.quartz.JobError;
 import jp.smartcompany.job.modules.quartz.pojo.entity.ScheduleJobDO;

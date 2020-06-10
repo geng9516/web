@@ -2,8 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-
-import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -34,4 +33,9 @@ public interface IConfSyscontrolService extends IService<ConfSyscontrolDO> {
          */
         String selectPropertyValueNotFound(String customerId, String propertyName);
 
-        }
+        /**
+         * 读取SysControl全部的值
+         * @return
+         */
+        List<ConfSyscontrolDO> getProperties();
+}

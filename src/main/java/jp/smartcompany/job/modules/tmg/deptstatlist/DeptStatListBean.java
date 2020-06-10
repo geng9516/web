@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.deptstatlist;
 
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -8,7 +9,6 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.CommonUI;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import jp.smartcompany.job.util.SysUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

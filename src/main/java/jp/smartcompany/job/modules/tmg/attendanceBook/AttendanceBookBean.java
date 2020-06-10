@@ -3,11 +3,13 @@ package jp.smartcompany.job.modules.tmg.attendanceBook;
 import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
-import jp.smartcompany.job.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +17,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.ModelMap;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author 陳毅力
@@ -34,6 +36,7 @@ public class AttendanceBookBean {
 
     private final Logger logger = LoggerFactory.getLogger(AttendanceBookBean.class);
     private final PsDBBean psDBBean;
+    private TmgReferList _referList;
     private final ITmgAttendanceBookService iTmgAttendanceBookService;
 
     public static final String BEAN_DESC = "AttendanceBook";
@@ -71,6 +74,28 @@ public class AttendanceBookBean {
             "tmaWorkcontent21", "tmaWorkcontent22", "tmaWorkcontent23", "tmaWorkcontent24",
             "tmaWorkcontent25", "tmaWorkcontent26", "tmaWorkcontent27", "tmaWorkcontent28",
             "tmaWorkcontent29", "tmaWorkcontent30", "tmaWorkcontent31"};
+
+    /**
+     * 画面から入力された実行条件を判定し設定します。
+     *
+     * @param year
+     * @param month
+     * @param employeeId
+     * @param modelMap
+     */
+    public void setExecuteParameters(String year, String month, String employeeId, ModelMap modelMap) {
+
+        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
+            year = DateUtil.thisYear() + "";
+        }
+        if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
+            month = DateUtil.thisMonth() + "";
+        }
+        this.setReferList(modelMap);
+        if (null != employeeId && !"".equals(employeeId) && (null == psDBBean.getTargetUser() || "".equals(psDBBean.getTargetUser()))) {
+            psDBBean.setTargetUser(employeeId);
+        }
+    }
 
     /**
      * ディフォルト表示時間を取得する
@@ -123,6 +148,27 @@ public class AttendanceBookBean {
         return result;
     }
 
+    /**
+     * 汎用参照リストを生成します。
+     *
+     * @throws Exception 汎用参照リストの生成時
+     */
+    private void setReferList(ModelMap modelMap) {
+
+        try {
+            _referList = new TmgReferList(
+                    psDBBean, BEAN_DESC,
+                    (psDBBean.getCreterialDate1().substring(0, 10)).replaceAll("-", "/"),
+                    TmgReferList.TREEVIEW_TYPE_EMP, true, true,
+                    false, false, true
+            );
+            _referList.putReferList(modelMap);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
 
     /**
      * 年次休暇付与日数と付与時間
@@ -155,6 +201,11 @@ public class AttendanceBookBean {
     @Transactional(rollbackFor = GlobalException.class)
     public boolean updateComment(String employeeId, String modifieruserId, String year, String comment) {
 
+        if (!this.isEnableEditField(year)) {
+            logger.warn("権限がない");
+            return false;
+        }
+
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId) || ObjectUtil.isNull(modifieruserId) || ObjectUtil.isEmpty(modifieruserId)) {
             logger.error("社員IDまたは更新者IDは空です");
             return false;
@@ -178,6 +229,80 @@ public class AttendanceBookBean {
         iTmgAttendanceBookService.updateComment(employeeId, modifieruserId, yearLastDay, comment, compCode, custId);
         return true;
     }
+
+    /**
+     * 権限処理　（コメント更新）
+     *
+     * @param year
+     * @return
+     */
+    public boolean isEnableEditField(String year) {
+        String targetDate = "";
+        if (null != year && !"".equals(year)) {
+            targetDate = year + "/12/31";
+        }
+
+        /**
+         * 入力サイト：　TMG_INP
+         * 管理サイト：　TMG_ADMIN
+         *　承認サイト：　TMG_PERM
+         */
+        String siteId = psDBBean.getSiteId();
+      //  String siteId = "TMG_ADMIN";
+        if (null == siteId || "".equals(siteId)) {
+            logger.warn("編集権限なし");
+            return false;
+        }
+        /* String targetDate = getReqParm(REQ_TARGET_YEAR);*/
+        String sysDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+
+        try {
+            if (targetDate == null || targetDate.length() == 0) {
+                targetDate = sysDate;
+            } else if (0 <= stringToDate(targetDate).compareTo(new Date())) {
+                targetDate = sysDate;
+            }
+
+            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId)
+                    && _referList.hasAuthorityAtEmployee(
+                    targetDate, _referList.getTargetEmployee()
+                    , TmgUtil.Cs_AUTHORITY_NOTIFICATION
+            )
+            ) {
+                logger.info("休暇・休出承認権限有り");
+                return true;
+
+            } else if (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
+                logger.info("勤怠管理サイト権限有り");
+                return true;
+
+            } else {
+                logger.warn("編集権限なし");
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("権限処理の際にエラーが発生しました", e);
+            return false;
+        }
+    }
+
+    /**
+     * String型の文字列をDate型に変換して返します。
+     *
+     * @param date
+     * @return Date 日付
+     */
+    private Date stringToDate(String date) {
+        Date d;
+        try {
+            d = new SimpleDateFormat("yyyy/MM/dd").parse(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return d;
+    }
+
 
     /**
      * コメント　検索
@@ -310,7 +435,7 @@ public class AttendanceBookBean {
                         listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
                         break;
                     default:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12));
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12)+"日");
                 }
 
                 listHashMap.put(DEFAULT_KEY_ARRAY[i + 1], map.get(ATTENDANCEBOOK_KEY_ARRAY[j]));
@@ -322,30 +447,30 @@ public class AttendanceBookBean {
 
         List<LinkedHashMap<String, String>> resultListMerged = new ArrayList<LinkedHashMap<String, String>>();
         // 2行と3行、4行と5行・・・11行と12行をマージする
-        for (int k = 0; k < resultListConverted.size();k++) {
+        for (int k = 0; k < resultListConverted.size(); k++) {
             switch (k) {
                 case 2:
-                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k), resultListConverted.get(k + 1)));
                     break;
                 case 3:
                     break;
                 case 4:
-                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k), resultListConverted.get(k + 1)));
                     break;
                 case 5:
                     break;
                 case 6:
-                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k), resultListConverted.get(k + 1)));
                     break;
                 case 7:
                     break;
                 case 8:
-                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k), resultListConverted.get(k + 1)));
                     break;
                 case 9:
                     break;
                 case 10:
-                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k),resultListConverted.get(k+1)));
+                    resultListMerged.add(listHashMapMerge(resultListConverted.get(k), resultListConverted.get(k + 1)));
                     break;
                 case 11:
                     break;
@@ -495,6 +620,7 @@ public class AttendanceBookBean {
 
     /**
      * 同じkeyであれば、listHashMap1.value+<br>+listHashMap2.value
+     *
      * @param listHashMap1
      * @param listHashMap2
      * @return listHashMap
@@ -502,9 +628,9 @@ public class AttendanceBookBean {
     private LinkedHashMap listHashMapMerge(LinkedHashMap listHashMap1, LinkedHashMap listHashMap2) {
         LinkedHashMap listHashMap = new LinkedHashMap();
         for (int i = 0; i < 13; i++) {
-            listHashMap.put(DEFAULT_KEY_ARRAY[i],listHashMap1.get(DEFAULT_KEY_ARRAY[i]) +"<br>"+listHashMap2.get(DEFAULT_KEY_ARRAY[i]));
+            listHashMap.put(DEFAULT_KEY_ARRAY[i], listHashMap1.get(DEFAULT_KEY_ARRAY[i]) + "<br>" + listHashMap2.get(DEFAULT_KEY_ARRAY[i]));
         }
-        return  listHashMap;
+        return listHashMap;
     }
 
 

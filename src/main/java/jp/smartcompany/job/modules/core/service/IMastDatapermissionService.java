@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.core.util.searchrange.SearchRangeInfo;
+import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
 import java.util.List;
 
 /**
@@ -15,8 +15,8 @@ import java.util.List;
  */
 public interface IMastDatapermissionService extends IService<MastDatapermissionDO> {
 
-        List<SearchRangeInfo> selectDataPermissionDefs();
+        List<SearchRangeInfoDTO> selectDataPermissionDefs();
 
-        List<SearchRangeInfo> selectDataSectionPost();
+        List<SearchRangeInfoDTO> selectDataSectionPost();
 
 }

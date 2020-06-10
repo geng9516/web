@@ -3,17 +3,15 @@ package jp.smartcompany.job.modules.core.service.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.TmgEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.ITmgEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**

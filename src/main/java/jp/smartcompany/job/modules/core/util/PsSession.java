@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.util;
 
+import jp.smartcompany.framework.appcontrol.TopPageInfo;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
-import jp.smartcompany.job.modules.core.util.appcontrol.TopPageInfo;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Accessors(chain = true)
 public class PsSession implements Serializable {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2722637536345008026L;
     // 当前登录用户账号
     private String loginAccount;
     // 法人code

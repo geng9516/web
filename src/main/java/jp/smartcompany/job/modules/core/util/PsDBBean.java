@@ -5,16 +5,19 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
-import jp.smartcompany.job.util.SysUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
@@ -28,8 +31,9 @@ import java.util.*;
 @Getter
 @Setter
 @ToString
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PsDBBean {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
@@ -56,8 +60,20 @@ public class PsDBBean {
     private final IMastOrganisationService iMastOrganisationService;
     private final IMastEmployeesService iMastEmployeesService;
     private final IHistDesignationService iHistDesignationService;
-    public final HttpSession session;
-    private final HttpServletRequest request;
+    private final ScCacheUtil scCacheUtil;
+
+    public HttpSession getSession(){
+        HttpServletRequest request = ContextUtil.getHttpRequest();
+        if (request!=null){
+            return request.getSession();
+        }
+        return null;
+    }
+
+//    {
+//        this.request = ContextUtil.getHttpRequest();
+//        this.session = request.getSession();
+//    }
 
     // 日付フォーマット
     private final String DATE_FORMAT = "yyyy/MM/dd";
@@ -73,7 +89,7 @@ public class PsDBBean {
     /** ドメインコード */
     private static final String DOMAIN_CODE = "01";
 
-    public Hashtable requestHash;
+    private Map<String,Object> requestHash;
     private String language;
 
     public void setGroupID(String param) {
@@ -244,8 +260,6 @@ public class PsDBBean {
             this.targetDept = "";
             this.targetCust = "";
         }
-
-
 //        Hashtable siteurls = (Hashtable) this.requestHash.get("SitePermission");
 //        setDomObject((Document) siteurls.get(getCustID() + "_" + getCompCode()
 //                + "_" + getSystemCode() + "_" + getGroupID()));
@@ -570,5 +584,12 @@ public class PsDBBean {
         this.sDownloadFileName = sDownloadFileName;
     }
 
+    /**
+     * システムプロパティ情報を取得します<br>
+     * @return プロパティ値
+     */
+    public String getSystemProperty(String sSysPropertyKey) {
+        return scCacheUtil.getSystemProperty(sSysPropertyKey);
+    }
 
 }

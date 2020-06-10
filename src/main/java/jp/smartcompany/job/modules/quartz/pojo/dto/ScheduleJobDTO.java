@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.quartz.pojo.dto;
 
-import jp.smartcompany.job.group.UpdateGroup;
+import jp.smartcompany.boot.group.UpdateGroup;
 import jp.smartcompany.job.modules.quartz.JobValidateMessage;
 import lombok.Getter;
 import lombok.Setter;

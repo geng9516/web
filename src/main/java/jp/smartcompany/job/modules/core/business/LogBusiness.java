@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import jp.smartcompany.job.common.Query;
+import jp.smartcompany.boot.common.Query;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.service.ErrorAuditService;
@@ -11,7 +11,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.OperationAuditDO;
-import jp.smartcompany.job.util.PageUtil;
+import jp.smartcompany.boot.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

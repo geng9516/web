@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastSystemMapper">
 
-    <select id="selectTableInfo" resultType="jp.smartcompany.job.modules.core.pojo.dto.TableCombinationTypeDTO">
+    <select id="selectTableInfo" resultType="jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO">
         SELECT	TABLE_NAME,
                   COLUMN_NAME
         FROM	USER_TAB_COLUMNS
@@ -24,7 +24,7 @@
 	   ) ORDER BY TABLE_NAME,COLUMN_ID;
     </select>
 
-	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.job.modules.core.util.searchrange.AppSearchRangeInfoEntity">
+	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO">
 		-- HIST_GROUPDATAPERMISSION 常駐変数化用
 		SELECT
 		HGP_CCUSTOMERID,

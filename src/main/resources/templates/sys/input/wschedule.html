@@ -29,7 +29,7 @@
                 </i-select>
                 <span class="label">所属</span>
                 <span class="input-like-span width15">{{ sectionName }}</span>
-                <span class="label">氏名</span>
+                <span class="ml15 label">氏名</span>
                 <span class="input-like-span width15">{{ kanjiName }}</span>
             </div>
         </div>
@@ -44,7 +44,7 @@
                         <i-button type="text" @click="nextYear" :disabled="showPre">今年</i-button>
                     </i-col>
                     <i-col span="13" class="tr">
-                        <i-button type="primary" class="mr5" ghost icon="md-add-circle">印刷</i-button>
+                        <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
                     </i-col>
                 </Row>
             </div>
@@ -60,144 +60,56 @@
                     </div>
                 </i-col>
                 <i-col span="8" class="no-border-radius">
-                    <div class="work-changed-day">摘要</div>
+                    <div class="work-changed-day">摘要
+                    <Poptip
+                        v-model="commentBtnShow"
+                        class="comment-btn tl"
+                        placement="right"
+                        title="保存してもいいですか?">
+                    <i-button type="primary" ghost size="small" icon="md-create" style="border-radius: 23px" :loading="commentBtnLoading"><span style="margin-left: -4px;">編集</span></i-button>
+                    <div class="tr" slot="content">
+                        <i-button class="mr10" type="text" size="small" @click="cancelComment">いいえ</i-button>
+                        <i-button type="primary" ghost size="small" @click="updateComment" style="border-radius: 23px">はい</i-button>
+                    </div>
+                    </Poptip>
+                    </div>
                     <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
                 </i-col>
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
-                合計
+                月出勤情報統計
             </div>
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
-
-                <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)" v-if="!row.needTurnLine">{{ row.one | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.one.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.one.split(TURN_LINE_STR)[1] }}</div>
+                <template slot-scope="{ row }" slot="intDay">
+                    <div style="position: relative;">
+                        <span :class="row._index === 0 ? '' : 'mr15 sum-title-divi'">{{ row.intDay.split('日')[0].trim() }}</span>
+                        <div style="position: absolute;top: -13px;left: 72px;" v-if="row._index !== 0">日</div>
+                        <div class="divi-hour-line-small" style="position: absolute;top: 15px;left: 72px;" v-if="row._index !== 0">時</div>
+                    </div>
                 </template>
-
-                <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)" v-if="!row.needTurnLine">{{ row.two | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.two.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)" v-if="!row.needTurnLine">{{ row.three | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.three.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)" v-if="!row.needTurnLine">{{ row.four | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.four.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)" v-if="!row.needTurnLine">{{ row.five | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.five.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)" v-if="!row.needTurnLine">{{ row.six | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.six.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)" v-if="!row.needTurnLine">{{ row.seven | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.seven.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)" v-if="!row.needTurnLine">{{ row.eight | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eight.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)" v-if="!row.needTurnLine">{{ row.nine | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.nine.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)" v-if="!row.needTurnLine">{{ row.ten | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.ten.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)" v-if="!row.needTurnLine">{{ row.eleven | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
-                </template>
-
-                <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)" v-if="!row.needTurnLine">{{ row.twelve | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
-                </template>
+                <!-- 循环slotList -->
+                <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                    <span :class="dayRed(row[item])" v-if="!row.needTurnLine">{{ row[item] | turnLine }}</span>
+                    <div class="mb-2" v-if="row.needTurnLine">{{ row[item].split(TURN_LINE_STR)[0] }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row[item].split(TURN_LINE_STR)[1] }}</div>
+                  </template>
             </i-table>
 
             <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData.length > 0">
                 <Icon type="logo-buffer"></Icon>
-                カレンダー
+                月出勤情報明細
             </div>
             <i-table :show-header="false" no-data-text=" " border :columns="columns"
                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
-
-                <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)">{{ row.one | turnLine }}</span>
+                <template slot-scope="{ row }" slot="intDay">
+                    <span>{{ row.intDay }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="two" style>
-                    <span :class="dayRed(row.two)">{{ row.two | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="three">
-                    <span :class="dayRed(row.three)">{{ row.three | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="four">
-                    <span :class="dayRed(row.four)">{{ row.four | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="five">
-                    <span :class="dayRed(row.five)">{{ row.five | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="six">
-                    <span :class="dayRed(row.six)">{{ row.six | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="seven">
-                    <span :class="dayRed(row.seven)">{{ row.seven | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="eight">
-                    <span :class="dayRed(row.eight)">{{ row.eight | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="nine">
-                    <span :class="dayRed(row.nine)">{{ row.nine | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="ten">
-                    <span :class="dayRed(row.ten)">{{ row.ten | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="eleven">
-                    <span :class="dayRed(row.eleven)">{{ row.eleven | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="twelve">
-                    <span :class="dayRed(row.twelve)">{{ row.twelve | turnLine }}</span>
-                </template>
+                <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                    <span :class="dayRed(row[item])">{{ row[item] | turnLine }}</span>
+                  </template>
             </i-table>
         </div>
         <span class="toTopBtn" @click="toTop" v-show="isScroll">
@@ -211,8 +123,10 @@
             data() {
                 return {
                     monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
+                    slotList: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
                     defaultDate: {},
                     queryDate: {},
+                    commentBtnLoading: false,
                     queryHolidayInfo: {},
                     tableHead: [],
                     loading: false,
@@ -224,6 +138,7 @@
                         obj: {},
                         date: ''
                     },
+                    commentBtnShow:false,
                     isShow: false,
                     showPre: true,
                     index: 0,
@@ -261,9 +176,9 @@
                     return [
                         {
                             title: ' ',
-                            key: 'intDay',
+                            slot: 'intDay',
                             width: 100,
-                            align: 'right'
+                            align: 'center'
                         },
                         {
                             title: this.tableHead[0] || '',
@@ -452,6 +367,19 @@
                     this.showPre = true
                     this.query.year = +this.query.year + 1
                     this.getData()
+                },
+                // 评论更新相关
+                updateComment() {
+                    // 首先将浮层关闭，然后按钮进入loading状态，请求完成后提示完了并且loading结束
+                    this.commentBtnShow = false
+                    this.commentBtnLoading = true
+                    setTimeout(()=>{
+                        this.$Message.success('更新完了')
+                        this.commentBtnLoading = false
+                    },1000)
+                },
+                cancelComment() {
+                    this.commentBtnShow = false
                 }
             }
         })
