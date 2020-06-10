@@ -116,6 +116,11 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String replacedCompCode = request.getParameter("ReplacedCompCode");
         String replacedUserCode = request.getParameter("ReplacedUserCode");
         String employeeCode = request.getParameter("EmployeeCode");
+        String creterialDate = request.getParameter("CreterialDate");
+
+        if (StrUtil.isNotBlank(creterialDate)) {
+            hashtable.put("CreterialDate",creterialDate);
+        }
 
         if (StrUtil.isNotBlank(replacedCompCode)){
             hashtable.put("ReplacedCompCode",replacedCompCode);
