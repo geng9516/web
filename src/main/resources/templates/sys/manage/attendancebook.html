@@ -88,7 +88,7 @@
                             v-model="commentBtnShow"
                             class="comment-btn tl"
                             placement="right"
-                            title="保存してもいいですか?">
+                            title="入力内容を登録します。よろしいですか？">
                             <i-button type="primary" ghost size="small" icon="md-create" style="border-radius: 23px" :loading="commentBtnLoading"><span style="margin-left: -4px;">編集</span></i-button>
                             <div class="tr" slot="content">
                             <i-button class="mr10" type="text" size="small" @click="cancelComment">いいえ</i-button>
@@ -96,7 +96,7 @@
                         </div>
                         </Poptip>
                         </div>
-                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
+                    <i-input type="textarea" :disabled="!remarksDisabled" :autosize="{ maxRows: 2 }" v-model="query.comment" />
                 </i-col>
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
@@ -166,6 +166,7 @@
                     isShow: false,
                     showPre: true,
                     selectDisabled: false,
+                    remarksDisabled: false,
                     index: 0,
                     comment: '',
                     contentScrollTop: 0,
@@ -175,7 +176,11 @@
                     query: {
                         employeeId: '',
                         year: '',
-                        month: 0
+                        month: 0,
+                        modifieruserId: [[${ session.psSession.loginEmployee }]],
+                        comment: this.tmyComment,
+                        psSite: Utils.getUrlParam(location.href, 'psSite')
+
                     },
                     endueDate: '',
                     endueDaysHours: '',
@@ -336,7 +341,7 @@
                     this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
 
                     // 摘要
-                    this.tmyComment = this.queryHolidayInfo.tmy_comment
+                    this.query.comment = this.queryHolidayInfo.tmy_comment
 
                 },
                 async getTableData() {
@@ -496,15 +501,27 @@
                     const result = e.match(/^[\s\S]+(?=\()/g)
                     return (result && result[0]) || e
                 },
-                // 评论更新相关
-                updateComment() {
+                // 摘要更新
+                async updateComment() {
                     // 首先将浮层关闭，然后按钮进入loading状态，请求完成后提示完了并且loading结束
                     this.commentBtnShow = false
                     this.commentBtnLoading = true
-                    setTimeout(()=>{
-                        this.$Message.success('更新完了')
-                        this.commentBtnLoading = false
-                    },1000)
+
+                    // 摘要編集できるようにする
+                    this.remarksDisabled = true
+
+                    const { data } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
+                    console.log([[data]])
+
+                    // setTimeout(()=>{
+                    //     this.$Message.success('更新完了')
+                    //     this.commentBtnLoading = false
+                    // },1000)
+                    if(data){
+                            this.$Message.success('更新完了')
+                            this.commentBtnLoading = false
+                            this.remarksDisabled = false
+                    }
                 },
                 cancelComment() {
                     this.commentBtnShow = false
