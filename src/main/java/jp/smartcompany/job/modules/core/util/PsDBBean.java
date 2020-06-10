@@ -18,8 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
@@ -64,10 +62,8 @@ public class PsDBBean {
     private final IHistDesignationService iHistDesignationService;
     private final ScCacheUtil scCacheUtil;
 
-    private HttpServletRequest request;
-
     public HttpSession getSession(){
-        request = ContextUtil.getHttpRequest();
+        HttpServletRequest request = ContextUtil.getHttpRequest();
         if (request!=null){
             return request.getSession();
         }
