@@ -5,7 +5,7 @@
 :root {
   --primary: rgb(45, 140, 240);
   --theme-blue: rgb(48, 118, 242);
-  --label-blue: rgb(132, 178, 239);
+  --label-blue: rgb(110, 165, 238);
   --grey: rgb(104, 109, 116);
   --border-grey: rgb(234, 235, 236);
   --light-grey: rgb(245, 247, 249);
@@ -16,7 +16,7 @@
   --light-blue: rgb(233, 243, 255);
   --light-pink: rgb(255, 241, 240);
   --brown: rgb(175, 121, 2);
-  --text-green: rgb(91, 208, 41);
+  --text-green: rgb(58, 180, 6);
   --white: rgb(255, 255, 255);
   --red: rgb(252, 13, 27);
   --green: rgb(82, 196, 26);
@@ -27,7 +27,7 @@
   /* content-head */
   --searchwrap-background: rgb(241, 244, 247);
   /*  table */
-  --table-head: rgb(132, 178, 239);
+  --table-head: rgb(110, 165, 238);
   --table-head-border: rgb(176, 210, 255);
   --table-month-label: rgb(227, 235, 243);
   --table-th-checkin: rgb(65, 123, 255);
@@ -45,7 +45,7 @@
   --sider-item-border-b: rgb(34, 96, 206);
   --sider-item-border-t: rgb(79, 143, 255);
   /* form */
-  --form-label: rgb(132, 178, 239);
+  --form-label: rgb(110, 165, 238);
   --form-notice: rgb(0, 185, 177);
   --form-required-star: rgb(48, 118, 242);
   --form-bg-blue: rgb(244, 249, 255);

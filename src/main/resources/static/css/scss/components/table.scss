@@ -1,7 +1,7 @@
 .ivu-table {
   .ivu-table-header {
     th {
-      padding: 4px 0;
+      padding: 2px 0;
     }
   }
   .ivu-table-body {
@@ -247,5 +247,13 @@
   }
   &.ing {
     color: var(--primary);
+  }
+}
+
+// 固定表格相关
+.ivu-table-fixed, .ivu-table-fixed-right {
+  background: white;
+  .ivu-table-fixed-header th {
+    padding: 2px 0;
   }
 }
