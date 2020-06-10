@@ -3108,17 +3108,17 @@ public class TmgReferList {
     /**
      * 検索タブで表示するメッセージを返却する。(对应旧代码3487-3546)
      */
-    private String msgSearchTree = null;
-    public String getMsgSearchTree(){
-      if (StrUtil.isNotBlank(msgSearchTree)){
-          return msgSearchTree;
-      }
-      List<TmgMgdMsgSearchTreeView> searchTreeViewList = buildSQLForSelectMsgSearchTree(psDBBean.getCustID(),psDBBean.getCompCode(), psDBBean.getLanguage(),DateUtil.date());
-      if (CollUtil.isNotEmpty(searchTreeViewList)) {
-        msgSearchTree = searchTreeViewList.get(0).getMsg();
-      }
-      return msgSearchTree;
-    }
+//    private String msgSearchTree = null;
+//    public String getMsgSearchTree(){
+//      if (StrUtil.isNotBlank(msgSearchTree)){
+//          return msgSearchTree;
+//      }
+//      List<TmgMgdMsgSearchTreeView> searchTreeViewList = buildSQLForSelectMsgSearchTree(psDBBean.getCustID(),psDBBean.getCompCode(), psDBBean.getLanguage(),DateUtil.date());
+//      if (CollUtil.isNotEmpty(searchTreeViewList)) {
+//        msgSearchTree = searchTreeViewList.get(0).getMsg();
+//      }
+//      return msgSearchTree;
+//    }
 
     /**
      * 名称マスタから検索タブで表示するメッセージを取得するSQLを返却する。
