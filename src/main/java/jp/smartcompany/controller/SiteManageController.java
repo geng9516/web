@@ -75,7 +75,8 @@ public class SiteManageController {
             @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         // 先同样作为管理site的树来看待
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        System.out.println(psDBBean.getRequestHash());
+        psDBBean.getRequestHash().put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         modelMap

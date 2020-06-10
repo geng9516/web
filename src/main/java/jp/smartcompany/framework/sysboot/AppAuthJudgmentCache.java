@@ -43,7 +43,6 @@ public class AppAuthJudgmentCache {
         // 権限判定が必要な画面オブジェクトの一覧を取得
         IMastApptreeService iMastApptreeService = SpringUtil.getBean("mastApptreeServiceImpl");
         List<AppAuthJudgmentEntity> lAppAuthJudgmentDtoList = iMastApptreeService.selectAppTreePermission();
-        log.info("【lAppAuthJudgmentDtoList：{}】",lAppAuthJudgmentDtoList);
         StringBuilder sb = new StringBuilder();
         Map<String, AppAuthJudgmentEntity> objectIdMapMaster = MapUtil.newHashMap();
         for (AppAuthJudgmentEntity d : lAppAuthJudgmentDtoList) {
@@ -89,10 +88,10 @@ public class AppAuthJudgmentCache {
                 sb.append(sLanguage);
                 List<AppAuthJudgmentDTO> lAppAuthJudgmentDTOList = CollUtil.newArrayList();
 
-                for (int j=0; j<lAppAuthJudgmentDtoList.size(); j++) {
+                for (AppAuthJudgmentEntity appAuthJudgmentEntity : lAppAuthJudgmentDtoList) {
                     // 画面オブジェクトのインスタンスをコピーして
                     // そこにグループの権限を設定する
-                    AppAuthJudgmentDTO c = new AppAuthJudgmentDTO(lAppAuthJudgmentDtoList.get(j));
+                    AppAuthJudgmentDTO c = new AppAuthJudgmentDTO(appAuthJudgmentEntity);
                     lAppAuthJudgmentDTOList.add(c);
                     AppAuthJudgmentEntity perm = objectIdMapBase.get(c.getMtrCobjectid());
                     if (perm != null) {

@@ -25,7 +25,7 @@ public class TreeController {
     @GetMapping("admin/orglist")
     public GlobalResponse orgTree(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        psDBBean.getRequestHash().put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         return GlobalResponse.data(referList.getJSONArrayForOrgTree());
@@ -34,7 +34,7 @@ public class TreeController {
     @GetMapping("admin/emplist")
     public GlobalResponse empTree(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        psDBBean.getRequestHash().put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         return GlobalResponse.data(referList.getJSONArrayForEmpList());

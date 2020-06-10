@@ -26,7 +26,7 @@ public class TestController {
     // TmgTreeViewForAdminEmp.jsp
     @GetMapping("rf1")
     public String setReferList1(@RequestAttribute("BeanName") PsDBBean psDBBean, ModelMap modelMap) throws Exception {
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+//        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                                  true, false, false, true);
         String orgTree = referList.getJSONArrayForOrgTree();
@@ -52,7 +52,7 @@ public class TestController {
     @GetMapping("rf2")
     @ResponseBody
     public GlobalResponse setReferList2(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+//        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         // 21 31时使用orgTree
 //        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
 //                true, false, false, true);
@@ -73,7 +73,7 @@ public class TestController {
     @GetMapping("rf3")
     @ResponseBody
     public GlobalResponse setReferList3(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+//        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_DIVLIST, true,
                 true, false, false, true);
         String memberList = referList.getJSONArrayForMemberList();
@@ -90,7 +90,7 @@ public class TestController {
     @GetMapping("rf4")
     @ResponseBody
     public GlobalResponse setReferList4(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+//        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 true, false, false, true);
         String groupList = referList.getJSONArrayForGroupList();
@@ -105,7 +105,7 @@ public class TestController {
     @GetMapping("rf5")
     @ResponseBody
     public GlobalResponse setReferList5(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
+//        psDBBean.requestHash.put("SiteId", TmgUtil.Cs_SITE_ID_TMG_PERM);
         TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         String sectionList = referList.getJSONArrayForSectionList();

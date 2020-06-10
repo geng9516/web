@@ -78,6 +78,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
                 loadMenus(request, systemCode, customerId, systemList);
             }
         }
+
         return true;
     }
 
@@ -226,8 +227,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
 
         psDBBean.setSysControl(hashtable);
-        log.info("【psSite:{}】",psDBBean.getSiteId());
-
         request.setAttribute("BeanName",psDBBean);
 
     }
@@ -307,7 +306,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     // 登录后加载角色组和基点组织
     private void executeLoginSequence(List<MastSystemDO> systemList, String language,PsSession session) {
-
         if (CollUtil.isEmpty(systemList)){
             throw new GlobalException("Master not found");
         }
@@ -315,7 +313,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         groupBusiness.getGroupList(language,systemList);
         // アプリケーション起動判定処理実施(戻り値をセッションに設定)
         session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
-        log.info("【用户登录后的loginPermission:{}】",session.getLoginAppPermission());
+
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();
     }
