@@ -85,18 +85,19 @@
                 <i-col span="8" class="no-border-radius">
                     <div class="work-changed-day">摘要
                         <Poptip
+                            v-if="remarksDisabled"
                             v-model="commentBtnShow"
                             class="comment-btn tl"
                             placement="right"
                             title="入力内容を登録します。よろしいですか？">
-                            <i-button type="primary" ghost size="small" icon="md-create" style="border-radius: 23px" :loading="commentBtnLoading"><span style="margin-left: -4px;">編集</span></i-button>
+                            <i-button type="primary" ghost size="small" icon="md-create" style="border-radius: 23px" :loading="commentBtnLoading"><span style="margin-left: -4px;">登録</span></i-button>
                             <div class="tr" slot="content">
                             <i-button class="mr10" type="text" size="small" @click="cancelComment">いいえ</i-button>
                             <i-button type="primary" ghost size="small" @click="updateComment" style="border-radius: 23px">はい</i-button>
                         </div>
                         </Poptip>
                         </div>
-                    <i-input type="textarea" :disabled="!remarksDisabled" :autosize="{ maxRows: 2 }" v-model="query.comment" />
+                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="query.comment" />
                 </i-col>
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
@@ -494,7 +495,8 @@
                     this.sectionName = e[0].secnic
                     this.query.employeeId = e[0].empid
                     this.kanjiName = e[0].empname
-                    this.selectDisabled = true,
+                    this.selectDisabled = true
+                    this.remarksDisabled = true
                     this.getData(true)
                 },
                 showName(e) {
@@ -507,20 +509,17 @@
                     this.commentBtnShow = false
                     this.commentBtnLoading = true
 
-                    // 摘要編集できるようにする
-                    this.remarksDisabled = true
-
-                    const { data } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
-                    console.log([[data]])
-
-                    // setTimeout(()=>{
-                    //     this.$Message.success('更新完了')
-                    //     this.commentBtnLoading = false
-                    // },1000)
-                    if(data){
-                            this.$Message.success('更新完了')
-                            this.commentBtnLoading = false
-                            this.remarksDisabled = false
+                    if(this.query.comment != null){
+                        if (this.query.comment.length > 400) {
+                            alert('摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。');
+                            return
+                        } else {
+                            const { data } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
+                            if(data){
+                                this.$Message.success('登録完了')
+                                this.commentBtnLoading = false
+                            }
+                        }
                     }
                 },
                 cancelComment() {
