@@ -203,7 +203,6 @@ public class PsDBBean {
     }
 
     public void setSysControl(Hashtable<String,Object> requestHash){
-        System.out.println("--");
         this.requestHash = requestHash;
 
         setCompCode((String)this.requestHash.get("CompCode"));
@@ -265,9 +264,6 @@ public class PsDBBean {
             this.targetDept = "";
             this.targetCust = "";
         }
-        System.out.println("结束");
-        System.out.println(this.requestHash);
-
 //        Hashtable siteurls = (Hashtable) this.requestHash.get("SitePermission");
 //        setDomObject((Document) siteurls.get(getCustID() + "_" + getCompCode()
 //                + "_" + getSystemCode() + "_" + getGroupID()));
