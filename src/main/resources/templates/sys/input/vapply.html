@@ -81,35 +81,53 @@
                     <Card title="申請状況一覧" :class="!rotate ? 'card card-two' : 'card card-two rotate-360'"
                         :loading="loading">
                         <i-button type="primary" ghost size="small" class="mr5"
-                            style="position:relative;right:445px;font-size:14px" slot="extra" @click="onRefresh">
+                            style="position:relative;right:-672px;font-size:14px" slot="extra" @click="onRefresh">
                             申請へ
                         </i-button>
-                        <radio-group :value="RadioStatusHelper" @on-change="handleRadioStatusHelper" slot="extra"
-                            class="mr5">
-                            <Radio :label="6">全て</Radio>
-                            <Radio :label="0">待ち</Radio>
-                            <Radio :label="1">済み</Radio>
-                            <Radio :label="2">拒否</Radio>
-                        </radio-group>
-                        <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small" icon="md-refresh"
-                            @click="getApplyHistory(true)" :loading="loading"></i-button>
+                        <i-select :value="RadioStatusHelper" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleRadioStatusHelper" slot="extra">
+                            <!-- <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
+                            </i-option> -->
+                            <i-option label="全て" :value="6"></i-option>
+                            <i-option label="待ち" :value="0"></i-option>
+                            <i-option label="済み" :value="1"></i-option>
+                            <i-option label="拒否" :value="2"></i-option>
+                        </i-select>
+                        <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
+                            icon="md-refresh" @click="getApplyHistory(true)" :loading="loading"></i-button>
                         <!-- PersonalApplyTable -->
                         <ul class="apply-history-list" @scroll.native.passive="handleScroll">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
                             <li :class="handleTimelineDotShow(item.status)" v-for="(item, index) of tableData" :key="index">
                                 <Row>
                                     <!-- 申请休假的时间的显示 -->
-                                    <i-col span="5" style="margin-left: 4.5%" class="title">
+                                    <i-col span="6" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.dateList) }}</i-col>
                                     <!-- 承认者-状态-承认者-状态-流的展示, 状态为取消时，不显示 -->
                                     <!-- todo: 要将这个改为 次に承認者：xxxx -->
-                                    <i-col span="17" style="margin-left: 2.5%" class="title" v-if="item.status !== 3">
-                                        <ul style="display:flex">
-                                            <li style="margin-right:10px">
-                                                <span>{{ `次の承認者：${item.nextAdmin} ` }}</span>
-                                                <span :class="handleApplyMarkShow(item.nextAdminStatus)" />
-                                            </li>
-                                        </ul>
+                                    <i-col span="15" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
+                                        <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
+                                            <ul style="display:flex">
+                                                <li style="margin-right:10px" v-if="item.nextAdminList.length <= 3">
+                                                    <!-- 3个人以下摊开显示 -->
+                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg">
+                                                    </Avatar>
+                                                </li>
+                                                <li style="margin-right:10px" v-else>
+                                                    <!-- 超过3个人，缩进,并且隐藏了多少人  -->
+                                                    <Avatar src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar class="more-user">{{`+${item.nextAdminList.length - 3}`}}</Avatar>
+                                                </li>
+                                            </ul>
+                                            <div class="tr" slot="content">
+                                                <div class="mb5" v-for="(e,i) of item.nextAdminList" :key="i">
+                                                    <Avatar class="mr15" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <span>{{ e.name }}</span>
+                                                </div>
+                                            </div>
+                                        </Poptip>
+                                        <span :class="handleApplyMarkShow(item.status)" />
                                     </i-col>
                                 </Row>
                                 <Row>
@@ -295,17 +313,15 @@
                             updateTime: '2020/03/02 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            nextAdmin:'田中さん',
-                            nextAdminStatus: 1
+                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1}],
                         },
                         {
                             status: 2,
                             remark: '申請承認拒否',
                             updateTime: '2020/03/01 09:56:03',
                             restTypeName: 'test',
-                            dateList: ['2020/03/02','2020/03/05'],
-                            nextAdmin:'鈴木さん',
-                            nextAdminStatus: 2
+                            dateList: ['2020/03/02', '2020/03/05'],
+                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:2}],
                         },
                         {
                             status: 3,
@@ -313,8 +329,7 @@
                             updateTime: '2020/02/28 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            nextAdmin:'',
-                            nextAdminStatus: 0,
+                            nextAdminList:[],
                         }
                     ],
                     opts: {
@@ -350,7 +365,7 @@
             computed: {
                 flatRestTypeList() {
                     let result = []
-                    if(this.restTypeList.length > 0) {
+                    if (this.restTypeList.length > 0) {
                         this.restTypeList.forEach(e => (result = result.concat(e.children)))
                     }
                     return result
@@ -442,7 +457,7 @@
                             updateTime: Utils.formatDate(Date.now()),
                             restTypeName: that.selectedRestInfo.label || '申請区分選択待ち',
                             dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
-                            nextAdmin:'田中さん',
+                            nextAdmin: '田中さん',
                             nextAdminStatus: 0
                         })
                     }, 1000)
