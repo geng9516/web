@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.schedule;
 
+import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
@@ -19,7 +20,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.ModelMap;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -38,8 +38,11 @@ import java.util.*;
 public class TmgScheduleBean {
 
     private final Logger logger = LoggerFactory.getLogger(TmgScheduleBean.class);
-    private final PsDBBean psDBBean;
+
     private final ITmgScheduleService iTmgScheduleService;
+
+    private PsDBBean psDBBean;
+
     /**
      * 汎用参照オブジェクト
      */
@@ -86,9 +89,9 @@ public class TmgScheduleBean {
     public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
     /**
-     * システム年月日の前月の月初(1日)
+     * 日付形式2
      */
-    private String _preFirstDayOfSysDate = null;
+    public static final String Cs_FORMAT_DATE_TYPE2 = "yy-MM-dd";
 
     /**
      * 今月
@@ -98,8 +101,11 @@ public class TmgScheduleBean {
     /**
      * システム年月日(今月)
      */
-    private String _thisMonth = "";
-
+    private String _thisMonthFirstDay = "";
+    /**
+     * 現在日付の月末日
+     */
+    private String _thisMonthLastDay = "";
 
     /**
      * 1ヶ月前
@@ -125,12 +131,12 @@ public class TmgScheduleBean {
     /**
      * 基準日(開始日)
      */
-    protected String _baseDate = null;
+    private String _baseDate = null;
 
     /**
      * 終了日
      */
-    protected String _endDate = null;
+    private String _endDate = null;
 
 
     /**
@@ -233,6 +239,31 @@ public class TmgScheduleBean {
     public final boolean bClearResult = false;
 
     /**
+     * 4週間後
+     */
+    private final int PARAM_4WEEK_AFTER = 27;
+
+    /**
+     * 前月開始時間
+     */
+    private String preStart = "";
+
+    /**
+     * 　前月終了時間
+     */
+    private String preEnd = "";
+
+    /**
+     * 　翌月開始時間
+     */
+    private String nextStart = "";
+
+    /**
+     * 　翌月終了時間
+     */
+    private String nextEnd = "";
+
+    /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
      *
      * @param baseDate
@@ -254,11 +285,9 @@ public class TmgScheduleBean {
      * 対象ユーザー情報
      *
      * @param employeeId
-     * @param year
-     * @param month
      * @return
      */
-    public TargetUserDetailDTO selectTargetUserDetail(String employeeId, String year, String month) {
+    public TargetUserDetailDTO selectTargetUserDetail(String employeeId) {
 
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
@@ -272,27 +301,57 @@ public class TmgScheduleBean {
     /**
      * 画面から入力された実行条件を判定し設定します。
      *
-     * @param year
-     * @param month
+     * @param txtBaseDate 2020/03/15
+     * @param txtEndDate  2020/04/11
      * @param employeeId
-     * @param modelMap
      */
-    public void setExecuteParameters(String year, String month, String employeeId, ModelMap modelMap) {
-        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
-            year = DateUtil.thisYear() + "";
-        }
-        if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
-            month = DateUtil.thisMonth() + "";
-        }
-        // 現在日付の1ヶ月前の初日
-        _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
-        // 現在日付の月初日を取得
-        _thisMonth = this.getFirstDayOfMonth(getSysdate(), PARAM_THIS_MONTH);
-        // 2020/04/01
-        _baseDate = year + "/" + month + "/" + "01";
-        this.setReferList(_baseDate, modelMap);
-        this.setBasicUserInfo();
+    public void setExecuteParameters(String txtBaseDate, String txtEndDate, String employeeId, PsDBBean psDBBean) {
+        this.psDBBean = psDBBean;
+        //変数初期化
+        _baseDate = "";
+        _endDateOf4Weeks = "";
+        preStart = "";
+        preEnd = "";
+        nextStart = "";
+        nextEnd = "";
+        _thisMonthFirstDay = "";
+        _thisMonthLastDay = "";
+        _isVariationalWorkType = false;
+        detailPeriod = "";
+
         _targetUserCode = employeeId;
+
+        //WEBから基準時間を渡せれば
+        if (null != txtBaseDate && !"".equals(txtBaseDate)) {
+            _baseDate = txtBaseDate;
+        }
+        if (null != txtEndDate && !"".equals(txtEndDate)) {
+            _endDateOf4Weeks = txtEndDate;
+        } else {
+            _endDateOf4Weeks = "";
+        }
+        this.setExecuteParameters();
+    }
+
+
+    /**
+     * 画面から入力された実行条件を判定し設定します。
+     */
+    public void setExecuteParameters() {
+
+        // 現在日付の1ヶ月前の初日
+        // _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
+        // 現在日付の月初日を取得
+        _thisMonthFirstDay = this.getFirstDayOfMonth(getSysdate(), PARAM_THIS_MONTH);
+        // 現在日付の月末日を取得
+        _thisMonthLastDay = DateUtil.format(DateUtil.endOfMonth(CalendarUtil.calendar()).getTime(), "yyyy/MM/dd");
+        // システム年月日の翌月１日時点
+        if (_baseDate == null || _baseDate.length() == 0) {
+            _baseDate = getNextFirstDayOfSysDate();
+        }
+        this.setReferList(_baseDate);
+        this.setBasicUserInfo();
+
 
         // 社員が選択されている場合は基本労働制か変形労働制か判定する処理を実行する。
         if (isSelectedTargetUser()) {
@@ -301,7 +360,27 @@ public class TmgScheduleBean {
         // 4週間単位の変形労働制職員か？
         if (_isVariationalWorkType) {
             // 起算日を取得します
-            detailPeriod = iTmgScheduleService.selectDetailPeriod(employeeId, _targetCompCode, _targetCustCode);
+            detailPeriod = iTmgScheduleService.selectDetailPeriod(_targetUserCode, _targetCompCode, _targetCustCode);
+            if (null != detailPeriod && !"".equals(detailPeriod)) {
+                detailPeriod = DateUtil.format(DateUtil.parse(detailPeriod, Cs_FORMAT_DATE_TYPE2), Cs_FORMAT_DATE_TYPE1);
+            }
+            //検索対象年月日の開始日reset
+            //変形労働制社員の初めて検索すれば、有効開始時間を取得
+            if (_baseDate.equals(getNextFirstDayOfSysDate())) {
+                _baseDate = iTmgScheduleService.selectBaseDateFor4Week(_targetCustCode, _targetCompCode, _targetUserCode, _thisMonthFirstDay, _thisMonthLastDay, PARAM_4WEEK_AFTER);
+            }
+
+        } else {
+            // 新たなインタフェース対応
+            preStart = this.selectLinkOfNextMonth(_baseDate, _targetUserCode);
+            if (null != preStart && !"".equals(preStart)) {
+                preEnd = DateUtil.format(DateUtil.endOfMonth(DateUtil.parse(preStart, "yyyy/MM/dd")), "yyyy/MM/dd");
+            }
+            HashMap<String, Object> nextResult = this.selectLinkOfPreMonth(_baseDate, _targetUserCode);
+            if (null != nextResult) {
+                nextStart = nextResult.get("PREMONTH").toString();
+                nextEnd = nextResult.get("PREMONTHLASTDAY").toString();
+            }
         }
 
         // ユーザー基本情報も再設定する。
@@ -310,13 +389,34 @@ public class TmgScheduleBean {
             _baseDate = this.getFirstDayOfMonth(_baseDate, PARAM_THIS_MONTH);
             //setTmgReferListOfBeforeProcess();
             setBasicUserInfo();
-        } else if (isSelectedTargetUser() && _isVariationalWorkType
-                && _endDateOf4Weeks.equals("")) {
+        } else if (isSelectedTargetUser() && _isVariationalWorkType && _endDateOf4Weeks.equals("")) {
             initBaseDateOf4Weeks();
         }
         // 4週間単位の変形労働職員の場合、表示基準日が4週間区切りの日付かどうかを設定する。
         if (_isVariationalWorkType) {
             setDispVariationalWork();
+
+            //baseDate初期化すると、4週間単位の変形労働職員の場合 前月と翌月の開始時間と終了時間を取得する
+            HashMap<String, Object> preMonthResult = iTmgScheduleService.selectBaseDateOf4WeeksBeforeDay(_baseDate, detailPeriod, _targetCustCode, _targetCompCode, _targetUserCode);
+            if (null != preMonthResult) {
+                // 検索結果が存在するなら、基準日の値を更新する
+                if (null != preMonthResult.get("PRE_START")) {
+                    preStart = preMonthResult.get("PRE_START").toString();
+                }
+                if (null != preMonthResult.get("PRE_END")) {
+                    preEnd = preMonthResult.get("PRE_END").toString();
+                }
+            }
+            HashMap<String, Object> nextMonthResult = iTmgScheduleService.SelectBaseDateOf4WeeksAfterDay(_baseDate, detailPeriod, _targetCustCode, _targetCompCode, _targetUserCode);
+            if (null != nextMonthResult) {
+                // 検索結果が存在するなら、基準日の値を更新する
+                if (null != nextMonthResult.get("NEXT_START")) {
+                    nextStart = nextMonthResult.get("NEXT_START").toString();
+                }
+                if (null != nextMonthResult.get("NEXT_END")) {
+                    nextEnd = nextMonthResult.get("NEXT_END").toString();
+                }
+            }
         }
 
         //終了日を取得する
@@ -325,15 +425,31 @@ public class TmgScheduleBean {
         // 表示開始?終了日セット
         setDispDate();
 
-
     }
 
+    /**
+     * システム年月日の翌月１日時点を取得します。
+     * <p>
+     * システム年月日の1ヶ月後1日を参照します。<br>
+     * [例] "2007/03/23" --> "2007/04/01"
+     * </p>
+     *
+     * @return システム年月日の翌月１日時点
+     */
+    private String getNextFirstDayOfSysDate() {
+        SimpleDateFormat sdf = new SimpleDateFormat(FORMAT_DATE_TYPE1);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, 1);
+        calendar.set(Calendar.DATE, 1);
+        Date date = calendar.getTime();
+        return sdf.format(date);
+    }
 
     /**
      * 基準日が表示基準日が4週間区切りの日付と一致しているかを設定します。
      */
     private void setDispVariationalWork() {
-        String tmp = iTmgScheduleService.selectIsStart4weeks("TO_DATE(" + _baseDate + ", 'yyyy/MM/dd')", detailPeriod);
+        String tmp = iTmgScheduleService.selectIsStart4weeks(_baseDate, detailPeriod);
         if (null != tmp && !"".equals(tmp)) {
             if (Integer.parseInt(tmp) > 0) {
                 _isDispVariationalWorkType = true;
@@ -349,9 +465,31 @@ public class TmgScheduleBean {
      * @author shishido since 2007/12/18
      */
     private void initBaseDateOf4Weeks() {
-
+        HashMap<String, Object> results1 = iTmgScheduleService.SelectBaseDateOf4WeeksAfterDay(_baseDate, detailPeriod, _targetCustCode, _targetCompCode, _targetUserCode);
+        if (null == results1) {
+            HashMap<String, Object> results2 = iTmgScheduleService.selectBaseDateOf4WeeksBeforeDay(_baseDate, detailPeriod, _targetCustCode, _targetCompCode, _targetUserCode);
+            if (null == results2) {
+                // 検索結果が無い場合は何もしない(基準日の丸め処理を行わない)
+                // 2007/12/27 J.Okamoto #309 検索結果がなかった場合、終了日には基準日の月末を設定します。
+                _endDateOf4Weeks = getActualMaximumOfTypeStringOfDate(_baseDate);
+            } else {
+                // 検索結果が存在するなら、基準日の値を更新する
+                if (null != results2.get("PRE_START")) {
+                    _baseDate = results2.get("PRE_START").toString();
+                }
+                if (null != results2.get("PRE_END")) {
+                    _endDateOf4Weeks = results2.get("PRE_END").toString();
+                }
+            }
+        } else {
+            // 基準日以降で、且つ組織ツリーの基準日が運用日の場合または組織ツリーの基準日が最も近い4週間区切りの日付の開始日の場合、取得できていれば何もしない
+            // 　①組織ツリーの基準日が運用日の場合：表示対象が運用日の次の期間を表示する為。
+            // 　②組織ツリーの基準日が最も近い4週間区切りの日付の開始日の場合：①だけだと、組織ツリーの基準日が最も近い4週間区切りの日付の開始日の場合に前期間を表示してしまうので。
+            if (null != results1.get("NEXT_END")) {
+                _endDateOf4Weeks = results1.get("NEXT_END").toString();
+            }
+        }
     }
-
 
     /**
      * 引数で指定された値分だけ基準日の月を移動します。
@@ -395,6 +533,12 @@ public class TmgScheduleBean {
 
             //login user
             _loginUserCode = psDBBean.getUserCode();
+            //target user
+            if (null == _targetUserCode || "".equals(_targetUserCode)) {
+                if (null != psDBBean.getTargetUser() && !"".equals(psDBBean.getTargetUser())) {
+                    _targetUserCode = psDBBean.getTargetUser();
+                }
+            }
 
             // 顧客コード
             if (null != psDBBean.getTargetCust() && !"".equals(psDBBean.getTargetCust())) {
@@ -440,7 +584,7 @@ public class TmgScheduleBean {
      *
      * @return 選択されているtrue, 選択されていないfalse
      */
-    public boolean isSelectedTargetUser() {
+    private boolean isSelectedTargetUser() {
 
         if (_targetUserCode != null && _targetUserCode.length() > 0) {
             return true;
@@ -453,49 +597,16 @@ public class TmgScheduleBean {
     /**
      * 汎用リンクコンポーネントを生成します。
      */
-    protected void setReferList(String pBaseDate, ModelMap modelMap) {
+    protected void setReferList(String pBaseDate) {
         try {
             referList = new TmgReferList(psDBBean, "TmgSchedule", pBaseDate,
                     TmgReferList.TREEVIEW_TYPE_EMP, true, true, false, false,
                     true);
-            referList.putReferList(modelMap);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /* *//**
-     * 汎用参照リンクオブジェクトを生成します。 _preMonthDate = システム年月日から1ヶ月前の月初のデータ_baseDate = 基準日
-     * この条件でなくてはならない。_preMonthDate <= _baseDate
-     * _baseDateが_preMonthDateより未来の場合は正の数値が返却される。
-     *//*
-    private void setTmgReferListOfBeforeProcess() {
-        if (toDateFormat(_baseDate).after(toDateFormat(_preFirstDayOfSysDate))) {
-            setReferList(_preFirstDayOfSysDate);
-        } else {
-            setReferList(_baseDate);
-        }
-    }
-*/
-    /*
-     */
-/**
- * 日付形式「yyyy/mm/dd」のString型文字列をDate型にキャストします。
- *
- * @param strDate
- * @return
- *//*
-
-    public Date toDateFormat(String strDate) {
-        Date date = null;
-        try {
-            date = new SimpleDateFormat(FORMAT_DATE_TYPE1).parse(strDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-*/
 
     /**
      * 対象社員の勤務形態に対応する終了日を返します。
@@ -584,12 +695,12 @@ public class TmgScheduleBean {
             // 前月シート存在確認
             HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
             if (null != results1) {
-                _startDispDate = results1.get("premonth").toString();
+                _startDispDate = results1.get("PREMONTH").toString();
             }
             // 翌月シート存在確認
             HashMap<String, Object> results2 = this.selectLinkOfNextMonthNextSaturday(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
             if (null != results2) {
-                _endDispDate = results2.get("premonth_lastday").toString();
+                _endDispDate = results2.get("PREMONTH_LASTDAY").toString();
             }
         }
 
@@ -644,28 +755,51 @@ public class TmgScheduleBean {
      * @return
      */
     public List<ScheduleDataDTO> selectSchedule(String year, String month, String employeeId) {
-        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         return scheduleDataDTOS;
     }
+
 
     /**
      * 公休日数	基準日数	基準時間	年次休暇残 info
      *
-     * @param year
-     * @param month
+     * @param startDispDate
+     * @param endDispDate
      * @param employeeId
      * @return
      */
-    public ScheduleInfoVO selectPaidHolidayInfo(String year, String month, String employeeId) {
+    public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate, String employeeId) {
+
+        if (null != startDispDate && !"".equals(startDispDate)) {
+            _startDispDate = startDispDate;
+        }
+        if (null != endDispDate && !"".equals(endDispDate)) {
+            _endDispDate = endDispDate;
+        }
+
+        ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
         PaidHolidayVO paidHolidayVO = new PaidHolidayVO();
-        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
-        NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _baseDate, _targetCompCode, _targetCustCode);
+
+        //eg: 2020年3月15日～2020年4月11日
+        String period = "";
+        if (null != _startDispDate && !"".equals(_startDispDate)) {
+            period = DateUtil.format(DateUtil.parse(_startDispDate), "yyyy年MM月dd日").toString();
+            if (null != _endDispDate && !"".equals(_endDispDate)) {
+                period += "～" + DateUtil.format(DateUtil.parse(_endDispDate), "yyyy年MM月dd日").toString();
+            }
+        }
+        scheduleInfoVO.setPreEnd(preEnd);
+        scheduleInfoVO.setPreStart(preStart);
+        scheduleInfoVO.setNextStart(nextStart);
+        scheduleInfoVO.setNextEnd(nextEnd);
+        scheduleInfoVO.setPeriod(period);
+        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
         /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
         ArrayList _TCA_CHOLFlgList = new ArrayList();
         int weekday = 0;
         int holiday = 0;
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
-
             String sHolFlg = scheduleDataDTOS.get(i).getHolflgCalendar();
             _TCA_CHOLFlgList.add(sHolFlg);
             // 休日、平日を集計
@@ -685,12 +819,12 @@ public class TmgScheduleBean {
         } else {
             paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
         }
-
-        //年次休暇残
-        String npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0" : npaidRestDTO.getTmo_npaid_rest_days() + "日";
-        int hour = 0;
-        int min = 0;
+        String npaidRestDaysHour = "0日0時間0分";
         if (null != npaidRestDTO) {
+            //年次休暇残
+            npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0" : npaidRestDTO.getTmo_npaid_rest_days() + "日";
+            int hour = 0;
+            int min = 0;
             String hoursMins = npaidRestDTO.getTmo_npaid_rest_hours();
             if (null != hoursMins && !"".equals(hoursMins)) {
                 int hoursMins_int = Integer.parseInt(hoursMins);
@@ -713,7 +847,7 @@ public class TmgScheduleBean {
         String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
         paidHolidayVO.setDateOfRecord(dateOfRecord);
 
-        ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
+
         scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
         scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
 
@@ -727,6 +861,15 @@ public class TmgScheduleBean {
      * @param baseDateCnt 基準日の日数
      */
     private String calculateWorkingHourOfMonth(String MIOfWeekDay, String baseDateCnt) {
+
+        // データ処理
+        if ("0日".equals(baseDateCnt)) {
+            baseDateCnt = "0";
+        }
+        if ("0日".equals(MIOfWeekDay)) {
+            baseDateCnt = "0";
+        }
+
         // 平日の勤務時間(分)
         double minites = 0.0;
         // 基準日の日数
@@ -774,25 +917,30 @@ public class TmgScheduleBean {
     /**
      * 翌月リンクを取得
      *
+     * @param baseDate
      * @param employeeId
      * @return
      */
-    public HashMap<String, Object> selectLinkOfNextMonth(String employeeId) {
-        String nextMonth = iTmgScheduleService.selectLinkOfNextMonth(employeeId, _baseDate, _targetCustCode, _targetCompCode);
-        HashMap<String, Object> result = new HashMap<String, Object>();
-        result.put("nextMonth", nextMonth);
-        return result;
+    public String selectLinkOfNextMonth(String baseDate, String employeeId) {
+        if (null == baseDate || "".equals(baseDate)) {
+            baseDate = _baseDate;
+        }
+        String nextMonth = iTmgScheduleService.selectLinkOfNextMonth(employeeId, baseDate, _targetCustCode, _targetCompCode);
+        return nextMonth;
     }
 
     /**
      * 前月リンクを取得
      *
+     * @param baseDate
      * @param employeeId
      * @return
      */
-    public HashMap<String, Object> selectLinkOfPreMonth(String employeeId) {
-
-        return iTmgScheduleService.selectLinkOfPreMonth(employeeId, _baseDate, _targetCustCode, _targetCompCode);
+    public HashMap<String, Object> selectLinkOfPreMonth(String baseDate, String employeeId) {
+        if (null == baseDate || "".equals(baseDate)) {
+            baseDate = _baseDate;
+        }
+        return iTmgScheduleService.selectLinkOfPreMonth(employeeId, baseDate, _targetCustCode, _targetCompCode);
     }
 
     /**
@@ -1051,30 +1199,14 @@ public class TmgScheduleBean {
      *
      * @return
      */
-    public List<TmgWeekPatternDTO> selectTmgWeekPattern(String year, String month) {
-
-        if (null == year || "".equals(year)) {
-            year = DateUtil.thisYear() + "";
-        }
-        if (null == month || "".equals(month)) {
-            month = DateUtil.thisMonth() + "";
-        }
-        if (month.length() == 1) {
-            month += "0";
-        }
-
-        // 表示月   2020/04/01
-        String baseDay = year + "/" + month + "/01";
-        if (null == _baseDate || "".equals(_baseDate)) {
-            _baseDate = baseDay;
-        }
+    public List<TmgWeekPatternDTO> selectTmgWeekPattern() {
 
         // 本日
         String sysDate = DateUtil.now();
 
         // 現在日付の翌月(初期表示時の年月)を表示している場合のみ、
         // 適用開始日が未来のパターンが全て表示される。
-        boolean isAfter = this.compareDate(sysDate, baseDay);
+        boolean isAfter = this.compareDate(sysDate, _baseDate);
 
         List<TmgWeekPatternDTO> tmgWeekPatternDTOS = iTmgScheduleService.selectTmgWeekPattern(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode, isAfter);
         return tmgWeekPatternDTOS;
@@ -1088,15 +1220,10 @@ public class TmgScheduleBean {
      * @return dateStrA>dateStrBの場合、TRUE戻る
      */
     private boolean compareDate(String dateStrA, String dateStrB) {
-        try {
-            Date dateA = DateFormat.getDateInstance().parse(dateStrA);
-            Date dateB = DateFormat.getDateInstance().parse(dateStrB);
-            if (dateA.after(dateB)) {
+        if (null != dateStrA && !"".equals(dateStrA) && null != dateStrB && !"".equals(dateStrB)) {
+            if (DateUtil.parse(dateStrA).after(DateUtil.parse(dateStrB))) {
                 return true;
             }
-            return false;
-        } catch (ParseException e) {
-            logger.error("時間比較エラー", e);
         }
         return false;
     }

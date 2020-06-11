@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
@@ -24,25 +25,28 @@ public class ScheduleController {
     @Autowired
     private TmgScheduleBean tmgScheduleBean;
 
+
     /**
      * 公休日数	基準日数	基準時間	年次休暇残　と　　勤務予定 リスト
-     * 　http://localhost:6879/sys/schedule/selectScheduleInfo?employeeId=29042924&year=2020&month=04
+     * http://localhost:6879/sys/schedule/selectScheduleInfo?employeeId=46402406&txtBaseDate=2020/03/15&txtEndDate=2020/04/11
+     * http://localhost:6879/sys/schedule/selectScheduleInfo?employeeId=C1000015&txtBaseDate=2020/03/15&txtEndDate=2020/04/11 (変形労働制)
      *
      * @param employeeId
-     * @param year
-     * @param month
-     * @param modelMap
+     * @param txtBaseDate 2020/03/15
+     * @param txtEndDate  2020/04/11
+     * @param psDBBean
      * @return
      * @throws Exception
      */
     @GetMapping("selectScheduleInfo")
     @ResponseBody
     public ScheduleInfoVO selectScheduleInfo(@RequestParam("employeeId") String employeeId,
-                                             @RequestParam("year") String year,
-                                             @RequestParam("month") String month, ModelMap modelMap) {
+                                             @RequestParam("txtBaseDate") String txtBaseDate,
+                                             @RequestParam("txtEndDate") String txtEndDate,
+                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
-        return tmgScheduleBean.selectPaidHolidayInfo(year, month, employeeId);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
+        return tmgScheduleBean.selectPaidHolidayInfo(txtBaseDate, txtEndDate, employeeId);
 
     }
 
@@ -60,62 +64,64 @@ public class ScheduleController {
 
     /**
      * 翌月リンクを取得
-     * 　http://localhost:6879/sys/schedule/selectLinkOfNextMonth?employeeId=29042924&year=2020&month=04
+     * 　http://localhost:6879/sys/schedule/selectLinkOfNextMonth?employeeId=29042924&txtBaseDate=2020/03/15
+     * http://localhost:6879/sys/schedule/selectLinkOfNextMonth?employeeId=C1000015&txtBaseDate=2020/03/15
      *
      * @param employeeId
-     * @param year
-     * @param month
-     * @param modelMap
+     * @param txtBaseDate
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectLinkOfNextMonth")
     @ResponseBody
-    public HashMap<String, Object> selectLinkOfNextMonth(@RequestParam("employeeId") String employeeId,
-                                                         @RequestParam("year") String year,
-                                                         @RequestParam("month") String month, ModelMap modelMap) {
+    private HashMap<String, Object> selectLinkOfNextMonth(@RequestParam("employeeId") String employeeId,
+                                                          @RequestParam("txtBaseDate") String txtBaseDate,
+                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
-        return tmgScheduleBean.selectLinkOfNextMonth(employeeId);
+        tmgScheduleBean.setExecuteParameters(null, null, employeeId, psDBBean);
+        // return tmgScheduleBean.selectLinkOfNextMonth(txtBaseDate, employeeId);
+        return null;
     }
 
     /**
      * 前月リンクを取得
-     * 　http://localhost:6879/sys/schedule/selectLinkOfPreMonth?employeeId=29042924&year=2020&month=04
+     * 　http://localhost:6879/sys/schedule/selectLinkOfPreMonth?employeeId=29042924&txtBaseDate=2020/03/15
+     * http://localhost:6879/sys/schedule/selectLinkOfPreMonth?employeeId=C1000015&txtBaseDate=2020/03/15
      *
      * @param employeeId
-     * @param year
-     * @param month
-     * @param modelMap
+     * @param txtBaseDate
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectLinkOfPreMonth")
     @ResponseBody
-    public HashMap<String, Object> selectLinkOfPreMonth(@RequestParam("employeeId") String employeeId,
-                                                        @RequestParam("year") String year,
-                                                        @RequestParam("month") String month, ModelMap modelMap) {
+    private HashMap<String, Object> selectLinkOfPreMonth(@RequestParam("employeeId") String employeeId,
+                                                         @RequestParam("txtBaseDate") String txtBaseDate,
+                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
-        return tmgScheduleBean.selectLinkOfPreMonth(employeeId);
+        tmgScheduleBean.setExecuteParameters(null, null, employeeId, psDBBean);
+        return tmgScheduleBean.selectLinkOfPreMonth(txtBaseDate, employeeId);
     }
 
     /**
      * [区分][出張][勤務パターン]
-     * 　http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=29042924&year=2020&month=04
+     * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=46402406&txtBaseDate=&txtEndDate=
+     * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
      *
      * @param employeeId
-     * @param year
-     * @param month
-     * @param modelMap
+     * @param txtBaseDate
+     * @param txtEndDate
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectIkkaInfo")
     @ResponseBody
     public HashMap<String, Object> selectIkkaInfo(@RequestParam("employeeId") String employeeId,
-                                                  @RequestParam("year") String year,
-                                                  @RequestParam("month") String month,
-                                                  ModelMap modelMap) {
+                                                  @RequestParam("txtBaseDate") String txtBaseDate,
+                                                  @RequestParam("txtEndDate") String txtEndDate,
+                                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
         String sectionid = "201000201010";
         String groupid = "201000201010|000000";
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid);
@@ -123,111 +129,111 @@ public class ScheduleController {
 
     /**
      * 予定作成更新処理を行います
-     * 　http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=29042924&year=2020&month=04
      *
+     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=46402406&txtBaseDate=&txtEndDate=
+     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
      * @param employeeId
-     * @param year
-     * @param month
-     * @param modelMap
+     * @param txtBaseDate
+     * @param txtEndDate
+     * @param psDBBean
      * @return
      */
     @GetMapping("executeEditMonthlyUSchedule")
     @ResponseBody
     public HashMap<String, Object> executeEditMonthlyUSchedule(@RequestParam("employeeId") String employeeId,
-                                                               @RequestParam("year") String year,
-                                                               @RequestParam("month") String month,
-                                                               ModelMap modelMap) {
+                                                               @RequestParam("txtBaseDate") String txtBaseDate,
+                                                               @RequestParam("txtEndDate") String txtEndDate,
+                                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
         tmgScheduleBean.executeEditMonthlyUSchedule();
         return null;
     }
 
     /**
      * 週勤務パターンを取得する
-     * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=29042924&year=2020&month=04&twp_nid=663
-     *
-     * @param year
-     * @param month
+     * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=40010001&twp_nid=641&txtBaseDate=&txtEndDate=
+     * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=C1000015&twp_nid=641&txtBaseDate=&txtEndDate=
      * @param employeeId
+     * @param txtBaseDate
+     * @param txtEndDate
      * @param twp_nid
-     * @param modelMap
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectWeekPatternInfo")
     @ResponseBody
-    public TmgWeekPatternVO selectCsvReference(@RequestParam("year") String year,
-                                               @RequestParam("month") String month,
-                                               @RequestParam("employeeId") String employeeId,
+    public TmgWeekPatternVO selectCsvReference(@RequestParam("employeeId") String employeeId,
+                                               @RequestParam("txtBaseDate") String txtBaseDate,
+                                               @RequestParam("txtEndDate") String txtEndDate,
                                                @RequestParam("twp_nid") int twp_nid,
-                                               ModelMap modelMap) {
+                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
         return tmgScheduleBean.selectCsvReference(employeeId, twp_nid);
     }
 
 
     /**
      * 週勤務パターンlistを取得する
-     * http://localhost:6879/sys/schedule/selectWeekPatternInfoList?employeeId=29042924&year=2020&month=04
-     *
-     * @param year
-     * @param month
+     * http://localhost:6879/sys/schedule/selectWeekPatternInfoList?employeeId=40010001&txtBaseDate=&txtEndDate=
+     * @param txtBaseDate
+     * @param txtEndDate
      * @param employeeId
-     * @param modelMap
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectWeekPatternInfoList")
     @ResponseBody
-    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("year") String year,
-                                                         @RequestParam("month") String month,
-                                                         @RequestParam("employeeId") String employeeId,
-                                                         ModelMap modelMap) {
+    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("employeeId") String employeeId,
+                                                         @RequestParam("txtBaseDate") String txtBaseDate,
+                                                         @RequestParam("txtEndDate") String txtEndDate,
+                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
         return tmgScheduleBean.selectCsvReference(employeeId);
     }
 
 
     /**
      * 週勤務パターンを取得する
-     * http://localhost:6879/sys/schedule/selectTmgWeekPatternList?employeeId=29042924&year=2020&month=04
+     * http://localhost:6879/sys/schedule/selectTmgWeekPatternList?employeeId=29042924&txtBaseDate=&txtEndDate=
      *
-     * @param year
-     * @param month
+     * @param txtBaseDate
+     * @param txtEndDate
      * @param employeeId
-     * @param modelMap
+     * @param psDBBean
      * @return
      */
     @GetMapping("selectTmgWeekPatternList")
     @ResponseBody
-    public List<TmgWeekPatternDTO> selectTmgWeekPattern(@RequestParam("year") String year,
-                                                        @RequestParam("month") String month,
-                                                        @RequestParam("employeeId") String employeeId,
-                                                        ModelMap modelMap) {
+    public List<TmgWeekPatternDTO> selectTmgWeekPattern(@RequestParam("employeeId") String employeeId,
+                                                        @RequestParam("txtBaseDate") String txtBaseDate,
+                                                        @RequestParam("txtEndDate") String txtEndDate,
+                                                        @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
-        return tmgScheduleBean.selectTmgWeekPattern(year, month);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
+        return tmgScheduleBean.selectTmgWeekPattern();
     }
 
 
     /**
      * 週勤務パターン登録画面　登録処理
-     * http://localhost:6879/sys/schedule/executeMakeWeekPattern?employeeId=29042924&year=2020&month=04
+     * http://localhost:6879/sys/schedule/executeMakeWeekPattern?employeeId=29042924&txtBaseDate=&txtEndDate=
      *
-     * @param year
-     * @param month
+     * @param txtBaseDate
+     * @param txtEndDate
      * @param employeeId
-     * @param modelMap
+     * @param psDBBean
      */
     @GetMapping("executeMakeWeekPattern")
     @ResponseBody
-    public void executeMakeWeekPattern_UWPtn(@RequestParam("year") String year,
-                                             @RequestParam("month") String month,
-                                             @RequestParam("employeeId") String employeeId,
-                                             ModelMap modelMap) {
+    public void executeMakeWeekPattern_UWPtn(@RequestParam("employeeId") String employeeId,
+                                             @RequestParam("txtBaseDate") String txtBaseDate,
+                                             @RequestParam("txtEndDate") String txtEndDate,
+                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(year, month, employeeId, modelMap);
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, employeeId, psDBBean);
         tmgScheduleBean.executeMakeWeekPattern_UWPtn();
     }
 
