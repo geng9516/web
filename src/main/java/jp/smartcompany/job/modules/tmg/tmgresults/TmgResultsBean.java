@@ -1,7 +1,6 @@
 package jp.smartcompany.job.modules.tmg.tmgresults;
 
 import cn.hutool.core.util.StrUtil;
-import com.sun.xml.internal.bind.v2.TODO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
