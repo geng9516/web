@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgAlertmsgDO;
 import jp.smartcompany.job.modules.core.mapper.TmgAlertmsgMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAlertmsgService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.AlertVo;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,4 +18,13 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class TmgAlertmsgServiceImpl extends ServiceImpl<TmgAlertmsgMapper, TmgAlertmsgDO> implements ITmgAlertmsgService {
 
+
+
+        /**
+         * 集計時の問題(アラート)の表示内容を取得するクエリを返却します
+         */
+        @Override
+        public AlertVo selectAlert(String cust, String comp, String secid, String dyyyymm, String lang, int numStart, int numEnd){
+                return baseMapper.selectAlert(cust, comp, secid, dyyyymm, lang, numStart, numEnd);
+        }
         }

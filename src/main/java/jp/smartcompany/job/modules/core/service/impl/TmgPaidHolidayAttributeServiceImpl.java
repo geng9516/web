@@ -5,9 +5,14 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayAttributeDO;
 import jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayAttributeMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPaidHolidayAttributeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.empattrsetting.dto.EmpAttrSettingDto;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.AvgWorkTimeHistoryVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.AvgWorkTimeVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgEmpVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,4 +52,50 @@ public class TmgPaidHolidayAttributeServiceImpl extends ServiceImpl<TmgPaidHolid
                 return workTime;
         }
 
+
+
+        /**
+         * 個人属性一覧_表示処理の一覧部分を取得するクエリを返します
+         */
+        @Override
+        public List<TmgEmpVo> selectTmgEmp(EmpAttrSettingDto param,int start,int end){
+                return baseMapper.selectTmgEmp(param,start,end);
+        }
+
+        /**
+         * 個人属性一覧_表示処理での件数を取得するクエリを返します。ページ数の計算に利用します
+         * (職員一覧の検索条件と表示ページによる取得範囲制限以外の条件が同じ)
+         */
+        @Override
+        public int selectTmgEmpCount(EmpAttrSettingDto param){
+                return baseMapper.selectTmgEmpCount(param);
+        }
+
+
+        /**
+         * 平均勤務時間を取得するSQLを返す
+         */
+        @Override
+        public AvgWorkTimeVo selectAvgWorkTime60(String customerId, String companyId, String employeeId
+                , String  yyyymmdd){
+                return baseMapper.selectAvgWorkTime60(customerId, companyId, employeeId, yyyymmdd);
+        }
+
+
+        /**
+         * 平均勤務時間のデフォルト値を取得するSQLを返す
+         */
+        @Override
+        public AvgWorkTimeVo selectDefaultAvgWorkTime(String customerId, String companyId, String employeeId
+                , String  yyyymmdd){
+                return baseMapper.selectDefaultAvgWorkTime(customerId, companyId, employeeId, yyyymmdd);
+        }
+
+        /**
+         * 平均勤務時間設定状況を取得するSQLを返す
+         */
+        @Override
+        public AvgWorkTimeHistoryVo selectAvgWorkTimeHistory(String customerId, String companyId, String employeeId){
+                return baseMapper.selectAvgWorkTimeHistory(customerId, companyId, employeeId);
+        }
 }

@@ -81,4 +81,22 @@
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(TO_DATE(#{yyyymmdd})), TRUNC(TO_DATE(#{yyyymmdd})), v.cust, v.comp)
     </select>
 
+    <select id="selectDateofemploymentWithME" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo">
+        SELECT
+            TO_CHAR( MIN( ME_DSTARTDATE ), 'yyyy/mm/dd' ) AS DSTART,
+            TO_CHAR( ME_DDATEOFEMPLOYEMENT, 'yyyy/mm/dd' ) AS DDATEOFEMPLOYEMENT
+        FROM
+            MAST_EMPLOYEES
+        WHERE
+                ME_CCUSTOMERID_CK = #{custId}
+            AND ME_CCOMPANYID = #{compId}
+            AND ME_CEMPLOYEEID_CK = #{empId}
+            AND ME_CIFSTILLEMPLOYEDID = '0'
+        GROUP BY
+            ME_DDATEOFEMPLOYEMENT
+        ORDER BY
+            MIN( ME_DSTARTDATE ) DESC
+        ;
+    </select>
+
 </mapper>

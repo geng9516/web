@@ -134,7 +134,7 @@
                 WHERE
                     TDA_CCUSTOMERID = ORVERTIME_RESULT_INFO.CUST
                 AND TDA_CCOMPANYID = ORVERTIME_RESULT_INFO.COMP
-                AND TDA_DYYYYMM = trunc( to_date( #{toDay}, 'YYYY/MM/DD' ), 'MM' )
+                AND TDA_DYYYYMM = trunc( to_date( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' )
                 AND TDA_CHOLFLG IS NOT NULL
                 AND TDA_CHOLFLG <![CDATA[<>]]> 'TMG_HOLFLG|0'
                 AND ( TDA_CWORKINGID_R = 'TMG_WORK|000' OR TDA_CWORKINGID_R = 'TMG_WORK|510' )
@@ -147,8 +147,8 @@
                         SUM( TMG_F_CONV_HHMI2MIN ( REPLACE ( TO_CHAR( ORVERTIME_RESULT_INFO.TOTAL_TIMES, 'FM9990.00' ), '.', ':' ) ) ) / (
                             TRUNC(
                                 months_between(
-                                    ADD_MONTHS( TRUNC( TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1,
-                                        TMG_F_GET_DATEOF36KYOTEI (#{custId}, #{compId}, TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 1 )
+                                    ADD_MONTHS( TRUNC( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1,
+                                        TMG_F_GET_DATEOF36KYOTEI (#{custId}, #{compId}, TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 1 )
                                 )
                             ) + 1
                         )
@@ -201,8 +201,8 @@
                             AND MGD_CCOMPANYID_CK_FK = #{compId}
                             AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
                             AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
-                            AND MGD_DSTART_CK <![CDATA[<=]]> #{sBaseDate}
-                            AND MGD_DEND >= #{sBaseDate}
+                            AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+                            AND MGD_DEND >= #{toDay}
                             AND MGD_CLANGUAGE_CK = #{sLang}
                         ),
                         0,
@@ -218,8 +218,8 @@
                                 AND MGD_CCOMPANYID_CK_FK = #{compId}
                                 AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
                                 AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
-                                AND MGD_DSTART_CK <![CDATA[<=]]> #{sBaseDate}
-                                AND MGD_DEND >= #{sBaseDate}
+                                AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+                                AND MGD_DEND >= #{toDay}
                                 AND MGD_CLANGUAGE_CK = #{sLang}
                             )
                         )
@@ -234,8 +234,8 @@
                     AND MGD_CCOMPANYID_CK_FK = #{compId}
                     AND MGD_CGENERICGROUPID = 'TMG_LIMIT'
                     AND MGD_CMASTERCODE = 'TMG_LIMIT|MONTHLY_OVERTIME_36'
-                    AND MGD_DSTART_CK <![CDATA[<=]]> #{sBaseDate}
-                    AND MGD_DEND >= #{sBaseDate}
+                    AND MGD_DSTART_CK <![CDATA[<=]]> #{toDay}
+                    AND MGD_DEND >= #{toDay}
                     AND MGD_CLANGUAGE_CK = #{sLang}
                 ),
                 1,
@@ -246,10 +246,10 @@
             ( ${sql} ) E
             WHERE
             TMI_CEMPLOYEEID = E.EMPID
-            AND TMI_DYYYYMM >= ADD_MONTHS( TRUNC( ADD_MONTHS( TO_DATE( #{toDay}, 'YYYY/MM/DD' ), - 3 ), 'YYYY' ), 3 )
-            AND TMI_DYYYYMM <![CDATA[<=]]> ADD_MONTHS( TRUNC( TO_DATE( #{toDay}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1
+            AND TMI_DYYYYMM >= ADD_MONTHS( TRUNC( ADD_MONTHS( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), - 3 ), 'YYYY' ), 3 )
+            AND TMI_DYYYYMM <![CDATA[<=]]> ADD_MONTHS( TRUNC( TO_DATE( #{sBaseDate}, 'YYYY/MM/DD' ), 'MM' ), 1 ) - 1
             AND TMI_CCONTENTID = #{sContentId}
-            AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{toDay}) ), LAST_DAY( TO_DATE(#{toDay} ) ), e.cust, e.comp )
+            AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{sBaseDate}) ), LAST_DAY( TO_DATE(#{sBaseDate} ) ), e.cust, e.comp )
             )
             ORVERTIME_RESULT_INFO
         GROUP BY

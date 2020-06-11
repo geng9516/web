@@ -2,6 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -23,7 +24,7 @@ import java.util.List;
 public class SiteWManageController {
 
     private final PaidholidayBean paidHolidayBean;
-
+    private final OvertimeInstructBean overtimeInstructBean;
     /**
      * 跳转到カレンダー管理界面
      * @param moduleIndex
@@ -90,6 +91,7 @@ public class SiteWManageController {
                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+
         return "sys/wmanage/sumdata";
     }
 
@@ -105,6 +107,7 @@ public class SiteWManageController {
                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+        overtimeInstructBean.actionExecuteDispResult(modelMap);
         return "sys/wmanage/csvoutput";
     }
 

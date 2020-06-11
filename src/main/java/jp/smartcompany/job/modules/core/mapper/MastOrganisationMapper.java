@@ -2,6 +2,9 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -36,4 +39,43 @@ public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
       */
      String buildSQLForSelectEmployeeDetail(Map<String, Object> map);
 
+     /**
+      * 選択された組織の表示権限があるかを判定するSQLを返すメソッド
+      */
+     int selectHasAuth(@Param("customerId") String customerId,
+                       @Param("compnyId")String compnyId,
+                       @Param("sectionId")String sectionId,
+                       @Param("searchDate")String searchDate,
+                       @Param("language")String language,
+                       @Param("exists")String exists);
+
+
+
+     TargetFiscalYearDto selectTargetFiscalYear(@Param("cust")String cust,
+                                                @Param("comp")String comp,
+                                                @Param("section")String section,
+                                                @Param("lang")String lang,
+                                                @Param("targetDate")String targetDate,
+                                                @Param("targetStartDate")String targetStartDate,
+                                                @Param("targetEneDate")String targetEneDate,
+                                                @Param("psBaseDate")String psBaseDate);
+
+
+     List<NotApprovalVo>  selectNotApproval(@Param("custId")String custId,
+                                            @Param("compId")String compId,
+                                            @Param("secId")String secId,
+                                            @Param("dyyyymm")String dyyyymm,
+                                            @Param("lang")String lang,
+                                            @Param("numStart")int numStart,
+                                            @Param("numEnd")int numEnd);
+
+
+
+     List<NotFixedDeptListVo>  selectNotFixedDeptList(@Param("custId")String custId,
+                                                      @Param("compId")String compId,
+                                                      @Param("secId")String secId,
+                                                      @Param("dyyyymm")String dyyyymm,
+                                                      @Param("lang")String lang,
+                                                      @Param("numStart")int numStart,
+                                                      @Param("numEnd")int numEnd);
 }

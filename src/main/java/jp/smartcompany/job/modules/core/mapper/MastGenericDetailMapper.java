@@ -2,6 +2,12 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
@@ -247,5 +253,60 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                                             @Param("compID") String compID,
                                                             @Param("lang") String lang,
                                                             @Param("targetDate") String targetDate);
+
+
+    TargetDateLimit selectTargetFiscalYear(@Param("custID") String custID,
+                                           @Param("compID") String compID,
+                                           @Param("baseDate") String baseDate);
+
+
+    List<MoDLTypeVo> selectTmgMoDLType(@Param("custId") String custId,
+                                       @Param("compId") String compId,
+                                       @Param("lang") String lang,
+                                       @Param("date") String date);
+
+
+    List<TmgMoTableFunctionVo> selectTmgMoTableFunction(@Param("custID")String custID,
+                                                        @Param("compID")String compID,
+                                                        @Param("lang")String lang,
+                                                        @Param("date")String date,
+                                                        @Param("masterCD")String masterCD);
+
+    List<String> selectTmgMoRetroLayout(@Param("custId")String custId,
+                                        @Param("compId")String compId,
+                                        @Param("lang")String lang,
+                                        @Param("targetDate")String targetDate,
+                                        @Param("dlTypeID")String dlTypeID);
+
+    String selectTmgMoCsvFileName(@Param("custId")String custId,
+                                  @Param("compId")String compId,
+                                  @Param("empId")String empId,
+                                  @Param("targetDate")String targetDate,
+                                  @Param("dlTypeID")String dlTypeID);
+
+    List<EmpAttsetDispVo> selectEmpAttsetDisp(@Param("custId")String custId,
+                                              @Param("compId")String compId,
+                                              @Param("baseDate")String baseDate,
+                                              @Param("lang")String lang);
+
+    MgdTimeLimitVo selectMgdTimeLimit();
+
+    String selectWeekDaysCom(@Param("custId") String custId,
+                             @Param("compId")String compId,
+                             @Param("baseDate")String baseDate,
+                             @Param("daysOfWeeks")int daysOfWeeks,
+                             @Param("allMinutes")int allMinutes);
+
+    EmploymentWithMgdVo selectDateOfEmploymentWithMGD(@Param("custId")String custId,
+                                                      @Param("compId")String compId,
+                                                      @Param("lang")String lang,
+                                                      @Param("empId")String empId,
+                                                      @Param("groupId")String groupId);
+
+    int insertMgdKinmuStart(@Param("custId")String custId,
+                            @Param("compId")String compId,
+                            @Param("targetUser")String targetUser,
+                            @Param("userCode")String userCode,
+                            @Param("baseDate")String baseDate);
 }
 

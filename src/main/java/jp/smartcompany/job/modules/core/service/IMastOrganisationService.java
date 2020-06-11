@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 
 import java.util.Date;
@@ -58,10 +61,10 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * <div>指定した組織の上位組織リストを返却する。</div>
      *
      * @author t-abe
-     * @param customerId 顧客コード
-     * @param compnyId 法人コード
-     * @param sectionId 組織コード
-     * @param searchDate 検索基準日
+     * @param psCustID 顧客コード
+     * @param psCompCode 法人コード
+     * @param psTargetDept 組織コード
+     * @param pdSearchDate 検索基準日
      * @return 上位組織情報
      */
     List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate);
@@ -122,4 +125,68 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      */
     List < String > getSubSection(String customerId, String compnyId, String sectionId,
                                   Date searchDate);
+
+
+
+
+    /**
+     * 選択された組織の表示権限があるかを判定するSQLを返すメソッド
+     * */
+    int selectHasAuth(String customerId, String compnyId, String sectionId,
+                      String searchDate,String language,String exists);
+
+
+    /**
+     * 対象日の年度開始日および年度終了日を取得するSQLを構築して返します
+     */
+    TargetFiscalYearDto selectTargetFiscalYear(String cust,
+                                               String comp,
+                                               String section,
+                                               String lang,
+                                               String targetDate,
+                                               String targetStartDate,
+                                               String targetEneDate,
+                                               String psBaseDate);
+
+
+    /**
+     * 対象組織と組織配下の部署について対象年月の未承認者情報を検索するSQL文を生成し返します。
+     *
+     * @param custId 対象顧客コード
+     * @param compId 対象法人コード
+     * @param secId 対象組織コード
+     * @param dyyyymm 該当年月
+     * @param lang 言語区分
+     * @param numStart 検索番号スタート
+     * @param numEnd 検索番号エンド
+     * @return SQL文
+     */
+    List<NotApprovalVo> selectNotApproval(String custId,
+                                          String compId,
+                                          String secId,
+                                          String dyyyymm,
+                                          String lang,
+                                          int numStart,
+                                          int numEnd);
+
+
+    /**
+     * 対象年月の締め未完了部局の一覧を検索するSQL文を生成し返します。
+     *
+     * @param custId 対象顧客コード
+     * @param compId 対象法人コード
+     * @param secId 対象組織コード
+     * @param dyyyymm 該当年月
+     * @param lang 言語区分
+     * @param numStart 検索番号スタート
+     * @param numEnd 検索番号エンド
+     * @return SQL文
+     */
+    List<NotFixedDeptListVo> selectNotFixedDeptList(String custId,
+                                                    String compId,
+                                                    String secId,
+                                                    String dyyyymm,
+                                                    String lang,
+                                                    int numStart,
+                                                    int numEnd);
 }

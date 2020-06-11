@@ -17,4 +17,11 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class TmgMonthlyOutputLogServiceImpl extends ServiceImpl<TmgMonthlyOutputLogMapper, TmgMonthlyOutputLogDO> implements ITmgMonthlyOutputLogService {
 
+        /**
+         * 月次集計データ作成処理のジョブ番号を検索するSQL文を生成し返します。
+         */
+        @Override
+        public String selectSeq(){
+                return baseMapper.selectSeq();
+        }
         }

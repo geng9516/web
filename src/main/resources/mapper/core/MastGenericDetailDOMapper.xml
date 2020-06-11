@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper">
+    <insert id="insertMgdKinmuStart">
+
+
+
+
+
+
+
+
+
+
+
+    </insert>
 
 
     <select id="tmgFExcludeTerm" resultType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow">
@@ -726,6 +739,136 @@
         AND MGD_DEND >= #{targetDate}
         ORDER BY
             MGD_NSEQ
+    </select>
+
+    <select id="selectTargetFiscalYear" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit">
+        SELECT
+            TO_CHAR(
+                TMG_F_GET_THE_YEARZONE (
+                    TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
+                    0,
+                    TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ),
+                    #{custID},
+                    #{compID}
+                ),
+                'YYYY/MM/DD'
+            ),
+            TO_CHAR(
+                TMG_F_GET_THE_YEARZONE (
+                    TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
+                    1,
+                    TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ),
+                    #{custID},
+                    #{compID}
+                ),
+                'YYYY/MM/DD'
+            )
+        FROM
+            DUAL
+    </select>
+
+    <select id="selectTmgMoDLType" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo">
+        SELECT
+            MGD_CDLTYPEID,
+            MGD_CDLTYPENAME
+        FROM
+            TMG_V_MGD_MO_DLTYPE
+        WHERE
+            MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
+        AND MGD_DEND >= #{date}
+        ORDER　BY
+            MGD_NSEQ;
+    </select>
+
+    <select id="selectTmgMoTableFunction" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo">
+        SELECT
+            MGD_CFILETYPENAME,
+            MGD_CFUNCTIONID
+        FROM
+            TMG_V_MGD_MOTABLEFUNCTION
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
+        AND MGD_DEND >= #{date}
+        AND MGD_CMASTERCODE = #{masterCD}
+    </select>
+    <select id="selectTmgMoRetroLayout" resultType="java.lang.String">
+        SELECT
+            MGD_CSQL
+        FROM
+            TMG_V_MGD_MORETRO_LAYOUT
+        WHERE
+            MGD_CCUSTOMERID = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compID}
+        AND MGD_CLANGUAGE_CK = #{lang}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
+        AND MGD_DEND >= #{date}
+        AND MGD_CDLTYPEID = #{dlTypeID}
+        ORDER BY
+            MGD_NSEQ;
+    </select>
+    <select id="selectTmgMoCsvFileName" resultType="java.lang.String">
+        SELECT  TMG_F_GET_MO_CSVFILENAME(#{targetDate},#{empId},#{dlTypeID},#{custId},#{compId})
+        FROM dual;
+    </select>
+    <select id="selectEmpAttsetDisp" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo">
+        SELECT
+            MGD_CITEMNAME,
+            MGD_NDISPFLG,
+            MGD_NEDITFLG,
+            MGD_NWIDTH
+        FROM
+            TMG_V_MGD_EMPATTSET_DISP
+        WHERE
+            　MGD_CCUSTOMERID =　#{custId}
+        AND  MGD_CCOMPANYID_CK_FK = #{compId}
+        AND  MGD_DSTART_CK <![CDATA[<=]]> #{baseDate}
+        AND  MGD_DEND >= #{baseDate}
+        AND  MGD_CLANGUAGE_CK = #{lang}
+        ORDER BY
+            MGD_NSEQ
+            ;
+    </select>
+    <select id="selectMgdTimeLimit" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo">
+        SELECT
+            MGD_NSPARENUM1 AS ALLMINUTES,
+            trunc(MGD_NSPARENUM1 / 60) AS HOURS,
+            mod(MGD_NSPARENUM1, 60)  AS MINUTES
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE  MGD_CMASTERCODE = 'TMG_LEGAL_HOURS|DAY';
+
+
+    </select>
+    <select id="selectWeekDaysCom" resultType="java.lang.String">
+
+        select
+            TMG_F_GET_TMG_WEEKDAYS_COM ( #{custId}, #{compId},#{baseDate},#{daysOfWeeks,jdbcType=BIGINT},#{allMinutes,jdbcType=BIGINT}  )
+        from dual
+        ;
+    </select>
+    <select id="selectDateOfEmploymentWithMGD" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo">
+        SELECT
+            TO_CHAR( MGD_DSTART_CK, 'yyyy/mm/dd' ) AS DSTART,
+            DECODE( TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ), '2222/12/31', '', TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) ) AS DEND,
+            TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) AS DEND,
+            TO_CHAR( MGD_DSPAREDATE1, 'yyyy/mm/dd' ) AS BEGINDATE
+        FROM
+            MAST_GENERIC_DETAIL
+        WHERE
+                MGD_CCUSTOMERID = #{custId}
+            AND MGD_CCOMPANYID_CK_FK = #{compId}
+            AND MGD_CLANGUAGE_CK = #{lang}
+            AND MGD_CGENERICGROUPID = #{groupId}
+            AND MGD_CGENERICDETAILID_CK = #{empId}
+        ORDER BY
+            MGD_DSTART_CK DESC
+        ;
     </select>
 
 

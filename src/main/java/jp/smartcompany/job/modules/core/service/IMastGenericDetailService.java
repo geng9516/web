@@ -3,6 +3,12 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
@@ -343,6 +349,57 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<ItemVO> buildSQLForSelectTmgDisppermstatlist(String custID, String compID, String lang);
 
+
+
+    /**
+     * 対象日の年度開始日および年度終了日を取得するSQLを構築して返します
+     */
+    TargetDateLimit selectTargetFiscalYear(String custID, String compID, String baseDate);
+
+
+    /**
+     * 月例/遡及データダウンロード画面用 DL種別・リンク名称を取得するクエリを返す
+     * @param custId：顧客コード
+     * @param compId：法人コード
+     * @param lang：言語区分
+     * @param date：基準日
+     * @return
+     */
+    List<MoDLTypeVo> selectTmgMoDLType(String custId, String compId, String lang, String date);
+
+    /**
+     * 部局管理者を検索するSQL文を生成し返します。
+     */
+    List<MastGenericDetailDO> selectTmgSectionAdmin(String custId, String compId, String sectionId, String lang, String baseDate);
+
+    /**
+     * CSVダウンロード用 ファイルタイプ名・表関数名を取得するクエリを返す
+     * @param custID：顧客コード
+     * @param compID：法人コード
+     * @param lang：言語区分
+     * @param date：基準日
+     * @param masterCD：マスタコード
+     * @return
+     */
+    List<TmgMoTableFunctionVo> selectTmgMoTableFunction(String custID, String compID, String lang, String date, String masterCD);
+
+    /**
+     * (遡及)CSVダウンロード用 CSVレイアウトを取得するクエリを返す
+     * @param custId：顧客コード
+     * @param compId：法人コード
+     * @param lang：言語区分
+     * @param targetDate：基準日
+     * @param dlTypeID：DL種別コード
+     * @return
+     */
+    List<String> selectTmgMoRetroLayout(String custId, String compId, String lang, String targetDate, String dlTypeID);
+
+
+    /**
+     * CSVファイル名取得するクエリを返す
+     */
+    String selectTmgMoCsvFileName(String custId, String compId, String empId, String targetDate, String dlTypeID);
+
     /**
      * CSV出力ヘッダー・項目取得
      *
@@ -365,4 +422,36 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate);
 
+    /**
+     * 個人属性一覧_表示処理での一括編集用項目の制御情報を取得するクエリを返します。
+     */
+    List<EmpAttsetDispVo> selectEmpAttsetDisp(String custId, String compId, String baseDate, String lang);
+
+
+    /**
+     * マスタ検索用SQL取得メソッド
+     */
+    List<MastGenericDetailDO> selectWorkPlace(String custId,String compId,String lang,String groupId,String baseDate);
+
+    /**
+     * 平均勤務時間の上限取得クエリを返す
+     * 1日の上限を「分」で返す
+     * @return
+     */
+    MgdTimeLimitVo selectMgdTimeLimit();
+
+
+    /**
+     * 週予定勤務パターン取得処理
+     */
+    String selectWeekDaysCom(String custId,String compId,String baseDate,int daysOfWeeks,int allMinutes);
+
+
+    EmploymentWithMgdVo selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId);
+
+
+    /**
+     * 名称マスタに勤務開始日を追加
+     */
+    int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate);
 }

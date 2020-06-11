@@ -2,8 +2,10 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -35,4 +37,8 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
      * サイトIDを判定し更新対象の職員番号
      */
     List<String> selectEmpIdListForTmgDaily(Map<String, Object> map);
+
+    EmployMentWithMEVo selectDateofemploymentWithME(@Param("custId") String custId,
+                                                    @Param("compId") String compId,
+                                                    @Param("empId") String empId);
 }
