@@ -43,6 +43,15 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
     HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(HashMap<String, Object> params);
 
     /**
+     * 4週間単位の変形労働制職員対応
+     *
+     * @param params
+     * @return
+     */
+    HashMap<String, Object> SelectBaseDateOf4WeeksAfterDay(HashMap<String, Object> params);
+
+
+    /**
      * 翌月リンクを取得
      *
      * @param params
@@ -277,5 +286,20 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     void insertTrigger(HashMap<String, Object> params);
 
+    /**
+     * 検索対象年月日の開始日
+     *
+     * @param params
+     * @return
+     */
+    String selectBaseDateFor4Week(HashMap<String, Object> params);
+
+    /**
+     * 対象社員の勤怠日別情報の最小日と最大日を取得する
+     *
+     * @param params
+     * @return
+     */
+    HashMap<String, String> selectTmgDailyMinAndMax(HashMap<String, Object> params);
 
 }
