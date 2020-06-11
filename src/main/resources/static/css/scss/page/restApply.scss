@@ -1,8 +1,11 @@
-.boder {
+.border {
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
   border-radius: 3px;
+}
+.content {
+  overflow-y: visible;
 }
 .head-info {
   background: #e7e7e7;

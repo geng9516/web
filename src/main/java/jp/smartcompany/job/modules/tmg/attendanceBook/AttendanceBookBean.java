@@ -35,7 +35,7 @@ import java.util.*;
 public class AttendanceBookBean {
 
     private final Logger logger = LoggerFactory.getLogger(AttendanceBookBean.class);
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
     private TmgReferList _referList;
     private final ITmgAttendanceBookService iTmgAttendanceBookService;
 
@@ -81,9 +81,11 @@ public class AttendanceBookBean {
      * @param year
      * @param month
      * @param employeeId
-     * @param modelMap
+     * @param psDBBean
      */
-    public void setExecuteParameters(String year, String month, String employeeId, ModelMap modelMap) {
+    public void setExecuteParameters(String year, String month, String employeeId, PsDBBean psDBBean) {
+
+        this.psDBBean = psDBBean;
 
         if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
             year = DateUtil.thisYear() + "";
@@ -91,7 +93,7 @@ public class AttendanceBookBean {
         if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
             month = DateUtil.thisMonth() + "";
         }
-        this.setReferList(modelMap);
+        this.setReferList();
         if (null != employeeId && !"".equals(employeeId) && (null == psDBBean.getTargetUser() || "".equals(psDBBean.getTargetUser()))) {
             psDBBean.setTargetUser(employeeId);
         }
@@ -153,16 +155,15 @@ public class AttendanceBookBean {
      *
      * @throws Exception 汎用参照リストの生成時
      */
-    private void setReferList(ModelMap modelMap) {
-
+    private void setReferList() {
+        String sysDate = DateUtil.format(new Date(),"yyyy-MM-dd")+" 00:00:00";
         try {
             _referList = new TmgReferList(
                     psDBBean, BEAN_DESC,
-                    (psDBBean.getCreterialDate1().substring(0, 10)).replaceAll("-", "/"),
+                    (sysDate.substring(0, 10)).replaceAll("-", "/"),
                     TmgReferList.TREEVIEW_TYPE_EMP, true, true,
                     false, false, true
             );
-            _referList.putReferList(modelMap);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -248,7 +249,7 @@ public class AttendanceBookBean {
          *　承認サイト：　TMG_PERM
          */
         String siteId = psDBBean.getSiteId();
-      //  String siteId = "TMG_ADMIN";
+        //  String siteId = "TMG_ADMIN";
         if (null == siteId || "".equals(siteId)) {
             logger.warn("編集権限なし");
             return false;
@@ -435,7 +436,7 @@ public class AttendanceBookBean {
                         listHashMap.put(DEFAULT_KEY_ARRAY[0], "時");
                         break;
                     default:
-                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12)+"日");
+                        listHashMap.put(DEFAULT_KEY_ARRAY[0], String.valueOf(MONTH_DAY++ / 12) + "日");
                 }
 
                 listHashMap.put(DEFAULT_KEY_ARRAY[i + 1], map.get(ATTENDANCEBOOK_KEY_ARRAY[j]));

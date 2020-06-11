@@ -38,7 +38,7 @@
                                 <p class="head-info">残時間数</p>
                             </i-col>
                         </Row>
-                        <Row class="mb20 ft13 boder">
+                        <Row class="mb20 ft13 border">
                             <i-col span="12" class="mb10">
                                 <p class="mb5">2010/12/31まで</p>
                                 <p>2020/01/01から</p>
@@ -64,7 +64,7 @@
                                 <p class="head-info">残時間数</p>
                             </i-col>
                         </Row>
-                        <Row class="mb20 ft13 boder">
+                        <Row class="mb20 ft13 border">
                             <i-col span="12">
                                 <p class="mb5">2010/12/31まで</p>
                             </i-col>
@@ -105,10 +105,9 @@
                                     <!-- todo: 要将这个改为 次に承認者：xxxx -->
                                     <i-col span="17" style="margin-left: 2.5%" class="title" v-if="item.status !== 3">
                                         <ul style="display:flex">
-                                            <li style="margin-right:10px"
-                                                v-for="(item, index) of handleAdminflowShow(item)" :key="index">
-                                                <span>{{ `${item.name} ` }}</span>
-                                                <span :class="handleApplyMarkShow(item.status)" />
+                                            <li style="margin-right:10px">
+                                                <span>{{ `次の承認者：${item.nextAdmin} ` }}</span>
+                                                <span :class="handleApplyMarkShow(item.nextAdminStatus)" />
                                             </li>
                                         </ul>
                                     </i-col>
@@ -118,7 +117,7 @@
                                         {{ item.restTypeName }}
                                     </i-col>
                                     <i-col span="2" style="margin-left: 26.3%" class="description"
-                                        v-if="item.status === 0 && item.progressList[0].status === 0">
+                                        v-if="item.status === 0">
                                         <i-button class="cancel-btn" size="small" @click="cancel(item.applyId)">取り消し
                                         </i-button>
                                     </i-col>
@@ -127,9 +126,9 @@
                                     <i-col span="20" style="margin-left: 4.5%" class="description light-grey">
                                         {{ item.remark }}</i-col>
                                 </Row>
-                                <Row>
+                                <Row v-if="item.status === 2">
                                     <i-col span="20" style="margin-left: 4.5%" class="description red">
-                                        {{ handleDenyText(item.progressList) }}</i-col>
+                                        {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="8" offset="15" class="description light-grey mt10">
@@ -253,8 +252,7 @@
                             </i-col>
                         </Row>
                         <Divider size="small" orientation="left">申請事由</Divider>
-                        <i-input v-model="restApply.reason" type="textarea" :autosize="{ minRows: 5 }"
-                            placeholder="文字の長さは１００位以内になっております。" />
+                        <i-input v-model="restApply.reason" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
                         <i-button class="btn" type="primary" long @click="apply" icon="md-create" :loading="loading">申請
                         </i-button>
                     </Card>
@@ -297,15 +295,17 @@
                             updateTime: '2020/03/02 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            progressList: [{ name: '田中さん', status: 1 }, { name: '鈴木さん', status: 1 }]
+                            nextAdmin:'田中さん',
+                            nextAdminStatus: 1
                         },
                         {
                             status: 2,
                             remark: '申請承認拒否',
                             updateTime: '2020/03/01 09:56:03',
                             restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            progressList: [{ name: '田中さん', status: 1 }, { name: '鈴木さん', status: 2 }]
+                            dateList: ['2020/03/02','2020/03/05'],
+                            nextAdmin:'鈴木さん',
+                            nextAdminStatus: 2
                         },
                         {
                             status: 3,
@@ -313,7 +313,8 @@
                             updateTime: '2020/02/28 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            progressList: []
+                            nextAdmin:'',
+                            nextAdminStatus: 0,
                         }
                     ],
                     opts: {
@@ -438,10 +439,11 @@
                         this.tableData.unshift({
                             status: 0,
                             remark: that.restApply.reason,
-                            updateTime: that.utils.formatDate(Date.now()),
+                            updateTime: Utils.formatDate(Date.now()),
                             restTypeName: that.selectedRestInfo.label || '申請区分選択待ち',
-                            dateList: [that.utils.formatDate(Date.now(), 'yyyy-mm-dd')],
-                            progressList: [{ name: '田中さん', status: 0 }, { name: '鈴木さん', status: 0 }]
+                            dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
+                            nextAdmin:'田中さん',
+                            nextAdminStatus: 0
                         })
                     }, 1000)
                 }),
@@ -471,24 +473,11 @@
                             return 'with-dot'
                     }
                 },
-                handleDenyText(e) {
-                    const target = e.find(e => e.status === 2)
-                    if (target) return `拒否理由：${target.remark ? target.remark : 'なし'}`
-                    else return ''
-                },
                 handleApplyDayShow(e) {
                     if (e.length === 1) {
                         return e.join('')
                     }
                     return `${e[0]} ～ ${e[e.length - 1]}`
-                },
-                handleAdminflowShow(item) {
-                    if (item.status === 2) {
-                        const index = item.progressList.findIndex(e => e.status === 2) + 1
-                        return item.progressList.slice(0, index)
-                    } else {
-                        return item.progressList
-                    }
                 },
                 cancel() {
                     // todo
