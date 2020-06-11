@@ -36,6 +36,12 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
         SectionGroupId selectSecGroupId(String customerId, String companyId, String employeeId , Date yyyymmdd);
 
 
+        /**
+         * 基準日時点の法人コードを取得する
+         * @param userId
+         * @param date
+         * @return
+         */
         List<HistDesignationDO> selectCompanyId(String userId,Date date);
 
         List<EvaluatorBO> selectEvaluator(String customerId,String systemId,String userId,

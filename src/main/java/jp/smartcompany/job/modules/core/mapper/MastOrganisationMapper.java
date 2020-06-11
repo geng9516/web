@@ -23,8 +23,13 @@ import java.util.Map;
 public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
 
      List<String> selectLowerSection(@Param("custId") String custId,@Param("compId") String compId,
-                                            @Param("sectionId") String psSection,@Param("date") Date date);
+                                            @Param("sectionId") String psSection,@Param("date") String date);
 
+     List<MastOrganisationDO> selectLowEmp(@Param("custId") String custId,
+                                           @Param("compId") String compId,
+                                           @Param("sectionId") String sectionId,
+                                           @Param("searchDate") String searchDate,
+                                           @Param("virtualSection") Boolean virtualSection);
 
      /**
       * 基準日時点の超勤限度時間取得用

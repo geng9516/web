@@ -70,7 +70,7 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     public List<MastEmployeesDO> selectEmployByLoginUserId(String psCustid,
                                                            String psCompid,
                                                            String psLoginUserId,
-                                                           Date psDate) {
+                                                           String psDate) {
         QueryWrapper<MastEmployeesDO> qw = SysUtil.query();
         qw.eq("ME_CCUSTOMERID_CK",psCustid)
                 .eq("ME_CCOMPANYID",psCompid)

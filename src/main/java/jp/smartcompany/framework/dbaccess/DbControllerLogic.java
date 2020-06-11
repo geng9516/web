@@ -16,4 +16,5 @@ public interface DbControllerLogic {
 
     Vector<Integer> executeUpdate(Vector vecQuery, Vector vecParam) throws SQLException;
 
+    boolean executeProcedure(Vector vecQuery, Vector vecParam) throws SQLException;
 }

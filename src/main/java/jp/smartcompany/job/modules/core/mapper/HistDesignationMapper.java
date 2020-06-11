@@ -35,28 +35,28 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
         List<EvaluatorBO> selectEvaluator(@Param("customerId") String customerId,
                                           @Param("systemId") String systemId,
                                           @Param("userId") String userId,
-                                          @Param("searcharDate") Date pdSearchDate,
+                                          @Param("searcharDate") String pdSearchDate,
                                           @Param("evaluation") int evaluation,
                                           @Param("reportType") String reportType,
-                                          @Param("sLanguage") String sLanguage);
+                                          @Param("language") String language);
 
         List<EvaluatorBO> selectAllEvaluator(@Param("customerId") String psCustomerId,
                                              @Param("userId") String psUserId,
-                                             @Param("searchDate") Date pdSearchDate,
+                                             @Param("searchDate") String pdSearchDate,
                                              @Param("language") String psLanguage);
 
         List<EvaluatorBO> selectWithSection(
                 @Param("custId") String psCustId,
                 @Param("userId") String psUserId,
                 @Param("sectionId") String psSectionId,
-                @Param("searchDate") Date pdSearchDate,
+                @Param("searchDate") String pdSearchDate,
                 @Param("language") String sLanguage);
 
         List<EvaluatorBO> selectSectionChief(
                 @Param("custId") String psCustId,
                 @Param("compId") String compId,
                 @Param("sectionId") String sectionId,
-                @Param("searchDate")Date pdSearchDate,
+                @Param("searchDate")String pdSearchDate,
                 @Param("language") String sLanguage);
 
         /**
@@ -81,4 +81,7 @@ public interface HistDesignationMapper extends BaseMapper<HistDesignationDO> {
          * CSV出力用データを取得
          */
         List<Map> buildSQLForSelectCSVOutputImage(Map<String, Object> map);
+
+
+
 }
