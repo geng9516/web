@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -156,4 +157,16 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @return SQL文
      */
     List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String sectionId, String baseDate, String slanguage , String empListSql);
+
+
+    /**
+     *[勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
+     * @param custID 顧客コード
+     * @param compCode 法人コード
+     * @param dispUserCode 対象者
+     * @param searchStart　開始日
+     * @param searchEnd　終了日
+     * @return
+     */
+    List<PaidHolidayVO> buildSQLForSelectPaidHoliday(String custID, String compCode, String dispUserCode, String searchStart, String searchEnd);
 }

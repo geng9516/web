@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
+import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -109,4 +110,9 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
                                                             @Param("baseDate")String baseDate,
                                                             @Param("slanguage")String slanguage,
                                                             @Param("empListSql")String empListSql);
+
+    /**
+     * [勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
+     */
+    List<PaidHolidayVO> buildSQLForSelectPaidHoliday(Map<String, Object> map);
 }

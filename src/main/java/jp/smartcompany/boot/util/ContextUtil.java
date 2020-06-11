@@ -1,5 +1,7 @@
 package jp.smartcompany.boot.util;
 
+import org.springframework.web.context.request.NativeWebRequest;
+import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -11,9 +13,11 @@ import javax.servlet.http.HttpServletRequest;
 public class ContextUtil {
 
   public static HttpServletRequest getHttpRequest() {
-    ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-    if (servletRequestAttributes!=null) {
-      return servletRequestAttributes.getRequest();
+    RequestAttributes servletRequestAttributes = RequestContextHolder.getRequestAttributes();
+    if (servletRequestAttributes instanceof ServletRequestAttributes) {
+      return ((ServletRequestAttributes) servletRequestAttributes).getRequest();
+    } else if (servletRequestAttributes  instanceof NativeWebRequest) {
+      return  (HttpServletRequest) ((NativeWebRequest) servletRequestAttributes).getNativeRequest();
     }
     return null;
   }

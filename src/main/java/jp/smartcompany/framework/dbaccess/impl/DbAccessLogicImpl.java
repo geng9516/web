@@ -1,6 +1,5 @@
 package jp.smartcompany.framework.dbaccess.impl;
 
-import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.framework.dbaccess.DbAccessLogic;
@@ -12,12 +11,11 @@ import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.sql.Date;
-import java.util.List;
 import java.util.Vector;
 
 /**
  * SqlExecutor封装类
- * @author Xiao Wenpenh
+ * @author Xiao Wenpeng
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
