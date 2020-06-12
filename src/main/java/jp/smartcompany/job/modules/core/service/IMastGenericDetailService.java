@@ -365,4 +365,5 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate);
 
+    List<MastGenericDetailDO> selectPermissionString();
 }
