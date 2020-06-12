@@ -1,6 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayMapper">
+    <update id="buildSQLForUpdatePaidHolyday" parameterType="jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto">
+        UPDATE
+            TMG_PAID_HOLIDAY
+        SET
+            TPH_CMODIFIERUSERID    = #{tphCmodifieruserid},
+            TPH_DMODIFIEDDATE      = SYSDATE,
+            TPH_CMODIFIERPROGRAMID = #{tphCmodifierprogramid},
+            TPH_NINVEST            = NVL(#{tphNinvest}, 0),
+            TPH_NADJUST            = #{tphNadjust},
+            TPH_NADJUST_HOURS      = TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{tphNadjustHours}),
+            TPH_NADJUST_TO         = NVL(#{tphNadjustTo}, 0),
+            TPH_NADJUST_HOURS_TO   = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{tphNadjustHoursTo}), 0),
+            TPH_DEXPIRE_ADJUST     = #{tphDexpireAdjust},
+            TPH_DEXPIRE_ADJUST_TO  = #{tphDexpireAdjustTo},
+            TPH_CCOMMENT           = #{tphCcomment}
+        WHERE
+            TPH_CEMPLOYEEID      = #{tphCemployeeid}
+        AND TPH_DYYYYMMDD        = TO_DATE(#{tphDyyyymmdd}, 'yyyy/MM/dd')
+        AND TPH_CCOMPANYID       = #{tphCcompanyid}
+        AND TPH_CCUSTOMERID      = #{tphCcustomerid}
+    </update>
 
 
     <select id="selectNykLoseDate" resultType="java.util.Date" >
@@ -84,5 +105,57 @@
         )
         WHERE
             TRUNC(DBEGIN) <![CDATA[<=]]> TRUNC(#{params.todayD,jdbcType=DATE})
+    </select>
+    <select id="buildSQLForSelectPaidHoliday"
+            resultType="jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO">
+        SELECT
+            TO_CHAR(DYYYYMMDD, 'yyyy/MM/dd') AS DYYYYMMDD,                      <!-- 付与日 -->
+            TO_CHAR(DYYYYMMDD_END, 'yyyy/MM/dd') AS DYYYYMMDD_END,               <!--  今回付与期間終了日-->
+            NVL(NINVEST, 0) AS NINVEST,                                                            <!-- 今期付与日数(A)-->
+            NVL(NTHROUGHOUT, 0) AS NTHROUGHOUT,                                                        <!-- 前期繰越日数(D)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(NTHROUGHOUT_HOURS, 0), 1) AS NTHROUGHOUT_HOURS,      <!--前期繰越時間(G)-->
+            NVL(NADJUST, 0) AS NADJUST,                                                             <!--調整付与日数(B)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(NADJUST_HOURS, 0), 1) AS NADJUST_HOURS,              <!--調整付与時間(C)-->
+            NVL(NADJUST_TO, 0) AS NADJUST_TO,                                                         <!--調整繰越日数(E)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(NADJUST_HOURS_TO, 0), 1) AS NADJUST_HOURS_TO,        <!--調整繰越時間(F)-->
+            NINVEST_DAYS,                                                        <!--合計付与日数(A)+(B)+(D)+(E)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NINVEST_HOURS, 1) AS NINVEST_HOURS,              <!--合計付与時間(C)+(F)+(G)-->
+            DECODE(NCONFIRM, NULL, '-', NCONFIRM) AS NCONFIRM,                   <!--認定出勤日数-->
+            DECODE(NPLANWORKDAY, NULL, '-', NPLANWORKDAY) AS NPLANWORKDAY,      <!--予定勤務日数-->
+            DECODE(NPLANWORKDAY_LIMIT, NULL, '-', NPLANWORKDAY_LIMIT) AS NPLANWORKDAY_LIMIT,   <!--予定の8割-->
+            NPAID_USED_DAYS,                                                     <!--今期取得日数-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NPAID_USED_HOURS, 1) AS NPAID_USED_HOURS,        <!--今期取得時間数-->
+            NPAID_REST_DAYS,                                                     <!--今期残日数-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NPAID_REST_HOURS, 1) AS NPAID_REST_HOURS,        <!--今期残時間数-->
+            TO_CHAR(DBEGINDATE_WORK, 'yyyy/MM/dd') AS DBEGINDATE_WORK,           <!--勤務開始日-->
+            TMG_F_GET_MGD(
+                CWORKINGDAYS_WEEK,
+                TO_DATE(#{baseDate}, 'yyyy/MM/dd'),
+                #{custID},
+                #{compCode},
+                'ja'
+            ) AS CWORKINGDAYS_WEEK_NAME,   <!--週勤務パターン(週n日)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NAVGWORKTIME, 1) AS NAVGWORKTIME_CALC,                               <!--平均勤務時間(計算用)-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NAVGWORKTIME, 0) AS NAVGWORKTIME_DISP,                               <!--平均勤務時間(表示用)-->
+            TO_CHAR(DEXPIRE_INVEST, 'yyyy/MM/dd') AS DEXPIRE_INVEST,          <!--22.付与の有効期限-->
+            TO_CHAR(DEXPIRE_ADJUST, 'yyyy/MM/dd') AS DEXPIRE_ADJUST,           <!--23.調整付与の有効期限-->
+            TO_CHAR(DEXPIRE_ADJUST_TO, 'yyyy/MM/dd') AS DEXPIRE_ADJUST_TO,     <!--24.調整繰越の有効期限-->
+            NVL(NLOSE_DAYS, 0) NLOSE_DAYS,                                     <!--25.喪失日数-->
+            TMG_F_CONV_MIN2HHMI_WITH_MINUS(NVL(NLOSE_HOURS, 0), 1) NLOSE_HOURS,    <!--26.喪失時間数-->
+            CCOMMENT                                                          <!-- 27.変更者コメント-->
+        FROM
+            TABLE(
+                TMG_SELECT_NYK_LIST(
+                    #{custID},
+                    #{compCode},
+                    #{userCode}
+                )
+            )
+        <!--指定された基準日の付与情報を返却する為の条件分岐-->
+        <if test="targetDate != null">
+            WHERE DYYYYMMDD = TO_DATE(#{targetDate}, 'yyyy/MM/dd')
+        </if>
+        ORDER BY
+            DYYYYMMDD DESC
     </select>
 </mapper>

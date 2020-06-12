@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
@@ -693,10 +694,24 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public List<MastGenericDetailDO> selectPermissionString() {
         return list(SysUtil.<MastGenericDetailDO>query()
-                .eq("MGD_CGENERICGROUPID","PERMSTR")
-                .eq("MGD_CLANGUAGE_CK","ja")
-                .le("MGD_DSTART_CK","trunc(sysdate)")
-                .ge("MGD_DEND","trunc(sysdate)")
-                .orderByAsc("MGD_CCUSTOMERID","MGD_CCOMPANYID_CK_FK"));
+                .eq("MGD_CGENERICGROUPID", "PERMSTR")
+                .eq("MGD_CLANGUAGE_CK", "ja")
+                .le("MGD_DSTART_CK", "trunc(sysdate)")
+                .ge("MGD_DEND", "trunc(sysdate)")
+                .orderByAsc("MGD_CCUSTOMERID", "MGD_CCOMPANYID_CK_FK"));
+    }
+
+    /**
+     * HR連携除外条件マスタ情報を取得する
+     *
+     * @param custID   顧客コード
+     * @param compCode 　法人コード
+     * @param language 　言語
+     * @param groupId  グループID
+     * @return 　List<SimulationMasterDto>
+     */
+    @Override
+    public List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId){
+        return null;
     }
 }

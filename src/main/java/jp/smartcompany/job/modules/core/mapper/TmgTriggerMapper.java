@@ -37,4 +37,9 @@ public interface TmgTriggerMapper extends BaseMapper<TmgTriggerDO> {
      *[勤怠]トリガーの挿入
      */
     int buildSQLInsertTrigger(Map<String, Object> map);
+
+    /**
+     * トリガーテーブルにデータを入れる
+     */
+    void buildSQLForInsertTriggerTable(Map<String, Object> map);
 }
