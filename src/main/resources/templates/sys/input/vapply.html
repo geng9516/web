@@ -13,12 +13,11 @@
                 <i-col span="7">
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
-                        <i-select v-model="restApply.restTypeId" @on-change="handleRestType"
+                        <i-select v-model="restApply.restTypeId" editable filterable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
-                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ e.ntfName }}
-                                </i-option>
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ e.ntfName }}</i-option>
                             </option-group>
                         </i-select>
                         <section v-show="selectedRestInfo.info">
@@ -155,11 +154,11 @@
                                 </Row>
                             </li>
                             <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
-                            <i-button class="width75" style="margin-top: 35px;margin-left: 47px;">もっと見る</i-button>
+                            <i-button class="width75" style="margin-top: 35px;margin-left: 47px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
-                    <Card :title="selectedRestInfo.label ? selectedRestInfo.label : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
+                    <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
                         <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
@@ -299,6 +298,7 @@
                     open: true,
                     timerangeType: 1,
                     loading: false,
+                    moreDataLoading: false,
                     weekSelectFlag: true,
                     modeId: null,
                     rotate: false,
@@ -421,7 +421,7 @@
                 flatRestTypeList() {
                     let result = []
                     if (this.restTypeList.length > 0) {
-                        this.restTypeList.forEach(e => (result = result.concat(e.children)))
+                        this.restTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
                     }
                     return result
                 }
@@ -511,7 +511,7 @@
                             status: 0,
                             remark: that.restApply.reason,
                             updateTime: Utils.formatDate(Date.now()),
-                            restTypeName: that.selectedRestInfo.label || '申請区分選択待ち',
+                            restTypeName: that.selectedRestInfo.ntfName || '申請区分選択待ち',
                             dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
                             nextAdmin: '田中さん',
                             nextAdminStatus: 0
@@ -581,6 +581,10 @@
                         desc: 'File ' + file.name + ' is too large, no more than 500K.'
                     });
                 },
+                // 加载更多按钮
+                handleMoreDataLoading () {
+                    this.moreDataLoading = true
+                }
             }
         })
     </script>
