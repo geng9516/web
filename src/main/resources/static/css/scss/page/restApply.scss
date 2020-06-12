@@ -156,7 +156,18 @@
   border: 1px solid rgb(219, 240, 255);
   background: rgba(240, 250, 255, 0.349);
 }
-
+// 更多承认者
+.more-user {
+  font-size: 15px;
+  font-weight: bold;
+  margin-left: -16px;
+  color: var(--theme-blue);
+  box-shadow: 0px 1px 2px 0px var(--box-shadow);
+  background-color: var(--light-blue);
+}
+.ml-13 {
+  margin-left: -13px;
+}
 
 .apply-status {
   display: inline-block;

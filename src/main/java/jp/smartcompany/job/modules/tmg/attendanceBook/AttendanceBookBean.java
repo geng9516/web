@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -87,12 +88,6 @@ public class AttendanceBookBean {
 
         this.psDBBean = psDBBean;
 
-        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
-            year = DateUtil.thisYear() + "";
-        }
-        if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
-            month = DateUtil.thisMonth() + "";
-        }
         this.setReferList();
         if (null != employeeId && !"".equals(employeeId) && (null == psDBBean.getTargetUser() || "".equals(psDBBean.getTargetUser()))) {
             psDBBean.setTargetUser(employeeId);
@@ -156,7 +151,7 @@ public class AttendanceBookBean {
      * @throws Exception 汎用参照リストの生成時
      */
     private void setReferList() {
-        String sysDate = DateUtil.format(new Date(),"yyyy-MM-dd")+" 00:00:00";
+        String sysDate = DateUtil.format(new Date(), "yyyy-MM-dd") + " 00:00:00";
         try {
             _referList = new TmgReferList(
                     psDBBean, BEAN_DESC,
@@ -632,6 +627,38 @@ public class AttendanceBookBean {
             listHashMap.put(DEFAULT_KEY_ARRAY[i], listHashMap1.get(DEFAULT_KEY_ARRAY[i]) + "<br>" + listHashMap2.get(DEFAULT_KEY_ARRAY[i]));
         }
         return listHashMap;
+    }
+
+    /**
+     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     *
+     * @param employeeId
+     * @param year
+     * @return
+     */
+    public AttendanceExistsVO selectExistsAttendanceBook(String employeeId, String year) {
+
+        String targetDate = "";
+
+        if (null == employeeId || "".equals(employeeId)) {
+            logger.warn("社員番号が空です");
+            return null;
+        }
+
+        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
+            year = DateUtil.thisYear() + "";
+        }
+        targetDate = year + "/12/31";
+        String currentYear = DateUtil.thisYear() + "/12/31";
+
+        String compCode = psDBBean.getCompCode();
+        String custId = psDBBean.getCustID();
+
+        AttendanceExistsVO attendanceExistsVO = iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
+        attendanceExistsVO.setCurrentYear(currentYear);
+
+        return attendanceExistsVO;
+
     }
 
 

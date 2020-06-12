@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -61,10 +62,10 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * <div>指定した組織の上位組織リストを返却する。</div>
      *
      * @author t-abe
-     * @param psCustID 顧客コード
-     * @param psCompCode 法人コード
-     * @param psTargetDept 組織コード
-     * @param pdSearchDate 検索基準日
+     * @param customerId 顧客コード
+     * @param compnyId 法人コード
+     * @param sectionId 組織コード
+     * @param searchDate 検索基準日
      * @return 上位組織情報
      */
     List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate);
@@ -189,4 +190,22 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
                                                     String lang,
                                                     int numStart,
                                                     int numEnd);
+    List <String> getSubSection(String customerId, String compnyId, String sectionId, Date searchDate);
+
+    /**
+     * <p>
+     * <b>下位組織</b>情報取得（社員指定）
+     * </p>
+     * <div>指定した社員の下位組織情報を返却する。</div>
+     *
+     * @author t-abe
+     * @param userId ユーザID
+     * @param searchDate 検索基準日
+     * @param virtualSection 仮想組織判定<br>
+     *            true : 組織リストに仮想組織を含ませる。<br>
+     *            false : 仮想リストに仮想組織を含ませない。
+     * @return 下位組織情報
+     * @exception
+     */
+    Map<String,List<String>> getSubSectionEmp(String userId,Date searchDate, boolean virtualSection);
 }

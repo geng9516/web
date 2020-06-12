@@ -90,19 +90,18 @@ public class SiteManageController {
     }
 
     /**
-     * 跳转到年5日時季指定取得確認界面
+     * 跳转到承認状況一覧界面
      * @param moduleIndex
      * @param menuId
      * @param modelMap
      * @return
      */
     @GetMapping("permstatlist")
-    public String toManageVPermstatList(@RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception{
+    public String toManagePermstatList(@RequestParam("moduleIndex") Integer moduleIndex,
+                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
-        permStatListBean.actRedirect(modelMap);
-        return "sys/manage/require5days";
+        return "sys/manage/permstatlist";
     }
 
 

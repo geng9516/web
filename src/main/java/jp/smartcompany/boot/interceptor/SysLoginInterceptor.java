@@ -116,10 +116,15 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String replacedCompCode = request.getParameter("ReplacedCompCode");
         String replacedUserCode = request.getParameter("ReplacedUserCode");
         String employeeCode = request.getParameter("EmployeeCode");
-        String creterialDate = request.getParameter("CreterialDate");
-
-        if (StrUtil.isNotBlank(creterialDate)) {
-            hashtable.put("CreterialDate",creterialDate);
+        // 表示対象月
+        String standardDate = request.getParameter("txtDYYYYMM");
+        // 表示対象日
+        String standardDay = request.getParameter("txtDYYYYMMDD");
+        if (StrUtil.isNotBlank(standardDate)){
+            hashtable.put("txtDYYYYMM",standardDate);
+        }
+        if (StrUtil.isNotBlank((standardDay))) {
+            hashtable.put("txtDYYYYMMDD",standardDay);
         }
 
         if (StrUtil.isNotBlank(replacedCompCode)){
@@ -202,6 +207,12 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 承认Site的选中员工和部门
         String targetPermSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
         String targetPermEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+
+        // 部门基准日
+        String recordDate = request.getParameter(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
+        if (StrUtil.isNotBlank(recordDate)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_RECORD_DATE,recordDate);
+        }
 
         String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
 

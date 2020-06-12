@@ -29,8 +29,6 @@ public interface ITmgScheduleService extends IService<Object> {
      * [勤怠]日別情報より予定データを取得します
      *
      * @param ctpye_plan
-     * @param startDispDate
-     * @param endDispDate
      * @param dStart
      * @param dEnd
      * @param manageflg
@@ -40,7 +38,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param language
      * @return
      */
-    List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language);
+    List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language);
 
     /**
      * 4週間単位の変形労働制職員対応
@@ -51,7 +49,20 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param employeeId
      * @return
      */
-    HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String custId, String compCode, String employeeId);
+    HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod,String custId, String compCode, String employeeId);
+
+    /**
+     * 4週間単位の変形労働制職員対応
+     *
+     * @param baseDate
+     * @param detailPeriod
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    HashMap<String, Object> SelectBaseDateOf4WeeksAfterDay(String baseDate, String detailPeriod, String custId, String compCode, String employeeId);
+
 
     /**
      * 翌月リンクを取得
@@ -412,4 +423,25 @@ public interface ITmgScheduleService extends IService<Object> {
      */
     void insertTrigger(String custId, String compCode, String employeeId, String sLoginUserCode, String modifierprogramid, String sAction);
 
+    /**
+     * 検索対象年月日の開始日
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param startDate
+     * @param endDate
+     * @param param4WeekAfter
+     * @return
+     */
+    String selectBaseDateFor4Week(String custId, String compCode, String employeeId, String startDate, String endDate, int param4WeekAfter);
+
+    /**
+     * 対象社員の勤怠日別情報の最小日と最大日を取得する
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    HashMap<String,String> selectTmgDailyMinAndMax(String custId, String compCode, String employeeId);
 }
