@@ -17,6 +17,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
@@ -781,6 +782,20 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate) {
         return baseMapper.buildSQLForSelectTmgDispdeptStatlist(custID, compID, lang, targetDate);
+    }
+
+    /**
+     * HR連携除外条件マスタ情報を取得する
+     *
+     * @param custID   顧客コード
+     * @param compCode 　法人コード
+     * @param language 　言語
+     * @param groupId  グループID
+     * @return 　List<SimulationMasterDto>
+     */
+    @Override
+    public List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId){
+        return null;
     }
 
 

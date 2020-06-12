@@ -4,20 +4,33 @@
 
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
     <resultMap id="selectTmgPatternMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO">
-        <result column="tpa_ccustomerid" property="tpa_ccustomerid" />
+        <result column="tpa_ccustomerid" property="tpa_ccustomerid"/>
         <result column="tpa_ccompanyid" property="tpa_ccompanyid"/>
         <result column="tpa_csectionid" property="tpa_csectionid"/>
-        <result column="tpa_cgroupid" property="tpa_cgroupid" />
+        <result column="tpa_cgroupid" property="tpa_cgroupid"/>
         <result column="tpa_dstartdate" property="tpa_dstartdate"/>
         <result column="tpa_denddate" property="tpa_denddate"/>
-        <result column="tpa_cpatternid" property="tpa_cpatternid" />
+        <result column="tpa_cpatternid" property="tpa_cpatternid"/>
         <result column="tpa_cpatternname" property="tpa_cpatternname"/>
         <result column="tpa_cdefaultflg" property="tpa_cdefaultflg"/>
-        <result column="timerange" property="timerange" />
+        <result column="timerange" property="timerange"/>
         <result column="tpa_ndate_change_time" property="tpa_ndate_change_time"/>
         <result column="tpa_c2caldays" property="tpa_c2caldays"/>
         <result column="tpa_cnextptn" property="tpa_cnextptn"/>
     </resultMap>
+
+    <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
+    <resultMap id="selectTmgPatternAppliesMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO">
+        <result column="cust" property="cust"/>
+        <result column="comp" property="comp"/>
+        <result column="empid" property="empid"/>
+        <result column="empname" property="empname"/>
+        <result column="tpaa_cpatternid" property="tpaa_cpatternid"/>
+        <result column="tpa_cpatternname" property="tpa_cpatternname"/>
+        <result column="cworktypeid" property="cworktypeid"/>
+        <result column="cworktypename" property="cworktypename"/>
+    </resultMap>
+
 
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
     <select id="selectTmgPattern" parameterType="java.util.HashMap" resultMap="selectTmgPatternMap">
@@ -60,11 +73,41 @@
 
     </select>
 
-    <select id="selectTmgPatternApplies" parameterType="java.util.HashMap" resultMap="">
-
-
+    <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
+    <select id="selectTmgPatternApplies" parameterType="java.util.HashMap" resultMap="selectTmgPatternAppliesMap">
+        select t0.cust
+        ,t0.comp
+        ,t0.empid
+        ,t0.empname
+        ,tmg_f_get_pattern_default(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) .cpatternid as tpaa_cpatternid
+        ,tmg_f_get_pattern_default(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) .cpatternname as tpa_cpatternname
+        ,tmg_get_worktypeid(t0.cust, t0.comp, t0.empid, to_date(#{baseDate}, 'yyyy/mm/dd')) as cworktypeid
+        ,tmg_f_get_mgd(tmg_get_worktypeid(t0.cust, t0.comp, t0.empid,to_date(#{baseDate}, 'yyyy/mm/dd')), to_date(#{baseDate},'yyyy/mm/dd'), t0.cust, t0.comp, #{language}) as cworktypename
+        ,(select decode(count(1), 0, 0, 1)
+        from tmg_personal_pattern
+        where tppa_ccustomerid = t0.cust
+        and tppa_ccompanyid = t0.comp
+        and tppa_cemployeeid = t0.empid
+        and to_date(#{baseDate}, 'yyyy/mm/dd') between tppa_dstartdate
+        and tppa_denddate and (tppa_nkinmu_num1 is not null
+        or tppa_nkinmu_num2 is not null
+        or tppa_nkinmu_num3 is not null
+        or tppa_nkinmu_num4 is not null
+        or tppa_nkinmu_num5 is not null)) as personal_pattern_use
+        from (
+        <if test="targetEmployees is not null">
+            ${targetEmployees}
+        </if>
+        ) t0
+        where exists (select 1
+        from tmg_group_member
+        where tgrm_ccustomerid = t0.cust
+        and tgrm_ccompanyid = t0.comp
+        and tgrm_cemployeeid = t0.empid
+        and tgrm_dstartdate <![CDATA[<=]]> to_date(#{baseDate}, 'yyyy/mm/dd')
+        and tgrm_denddate <![CDATA[>=]]> to_date(#{baseDate}, 'yyyy/mm/dd'))
+        order by empid;
     </select>
-
 
 
 </mapper>

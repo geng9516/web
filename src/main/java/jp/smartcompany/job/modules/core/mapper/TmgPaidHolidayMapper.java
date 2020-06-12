@@ -2,6 +2,8 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo;
 import org.apache.ibatis.annotations.Mapper;
@@ -28,4 +30,18 @@ public interface TmgPaidHolidayMapper extends BaseMapper<TmgPaidHolidayDO> {
 
 
         List<restYearPaidHolidayVo> selectNenjikyukazannissu(@Param("params") paramNotificationListDto params, @Param("detailFlg")int detailFlg);
-        }
+
+    /**
+     * [勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
+     */
+    List<PaidHolidayDispVO> buildSQLForSelectPaidHoliday(@Param("custID") String custID,
+                                                         @Param("compCode") String compCode,
+                                                         @Param("userCode") String userCode,
+                                                         @Param("targetDate") String targetDate);
+
+    /**
+     *
+     * [勤怠]年次休暇情報を更新する
+     */
+    int buildSQLForUpdatePaidHolyday(TmgPaidHolidayDto tmgPaidHolidayDto);
+}

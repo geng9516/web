@@ -149,4 +149,25 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
         return baseMapper.buildSQLInsertTrigger(map);
     }
 
+    /**
+     * トリガーテーブルにデータを入れる
+     *
+     * @param custID       顧客コード
+     * @param compCode     　法人コード
+     * @param dispUserCode 　対象者
+     * @param userCode     　更新者
+     * @param baseDate     　対象日
+     */
+    @Override
+    public void buildSQLForInsertTriggerTable(String custID, String compCode, String dispUserCode, String userCode, String baseDate) {
+        Map<String, Object> map = MapUtil.newHashMap(4);
+        map.put("custID", custID);
+        map.put("compCode", compCode);
+        map.put("dispUserCode", dispUserCode);
+        map.put("userCode", userCode);
+        map.put("baseDate", baseDate);
+
+        baseMapper.buildSQLForInsertTriggerTable(map);
+    }
+
 }
