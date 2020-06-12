@@ -366,6 +366,9 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate);
 
+
+    List<MastGenericDetailDO> selectPermissionString();
+
     /**
      * HR連携除外条件マスタ情報を取得する
      *
@@ -376,4 +379,5 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @return 　List<SimulationMasterDto>
      */
     List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId);
+
 }

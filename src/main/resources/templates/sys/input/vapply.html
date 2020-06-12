@@ -81,7 +81,7 @@
                     <Card title="申請状況一覧" :class="!rotate ? 'card card-two' : 'card card-two rotate-360'"
                         :loading="loading">
                         <i-button type="primary" ghost size="small" class="mr5"
-                            style="position:relative;right:-672px;font-size:14px" slot="extra" @click="onRefresh">
+                            style="position:relative;right:676px;font-size:14px" slot="extra" @click="onRefresh">
                             申請へ
                         </i-button>
                         <i-select :value="RadioStatusHelper" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleRadioStatusHelper" slot="extra">
@@ -109,20 +109,21 @@
                                             <ul style="display:flex">
                                                 <li style="margin-right:10px" v-if="item.nextAdminList.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
-                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg">
+                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
+                                                        {{e.avatar ? '' : e.name.split(' ')[0]}}
                                                     </Avatar>
                                                 </li>
                                                 <li style="margin-right:10px" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
-                                                    <Avatar src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
-                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
-                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar :src="item.nextAdminList[0].avatar || ''">{{item.nextAdminList[0].avatar ? '' : item.nextAdminList[0].name.split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.nextAdminList[1].avatar || ''">{{item.nextAdminList[1].avatar ? '' : item.nextAdminList[1].name.split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.nextAdminList[2].avatar || ''">{{item.nextAdminList[2].avatar ? '' : item.nextAdminList[2].name.split(' ')[0]}}</Avatar>
                                                     <Avatar class="more-user">{{`+${item.nextAdminList.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
                                             <div class="tr" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.nextAdminList" :key="i">
-                                                    <Avatar class="mr15" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.name.split(' ')[0]}}</Avatar>
                                                     <span>{{ e.name }}</span>
                                                 </div>
                                             </div>
@@ -153,12 +154,12 @@
                                         {{ `申請日時：${item.updateTime}` }}</i-col>
                                 </Row>
                             </li>
-                            <div v-loading="listLoading" style="top:-20px"></div>
+                            <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
+                            <i-button long style="top:-20px">もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
-                    <Card :title="selectedRestInfo.label ? selectedRestInfo.label : '申請区分選択待ち'"
-                        :class="!rotate ? 'card' : 'card rotate-180'">
+                    <Card :title="selectedRestInfo.label ? selectedRestInfo.label : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
                         <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
@@ -259,7 +260,7 @@
                                         <i-input />
                                     </section>
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload multiple action="/" type="drag" class="tl mt15 mb15">
+                                    <Upload ref="upload" :format="['pdf','csv','png','xlsx']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :on-success="handleSuccess" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
@@ -281,6 +282,7 @@
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
         const aliURL = 'https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func'
+        const avatar = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"
         const REST_APPLY = new Vue({
             el: '.restApply-warp',
             data() {
@@ -313,7 +315,7 @@
                             updateTime: '2020/03/02 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1}],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
                         },
                         {
                             status: 2,
@@ -321,7 +323,7 @@
                             updateTime: '2020/03/01 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02', '2020/03/05'],
-                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:2}],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
                         },
                         {
                             status: 3,
@@ -343,10 +345,12 @@
                         useVacation: false
                     },
                     restTypeList: [],
-                    selectedRestInfo: {}
+                    selectedRestInfo: {},
+                    uploadList:[]
                 }
             },
             watch: {
+                // 重置曜日选择器
                 weekSelectFlag(newValue) {
                     if (newValue) {
                         return (this.weekSelected = [])
@@ -361,6 +365,9 @@
             },
             created() {
                 this.getData()
+            },
+            mounted () {
+                this.uploadList = this.$refs.upload.fileList;;
             },
             computed: {
                 flatRestTypeList() {
@@ -497,7 +504,34 @@
                 cancel() {
                     // todo
                     // this.$emit('cancel', e)
+                },
+                handleSuccess (res, file) {
+                    this.$Notice.success({
+                        title: 'Done!',
+                        desc: 'The ' + file.name + 'has been uploaded successfully'
+                    })
+                },
+                handleFormatError (file) {
+                    this.$Notice.warning({
+                        title: 'The file format is incorrect',
+                        desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, or xlsx.'
+                    });
+                },
+                handleBeforeUpload () {
+                    const check = this.uploadList.length < 5;
+                     if (!check) {
+                        this.$Notice.warning({
+                        title: 'Up to five files can be uploaded.'
+                    })
                 }
+                return check;
+                },
+                handleMaxSize (file) {
+                    this.$Notice.warning({
+                        title: 'Exceeding file size limit',
+                        desc: 'File ' + file.name + ' is too large, no more than 500K.'
+                    });
+                },
             }
         })
     </script>

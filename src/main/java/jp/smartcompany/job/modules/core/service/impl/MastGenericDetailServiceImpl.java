@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
@@ -688,6 +689,16 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public List<DispItemsDto> buildSQLForSelectTmgDispdeptStatlist(String custID, String compID, String lang, String targetDate) {
         return baseMapper.buildSQLForSelectTmgDispdeptStatlist(custID, compID, lang, targetDate);
+    }
+
+    @Override
+    public List<MastGenericDetailDO> selectPermissionString() {
+        return list(SysUtil.<MastGenericDetailDO>query()
+                .eq("MGD_CGENERICGROUPID", "PERMSTR")
+                .eq("MGD_CLANGUAGE_CK", "ja")
+                .le("MGD_DSTART_CK", "trunc(sysdate)")
+                .ge("MGD_DEND", "trunc(sysdate)")
+                .orderByAsc("MGD_CCUSTOMERID", "MGD_CCOMPANYID_CK_FK"));
     }
 
     /**
