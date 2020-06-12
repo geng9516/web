@@ -191,8 +191,8 @@
         and tda_ccompanyid = #{compCode}
         and tda_ccustomerid = #{custId}
         <if test="isVariationalWorkDays == false">
-            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{startDispDate}, 'yyyy/mm/dd')  <!-- 日曜日 -->
-            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{endDispDate}, 'yyyy/mm/dd')     <!-- 土曜日 -->
+            and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')  <!-- 日曜日 -->
+            and tda_dyyyymmdd <![CDATA[<=]]> to_date(#{dEnd}, 'yyyy/mm/dd')     <!-- 土曜日 -->
         </if>
         <if test="isVariationalWorkDays == true">
             and tda_dyyyymmdd <![CDATA[>=]]>  to_date(#{dStart}, 'yyyy/mm/dd')
@@ -205,15 +205,30 @@
     <!-- 4週間単位の変形労働制職員対応 -->
     <select id="selectBaseDateOf4WeeksBeforeDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
         select pre_data.pre_start,pre_data.pre_end
-        from (select to_char (decode(tmg_f_get_basedate_fourweeks(0 ,to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId} , #{compCode} , #{custId}), null, trunc(to_date(#{baseDate}, 'yyyy/mm/dd') - 1,'mm'),
-        tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate},'yyyy/mm/dd') - 1 , null , #{employeeId}, #{compCode} ,#{custId})), 'yyyy/mm/dd') as pre_start
-        ,to_char (decode(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId}, #{compCode} , #{custId}), null, last_day(to_date(#{baseDate}, 'yyyy/mm/dd') - 1),
-        to_date(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , null ,#{employeeId} , #{compCode} , #{custId}), 'yyyy-mm-dd') + 7 * 4 - 1), 'yyyy/mm/dd') as pre_end from dual) pre_data
-        where exists(select 1 from tmg_daily
-        where tda_ccustomerid = #{custId}
-        and tda_ccompanyid = #{compCode}
-        and tda_cemployeeid = #{employeeId}
-        and tda_dyyyymmdd <![CDATA[<=]]> pre_data.pre_end)
+                from (select to_char (decode(tmg_f_get_basedate_fourweeks(0 ,to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'), #{employeeId} ,  #{compCode} ,#{custId}), null, trunc(to_date(#{baseDate},'yyyy/mm/dd') - 1, 'mm'),tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate},'yyyy/mm/dd') - 1 , to_date(#{detailPeriod},'yyyy/mm/dd'),#{employeeId} , '01' , '01')),'yyyy/mm/dd') as pre_start
+                        ,to_char (decode(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId},  #{compCode} ,#{custId}), null, last_day(to_date(#{baseDate},'yyyy/mm/dd') - 1), to_date(tmg_f_get_basedate_fourweeks(0 , to_date(#{baseDate}, 'yyyy/mm/dd') - 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId},'01' , '01'), 'yyyy-mm-dd') + 7 * 4 - 1),'yyyy/mm/dd') as pre_end
+                        from dual) pre_data
+                where exists(select 1 from tmg_daily
+                                where tda_ccustomerid = #{custId}
+                                and tda_ccompanyid = #{compCode}
+                                and tda_cemployeeid = #{employeeId}
+                                and tda_dyyyymmdd <![CDATA[<=]]> pre_data.pre_end)
+    </select>
+
+    <!-- 4週間単位の変形労働制職員対応 -->
+    <select id="SelectBaseDateOf4WeeksAfterDay" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select next_data.next_start,next_data.next_end
+              from (select to_char (decode(tmg_f_get_basedate_fourweeks(1 ,to_date(#{baseDate}, 'yyyy/mm/dd') + 1 ,to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId}, #{compCode} , #{custId}), null, add_months(trunc(to_date(#{baseDate}, 'yyyy/mm/dd'), 'mm'), 1),
+                            tmg_f_get_basedate_fourweeks(1 , to_date(#{baseDate},'yyyy/mm/dd') + 1 , to_date(#{detailPeriod},'yyyy/mm/dd'), #{employeeId}, #{compCode} , #{custId})),'yyyy/mm/dd') as next_start
+                    ,to_char (decode(tmg_f_get_basedate_fourweeks(1 , to_date(#{baseDate}, 'yyyy/mm/dd')+ 1 , to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId} , #{compCode} , #{custId}), null, last_day(add_months(to_date(#{baseDate}, 'yyyy/mm/dd'), 1)),
+                            to_date(tmg_f_get_basedate_fourweeks(1 , to_date(#{baseDate}, 'yyyy/mm/dd') + 1 ,to_date(#{detailPeriod}, 'yyyy/mm/dd'),#{employeeId} ,#{compCode} , #{custId}), 'yyyy-mm-dd') + 7 *4 - 1), 'yyyy/mm/dd') as next_end
+                  from dual) next_data
+             where exists(select 1
+                  from tmg_daily
+                 where tda_ccustomerid = #{custId}
+                   and tda_ccompanyid = #{compCode}
+                   and tda_cemployeeid = #{employeeId}
+                   and tda_dyyyymmdd <![CDATA[>=]]> next_data.next_start)
     </select>
 
     <!-- 翌月リンクを取得 -->
@@ -376,7 +391,7 @@
 
     <!-- 表示基準日が4週間単位の変形労働に則っているか -->
     <select id="selectIsStart4weeks" parameterType="java.util.HashMap" resultType="java.lang.String">
-        select 1 from dual where mod(#{targetDate}-to_date(#{detailPeriod},'yyyy/MM/dd'),7*4)=0
+        select 1 from dual where mod(to_date(#{targetDate},'yyyy/MM/dd')-to_date(#{detailPeriod},'yyyy/MM/dd'),7*4)=0
     </select>
 
     <!-- [区分]汎用マスタより区分コンボボックスの選択値を取得します -->
@@ -1222,5 +1237,33 @@
                and ter_cmodifierprogramid =#{modifierprogramid}
 
     </select>
+
+    <!-- 検索対象年月日の開始日 -->
+    <select id="selectBaseDateFor4Week"  parameterType="java.util.HashMap" resultType="java.lang.String">
+        select decode(sign(max(tda_dyyyymmdd) - to_date(#{startDate})), - 1,
+                    to_char(max(tda_dyyyymmdd) - #{param4WeekAfter}, 'yyyy/mm/dd'), decode(sign(
+                            max(tda_dyyyymmdd) - to_date(#{endDate})), - 1,
+                        to_char(max(tda_dyyyymmdd) - #{param4WeekAfter}, 'yyyy/mm/dd'), decode(
+                            sign(min(tda_dyyyymmdd) - to_date(#{startDate})), 1,
+                            to_char(min(tda_dyyyymmdd), 'yyyy/mm/dd'), decode(sign(
+                                    min(tda_dyyyymmdd) - to_date(#{endDate})), 1,
+                                to_char(min(tda_dyyyymmdd), 'yyyy/mm/dd')))))  as baseDate
+              from tmg_daily
+             where tda_cemployeeid = #{employeeId}
+               and tda_ccompanyid = #{compCode}
+               and tda_ccustomerid = #{custId}
+    </select>
+
+    <!-- 対象社員の勤怠日別情報の最小日と最大日を取得する -->
+    <select id="selectTmgDailyMinAndMax" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select to_char(min(tda_dyyyymmdd), 'yyyy/mm/dd') as min_date
+                ,to_char(max(tda_dyyyymmdd), 'yyyy/mm/dd') as max_date
+              from tmg_daily
+             where tda_cemployeeid =  #{employeeId}
+               and tda_ccompanyid = #{compCode}
+               and tda_ccustomerid =  #{custId}
+
+    </select>
+
 
 </mapper>

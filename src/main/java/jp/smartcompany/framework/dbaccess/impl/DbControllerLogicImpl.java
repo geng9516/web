@@ -35,6 +35,65 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         return convertData(oSqlResult);
     }
 
+    @Override
+    public Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam) throws SQLException {
+        if (StrUtil.isBlank(sSql)) {
+            throw new GlobalException("SEARCH_SQL");
+        }
+        Connection connection = dataSource.getConnection();
+        Object oSqlResult = dbAccessLogic.executeQuery(connection,
+                sSql, vecParam);
+        return convertData(oSqlResult);
+    }
+
+    @Override
+    public Vector<Integer> executeUpdate(Vector vecQuery) throws SQLException {
+        if (CollUtil.isEmpty(vecQuery)) {
+            throw new GlobalException("UPDATE_SQL");
+        }
+        Vector<Integer> vecResult = new Vector<>();
+        Connection connection = dataSource.getConnection();
+        for (Object sql : vecQuery) {
+            int nCount = dbAccessLogic.executeUpdate(connection, (String)sql);
+            vecResult.add(nCount);
+        }
+        return vecResult;
+    }
+
+    @Override
+    public Vector<Integer> executeUpdate(Vector vecQuery, Vector vecParam) throws SQLException {
+        if (CollUtil.isEmpty(vecQuery)) {
+            throw new GlobalException("UPDATE_SQL");
+        }
+        Vector<Integer> vecResult = new Vector<>();
+        Connection connection = dataSource.getConnection();
+        for (Object sql : vecQuery) {
+            int nCount = dbAccessLogic.executeUpdate(connection, (String)sql,vecParam);
+            vecResult.add(nCount);
+        }
+        return vecResult;
+    }
+
+    @Override
+    public boolean executeProcedure(Vector vecQuery, Vector vecParam) throws SQLException {
+        if (CollUtil.isEmpty(vecQuery)) {
+            throw new GlobalException("PROCEDUR_QUERY");
+        }
+        Connection connection = dataSource.getConnection();
+        Vector<Vector<Object>> vParam = new Vector();
+        for (int i = 0; i < vecQuery.size(); i++) {
+            if ((vecParam == null) || (vecParam.size() == 0)) {
+                vParam.add(new Vector());
+            } else if ((i >= vecParam.size()) || (vecParam.get(i) == null)) {
+                vParam.add(new Vector());
+            } else {
+                vParam.add((Vector) vecParam.get(i));
+            }
+        }
+        dbAccessLogic.executeProcedure(connection,vecQuery,vecParam);
+        return true;
+    }
+
     private Vector<Vector<Object>> convertData(Object oSqlResult) {
         Vector<Vector<Object>> vecResult = new Vector<>();
         List<Entity> lSqlResult = (List<Entity>) oSqlResult;
@@ -49,7 +108,6 @@ public class DbControllerLogicImpl implements DbControllerLogic {
                 vecResult.add(vColuData);
             }
         }
-        System.out.println(vecResult);
         return vecResult;
     }
 

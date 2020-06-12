@@ -40,7 +40,7 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
     List<MastEmployeesDO> selectEmployByLoginUserId(String psCustid,
                                   String psCompid,
                                   String psLoginUserId,
-                                  Date psDate);
+                                  String psDate);
 
     /**
      * サイトIDを判定し更新対象の職員番号

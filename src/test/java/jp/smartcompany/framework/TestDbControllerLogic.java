@@ -9,7 +9,9 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.Vector;
 
 @SpringBootTest(classes = NextJobApplication.class)
 @RunWith(SpringRunner.class)
@@ -25,6 +27,22 @@ public class TestDbControllerLogic {
     @Test
     public void testExecuteQuery() throws SQLException {
         System.out.println(dbControllerLogic.executeQuery("select * from mast_apptree order by mtr_nseq"));
+    }
+
+    @Test
+    public void testExecuteProcedure() throws SQLException {
+        Vector sql = new Vector();
+        Vector<Vector<Object>> vParam = new Vector<>();
+        sql.add("call TMG_P_IF_PERSONAL_PATTERN(?,?,?,?,?,?)");
+        Vector<Object> p1 = new Vector<>();
+        p1.add("'46402406'");
+        p1.add("null");
+        p1.add("'TMG_P_IF_PERSONAL_PATTERN'");
+        p1.add("'01'");
+        p1.add("'01'");
+        p1.add("2020/06/10");
+        vParam.add(p1);
+        dbControllerLogic.executeProcedure(sql,vParam);
     }
 
 

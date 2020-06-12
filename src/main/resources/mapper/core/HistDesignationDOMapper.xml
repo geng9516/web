@@ -28,24 +28,25 @@
         ;
     </select>
 
-    <select id="selectEvaluator" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO" statementType="STATEMENT">
+    <select id="selectEvaluator" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
+        -- 指定ユーザ役割関係定義異動暦情報取得
         SELECT
         HD_CCUSTOMERID_CK AS customerCode, -- 顧客コード
         HD_CCOMPANYID_CK AS companyCode, -- 法人コード
         MAC_CLAYEREDCOMPANYID AS companyHierarchy, -- 法人内部階層コード
         MAC_NSEQ AS companyOrder, -- 法人並び順
-        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, 'ja') AS companyName, -- 法人名称
+        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
         HD_CUSERID AS userid, -- ユーザID
         HD_CEMPLOYEEID_CK AS employee, -- 社員番号
-        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, 'ja') AS name, -- 氏名
+        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
         ME_CKANANAME AS nameKana, -- 氏名カナ
         HD_CSECTIONID_FK AS section, -- 組織コード
         MO_CLAYEREDSECTIONID AS sectionHierarchy, -- 組織内部階層コード
         MO_NSEQ AS sectionOrder, -- 組織並び順
-        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, 'ja') AS sectionName, -- 組織名称
+        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, '${language}') AS sectionName, -- 組織名称
         HD_CPOSTID_FK AS postCode, -- 役職コード
         MAP_NWEIGHTAGE AS postRank, -- 役職順位
-        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, 'ja') AS postName, -- 役職名称
+        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, '${language}') AS postName, -- 役職名称
         HD_CIFKEYORADDITIONALROLE AS attachRole, -- 本務兼務区分コード
         HD_DSTARTDATE_CK AS personnelChangesBigin, -- 異動暦開始日取得
         '1' AS judgDiv, -- 判定区分
@@ -124,7 +125,7 @@
         HD_CCOMPANYID_CK;
     </select>
 
-    <select id="selectAllEvaluator" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
+    <select id="selectAllEvaluator" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
         -- 指定ユーザの異動暦情報取得Query（DesignationDao_select.sql）
 
         SELECT
@@ -132,18 +133,18 @@
         HD_CCOMPANYID_CK AS companyCode, -- 法人コード
         MAC_CLAYEREDCOMPANYID AS companyHierarchy, -- 法人内部階層コード
         MAC_NSEQ AS companyOrder, -- 法人並び順
-        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, /*language*/'ja') AS companyName, -- 法人名称
+        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
         HD_CUSERID AS userid, -- ユーザID
         HD_CEMPLOYEEID_CK AS employee, -- 社員番号
-        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, /*language*/'ja') AS name, -- 氏名
+        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
         ME_CKANANAME AS nameKana, -- 氏名カナ
         HD_CSECTIONID_FK AS section, -- 組織コード
         MO_CLAYEREDSECTIONID AS sectionHierarchy, -- 組織内部階層コード
         MO_NSEQ AS sectionOrder, -- 組織並び順
-        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, /*language*/'ja') AS sectionName, -- 組織名称
+        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, '${language}') AS sectionName, -- 組織名称
         HD_CPOSTID_FK AS postCode, -- 役職コード
         MAP_NWEIGHTAGE AS postRank, -- 役職順位
-        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, /*language*/'ja') AS postName, -- 役職名称
+        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, '${language}') AS postName, -- 役職名称
         HD_CIFKEYORADDITIONALROLE AS attachRole, -- 本務兼務区分コード
         HD_DSTARTDATE_CK AS personnelChangesBigin, -- 異動暦開始日取得
         '' AS judgDiv, -- 判定区分
@@ -161,37 +162,37 @@
         -- HIST_DESIGNATION
         HD_CCUSTOMERID_CK =#{customerId}
         AND	HD_CUSERID = #{userId}
-        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	HD_DENDDATE >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	HD_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_EMPLOYEES
         AND	ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK
         AND	ME_CUSERID = HD_CUSERID
-        AND	ME_DSTARTDATE <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	ME_DENDDATE >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	ME_DSTARTDATE <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	ME_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_COMPANY
         AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
         AND	MAC_CLANGUAGE = 'ja'
-        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAC_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAC_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_ORGANISATION
         AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
         AND	MO_CLANGUAGE = 'ja'
-        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MO_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_POST
         AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
         AND	MAP_CLANGUAGE = 'ja'
-        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAP_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAP_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         ORDER BY
         HD_CIFKEYORADDITIONALROLE,
@@ -206,18 +207,18 @@
         HD_CCOMPANYID_CK AS companyCode, -- 法人コード
         MAC_CLAYEREDCOMPANYID AS companyHierarchy, -- 法人内部階層コード
         MAC_NSEQ AS companyOrder, -- 法人並び順
-        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, #{language}) AS companyName, -- 法人名称
+        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
         HD_CUSERID AS userid, -- ユーザID
         HD_CEMPLOYEEID_CK AS employee, -- 社員番号
-        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, #{language}) AS name, -- 氏名
+        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
         ME_CKANANAME AS nameKana, -- 氏名カナ
         HD_CSECTIONID_FK AS section, -- 組織コード
         MO_CLAYEREDSECTIONID AS sectionHierarchy, -- 組織内部階層コード
         MO_NSEQ AS sectionOrder, -- 組織並び順
-        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, #{language}) AS sectionName, -- 組織名称
+        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, '${language}') AS sectionName, -- 組織名称
         HD_CPOSTID_FK AS postCode, -- 役職コード
         MAP_NWEIGHTAGE AS postRank, -- 役職順位
-        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, #{language}) AS postName, -- 役職名称
+        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, '${language}') AS postName, -- 役職名称
         HD_CIFKEYORADDITIONALROLE AS attachRole, -- 本務兼務区分コード
         HD_DSTARTDATE_CK AS personnelChangesBigin, -- 異動暦開始日取得
         '' AS judgDiv, -- 判定区分
@@ -236,37 +237,37 @@
         HD_CCUSTOMERID_CK = #{custId}
         AND	HD_CUSERID = #{userId}
         AND HD_CSECTIONID_FK = #{sectionId}
-        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
         AND	HD_DENDDATE >=  to_date(#{searcharDate},'yyyy/mm/dd')
 
         -- MAST_EMPLOYEES
         AND	ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK
         AND	ME_CUSERID = HD_CUSERID
-        AND	ME_DSTARTDATE <![CDATA[<=]]>  to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	ME_DENDDATE >=  to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	ME_DSTARTDATE <![CDATA[<=]]>  to_date(#{searchDate},'yyyy/mm/dd')
+        AND	ME_DENDDATE >=  to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_COMPANY
         AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
         AND	MAC_CLANGUAGE = 'ja'
-        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAC_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAC_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_ORGANISATION
         AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
         AND	MO_CLANGUAGE = 'ja'
-        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MO_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_POST
         AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
         AND	MAP_CLANGUAGE = 'ja'
-        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAP_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAP_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         ORDER BY
         HD_CIFKEYORADDITIONALROLE,
@@ -281,18 +282,18 @@
         HD_CCOMPANYID_CK AS companyCode, -- 法人コード
         MAC_CLAYEREDCOMPANYID AS companyHierarchy, -- 法人内部階層コード
         MAC_NSEQ AS companyOrder, -- 法人並び順
-        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, #{language}) AS companyName, -- 法人名称
+        PSMASTER.FUNC_GET_COMP_NAME(MAC_ID, '${language}') AS companyName, -- 法人名称
         HD_CUSERID AS userid, -- ユーザID
         HD_CEMPLOYEEID_CK AS employee, -- 社員番号
-        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, #{language}) AS name, -- 氏名
+        PSMASTER.FUNC_GET_EMP_NAME(ME_ID, '${language}') AS name, -- 氏名
         ME_CKANANAME AS nameKana, -- 氏名カナ
         HD_CSECTIONID_FK AS section, -- 組織コード
         MO_CLAYEREDSECTIONID AS sectionHierarchy, -- 組織内部階層コード
         MO_NSEQ AS sectionOrder, -- 組織並び順
-        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, #{language}) AS sectionName, -- 組織名称
+        PSMASTER.FUNC_GET_SECTION_NAME(MO_ID, '${language}') AS sectionName, -- 組織名称
         HD_CPOSTID_FK AS postCode, -- 役職コード
         MAP_NWEIGHTAGE AS postRank, -- 役職順位
-        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, #{language}) AS postName, -- 役職名称
+        PSMASTER.FUNC_GET_POST_NAME(MAP_ID, '${language}') AS postName, -- 役職名称
         HD_CIFKEYORADDITIONALROLE AS attachRole, -- 本務兼務区分コード
         HD_DSTARTDATE_CK AS personnelChangesBigin, -- 異動暦開始日取得
         '' AS judgDiv, -- 判定区分
@@ -312,37 +313,37 @@
         AND HD_CCOMPANYID_CK = #{compId}
         AND HD_CSECTIONID_FK = #{sectionId}
         AND HD_CBOSSORNOT = '1' -- 0:一般 / 1:所属長
-        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	HD_DENDDATE >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	HD_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_EMPLOYEES
         AND	ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK
         AND	ME_CUSERID = HD_CUSERID
-        AND	ME_DSTARTDATE <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	ME_DENDDATE >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	ME_DSTARTDATE <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	ME_DENDDATE >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_COMPANY
         AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
         AND	MAC_CLANGUAGE = 'ja'
-        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAC_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAC_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAC_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_ORGANISATION
         AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
         AND	MO_CLANGUAGE = 'ja'
-        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MO_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MO_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         -- MAST_POST
         AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
         AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
         AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
         AND	MAP_CLANGUAGE = 'ja'
-        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searcharDate},'yyyy/mm/dd')
-        AND	MAP_DEND >= to_date(#{searcharDate},'yyyy/mm/dd')
+        AND	MAP_DSTART <![CDATA[<=]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND	MAP_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
 
         ORDER BY
         HD_DSTARTDATE_CK,
@@ -463,4 +464,5 @@
         AND HD.HD_DSTARTDATE_CK(+) <![CDATA[<=]]> m.TMO_DYYYYMM
         AND HD.HD_DENDDATE(+) >= m.TMO_DYYYYMM
     </select>
+
 </mapper>

@@ -2,10 +2,7 @@ package jp.smartcompany.boot.util;
 
 import cn.hutool.cache.impl.LRUCache;
 import jp.smartcompany.framework.sysboot.*;
-import jp.smartcompany.framework.sysboot.dto.AppAuthJudgmentDTO;
-import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
-import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
-import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
+import jp.smartcompany.framework.sysboot.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -127,4 +124,10 @@ public class ScCacheUtil {
         appAuthJudgmentCache.loadAppAuthJudgment();
         return appAuthJudgmentCache.getAppAuthJudgmentCache(psKey1);
     }
+
+    public Map<String, SystemPropertyDTO> getAllSystemProperties() {
+        SystemPropertyCache systemPropertyCache = new SystemPropertyCache();
+        return systemPropertyCache.getAllSystemProperties();
+    }
+
 }
