@@ -13,11 +13,11 @@
                 <i-col span="7">
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
-                        <i-select v-model="restApply.restTypeId" editable filterable @on-change="handleRestType"
+                        <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
-                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ e.ntfName }}</i-option>
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ e.ntfName.length > 25 ? e.ntfName.split('(')[1] : e.ntfName  }}</i-option>
                             </option-group>
                         </i-select>
                         <section v-show="selectedRestInfo.info">
@@ -466,8 +466,13 @@
                 handleWeekSelect() { },
                 handleRestType(e) {
                     // 选择不同的休假时，判断显示不同的项目
-                    if (!e || e === '全て') return (this.selectedRestInfo = {})
-                    else this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                    if  (!e || e === '全て') {
+                        return (this.selectedRestInfo = {})
+                    }
+                    this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                    if(this.selectedRestInfo.ntfName.length > 25 ) {
+                        this.selectedRestInfo.ntfName =this.selectedRestInfo.ntfName.split('(')[1]
+                    }
                 },
                 // 到底再拉数据，需要判断总数，决定是否再拉，每次拉50条
                 handleScroll: Throttle(function (e) {
