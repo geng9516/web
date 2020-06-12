@@ -158,7 +158,7 @@
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
-                    <Card :title="selectedRestInfo.ntfName ? restTypeNameView(selectedRestInfo.ntfName) : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
+                    <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="handleFrontCardClass">
                         <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
@@ -422,6 +422,17 @@
                     let result = []
                     if (this.restTypeList.length > 0) {
                         this.restTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
+                    }
+                    return result
+                },
+                handleFrontCardClass() {
+                    let result = 'card'
+                    if(this.rotate) {
+                        result = result.concat(' rotate-180')
+                    }
+                    const name = this.selectedRestInfo.ntfName
+                    if(name && name.length > 25) {
+                        result = result.concat(' full-name')
                     }
                     return result
                 }
