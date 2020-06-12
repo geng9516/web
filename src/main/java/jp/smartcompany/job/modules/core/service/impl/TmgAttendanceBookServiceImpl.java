@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgAttendanceBookMapper;
 import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -110,5 +111,15 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
         params.put("compCode", compCode);
         params.put("custId", custId);
         return baseMapper.selectEmployeesBasicInfo(params);
+    }
+
+    @Override
+    public AttendanceExistsVO selectExistsAttendanceBook(String baseDate, String employeeId, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectExistsAttendanceBook(params);
     }
 }

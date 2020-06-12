@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +37,7 @@ public class AttendanceBookController {
     @GetMapping("queryDate")
     public AttendanceDateInfoDTO queryDate(@RequestParam("employeeId") String employeeId, @RequestParam("year") String year, @RequestParam("month") String month, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(year, null, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, psDBBean);
         return attendanceBookBean.selectDateInfo(employeeId, year, month);
 
     }
@@ -48,9 +49,9 @@ public class AttendanceBookController {
      * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
      */
     @GetMapping("defaultDate")
-    public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId,  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public AttendanceDateInfoDTO defaultDate(@RequestParam("employeeId") String employeeId, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(null, null, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(null, null, employeeId, psDBBean);
         return attendanceBookBean.selectDateInfo(employeeId);
 
     }
@@ -67,9 +68,9 @@ public class AttendanceBookController {
     @ResponseBody
     public AttendanceBookHolidayInfoVO queryHolidayInfo(@RequestParam("employeeId") String employeeId,
                                                         @RequestParam("year") String year,
-                                                        @RequestParam("month") String month,  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                        @RequestParam("month") String month, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(year, month, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(year, month, employeeId, psDBBean);
         return attendanceBookBean.queryHolidayInfo(employeeId, year, month);
     }
 
@@ -85,9 +86,9 @@ public class AttendanceBookController {
     @ResponseBody
     public List<LinkedHashMap<String, String>> attendanceBookList(@RequestParam("employeeId") String employeeId,
                                                                   @RequestParam("year") String year,
-                                                                  @RequestParam("month") String month,  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                                  @RequestParam("month") String month, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(year, month, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(year, month, employeeId, psDBBean);
         return attendanceBookBean.selectAttendanceBookList(employeeId, year, month);
     }
 
@@ -106,15 +107,16 @@ public class AttendanceBookController {
     public boolean updateComment(@RequestParam("employeeId") String employeeId,
                                  @RequestParam("modifieruserId") String modifieruserId,
                                  @RequestParam("year") String year,
-                                 @RequestParam("comment") String comment,  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                 @RequestParam("comment") String comment, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(year, null, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, psDBBean);
         return attendanceBookBean.updateComment(employeeId, modifieruserId, year, comment);
     }
 
     /**
      * 権限処理　（コメント更新）
      * http://localhost:6879/sys/attendanceBook/isEnableEditField?employeeId=46402406&year=2019
+     *
      * @param employeeId targetUser
      * @param year
      * @return true:権限があり    false:権限がない
@@ -123,11 +125,28 @@ public class AttendanceBookController {
     @ResponseBody
     public boolean isEnableEditField(@RequestParam("employeeId") String employeeId,
                                      @RequestParam("year") String year,
-                                      @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                     @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        attendanceBookBean.setExecuteParameters(year, null, employeeId,psDBBean);
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, psDBBean);
         return attendanceBookBean.isEnableEditField(year);
     }
 
+
+    /**
+     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * http://localhost:6879/sys/attendanceBook/selectExistsAttendanceBook?employeeId=46402406&year=2019
+     *
+     * @param employeeId targetUser
+     * @param year
+     */
+    @GetMapping("selectExistsAttendanceBook")
+    @ResponseBody
+    public AttendanceExistsVO selectExistsAttendanceBook(@RequestParam("employeeId") String employeeId,
+                                                @RequestParam("year") String year,
+                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        attendanceBookBean.setExecuteParameters(year, null, employeeId, psDBBean);
+        return attendanceBookBean.selectExistsAttendanceBook(employeeId, year);
+    }
 
 }

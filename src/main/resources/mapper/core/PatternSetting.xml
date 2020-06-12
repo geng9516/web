@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSettingMapper">
+
+    <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
+    <resultMap id="selectTmgPatternMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO">
+        <result column="tpa_ccustomerid" property="tpa_ccustomerid" />
+        <result column="tpa_ccompanyid" property="tpa_ccompanyid"/>
+        <result column="tpa_csectionid" property="tpa_csectionid"/>
+        <result column="tpa_cgroupid" property="tpa_cgroupid" />
+        <result column="tpa_dstartdate" property="tpa_dstartdate"/>
+        <result column="tpa_denddate" property="tpa_denddate"/>
+        <result column="tpa_cpatternid" property="tpa_cpatternid" />
+        <result column="tpa_cpatternname" property="tpa_cpatternname"/>
+        <result column="tpa_cdefaultflg" property="tpa_cdefaultflg"/>
+        <result column="timerange" property="timerange" />
+        <result column="tpa_ndate_change_time" property="tpa_ndate_change_time"/>
+        <result column="tpa_c2caldays" property="tpa_c2caldays"/>
+        <result column="tpa_cnextptn" property="tpa_cnextptn"/>
+    </resultMap>
+
+    <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
+    <select id="selectTmgPattern" parameterType="java.util.HashMap" resultMap="selectTmgPatternMap">
+        select ccustomerid as tpa_ccustomerid
+            ,ccompanyid as tpa_ccompanyid
+            ,csectionid as tpa_csectionid
+            ,cgroupid as tpa_cgroupid
+            ,dstartdate as tpa_dstartdate
+            ,denddate as tpa_denddate
+            ,cpatternid as tpa_cpatternid
+            ,cpatternname as tpa_cpatternname
+            ,cdefaultflg as tpa_cdefaultflg
+            ,tmg_f_timerange_table_json(timerange) as timerange
+            ,tmg_f_conv_min2hhmi(ndate_change_time, 0) as tpa_ndate_change_time
+            ,c2caldays as tpa_c2caldays
+            ,cnextptn as tpa_cnextptn
+          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{groupId}, null, trunc(sysdate)))
+                  order by csectionid, cgroupid, cpatternid
+
+    </select>
+
+    <!-- TMG_PATTERNより利用可能な勤務パターンを取得する(自組織分)  -->
+    <select id="selectTmgPatternOwn" parameterType="java.util.HashMap" resultMap="selectTmgPatternMap">
+        select ccustomerid as tpa_ccustomerid
+            ,ccompanyid as tpa_ccompanyid
+            ,csectionid as tpa_csectionid
+            ,cgroupid as tpa_cgroupid
+            ,dstartdate as tpa_dstartdate
+            ,denddate as tpa_denddate
+            ,cpatternid as tpa_cpatternid
+            ,cpatternname as tpa_cpatternname
+            ,cdefaultflg as tpa_cdefaultflg
+            ,tmg_f_timerange_table_json(timerange) as timerange
+            ,tmg_f_conv_min2hhmi(ndate_change_time, 0) as tpa_ndate_change_time
+            ,c2caldays as tpa_c2caldays
+            ,cnextptn as tpa_cnextptn
+          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{groupId},null, trunc(sysdate)))
+             where csectionid = #{sectionId}
+               order by csectionid, cgroupid, cpatternid;
+
+    </select>
+
+    <select id="selectTmgPatternApplies" parameterType="java.util.HashMap" resultMap="">
+
+
+    </select>
+
+
+
+</mapper>
