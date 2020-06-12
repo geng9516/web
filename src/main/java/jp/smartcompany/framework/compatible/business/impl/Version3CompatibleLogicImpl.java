@@ -22,16 +22,13 @@ import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
-import jp.smartcompany.job.modules.core.service.IHistDesignationService;
-import jp.smartcompany.job.modules.core.service.IMastCompanyService;
-import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
-import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
+import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
@@ -60,8 +57,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     private final PsEmpRelation psEmpRelation;
     private final PsOrgRelation psOrgRelation;
     private final BehaviorApplyLogic behaviorApplyLogic;
-
-    private PsSession psSession;
+    private final IMastGenericDetailService iMastGenericDetailService;
 
     /** 更新用エラーコード */
     private static final int UPDATE_ERROR_CODE = -2;
@@ -83,28 +79,136 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     @Override
-    public PsResult SelectQuerywithPermission(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, boolean bApplypermission, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession) throws Exception {
-        return null;
+    public PsResult SelectQuerywithPermission(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, boolean bApplypermission, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession) throws Exception {
+        // ログインユーザコード取得
+        PsSession psSession = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        String sLoginUserCode = psSession.getLoginUser();
+        // リレーションID取得
+        int nRelationId = this.getRelationIdForMask(
+                sCustid, sCompid, sUserid, sTarcomp, sTargetuser, sDate,
+                sLoginUserCode, sTarcomp, sTarsection, sSystemCode, sDomainid,
+                PsConst.REPORTLINE_TYPE_DEF,
+                httpSession, sGroupid, strGUID);
+
+//		return this.SelectQuerywithPermissionAndQueryBatchAndTargetUser(
+//						pvQuery, nRelationId, psSystemCode, psDomainid);
+        PsResult result = this.SelectQuerywithPermissionAndQueryBatchAndTargetUser(	//暫定の修正
+                pvQuery, nRelationId, sSystemCode, sDomainid);
+        result.setResult((Vector)result.getResult().get(0));
+        return result;
     }
 
     @Override
     public PsResult SelectSpecificComboQuerywithoutPermission(String sCustid, String sCompid, String sLanguage, String sDate, String sCode) {
-        return null;
+        PsResult psResult = new PsResult();
+        Vector<Vector<Object>> vResult = new Vector<Vector<Object>>();
+        Vector<String> vecException = new Vector<String>();
+        try {
+            // 名称マスタ取得（名称マスタ明細データより取得）
+            //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+            // sCustid, sCompid, sLanguage, fmtchgDate(sDate), sCode
+            List<MastGenericDetailDO> lGenericDetailList =
+                    iMastGenericDetailService.list(
+                        SysUtil.<MastGenericDetailDO>query()
+                        .eq("MGD_CCUSTOMERID",sCustid)
+                        .eq("MGD_CCOMPANYID_CK_FK",sCompid)
+                        .eq("MGD_CLANGUAGE_CK","ja")
+                        .le("MGD_DSTART_CK",SysUtil.transDateNullToDB(sDate))
+                            .ge("MGD_DEND",SysUtil.transDateNullToDB(sDate))
+                            .orderByAsc("MGD_CMASTERCODE")
+                    );
+            Vector<Object> vColumn;
+            for (MastGenericDetailDO mastGenericDetailEntity : lGenericDetailList) {
+                vColumn = new Vector<>();
+                vColumn.add(mastGenericDetailEntity.getMgdCcustomerid());
+                vColumn.add(mastGenericDetailEntity.getMgdCcompanyidCkFk());
+                vColumn.add(mastGenericDetailEntity.getMgdCgenericgroupid());
+                vColumn.add(mastGenericDetailEntity.getMgdClanguageCk());
+                vColumn.add(mastGenericDetailEntity.getMgdCmastercode());
+                vColumn.add(mastGenericDetailEntity.getMgdCgenericdetaildesc());
+                vResult.add(vColumn);
+            }
+
+            // setExceptionに空を設定
+            vecException.add("");
+        } catch (Exception e) {
+
+            // e.getMessageをセット
+            vecException.add(e.getMessage());
+        }
+
+        // psResultへ結果セット
+        psResult.setException(vecException);
+        psResult.setResult(vResult);
+        return psResult;
     }
 
     @Override
     public int setInsertValues(Vector vecQuery, String sUserid, String sBeandesc, String sCompid, String sCustid, String sSystemCode, String strGUID) {
-        return 0;
+        int nCount = 0;
+        if (vecQuery != null && vecQuery.size() > 0) {
+
+            // SQL実行
+            Vector vUpdateCnt;
+            try {
+                vUpdateCnt = dbControllerLogic.executeUpdate(vecQuery);
+                if (vUpdateCnt.size() > 0) {
+                    // 最後のSQL文の更新件数をかえす
+                    nCount = (Integer) vUpdateCnt.get(vUpdateCnt.size() - 1);
+                }
+            } catch (Exception e) {
+                nCount = Version3CompatibleLogicImpl.UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
+            }
+        }
+        return nCount;
     }
 
     @Override
     public int setInsertValuesForBlob(Vector vecQuery, Vector vecParams, String sUserId, String sBeanDesc, String sCompId, String sCustId, String sSystemCode, String sGUID) {
-        return 0;
+        int nCount = 0;
+        if (vecQuery != null && vecQuery.size() > 0) {
+
+            // SQL実行
+            Vector vUpdateCnt = new Vector();
+            try {
+                vUpdateCnt = dbControllerLogic.executeUpdate(vecQuery, vecParams);
+                if (vUpdateCnt.size() > 0) {
+
+                    // 最後のSQL文の更新件数をかえす
+                    nCount = (Integer) vUpdateCnt.get(vUpdateCnt.size() - 1);
+                }
+            } catch (Exception e) {
+                nCount = Version3CompatibleLogicImpl.UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
+            }
+        }
+        return nCount;
     }
 
+    /**
+     * 複数SELECT文を実行します
+     * @param vecQuery クエリ Vector
+     * @param sUserid ユーザコード
+     * @param vPostid 役職コード Vector
+     * @param sGroupid グループコード
+     * @param vPostweightage 役職重み Vector
+     * @param sBeandesc ログ出力で用いる説明文字列
+     * @param bApplypermission データアクセス制御の適用フラグ
+     * @param sTargetuser 検索対象ユーザコード
+     * @param vDept 検索対象組織コード Vector
+     * @param sCompid 法人コード
+     * @param sCustid 顧客コード
+     * @param sSystemCode システムコード
+     * @param strGUID GUID
+     * @return PsResult 結果セット
+     * @throws Exception システム例外
+     */
     @Override
     public PsResult executeSelectQueryBatch(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, Vector vPostweightage, String sBeandesc, boolean bApplypermission, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID) throws Exception {
-        return null;
+        // リレーションID取得
+        int nRelationId = getRelation(sCustid, sCompid, sUserid,
+                sCompid, sTargetuser, this.getDataBaseDate());
+        return SelectQuerywithPermissionAndQueryBatchAndTargetUser(
+                vecQuery, nRelationId, sSystemCode,DOMAIN_CODE);
     }
 
     /**
@@ -140,9 +244,37 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                 vecQuery, nRelationId, sSystemCode, sDomainid);
     }
 
+    /**
+     * SELECT文（複数対象）を実行します
+     * @param pvQuery クエリVector
+     * @param sUserid ユーザコード
+     * @param vPostid 役職コード Vector
+     * @param sGroupid グループコード
+     * @param sBeandesc ログ出力で用いる説明文字列
+     * @param sTargetuser 検索対象ユーザコード
+     * @param vDept 検索者の組織コード Vector
+     * @param sCompid 検索者の法人コード
+     * @param sCustid 顧客コード
+     * @param sSystemCode システムコード
+     * @param strGUID GUID
+     * @param sDomainid ドメインコード
+     * @param sDate 検索基準日
+     * @param vSectionid 検索者組織コード（組織用）
+     * @param sTarcomp 検索対象者の法人コード
+     * @param sTarsection 検索対象者の組織コード
+     * @param httpSession セッション情報
+     * @return PsResult 結果セット
+     * @throws Exception システム例外
+     */
     @Override
     public PsResult SelectMultiQuerywithPermission(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession)  {
-        return null;
+        return this.SelectMultiQuerywithPermissionwithRangeLine(
+                pvQuery,    sUserid,     vPostid,
+                sGroupid,    sBeandesc,   sTargetuser,
+                vDept,       sCompid,     sCustid,
+                sSystemCode, strGUID,     sDomainid,
+                sDate,       vSectionid,  sTarcomp,
+                sTarsection, null, null, httpSession);
     }
 
     /**
@@ -361,6 +493,8 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
     @Override
     public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate) throws Exception {
+        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         // ログインユーザコード取得
         String sLoginUserCode = psSession.getLoginUser();
         // TODO 検索対象ユーザコード取得できないときの処理未実装
@@ -590,6 +724,8 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         List<EvaluatorBO> lSectionChief;
         try {
             // ログインユーザコード取得
+            HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+            PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
             String sLoginUserCode = psSession.getLoginUser();
 //            String sLoginUserCode = "46402406";
             // TODO 所属長情報取得のメソッド空実装
@@ -971,6 +1107,8 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
         // SQL実行結果の行数分処理
         Vector<Vector<Object>> vResult = new Vector<Vector<Object>>();
+        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         for (int nRcnt = nSline; nRcnt < nEline; nRcnt++) {
 
             // 取得した対象者法人コード
