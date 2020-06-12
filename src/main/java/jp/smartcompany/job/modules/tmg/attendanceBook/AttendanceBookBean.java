@@ -88,12 +88,6 @@ public class AttendanceBookBean {
 
         this.psDBBean = psDBBean;
 
-        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
-            year = DateUtil.thisYear() + "";
-        }
-        if (ObjectUtil.isNull(month) || ObjectUtil.isEmpty(month)) {
-            month = DateUtil.thisMonth() + "";
-        }
         this.setReferList();
         if (null != employeeId && !"".equals(employeeId) && (null == psDBBean.getTargetUser() || "".equals(psDBBean.getTargetUser()))) {
             psDBBean.setTargetUser(employeeId);
@@ -651,12 +645,10 @@ public class AttendanceBookBean {
             return null;
         }
 
-        if (null != year && !"".equals(year)) {
-            targetDate = year + "/12/31";
-        } else {
-            logger.warn("基準年が空です");
-            return null;
+        if (ObjectUtil.isNull(year) || ObjectUtil.isEmpty(year)) {
+            year = DateUtil.thisYear() + "";
         }
+        targetDate = year + "/12/31";
 
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
