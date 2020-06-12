@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
@@ -26,13 +27,15 @@ public class PermStatListController {
     private PermStatListBean permStatListBean;
 
     /**
-     * ディフォルト表示時間を取得する
+     * 年月を取得する
      */
     @GetMapping("dispTmgMonthlyList")
-    public List<DispMonthlyVO> dispMonthlyList(@RequestAttribute("BeanName") PsDBBean psDBBean, @RequestAttribute("modelMap") ModelMap modelMap) throws Exception {
-        permStatListBean.execute(psDBBean, modelMap);
+    @ResponseBody
+    public List<DispMonthlyVO> dispMonthlyList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
         return permStatListBean.dispMonthlyList(psDBBean);
     }
+
 
 //
 //    /**
