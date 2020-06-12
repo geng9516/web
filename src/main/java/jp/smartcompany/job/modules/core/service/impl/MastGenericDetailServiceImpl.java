@@ -873,7 +873,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * 名称マスタに勤務開始日を追加
      */
     @Override
-    public int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate){
-        return baseMapper.insertMgdKinmuStart( custId,  compId,  targetUser, userCode,  baseDate);
+    public int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate,String startDate,String endDate,String beginDate){
+        return baseMapper.insertMgdKinmuStart( custId,  compId,  targetUser, userCode,  baseDate,startDate,endDate,beginDate);
     }
 }

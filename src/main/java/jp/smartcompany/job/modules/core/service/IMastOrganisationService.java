@@ -190,7 +190,7 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
                                                     String lang,
                                                     int numStart,
                                                     int numEnd);
-    List <String> getSubSection(String customerId, String compnyId, String sectionId, Date searchDate);
+
 
     /**
      * <p>

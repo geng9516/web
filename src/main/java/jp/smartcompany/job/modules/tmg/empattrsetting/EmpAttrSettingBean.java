@@ -17,7 +17,6 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.collections.list.AbstractLinkedList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,6 +54,17 @@ public class EmpAttrSettingBean {
     public static final String TYPE_ITEM_EXCLUDE_OVERTIME = "TMG_ITEMS|EXCLUDE_OVERTIME";
     // 勤務先グループ
     public static final String TYPE_ITEM_WORKPLACE  = "TMG_WORKPLACE";
+
+
+    // 勤務開始日設定状況画面-新規登録
+    public static final String ACTION_EDITBEGINDATE_C = "ACTION_EDITBEGINDATE_C";
+    // 勤務開始日設定状況画面-更新
+    public static final String ACTION_EDITBEGINDATE_U = "ACTION_EDITBEGINDATE_U";
+    // 勤務開始日設定状況画面-削除
+    public static final String ACTION_EDITBEGINDATE_D = "ACTION_EDITBEGINDATE_D";
+
+
+
     /**
      * 機能：個人属性一覧_表示処理
      *
@@ -237,7 +247,6 @@ public class EmpAttrSettingBean {
                 param.getLang(),param.getTargetSectionId());
 
         // 勤務開始日設定状況：SELECT
-
         EmploymentWithMgdVo employmentWithMgdVo = iMastGenericDetailService.selectDateOfEmploymentWithMGD(param.getCustId(),param.getCompId()
         ,param.getLang(),param.getTargetUser(),TmgUtil.Cs_MG_TMG_DATEOFEMPLOYMENT);
         // 発令上の勤務開始日取得：SELECT
@@ -255,29 +264,206 @@ public class EmpAttrSettingBean {
      */
     private void actionInsertBeginDate() throws Exception {
 
-        Vector <String> vecSQL = new Vector <String> ();
-
         // 勤務開始日を名称マスタに保存
         int insertMgd=iMastGenericDetailService.insertMgdKinmuStart(param.getCustId(),param.getCompId(),param.getTargetUser()
-                                        ,param.getUserCode(),param.getBaseDate());
+                                        ,param.getUserCode(),param.getBaseDate(),null,null,null);
 
         // 登録内容をログテーブルに保存
-        vecSQL.add(buildSQLForInsertTmgDateofempLog(p, p.getModifiedMessage()));
+        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
 
         // トリガーテーブルのデータ削除
-        vecSQL.add(this.buildSQLForDelTriggerTable(p));
+        int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
         // トリガーテーブルにデータ登録
-        vecSQL.add(this.buildSQLForInsTriggerTable(p, p.getStartDate()));
+        int insertTrigger = insertTrigger(param.getPsStartDate());
 
         // トリガーテーブルのデータ削除
-        vecSQL.add(this.buildSQLForDelTriggerTable(p));
+        int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
-        super.setInsertValues(vecSQL, BEAN_DESC);
-
-        return;
     }
 
+
+    /**
+     * 機能：勤務開始日設定状況_更新処理
+     *updateBeginDate
+     * @throws Exception
+     */
+    private void actionUpdateBeginDate() throws Exception{
+
+        // 名称マスタを更新
+        int updateMgd = updateMgd();
+
+        // 登録内容をログテーブルに保存
+        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
+
+        // トリガーテーブルのデータ削除
+        int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
+
+        // トリガーテーブルにデータ登録
+        int insertTrigger = insertTrigger(param.getPsMaxOldStartDate());
+
+        // トリガーテーブルのデータ削除
+        int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
+
+
+
+    }
+
+    /**
+     * 機能：勤務開始日設定状況_削除処理
+     *deleteBeginDate
+     */
+    private void actionDeleteBeginDate() throws Exception {
+
+        // 名称マスタから削除
+        int deleteMgd=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("MGD_CCUSTOMERID",param.getCustId())
+                .eq("MGD_CCOMPANYID_CK_FK",param.getCompId())
+                .eq("MGD_CGENERICGROUPID","TMG_DATEOFEMPLOYMENT")
+                .eq("MGD_CGENERICDETAILID_CK",param.getTargetUser())
+                .eq("MGD_CLANGUAGE_CK",param.getLang())
+                .eq("MGD_DSTART_CK",param.getPsOldStartDate()));
+
+        // 登録内容をログテーブルに保存
+        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
+
+        // トリガーテーブルのデータ削除
+        int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
+
+        // トリガーテーブルにデータ登録
+        int insertTrigger = insertTrigger(param.getPsOldStartDate());
+
+        // トリガーテーブルのデータ削除
+        int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                .eq("TTR_CCUSTOMERID",param.getCustId())
+                .eq("TTR_CCOMPANYID",param.getCompId())
+                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
+                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
+
+    }
+
+    /**
+     * 名称マスタを更新
+     */
+    private int updateMgd() {
+        QueryWrapper<MastGenericDetailDO> queryWrapper= new QueryWrapper<MastGenericDetailDO>();
+        queryWrapper.eq("MGD_CCUSTOMERID",param.getCustId());
+        queryWrapper.eq("MGD_CCOMPANYID_CK_FK",param.getCompId());
+        queryWrapper.eq("MGD_CGENERICGROUPID",TmgUtil.Cs_MG_TMG_DATEOFEMPLOYMENT);
+        queryWrapper.eq("MGD_CGENERICDETAILID_CK",param.getTargetUser());
+        queryWrapper.eq("MGD_CLANGUAGE_CK",param.getLang());
+        queryWrapper.eq("MGD_DSTART_CK",param.getPsOldStartDate());
+
+        long versionNo=iMastGenericDetailService.getBaseMapper().selectOne(queryWrapper).getVersionno();
+
+        MastGenericDetailDO mgdDo = new MastGenericDetailDO();
+        mgdDo.setMgdDstartCk(DateUtil.parse(param.getPsStartDate()));
+        mgdDo.setMgdDend(DateUtil.parse(param.getPsEndDate()));
+        mgdDo.setMgdCmodifieruserid(param.getUserCode());
+        mgdDo.setMgdDmodifieddate(DateTime.now());
+        mgdDo.setMgdDsparedate1(DateUtil.parse(param.getPsBeginDate()));
+        mgdDo.setVersionno(versionNo+1);
+
+        return iMastGenericDetailService.getBaseMapper().update(mgdDo,queryWrapper);
+    }
+
+
+    private int insertTrigger(String paramDate) {
+        TmgTriggerDO ttDo=new TmgTriggerDO();
+        ttDo.setTtrCcustomerid(param.getCustId());
+        ttDo.setTtrCcompanyid(param.getCompId());
+        ttDo.setTtrCemployeeid(param.getTargetUser());
+        ttDo.setTtrDstartdate(TmgUtil.minDate);
+        ttDo.setTtrDenddate(TmgUtil.maxDate);
+        ttDo.setTtrCmodifieruserid(param.getUserCode());
+        ttDo.setTtrDmodifieddate(DateTime.now());
+        ttDo.setTtrCmodifierprogramid("EmpAttrSetting");
+        ttDo.setTtrCprogramid("EmpAttrSetting");
+        ttDo.setTtrDparameter1(DateUtil.parse(paramDate));
+        return iTmgTriggerService.getBaseMapper().insert(ttDo);
+    }
+
+    private int insertTmgDateofempLog(String message) {
+        TmgDateofempLogDO tddo = new TmgDateofempLogDO();
+        tddo.setTdlgCcustomerid(param.getCustId());
+        tddo.setTdlgCcompanyid(param.getCompId());
+        tddo.setTdlgCemployeeid(param.getTargetUser());
+        tddo.setTdlgDstartdate(TmgUtil.minDate);
+        tddo.setTdlgDenddate(TmgUtil.maxDate);
+        tddo.setTdlgCmodifieruserid(param.getUserCode());
+        tddo.setTdlgDmodifieddate(DateTime.now());
+        tddo.setTdlgCmodifierprogramid("EmpAttrSetting");
+        tddo.setTdlgCmodifieddetail(message);
+        return iTmgDateofempLogService.getBaseMapper().insert(tddo);
+    }
+
+
+
+    /**
+     *
+     * 勤務開始日編集ログに保持する更新内容を返却する
+     *
+     * @return
+     */
+    public String getModifiedMessage(){
+
+        String sMessage = new String();
+        String WRD_BD_ADD             = "追加";
+        String WRD_BD_UPDATE          = "更新";
+        String WRD_BD_DELETE          = "削除";
+        String WRD_BD_BEFORE_BRACKETS = "[";
+        String WRD_BD_HYPHEN          = "-";
+        String WRD_BD_COLON           = ":";
+        String WRD_BD_AFTER_BRACKETS  = "]";
+        String WRD_BD_RIGHT_ARROW     = "→";
+        String SPACE                  = " ";
+
+        // 新規登録時・・・新規 [適用開始日 - 適用終了日:勤務開始日]
+        if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_C)) {
+            sMessage =  WRD_BD_ADD + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        }
+        // 更新時・・・更新 [(旧)適用開始日 - (旧)適用終了日:(旧)勤務開始日] → [適用開始日 - 適用終了日:勤務開始日]
+        else if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_U)) {
+            sMessage =  WRD_BD_UPDATE + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS + SPACE +
+                    WRD_BD_RIGHT_ARROW + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        }
+        // 削除時・・・削除 [適用開始日 - 適用終了日:勤務開始日]
+        else if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_D)) {
+            sMessage =  WRD_BD_DELETE + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        }
+
+        return sMessage;
+    }
 
 
     /**

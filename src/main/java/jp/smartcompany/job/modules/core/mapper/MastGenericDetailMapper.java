@@ -307,6 +307,9 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                             @Param("compId")String compId,
                             @Param("targetUser")String targetUser,
                             @Param("userCode")String userCode,
-                            @Param("baseDate")String baseDate);
+                            @Param("baseDate")String baseDate,
+                            @Param("startDate")String startDate,
+                            @Param("endDate")String endDate,
+                            @Param("beginDate")String beginDate);
 }
 

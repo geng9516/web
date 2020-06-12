@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
@@ -17,8 +16,6 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.boot.util.SysUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -38,6 +35,7 @@ import java.util.stream.Collectors;
 @Repository
 public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMapper, MastOrganisationDO> implements IMastOrganisationService {
 
+    private IHistDesignationService iHistDesignationService;
     @Override
     public MastOrganisationDO selectOrganisation(String customerId, String companyId, String sectionId, Date yyyymmdd) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();

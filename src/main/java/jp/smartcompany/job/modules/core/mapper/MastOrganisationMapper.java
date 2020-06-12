@@ -26,7 +26,7 @@ import java.util.Map;
 public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
 
      List<String> selectLowerSection(@Param("custId") String custId,@Param("compId") String compId,
-                                            @Param("sectionId") String psSection,@Param("date") String date);
+                                            @Param("sectionId") String psSection,@Param("date") Date date);
 
      List<MastOrganisationDO> selectLowEmp(@Param("custId") String custId,
                                            @Param("compId") String compId,

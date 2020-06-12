@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 /**
  * @author Wang Ziyue
  * Vo for  MasterTmgNtfTypeDispAppList
@@ -28,5 +30,7 @@ public class mgdNtfTypeDispAppVo {
     private String biko;
     /**7 添付ファイル必須有無*/
     private String confirmFile;
+
+
 
 }

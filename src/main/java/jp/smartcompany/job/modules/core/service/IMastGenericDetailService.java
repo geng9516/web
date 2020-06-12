@@ -468,5 +468,5 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     /**
      * 名称マスタに勤務開始日を追加
      */
-    int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate);
+    int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate,String startDate,String endDate,String beginDate);
 }

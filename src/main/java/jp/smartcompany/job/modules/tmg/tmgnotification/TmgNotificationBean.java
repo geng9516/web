@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.tmgnotification;
 
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -140,7 +141,7 @@ public class TmgNotificationBean {
         //アクション
         param.setAction(psDBBean.getReqParam("txtAction"));
         // パラメータ
-        getParam(0);
+        //getParam(0);
 
         //カレンダー関連情報を取得するメソッド
         getCalender();
@@ -148,7 +149,7 @@ public class TmgNotificationBean {
         // リクエストパラメータ取得
         setParamSearch();
 
-        setSearchNtfTerm();
+        //setSearchNtfTerm();
 
         // 参照権限チェック仕様変更対応
         // ■初期表示時：
@@ -361,7 +362,7 @@ public class TmgNotificationBean {
             Date dEnd = sdf.parse(calendarDto.getEndYearDate());
 
             if (dMin.before(dStart)) {
-                param.setGbNextYear(true);
+                param.setGbPreviousYear(true);
             }
             if (dMax.after(dEnd)) {
                 param.setGbNextYear(true);
@@ -380,15 +381,15 @@ public class TmgNotificationBean {
      * @param piPBranchingProcess 0:初期処理、1:組織ツリー情報使用処理
      * @return なし
      */
-    private void getParam(int piPBranchingProcess) {
+    private void getParam(int piPBranchingProcess,int yearNow) {
         int year = iMastGenericDetailService.selectYear(param.getCustId(), param.getCompId());
         // 初期処理
         if (piPBranchingProcess == INITIAL_TREATMENT) {
             // 今年度
-            param.setYear(year);
+            param.setThisYear(year);
             // 年度
             try {
-                param.setThisYear(Integer.parseInt(psDBBean.getReqParam("year")));
+                param.setYear(yearNow);
             } catch (Exception e) {
                 // 取得出来なかったらDBより取得
                 param.setYear(year);
@@ -398,12 +399,175 @@ public class TmgNotificationBean {
         else {
             // 組織ツリー基準日情報チェック
             if (referList.getRecordDate() != null) {
-                param.setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
-                // TODO 再表示ボタン使用判定
+                param.setThisYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
+                //TODO 再表示ボタン使用判定
                 if (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) != null && !"".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
                     param.setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
                 }
             }
+        }
+    }
+
+
+    /**
+     * 申請ステータスマスタ
+     * @return
+     */
+    public List<StutasFlgVo>  getStutas(){
+        List<StutasFlgVo> stutasFlgVos = new ArrayList<StutasFlgVo>();
+        List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+
+        for(Map<String, Object> map:mgdList){
+            for (Map.Entry<String, Object> m : map.entrySet()) {
+                StutasFlgVo stutasFlgVo=new StutasFlgVo();
+                if (m.getKey().equals("MGD_CMASTERCODE")){
+                    stutasFlgVo.setStutasId(m.getValue().toString());
+                }
+                if (m.getKey().equals("MGD_CGENERICDETAILDESC")){
+                    stutasFlgVo.setStutasId(m.getValue().toString());
+                }
+                stutasFlgVos.add(stutasFlgVo);
+            }
+        }
+        return stutasFlgVos;
+    }
+
+    //一覧
+    public List<notificationListVo> getNotificationList(String statusFlg,String ntfTypeId,String year,PsDBBean psDBBean){
+        //基本信息
+        param.setCompId(psDBBean.getCustID());
+        param.setCustId(psDBBean.getCompCode());
+        param.setTargetUser(psDBBean.getTargetUser());
+        param.setUserCode(psDBBean.getUserCode());
+        param.setSiteId(psDBBean.getSiteId());
+        param.setLang(psDBBean.getLanguage());
+
+        param.setToday(TmgUtil.getSysdate());
+        param.setTodayD(DateUtil.parse(param.getToday()));
+        //アクション
+        param.setAction(psDBBean.getReqParam("txtAction"));
+
+        getParam(0,Integer.valueOf(year));
+
+        // 検索条件・申請内
+        param.setType(ntfTypeId);
+
+        // 申請一覧（本人）用検索パラメータを取得するメソッド(返すものは常に承認済・取下・却下(選択不可))
+        if (param.getAction() == ACT_DISPINP_RLIST && statusFlg == null) {
+            statusFlg = STATUS_WAIT;
+        } else if (statusFlg == null) {
+            statusFlg = STATUS_WAIT;
+        }
+        param.setStatus(statusFlg);
+
+        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
+        List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
+
+        return notificationListVoList;
+    }
+
+    /**
+     * 申請区分マスタ　全て　一覧画面用
+     * @param psDBBean
+     * @return
+     */
+    public List<TypeGroupVo> getMgdNtfTypeDispAppList(PsDBBean psDBBean){
+
+        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), DateTime.now(), psDBBean.getLanguage());
+
+        List<TypeGroupVo> typeGroupVoList=new ArrayList<TypeGroupVo>();
+        //显示type处理
+        int viewType;
+        String viewflg = null;
+        for(mgdNtfTypeDispAppVo vo:mgdNtfTypeDispAppVoList){
+            TypeGroupVo typeGroupVo=new TypeGroupVo();
+            typeGroupVo.setGroupId(vo.getGroupId());
+            typeGroupVo.setGroupName(vo.getGroupName());
+            typeGroupVoList.add(typeGroupVo);
+        }
+
+        typeGroupVoList = CollUtil.distinct(typeGroupVoList);
+        List<TypeChildrenVo> typeChildrenVos = new ArrayList<TypeChildrenVo>();
+        for(mgdNtfTypeDispAppVo voChild:mgdNtfTypeDispAppVoList){
+            for(TypeGroupVo voGroup:typeGroupVoList){
+                if(voChild.getGroupId().equals(voGroup.getGroupId())){
+                    TypeChildrenVo tc =new TypeChildrenVo();
+                    tc.setNtfId(voChild.getNtfId());
+                    tc.setNtfName(voChild.getNtfName());
+                    tc.setViewType(voChild.getViewType());
+                    tc.setConfirmComment(voChild.getConfirmComment());
+                    tc.setBiko(voChild.getBiko());
+                    tc.setConfirmFile(voChild.getConfirmFile());
+
+                    viewflg="";
+                    viewType=0;
+                    if(!StrUtil.hasEmpty(voChild.getViewType())){
+                        viewType = Integer.valueOf(voChild.getViewType());
+                        for(int i=0;i<14;i++){
+                            viewflg  += (viewType%2);
+                            viewType = viewType/2;
+                        }
+                        if (viewflg.length()==14){
+                            byte[] bytes;
+                            bytes=viewflg.getBytes();
+                            if (bytes[0]=='1'){ tc.setTransfer(true); }//振替先・元
+                            if (bytes[1]=='1'){ tc.setTimeZone(true); }//時間帯
+                            if (bytes[2]=='1'){ tc.setWorkTime(true); }//始業・終業
+                            if (bytes[3]=='1'){ tc.setSickName(true); }//傷病名
+                            if (bytes[4]=='1'){ tc.setSickApply(true); }//労災申請有無
+                            if (bytes[5]=='1'){ tc.setPeriod(true); }//起算日
+                            if (bytes[6]=='1'){ tc.setAddDate(true); }//加算日数
+                            if (bytes[7]=='1'){ tc.setLabel(true); }//勤務時間ラベル
+                            if (bytes[8]=='1'){ tc.setRestTime(true); }//休憩時間
+                            if (bytes[9]=='1'){ tc.setName(true); }//氏名
+                            if (bytes[10]=='1'){ tc.setRelation(true); }//続柄
+                            if (bytes[11]=='1'){ tc.setBirthday(true); }//生年月日
+                            if (bytes[12]=='1'){ tc.setDaysOfWeek(true); }//曜日
+                            if (bytes[13]=='1'){ tc.setTargetNumber(true); }//対象者の人数
+                        }
+                    }
+                    voGroup.getNtfTypeValue().add(tc);
+                }
+            }
+        }
+
+        return typeGroupVoList;
+    }
+
+    /**
+     * 年次休暇残日数及び時間
+     * @param psDBBean
+     * @return
+     */
+    public List<restYearPaidHolidayVo> getRestYear(PsDBBean psDBBean){
+        param.setCustId(psDBBean.getCustID());
+        param.setCompId(psDBBean.getCompCode());
+        //无
+        param.setNtfNo(null);
+        //当前登陆用
+        param.setTargetUser(psDBBean.getUserCode());
+        //今日の日付
+        param.setTodayD(DateTime.now());
+        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+
+        for(int i=0;i<restYearPaidHolidayVoList.size();i++){
+            //分钟转小时处理
+            restYearPaidHolidayVoList.get(i).setCrestHours(TmgUtil.Mintue2HHmi(restYearPaidHolidayVoList.get(i).getNrestHours()));
+            //时间区间文言处理
+            restYearPaidHolidayVoList.get(i).setTxtTimeScope(getTxtTImeScope(restYearPaidHolidayVoList.get(i).getDbegin(),
+                    restYearPaidHolidayVoList.get(i).getDend()));
+        }
+        return restYearPaidHolidayVoList;
+    }
+
+
+    //文言処理
+    private String getTxtTImeScope(String begin,String end){
+        if(DateUtil.parse(end).before(DateTime.now())){
+            return end+"まで";
+        }else{
+            return begin+"から";
         }
     }
 
@@ -417,19 +581,19 @@ public class TmgNotificationBean {
 
         paramSetting();
 
-        param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
+
         //0 一覧
-        List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
-        modelMap.addAttribute("notificationListVoList", notificationListVoList);
+        /*List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
+        modelMap.addAttribute("notificationListVoList", notificationListVoList);*/
         //2 申請ステータスマスタ
-        List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
-        modelMap.addAttribute("mgdList", mgdList);
+        /*List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
+        modelMap.addAttribute("mgdList", mgdList);*/
         //1 申請区分マスタ
-        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(param.getCompId(), param.getCustId(), DateTime.now(), param.getLang());
-        modelMap.addAttribute("mgdNtfTypeDispAppVoList", mgdNtfTypeDispAppVoList);
+        /*List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(param.getCompId(), param.getCustId(), DateTime.now(), param.getLang());
+        modelMap.addAttribute("mgdNtfTypeDispAppVoList", mgdNtfTypeDispAppVoList);*/
         //3年次休暇残日数及び時間
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
-        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);
+        /*List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
+        modelMap.addAttribute("restYearPaidHolidayVoList", restYearPaidHolidayVoList);*/
         //4 今月の月中有給付与の情報
         List<paidHolidayThisMonthInfoVo> paidHolidayThisMonthInfoVoList = iTmgMonthlyService.selectPaidHolidayThisMonthInfo(param.getCompId(), param.getCustId(), param.getTargetUser());
         modelMap.addAttribute("paidHolidayThisMonthInfoVoList", paidHolidayThisMonthInfoVoList);

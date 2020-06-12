@@ -2,17 +2,42 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper">
     <insert id="insertMgdKinmuStart">
-
-
-
-
-
-
-
-
-
-
-
+        INSERT INTO
+            MAST_GENERIC_DETAIL
+        (   MGD_ID,
+            MGD_CCUSTOMERID,
+            MGD_CCOMPANYID_CK_FK,
+            MGD_CGENERICGROUPID,
+            MGD_CGENERICDETAILID_CK,
+            MGD_CMASTERCODE,
+            MGD_CLANGUAGE_CK,
+            MGD_DSTART_CK,
+            MGD_DEND,
+            MGD_CMODIFIERUSERID,
+            MGD_DMODIFIEDDATE,
+            MGD_CGENERICDETAILDESC,
+            MGD_CGENERICDETAILDESCJA,
+            MGD_DSPAREDATE1,
+            VERSIONNO )
+        VALUES
+            (
+                MAST_GENERIC_DETAIL_SEQ.NEXTVAL,
+                #{custId},
+                #{compId},
+                'TMG_DATEOFEMPLOYMENT',
+                #{targetUser},
+                'TMG_DATEOFEMPLOYMENT|'||${targetUser},
+                'ja',
+                TO_DATE(#{startDate}, 'yyyy/MM/dd' ),
+                TO_DATE(#{endDate}, 'yyyy/MM/dd' ),
+                #{userCode},
+                SYSDATE,
+                TMG_F_GET_ME_NAME (#{targetUser}, TO_DATE( #{baseDate}, 'yyyy/MM/dd' ), 0, #{custId}, #{compId} ),
+                TMG_F_GET_ME_NAME ( #{targetUser}, TO_DATE( #{baseDate}, 'yyyy/MM/dd' ), 0, #{custId}, #{compId} ),
+                TO_DATE( #{beginDate}, 'yyyy/MM/dd' ),
+                0
+            )
+        ;
     </insert>
 
 
