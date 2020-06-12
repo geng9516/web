@@ -2,4 +2,22 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgDateofempLogMapper">
 
+    <select id="selectTmgDateofempLog"
+            resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgDateOfEmpLogVo">
+        SELECT
+            TMG_F_GET_ME_NAME ( TDLG_CMODIFIERUSERID, TO_DATE( '2020/06/10', 'yyyy/MM/dd' ), 0, '01', '01' ) AS MODIFIERUSERID,
+            TO_CHAR( TDLG_DMODIFIEDDATE, 'yyyy/mm/dd hh24:mi:ss' ) AS MODIFIEDDATE,
+            TDLG_CMODIFIEDDETAIL
+        FROM
+            TMG_DATEOFEMP_LOG
+        WHERE
+            TDLG_CCUSTOMERID = #{custId}
+        AND TDLG_CCOMPANYID = #{compId}
+        AND TDLG_CEMPLOYEEID = #{empId}
+        AND TDLG_DSTARTDATE <![CDATA[<=]]> TRUNC( TO_DATE( #{baseDate}, 'yyyy/MM/dd' ), 'MM' )
+        AND TDLG_DENDDATE >= TRUNC( TO_DATE( #{baseDate}, 'yyyy/MM/dd' ), 'MM' )
+        ORDER BY
+            TDLG_DMODIFIEDDATE DESC
+        ;
+    </select>
 </mapper>

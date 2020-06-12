@@ -9,9 +9,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.boot.util.SysUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -180,4 +180,12 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     ) {
         return baseMapper.getVersion3SectionChief(sCustid,sCompid,sDeptid,sDate,sPostid,bIncludeactual);
     }
+
+    /**
+     * 発令上の勤務開始日取得用SQL取得メソッド
+     */
+    @Override
+    public EmployMentWithMEVo selectDateofemploymentWithME(String custId, String compId, String empId){
+        return baseMapper.selectDateofemploymentWithME( custId,  compId,  empId);
+     }
 }

@@ -2,12 +2,20 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
@@ -21,6 +29,8 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -664,6 +674,90 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
 
 
     /**
+     * 対象日の年度開始日および年度終了日を取得するSQLを構築して返します
+     */
+    @Override
+    public TargetDateLimit selectTargetFiscalYear(String custID, String compID, String baseDate){
+        return baseMapper.selectTargetFiscalYear( custID,  compID,  baseDate);
+    }
+
+
+    /**
+     * 月例/遡及データダウンロード画面用 DL種別・リンク名称を取得するクエリを返す
+     * @param custId：顧客コード
+     * @param compId：法人コード
+     * @param lang：言語区分
+     * @param date：基準日
+     * @return
+     */
+    @Override
+    public List<MoDLTypeVo> selectTmgMoDLType(String custId, String compId, String lang, String date){
+        return baseMapper.selectTmgMoDLType( custId, compId, lang, date);
+    }
+
+
+    /**
+     * 部局管理者を検索するSQL文を生成し返します。
+     */
+    @Override
+    public List<MastGenericDetailDO> selectTmgSectionAdmin(String custId, String compId, String sectionId, String lang, String baseDate){
+        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
+        qw.eq("MGD_CCUSTOMERID", custId)
+                .eq("MGD_CCOMPANYID_CK_FK", compId)
+                .eq("MGD_CLANGUAGE_CK", lang)
+                .eq("MGD_CGENERICGROUPID",  TmgUtil.Cs_MGD_TMG_SECTION_ADMIN )
+                .le("MGD_DSTART_CK", baseDate)
+                .ge("MGD_DEND", baseDate)
+                .eq("MGD_CSPARECHAR1",sectionId)
+                .select("MGD_CSPARECHAR4","MGD_CSPARECHAR3");
+        List<MastGenericDetailDO> mastGenericDetailDOList = list(qw);
+        if (mastGenericDetailDOList != null) {
+            return mastGenericDetailDOList;
+        }
+        return null;
+    }
+
+
+    /**
+     * CSVダウンロード用 ファイルタイプ名・表関数名を取得するクエリを返す
+     * @param custID：顧客コード
+     * @param compID：法人コード
+     * @param lang：言語区分
+     * @param date：基準日
+     * @param masterCD：マスタコード
+     * @return
+     */
+    @Override
+    public List<TmgMoTableFunctionVo> selectTmgMoTableFunction(String custID, String compID, String lang, String date, String masterCD){
+        return baseMapper.selectTmgMoTableFunction( custID,  compID,  lang,  date, masterCD);
+    }
+
+
+    /**
+     * (遡及)CSVダウンロード用 CSVレイアウトを取得するクエリを返す
+     * @param custId：顧客コード
+     * @param compId：法人コード
+     * @param lang：言語区分
+     * @param targetDate：基準日
+     * @param dlTypeID：DL種別コード
+     * @return
+     */
+    @Override
+    public List<String> selectTmgMoRetroLayout(String custId, String compId, String lang, String targetDate, String dlTypeID){
+        return baseMapper.selectTmgMoRetroLayout( custId,  compId,  lang,targetDate, dlTypeID);
+    }
+
+
+    /**
+     * CSVファイル名取得するクエリを返す
+     */
+    @Override
+    public String selectTmgMoCsvFileName(String custId, String compId, String empId, String targetDate, String dlTypeID){
+        return baseMapper.selectTmgMoCsvFileName(  custId, compId, empId, targetDate, dlTypeID);
+    }
+
+
+    /**
      * CSV出力ヘッダー・項目取得
      *
      * @param custID     顧客コード
@@ -713,5 +807,73 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId){
         return null;
+    }
+
+
+
+    /**
+     * 個人属性一覧_表示処理での一括編集用項目の制御情報を取得するクエリを返します。
+     */
+    @Override
+    public List<EmpAttsetDispVo> selectEmpAttsetDisp(String custId, String compId, String baseDate, String lang){
+        return baseMapper.selectEmpAttsetDisp( custId, compId, baseDate, lang);
+    }
+
+
+    /**
+     * マスタ検索用SQL取得メソッド
+     */
+    @Override
+    public List<MastGenericDetailDO> selectWorkPlace(String custId,String compId,String lang,String groupId,
+                                                                        String baseDate){
+        QueryWrapper<MastGenericDetailDO> qw = SysUtil.query();
+        qw.eq("MGD_CCUSTOMERID", custId)
+                .eq("MGD_CCOMPANYID_CK_FK", compId)
+                .eq("MGD_CLANGUAGE_CK", lang)
+                .eq("MGD_CGENERICGROUPID",  groupId )
+                .le("MGD_DSTART_CK", baseDate)
+                .ge("MGD_DEND", baseDate)
+                .orderByAsc("MGD_CGENERICDETAILID_CK")
+                .select("MGD_CMASTERCODE","MGD_CGENERICDETAILDESC");
+        List<MastGenericDetailDO> mastGenericDetailDOList = list(qw);
+        if (mastGenericDetailDOList != null) {
+            return mastGenericDetailDOList;
+        }
+        return null;
+    }
+
+    /**
+     * 平均勤務時間の上限取得クエリを返す
+     * 1日の上限を「分」で返す
+     * @return
+     */
+    @Override
+    public MgdTimeLimitVo selectMgdTimeLimit(){
+        return baseMapper.selectMgdTimeLimit();
+    }
+
+
+    /**
+     * 週予定勤務パターン取得処理
+     */
+    @Override
+    public String selectWeekDaysCom(String custId,String compId,String baseDate,int daysOfWeeks,int allMinutes){
+        return baseMapper.selectWeekDaysCom( custId, compId, baseDate, daysOfWeeks, allMinutes);
+    }
+
+
+
+    @Override
+    public EmploymentWithMgdVo selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId){
+        return baseMapper.selectDateOfEmploymentWithMGD( custId,  compId,  lang, empId,  groupId);
+    }
+
+
+    /**
+     * 名称マスタに勤務開始日を追加
+     */
+    @Override
+    public int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate,String startDate,String endDate,String beginDate){
+        return baseMapper.insertMgdKinmuStart( custId,  compId,  targetUser, userCode,  baseDate,startDate,endDate,beginDate);
     }
 }

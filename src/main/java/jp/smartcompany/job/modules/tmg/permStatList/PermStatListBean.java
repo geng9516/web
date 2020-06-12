@@ -509,7 +509,6 @@ public class PermStatListBean {
         execReflectionTimePunch(empSql);
 
 
-
         // 月次一覧表示データを取得する。
         // 0 表示月情報の取得
         List<ColNameDto> colNameList = new ArrayList<>();
@@ -537,9 +536,9 @@ public class PermStatListBean {
         modelMap.addAttribute("tmgMonthlyInfoVOList",tmgMonthlyInfoVOList);
 
         // 1 カレンダー情報の取得
-        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
-                _psDBBean.getCompCode(), referList.getTargetSec(), _psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0,4), getReqDYYYYMM());
-        modelMap.addAttribute("calenderVoList",calenderVoList);
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
+                _psDBBean.getCompCode(), referList.getTargetSec(), _psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+        modelMap.addAttribute("calenderVo", calenderVo);
 
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
@@ -678,9 +677,9 @@ public class PermStatListBean {
     /**
      * メインメソッド。
      */
-    public void execute(PsDBBean psDBBean,ModelMap modelMap) throws Exception {
+    public void execute(PsDBBean psDBBean) throws Exception {
 
-        setExecuteParameter(psDBBean,modelMap);
+        setExecuteParameter(psDBBean);
 
         // 2007/08/03 	H.Kawabata		参照権限チェック仕様変更対応
         // ■初期表示時：
@@ -714,7 +713,7 @@ public class PermStatListBean {
                     String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
 
                     // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    setReferList(sPrevMonth,modelMap);
+                    setReferList(sPrevMonth);
 
                     // 参照権限の設定:
                     // 初期表示時の対象年月の時点の参照権限が無い場合に、
@@ -738,7 +737,7 @@ public class PermStatListBean {
                         setAuthorityMonth(CB_CAN_REFER);
                     } else {
                         // 対象年月を元に戻します
-                        setReferList(getReqDYYYYMM(),modelMap);
+                        setReferList(getReqDYYYYMM());
 
                         setAuthorityMonth(CB_CANT_REFER);
                     }
@@ -797,7 +796,7 @@ public class PermStatListBean {
      *
      * @throws Exception
      */
-    public void setExecuteParameter(PsDBBean psDBBean,ModelMap modelMap) throws Exception {
+    public void setExecuteParameter(PsDBBean psDBBean) throws Exception {
 
         _sysdate = psDBBean.getSysDate();
         _reqSiteId = psDBBean.getSiteId();
@@ -818,7 +817,7 @@ public class PermStatListBean {
 
         // TmgReferListの生成
         referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
-        referList.putReferList(modelMap);
+//        referList.putReferList(modelMap);
         // 組織コードの取得
         _reqSectionId = referList.getTargetSec();
 
@@ -845,7 +844,7 @@ public class PermStatListBean {
             // 今月の月初
             _thisMonth = TmgUtil.getFirstDayOfMonth(psDBBean.getSysDate(), PARAM_THIS_MONTH);
         } else {
-            // 組織ツリー基準日
+                       // 組織ツリー基準日
             _thisMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
 
             // 初期表示、再表示ボタン使用時処理
@@ -886,10 +885,10 @@ public class PermStatListBean {
      *
      * @param pDate 対象年月日
      */
-    private void setReferList(String pDate, ModelMap modelMap)  throws Exception{
+    private void setReferList(String pDate)  throws Exception{
 
         referList = new TmgReferList(_psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
-        referList.putReferList(modelMap);
+//        referList.putReferList(modelMap);
 
     }
 

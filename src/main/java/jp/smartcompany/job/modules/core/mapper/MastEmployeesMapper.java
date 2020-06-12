@@ -4,6 +4,7 @@ import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -90,4 +91,9 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
             @Param("postId") String sPostid,
             @Param("bIncludeactual") boolean bIncludeactual
     );
+
+    EmployMentWithMEVo selectDateofemploymentWithME(@Param("custId") String custId,
+                                                    @Param("compId") String compId,
+                                                    @Param("empId") String empId);
+
 }

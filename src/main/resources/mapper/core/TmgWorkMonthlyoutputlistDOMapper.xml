@@ -2,4 +2,27 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgWorkMonthlyoutputlistMapper">
 
+    <select id="selectWorkMonthlyOutputList" resultType="java.lang.Integer">
+        SELECT
+            COUNT( 1 )
+        FROM
+            TMG_WORK_MONTHLYOUTPUTLIST
+        WHERE
+            TWMO_CCUSTOMERID = #{custId}
+        AND TWMO_CCOMPANYID = #{compId}
+        AND TWMO_DYYYYMM >= GREATEST( to_date( #{targetYear}, 'yyyy/mm/dd' ) - 1, TRUNC( to_date( #{introductionData}, 'yyyy/mm/dd' ), 'MM' ) )
+        AND TWMO_DYYYYMM <![CDATA[ <= ]]> LEAST(
+                                    TRUNC( SYSDATE, 'MM' ),
+                                    DECODE(
+                                    TRUNC( SYSDATE, 'YYYY' ),
+                                    to_date( #{targetYear}, 'yyyy/mm/dd' ),
+                                    ADD_MONTHS( to_date( #{targetYear}, 'yyyy/mm/dd' ), 11 ),
+                                    ADD_MONTHS( to_date( #{targetYear}, 'yyyy/mm/dd' ), 10 )
+                                    )
+                                )
+        AND TWMO_DMODIFIEDDATE >= TRUNC( SYSDATE )
+        ;
+
+
+    </select>
 </mapper>

@@ -2000,4 +2000,11 @@ public class TmgUtil {
     }
 
 
+
+
+    public static String Mintue2HHmi(int date){
+        String HHmi;
+        HHmi= (date/60) + "時" + (date%60) + "分";
+        return HHmi;
+    }
 }

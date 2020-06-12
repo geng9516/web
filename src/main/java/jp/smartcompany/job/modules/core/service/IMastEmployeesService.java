@@ -5,6 +5,7 @@ import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
@@ -77,4 +78,9 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
             boolean bIncludeactual
     );
 
+
+    /**
+    * 発令上の勤務開始日取得用SQL取得メソッド
+    */
+    EmployMentWithMEVo selectDateofemploymentWithME(String custId,String compId,String empId);
 }

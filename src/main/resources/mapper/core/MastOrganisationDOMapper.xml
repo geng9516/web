@@ -5,22 +5,23 @@
     <select parameterType="map" id="selectLowerSection" resultType="string">
         -- 下位組織情報取得（組織指定）
         SELECT	ORG_TERGET.MO_CSECTIONID_CK AS moCsectionidCk
-        FROM MAST_ORGANISATION ORG_TERGET,MAST_ORGANISATION ORG_ROOT
+        FROM	MAST_ORGANISATION ORG_TERGET,
+        MAST_ORGANISATION ORG_ROOT
         WHERE
         -- 対象となる組織取得
         ORG_TERGET.MO_CCUSTOMERID_CK_FK = #{custId}
         AND		ORG_TERGET.MO_CCOMPANYID_CK_FK = #{compId}
         AND		ORG_TERGET.MO_CSECTIONID_CK != #{sectionId}
         AND		ORG_TERGET.MO_CLANGUAGE = 'ja'
-        AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
-        AND		ORG_TERGET.MO_DEND >= to_date(#{date},'yyyy/mm/dd')
+        AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> #{date}
+        AND		ORG_TERGET.MO_DEND >= #{date}
         -- 基点となる組織取得
         AND		ORG_ROOT.MO_CCUSTOMERID_CK_FK = #{custId}
         AND		ORG_ROOT.MO_CCOMPANYID_CK_FK = #{compId}
         AND		ORG_ROOT.MO_CSECTIONID_CK = #{sectionId}
         AND		ORG_ROOT.MO_CLANGUAGE = 'ja'
-        AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
-        AND		ORG_ROOT.MO_DEND >= to_date(#{date},'yyyy/mm/dd')
+        AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> #{date}
+        AND		ORG_ROOT.MO_DEND >= #{date}
         AND		ORG_TERGET.MO_CLAYEREDSECTIONID LIKE ORG_ROOT.MO_CLAYEREDSECTIONID ||'%'
         ORDER BY
         ORG_TERGET.MO_CSECTIONID_CK;
@@ -84,6 +85,167 @@
             AND MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
         )
         ORDER BY MO_CSECTIONID_CK
+    </select>
+
+
+    <select id="selectHasAuth" resultType="java.lang.Integer">
+        SELECT
+            COUNT(1)
+        FROM
+            MAST_ORGANISATION o
+        WHERE
+            o.MO_CCUSTOMERID_CK_FK =#{customerId}
+        AND o.MO_CCOMPANYID_CK_FK  = #{compnyId}
+        AND o.MO_CSECTIONID_CK  = #{sectionId}
+        AND o.MO_DSTART  <![CDATA[ <= ]]> #{searchDate}
+        AND o.MO_DEND  >= #{searchDate}
+        AND o.MO_CLANGUAGE  = #{language}
+        ${exists}
+        ;
+    </select>
+    <select id="selectTargetFiscalYear" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto">
+        SELECT
+            TO_CHAR(
+            TMG_F_GET_THE_YEARZONE (
+            TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE(#{targetDate}, 'YYYY/MM/DD' ) ), #{cust}, #{comp} ),
+            0,
+            TRUNC( TO_DATE(#{targetDate}, 'YYYY/MM/DD' ) ),
+            #{cust},
+            #{comp}
+            ),
+            'YYYY/MM/DD'
+            ) AS TARGET_YEAR_DATE,
+            (
+            SELECT
+                DECODE(
+                P.PRE_YEAR_DATE,
+                NULL,
+                NULL,
+                TO_CHAR( TMG_F_GET_THE_YEARZONE ( TMG_F_GET_THE_YEAR ( P.PRE_YEAR_DATE, #{cust}, #{comp} ), 0, P.PRE_YEAR_DATE, #{cust}, #{comp} ), 'YYYY/MM/DD' )
+                )
+            FROM
+            (
+                SELECT
+                LEAST( MAX( O.MO_DEND ), TRUNC( TO_DATE( #{targetStartDate}, 'YYYY/MM/DD' ) ) - 1 ) AS PRE_YEAR_DATE
+                FROM
+                MAST_ORGANISATION O
+                WHERE
+                O.MO_CSECTIONID_CK = #{section}
+                AND O.MO_CCUSTOMERID_CK_FK = #{cust}
+                AND O.MO_CCOMPANYID_CK_FK = #{comp}
+                AND O.MO_CLANGUAGE = #{lang}
+                AND O.MO_DSTART <![CDATA[ < ]]> TRUNC( TO_DATE( #{targetStartDate}, 'YYYY/MM/DD' ) )
+            ) P
+            ) AS PRE_YEAR_DATE,
+            (
+                SELECT
+                DECODE(
+                N.NEXT_YEAR_DATE,
+                NULL,
+                NULL,
+                TO_CHAR( TMG_F_GET_THE_YEARZONE ( TMG_F_GET_THE_YEAR ( N.NEXT_YEAR_DATE, #{cust}, #{comp}), 0, N.NEXT_YEAR_DATE, #{cust}, #{comp} ), 'YYYY/MM/DD' )
+                )
+            FROM
+            (
+                SELECT
+                    GREATEST( MAX( O.MO_DSTART ), TRUNC( TO_DATE(#{targetEneDate}, 'YYYY/MM/DD' ) ) + 1 ) AS NEXT_YEAR_DATE
+                FROM
+                    MAST_ORGANISATION O
+                WHERE
+                    O.MO_CSECTIONID_CK = #{section}
+                AND O.MO_CCUSTOMERID_CK_FK = #{cust}
+                AND O.MO_CCOMPANYID_CK_FK = #{comp}
+                AND O.MO_CLANGUAGE = #{lang}
+                AND O.MO_DEND > TRUNC( TO_DATE( #{targetEneDate}, 'YYYY/MM/DD' ) )
+                AND TRUNC( TO_DATE( #{psBaseDate}, 'YYYY/MM/DD' ) ) > TRUNC( TO_DATE( #{targetEneDate}, 'YYYY/MM/DD' ) )
+            ) N
+        ) AS NEXT_YEAR_DATE,
+        TO_CHAR(
+            TMG_F_GET_THE_YEARZONE (
+                TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{psBaseDate}, 'YYYY/MM/DD' ) ), #{cust}, #{comp} ),
+                0,
+                TRUNC( TO_DATE( #{psBaseDate}, 'YYYY/MM/DD' ) ),
+                #{cust},
+                #{comp}
+                ),
+                'YYYY/MM/DD'
+        ) AS CURR_YEAR_DATE
+        FROM
+            DUAL
+        ;
+    </select>
+    <select id="selectNotApproval" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo">
+        SELECT
+            M.SECTION_NICK,
+            M.EMP_NAME,
+            M.NOT_APPROVAL_COUNT,
+            M.TMO_CEMPLOYEEID
+        FROM
+            (
+            SELECT
+                TMG_F_GET_MO ( M.HD_CSECTIONID_FK, LAST_DAY( M.TMO_DYYYYMM ), 1, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID, #{lang} ) AS SECTION_NICK,
+                M.TMO_CEMPLOYEEID,
+                TMG_F_GET_ME_NAME ( M.TMO_CEMPLOYEEID, M.HD_DSTARTDATE_CK, 0, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID ) AS EMP_NAME,
+                ROWNUM AS NUM,
+                MAX( ROWNUM ) KEEP ( DENSE_RANK LAST ORDER BY ROWNUM ) OVER ( ) AS NOT_APPROVAL_COUNT
+            FROM
+                (
+                SELECT
+                    *
+                FROM
+                    ( SELECT * FROM TABLE ( TMG_SELECT_MONTHLYOUTPUTLIST ( #{custId}, #{compId}, #{secId}, TRUNC( TO_DATE( #{dyyyymm}, 'YYYY/MM/DD' ) ), #{lang} ) ) ) M
+                WHERE
+                    M.TMO_CSTATUSFLG = 'TMG_DATASTATUS|0'
+                ORDER BY
+                    M.HD_CSECTIONID_FK,
+                    M.TMO_CEMPLOYEEID
+                ) M
+            ) M
+        WHERE
+            M.NUM BETWEEN #{numStart,jdbcType=BIGINT}
+            AND #{numEnd,jdbcType=BIGINT}
+        ;
+    </select>
+    <select id="selectNotFixedDeptList" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo">
+        SELECT
+            M.SECTION_NICK,
+            M.NOT_MONTHLYFIX_COUNT
+        FROM
+            (
+            SELECT
+                TMG_F_GET_MO ( M.BASESECTION, LAST_DAY( M.TMO_DYYYYMM ), 1, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID, #{lang} ) AS SECTION_NICK,
+                ROWNUM AS NUM,
+                MAX( ROWNUM ) KEEP ( DENSE_RANK LAST ORDER BY ROWNUM ) OVER ( ) AS NOT_MONTHLYFIX_COUNT
+            FROM
+                (
+                SELECT
+                    M.TMO_CCUSTOMERID,
+                    M.TMO_CCOMPANYID,
+                    M.TMO_DYYYYMM,
+                    M.BASESECTION
+                FROM
+                    (
+                    SELECT
+                        M.* ,
+                        TMG_F_IS_FIXED_MONTHLY ( M.TMO_CEMPLOYEEID, M.TMO_DYYYYMM, M.TMO_CCUSTOMERID, M.TMO_CCOMPANYID ) AS NOT_MONTHLY_FIX
+                    FROM
+                        ( SELECT * FROM TABLE ( TMG_SELECT_MONTHLYOUTPUTLIST ( #{custId}, #{compId}, #{secId}, TRUNC( TO_DATE( #{dyyyymm}, 'YYYY/MM/DD' ) ), #{lang} ) ) ) M
+                    ) M
+                WHERE
+                    M.NOT_MONTHLY_FIX = 0
+                GROUP BY
+                    M.TMO_CCUSTOMERID,
+                    M.TMO_CCOMPANYID,
+                    M.TMO_DYYYYMM,
+                    M.BASESECTION
+                ORDER BY
+                    M.BASESECTION
+                ) M
+            ) M
+        WHERE
+            M.NUM BETWEEN #{numStart,jdbcType=BIGINT}
+            AND  #{numEnd,jdbcType=BIGINT}
+
     </select>
 
 </mapper>

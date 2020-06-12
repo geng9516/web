@@ -2,4 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgMonthlyOutputLogMapper">
 
+    <select id="selectSeq" resultType="java.lang.String">
+        SELECT TMG_MONTHLY_OUTPUT_SEQ.NEXTVAL FROM DUAL
+    </select>
 </mapper>

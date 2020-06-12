@@ -18,6 +18,7 @@ public class restYearPaidHolidayVo {
     private int nrestDays;
     /**剩余时间*/
     private int nrestHours;
+
     /**种类*/
     private String ctype;
     /**排序*/
@@ -27,4 +28,8 @@ public class restYearPaidHolidayVo {
     /**结束日*/
     private String dend;
 
+    /**剩余时间*/
+    private String crestHours;
+    /**显示期间*/
+    private String txtTimeScope;
 }

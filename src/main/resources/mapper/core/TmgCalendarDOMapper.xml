@@ -18,16 +18,16 @@
 
     <select id="selectDayCount" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo">
         SELECT
-            TO_NUMBER( TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dd' ) ),
-            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dy' ),
-            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'yyyy/mm/dd' )
+            TO_NUMBER( TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dd' ) ) AS SEQ,
+            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'dy' ) AS DAY_OF_WEEK,
+            TO_CHAR( ( TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 ), 'yyyy/mm/dd' ) AS DAY
         FROM
             TMG_V_DAYCOUNT
         WHERE
             TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 <![CDATA[<=]]> TRUNC( Last_day( TO_DATE(#{baseDate}) ) );
     </select>
 
-    <select id="selectGetCalendarList" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo" statementType="STATEMENT">
+    <select id="selectGetCalendarList" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo">
         SELECT
             TCA_CHOLFLG01,
             TCA_CHOLFLG02,
@@ -61,11 +61,11 @@
             TCA_CHOLFLG30,
             TCA_CHOLFLG31
         FROM
-            TABLE ( TMG_F_GET_CALENDAR_LIST ( '${custId}', '${compId}', '', ${groupId}, NULL, '${targetYYYY}' ) )
+            TABLE ( TMG_F_GET_CALENDAR_LIST ( '${custId}', '${compId}', '', '${groupId}', NULL, '${targetYYYY}' ) )
         WHERE
-                TCA_CCUSTOMERID = '${custId}'
-            AND TCA_CCOMPANYID = '${compId}'
-            AND TCA_DYYYYMM = to_date( '${sBaseDate}' );
+                TCA_CCUSTOMERID = #{custId}
+            AND TCA_CCOMPANYID = #{compId}
+            AND TCA_DYYYYMM = to_date( #{sBaseDate} );
     </select>
 
 

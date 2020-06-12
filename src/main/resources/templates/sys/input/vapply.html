@@ -13,12 +13,11 @@
                 <i-col span="7">
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
-                        <i-select v-model="restApply.restTypeId" @on-change="handleRestType"
+                        <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
-                            <option-group v-for="item of restTypeList" :key="item.value" :label="item.label">
-                                <i-option v-for="e of item.children" :value="e.value" :key="e.value">{{ e.label }}
-                                </i-option>
+                            <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ e.ntfName.length > 25 ? e.ntfName.split('(')[1] : e.ntfName  }}</i-option>
                             </option-group>
                         </i-select>
                         <section v-show="selectedRestInfo.info">
@@ -155,11 +154,11 @@
                                 </Row>
                             </li>
                             <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
-                            <i-button long style="top:-20px">もっと見る</i-button>
+                            <i-button class="width75" style="margin-top: 35px;margin-left: 47px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
-                    <Card :title="selectedRestInfo.label ? selectedRestInfo.label : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
+                    <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="!rotate ? 'card' : 'card rotate-180'">
                         <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
@@ -299,6 +298,7 @@
                     open: true,
                     timerangeType: 1,
                     loading: false,
+                    moreDataLoading: false,
                     weekSelectFlag: true,
                     modeId: null,
                     rotate: false,
@@ -309,6 +309,54 @@
                     totalCount: 0,
                     listLoading: false,
                     tableData: [
+                        {
+                            status: 1,
+                            remark: '申請承認済み',
+                            updateTime: '2020/03/02 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
+                        },
+                        {
+                            status: 2,
+                            remark: '申請承認拒否',
+                            updateTime: '2020/03/01 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02', '2020/03/05'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
+                        },
+                        {
+                            status: 3,
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
+                        },
+                        {
+                            status: 1,
+                            remark: '申請承認済み',
+                            updateTime: '2020/03/02 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
+                        },
+                        {
+                            status: 2,
+                            remark: '申請承認拒否',
+                            updateTime: '2020/03/01 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02', '2020/03/05'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
+                        },
+                        {
+                            status: 3,
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
+                        },
                         {
                             status: 1,
                             remark: '申請承認済み',
@@ -373,7 +421,7 @@
                 flatRestTypeList() {
                     let result = []
                     if (this.restTypeList.length > 0) {
-                        this.restTypeList.forEach(e => (result = result.concat(e.children)))
+                        this.restTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
                     }
                     return result
                 }
@@ -383,7 +431,8 @@
                     // 获得休假选择
                     this.loading = true
                     try {
-                        const { data } = await this.http.get(`${aliURL}/apply/holiday/select`)
+                        const { data } = await this.http.get(`/sys/vapply/NtfTypeList`)
+                        console.log(data)
                         this.restTypeList = data
                     } catch (error) {
                         return
@@ -417,8 +466,13 @@
                 handleWeekSelect() { },
                 handleRestType(e) {
                     // 选择不同的休假时，判断显示不同的项目
-                    if (!e || e === '全て') return (this.selectedRestInfo = {})
-                    else this.selectedRestInfo = this.flatRestTypeList.find(t => t.value === e)
+                    if  (!e || e === '全て') {
+                        return (this.selectedRestInfo = {})
+                    }
+                    this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                    if(this.selectedRestInfo.ntfName.length > 25 ) {
+                        this.selectedRestInfo.ntfName =this.selectedRestInfo.ntfName.split('(')[1]
+                    }
                 },
                 // 到底再拉数据，需要判断总数，决定是否再拉，每次拉50条
                 handleScroll: Throttle(function (e) {
@@ -462,7 +516,7 @@
                             status: 0,
                             remark: that.restApply.reason,
                             updateTime: Utils.formatDate(Date.now()),
-                            restTypeName: that.selectedRestInfo.label || '申請区分選択待ち',
+                            restTypeName: that.selectedRestInfo.ntfName || '申請区分選択待ち',
                             dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
                             nextAdmin: '田中さん',
                             nextAdminStatus: 0
@@ -532,6 +586,10 @@
                         desc: 'File ' + file.name + ' is too large, no more than 500K.'
                     });
                 },
+                // 加载更多按钮
+                handleMoreDataLoading () {
+                    this.moreDataLoading = true
+                }
             }
         })
     </script>

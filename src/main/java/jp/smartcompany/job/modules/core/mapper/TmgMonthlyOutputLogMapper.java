@@ -16,4 +16,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgMonthlyOutputLogMapper extends BaseMapper<TmgMonthlyOutputLogDO> {
 
-        }
+    String selectSeq();
+}

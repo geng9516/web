@@ -47,6 +47,6 @@ public class MonthlyInfoOtVo {
     private String tmiCinfo29;
     private String tmiCinfo30;
     private String tmiCinfo31;
-    private String asovertime;
+    private String overtime;
 
 }
