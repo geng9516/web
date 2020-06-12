@@ -74,10 +74,10 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
     }
 
     @Override
-    public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, String date) {
+    public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, Date date) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
         qw.eq("mo_ccustomerid_ck_fk", customerId)
-                .lt("mo_dstart", date).gt("mo_dend", date)
+                .le("mo_dstart", SysUtil.transDateToString(date)).ge("mo_dend", SysUtil.transDateToString(date))
                 .eq("mo_clanguage", "ja")
                 .orderByDesc("mo_nseq");
         List<MastOrganisationDO> organisationDOList = list(qw);
@@ -98,8 +98,8 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                 .eq("mo_ccompanyid_ck_fk", psCompCode)
                 .eq("mo_csectionid_ck", psTargetDept)
                 .eq("mo_clanguage", "ja")
-                .lt("mo_dstart", SysUtil.transDateToString(pdSearchDate))
-                .gt("mo_dend", SysUtil.transDateToString(pdSearchDate))
+                .le("mo_dstart", SysUtil.transDateToString(pdSearchDate))
+                .ge("mo_dend", SysUtil.transDateToString(pdSearchDate))
                 .select("MO_CLAYEREDSECTIONID");
         List<MastOrganisationDO> mastOrganisationList = list(qw);
         if (CollUtil.isNotEmpty(mastOrganisationList)) {

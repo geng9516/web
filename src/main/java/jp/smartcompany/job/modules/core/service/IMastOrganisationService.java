@@ -50,7 +50,7 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * @param date
      * @return
      */
-    List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, String date);
+    List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, Date date);
 
     /**
      * <p>

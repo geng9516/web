@@ -65,8 +65,8 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
         public List<HistDesignationDO> selectCompanyId(String userId, Date date) {
                 QueryWrapper<HistDesignationDO> qw = SysUtil.query();
                 qw.eq("HD_CUSERID",userId)
-                  .lt("HD_DSTARTDATE_CK",SysUtil.transDateToString(date))
-                   .gt("HD_DENDDATE",SysUtil.transDateToString(date));
+                  .le("HD_DSTARTDATE_CK",SysUtil.transDateToString(date))
+                   .ge("HD_DENDDATE",SysUtil.transDateToString(date));
                 return list(qw);
         }
 
@@ -159,8 +159,8 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                 String d = DateUtil.format(now, TmgUtil.Cs_FORMAT_DATE_TYPE1);
                 String fDate = SysUtil.transDateNullToDB(d);
                 qw.eq("HD_CUSERID",psUserId)
-                        .lt("HD_DSTARTDATE_CK",fDate)
-                        .gt("HD_DENDDATE",fDate);
+                        .le("HD_DSTARTDATE_CK",fDate)
+                        .ge("HD_DENDDATE",fDate);
                 return list(qw);
         }
 

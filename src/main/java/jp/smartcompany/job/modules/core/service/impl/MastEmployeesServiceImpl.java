@@ -1,13 +1,17 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.framework.auth.entity.LoginControlEntity;
+import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.boot.util.SysUtil;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -61,8 +65,8 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
         qw.eq("ME_CCUSTOMERID_CK",psCustid)
           .eq("ME_CCOMPANYID",psCompid)
           .eq("ME_CEMPLOYEEID_CK",psLoginUserId)
-                .lt("ME_DSTARTDATE",psDate)
-                .gt("ME_DENDDATE",psDate);
+                .le("ME_DSTARTDATE",psDate)
+                .ge("ME_DENDDATE",psDate);
         return list(qw).stream().map(MastEmployeesDO::getMeCuserid).collect(Collectors.toList());
     }
 
@@ -75,8 +79,8 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
         qw.eq("ME_CCUSTOMERID_CK",psCustid)
                 .eq("ME_CCOMPANYID",psCompid)
                 .eq("ME_CEMPLOYEEID_CK",psLoginUserId)
-                .lt("ME_DSTARTDATE",psDate)
-                .gt("ME_DENDDATE",psDate);
+                .le("ME_DSTARTDATE",psDate)
+                .ge("ME_DENDDATE",psDate);
         return list(qw);
     }
 
@@ -96,7 +100,84 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
         map.put("yyyymmdd", yyyymmdd);
         map.put("empsql", empsql);
         map.put("empIds", empIds);
-
         return baseMapper.selectEmpIdListForTmgDaily(map);
+    }
+
+    @Override
+    public int selectRelationEx(String sCust,String sLoginUser,String sTargetUser,String sSystem,String sDesig,
+                                       String sDate, String psBase1, String psBase2, String psBase3,
+                                       String psBase4, String psBase5, String psBase6,
+                                       String psBase7, String psBase8) {
+        if (StrUtil.isBlank(sCust)){
+            sCust = "01";
+        }
+        if (StrUtil.isBlank(sLoginUser)){
+            sLoginUser = "111";
+        }
+        if (StrUtil.isBlank(sTargetUser)) {
+            sTargetUser = "222";
+        }
+        if (StrUtil.isBlank(sSystem)){
+            sSystem = "system";
+        }
+        return baseMapper.selectRelationEx(sCust,sLoginUser,sTargetUser,sSystem,sDesig,sDate,psBase1,psBase2,psBase3,
+                psBase4,psBase5,psBase6,psBase7,psBase8);
+    }
+
+    @Override
+    public int selectRelation(String sCust,String sLoginUser,String sTargetUser,String sSystem,String sDesig,
+                                String sDate) {
+        if (StrUtil.isBlank(sCust)){
+            sCust = "01";
+        }
+        if (StrUtil.isBlank(sLoginUser)){
+            sLoginUser = "111";
+        }
+        if (StrUtil.isBlank(sTargetUser)) {
+            sTargetUser = "222";
+        }
+        if (StrUtil.isBlank(sSystem)){
+            sSystem = "system";
+        }
+        return baseMapper.selectRelation(sCust,sLoginUser,sTargetUser,sSystem,sDesig,sDate);
+    }
+
+    @Override
+    public List<LoginControlEntity> selectUserInfoByDate(String loginUser, String language, String psDate) {
+        return baseMapper.selectUserInfoByDate(loginUser,language,psDate);
+    }
+
+    @Override
+    public int selectOrgRelation(String sCust, String sLoginUser,String sTargetComp,
+                                 String sTargetSec,String sSystem,String non,String sDate) {
+        if (StrUtil.isBlank(sCust)){
+            sCust="01";
+        }
+        if(StrUtil.isBlank(sLoginUser)){
+            sLoginUser = "111";
+        }
+        if (StrUtil.isBlank(sTargetComp)){
+            sTargetComp = "222";
+        }
+        if (StrUtil.isBlank(sTargetSec)){
+            sTargetSec = "222";
+        }
+        if (StrUtil.isBlank(sSystem)){
+            sSystem = "system";
+        }
+        return baseMapper.selectOrgRelation(sCust,
+                sLoginUser, sTargetComp, sTargetSec, sSystem, null, sDate);
+    }
+
+    @Override
+    public List<V3CompatiblePostEntity> getVersion3SectionChief(
+            String sCustid,
+            String sCompid,
+            String sDeptid,
+            String sDate,
+            String sPostid,
+            boolean bIncludeactual
+    ) {
+        return baseMapper.getVersion3SectionChief(sCustid,sCompid,sDeptid,sDate,sPostid,bIncludeactual);
     }
 }

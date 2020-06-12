@@ -1,28 +1,45 @@
 package jp.smartcompany.framework.compatible.business.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.compatible.business.Version3CompatibleLogic;
+import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
+import jp.smartcompany.framework.dbaccess.BehaviorApplyLogic;
+import jp.smartcompany.framework.dbaccess.DbControllerLogic;
+import jp.smartcompany.framework.relation.PsEmpRelation;
+import jp.smartcompany.framework.relation.PsOrgRelation;
 import jp.smartcompany.framework.sysboot.dto.SystemPropertyDTO;
+import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.SectionChiefBusiness;
+import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.bo.DesignationBO;
 import jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
+import jp.smartcompany.job.modules.core.service.IMastCompanyService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Xiao Wenpeng
@@ -37,7 +54,28 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     private final IHistDesignationService iHistDesignationService;
     private final IMastOrganisationService iMastOrganisationService;
     private final IMastEmployeesService iMastEmployeesService;
+    private final BaseSectionBusiness baseSectionBusiness;
+    private final DbControllerLogic dbControllerLogic;
+    private final IMastCompanyService iMastCompanyService;
+    private final PsEmpRelation psEmpRelation;
+    private final PsOrgRelation psOrgRelation;
+    private final BehaviorApplyLogic behaviorApplyLogic;
+
     private PsSession psSession;
+
+    /** 更新用エラーコード */
+    private static final int UPDATE_ERROR_CODE = -2;
+    /** システムコード */
+    private static final String SYSTEM_CODE_01 = "01";
+    /** データベースモード */
+    private static final String DATABASE_MODE = "1";
+    /** ドメインコード */
+    private static final String DOMAIN_CODE = "01";
+    /** 日付フォーマット */
+    private static final String DATE_FORMAT = "yyyy/MM/dd";
+    /** ROWIDの正規表現パターン */
+    private static final Pattern REGEXP_ROWID = Pattern.compile("(^|[ ]|[\t]|[^\\w\\.])rowid", Pattern.CASE_INSENSITIVE);
+    private static final Pattern REGEXP_ROWID_ALIAS = Pattern.compile("((?>(^|[ ]|[\t])\\w+)\\.)rowid", Pattern.CASE_INSENSITIVE);
 
     @Override
     public String getSystemCode() {
@@ -69,69 +107,295 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         return null;
     }
 
+    /**
+     * SELECT文実行（一意）
+     * @param vecQuery クエリVector
+     * @param sCustid 顧客コード
+     * @param sCompid 検索者の法人コード
+     * @param sUserid ユーザコード
+     * @param sGroupid グループコード
+     * @param sTargetcustid 検索対象者の顧客コード
+     * @param sTargetcompid 検索対象者の法人コード
+     * @param sTargetuserorsection 検索対象のユーザコードまたは組織コード
+     * @param sBeandesc ログ出力で用いる説明文字列
+     * @param sSystemCode システムコード
+     * @param sDomainid ドメインコード
+     * @param strGUID GUID
+     * @param sDate 検索基準日
+     * @param httpSession セッション情報
+     * @return Vector 結果セット
+     * @throws Exception システム例外
+     */
     @Override
     public PsResult SelectQuerywithTargetUser(Vector vecQuery, String sCustid, String sCompid, String sUserid, String sGroupid, String sTargetcustid, String sTargetcompid, String sTargetuserorsection, String sBeandesc, String sSystemCode, String sDomainid, String strGUID, String sDate, HttpSession httpSession) throws Exception {
-        return null;
+        // ログインユーザコード取得
+        PsSession psSession = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        String sLoginUserCode = psSession.getLoginUser();
+        // リレーションID取得
+        int nRelationId = this.getRelationIdForMask(
+                sCustid, sCompid, sUserid, sTargetcompid, sTargetuserorsection, sDate,
+                sLoginUserCode, sTargetcompid, sTargetuserorsection, sSystemCode, sDomainid,
+                PsConst.REPORTLINE_TYPE_DEF, httpSession, sGroupid, strGUID);
+        return SelectQuerywithPermissionAndQueryBatchAndTargetUser(
+                vecQuery, nRelationId, sSystemCode, sDomainid);
     }
 
     @Override
-    public PsResult SelectMultiQuerywithPermission(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession) throws Exception {
+    public PsResult SelectMultiQuerywithPermission(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession)  {
         return null;
     }
 
+    /**
+     * セキュリティ判定なしでSELECT文を実行しPsResultとして返します。
+     * @param pvSQL クエリVector
+     * @param psCustid 顧客コード
+     * @param psCompid 検索者の法人コード
+     * @param sUserid ユーザコード
+     * @param sGroupid グループコード
+     * @param sBeandesc ログ出力で用いる説明文字列
+     * @param psSystemCode システムコード
+     * @param psGUID GUID
+     * @param pbDesigSW	 true:SQL先頭にDesig4項目あり/false:Desig4項目なし
+     * @return	PsResult 結果セット
+     * @throws Exception システム例外
+     */
     @Override
     public PsResult executeMultiQuery(Vector pvSQL, String psCustid, String psCompid, String sUserid, String sGroupid, String sBeandesc, String psSystemCode, String psGUID, boolean pbDesigSW) throws Exception {
-        return null;
+        String sSql;
+        PsResult psResult = new PsResult();
+        Vector<String> vecException = new Vector<String>();
+        Vector<Vector<Vector<Object>>> vectorResult = new Vector<Vector<Vector<Object>>>();
+        Vector<Vector<Object>> vsqlResult;
+        Vector<Vector<Object>> vecResult;
+
+        // SQLの数分処理
+        for (int nSqlCnt = 0; nSqlCnt < pvSQL.size(); nSqlCnt++) {
+            sSql = pvSQL.elementAt(nSqlCnt).toString();
+            if (pbDesigSW) {	// Desig4項目の場合に正規区分を付加
+                sSql = this.addVirtualRole(sSql);
+            }
+            vecResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+            try {
+
+                // SQL実行
+                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                vsqlResult =dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                if (vsqlResult != null && vsqlResult.size() > 1) {
+
+                    // カラム名の１行目は設定しない
+                    for (int i = 1; i < vsqlResult.size(); i++) {
+                        // 検索結果をセット
+                        vecResult.add(vsqlResult.get(i));
+                    }
+                }
+
+                // setExceptionにnew String()を設定
+                vecException.add("");
+            } catch (Exception e) {
+
+                // e.getMessageをセット
+                vecException.add(nSqlCnt, e.getMessage());
+            }
+
+            // 1個のSQL分の結果セット
+            vectorResult.add(vecResult);
+        }
+        psResult.setException(vecException);
+        psResult.setResult(vectorResult);
+        return psResult;
     }
 
+    /**
+     * ストアドプロシージャ実行
+     * @param sCompid 検索者の法人コード
+     * @param sUserid ユーザコード
+     * @param sSystemCode システムコード
+     * @param sGUID GUID
+     * @param vSQL SQL文のVector
+     * @param vParams パラメータのVector
+     * @return boolean 更新結果
+     * @throws Exception システム例外
+     */
     @Override
     public boolean executeProcedure(String sCompid, String sUserid, String sSystemCode, String sGUID, Vector vSQL, Vector vParams) throws Exception {
-        return false;
+        try {
+            // プロシージャ実行
+            return dbControllerLogic.executeProcedure(vSQL, vParams);
+        } catch (Exception e) {
+            throw e;
+        }
     }
 
+    /**
+     * 所属長を取得します
+     * @param sCustid 検索対象顧客コード
+     * @param sCompid 検索対象法人コード
+     * @param sDeptid 検索対象組織コード
+     * @param sDate 検索基準日
+     * @param bIncludeActual 仮想兼務の適用可否フラグ
+     * @return PsResult 所属長情報を含む結果セット
+     */
     @Override
     public PsResult checkforchief(String sCustid, String sCompid, String sDeptid, String sDate, boolean bIncludeActual) {
-        return null;
+        PsResult psResult = new PsResult();
+        Vector<Vector<Object>> vResult = new Vector<Vector<Object>>();
+        Vector<String> vecException = new Vector<String>();
+        try {
+
+            // TODO 仮想対応のできないか（getEvaluator）
+            // 所属長役職コードの取得（異動歴、基本情報、役職マスタを結合し取得）
+            String sPostId = null;
+            //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+            List<V3CompatiblePostEntity> lPostList =
+                    iMastEmployeesService.getVersion3SectionChief(sCustid, sCompid, sDeptid, fmtchgDate(sDate), null, true);
+            if (lPostList.size() > 0) {
+                V3CompatiblePostEntity postEntity = lPostList.get(0);
+                sPostId = postEntity.getHdCpostidFk();
+                if ("".equals(sPostId)) {
+                    sPostId = null;
+                }
+            }
+            // 所属長情報取得(SQLファイルで役職コード、仮想兼務の適用可否を判定してSQL実行）
+            //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+            List<V3CompatiblePostEntity> lPostEntityList =
+                    iMastEmployeesService.getVersion3SectionChief(sCustid, sCompid, sDeptid, fmtchgDate(sDate), sPostId, bIncludeActual);
+            Vector<Object> vColumn;
+            for (V3CompatiblePostEntity v3CompatiblePostEntity : lPostEntityList) {
+                vColumn = new Vector<>();
+                vColumn.add(v3CompatiblePostEntity.getHdCpostidFk());
+                vColumn.add(v3CompatiblePostEntity.getMeCemployeeidCk());
+                vColumn.add(v3CompatiblePostEntity.getMapNweightage());
+                vColumn.add(v3CompatiblePostEntity.getMapCpostname());
+                vResult.add(vColumn);
+            }
+
+            // 取得できた場合、setExceptionに空を設定
+            vecException.add("");
+        } catch (Exception e) {
+            // e.getMessageをセット
+            vecException.add(e.getMessage());
+        }
+
+        // psResultへ結果セット
+        psResult.setException(vecException);
+        psResult.setResult(vResult);
+        return psResult;
     }
 
     @Override
     public PsResult getCompanyInfo(String sCustid, String sLanguage, String sDate) {
-        return null;
+        PsResult psResult = new PsResult();
+        Vector<Vector<Object>> vResult = new Vector<>();
+        Vector<String> vecException = new Vector<>();
+        try {
+            // 法人一覧取得（法人ツリーマスタよりコードと名称を取得）
+            //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+            List<MastCompanyDO> lMastCompanyList =
+                    iMastCompanyService.getCompanyInfo(sCustid,sLanguage,fmtchgDate(sDate));
+            Vector<Object> vColumn;
+            for (int i = 0; i < lMastCompanyList.size(); i++) {
+                vColumn = new Vector<>();
+                MastCompanyDO mastCompanyEntity = lMastCompanyList.get(i);
+                vColumn.add(mastCompanyEntity.getMacCcompanyidCk());
+                vColumn.add(mastCompanyEntity.getMacCcompanyname());
+                vResult.add(vColumn);
+            }
+            // 取得できた場合、setExceptionに空を設定
+            vecException.add("");
+        } catch (Exception e) {
+            // e.getMessageをセット
+            vecException.add(e.getMessage());
+        }
+        // psResultへ結果セット
+        psResult.setException(vecException);
+        psResult.setResult(vResult);
+        return psResult;
     }
 
     @Override
     public String getDataBaseDate() {
-        return null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+            return sdf.format(new Date());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
     public PsResult SelectMultiQuerywithPermission(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, String sPageStart, String sPageEnd, HttpSession httpSession) throws Exception {
-        return null;
+        return SelectMultiQuerywithPermissionwithRangeLine(
+                vecQuery,    sUserid,    vPostid,
+                sGroupid,    sBeandesc,  sTargetuser,
+                vDept,       sCompid,    sCustid,
+                sSystemCode, strGUID,   sDomainid,
+                sDate,       vSectionid, sTarcomp,
+                sTarsection, Integer.valueOf(sPageStart),
+                Integer.valueOf(sPageEnd), httpSession);
     }
 
     @Override
-    public PsResult SelectMultiQuerywithPermissionForJk(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, String sPageStart, String sPageEnd, HttpSession httpSession) throws Exception {
-        return null;
+    public PsResult SelectMultiQuerywithPermissionForJk(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, String sPageStart, String sPageEnd, HttpSession httpSession) throws Exception {
+        return SelectMultiQuerywithPermissionwithRangeLine(
+                pvQuery, sUserid, vPostid, sGroupid, sBeandesc, sTargetuser,
+                vDept, sCompid, sCustid, sSystemCode, strGUID, sDomainid,
+                sDate, vSectionid, sTarcomp, sTarsection,
+                Integer.valueOf(sPageStart), Integer.valueOf(sPageEnd), httpSession);
     }
 
     @Override
     public boolean isDebugModeEnabled() {
-        return false;
+        boolean bDebugflag = false;
+        String sDebugMode = this.getSystemProperty("DebugMode");
+        if ("yes".equals(sDebugMode)) {
+            bDebugflag = true;
+        }
+        return bDebugflag;
     }
 
     @Override
     public String getDatabaseMode() {
-        return null;
+        return DATABASE_MODE;
     }
 
     @Override
-    public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate, String sReportLine, HttpSession httpSession, String sGroupID, String sSystemCode, String sGUID) throws Exception {
-        return 0;
+    public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate) throws Exception {
+        // ログインユーザコード取得
+        String sLoginUserCode = psSession.getLoginUser();
+        // TODO 検索対象ユーザコード取得できないときの処理未実装
+        // 検索対象ユーザコード取得
+        String sTargetUserCode =
+                this.getUseridForV4(sCustomerID, sTargetCompanyID, sTargetUserID, sDate);
+        //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+        //2007/09/07 日付を「-」編集から「/」編集にして渡す by Konno
+        return psEmpRelation.getRelationId(
+                sCustomerID, sLoginUserCode, sTargetUserCode,
+                this.getSystemCode(), fmtchgDate(sDate));
     }
 
+    /**
+     * リレーション情報を取得します
+     * @param sCustomerID 顧客コード
+     * @param sLoginCompanyID ログイン法人コード
+     * @param sLoginUserID ログイン社員番号
+     * @param sTargetCompanyID 検索対象法人コード
+     * @param sTargetUserID 検索対象社員番号
+     * @param sDate 検索基準日
+     * @param sReportLine レポートラインタイプ
+     * @param httpSession セッション
+     * @param sGroupID グループコード
+     * @param sSystemCode システムコード
+     * @param sGUID GUID
+     * @param bFixed true:確定済み情報を参照, false:未確定情報を参照
+     * @return Vector リレーション情報 - 0:リレーションID,
+     *                                    1:適用開始日(自動判定の場合はnull),
+     *                                    2:適用終了日(自動判定の場合はnull),
+     *                                    3:判別区分(0:自動判定, 1:役割関係定義)
+     */
     @Override
     public Vector<Integer> getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate, String sReportLine, HttpSession httpSession, String sGroupID, String sSystemCode, String sGUID, boolean bFixed) throws Exception {
-        return null;
+        return new Vector<>();
     }
 
     @Override
@@ -156,12 +420,50 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
     @Override
     public String getBaseSectionListForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
-        return null;
+        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate);
+        Map<String, String> hBaseSection = baseSectionBO.getHmCompany().get(SYSTEM_CODE_01);
+        String sBaseSection = "";
+        if (MapUtil.isNotEmpty(hBaseSection) && hBaseSection.containsKey(sCompID)) {
+            // 法人コードをキーに基点組織情報取得
+            String sbSection = hBaseSection.get(sCompID);
+            if (!this.isEmptyString(sbSection)) {
+                // 先頭の法人コードを削除
+                int nCnt = sbSection.indexOf("#");
+                sBaseSection = sbSection.substring(nCnt + 1, sbSection.length());
+                // 区切り文字を変換:それぞれの組織コードにシングルクォーテーションを付加する
+                sBaseSection = SysUtil.replaceString(sBaseSection, "!", "','");
+                // 区切り文字を変換:前後にシングルクォーテーションを付加する
+                sBaseSection = "'" + sBaseSection + "'";
+            }
+        }
+        return sBaseSection;
     }
 
     @Override
-    public Map getBaseSectionListMultiCompForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
-        return null;
+    public Map<String,String> getBaseSectionListMultiCompForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
+        Map<String,String> mBaseSectionList = MapUtil.newHashMap();
+        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate);
+        Map<String, String> hBaseSection = baseSectionBO.getHmCompany().get(SYSTEM_CODE_01);
+        if (hBaseSection != null) {
+            // 法人コード毎に基点組織情報取得
+            for (Map.Entry<String, String> entry : hBaseSection.entrySet()) {
+                String sComp = entry.getKey();
+                String sbSection = entry.getValue();
+                if (!isEmptyString(sbSection)) {
+                    String sBaseSection = "";
+                    // 先頭の法人コードを削除
+                    int nCnt = sbSection.indexOf("#");
+                    sBaseSection = sbSection.substring(nCnt + 1);
+                    // 区切り文字を変換:それぞれの組織コードにシングルクォーテーションを付加する
+                    sBaseSection = SysUtil.replaceString(sBaseSection, "!", "','");
+                    // 区切り文字を変換:前後にシングルクォーテーションを付加する
+                    sBaseSection = "'" + sBaseSection + "'";
+                    // Mapに追加
+                    mBaseSectionList.put(sComp, sBaseSection);
+                }
+            }
+        }
+        return mBaseSectionList;
     }
 
     /**
@@ -315,8 +617,8 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                         .eq("HD_CCOMPANYID_CK",seCompid)
                         .eq("HD_CEMPLOYEEID_CK",seUserid)
                         .eq("HD_CSECTIONID_FK",seDeptid)
-                        .lt("HD_DSTARTDATE_CK",date)
-                        .gt("HD_DENDDATE",date)
+                        .le("HD_DSTARTDATE_CK",date)
+                        .ge("HD_DENDDATE",date)
                 );
                 if (lDesignationList.size() > 0) {
                     HistDesignationDO designationEntity = lDesignationList.get(0);
@@ -398,6 +700,217 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     /**
+     * SQL文実行、結果セットを行います
+     * SelectQuerywithPermissionとexecuteSelectQueryBatchとSelectQuerywithTargetUser用
+     * @param pvQuery クエリ Vector
+     * @param pnRelationId リレーションID
+     * @param psSystemCode システムコード
+     * @param psDomainid ドメインコード
+     * @return PsResult 結果セット
+     */
+    protected PsResult SelectQuerywithPermissionAndQueryBatchAndTargetUser(
+           Vector pvQuery, int pnRelationId,
+           String psSystemCode,String psDomainid) {
+        String sSql;
+        PsResult psResult = new PsResult();
+        Vector<String> vecException = new Vector<>();
+        Vector<Vector<Vector<Object>>> vbResult = new Vector<>();
+        Vector<Vector<Object>> vsqlResult;
+        Vector<Boolean> vBehav;
+        Vector<Vector<Object>> vResult;
+
+        // SQLの数分処理
+        for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
+            sSql = pvQuery.elementAt(nSqlCnt).toString();
+            vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+            try {
+
+                // SQL実行
+                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                if (vsqlResult != null && vsqlResult.size() > 0) {
+                    // ビヘイビア適用
+                    vBehav = setBehaviorApply(vsqlResult.get(0), psSystemCode, psDomainid, pnRelationId);
+                    // マスキング判定結果により結果セット
+                    vResult = setColumnDataAndMask(
+                            vsqlResult, vBehav, vResult);
+                }
+                // setExceptionにnew String()を設定
+                vecException.add("");
+            } catch (Exception e) {
+
+                // e.getMessageをセット
+                vecException.add(nSqlCnt, e.getMessage());
+            }
+
+            // 1個のSQL分の結果セット
+            vbResult.add(vResult);
+        }
+        psResult.setException(vecException);
+        psResult.setResult(vbResult);
+        return psResult;
+    }
+
+    /**
+     * マスキング判定結果によりSQL実行結果セット
+     * SelectQuerywithPermissionとexecuteSelectQueryBatchとSelectQuerywithTargetUser用
+     * @param pvsqlResult SQL実行結果
+     * @param pvBehav マスキング判定結果
+     * @param pvResult 結果セット
+     * @return Vector 結果セット（マスキング判定結果適用）
+     */
+    protected Vector<Vector<Object>> setColumnDataAndMask(
+            final Vector<Vector<Object>> pvsqlResult,
+            final Vector<Boolean> pvBehav,
+            final Vector<Vector<Object>> pvResult) {
+
+        // 検索結果の取得数分処理（先頭のカラム情報は除く）
+        for (int nRcnt = 1; nRcnt < pvsqlResult.size(); nRcnt++) {
+            Vector<Object> vColmData = new Vector<Object>();
+            Vector<Object> vDataOneLine = (Vector<Object>) pvsqlResult.get(nRcnt); // 1行分のデータ
+
+            // カラム数分処理
+            for (int nCnt = 0; nCnt < vDataOneLine.size(); nCnt++) {
+                if ((boolean) pvBehav.get(nCnt)) {
+
+                    // 権限あり
+                    vColmData.add((Object) vDataOneLine.get(nCnt));
+                } else {
+
+                    // 2013/06/19	matsukawa.y
+                    // V4と同じ仕組を利用
+                    vColmData.add(SysUtil.getPermissionString());
+                }
+            }
+            pvResult.add(vColmData);
+        }
+        return pvResult;
+    }
+
+
+    /**
+     * マスキング判定結果取得(ビヘイビア適用)：リレーションID（一意）
+     * @param pvColumn カラム
+     * @param psSystemCode システムコード
+     * @param psDomainid ドメインコード
+     * @param pnRelationId リレーションID
+     * @return Vector マスキング判定結果取得
+     */
+    protected Vector<Boolean> setBehaviorApply(final Vector pvColumn,
+                                               final String psSystemCode,
+                                               final String psDomainid,
+                                               final int pnRelationId) {
+        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
+        Vector<Boolean> vBehav = new Vector<Boolean>();
+        for (Object o : pvColumn) {
+            // ビヘイビアを適用しない場合
+            if (!psSession.isUseBehaviorForV3Compatible()) {    // V3LoadAppAction#initializeでセットされます
+                vBehav.add(true);
+                // ビヘイビアを適用する
+            } else {
+                vBehav.add(behaviorApplyLogic.isMask(
+                        psSystemCode, psDomainid,
+                        (Integer.valueOf(pnRelationId)).toString(),
+                        (String) o));
+            }
+        }
+        return vBehav;
+    }
+
+    protected int getRelationIdForMask(String psCustid, String psCompid,
+                                       String psUserid, String psTarcomp, String psTargetuser,
+                                       String psDate, String psLoginUser, String psTarcompForSection,
+                                       String psTarsectionForSection, String psSystemCode,
+                                       String psDomainid, String psReportLine, HttpSession pHttpSession,
+                                       String psGroupID, String psGUID) throws Exception {
+        int nRelationId;
+        if ("01".equals(psDomainid)) {
+            nRelationId = getRelation(psCustid, psCompid, psUserid, psTarcomp,
+                    psTargetuser, psDate);
+        } else {
+            nRelationId = psOrgRelation.getRelationId(psCustid,
+                    psLoginUser, psTarcompForSection, psTarsectionForSection,
+                    psSystemCode, fmtchgDate(psDate));
+        }
+        return nRelationId;
+    }
+
+
+    /**
+     * SELECT文（複数対象・複数対象行範囲あり・条件検索用SELECT文）を実行します
+     * @param pvQuery クエリVector
+     * @param psUserid ユーザコード
+     * @param pvPostid 役職コード Vector
+     * @param psGroupid グループコード
+     * @param psBeandesc ログ出力で用いる説明文字列
+     * @param psTargetuser 検索対象ユーザコード
+     * @param pvDept 検索者の組織コード Vector
+     * @param psCompid 検索者の法人コード
+     * @param psCustid 顧客コード
+     * @param psSystemCode システムコード
+     * @param psGUID GUID
+     * @param psDomainid ドメインコード
+     * @param psDate 検索基準日
+     * @param pvSectionid 検索者組織コード（組織用）
+     * @param psTarcomp 検索対象者の法人コード
+     * @param psTargetDept 検索対象者の組織コード
+     * @param pnStartLine 開始行
+     * @param pnEndLine 終了行
+     * @param pHttpSession セッション情報
+     * @return PsResult 結果セット
+     * @throws Exception システム例外
+     */
+    protected PsResult SelectMultiQuerywithPermissionwithRangeLine(
+            final Vector pvQuery,    final String psUserid,     final Vector pvPostid,
+            final String psGroupid,    final String psBeandesc,   final String psTargetuser,
+            final Vector pvDept,       final String psCompid,     final String psCustid,
+            final String psSystemCode, final String psGUID,     final String psDomainid,
+            final String psDate,       final Vector pvSectionid,  final String psTarcomp,
+            final String psTargetDept,  final Integer pnStartLine, final Integer pnEndLine,
+            final HttpSession pHttpSession
+    ) {
+        String sSql;
+        PsResult psResult = new PsResult();
+        Vector<String> vecException = new Vector<>();
+        Vector<Vector<Vector<Object>>> vectorResult = new Vector<>();
+        Vector<Vector<Object>> vsqlResult;
+        Vector<Vector<Object>> vResult;
+        // SQLの数分処理
+        for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
+            // SQL文のカラム名4個目の次に正規区分のカラム"HD_NOFFCIALORNOT"追加
+            sSql = this.addVirtualRole(pvQuery.elementAt(nSqlCnt).toString());
+            vResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
+            try {
+                // SQL実行
+                //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
+                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
+                if (vsqlResult != null && vsqlResult.size() > 0) {
+                    // マスキング判定(ビヘイビア適用)・結果セット
+                    vResult = this.setColumnDataAndBehaviorApplyPlural(
+                            psCustid, psCompid, psUserid, psDate, psTarcomp, psTargetDept,
+                            vsqlResult,vsqlResult.get(0),
+                            psSystemCode, psDomainid, pnStartLine, pnEndLine,
+                            PsConst.REPORTLINE_TYPE_DEF,
+                            pHttpSession, psGroupid, psGUID);
+                }
+                // setExceptionにnew String()を設定
+                vecException.add(new String());
+            } catch (Exception e) {
+                // e.getMessageをセット
+                vecException.add(nSqlCnt, e.getMessage());
+            }
+            // 1個のSQL分の結果セット
+            vectorResult.add(vResult);
+        }
+        psResult.setException(vecException);
+        psResult.setResult(vectorResult);
+        return psResult;
+    }
+
+    /**
      * 文字列チェック.
      * @param psString 文字列
      * @return true：null または 空文字
@@ -409,6 +922,166 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             return true;
         }
         return false;
+    }
+
+    /**
+     * データ設定・マスキング判定結果取得(ビヘイビア適用)：対象者複数
+     * @param psCustid 顧客コード
+     * @param psCompid 検索者の法人コード
+     * @param psUserid ユーザコード
+     * @param psDate 検索基準日
+     * @param psTarcomp 検索対象者の法人コード
+     * @param psTarsection 検索対象者の組織コード
+     * @param pvsqlResult SQL実行結果
+     * @param pvColumn カラム
+     * @param psSystemCode システムコード
+     * @param psDomainid ドメインコード
+     * @param pnStartLine 開始行
+     * @param pnEndLine 終了行
+     * @param psReportLine レポートラインタイプ
+     * @param pHttpSession  セッション情報
+     * @param psGroupID グループコード
+     * @param psGUID GUID
+     * @return Vector マスキング判定結果取得
+     * @throws Exception システム例外
+     */
+    protected Vector<Vector<Object>> setColumnDataAndBehaviorApplyPlural(
+            String psCustid, String psCompid, String psUserid,
+            String psDate, String psTarcomp, String psTarsection,
+            Vector<Vector<Object>> pvsqlResult,
+            Vector<Object> pvColumn,
+            String psSystemCode,String psDomainid,
+            Integer pnStartLine,Integer pnEndLine,
+            String psReportLine,
+            HttpSession pHttpSession,
+            String psGroupID,
+            String psGUID
+    ) throws Exception {
+        // 開始行、終了行が設定されている場合
+        int nSline = 1;
+        int nEline = pvsqlResult.size();
+        if (pnStartLine != null && pnEndLine != null && pnStartLine <= pnEndLine) {
+            if (pnEndLine < pvsqlResult.size() - 1) {
+                nEline = pnEndLine + 1;
+            }
+            if (pnStartLine > nSline) {
+                nSline = pnStartLine;
+            }
+        }
+
+        // SQL実行結果の行数分処理
+        Vector<Vector<Object>> vResult = new Vector<Vector<Object>>();
+        for (int nRcnt = nSline; nRcnt < nEline; nRcnt++) {
+
+            // 取得した対象者法人コード
+            String sTargetcomp = (String) (pvsqlResult.get(nRcnt)).get(2);
+
+            // 取得した対象者ユーザコード
+            String sTargetUser = (String) (pvsqlResult.get(nRcnt)).get(3);
+
+            // ログインユーザコード取得
+            String sLoginUserCode = psSession.getLoginUser();
+
+            // リレーションID取得
+            int nRelationId = getRelationIdForMask(
+                    psCustid, psCompid, psUserid, sTargetcomp, sTargetUser, psDate,
+                    sLoginUserCode, psTarcomp, psTarsection, psSystemCode, psDomainid,
+                    psReportLine, pHttpSession, psGroupID, psGUID);
+
+            Vector<Object> vColmData = new Vector<>();
+            Vector<Object> vDataOneLine = pvsqlResult.get(nRcnt); // 1行分のデータ
+
+            // カラム数分処理
+            for (int nCnt = 0; nCnt < pvColumn.size(); nCnt++) {
+
+                boolean bBehav;
+
+                // ビヘイビアを適用しない場合
+                if (!psSession.isUseBehaviorForV3Compatible()) {	// V3LoadAppAction#initializeでセットされます
+                    bBehav = true;
+                } else {
+                    // マスキング判定結果取得
+                    bBehav = behaviorApplyLogic.isMask(
+                            psSystemCode, psDomainid,
+                            (Integer.valueOf(nRelationId)).toString(),
+                            (String) pvColumn.get(nCnt));
+                }
+                if (bBehav) {
+
+                    // 権限あり
+                    vColmData.add(vDataOneLine.get(nCnt));
+                } else {
+
+                    // 2013/06/19	matsukawa.y
+                    // V4と同じ仕組を利用
+                    vColmData.add(SysUtil.getPermissionString());
+                }
+            }
+            vResult.add(vColmData);
+        }
+        return vResult;
+    }
+
+    /**
+     * SQL文内にROWIDが含まれるときrowidtochar関数を追加
+     * 2007/11/21追加
+     * @param psSQL
+     * @return
+     */
+    private String addRowidConvert( String psSQL ){
+        if (StrUtil.isBlank(psSQL)) {
+            return "";
+        }
+        // ROWID単体で使っているとき
+        Matcher matcher = REGEXP_ROWID.matcher(psSQL).reset();
+        if (matcher.find()) {
+            // カッコスタートの場合はカッコを含めて置換
+            if (matcher.group().startsWith("(")) {
+                psSQL = matcher.replaceAll("( rowidtochar(ROWID)");
+            } else {
+                psSQL = matcher.replaceAll(" rowidtochar(ROWID)");
+            }
+        }
+        // ROWIDをテーブル別名付きで使っているとき
+        matcher = REGEXP_ROWID_ALIAS.matcher(psSQL).reset();
+        while (matcher.find()) {
+            if (matcher.group().startsWith("(")) {
+                // カッコスタートの場合はカッコを含めて置換
+                psSQL = matcher.replaceFirst("( rowidtochar(" + matcher.group().trim() + ")");
+            } else {
+                psSQL = matcher.replaceFirst(" rowidtochar(" + matcher.group().trim() + ")");
+            }
+            matcher = REGEXP_ROWID_ALIAS.matcher(psSQL).reset();
+        }
+        return psSQL;
+    }
+
+    /**
+     * SQL文のカラム名4個目の次に
+     * 正規区分のカラム"HD_NOFFCIALORNOT"を追加します。
+     * @param psSql SQL
+     * @return	String 	SQL（HD_NOFFCIALORNOT 追加）
+     */
+    protected String addVirtualRole(String psSql) {
+        String temp;
+        if (!psSql.contains("hd.")) {
+            temp = "  HD_NOFFCIALORNOT as HD_NOFFCIALORNOT, ";
+        } else {
+            temp = "  hd.HD_NOFFCIALORNOT as HD_NOFFCIALORNOT, ";
+        }
+        String sRetvalue = "";
+        StringBuilder sQuery = new StringBuilder("");
+        int nCnt = 0;
+        StringTokenizer spart = new StringTokenizer(psSql, ",");
+        while (spart.hasMoreElements()) {
+            sQuery.append(spart.nextToken()).append(",");
+            nCnt++;
+            if (nCnt == 4) {
+                sQuery.append(temp);
+            }
+        }
+        sRetvalue = sQuery.toString();
+        return sRetvalue.substring(0, sRetvalue.length() - 1);
     }
 
     /**

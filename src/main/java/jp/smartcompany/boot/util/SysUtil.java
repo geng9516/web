@@ -1,11 +1,16 @@
 package jp.smartcompany.boot.util;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.job.modules.core.util.PsSession;
 
+import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Vector;
 
 /**
@@ -235,13 +240,26 @@ public class SysUtil {
      * @return String(yyyy/MM/dd)
      */
     public static String transTimestampToString(Timestamp pTimestamp) {
-
         if (pTimestamp == null) {
             return null;
         }
-
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         return sdf.format(pTimestamp.getTime());
     }
+
+    public static String getPermissionString() {
+        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        PsSession psSession = (PsSession)session.getAttribute(Constant.PS_SESSION);
+        ScCacheUtil scCacheUtil = SpringUtil.getBean("scCacheUtil");
+        return scCacheUtil.getPermissionString(psSession.getLoginCustomer(),
+                psSession.getLoginCompany(), psSession.getLanguage());
+    }
+
+    /* ▼****************************** 区切り文字置換 *******************************▼ */
+    /** デフォルト区切り文字 */
+    public static final String PS_DEFAULT_SEPARATOR = "_";
+
+    /** デフォルト以外に有効な区切り文字 */
+    public static final String[] PS_VALID_SEPARATORS = {","};
 
 }

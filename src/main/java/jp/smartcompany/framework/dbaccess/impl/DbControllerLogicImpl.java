@@ -32,6 +32,9 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         }
         Connection connection = dataSource.getConnection();
         Object oSqlResult = dbAccessLogic.executeQuery(connection,sSql);
+        if (connection!=null){
+            connection.close();
+        }
         return convertData(oSqlResult);
     }
 
@@ -43,6 +46,9 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         Connection connection = dataSource.getConnection();
         Object oSqlResult = dbAccessLogic.executeQuery(connection,
                 sSql, vecParam);
+        if (connection!=null){
+            connection.close();
+        }
         return convertData(oSqlResult);
     }
 
@@ -57,6 +63,9 @@ public class DbControllerLogicImpl implements DbControllerLogic {
             int nCount = dbAccessLogic.executeUpdate(connection, (String)sql);
             vecResult.add(nCount);
         }
+        if (connection!=null){
+            connection.close();
+        }
         return vecResult;
     }
 
@@ -70,6 +79,9 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         for (Object sql : vecQuery) {
             int nCount = dbAccessLogic.executeUpdate(connection, (String)sql,vecParam);
             vecResult.add(nCount);
+        }
+        if (connection!=null){
+            connection.close();
         }
         return vecResult;
     }
@@ -91,6 +103,9 @@ public class DbControllerLogicImpl implements DbControllerLogic {
             }
         }
         dbAccessLogic.executeProcedure(connection,vecQuery,vecParam);
+        if (connection!=null){
+            connection.close();
+        }
         return true;
     }
 
