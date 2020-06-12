@@ -14,17 +14,23 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AttendanceExistsVO {
+
     /**
      * 前月
      */
     private String lastYear;
     /**
-     * 当年
+     * 該当年
      */
     private String thisYear;
     /**
      * 翌年
      */
     private String nextYear;
+
+    /**
+     * 当年
+     */
+    private String currentYear;
 
 }

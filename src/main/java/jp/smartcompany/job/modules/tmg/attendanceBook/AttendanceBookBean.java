@@ -649,10 +649,15 @@ public class AttendanceBookBean {
             year = DateUtil.thisYear() + "";
         }
         targetDate = year + "/12/31";
+        String currentYear = DateUtil.thisYear() + "/12/31";
 
         String compCode = psDBBean.getCompCode();
         String custId = psDBBean.getCustID();
-        return iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
+
+        AttendanceExistsVO attendanceExistsVO = iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
+        attendanceExistsVO.setCurrentYear(currentYear);
+
+        return attendanceExistsVO;
 
     }
 
