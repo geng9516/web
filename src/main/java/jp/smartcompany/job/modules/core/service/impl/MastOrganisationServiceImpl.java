@@ -2,14 +2,20 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
+import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.mapper.MastOrganisationMapper;
+import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.boot.util.SysUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -27,7 +33,10 @@ import java.util.stream.Collectors;
  * @since 2020-04-16
  */
 @Repository
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMapper, MastOrganisationDO> implements IMastOrganisationService {
+
+    private final IHistDesignationService iHistDesignationService;
 
     @Override
     public MastOrganisationDO selectOrganisation(String customerId, String companyId, String sectionId, Date yyyymmdd) {
@@ -89,9 +98,9 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                 .eq("mo_ccompanyid_ck_fk", psCompCode)
                 .eq("mo_csectionid_ck", psTargetDept)
                 .eq("mo_clanguage", "ja")
-                .le("mo_dstart", pdSearchDate)
-                .ge("mo_dend", pdSearchDate)
-                .orderByAsc("mo_nseq");
+                .lt("mo_dstart", SysUtil.transDateToString(pdSearchDate))
+                .gt("mo_dend", SysUtil.transDateToString(pdSearchDate))
+                .select("MO_CLAYEREDSECTIONID");
         List<MastOrganisationDO> mastOrganisationList = list(qw);
         if (CollUtil.isNotEmpty(mastOrganisationList)) {
             List<String> layeredsectionid = mastOrganisationList.stream().map(MastOrganisationDO::getMoClayeredsectionid).collect(Collectors.toList());
@@ -120,7 +129,7 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
 
     @Override
     public List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date) {
-        return baseMapper.selectLowerSection(psCustID, psCompID, psSection, date);
+        return baseMapper.selectLowerSection(psCustID, psCompID, psSection, SysUtil.transDateToString(date));
     }
 
     /**
@@ -180,14 +189,53 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
      * @exception
      */
     @Override
-    public List < String > getSubSection(String customerId, String compnyId, String sectionId,
+    public List<String> getSubSection(String customerId, String compnyId, String sectionId,
                                          Date searchDate) {
-
         List <String> highLowSectionSysInfoDtolist = selectLowerSection(customerId, compnyId, sectionId, searchDate);
-        if (highLowSectionSysInfoDtolist == null || highLowSectionSysInfoDtolist.size() == 0) {
+        if (CollUtil.isEmpty(highLowSectionSysInfoDtolist)) {
             return null;
         }
         return highLowSectionSysInfoDtolist;
     }
 
+    /**
+     * <p>
+     * <b>下位組織</b>情報取得（社員指定）
+     * </p>
+     * <div>指定した社員の下位組織情報を返却する。</div>
+     *
+     * @author t-abe
+     * @param userId ユーザID
+     * @param searchDate 検索基準日
+     * @param virtualSection 仮想組織判定<br>
+     *            true : 組織リストに仮想組織を含ませる。<br>
+     *            false : 仮想リストに仮想組織を含ませない。
+     * @return 下位組織情報
+     * @exception
+     */
+    @Override
+    public Map<String,List<String>> getSubSectionEmp(String userId,Date searchDate, boolean virtualSection) {
+        if (searchDate==null) {
+            throw new GlobalException("searchDate");
+        }
+        List<HistDesignationDO> desinationDtoList = iHistDesignationService.selectCompanyId(userId,searchDate);
+        if (CollUtil.isEmpty(desinationDtoList)) {
+            return null;
+        }
+        Map<String, List<String>> subSectionMap =MapUtil.newHashMap();
+        for (HistDesignationDO histDesignationDO : desinationDtoList) {
+            String companyidCk = histDesignationDO.getHdCcompanyidCk();
+            List<MastOrganisationDO> highLowSectionSysInfoDtolist = baseMapper.selectLowEmp(histDesignationDO.getHdCcustomeridCk(),
+                            companyidCk,
+                            histDesignationDO.getHdCsectionidFk(),
+                            SysUtil.transDateToString(searchDate),
+                            virtualSection);
+            List<String> sectionidList = CollUtil.newArrayList();
+            for (MastOrganisationDO o : highLowSectionSysInfoDtolist) {
+                sectionidList.add(o.getMoCsectionidCk());
+            }
+            subSectionMap.put(companyidCk, sectionidList);
+        }
+        return subSectionMap;
+    }
 }

@@ -55,12 +55,18 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                 return sgId;
         }
 
+        /**
+         * 基準日時点の法人コードを取得する
+         * @param userId
+         * @param date
+         * @return
+         */
         @Override
         public List<HistDesignationDO> selectCompanyId(String userId, Date date) {
                 QueryWrapper<HistDesignationDO> qw = SysUtil.query();
                 qw.eq("HD_CUSERID",userId)
-                  .lt("HD_DSTARTDATE_CK",date)
-                   .gt("HD_DENDDATE",date);
+                  .lt("HD_DSTARTDATE_CK",SysUtil.transDateToString(date))
+                   .gt("HD_DENDDATE",SysUtil.transDateToString(date));
                 return list(qw);
         }
 
@@ -68,19 +74,19 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
         public List<EvaluatorBO> selectEvaluator(String customerId, String systemId, String userId,
                                                  Date pdSearchDate, int evaluation,
                                                  String reportType, String sLanguage) {
-              return baseMapper.selectEvaluator(customerId,systemId, userId, pdSearchDate, evaluation, reportType, sLanguage);
+              return baseMapper.selectEvaluator(customerId,systemId, userId, SysUtil.transDateToString(pdSearchDate), evaluation, reportType, sLanguage);
         }
 
         @Override
         public List<EvaluatorBO> selectAllEvaluator(String psCustomerId,String psUserId,Date pdSearchDate,String psLanguage) {
-              return baseMapper.selectAllEvaluator(psCustomerId,psUserId, pdSearchDate, psLanguage);
+              return baseMapper.selectAllEvaluator(psCustomerId,psUserId, SysUtil.transDateToString(pdSearchDate), psLanguage);
         }
 
         @Override
         public List<EvaluatorBO> selectWithSection(
                 String psCustId,String psUserId,String psSectionId,Date pdSearchDate,String sLanguage) {
                 return baseMapper.selectWithSection(
-                        psCustId,psUserId,psSectionId,pdSearchDate,sLanguage);
+                        psCustId,psUserId,psSectionId,SysUtil.transDateToString(pdSearchDate),sLanguage);
         }
 
         @Override
@@ -91,7 +97,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
                 Date pdSearchDate,
                 String sLanguage) {
                 return baseMapper.selectSectionChief(
-                        psCustId,compId,sectionId,pdSearchDate,sLanguage);
+                        psCustId,compId,sectionId,SysUtil.transDateToString(pdSearchDate),sLanguage);
         }
 
 

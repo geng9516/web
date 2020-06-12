@@ -2,6 +2,7 @@ package jp.smartcompany.boot.configuration;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import cn.hutool.core.map.MapUtil;
+import jp.smartcompany.boot.filter.CustomLoginAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -23,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 
+import javax.servlet.Filter;
 import java.util.Map;
 
 /**
@@ -71,16 +73,34 @@ public class ShiroConfiguration {
         return securityManager;
     }
 
+    @Bean("formAuthFilter")
+    @Primary
+    public FormAuthenticationFilter formAuthFilter() {
+        return new CustomLoginAuthFilter();
+    }
+
     @Bean
     public ShiroFilterFactoryBean shiroFilterFactoryBean(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(securityManager);
-        Map<String, String> map = MapUtil.newHashMap();
-        map.put("/static/**","anon");
-        map.put("/error","anon");
+        Map<String, String> filterChainDefinitionMap = shiroFilterFactoryBean.getFilterChainDefinitionMap();
 
-        map.put("/logout", "logout");
-        map.put("/sys/**", "user");
+        // 设置自定义的过滤器
+//        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
+//        CustomLoginAuthFilter loginFilter= new CustomLoginAuthFilter();
+//        filters.put("user", loginFilter);
+//        filters.put("authc", loginFilter);
+
+        /*
+         * anon:所有url都都可以匿名访问，authc:所有url都必须认证通过才可以访问;
+         * 过滤链定义，从上向下顺序执行，authc 应放在 anon 下面
+         * */
+        filterChainDefinitionMap.put("/static/**","anon");
+        filterChainDefinitionMap.put("/error","anon");
+
+        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/sys/**", "user");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");
@@ -88,7 +108,7 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setSuccessUrl("/");
         //错误页面，认证不通过跳转
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(map);
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }
 

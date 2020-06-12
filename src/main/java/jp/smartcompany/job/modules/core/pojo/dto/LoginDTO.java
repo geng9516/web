@@ -14,6 +14,6 @@ public class LoginDTO {
 
     private String username;
     private String password;
-    private String language;
+//    private String language;
 
 }

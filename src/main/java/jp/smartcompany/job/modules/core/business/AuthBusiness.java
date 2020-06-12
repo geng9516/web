@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.business;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.enums.ErrorMessage;
+import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
@@ -10,12 +11,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import jp.smartcompany.job.modules.core.service.LoginAuditService;
-import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.IpUtil;
-import jp.smartcompany.boot.util.ShiroUtil;
-import jp.smartcompany.boot.util.SysDateUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
@@ -37,7 +35,7 @@ public class AuthBusiness {
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
 
-    public boolean checkPassword(MastAccountDO account, String password) {
+    public boolean checkPassword(MastAccountDO account, String password) throws AuthenticationException {
         Date passwordSetDate = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
         // 密码错误
         if (passwordSetDate == null) {
@@ -67,8 +65,8 @@ public class AuthBusiness {
 
     public void login(LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
-        Subject subject = SecurityUtils.getSubject();
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
+        Subject subject = SecurityUtils.getSubject();
         subject.login(token);
         saveLoginInfo(true, username);
     }

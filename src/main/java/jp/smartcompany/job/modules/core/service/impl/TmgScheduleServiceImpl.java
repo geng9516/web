@@ -29,12 +29,10 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String startDispDate, String endDispDate, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
+    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan,String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("ctpye_plan", ctpye_plan);
         params.put("employeeId", employeeId);
-        params.put("startDispDate", startDispDate);
-        params.put("endDispDate", endDispDate);
         params.put("dStart", dStart);
         params.put("dEnd", dEnd);
         params.put("isVariationalWorkDays", isVariationalWorkDays);
@@ -46,13 +44,25 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String custId, String compCode, String employeeId) {
+    public HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod,String custId, String compCode, String employeeId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("baseDate", baseDate);
+        params.put("detailPeriod", detailPeriod);
         params.put("compCode", compCode);
         params.put("custId", custId);
         return baseMapper.selectBaseDateOf4WeeksBeforeDay(params);
+    }
+
+    @Override
+    public HashMap<String, Object> SelectBaseDateOf4WeeksAfterDay(String baseDate, String detailPeriod, String custId, String compCode, String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("detailPeriod", detailPeriod);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.SelectBaseDateOf4WeeksAfterDay(params);
     }
 
     @Override
@@ -406,6 +416,28 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("sAction", sAction);
         baseMapper.insertTrigger(params);
 
+    }
+
+    @Override
+    public String selectBaseDateFor4Week(String custId, String compCode, String employeeId, String startDate, String endDate, int param4WeekAfter) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        params.put("employeeId", employeeId);
+        params.put("param4WeekAfter", param4WeekAfter);
+
+        return baseMapper.selectBaseDateFor4Week(params);
+    }
+
+    @Override
+    public HashMap<String, String> selectTmgDailyMinAndMax(String custId, String compCode, String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        return baseMapper.selectTmgDailyMinAndMax(params);
     }
 
 

@@ -5,23 +5,22 @@
     <select parameterType="map" id="selectLowerSection" resultType="string">
         -- 下位組織情報取得（組織指定）
         SELECT	ORG_TERGET.MO_CSECTIONID_CK AS moCsectionidCk
-        FROM	MAST_ORGANISATION ORG_TERGET,
-        MAST_ORGANISATION ORG_ROOT
+        FROM MAST_ORGANISATION ORG_TERGET,MAST_ORGANISATION ORG_ROOT
         WHERE
         -- 対象となる組織取得
         ORG_TERGET.MO_CCUSTOMERID_CK_FK = #{custId}
         AND		ORG_TERGET.MO_CCOMPANYID_CK_FK = #{compId}
         AND		ORG_TERGET.MO_CSECTIONID_CK != #{sectionId}
         AND		ORG_TERGET.MO_CLANGUAGE = 'ja'
-        AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> #{date}
-        AND		ORG_TERGET.MO_DEND >= #{date}
+        AND		ORG_TERGET.MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND		ORG_TERGET.MO_DEND >= to_date(#{date},'yyyy/mm/dd')
         -- 基点となる組織取得
         AND		ORG_ROOT.MO_CCUSTOMERID_CK_FK = #{custId}
         AND		ORG_ROOT.MO_CCOMPANYID_CK_FK = #{compId}
         AND		ORG_ROOT.MO_CSECTIONID_CK = #{sectionId}
         AND		ORG_ROOT.MO_CLANGUAGE = 'ja'
-        AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> #{date}
-        AND		ORG_ROOT.MO_DEND >= #{date}
+        AND		ORG_ROOT.MO_DSTART <![CDATA[ <= ]]> to_date(#{date},'yyyy/mm/dd')
+        AND		ORG_ROOT.MO_DEND >= to_date(#{date},'yyyy/mm/dd')
         AND		ORG_TERGET.MO_CLAYEREDSECTIONID LIKE ORG_ROOT.MO_CLAYEREDSECTIONID ||'%'
         ORDER BY
         ORG_TERGET.MO_CSECTIONID_CK;
@@ -53,6 +52,38 @@
             )
 		FROM
 		    DUAL
+    </select>
+
+    <select id="selectLowEmp" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO">
+        -- 下位組織情報取得（社員指定）
+        SELECT
+        MO_CSECTIONID_CK
+        FROM
+        MAST_ORGANISATION
+        WHERE
+        MO_CCUSTOMERID_CK_FK = #{custId}
+        AND MO_CSECTIONID_CK <![CDATA[<>]]> #{sectionId}
+        AND MO_CLANGUAGE = 'ja'
+        AND MO_DSTART <![CDATA[ <= ]]> to_date(#{searchDate},'yyyy/mm/dd')
+        AND MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+        -- 仮想組織判定がtrueだったら、下記条件をANDする
+        <if test="virtualSection">
+            AND MO_NHR <![CDATA[<>]]> '3'
+        </if>
+        AND MO_CLAYEREDSECTIONID LIKE (
+            SELECT
+            MO_CLAYEREDSECTIONID ||'%'
+            FROM
+            MAST_ORGANISATION
+            WHERE
+            MO_CCUSTOMERID_CK_FK = #{custId}
+            AND MO_CCOMPANYID_CK_FK = #{compId}
+            AND	MO_CSECTIONID_CK = #{sectionId}
+            AND	MO_CLANGUAGE = 'ja'
+            AND MO_DSTART <![CDATA[ <= ]]> to_date(#{searchDate},'yyyy/mm/dd')
+            AND MO_DEND >= to_date(#{searchDate},'yyyy/mm/dd')
+        )
+        ORDER BY MO_CSECTIONID_CK
     </select>
 
 </mapper>

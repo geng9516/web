@@ -37,6 +37,7 @@ public class SystemPropertyCache {
         if (systemPropertyMap!=null){
             systemPropertyDTO = systemPropertyMap.get(psKey);
         }else {
+            systemPropertyMap = MapUtil.newHashMap();
             loadSystemProperty();
             systemPropertyDTO = systemPropertyMap.get(psKey);
         }
@@ -95,6 +96,15 @@ public class SystemPropertyCache {
         }
         log.info("【システムプロパティ：{}】",systemPropertyMap);
         lruCache.put(ScCacheUtil.SYSTEM_PROPERTY_MAP,systemPropertyMap);
+    }
+
+    public Map<String,SystemPropertyDTO> getAllSystemProperties() {
+        Map<String,SystemPropertyDTO> systemProperties = (Map<String, SystemPropertyDTO>)lruCache.get(ScCacheUtil.SYSTEM_PROPERTY_MAP);
+        if (MapUtil.isNotEmpty(systemProperties)) {
+            return systemProperties;
+        }
+        loadSystemProperty();
+        return systemPropertyMap;
     }
 
 }
