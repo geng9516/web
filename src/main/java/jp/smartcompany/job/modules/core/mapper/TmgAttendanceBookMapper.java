@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -84,4 +85,11 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
      */
     AttendanceBookEmpDTO selectEmployeesBasicInfo(HashMap<String, Object> params);
 
+    /**
+     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     *
+     * @param params
+     * @return
+     */
+    AttendanceExistsVO selectExistsAttendanceBook(HashMap<String, Object> params);
 }

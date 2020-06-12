@@ -3,7 +3,9 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAttendanceBookDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -118,5 +120,16 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @return
      */
     AttendanceBookEmpDTO selectEmployeesBasicInfo(String employeeId, String queryMonthDay, String nextYearDay, String compCode, String custId);
+
+
+    /**
+     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     * @param baseDate
+     * @param employeeId
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    AttendanceExistsVO selectExistsAttendanceBook(String baseDate,String employeeId, String compCode, String custId);
 
 }

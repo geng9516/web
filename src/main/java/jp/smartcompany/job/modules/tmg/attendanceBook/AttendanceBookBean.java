@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.service.ITmgAttendanceBookService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.*;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
+import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -156,7 +157,7 @@ public class AttendanceBookBean {
      * @throws Exception 汎用参照リストの生成時
      */
     private void setReferList() {
-        String sysDate = DateUtil.format(new Date(),"yyyy-MM-dd")+" 00:00:00";
+        String sysDate = DateUtil.format(new Date(), "yyyy-MM-dd") + " 00:00:00";
         try {
             _referList = new TmgReferList(
                     psDBBean, BEAN_DESC,
@@ -632,6 +633,35 @@ public class AttendanceBookBean {
             listHashMap.put(DEFAULT_KEY_ARRAY[i], listHashMap1.get(DEFAULT_KEY_ARRAY[i]) + "<br>" + listHashMap2.get(DEFAULT_KEY_ARRAY[i]));
         }
         return listHashMap;
+    }
+
+    /**
+     * 対象社員の出勤簿情報が存在する年度情報を検索する
+     *
+     * @param employeeId
+     * @param year
+     * @return
+     */
+    public AttendanceExistsVO selectExistsAttendanceBook(String employeeId, String year) {
+
+        String targetDate = "";
+
+        if (null == employeeId || "".equals(employeeId)) {
+            logger.warn("社員番号が空です");
+            return null;
+        }
+
+        if (null != year && !"".equals(year)) {
+            targetDate = year + "/12/31";
+        } else {
+            logger.warn("基準年が空です");
+            return null;
+        }
+
+        String compCode = psDBBean.getCompCode();
+        String custId = psDBBean.getCustID();
+        return iTmgAttendanceBookService.selectExistsAttendanceBook(targetDate, employeeId, compCode, custId);
+
     }
 
 
