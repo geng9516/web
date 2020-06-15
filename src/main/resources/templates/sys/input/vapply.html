@@ -190,18 +190,34 @@
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                 </section>
 
-                                <!-- 是小时单位的-->
-                                <section v-show="selectedRestInfo.hasTime" class="mt30">
+                                <!-- 是小时单位的 時間帯 -->
+                                <section v-show="selectedRestInfo.timeZone" class="mt30">
                                     <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
-                                            <i-input placeholder="開始時間" />
+                                            <i-input placeholder="開始時間"/>
                                         </i-col>
                                         <i-col span="2">
                                             <p style="padding: 4px;">-</p>
                                         </i-col>
                                         <i-col span="10">
-                                            <i-input placeholder="終了時間" />
+                                            <i-input placeholder="終了時間"/>
+                                        </i-col>
+                                    </Row>
+                                </section>
+
+                                 <!-- 始业终业-->
+                                <section v-show="selectedRestInfo.workTime" class="mt30">
+                                    <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
+                                    <Row class="mb20">
+                                        <i-col span="10">
+                                            <i-input placeholder="始業後" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
+                                        </i-col>
+                                        <i-col span="2">
+                                            <p style="padding: 4px;">-</p>
+                                        </i-col>
+                                        <i-col span="10">
+                                            <i-input placeholder="終業前" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -225,14 +241,21 @@
                             </i-col>
                             <i-col span="13">
                                 <Alert class="right-info sub">
-                                    <!-- 是有别人的-->
+                                    <!-- 是有氏名的-->
                                     <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
                                         <i-input class="mb15" />
-                                        <p class="mb5" v-show="selectedRestInfo.relation">続柄</p>
+                                    </section>
+                                    <!-- 是有続柄的-->
+                                    <section v-show="selectedRestInfo.relation" class="tl">
+                                        <p class="mb5">続柄</p>
                                         <i-input class="mb5" />
                                     </section>
-
+                                    <!-- 是有対象の人数的-->
+                                    <section v-show="selectedRestInfo.targetNumber " class="tl">
+                                        <p class="mb5">対象の人数</p>
+                                        <i-input class="mb5" />
+                                    </section>
                                     <!-- 有生年月日-->
                                     <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
@@ -481,6 +504,7 @@
                         return (this.selectedRestInfo = {})
                     }
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                    console.log(this.selectedRestInfo)
                 },
                 onRefresh() {
                     this.rotate = !this.rotate
