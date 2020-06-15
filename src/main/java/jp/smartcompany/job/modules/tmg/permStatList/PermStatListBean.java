@@ -874,11 +874,11 @@ public class PermStatListBean {
         //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
         //     権限が無いのと同じ扱いとする。
         // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
-        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(_psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(_psDBBean.getSiteId())) {
+        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
             // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
             // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
-            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(_psDBBean.getSiteId())  && StrUtil.isEmpty(_sAction) ||
-                    TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(_psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) && isSelectSection()
+            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())  && StrUtil.isEmpty(_sAction) ||
+                    TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) && isSelectSection()
             ) {
                 // 参照権限チェック(現在時点での年月)
                 if (getReferList().existsAnyone(getFirstDayOfSysdate()) && getReferList().isThereSomeEmployees(getFirstDayOfSysdate())) {
