@@ -350,20 +350,10 @@ public interface Version3CompatibleLogic {
      * @param sTargetCompanyID 検索対象法人コード
      * @param sTargetUserID 検索対象社員番号
      * @param sDate 判定基準日
-     * @param sReportLine レポートラインタイプ
-     * @param httpSession セッション
-     * @param sGroupID グループコード
-     * @param sSystemCode システムコード
-     * @param sGUID GUID
      * @return リレーションID
      * @throws Exception システム例外
      */
-     int getRelation( String sCustomerID,  String sLoginCompanyID,
-                            String sLoginUserID,  String sTargetCompanyID,
-                            String sTargetUserID,  String sDate,
-                            String sReportLine,  HttpSession httpSession,
-                            String sGroupID,  String sSystemCode,
-                            String sGUID) throws Exception;
+     int getRelation( String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate) throws Exception;
 
     /**
      * リレーション情報を取得します
@@ -506,7 +496,7 @@ public interface Version3CompatibleLogic {
      * @param sCreterialDate 基準日
      * @return String 法人区分をキーに、基点組織またはそれ以下の組織のリスト（カンマ区切り）
      */
-     Map getBaseSectionListMultiCompForSQL(
+     Map<String,String> getBaseSectionListMultiCompForSQL(
              String sCustID,      String sCompID,
              String sEmployeeID,  String sCreterialDate);
 

@@ -17,4 +17,12 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class TmgWorkMonthlyoutputlistServiceImpl extends ServiceImpl<TmgWorkMonthlyoutputlistMapper, TmgWorkMonthlyoutputlistDO> implements ITmgWorkMonthlyoutputlistService {
 
+
+        /**
+         * 処理対象年度の対象者一覧ワークテーブルデータの件数を取得するＳＱＬ文を生成する。
+         */
+        @Override
+        public int selectWorkMonthlyOutputList(String custId,String compId,String targetYear,String introductionData){
+                return baseMapper.selectWorkMonthlyOutputList( custId, compId, targetYear,introductionData);
+        }
         }

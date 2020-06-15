@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IMastCompanyService extends IService<MastCompanyDO> {
 
-        }
+        List<MastCompanyDO> getCompanyInfo(String sCustid,String sLanguage,String sDate);
+}

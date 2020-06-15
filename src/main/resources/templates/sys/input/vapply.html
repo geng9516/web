@@ -13,75 +13,53 @@
                 <i-col span="7">
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
-                        <i-select v-model="restApply.restTypeId" @on-change="handleRestType"
+                        <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
-                            <option-group v-for="item of restTypeList" :key="item.value" :label="item.label">
-                                <i-option v-for="e of item.children" :value="e.value" :key="e.value">{{ e.label }}
-                                </i-option>
+                            <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
-                        <section v-show="selectedRestInfo.info">
+                        <section v-show="selectedRestInfo.biko">
                             <Divider size="small" orientation="left">注意事項</Divider>
-                            <Alert class="primary-info mb20" style="white-space: pre-line;">{{ selectedRestInfo.info }}
+                            <Alert class="primary-info mb20" style="white-space: pre-line;">{{ selectedRestInfo.biko | turnLine }}
                             </Alert>
                         </section>
-                        <Divider size="small" orientation="left">年次有給休暇</Divider>
-                        <Row class="ft13 mb5 mt15">
-                            <i-col span="12">
-                                <p class="head-info mr1">期間</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info mr1">残日数</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info">残時間数</p>
-                            </i-col>
-                        </Row>
-                        <Row class="mb20 ft13 border">
-                            <i-col span="12" class="mb10">
-                                <p class="mb5">2010/12/31まで</p>
-                                <p>2020/01/01から</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">19.0日</p>
-                                <p>39.0日</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">6時間 45分</p>
-                                <p>6時間 45分</p>
-                            </i-col>
-                        </Row>
-                        <Divider size="small" orientation="left">特別休暇(子の看護)</Divider>
-                        <Row class="ft13 mb5 mt15">
-                            <i-col span="12">
-                                <p class="head-info mr1">期間</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info mr1">残日数</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info">残時間数</p>
-                            </i-col>
-                        </Row>
-                        <Row class="mb20 ft13 border">
-                            <i-col span="12">
-                                <p class="mb5">2010/12/31まで</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">4.0日</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">0時間 00分</p>
-                            </i-col>
-                        </Row>
+                        <div style="position: relative;min-height: 120px;">
+                            <div v-for="(item, i) of restInfoList" :key="i">
+                                <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
+                                <Row class="ft13 mb5 mt15">
+                                    <i-col span="12">
+                                        <p class="head-info mr1">期間</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p class="head-info mr1">残日数</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p class="head-info">残時間数</p>
+                                    </i-col>
+                                </Row>
+                                <Row class="mb20 ft13 border">
+                                    <i-col span="12" class="mb10">
+                                        <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeRange">{{ e }}</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p :class="j === item.dayList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.dayList" >{{ e }}</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p :class="j === item.timeList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeList">{{ e }}</p>
+                                    </i-col>
+                                </Row>
+                            </div>
+                            <Spin size="large" fix v-if="restInfoLoading"></Spin>
+                        </div>
                     </div>
                 </i-col>
                 <i-col span="16" offset="1">
                     <Card title="申請状況一覧" :class="!rotate ? 'card card-two' : 'card card-two rotate-360'"
                         :loading="loading">
                         <i-button type="primary" ghost size="small" class="mr5"
-                            style="position:relative;right:-672px;font-size:14px" slot="extra" @click="onRefresh">
+                            style="position:relative;right:676px;font-size:14px" slot="extra" @click="onRefresh">
                             申請へ
                         </i-button>
                         <i-select :value="RadioStatusHelper" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleRadioStatusHelper" slot="extra">
@@ -95,36 +73,43 @@
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
                             icon="md-refresh" @click="getApplyHistory(true)" :loading="loading"></i-button>
                         <!-- PersonalApplyTable -->
-                        <ul class="apply-history-list" @scroll.native.passive="handleScroll">
+                        <ul class="apply-history-list">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
                             <li :class="handleTimelineDotShow(item.status)" v-for="(item, index) of tableData" :key="index">
                                 <Row>
                                     <!-- 申请休假的时间的显示 -->
-                                    <i-col span="6" style="margin-left: 4.5%" class="title">
+                                    <i-col span="7" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.dateList) }}</i-col>
-                                    <!-- 承认者-状态-承认者-状态-流的展示, 状态为取消时，不显示 -->
-                                    <!-- todo: 要将这个改为 次に承認者：xxxx -->
-                                    <i-col span="15" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
+                                    <i-col span="12" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
                                             <ul style="display:flex">
                                                 <li style="margin-right:10px" v-if="item.nextAdminList.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
-                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg">
+                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
+                                                        {{e.avatar ? '' : e.name.split(' ')[0]}}
                                                     </Avatar>
                                                 </li>
                                                 <li style="margin-right:10px" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
-                                                    <Avatar src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
-                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
-                                                    <Avatar class="ml-13" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar :src="item.nextAdminList[0].avatar || ''">{{item.nextAdminList[0].avatar ? '' : item.nextAdminList[0].name.split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.nextAdminList[1].avatar || ''">{{item.nextAdminList[1].avatar ? '' : item.nextAdminList[1].name.split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.nextAdminList[2].avatar || ''">{{item.nextAdminList[2].avatar ? '' : item.nextAdminList[2].name.split(' ')[0]}}</Avatar>
                                                     <Avatar class="more-user">{{`+${item.nextAdminList.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
                                             <div class="tr" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.nextAdminList" :key="i">
-                                                    <Avatar class="mr15" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"></Avatar>
+                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.name.split(' ')[0]}}</Avatar>
                                                     <span>{{ e.name }}</span>
                                                 </div>
+                                            </div>
+                                        </Poptip>
+                                    </i-col>
+                                    <i-col span="4" style="margin-left: 44%">
+                                        <Poptip trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
+                                            <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
+                                            <div slot="content">
+                                                <span class="blue" style="text-decoration: underline;">file.jpg</span>
                                             </div>
                                         </Poptip>
                                         <span :class="handleApplyMarkShow(item.status)" />
@@ -134,9 +119,10 @@
                                     <i-col span="12" style="font-weight:bold;margin-left: 4.5%" class="description">
                                         {{ item.restTypeName }}
                                     </i-col>
-                                    <i-col span="2" style="margin-left: 26.3%" class="description"
+                                    <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
                                         v-if="item.status === 0">
-                                        <i-button class="cancel-btn" size="small" @click="cancel(item.applyId)">取り消し
+                                        <!-- todo: 也可能是再申请按钮S -->
+                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item.applyId)">取り消し
                                         </i-button>
                                     </i-col>
                                 </Row>
@@ -149,23 +135,23 @@
                                         {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
                                 </Row>
                                 <Row>
-                                    <i-col span="8" offset="15" class="description light-grey mt10">
+                                    <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">
                                         {{ `申請日時：${item.updateTime}` }}</i-col>
                                 </Row>
                             </li>
-                            <div v-loading="listLoading" style="top:-20px"></div>
+                            <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
+                            <i-button class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
-                    <Card :title="selectedRestInfo.label ? selectedRestInfo.label : '申請区分選択待ち'"
-                        :class="!rotate ? 'card' : 'card rotate-180'">
+                    <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="handleFrontCardClass">
                         <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
                         <Row style="margin-top:10px" :gutter="16">
                             <i-col span="11">
-                                <!-- 有振休 -->
-                                <section v-show="!selectedRestInfo.hasChange">
+                                <!-- 没有振休-->
+                                <section v-show="!selectedRestInfo.transfer">
                                     <Row class="mb15 tl">
                                         <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
                                             <Radio :label="1">指定日申請</Radio>
@@ -180,8 +166,8 @@
                                             format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                     </Row>
                                 </section>
-                                <!-- 没有振休-->
-                                <section v-show="selectedRestInfo.hasChange" class="tl">
+                                <!-- 有振休 -->
+                                <section v-show="selectedRestInfo.transfer" class="tl">
                                     <p class="mb5">出勤にする休日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
@@ -191,14 +177,14 @@
                                 </section>
 
                                 <!-- 有起算日-->
-                                <section v-show="selectedRestInfo.hasBeginDay" class="tl mt20">
+                                <section v-show="selectedRestInfo.period" class="tl mt20">
                                     <p class="mb5">起算日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                 </section>
 
                                 <!-- 有加算日-->
-                                <section v-show="selectedRestInfo.hasAddingDay" class="tl mt20">
+                                <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
@@ -221,18 +207,18 @@
                                 </section>
 
                                 <!-- 是范围才有曜日-->
-                                <section v-show="!selectedRestInfo.hasChange && timerangeType === 2">
+                                <section v-show="selectedRestInfo.daysOfWeek  && timerangeType === 2">
                                     <Divider size="small" orientation="left">曜日</Divider>
                                     <Row style="margin-bottom:20px">
                                         <i-col span="7">
                                             <Checkbox v-model="weekSelectFlag">指定なし</Checkbox>
                                         </i-col>
                                         <i-col span="17">
-                                            <CheckboxGroup v-model="weekSelected" @on-change="handleWeekSelect"
+                                            <checkbox-group v-model="weekSelected" @on-change="handleWeekSelect"
                                                 class="tl">
                                                 <Checkbox v-for="item of week" :key="item.value" :label="item.name"
                                                     class="mb5" :disabled="weekSelectFlag" />
-                                            </CheckboxGroup>
+                                            </checkbox-group>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -240,26 +226,26 @@
                             <i-col span="13">
                                 <Alert class="right-info sub">
                                     <!-- 是有别人的-->
-                                    <section v-show="selectedRestInfo.hasOtherOne" class="tl">
+                                    <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
                                         <i-input class="mb15" />
-                                        <p class="mb5">続柄</p>
+                                        <p class="mb5" v-show="selectedRestInfo.relation">続柄</p>
                                         <i-input class="mb5" />
                                     </section>
 
                                     <!-- 有生年月日-->
-                                    <section v-show="selectedRestInfo.hasBornDay" class="tl mt10">
+                                    <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
                                         <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                             format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                     </section>
                                     <!-- 有伤病-->
-                                    <section v-show="selectedRestInfo.hasDisease" class="tl">
+                                    <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
                                         <i-input />
                                     </section>
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload multiple action="/" type="drag" class="tl mt15 mb15">
+                                    <Upload ref="upload" :format="['pdf','csv','png','xlsx']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :on-success="handleSuccess" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
@@ -281,6 +267,7 @@
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
         const aliURL = 'https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func'
+        const avatar = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"
         const REST_APPLY = new Vue({
             el: '.restApply-warp',
             data() {
@@ -294,9 +281,11 @@
                         { name: '土', value: 6 },
                         { name: '日', value: 7 }
                     ],
+                    restInfoList:[],
                     open: true,
                     timerangeType: 1,
                     loading: false,
+                    moreDataLoading: false,
                     weekSelectFlag: true,
                     modeId: null,
                     rotate: false,
@@ -305,6 +294,7 @@
                     // 用于为全て时删除status字段
                     RadioStatusHelper: 6,
                     totalCount: 0,
+                    restInfoLoading:false,
                     listLoading: false,
                     tableData: [
                         {
@@ -313,7 +303,7 @@
                             updateTime: '2020/03/02 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02'],
-                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1}],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
                         },
                         {
                             status: 2,
@@ -321,7 +311,55 @@
                             updateTime: '2020/03/01 09:56:03',
                             restTypeName: 'test',
                             dateList: ['2020/03/02', '2020/03/05'],
-                            nextAdminList:[{name:'田中 1さん',status:1},{name:'田中 2さん',status:1},{name:'田中 2さん',status:2}],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
+                        },
+                        {
+                            status: 3,
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
+                        },
+                        {
+                            status: 1,
+                            remark: '申請承認済み',
+                            updateTime: '2020/03/02 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
+                        },
+                        {
+                            status: 2,
+                            remark: '申請承認拒否',
+                            updateTime: '2020/03/01 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02', '2020/03/05'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
+                        },
+                        {
+                            status: 3,
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
+                        },
+                        {
+                            status: 1,
+                            remark: '申請承認済み',
+                            updateTime: '2020/03/02 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
+                        },
+                        {
+                            status: 2,
+                            remark: '申請承認拒否',
+                            updateTime: '2020/03/01 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02', '2020/03/05'],
+                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
                         },
                         {
                             status: 3,
@@ -343,10 +381,12 @@
                         useVacation: false
                     },
                     restTypeList: [],
-                    selectedRestInfo: {}
+                    selectedRestInfo: {},
+                    uploadList:[]
                 }
             },
             watch: {
+                // 重置曜日选择器
                 weekSelectFlag(newValue) {
                     if (newValue) {
                         return (this.weekSelected = [])
@@ -361,12 +401,27 @@
             },
             created() {
                 this.getData()
+                this.getRestInfo()
+            },
+            mounted () {
+                this.uploadList = this.$refs.upload.fileList;;
             },
             computed: {
                 flatRestTypeList() {
                     let result = []
                     if (this.restTypeList.length > 0) {
-                        this.restTypeList.forEach(e => (result = result.concat(e.children)))
+                        this.restTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
+                    }
+                    return result
+                },
+                handleFrontCardClass() {
+                    let result = 'card'
+                    if(this.rotate) {
+                        result = result.concat(' rotate-180')
+                    }
+                    const name = this.selectedRestInfo.ntfName
+                    if(name && name.length > 25) {
+                        result = result.concat(' full-name')
                     }
                     return result
                 }
@@ -376,7 +431,8 @@
                     // 获得休假选择
                     this.loading = true
                     try {
-                        const { data } = await this.http.get(`${aliURL}/apply/holiday/select`)
+                        const { data } = await this.http.get(`/sys/vapply/NtfTypeList`)
+                        console.log(data)
                         this.restTypeList = data
                     } catch (error) {
                         return
@@ -385,6 +441,17 @@
                     }
                     // 获得历史申请数据
                     // this.getApplyHistory()
+                },
+                async getRestInfo() {
+                    this.restInfoLoading = true
+                    try {
+                        const { data } = await this.http.get(`/sys/vapply/RestYearList`)
+                        this.restInfoList = data
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.restInfoLoading = false
+                    }
                 },
                 getApplyHistory: Debounce(async function (isRefresh, isReachBottom) {
                     // 获得历史申请数据
@@ -410,21 +477,11 @@
                 handleWeekSelect() { },
                 handleRestType(e) {
                     // 选择不同的休假时，判断显示不同的项目
-                    if (!e || e === '全て') return (this.selectedRestInfo = {})
-                    else this.selectedRestInfo = this.flatRestTypeList.find(t => t.value === e)
-                },
-                // 到底再拉数据，需要判断总数，决定是否再拉，每次拉50条
-                handleScroll: Throttle(function (e) {
-                    const _e = e.target
-                    if (_e.offsetHeight + _e.scrollTop === _e.scrollHeight) {
-                        console.log('到底了！')
-                        if (this.totalCount > this.tableData.length) {
-                            console.log('该拉了')
-                            this.opts.limit += 50
-                            this.getApplyHistory(false, true)
-                        }
+                    if  (!e || e === '全て') {
+                        return (this.selectedRestInfo = {})
                     }
-                }, 600),
+                    this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                },
                 onRefresh() {
                     this.rotate = !this.rotate
                 },
@@ -453,12 +510,11 @@
                         this.loading = false
                         this.tableData.unshift({
                             status: 0,
-                            remark: that.restApply.reason,
-                            updateTime: Utils.formatDate(Date.now()),
-                            restTypeName: that.selectedRestInfo.label || '申請区分選択待ち',
-                            dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
-                            nextAdmin: '田中さん',
-                            nextAdminStatus: 0
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
                         })
                     }, 1000)
                 }),
@@ -497,6 +553,37 @@
                 cancel() {
                     // todo
                     // this.$emit('cancel', e)
+                },
+                handleSuccess (res, file) {
+                    this.$Notice.success({
+                        title: 'Done!',
+                        desc: 'The ' + file.name + 'has been uploaded successfully'
+                    })
+                },
+                handleFormatError (file) {
+                    this.$Notice.warning({
+                        title: 'The file format is incorrect',
+                        desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, or xlsx.'
+                    });
+                },
+                handleBeforeUpload () {
+                    const check = this.uploadList.length < 5;
+                     if (!check) {
+                        this.$Notice.warning({
+                        title: 'Up to five files can be uploaded.'
+                    })
+                }
+                return check;
+                },
+                handleMaxSize (file) {
+                    this.$Notice.warning({
+                        title: 'Exceeding file size limit',
+                        desc: 'File ' + file.name + ' is too large, no more than 500K.'
+                    });
+                },
+                // 加载更多按钮
+                handleMoreDataLoading () {
+                    this.moreDataLoading = true
                 }
             }
         })

@@ -120,6 +120,31 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String standardDate = request.getParameter("txtDYYYYMM");
         // 表示対象日
         String standardDay = request.getParameter("txtDYYYYMMDD");
+        // 请求action
+        String requestAction = request.getParameter("txtAction");
+
+        String redirectBean = request.getParameter("txtRedirectBean");
+        String redirectAction = request.getParameter("txtRedirectAction");
+        String callBeanAction = request.getParameter("txtCallBeanAction");
+        String executeEmpId = request.getParameter("txtExecuteEmpId");
+
+        if (StrUtil.isNotBlank(redirectBean)) {
+            hashtable.put("txtRedirectBean",redirectBean);
+        }
+        if (StrUtil.isNotBlank(redirectAction)) {
+            hashtable.put("txtRedirectAction",redirectAction);
+        }
+        if (StrUtil.isNotBlank(callBeanAction)) {
+            hashtable.put("txtCallBeanAction",callBeanAction);
+        }
+        if (StrUtil.isNotBlank(executeEmpId)){
+            hashtable.put("txtExecuteEmpId",executeEmpId);
+        }
+
+        if (StrUtil.isNotBlank(requestAction)) {
+            hashtable.put("txtAction",requestAction);
+        }
+
         if (StrUtil.isNotBlank(standardDate)){
             hashtable.put("txtDYYYYMM",standardDate);
         }

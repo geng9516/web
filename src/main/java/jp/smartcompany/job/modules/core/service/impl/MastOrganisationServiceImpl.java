@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
@@ -12,10 +11,11 @@ import jp.smartcompany.job.modules.core.mapper.MastOrganisationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.boot.util.SysUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -33,11 +33,9 @@ import java.util.stream.Collectors;
  * @since 2020-04-16
  */
 @Repository
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMapper, MastOrganisationDO> implements IMastOrganisationService {
 
-    private final IHistDesignationService iHistDesignationService;
-
+    private IHistDesignationService iHistDesignationService;
     @Override
     public MastOrganisationDO selectOrganisation(String customerId, String companyId, String sectionId, Date yyyymmdd) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
@@ -74,10 +72,10 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
     }
 
     @Override
-    public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, String date) {
+    public List<BaseSectionOrganisationBO> selectOrganisationByLevel(String customerId, String conds, Date date) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
         qw.eq("mo_ccustomerid_ck_fk", customerId)
-                .lt("mo_dstart", date).gt("mo_dend", date)
+                .le("mo_dstart", SysUtil.transDateToString(date)).ge("mo_dend", SysUtil.transDateToString(date))
                 .eq("mo_clanguage", "ja")
                 .orderByDesc("mo_nseq");
         List<MastOrganisationDO> organisationDOList = list(qw);
@@ -98,8 +96,8 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                 .eq("mo_ccompanyid_ck_fk", psCompCode)
                 .eq("mo_csectionid_ck", psTargetDept)
                 .eq("mo_clanguage", "ja")
-                .lt("mo_dstart", SysUtil.transDateToString(pdSearchDate))
-                .gt("mo_dend", SysUtil.transDateToString(pdSearchDate))
+                .le("mo_dstart", SysUtil.transDateToString(pdSearchDate))
+                .ge("mo_dend", SysUtil.transDateToString(pdSearchDate))
                 .select("MO_CLAYEREDSECTIONID");
         List<MastOrganisationDO> mastOrganisationList = list(qw);
         if (CollUtil.isNotEmpty(mastOrganisationList)) {
@@ -129,7 +127,7 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
 
     @Override
     public List<String> selectLowerSection(String psCustID, String psCompID, String psSection, Date date) {
-        return baseMapper.selectLowerSection(psCustID, psCompID, psSection, SysUtil.transDateToString(date));
+        return baseMapper.selectLowerSection(psCustID, psCompID, psSection, date);
     }
 
     /**
@@ -189,10 +187,11 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
      * @exception
      */
     @Override
-    public List<String> getSubSection(String customerId, String compnyId, String sectionId,
+    public List < String > getSubSection(String customerId, String compnyId, String sectionId,
                                          Date searchDate) {
+
         List <String> highLowSectionSysInfoDtolist = selectLowerSection(customerId, compnyId, sectionId, searchDate);
-        if (CollUtil.isEmpty(highLowSectionSysInfoDtolist)) {
+        if (highLowSectionSysInfoDtolist == null || highLowSectionSysInfoDtolist.size() == 0) {
             return null;
         }
         return highLowSectionSysInfoDtolist;
@@ -237,5 +236,85 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
             subSectionMap.put(companyidCk, sectionidList);
         }
         return subSectionMap;
+    }
+
+
+
+    /**
+     * 選択された組織の表示権限があるかを判定するSQLを返すメソッド
+     * */
+    @Override
+    public int selectHasAuth(String customerId, String compnyId, String sectionId,
+                             String searchDate,String language,String exists){
+        return baseMapper.selectHasAuth( customerId,  compnyId,  sectionId,
+                 searchDate, language, exists);
+    }
+
+
+
+    /**
+     * 対象日の年度開始日および年度終了日を取得するSQLを構築して返します
+     */
+    @Override
+    public TargetFiscalYearDto selectTargetFiscalYear(String cust,
+                                                      String comp,
+                                                      String section,
+                                                      String lang,
+                                                      String targetDate,
+                                                      String targetStartDate,
+                                                      String targetEneDate,
+                                                      String psBaseDate){
+
+        return baseMapper.selectTargetFiscalYear(cust, comp, section, lang, targetDate, targetStartDate,
+                 targetEneDate, psBaseDate);
+    }
+
+
+    /**
+     * 対象組織と組織配下の部署について対象年月の未承認者情報を検索するSQL文を生成し返します。
+     *
+     * @param custId 対象顧客コード
+     * @param compId 対象法人コード
+     * @param secId 対象組織コード
+     * @param dyyyymm 該当年月
+     * @param lang 言語区分
+     * @param numStart 検索番号スタート
+     * @param numEnd 検索番号エンド
+     * @return SQL文
+     */
+    @Override
+    public List<NotApprovalVo> selectNotApproval(String custId,
+                                          String compId,
+                                          String secId,
+                                          String dyyyymm,
+                                          String lang,
+                                          int numStart,
+                                          int numEnd){
+
+        return baseMapper.selectNotApproval(custId, compId, secId, dyyyymm, lang, numStart,numEnd);
+    }
+
+
+    /**
+     * 対象年月の締め未完了部局の一覧を検索するSQL文を生成し返します。
+     *
+     * @param custId 対象顧客コード
+     * @param compId 対象法人コード
+     * @param secId 対象組織コード
+     * @param dyyyymm 該当年月
+     * @param lang 言語区分
+     * @param numStart 検索番号スタート
+     * @param numEnd 検索番号エンド
+     * @return SQL文
+     */
+    @Override
+    public List<NotFixedDeptListVo> selectNotFixedDeptList(String custId,
+                                                           String compId,
+                                                           String secId,
+                                                           String dyyyymm,
+                                                           String lang,
+                                                           int numStart,
+                                                           int numEnd){
+        return baseMapper.selectNotFixedDeptList(custId, compId, secId, dyyyymm, lang, numStart,numEnd);
     }
 }

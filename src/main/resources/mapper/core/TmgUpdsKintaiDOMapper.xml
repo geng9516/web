@@ -2,4 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgUpdsKintaiMapper">
 
+    <select id="selectMoUpds" resultType="java.util.Map" statementType="STATEMENT">
+        SELECT
+            <foreach collection="list" item="columnList" index="index" open="" separator="," close="">
+                ${columnList}
+            </foreach>
+        FROM
+            TABLE(${functionID}(${sectionID},${dlTypeID},${date},${custID},${compID},${lang}))
+            ;
+    </select>
 </mapper>

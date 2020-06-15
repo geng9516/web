@@ -10,6 +10,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
 @SpringBootTest(classes = NextJobApplication.class)
 @RunWith(SpringRunner.class)
 public class TestVersion3CompatibleLogic {
@@ -50,4 +52,9 @@ public class TestVersion3CompatibleLogic {
         System.out.println(result);
     }
 
+    @Test
+    public void testGetBaseSectionListMultiCompForSQL() {
+        Map<String,String> result = version3CompatibleLogic.getBaseSectionListMultiCompForSQL("01", "01", "46402406", "2020/06/11");
+        System.out.println(result);
+    }
 }

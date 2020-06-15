@@ -2,7 +2,9 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDateofempLogDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgDateOfEmpLogVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,4 +18,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgDateofempLogMapper extends BaseMapper<TmgDateofempLogDO> {
 
-        }
+    TmgDateOfEmpLogVo selectTmgDateofempLog(@Param("custId") String custId,
+                                            @Param("compId")String compId,
+                                            @Param("empId")String empId,
+                                            @Param("baseDate")String baseDate);
+}

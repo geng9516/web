@@ -1,8 +1,11 @@
 package jp.smartcompany.job.modules.core.service;
 
 import cn.hutool.core.map.MapUtil;
+import jp.smartcompany.framework.auth.entity.LoginControlEntity;
+import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
@@ -52,4 +55,32 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
      * @return
      */
     List<String> selectEmpIdListForTmgDaily(String siteId, String yyyymmdd, String empsql, String[] empIds);
+
+    int selectRelation(String sCust,String sLoginUser,String sTargetUser,String sSystem,String sDesig,
+                       String sDate);
+
+    int selectRelationEx(String sCust,String sLoginUser,String sTargetUser,String sSystem,String sDesig,
+                                String sDate, String psBase1, String psBase2, String psBase3,
+                                String psBase4, String psBase5, String psBase6,
+                                String psBase7, String psBase8);
+
+    List<LoginControlEntity> selectUserInfoByDate(String loginUser,String language,String psDate);
+
+    int selectOrgRelation(String sCust, String sLoginUser,String sTargetComp,
+                          String sTargetSec,String sSystem,String non,String sDate);
+
+    List<V3CompatiblePostEntity> getVersion3SectionChief(
+            String sCustid,
+            String sCompid,
+            String sDeptid,
+            String sDate,
+            String sPostid,
+            boolean bIncludeactual
+    );
+
+
+    /**
+    * 発令上の勤務開始日取得用SQL取得メソッド
+    */
+    EmployMentWithMEVo selectDateofemploymentWithME(String custId,String compId,String empId);
 }

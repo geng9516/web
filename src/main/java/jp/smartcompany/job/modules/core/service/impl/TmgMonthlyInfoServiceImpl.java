@@ -108,16 +108,15 @@ import java.util.Map;
          *
          * @param  custID      顧客ID
          * @param  compID      法人ID
-         * @param  sectionID   組織コード
          * @param  sContentId  コンテンツID 超過勤務命令用:「TMG_CONTENTID|OTI」    超過勤務実績用：「TMG_CONTENTID|OTR」
          * @param  sBaseDate   基準日(月初日)
          * @param  sLang       言語区分
          * @return SQL文
          */
         @Override
-        public List<YearlyInfoVo> selectYearlyInfo(String custID, String compID, String sectionID,
+        public List<YearlyInfoVo> selectYearlyInfo(String custID, String compID,
                                                    String sContentId, String sBaseDate, String toDay, String sLang, String sql){
-                return baseMapper.selectYearlyInfo( custID,  compID,  sectionID,
+                return baseMapper.selectYearlyInfo( custID,  compID,
                          sContentId,  sBaseDate,toDay,  sLang, sql);
         }
 

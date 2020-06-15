@@ -22,7 +22,7 @@ public class YearlyInfoVo {
 
     private String tmiCinfo02;
 
-    private int tmiCinfo03;
+    private String tmiCinfo03;
 
     private String tmiCinfo04;
 

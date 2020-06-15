@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgWorkMonthlyoutputlistDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,4 +17,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgWorkMonthlyoutputlistMapper extends BaseMapper<TmgWorkMonthlyoutputlistDO> {
 
+
+        int selectWorkMonthlyOutputList(@Param("custId")String custId,
+                                        @Param("compId")String compId,
+                                        @Param("targetYear")String targetYear,
+                                        @Param("introductionData")String introductionData);
         }

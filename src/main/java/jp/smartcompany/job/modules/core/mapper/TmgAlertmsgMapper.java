@@ -2,7 +2,9 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgAlertmsgDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.AlertVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -16,4 +18,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgAlertmsgMapper extends BaseMapper<TmgAlertmsgDO> {
 
-        }
+    AlertVo selectAlert(@Param("cust") String cust,
+                        @Param("comp")String comp,
+                        @Param("secid")String secid,
+                        @Param("dyyyymm")String dyyyymm,
+                        @Param("lang")String lang,
+                        @Param("numStart")int numStart,
+                        @Param("numEnd")int numEnd);
+}

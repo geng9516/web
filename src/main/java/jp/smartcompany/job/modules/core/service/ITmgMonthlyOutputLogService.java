@@ -13,4 +13,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgMonthlyOutputLogService extends IService<TmgMonthlyOutputLogDO> {
 
-        }
+    /**
+     * 月次集計データ作成処理のジョブ番号を検索するSQL文を生成し返します。
+     */
+    String selectSeq();
+}

@@ -85,4 +85,14 @@ public interface ITmgTriggerService extends IService<TmgTriggerDO> {
      */
     int buildSQLInsertTrigger(String loginUserCode,  String pWorkDate,String empsql, String baseDate);
 
+
+    /**
+     * トリガーテーブルにデータを入れる
+     * @param custID 顧客コード
+     * @param compCode　法人コード
+     * @param dispUserCode　対象者
+     * @param userCode　更新者
+     * @param baseDate　対象日
+     */
+    void buildSQLForInsertTriggerTable(String custID,String compCode,String dispUserCode,String userCode,String baseDate);
 }

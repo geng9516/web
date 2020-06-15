@@ -1,8 +1,10 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +18,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MastDatadictionaryMapper extends BaseMapper<MastDatadictionaryDO> {
 
-        }
+        List<MastDatadictionaryDO> selectAllDicts();
+
+        List<MastDatadicSeclevelDTO> selectAllDataDicSecLevel();
+
+}

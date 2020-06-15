@@ -81,4 +81,182 @@
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(TO_DATE(#{yyyymmdd})), TRUNC(TO_DATE(#{yyyymmdd})), v.cust, v.comp)
     </select>
 
+
+    <select id="selectRelationEx" parameterType="map" resultType="int">
+        SELECT
+            PSEMPRELATION.FUNC_GET_RELATIONID_EX(
+                '${psCust}',
+                '${psLogin}',
+                '${psTarget}',
+                '${psSystem}',
+                '${psDesig}',
+                TO_DATE('${psDate}','yyyy/mm/dd'),
+                ${psBase1},
+                ${psBase2},
+                ${psBase3},
+                ${psBase4},
+                ${psBase5},
+                ${psBase6},
+                ${psBase7},
+                ${psBase8}
+            )
+        FROM DUAL;
+    </select>
+
+    <select id="selectRelation" parameterType="map" resultType="int">
+        SELECT PSEMPRELATION.FUNC_GET_RELATIONID(
+                       '${psCust}',
+                       '${psLogin}',
+                       '${psTarget}',
+                       '${psSystem}',
+                       '${psDesig}',
+                       TO_DATE('${psDate}','yyyy/mm/dd'))
+        FROM DUAL;
+    </select>
+
+    <select id="selectUserInfoByDate" parameterType="map" resultType="jp.smartcompany.framework.auth.entity.LoginControlEntity">
+        -- ログイン制御 ログインアカウント情報取得SQL(基準日判定有り)
+        SELECT DISTINCT
+        HD_CCUSTOMERID_CK,
+        HD_CCOMPANYID_CK,
+        MAC_CLAYEREDCOMPANYID,
+        MAC_NSEQ,
+        PSMASTER.FUNC_GET_COMP_NAME(
+        MAC_CCUSTOMERID_CK_FK, MAC_CCOMPANYID_CK, '${date}', '${language}'
+        ) MAC_CCOMPANYNAME,
+        HD_CEMPLOYEEID_CK,
+        HD_CUSERID,
+        PSMASTER.FUNC_GET_EMP_NAME(
+        ME_CCUSTOMERID_CK, ME_CCOMPANYID, ME_CEMPLOYEEID_CK, '${date}', '${language}'
+        ) ME_CEMPLOYEENAME,
+        ME_CKANANAME,
+        HD_CSECTIONID_FK,
+        MO_CLAYEREDSECTIONID,
+        MO_NSEQ,
+        PSMASTER.FUNC_GET_SECTION_NAME(
+        MO_CCUSTOMERID_CK_FK, MO_CCOMPANYID_CK_FK, MO_CSECTIONID_CK, '${date}', '${language}'
+        ) MO_CSECTIONNAME,
+        HD_CPOSTID_FK,
+        MAP_NWEIGHTAGE,
+        PSMASTER.FUNC_GET_POST_NAME(
+        MAP_CCUSTOMERID_CK_FK, MAP_CCOMPANYID_CK_FK, MAP_CPOSTID_CK, '${date}', '${language}'
+        ) MAP_CPOSTNAME,
+        HD_CIFKEYORADDITIONALROLE,
+        HD_DSTARTDATE_CK,
+        HD_CBOSSORNOT
+        FROM
+        MAST_EMPLOYEES,		-- 基本情報テーブル
+        HIST_DESIGNATION,	-- 異動歴テーブル
+        MAST_COMPANY,		-- 法人ツリーマスタ
+        MAST_ORGANISATION,	-- 組織ツリーマスタ
+        MAST_POST			-- 役職マスタ
+        WHERE
+        ME_CUSERID = #{loginUser}
+        AND	ME_DSTARTDATE <![CDATA[<=]]> #{date}
+        AND	ME_DENDDATE >= #{date}
+        AND	HD_CCUSTOMERID_CK = ME_CCUSTOMERID_CK
+        AND	HD_CUSERID = ME_CUSERID
+        AND	HD_DSTARTDATE_CK <![CDATA[<=]]> #{date}
+        AND	HD_DENDDATE >= #{date}
+        AND	MAC_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+        AND	MAC_CCOMPANYID_CK = HD_CCOMPANYID_CK
+        AND	MAC_DSTART <![CDATA[<=]]> #{date}
+        AND	MAC_DEND >= #{date}
+        AND	MAC_CLANGUAGE = 'ja'
+        AND	MO_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+        AND	MO_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+        AND	MO_CSECTIONID_CK = HD_CSECTIONID_FK
+        AND	MO_DSTART <![CDATA[<=]]> #{date}
+        AND	MO_DEND >= #{date}
+        AND	MO_CLANGUAGE = 'ja'
+        AND	MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK
+        AND	MAP_CCOMPANYID_CK_FK = HD_CCOMPANYID_CK
+        AND	MAP_CPOSTID_CK = HD_CPOSTID_FK
+        AND	MAP_DSTART <![CDATA[<=]]> #{date}
+        AND	MAP_DEND >= #{date}
+        AND	MAP_CLANGUAGE = 'ja'
+        ORDER BY HD_CIFKEYORADDITIONALROLE
+    </select>
+
+    <select id="selectOrgRelation" parameterType="map" resultType="int">
+        SELECT PSORGRELATION.FUNC_GET_RELATIONID(
+                '${psCust}',
+                '${loginUser}',
+                '${targetComp}',
+                '${targetSection}',
+                '${systemId}',
+                ${desig},
+                TO_DATE('${psDate}','yyyy/mm/dd')
+         )
+        FROM DUAL;
+    </select>
+
+    <select id="getVersion3SectionChief" parameterType="map" resultType="jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity">
+        -- Version3CompatibleLogicImpl 所属長（役所コード取得の可否、仮想兼務適用の可否判定） 情報取得SQLファイル
+        SELECT
+        HD_CPOSTID_FK,
+        ME_CEMPLOYEEID_CK,
+        MAP_NWEIGHTAGE,
+        PSMASTER.FUNC_GET_POST_NAME(
+        MAP_CCUSTOMERID_CK_FK,
+        MAP_CCOMPANYID_CK_FK,
+        MAP_CPOSTID_CK, TO_DATE('${date}'), 'ja') AS MAP_CPOSTNAME,
+        HD_DSTARTDATE_CK
+        FROM
+        HIST_DESIGNATION,
+        MAST_EMPLOYEES,
+        MAST_POST
+        WHERE
+        HD_CCUSTOMERID_CK = #{custId} AND
+        HD_CCOMPANYID_CK = #{compId} AND
+        HD_CSECTIONID_FK = #{deptId} AND
+        <if test="postId != null and bIncludeactual">
+          HD_CPOSTID_FK = #{postId} AND
+        </if>
+        <if test="postId != null and !bIncludeactual">
+            HD_CPOSTID_FK = #{postId} AND
+            HD_NOFFCIALORNOT = '0' AND
+        </if>
+        <if test="postId == null and !bIncludeactual">
+            HD_NOFFCIALORNOT = '0' AND
+        </if>
+        HD_DSTARTDATE_CK <![CDATA[<=]]> TO_DATE(#{date}) AND
+        HD_DENDDATE >= TO_DATE(#{date}) AND
+        MAP_CCUSTOMERID_CK_FK = HD_CCUSTOMERID_CK AND
+        MAP_CCOMPANYID_CK_FK  = HD_CCOMPANYID_CK AND
+        MAP_CPOSTID_CK = HD_CPOSTID_FK AND
+        MAP_DSTART <![CDATA[<=]]> TO_DATE(#{date}) AND
+        MAP_DEND >= TO_DATE(#{date}) AND
+        MAP_CLANGUAGE = 'ja' AND
+        ME_CCUSTOMERID_CK = HD_CCUSTOMERID_CK AND
+        ME_CCOMPANYID = HD_CCOMPANYID_CK AND
+        ME_CEMPLOYEEID_CK = HD_CEMPLOYEEID_CK AND
+        ME_DSTARTDATE <![CDATA[<=]]> TO_DATE(#{date}) AND
+        ME_DENDDATE >= TO_DATE(#{date}) AND
+        (ME_CIFSTILLEMPLOYEDID = '0' OR
+        (ME_CIFSTILLEMPLOYEDID = '1' AND ME_DDATEOFRETIREMENT >= TO_DATE(#{date})))
+        ORDER BY
+        MAP_NWEIGHTAGE,
+        HD_DSTARTDATE_CK,
+        ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectDateofemploymentWithME" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo">
+        SELECT
+            TO_CHAR( MIN( ME_DSTARTDATE ), 'yyyy/mm/dd' ) AS DSTART,
+            TO_CHAR( ME_DDATEOFEMPLOYEMENT, 'yyyy/mm/dd' ) AS DDATEOFEMPLOYEMENT
+        FROM
+            MAST_EMPLOYEES
+        WHERE
+                ME_CCUSTOMERID_CK = #{custId}
+            AND ME_CCOMPANYID = #{compId}
+            AND ME_CEMPLOYEEID_CK = #{empId}
+            AND ME_CIFSTILLEMPLOYEDID = '0'
+        GROUP BY
+            ME_DDATEOFEMPLOYEMENT
+        ORDER BY
+            MIN( ME_DSTARTDATE ) DESC
+        ;
+    </select>
+
 </mapper>

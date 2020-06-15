@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.overtimeInstruct;
 
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -19,8 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 超過勤務命令bean -> 对应旧就业的ps.c01.tmg.OvertimeInstruct.OvertimeInstructBean
@@ -80,6 +83,8 @@ public class OvertimeInstructBean {
     public static final String STYLE_CLASS_WARNING_LVL5 = "chokinWarningLvl5";
     /**超勤実績の月平均時間 */
     public static final String STYLE_OVERWORK_AVG_WAR_LVL1 = "chokinAvgWarningLvl1";
+    /** ステータス関連クラス - 超過勤務命令（命令画面用） */
+    public static final String STYLE_CLASS_CHOKIN_MEIREI = "chokin_meirei";
 
     /** 勤務時間(日) */
     public static final String CATEGORY_OVER_WORK = "5";
@@ -94,7 +99,7 @@ public class OvertimeInstructBean {
     /**超勤実績の月平均時間*/
     public static final String CATEGORY_OVERWORK_AVG_MONTH   = "6";
 
-
+    //参数设置
     private void paramSetting(){
         param=null;
 
@@ -117,7 +122,7 @@ public class OvertimeInstructBean {
     }
 
 
-
+    // 凡例画面表示
     public void actionDemoDisp(ModelMap modelMap){
 
         DemoLimitVo demo=new DemoLimitVo();
@@ -172,26 +177,25 @@ public class OvertimeInstructBean {
             // 組織未選択なので、呼出元メソッドへ制御を返す。
             return;
         }
-
-        *//* 情報をDB用(SQLで使用できる形)へ加工 *//*
-        *//*
-         * コンテンツＩＤはアクションコードによって、切替する。
-         *   実績時間画面表示の場合は、「TMG_CONTENTID|OTR」を使用。
-         *   実績時間（法定内含む）画面表示の場合は、「TMG_CONTENTID|OTRA」を使用。
-         *//**/
-
-
         param.setAction("ACT_DISP_RMONTHLY_RESULT");
         param.setCustId("01");
         param.setCompId("01");
         param.setTargetSec("201000000000");
-        param.setBaseDate("2020/04/01");
-        param.setBaseDateMM("2020/04/01");
+        param.setBaseDate("2020/03/01");
+        param.setBaseDateMM("2020/03/01");
         param.setLang("ja");
         param.setBaseDateYYYY("2020");
         param.setToday("2020/06/04");
         param.setEmployeeListSql("SELECT '29042924' as empid,'黒川 弘樹' as empname,1 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '17452600' as empid,'日野原 友佳子' as empname,2 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '46402406' as empid,'松野 強' as empname,3 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '46404536' as empid,'吉田 正和' as empname,4 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '32948535' as empid,'柴田 隆' as empname,5 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '91544761' as empid,'内田 信也' as empname,6 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '49271150' as empid,'渡邉 大輝' as empname,7 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '33760045' as empid,'小西 雅治' as empname,8 as seq,'01' as cust,'01' as comp FROM DUAL ");
+
+        /* 情報をDB用(SQLで使用できる形)へ加工 */
+        /**
+         * コンテンツＩＤはアクションコードによって、切替する。
+         *   実績時間画面表示の場合は、「TMG_CONTENTID|OTR」を使用。
+         *   実績時間（法定内含む）画面表示の場合は、「TMG_CONTENTID|OTRA」を使用。
+         */
         String sDBContentId         = ""; // コンテンツID
+
         if (ACT_DISP_RMONTHLY_RESULT.equals(param.getAction())) {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTR;
         } else if(ACT_DISP_RMONTHLY_RESULT_OT100.equals(param.getAction())) {
@@ -219,25 +223,46 @@ public class OvertimeInstructBean {
         // 4 翌月リンクを取得
         String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 0);
         // 5 表示対象社員の今年度分の合計超過実績時間と、月超過回数を取得
-        List<YearlyInfoVo> yearlyInfoVoList = iTmgMonthlyInfoService.selectYearlyInfo(param.getCustId(), param.getCompId(), param.getTargetSec(), sDBContentId,
+        List<YearlyInfoVo> yearlyInfoVoList = iTmgMonthlyInfoService.selectYearlyInfo(param.getCustId(), param.getCompId(), sDBContentId,
                 param.getBaseDate(), param.getToday(), param.getLang(), param.getEmployeeListSql());
         // 6 36協定における月の超勤限度時間表示用名称取得
+
         String limit = iMastGenericDetailService.selectLimit(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getLang(), TmgUtil.Cs_MGD_LIMIT_MONTHLY_OVERTIME_36);
-
+        //处理后MonthlyInfoOtVo　list
+        List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
         for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
+            //合計(月)
+            monthlyInfoOtVo.setOvertime(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getOvertime(),CATEGORY_SUM_MONTH)));
+            //承認状況ステータス
+            Map<String,Object> monthlyMap=BeanUtil.beanToMap(monthlyInfoOtVo);
 
-        }
-
-        for(YearlyInfoVo yearlyInfoVo:yearlyInfoVoList){
-
+            for(String key:monthlyMap.keySet()){//keySet获取map集合key的集合  然后在遍历key即可
+                 if(!key.equals("empid")&&!key.equals("empname")&&!key.equals("overtime")){
+                     monthlyMap.put(key,formatTime(getTypeOfStyleByLimit((String)monthlyMap.get(key),CATEGORY_OVER_WORK)));
+                 }
+            }
+            for(YearlyInfoVo yearlyInfoVo:yearlyInfoVoList){
+                if(yearlyInfoVo.getTmiCemployeeid().equals(monthlyInfoOtVo.getEmpid())){
+                    //合計(年)
+                    yearlyInfoVo.setTmiCinfo01(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo01(),CATEGORY_SUM_YEAR)));
+                    //45超(年)
+                    yearlyInfoVo.setTmiCinfo02(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo02(),CATEGORY_COUNT));
+                    //休日出勤回数
+                    yearlyInfoVo.setTmiCinfo03(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo03(),CATEGORY_HOL_CNT));
+                    //平均超勤時間（月）
+                    yearlyInfoVo.setTmiCinfo04(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo04(),CATEGORY_OVERWORK_AVG_MONTH)));
+                }
+            }
+            dealwitchMonthlyList.add(BeanUtil.toBean(monthlyMap,MonthlyInfoOtVo.class));
         }
     }
 
 
 
 
-
+    // 月別情報一覧画面.超過勤務命令月別一覧画面
     public void actionExecuteDisp(ModelMap modelMap) {
+        paramSetting();
         /*param.setCompId("01");
         param.setCustId("01");
         param.setBaseDateYYYY("2020");
@@ -257,16 +282,33 @@ public class OvertimeInstructBean {
         // 4 翌月リンクを取得
         String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 0);
 
+        List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
+        for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
+            //合計(月)
+            monthlyInfoOtVo.setOvertime(formatTime(monthlyInfoOtVo.getOvertime()));
+            //承認状況ステータス
+            Map<String,Object> monthlyMap=BeanUtil.beanToMap(monthlyInfoOtVo);
+
+            for(String key:monthlyMap.keySet()){//keySet获取map集合key的集合  然后在遍历key即可
+                if(!key.equals("empid")&&!key.equals("empname")&&!key.equals("overtime")){
+                    monthlyMap.put(key,formatTime(getTypeOfStyleByState((String)monthlyMap.get(key))));
+                }
+            }
+            dealwitchMonthlyList.add(BeanUtil.toBean(monthlyMap,MonthlyInfoOtVo.class));
+        }
+
     }
 
-
+    //超過勤務実績月別平均画面
     public void actionexecuteDisp6MonthsAvg(){
+        paramSetting();
         List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(param.getCustId(),param.getCompId(),param.getTargetUser()
         ,param.getBaseDate(),"-5");
     }
 
-
+    // 日別情報編集画面
     public void actionExecuteEdit(){
+        paramSetting();
         // 編集画面表示項目マスタ制御設定取得
         List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
         // 0 日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得
@@ -285,7 +327,9 @@ public class OvertimeInstructBean {
         List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getEmployeeListSql());
     }
 
+    // 日別情報更新処理
     public void actioneExecuteUpdate(){
+        paramSetting();
 
         List<UpdateDto> updateDtoList=new ArrayList<UpdateDto>();
 
@@ -297,7 +341,6 @@ public class OvertimeInstructBean {
                     .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
                     .eq("TDAD_DYYYYMM", param.getBaseDateMM())
                     .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
-
 
             for (UpdateOverTimeDto updateTime:updateDto.getUpdateOverTimeDtoList()){
                 // 日次詳細CHECKデータ（超過勤務）　登録
@@ -326,7 +369,6 @@ public class OvertimeInstructBean {
                             updateDto.getSEmpId(),
                             param.getUserCode(),
                             TmgUtil.Cs_MGD_ITEMS_ResultRest);
-
                 }
             }
             // 超勤命令反映処理（トリガー起動）
@@ -348,7 +390,6 @@ public class OvertimeInstructBean {
                         .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + param.getAction()));
             }
 
-
             // 日次詳細CHECKデータ（超過勤務）　クリア
             int deleteTmgDailyDetailCheckAfr=ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
                     .eq("TDAD_CCUSTOMERID",param.getCustId())
@@ -356,9 +397,7 @@ public class OvertimeInstructBean {
                     .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
                     .eq("TDAD_DYYYYMM", param.getBaseDateMM())
                     .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
-
         }
-
     }
 
     /**
@@ -443,7 +482,7 @@ public class OvertimeInstructBean {
      */
     private String formatTime(String time){
         if(time == null || time.equals("")){
-            return time;
+            return "";
         }
         if(time.indexOf(".") < 0){
             return time+"<br />"+".00";
@@ -490,7 +529,9 @@ public class OvertimeInstructBean {
      * @return CSS定義クラス名
      */
     public String getTypeOfStyleByLimit(String sValue, String sCategory) {
-
+        if(StrUtil.hasEmpty(sValue)){
+            return "";
+        }
          //月超勤回数
         if(CATEGORY_OVER_WORK.equals(sCategory)) {
 
@@ -599,5 +640,23 @@ public class OvertimeInstructBean {
         return sValue;
     }
 
+
+    /**
+     * 月別一覧画面のスタイルを返却します。
+     *
+     * @param  state 承認状況ステータス
+     * @return 表示スタイル
+     */
+    public String getTypeOfStyleByState(String state) {
+
+        String retStyle = null;
+        // 表示スタイルの設定
+        if(state == null || state.length() == 0){
+            retStyle = state;
+        }else{
+            retStyle = state+"@"+STYLE_CLASS_CHOKIN_MEIREI;
+        }
+        return retStyle;
+    }
 
 }

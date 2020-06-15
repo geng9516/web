@@ -28,8 +28,8 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
         public MastAccountDO getByUsername(String username) {
                 QueryWrapper<MastAccountDO> qw = SysUtil.query();
                 qw.eq("ma_caccount", username)
-                  .lt("ma_dstart", DateUtil.date())
-                  .gt("ma_dend",DateUtil.date());
+                  .le("ma_dstart", DateUtil.date())
+                  .ge("ma_dend",DateUtil.date());
                 List<MastAccountDO> accountList = list(qw);
                 if (CollUtil.isEmpty(accountList)){
                    return null;

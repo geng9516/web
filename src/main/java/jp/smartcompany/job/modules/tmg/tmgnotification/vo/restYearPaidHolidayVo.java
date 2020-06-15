@@ -15,9 +15,10 @@ import lombok.ToString;
 public class restYearPaidHolidayVo {
 
     /**剩余天*/
-    private int nrestDays;
+    private Double nrestDays;
     /**剩余时间*/
     private int nrestHours;
+
     /**种类*/
     private String ctype;
     /**排序*/
@@ -26,5 +27,4 @@ public class restYearPaidHolidayVo {
     private String dbegin;
     /**结束日*/
     private String dend;
-
 }

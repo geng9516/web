@@ -53,7 +53,6 @@ public interface TmgMonthlyInfoMapper extends BaseMapper<TmgMonthlyInfoDO> {
 
         List<YearlyInfoVo> selectYearlyInfo(@Param("custId")String custId,
                                             @Param("compId")String compId,
-                                            @Param("sectionId")String sectionId,
                                             @Param("sContentId")String sContentId,
                                             @Param("sBaseDate")String sBaseDate,
                                             @Param("toDay")String toDay,
