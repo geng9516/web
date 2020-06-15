@@ -72,11 +72,6 @@ public class PsDBBean {
         return null;
     }
 
-//    {
-//        this.request = ContextUtil.getHttpRequest();
-//        this.session = request.getSession();
-//    }
-
     // 日付フォーマット
     private final String DATE_FORMAT = "yyyy/MM/dd";
     /** 更新用エラーコード */
@@ -600,6 +595,105 @@ public class PsDBBean {
      */
     public Version3CompatibleLogic getV3Logic() {
         return SpringUtil.getBean(Version3CompatibleLogic.class);
+    }
+
+    /**
+     * １つ以上のSELECT文をセキュリティ判定なしで実行します。
+     * @param vecQuery	   SELECT文のVector
+     * @param strBeanDesc ログ出力用Bean識別子
+     * @return PsResult   SQLの実行結果
+     * @throws Exception  システム例外
+     */
+    public PsResult getValuesforMultiquery(Vector vecQuery, String strBeanDesc)
+            throws Exception {
+        try {
+            if (vecQuery != null && strBeanDesc != null) {
+                return getV3Logic().executeMultiQuery(
+                        vecQuery, getCustID(),
+                        getCompCode(), getUserCode(),
+                        getGroupID(), 	strBeanDesc,
+                        getSystemCode(), getStrGUID(),
+                        false);
+            } else {
+                throw new Exception(
+                        SysUtil.getpropertyvalue(
+                                getLanguage(), "ErrorCode_25"));
+            }
+        } catch (Exception e) {
+            throw e;
+        }
+    }
+
+    public Object valueAtColumnRow(Vector result,int column,int row ) throws ArrayIndexOutOfBoundsException
+    {
+        int vnest = 0;
+        Object odummy = result;
+        while(true){
+            if(odummy instanceof Vector == true){
+                vnest++;
+                if(((Vector)odummy).size() > 0){
+                    odummy = ((Vector)odummy).get(0);
+                }else{
+                    break;
+                }
+            }else{
+                break;
+            }
+        }
+        if(vnest == 3){
+            //result = (Vector)result.get(0);
+        }
+        int realRow = row + 1;
+        if (result == null) {
+            throw new ArrayIndexOutOfBoundsException ("Result set is empty.");
+        }
+
+        if (realRow > result.size()) {
+            throw new ArrayIndexOutOfBoundsException ("Row is out of bounds.");
+        }
+        try
+        {
+            return ((Vector)result.get(row)).get(column);
+        } catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        return null;
+    }//end of valueAtColumnRow()................
+
+    public String valueAtColumnRow(PsResult psResult,int queryindex,int column,int row ) {
+        Vector retvec;
+        retvec = psResult.getException();
+        try
+        {
+            if (retvec.size() != 0 && !retvec.get(queryindex).equals(""))
+            {
+                String errmsg = (String)retvec.get(queryindex);
+                throw new Exception(errmsg);
+            }
+            retvec = psResult.getResult();
+            return (String)((Vector)((Vector)retvec.get(queryindex)).get(row)).get(column);
+        }
+        catch(Exception e)
+        {
+        }
+        return null;
+    }
+
+    public int getCount(PsResult psResult,int queryindex) throws Exception {
+        Vector retvec = psResult.getResult();
+        Vector errvec = psResult.getException();
+        if (errvec != null) {
+            if ((errvec.size() != 0) && (queryindex < errvec.size())
+                    && (!errvec.get(queryindex).equals(""))) {
+                String errmsg = (String) errvec.get(queryindex);
+                throw new Exception(errmsg);
+            }
+        }
+        if ((retvec != null) && (queryindex < retvec.size())) {
+            return ((Vector) retvec.get(queryindex)).size();
+        }
+        return 0;
     }
 
 }
