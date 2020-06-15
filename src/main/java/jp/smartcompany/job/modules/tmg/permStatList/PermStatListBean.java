@@ -366,7 +366,7 @@ public class PermStatListBean {
              * 月次承認機能がオンの場合、
              * 月次承認エラーチェック結果がＯＫの職員のみ更新を行う。
              */
-            if (isMonthlyApproval() && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
+            if (isMonthlyApproval(_psDBBean) && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
                 continue;
             }
 
@@ -391,20 +391,18 @@ public class PermStatListBean {
      *
      * @return boolean(true:使用する、false:使用しない)
      */
-    public boolean isMonthlyApproval() {
+    public boolean isMonthlyApproval(PsDBBean psDBBean) {
 
         if (gbMonthlyApproval == null) {
 
-            //TODO
-            //String sMonthlyApproval = psDBBean.getSystemProperty(SYSPROP_TMG_BULK_MONTHLY_APPROVAL);
-            String sMonthlyApproval = "yes";
+            String sMonthlyApproval = psDBBean.getSystemProperty(SYSPROP_TMG_BULK_MONTHLY_APPROVAL);
+
 
             if (sMonthlyApproval != null && Cs_YES.equalsIgnoreCase(sMonthlyApproval)) {
                 gbMonthlyApproval = true;
             } else {
                 gbMonthlyApproval = false;
             }
-
         }
 
         return gbMonthlyApproval;
@@ -648,45 +646,65 @@ public class PermStatListBean {
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
         return oneMonthDetailVoList;
     }
-//
-//
-//    /**
-//     * 日別承認状況一覧画面の一括承認ボタンの表示可能か判定します。
-//     * <p>
-//     * 以下の条件を満たしている場合に表示可能になります。
-//     * <ol>
-//     *  <li>一覧で表示されている職員の中に該当月の日次情報が全て「承認済」の職員が存在する。</li>
-//     *  <li>一覧で表示されている職員の中に該当月のステータスが「未承認」の職員が存在する。</li>
-//     *  <li>勤怠管理サイトの場合は1．と2．の条件が真であれば真を返す。</li>
-//     *  <li>勤怠承認サイトの場合は、1．と 2．の条件が真でかつ、
-//     *      一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する。</li>
-//     * </ol>
-//     * </p>
-//     * @return boolean 表示制御値
-//     *
-//     */
-//    public boolean isDispEnableBatchApproval(int piSqlNumber) {
-//
-//        if (!isMonthlyApproval()){ return false; }
-//
-//        try {
-//            for (int i = 0; i < getCount(piSqlNumber); i++) {
-//
-//                if (CsApprovedDailyCount.equals(valueAtColumnRow(piSqlNumber, COL_DAILY_COUNT, i)) &&
-//                        TmgUtil.Cs_MGD_DATASTATUS_0.equals(valueAtColumnRow(piSqlNumber, COL_MONTHLY_STATUSFLG, i))) {
-//
-//                    return existsDispMonthlyApproval(valueAtColumnRow(piSqlNumber, COL_MONTHLY_INFO_EMPLOYEEID, i),
-//                            getReqDYYYYMM(), valueAtColumnRow(piSqlNumber, COL_MONTHLY_LASTDAY, i));
-//                }
-//
-//            }
-//
-//        } catch (Exception e) {
-//            return false;
-//        }
-//
-//        return false;
-//    }
+
+
+    private final String CsApprovedDailyCount = "0";
+
+    /**
+     * 日別承認状況一覧画面の一括承認ボタンの表示可能か判定します。
+     * <p>
+     * 以下の条件を満たしている場合に表示可能になります。
+     * <ol>
+     *  <li>一覧で表示されている職員の中に該当月の日次情報が全て「承認済」の職員が存在する。</li>
+     *  <li>一覧で表示されている職員の中に該当月のステータスが「未承認」の職員が存在する。</li>
+     *  <li>勤怠管理サイトの場合は1．と2．の条件が真であれば真を返す。</li>
+     *  <li>勤怠承認サイトの場合は、1．と 2．の条件が真でかつ、
+     *      一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する。</li>
+     * </ol>
+     * </p>
+     * @return boolean 表示制御値
+     *
+     */
+    public boolean isDispEnableBatchApproval(PsDBBean psDBBean, List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList) {
+
+        if (!isMonthlyApproval(psDBBean)) {
+            return false;
+        }
+
+        for (TmgMonthlyInfoVO tmgMonthlyInfoVO : tmgMonthlyInfoVOList) {
+
+            if (CsApprovedDailyCount.equals(tmgMonthlyInfoVO.getDailyCount()) &&
+                    TmgUtil.Cs_MGD_DATASTATUS_0.equals(tmgMonthlyInfoVO.getTmoCstatusflg())) {
+
+                return existsDispMonthlyApproval(tmgMonthlyInfoVO.getEmpid(),
+                        getReqDYYYYMM(), tmgMonthlyInfoVO.getLastBaseDate());
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * 勤怠承認権限(月次)があるかどうか判定を行い返却する
+     *
+     * @return boolean(true:権限あり、false:権限なし)
+     *
+     */
+    private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay) {
+
+        try {
+
+            if (!referList.hasAuthorityAtEmployee(psStartDay, psEndDay, psEmployeeId, TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL)) {
+                return false;
+            }
+
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
 //
 //
 //    /**
