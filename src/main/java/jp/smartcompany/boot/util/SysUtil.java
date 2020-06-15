@@ -9,9 +9,7 @@ import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Vector;
+import java.util.*;
 
 /**
  * @author Xiao Wenpeng
@@ -261,5 +259,130 @@ public class SysUtil {
 
     /** デフォルト以外に有効な区切り文字 */
     public static final String[] PS_VALID_SEPARATORS = {","};
+
+
+    /***********************************************************************************************
+     * プロパティファイルより値を取得 言語区分がNULLの場合には英語モードとなります、また指定した取得キーが存在しない
+     * 場合には[default]をキーとした値を返す、[default]が存在しない場合にはNULLを返します。 ResourceBundleのBaseNameは[PS]固定
+     *
+     * @param psLanguage 言語区分 ja または en-us
+     * @param psValue プロパティファイルの取得キー
+     * @return String プロパティファイルの値
+     */
+    public static String getpropertyvalue(String psLanguage, String psValue) {
+
+        ResourceBundle rb = null;
+        try {
+
+            // 言語区分がNULLの場合は英語モードとする
+            if (psLanguage == null) {
+                psLanguage = "en-us";
+            }
+
+            // 言語区分が[,]で区切られている場合は最初の要素の値を使用する
+            int index = psLanguage.indexOf(",");
+            if (index != -1) {
+                psLanguage = psLanguage.substring(0, index);
+            }
+
+            // ローカルの設定
+            Locale locale = null;
+            if (psLanguage.equalsIgnoreCase("en-us")) {
+                // 言語区分:英 語
+                locale = Locale.US;
+            } else if (psLanguage.equalsIgnoreCase("ja")) {
+                // 言語区分:日本語
+                locale = Locale.JAPAN;
+            } else {
+                // 言語区分:英 語
+                locale = Locale.US;
+            }
+
+            // ローカルが日本語の場合にキャラクタネームを指定
+            rb = ResourceBundle.getBundle("PS", locale);
+            if (psLanguage.equalsIgnoreCase("ja")) {
+                // 日本語の場合はJDKのバージョンによってエンコード方式を変える
+                if (isUpper141()) {
+                    return new String(rb.getString(psValue).getBytes("8859_1"), "Windows-31J");
+                } else {
+                    return new String(rb.getString(psValue).getBytes("8859_1"), "Shift_JIS");
+                }
+            } else {
+                return rb.getString(psValue);
+            }
+        } catch (Exception e) {
+            try {
+
+                // 指定のキーが無い場合には[default]をキーとした内容を返す
+                // 日本語の場合はJDKのバージョンによってエンコード方式を変える
+                if (isUpper141()) {
+                    return new String(rb.getString("default").getBytes("8859_1"), "Windows-31J");
+                } else {
+                    return new String(rb.getString("default").getBytes("8859_1"), "Shift_JIS");
+                }
+
+            } catch (Exception e1) {
+                // [default]の値が無い場合にはNULLを返す
+                return null;
+            }
+        }
+    }
+
+    /***********************************************************************************************
+     * JDKのバージョンが1.4.1以上かどうか判定する
+     * @return boolean true:1.4.1以上 false:1.4.0以下
+     */
+    public static final boolean isUpper141() {
+
+        // ▼2005/04/04 Saito
+//        ResourceBundle rb = ResourceBundle.getBundle("datasource");
+//        String sServerType = rb.getString("SERVER");
+//        final String SERVER_TOMCAT = "1";
+        // 2006/03/13 Saito Tomcat向け判定処理を削除
+        // ▲2005/04/04 Saito
+
+        String sVersion = System.getProperty("java.vm.version");
+        // ハイフンつきのバージョンに対応
+        if (sVersion.indexOf("-") > -1) {
+            sVersion = sVersion.substring(0, sVersion.indexOf("-"));
+        }
+        // アンダーバーつきのバージョンに対応
+        if (sVersion.indexOf("_") > -1) {
+            sVersion = sVersion.substring(0, sVersion.indexOf("_"));
+        }
+
+        String sMajorVersion = null;
+        String sMinorVersion = null;
+        String sReleaseVersion = null;
+        // メジャーバージョン、マイナーバージョン、リリースバージョンを取得
+        if (sVersion.indexOf(".") > -1) {
+            sMajorVersion = sVersion.substring(0, sVersion.indexOf("."));
+            if (sVersion.indexOf(".") != sVersion.lastIndexOf(".")) {
+                sMinorVersion =
+                        sVersion.substring(sVersion.indexOf(".") + 1, sVersion.lastIndexOf("."));
+                sReleaseVersion = sVersion.substring(sVersion.lastIndexOf(".") + 1);
+            } else {
+                sMinorVersion = sVersion.substring(sVersion.indexOf(".") + 1);
+                sReleaseVersion = "0";
+            }
+        } else {
+            sMajorVersion = sVersion;
+            sMinorVersion = "0";
+            sReleaseVersion = "0";
+        }
+
+        // メジャーバージョンが１より大きければバージョン1.4.1以上なのでtrue
+        if (Integer.parseInt(sMajorVersion) > 1) {
+            return true;
+            // マイナーバージョンが４より大きければバージョン1.4.1以上なのでtrue
+        } else if (Integer.parseInt(sMinorVersion) > 4) {
+            return true;
+            // マイナーバージョンが４でリリースバージョンが１以上ならバージョン1.4.1以上なのでtrue
+        } else if (Integer.parseInt(sMinorVersion) == 4 && Integer.parseInt(sReleaseVersion) >= 1) {
+            return true;
+        }
+
+        return false;
+    }
 
 }

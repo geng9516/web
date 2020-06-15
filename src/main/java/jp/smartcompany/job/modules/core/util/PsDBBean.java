@@ -5,8 +5,10 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.framework.compatible.business.Version3CompatibleLogic;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionBO;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
@@ -590,6 +592,14 @@ public class PsDBBean {
      */
     public String getSystemProperty(String sSysPropertyKey) {
         return scCacheUtil.getSystemProperty(sSysPropertyKey);
+    }
+
+    /**
+     * Version3CompatibleLogicの取得
+     * @return gV3CompatibleLogic Version3CompatibleLogic
+     */
+    public Version3CompatibleLogic getV3Logic() {
+        return SpringUtil.getBean(Version3CompatibleLogic.class);
     }
 
 }

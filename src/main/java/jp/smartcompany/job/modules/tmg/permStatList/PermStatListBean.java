@@ -32,11 +32,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PermStatListBean {
-//
-//    /**
-//     * PsDBBean
-//     */
-//    private final PsDBBean _psDBBean;
 
     /**
      * IMastGenericDetailService
@@ -134,8 +129,7 @@ public class PermStatListBean {
 
     /** アクション */
     private String _sAction           = null;
-    /** サイトID */
-    private String _reqSiteId         = null;
+
     /** システム年月日 */
     private String _sysdate           = null;
     /** 対象組織 */
@@ -148,12 +142,7 @@ public class PermStatListBean {
     private String _reqEmployeeId     = null;
     /** 登録対象職員番号 */
     private String _reqExecuteEmpId   = null;
-    /** ログイン顧客コード */
-    private String _loginCustId   = null;
-    /** ログイン法人コード */
-    private String _loginCompCode = null;
-    /** ログインユーザーコード */
-    private String _loginUserCode = null;
+
     /** 対象年月の前月 */
     private String _prevMonth = null;
     /** 対象年月の翌月 */
@@ -280,24 +269,24 @@ public class PermStatListBean {
         String empSql = referList.buildSQLForSelectEmployees();
 
         // サイトIDを判定し更新対象の職員番号
-        List<String> empIdList = iMastEmployeesService.selectEmpIdListForTmgDaily(_reqSiteId, _reqDYYYYMMDD, empSql, empIds);
+        List<String> empIdList = iMastEmployeesService.selectEmpIdListForTmgDaily(psDBBean.getSiteId(), _reqDYYYYMMDD, empSql, empIds);
 
         // 更新対象職員のROWIDを取得する
         List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
 
         //  一括承認データを更新する
         String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
-        iTmgDailyService.buildSQLForUpdateTmgDaily(_loginUserCode, sProgramId, getReqDYYYYMMDD(), empIdList);
+        iTmgDailyService.buildSQLForUpdateTmgDaily(psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList);
 
         // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
         // 一括承認データを更新する
-        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(),_loginUserCode,sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
+        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
 
-        iTmgTriggerService.buildSQLForInsertTmgTrigger(_loginUserCode, sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
+        iTmgTriggerService.buildSQLForInsertTmgTrigger(psDBBean.getUserCode(), sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
 
         iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
-                .eq("TTR_CMODIFIERUSERID", _loginUserCode)
+                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction ));
 
         // TODO
@@ -353,7 +342,7 @@ public class PermStatListBean {
         String sCustId        = psDBBean.getCustID();
         String sCompId        = psDBBean.getCompCode();
         String sDyyyyMm       = getReqDYYYYMM();
-        String sloginUserCode = _loginUserCode;
+
         String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
 
         /*
@@ -371,7 +360,7 @@ public class PermStatListBean {
             }
 
             // 月次情報の更新
-            iTmgMonthlyInfoService.buildSQLForUpdateTmgMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm, sloginUserCode, sModifierProgramId);
+            iTmgMonthlyInfoService.buildSQLForUpdateTmgMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm, psDBBean.getUserCode(), sModifierProgramId);
         }
 
         // TODO
@@ -449,8 +438,6 @@ public class PermStatListBean {
      * @param modelMap
      */
     private void executeReadTmgDaily(ModelMap modelMap,PsDBBean psDBBean) {
-        // TODO
-        _reqDYYYYMMDD ="2020/01/01";
 
         // 組織の職員取得ｓｑｌ
         String empSql = getReferList().buildSQLForSelectEmployees();
@@ -472,7 +459,7 @@ public class PermStatListBean {
         modelMap.addAttribute("tmgDailyMapList",tmgDailyMapList);
 
         // 所属情報
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), _loginCustId, _loginCompCode);
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
         modelMap.addAttribute("sectionName",sectionName);
     }
 
@@ -551,7 +538,7 @@ public class PermStatListBean {
         modelMap.addAttribute("tmgMonthlyInfoNextCount", tmgMonthlyInfoNextCount);
 
         // 5 選択組織名称の取得
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), _loginCustId, _loginCompCode);
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
         modelMap.addAttribute("sectionName", sectionName);
 
         // 6 表示月遷移リスト情報取得
@@ -627,6 +614,7 @@ public class PermStatListBean {
                 empSql,
                 colNameList
         );
+        this.isDispEnableBatchApproval(psDBBean,tmgMonthlyInfoVOList);
 
         return tmgMonthlyInfoVOList;
     }
@@ -811,7 +799,7 @@ public class PermStatListBean {
         iTmgTriggerService.buildSQLForInsertTmgTriggerByTimePunch(psDBBean.getUserCode(), action, stDate, endDate, empSql);
         iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
-                .eq("TTR_CMODIFIERUSERID", _loginUserCode)
+                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + action));
 
         // TODO
@@ -975,21 +963,18 @@ public class PermStatListBean {
     public void setExecuteParameter(PsDBBean psDBBean) throws Exception {
 
         _sysdate = psDBBean.getSysDate();
-        _reqSiteId = psDBBean.getSiteId();
-        _loginCustId = psDBBean.getCustID();
-        _loginCompCode = psDBBean.getCompCode();
-        _loginUserCode = psDBBean.getUserCode();
-        _sAction = psDBBean.getReqParam(REQ_ACTION);
-        _reqDYYYYMM = psDBBean.getReqParam(REQ_DYYYYMM);
-        _reqDYYYYMMDD = psDBBean.getReqParam(REQ_DYYYYMMDD);
-        _reqEmployeeId = psDBBean.getReqParam(REQ_CEMPLOYEEID);
-        _reqExecuteEmpId = psDBBean.getReqParam(REQ_EXECUTEEMPID);
+
+
+        _sAction =  (String)psDBBean.getRequestHash().get(REQ_ACTION);
+        _reqDYYYYMM = (String)psDBBean.getRequestHash().get(REQ_DYYYYMM);
+        _reqDYYYYMMDD = (String)psDBBean.getRequestHash().get(REQ_DYYYYMMDD);
+        _reqEmployeeId =  (String)psDBBean.getRequestHash().get(REQ_CEMPLOYEEID);
+        _reqExecuteEmpId = (String)psDBBean.getRequestHash().get(REQ_EXECUTEEMPID);
 
         // 検索対象年月の入力がなければ、現在日付月初を検索対象年月する。
         if (_reqDYYYYMM == null || _reqDYYYYMM.length() == 0) {
             _reqDYYYYMM = getFirstDayOfSysdate();
         }
-
 
         // TmgReferListの生成
         referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
@@ -1024,7 +1009,7 @@ public class PermStatListBean {
             _thisMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
 
             // 初期表示、再表示ボタン使用時処理
-            if (StrUtil.isEmpty(psDBBean.getReqParam(REQ_ACTION)) || StrUtil.isNotEmpty(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
+            if (StrUtil.isEmpty(_sAction) || StrUtil.isNotEmpty(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
 
                 // 表示日付変更
                 _reqDYYYYMM = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
