@@ -36,6 +36,7 @@
         <div class="content_body">
             <div class="table-top">
                 <Row :gutter="16">
+                    <!-- 共通年選択 start-->
                     <i-col span="11">
                         <i-button type="text" @click="preYear" :disabled="preDisabled" class="icon-left">
                             <Icon type="ios-arrow-back" size="large"></Icon>
@@ -45,6 +46,8 @@
                             <Icon type="ios-arrow-forward" size="large"></Icon>
                         </i-button>
                     </i-col>
+                    <!-- 共通年選択 end-->
+
                     <i-col span="13" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
                     </i-col>
@@ -112,38 +115,36 @@
             el: '.workyearschedule-warp',
             data() {
                 return {
-                    monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
+                    monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
                     slotList: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
-                    defaultDate: {},
-                    queryDate: {},
-                    queryHolidayInfo: {},
-                    tableHead: [],
-                    loading: false,
-                    tableData: [],
-                    monthSum: {},
+                    defaultDate: {},        //デフォルト開始歴
+                    queryDate: {},          //選択した開始月
+                    queryHolidayInfo: {},   //年次休暇付与日数 年次休暇付与日
+                    tableHead: [],          //月出勤情報統計と月出勤情報明細のテーブルヘッダー
+                    loading: false,　       //ローディングアクション
+                    tableData: [],          //月出勤情報統計と月出勤情報明細のテーブルデータ
                     showPre: true,
                     index: 0,
-                    comment: '',
                     contentScrollTop: 0,
-                    kanjiName: [[${ session.psSession.loginKanjiName }]],
-                    loginEmployee: [[${ session.psSession.loginEmployee }]],
-                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
+                    kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
+                    loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
+                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
                     query: {
-                        employeeId: [[${ session.psSession.loginEmployee }]],
-                        year: '',
-                        month: 0
+                        employeeId: [[${ session.psSession.loginEmployee }]],　 //組織ツリーで選択した職員番号
+                        year: '',                                               //年度情報
+                        month: 0                                                //開始月情報
                     },
-                    existsAttendanceBook: {},
-                    endueDate: '',
-                    endueDaysHours: '',
-                    tmyComment: '',
-                    fromYYYYMM: '',
+                    existsAttendanceBook: {},                                   //年度選択制御
+                    endueDate: '',           //年次休暇付与日
+                    endueDaysHours: '',      //年次休暇付与日数
+                    tmyComment: '',          //摘要
+                    fromYYYYMM: '',       　 //出勤簿の表示開始年月
+                    toYYYYMM: '',            //出勤簿の表示終了年月
                     isScroll: false,
-                    toYYYYMM: '',
-                    titleStartMonth: '',
-                    tableDataSum:[],
-                    preDisabled: false,
-                    nextDisabled: false
+                    titleStartMonth: '',     //デフォルト開始月
+                    tableDataSum:[],         //月出勤情報統計
+                    preDisabled: false,      //年度選択制御
+                    nextDisabled: false      //年度選択制御
                 }
             },
             async mounted() {
@@ -271,20 +272,16 @@
                     this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/selectExistsAttendanceBook`, this.query)
                     this.existsAttendanceBook  = data
+
                     if (this.existsAttendanceBook.lastYear == null) {
                         this.preDisabled = true
-                    } else
-                        {this.preDisabled = false}
+                    } else {this.preDisabled = false
+                    }
 
-                    console.log("this.existsAttendanceBook.nextYear")
-                    console.log(this.existsAttendanceBook.nextYear)
                     if (this.existsAttendanceBook.nextYear == null) {
-                        console.log("this.nextDisabled = true")
                         this.nextDisabled = true
-                    } else
-                        {this.nextDisabled = false}
-                    console.log("getExistsAttendanceBook")
-                    console.log(this.existsAttendanceBook)
+                    } else {this.nextDisabled = false
+                    }
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
