@@ -38,11 +38,11 @@
                 <Row :gutter="16">
                     <i-col span="11">
                         <i-button type="text" @click="preYear" :disabled="preDisabled" class="icon-left">
-                            <Icon type="ios-arrow-dropleft" size="large"></Icon>
+                            <Icon type="ios-arrow-back" size="large"></Icon>
                         </i-button>
-                        <i-button type="text" @click="currentYear" :disabled="showPre">今年</i-button>
+                        <i-button type="text" @click="currentYear" :disabled="showPre" class="icon-center">今年</i-button>
                         <i-button type="text" @click="nextYear" :disabled="nextDisabled" class="icon-right">
-                            <Icon type="ios-arrow-dropright" size="large"></Icon>
+                            <Icon type="ios-arrow-forward" size="large"></Icon>
                         </i-button>
                     </i-col>
                     <i-col span="13" class="tr">
