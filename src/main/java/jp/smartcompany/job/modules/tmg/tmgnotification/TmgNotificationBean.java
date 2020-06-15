@@ -414,6 +414,16 @@ public class TmgNotificationBean {
      * @return
      */
     public List<StutasFlgVo>  getStutas(){
+        param.setCompId(psDBBean.getCustID());
+        param.setCustId(psDBBean.getCompCode());
+        param.setTargetUser(psDBBean.getTargetUser());
+        param.setUserCode(psDBBean.getUserCode());
+        param.setSiteId(psDBBean.getSiteId());
+        param.setLang(psDBBean.getLanguage());
+        param.setToday(TmgUtil.getSysdate());
+        param.setTodayD(DateUtil.parse(param.getToday()));
+
+
         List<StutasFlgVo> stutasFlgVos = new ArrayList<StutasFlgVo>();
         List<Map<String, Object>> mgdList = iMastGenericDetailService.selectGenericDetail(buildSQLForSelectGenericDetail(TmgUtil.Cs_MGD_NTFSTATUS, "asc"));
 
@@ -540,7 +550,7 @@ public class TmgNotificationBean {
      * @param psDBBean
      * @return
      */
-    public List<restYearPaidHolidayVo> getRestYear(PsDBBean psDBBean){
+    public List<restYearVo> getRestYear(PsDBBean psDBBean){
         param.setCustId(psDBBean.getCustID());
         param.setCompId(psDBBean.getCompCode());
         //无
@@ -550,15 +560,25 @@ public class TmgNotificationBean {
         //今日の日付
         param.setTodayD(DateTime.now());
         List<restYearPaidHolidayVo> restYearPaidHolidayVoList = iTmgPaidHolidayService.selectNenjikyukazannissu(param, 0);
-
-        for(int i=0;i<restYearPaidHolidayVoList.size();i++){
-            //分钟转小时处理
-            restYearPaidHolidayVoList.get(i).setCrestHours(TmgUtil.Mintue2HHmi(restYearPaidHolidayVoList.get(i).getNrestHours()));
-            //时间区间文言处理
-            restYearPaidHolidayVoList.get(i).setTxtTimeScope(getTxtTImeScope(restYearPaidHolidayVoList.get(i).getDbegin(),
-                    restYearPaidHolidayVoList.get(i).getDend()));
+        List<restYearVo> restYearVoList = new ArrayList<restYearVo>();
+        for(restYearPaidHolidayVo ryphVo:restYearPaidHolidayVoList){
+            restYearVo restYearVo=new restYearVo();
+            restYearVo.setTypeName(ryphVo.getCdesc());
+            restYearVo.setTypeId(ryphVo.getCtype());
+            restYearVoList.add(restYearVo);
         }
-        return restYearPaidHolidayVoList;
+        restYearVoList = CollUtil.distinct(restYearVoList);
+        for(restYearPaidHolidayVo ryphVo:restYearPaidHolidayVoList){
+            for(restYearVo restYearVo:restYearVoList){
+                if(ryphVo.getCtype().equals(restYearVo.getTypeId())){
+                    restYearVo.getTimeList().add(TmgUtil.Mintue2HHmi(ryphVo.getNrestHours()));
+                    restYearVo.getDayList().add(ryphVo.getNrestDays()+"日");
+                    restYearVo.getTimeRange().add(getTxtTImeScope(ryphVo.getDbegin(), ryphVo.getDend()));
+                }
+            }
+        }
+
+        return restYearVoList;
     }
 
 
