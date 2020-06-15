@@ -25,6 +25,22 @@
       background: var(--white);
       border: solid 1px var(--border-grey);
       border-bottom: none;
+      .icon-left {
+        font-size: 19px;
+        margin-right: -5px;
+        padding-right: 0;
+        .ivu-icon {
+          font-weight: bold;
+        }
+      }
+      .icon-right {
+        font-size: 19px;
+        margin-left: -5px;
+        padding-left: 0;
+        .ivu-icon {
+          font-weight: bold;
+        }
+      }
     }
   }
   .searchwrap {

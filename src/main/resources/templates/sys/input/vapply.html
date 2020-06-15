@@ -20,9 +20,9 @@
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
-                        <section v-show="selectedRestInfo.info">
+                        <section v-show="selectedRestInfo.biko">
                             <Divider size="small" orientation="left">注意事項</Divider>
-                            <Alert class="primary-info mb20" style="white-space: pre-line;">{{ selectedRestInfo.info }}
+                            <Alert class="primary-info mb20" style="white-space: pre-line;">{{ selectedRestInfo.biko | turnLine }}
                             </Alert>
                         </section>
                         <div style="position: relative;min-height: 120px;">
@@ -119,10 +119,10 @@
                                     <i-col span="12" style="font-weight:bold;margin-left: 4.5%" class="description">
                                         {{ item.restTypeName }}
                                     </i-col>
-                                    <i-col span="2" style="margin-left: 26.3%" class="description"
+                                    <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
                                         v-if="item.status === 0">
                                         <!-- todo: 也可能是再申请按钮S -->
-                                        <i-button class="cancel-btn" size="small" @click="cancel(item.applyId)">取り消し
+                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item.applyId)">取り消し
                                         </i-button>
                                     </i-col>
                                 </Row>
@@ -150,8 +150,8 @@
                         <Divider size="small" orientation="left">期間</Divider>
                         <Row style="margin-top:10px" :gutter="16">
                             <i-col span="11">
-                                <!-- 有振休 -->
-                                <section v-show="!selectedRestInfo.hasChange">
+                                <!-- 没有振休-->
+                                <section v-show="!selectedRestInfo.transfer">
                                     <Row class="mb15 tl">
                                         <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
                                             <Radio :label="1">指定日申請</Radio>
@@ -166,8 +166,8 @@
                                             format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                     </Row>
                                 </section>
-                                <!-- 没有振休-->
-                                <section v-show="selectedRestInfo.hasChange" class="tl">
+                                <!-- 有振休 -->
+                                <section v-show="selectedRestInfo.transfer" class="tl">
                                     <p class="mb5">出勤にする休日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
@@ -177,14 +177,14 @@
                                 </section>
 
                                 <!-- 有起算日-->
-                                <section v-show="selectedRestInfo.hasBeginDay" class="tl mt20">
+                                <section v-show="selectedRestInfo.period" class="tl mt20">
                                     <p class="mb5">起算日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                 </section>
 
                                 <!-- 有加算日-->
-                                <section v-show="selectedRestInfo.hasAddingDay" class="tl mt20">
+                                <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日</p>
                                     <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                         format="yyyy-MM-dd" ref="datePicker"></date-picker>
@@ -207,18 +207,18 @@
                                 </section>
 
                                 <!-- 是范围才有曜日-->
-                                <section v-show="!selectedRestInfo.hasChange && timerangeType === 2">
+                                <section v-show="selectedRestInfo.daysOfWeek  && timerangeType === 2">
                                     <Divider size="small" orientation="left">曜日</Divider>
                                     <Row style="margin-bottom:20px">
                                         <i-col span="7">
                                             <Checkbox v-model="weekSelectFlag">指定なし</Checkbox>
                                         </i-col>
                                         <i-col span="17">
-                                            <CheckboxGroup v-model="weekSelected" @on-change="handleWeekSelect"
+                                            <checkbox-group v-model="weekSelected" @on-change="handleWeekSelect"
                                                 class="tl">
                                                 <Checkbox v-for="item of week" :key="item.value" :label="item.name"
                                                     class="mb5" :disabled="weekSelectFlag" />
-                                            </CheckboxGroup>
+                                            </checkbox-group>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -226,21 +226,21 @@
                             <i-col span="13">
                                 <Alert class="right-info sub">
                                     <!-- 是有别人的-->
-                                    <section v-show="selectedRestInfo.hasOtherOne" class="tl">
+                                    <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
                                         <i-input class="mb15" />
-                                        <p class="mb5">続柄</p>
+                                        <p class="mb5" v-show="selectedRestInfo.relation">続柄</p>
                                         <i-input class="mb5" />
                                     </section>
 
                                     <!-- 有生年月日-->
-                                    <section v-show="selectedRestInfo.hasBornDay" class="tl mt10">
+                                    <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
                                         <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                             format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                     </section>
                                     <!-- 有伤病-->
-                                    <section v-show="selectedRestInfo.hasDisease" class="tl">
+                                    <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
                                         <i-input />
                                     </section>
@@ -432,6 +432,7 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.get(`/sys/vapply/NtfTypeList`)
+                        console.log(data)
                         this.restTypeList = data
                     } catch (error) {
                         return
@@ -445,7 +446,6 @@
                     this.restInfoLoading = true
                     try {
                         const { data } = await this.http.get(`/sys/vapply/RestYearList`)
-                        console.log(data)
                         this.restInfoList = data
                     } catch (error) {
                         return

@@ -37,11 +37,11 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <i-col span="11">
-                        <i-button type="text" @click="preYear" :disabled="preDisabled" style="font-size: 19px;margin-right: -5px;padding-right: 0;">
+                        <i-button type="text" @click="preYear" :disabled="preDisabled" class="icon-left">
                             <Icon type="ios-arrow-dropleft" size="large"></Icon>
                         </i-button>
                         <i-button type="text" @click="currentYear" :disabled="showPre">今年</i-button>
-                        <i-button type="text" @click="nextYear" :disabled="nextDisabled" style="font-size: 19px;margin-left: -5px;padding-left: 0;">
+                        <i-button type="text" @click="nextYear" :disabled="nextDisabled" class="icon-right">
                             <Icon type="ios-arrow-dropright" size="large"></Icon>
                         </i-button>
                     </i-col>
