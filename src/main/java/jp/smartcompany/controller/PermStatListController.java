@@ -36,7 +36,8 @@ public class PermStatListController {
     @ResponseBody
     public List<DispMonthlyVO> dispMonthlyList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.dispMonthlyList(psDBBean);
+        List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean);
+        return dispMonthlyList;
     }
 
 
@@ -47,7 +48,8 @@ public class PermStatListController {
     @ResponseBody
     public int dispMonthlyPrev(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.dispMonthlyPrev();
+        int dispMonthlyPrev = permStatListBean.dispMonthlyPrev();
+        return dispMonthlyPrev;
     }
 
 
@@ -58,7 +60,8 @@ public class PermStatListController {
     @ResponseBody
     public int dispMonthlyNext(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.dispMonthlyNext();
+        int dispMonthlyNext = permStatListBean.dispMonthlyNext();
+        return dispMonthlyNext;
     }
 
     /**
@@ -68,7 +71,8 @@ public class PermStatListController {
     @ResponseBody
     public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
+        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
+        return tmgMonthlyInfoVOList;
     }
 
 
@@ -79,7 +83,8 @@ public class PermStatListController {
     @ResponseBody
     public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.selectGetCalendarList(psDBBean);
+        CalenderVo calenderVo = permStatListBean.selectGetCalendarList(psDBBean);
+        return calenderVo;
     }
 
 
@@ -90,7 +95,8 @@ public class PermStatListController {
     @ResponseBody
     public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.selectDayCount();
+        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount();
+        return oneMonthDetailVoList;
     }
 
 
