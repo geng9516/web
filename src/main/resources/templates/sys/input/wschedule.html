@@ -37,11 +37,13 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <i-col span="11">
-                        <i-button type="text" @click="preYear" :disabled="!showPre">
-                            <Icon type="ios-arrow-back"></Icon>
-                            前年
+                        <i-button type="text" @click="preYear" :disabled="preDisabled" style="font-size: 19px;margin-right: -5px;padding-right: 0;">
+                            <Icon type="ios-arrow-dropleft" size="large"></Icon>
                         </i-button>
-                        <i-button type="text" @click="nextYear" :disabled="showPre">今年</i-button>
+                        <i-button type="text" @click="currentYear" :disabled="showPre">今年</i-button>
+                        <i-button type="text" @click="nextYear" :disabled="nextDisabled" style="font-size: 19px;margin-left: -5px;padding-left: 0;">
+                            <Icon type="ios-arrow-dropright" size="large"></Icon>
+                        </i-button>
                     </i-col>
                     <i-col span="13" class="tr">
                         <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
@@ -119,13 +121,6 @@
                     loading: false,
                     tableData: [],
                     monthSum: {},
-                    dailyShow: true,
-                    rawData: [],
-                    selectedData: {
-                        obj: {},
-                        date: ''
-                    },
-                    isShow: false,
                     showPre: true,
                     index: 0,
                     comment: '',
@@ -138,15 +133,17 @@
                         year: '',
                         month: 0
                     },
+                    existsAttendanceBook: {},
                     endueDate: '',
                     endueDaysHours: '',
                     tmyComment: '',
                     fromYYYYMM: '',
-                    contentScrollTop: 0,
                     isScroll: false,
                     toYYYYMM: '',
                     titleStartMonth: '',
-                    tableDataSum:[]
+                    tableDataSum:[],
+                    preDisabled: false,
+                    nextDisabled: false
                 }
             },
             async mounted() {
@@ -246,6 +243,7 @@
                 async getData(isInit) {
                     if(isInit) await this.getdefaultDate()
                     else await this.getqueryDate()
+                    await this.getExistsAttendanceBook()
                     await this.getqueryHolidayInfo()
                     await this.getTableData()
                 },
@@ -268,6 +266,25 @@
                     this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
                     this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
+                },
+                async getExistsAttendanceBook() {
+                    this.loading = true
+                    const { data } = await this.http.get(`sys/attendanceBook/selectExistsAttendanceBook`, this.query)
+                    this.existsAttendanceBook  = data
+                    if (this.existsAttendanceBook.lastYear == null) {
+                        this.preDisabled = true
+                    } else
+                        {this.preDisabled = false}
+
+                    console.log("this.existsAttendanceBook.nextYear")
+                    console.log(this.existsAttendanceBook.nextYear)
+                    if (this.existsAttendanceBook.nextYear == null) {
+                        console.log("this.nextDisabled = true")
+                        this.nextDisabled = true
+                    } else
+                        {this.nextDisabled = false}
+                    console.log("getExistsAttendanceBook")
+                    console.log(this.existsAttendanceBook)
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
@@ -346,12 +363,17 @@
                 },
                 async　preYear() {
                     this.showPre = false
-                    this.query.year = +this.query.year - 1
+                    this.query.year = Utils.formatDate(this.existsAttendanceBook.lastYear, 'yyyy')
                     this.getData()
                 },
                 async　nextYear() {
                     this.showPre = true
-                    this.query.year = +this.query.year + 1
+                    this.query.year = Utils.formatDate(this.existsAttendanceBook.nextYear, 'yyyy')
+                    this.getData()
+                },
+                async　currentYear() {
+                    this.showPre = true
+                    this.query.year = Utils.formatDate(this.existsAttendanceBook.currentYear, 'yyyy')
                     this.getData()
                 }
             }
