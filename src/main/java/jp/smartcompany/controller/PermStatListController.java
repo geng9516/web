@@ -31,10 +31,20 @@ public class PermStatListController {
 
     /**
      * 年月を取得する
+     *
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション (ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return List<DispMonthlyVO>
+     * @throws Exception
      */
     @GetMapping("dispTmgMonthlyList")
     @ResponseBody
-    public List<DispMonthlyVO> dispMonthlyList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public List<DispMonthlyVO> dispMonthlyList(
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
         List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean);
         return dispMonthlyList;
@@ -43,6 +53,15 @@ public class PermStatListController {
 
     /**
      * 表示対象月の前月データを持つ職員数
+
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return int
+     * @throws Exception
      */
     @GetMapping("dispMonthlyPrev")
     @ResponseBody
@@ -55,6 +74,15 @@ public class PermStatListController {
 
     /**
      * 表示対象月の翌月データを持つ職員数
+     *
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return int
+     * @throws Exception
      */
     @GetMapping("dispMonthlyNext")
     @ResponseBody
@@ -66,6 +94,14 @@ public class PermStatListController {
 
     /**
      * 表示月情報の取得
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return List<TmgMonthlyInfoVO>
+     * @throws Exception
      */
     @GetMapping("getTmgMonthlyInfoVOList")
     @ResponseBody
@@ -78,6 +114,14 @@ public class PermStatListController {
 
     /**
      * カレンダー情報の取得
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return CalenderVo
+     * @throws Exception
      */
     @GetMapping("selectGetCalendarList")
     @ResponseBody
@@ -90,6 +134,14 @@ public class PermStatListController {
 
     /**
      * 対象勤務年月の1ヶ月間の日付・曜日を取得
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_DISP_MONTHLY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日
+     *                 txtCEMPLOYEEID　職員ID
+     *                 txtExecuteEmpId　チェックした対象者
+     * @return List<OneMonthDetailVo>
+     * @throws Exception
      */
     @GetMapping("selectDayCount")
     @ResponseBody
