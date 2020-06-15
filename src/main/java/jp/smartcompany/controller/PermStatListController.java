@@ -73,9 +73,9 @@ public class PermStatListController {
 
 
     /**
-     * 表示月情報の取得
+     * カレンダー情報の取得
      */
-    @GetMapping("getTmgMonthlyInfoVOList")
+    @GetMapping("selectGetCalendarList")
     @ResponseBody
     public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
@@ -84,9 +84,9 @@ public class PermStatListController {
 
 
     /**
-     * 表示月情報の取得
+     * 対象勤務年月の1ヶ月間の日付・曜日を取得
      */
-    @GetMapping("getTmgMonthlyInfoVOList")
+    @GetMapping("selectDayCount")
     @ResponseBody
     public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
