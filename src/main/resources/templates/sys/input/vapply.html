@@ -17,7 +17,7 @@
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
-                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i">{{ restTypeNameView(e.ntfName)  }}</i-option>
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
                         <section v-show="selectedRestInfo.info">
@@ -25,55 +25,34 @@
                             <Alert class="primary-info mb20" style="white-space: pre-line;">{{ selectedRestInfo.info }}
                             </Alert>
                         </section>
-                        <Divider size="small" orientation="left">年次有給休暇</Divider>
-                        <Row class="ft13 mb5 mt15">
-                            <i-col span="12">
-                                <p class="head-info mr1">期間</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info mr1">残日数</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info">残時間数</p>
-                            </i-col>
-                        </Row>
-                        <Row class="mb20 ft13 border">
-                            <i-col span="12" class="mb10">
-                                <p class="mb5">2010/12/31まで</p>
-                                <p>2020/01/01から</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">19.0日</p>
-                                <p>39.0日</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">6時間 45分</p>
-                                <p>6時間 45分</p>
-                            </i-col>
-                        </Row>
-                        <Divider size="small" orientation="left">特別休暇(子の看護)</Divider>
-                        <Row class="ft13 mb5 mt15">
-                            <i-col span="12">
-                                <p class="head-info mr1">期間</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info mr1">残日数</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="head-info">残時間数</p>
-                            </i-col>
-                        </Row>
-                        <Row class="mb20 ft13 border">
-                            <i-col span="12">
-                                <p class="mb5">2010/12/31まで</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">4.0日</p>
-                            </i-col>
-                            <i-col span="6">
-                                <p class="mb5">0時間 00分</p>
-                            </i-col>
-                        </Row>
+                        <div style="position: relative;min-height: 120px;">
+                            <div v-for="(item, i) of restInfoList" :key="i">
+                                <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
+                                <Row class="ft13 mb5 mt15">
+                                    <i-col span="12">
+                                        <p class="head-info mr1">期間</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p class="head-info mr1">残日数</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p class="head-info">残時間数</p>
+                                    </i-col>
+                                </Row>
+                                <Row class="mb20 ft13 border">
+                                    <i-col span="12" class="mb10">
+                                        <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeRange">{{ e }}</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p :class="j === item.dayList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.dayList" >{{ e }}</p>
+                                    </i-col>
+                                    <i-col span="6">
+                                        <p :class="j === item.timeList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeList">{{ e }}</p>
+                                    </i-col>
+                                </Row>
+                            </div>
+                            <Spin size="large" fix v-if="restInfoLoading"></Spin>
+                        </div>
                     </div>
                 </i-col>
                 <i-col span="16" offset="1">
@@ -94,16 +73,14 @@
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
                             icon="md-refresh" @click="getApplyHistory(true)" :loading="loading"></i-button>
                         <!-- PersonalApplyTable -->
-                        <ul class="apply-history-list" @scroll.native.passive="handleScroll">
+                        <ul class="apply-history-list">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
                             <li :class="handleTimelineDotShow(item.status)" v-for="(item, index) of tableData" :key="index">
                                 <Row>
                                     <!-- 申请休假的时间的显示 -->
-                                    <i-col span="6" style="margin-left: 4.5%" class="title">
+                                    <i-col span="7" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.dateList) }}</i-col>
-                                    <!-- 承认者-状态-承认者-状态-流的展示, 状态为取消时，不显示 -->
-                                    <!-- todo: 要将这个改为 次に承認者：xxxx -->
-                                    <i-col span="15" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
+                                    <i-col span="12" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
                                             <ul style="display:flex">
                                                 <li style="margin-right:10px" v-if="item.nextAdminList.length <= 3">
@@ -127,6 +104,14 @@
                                                 </div>
                                             </div>
                                         </Poptip>
+                                    </i-col>
+                                    <i-col span="4" style="margin-left: 44%">
+                                        <Poptip trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
+                                            <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
+                                            <div slot="content">
+                                                <span class="blue" style="text-decoration: underline;">file.jpg</span>
+                                            </div>
+                                        </Poptip>
                                         <span :class="handleApplyMarkShow(item.status)" />
                                     </i-col>
                                 </Row>
@@ -136,6 +121,7 @@
                                     </i-col>
                                     <i-col span="2" style="margin-left: 26.3%" class="description"
                                         v-if="item.status === 0">
+                                        <!-- todo: 也可能是再申请按钮S -->
                                         <i-button class="cancel-btn" size="small" @click="cancel(item.applyId)">取り消し
                                         </i-button>
                                     </i-col>
@@ -149,12 +135,12 @@
                                         {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
                                 </Row>
                                 <Row>
-                                    <i-col span="8" offset="15" class="description light-grey mt10">
+                                    <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">
                                         {{ `申請日時：${item.updateTime}` }}</i-col>
                                 </Row>
                             </li>
                             <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
-                            <i-button class="width75" style="margin-top: 35px;margin-left: 47px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
+                            <i-button class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
@@ -295,6 +281,7 @@
                         { name: '土', value: 6 },
                         { name: '日', value: 7 }
                     ],
+                    restInfoList:[],
                     open: true,
                     timerangeType: 1,
                     loading: false,
@@ -307,6 +294,7 @@
                     // 用于为全て时删除status字段
                     RadioStatusHelper: 6,
                     totalCount: 0,
+                    restInfoLoading:false,
                     listLoading: false,
                     tableData: [
                         {
@@ -413,6 +401,7 @@
             },
             created() {
                 this.getData()
+                this.getRestInfo()
             },
             mounted () {
                 this.uploadList = this.$refs.upload.fileList;;
@@ -443,7 +432,6 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.get(`/sys/vapply/NtfTypeList`)
-                        console.log(data)
                         this.restTypeList = data
                     } catch (error) {
                         return
@@ -452,6 +440,18 @@
                     }
                     // 获得历史申请数据
                     // this.getApplyHistory()
+                },
+                async getRestInfo() {
+                    this.restInfoLoading = true
+                    try {
+                        const { data } = await this.http.get(`/sys/vapply/RestYearList`)
+                        console.log(data)
+                        this.restInfoList = data
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.restInfoLoading = false
+                    }
                 },
                 getApplyHistory: Debounce(async function (isRefresh, isReachBottom) {
                     // 获得历史申请数据
@@ -482,22 +482,6 @@
                     }
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
-                restTypeNameView(e) {
-                    if(e.length > 20) return `${e.slice(0,20)}...`
-                    else return e
-                },
-                // 到底再拉数据，需要判断总数，决定是否再拉，每次拉50条
-                handleScroll: Throttle(function (e) {
-                    const _e = e.target
-                    if (_e.offsetHeight + _e.scrollTop === _e.scrollHeight) {
-                        console.log('到底了！')
-                        if (this.totalCount > this.tableData.length) {
-                            console.log('该拉了')
-                            this.opts.limit += 50
-                            this.getApplyHistory(false, true)
-                        }
-                    }
-                }, 600),
                 onRefresh() {
                     this.rotate = !this.rotate
                 },
@@ -526,12 +510,11 @@
                         this.loading = false
                         this.tableData.unshift({
                             status: 0,
-                            remark: that.restApply.reason,
-                            updateTime: Utils.formatDate(Date.now()),
-                            restTypeName: that.selectedRestInfo.ntfName || '申請区分選択待ち',
-                            dateList: [Utils.formatDate(Date.now(), 'yyyy-mm-dd')],
-                            nextAdmin: '田中さん',
-                            nextAdminStatus: 0
+                            remark: '自分取り消し',
+                            updateTime: '2020/02/28 09:56:03',
+                            restTypeName: 'test',
+                            dateList: ['2020/03/02'],
+                            nextAdminList:[],
                         })
                     }, 1000)
                 }),
