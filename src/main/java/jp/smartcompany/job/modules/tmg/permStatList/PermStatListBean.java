@@ -32,11 +32,11 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PermStatListBean {
-
-    /**
-     * PsDBBean
-     */
-    private final PsDBBean _psDBBean;
+//
+//    /**
+//     * PsDBBean
+//     */
+//    private final PsDBBean _psDBBean;
 
     /**
      * IMastGenericDetailService
@@ -200,7 +200,7 @@ public class PermStatListBean {
 //        execute(modelMap);
 
         // 月別一覧表示の為のプロセスを実行します。
-        executeReadMonthlyList(modelMap);
+ //       executeReadMonthlyList(modelMap,);
     }
 
 
@@ -214,7 +214,7 @@ public class PermStatListBean {
      */
     public void actEditDairy(ModelMap modelMap) throws Exception{
 //        execute(modelMap);
-        executeReadTmgDaily(modelMap);
+ //       executeReadTmgDaily(modelMap);
 
     }
 
@@ -228,8 +228,8 @@ public class PermStatListBean {
      */
     public void actMonthlyPermit(ModelMap modelMap) throws Exception {
 //        execute(modelMap);
-        executeUpdateTmgMonthly();
-        executeReadMonthlyList(modelMap);
+//        executeUpdateTmgMonthly();
+//        executeReadMonthlyList(modelMap);
     }
 
     /**
@@ -242,8 +242,8 @@ public class PermStatListBean {
      */
     public void actPermit(ModelMap modelMap) throws Exception {
 //        execute(modelMap);
-        executeUpdateTmgDaily();
-        executeReadMonthlyList(modelMap);
+//        executeUpdateTmgDaily();
+////        executeReadMonthlyList(modelMap);
     }
 
     /**
@@ -255,7 +255,7 @@ public class PermStatListBean {
      * @param modelMap
      */
     public void actRedirect(ModelMap modelMap) {
-        executeRedirect(modelMap);
+//        executeRedirect(modelMap);
     }
 
 
@@ -273,7 +273,7 @@ public class PermStatListBean {
      * 	</ul>
      * </p>
      */
-    private void executeUpdateTmgDaily() {
+    private void executeUpdateTmgDaily(PsDBBean psDBBean) {
 
         String[] empIds = this.getExecuteEmpId();
 
@@ -291,12 +291,12 @@ public class PermStatListBean {
 
         // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
         // 一括承認データを更新する
-        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(_psDBBean.getCustID(), _psDBBean.getCompCode(),_loginUserCode,sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
+        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(),_loginUserCode,sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
 
         iTmgTriggerService.buildSQLForInsertTmgTrigger(_loginUserCode, sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
 
-        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", _psDBBean.getCustID())
-                .eq("TTR_CCOMPANYID", _psDBBean.getCompCode())
+        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TTR_CMODIFIERUSERID", _loginUserCode)
                 .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction ));
 
@@ -309,11 +309,11 @@ public class PermStatListBean {
      * 別コンテンツへのリダイレクトを実行します。
      * @see TmgReferList#setTargetEmployee(String)
      */
-    private void executeRedirect(ModelMap modelMap) {
+    private void executeRedirect(ModelMap modelMap, PsDBBean psDBBean) {
 
-        String sBean = _psDBBean.getReqParam(REQ_REDIRECT_BEAN);
+        String sBean = psDBBean.getReqParam(REQ_REDIRECT_BEAN);
         Hashtable htRequest = new Hashtable();
-        htRequest.put(REQ_ACTION, _psDBBean.getReqParam(REQ_REDIRECT_ACTION));
+        htRequest.put(REQ_ACTION, psDBBean.getReqParam(REQ_REDIRECT_ACTION));
         htRequest.put(REQ_SECTION_ID, _reqSectionId);
         htRequest.put(REQ_DYYYYMMDD, _reqDYYYYMMDD);
         htRequest.put(REQ_DYYYYMM, _reqDYYYYMM);
@@ -321,9 +321,9 @@ public class PermStatListBean {
 
         htRequest.put(REQ_REDIRECT_BEAN, APPLICATION_ID);
 
-        if (_psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_EDIT_DAIRY)) {
+        if (psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_EDIT_DAIRY)) {
             htRequest.put(REQ_REDIRECT_ACTION, ACT_EDIT_DAIRY);
-        } else if (_psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_DISP_MONTHLY)) {
+        } else if (psDBBean.getReqParam(REQ_CALL_ACTION).equals(ACT_DISP_MONTHLY)) {
             htRequest.put(REQ_REDIRECT_ACTION, ACT_DISP_MONTHLY);
         } else { // いずれでもない場合は月別一覧に戻る
             htRequest.put(REQ_REDIRECT_ACTION, ACT_DISP_MONTHLY);
@@ -347,11 +347,11 @@ public class PermStatListBean {
      * </p>
      * @exception Exception
      */
-    private void executeUpdateTmgMonthly() {
+    private void executeUpdateTmgMonthly(PsDBBean psDBBean) {
 
 
-        String sCustId        = _psDBBean.getCustID();
-        String sCompId        = _psDBBean.getCompCode();
+        String sCustId        = psDBBean.getCustID();
+        String sCompId        = psDBBean.getCompCode();
         String sDyyyyMm       = getReqDYYYYMM();
         String sloginUserCode = _loginUserCode;
         String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
@@ -366,7 +366,7 @@ public class PermStatListBean {
              * 月次承認機能がオンの場合、
              * 月次承認エラーチェック結果がＯＫの職員のみ更新を行う。
              */
-            if (isMonthlyApproval(_psDBBean) && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
+            if (isMonthlyApproval(psDBBean) && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
                 continue;
             }
 
@@ -448,7 +448,7 @@ public class PermStatListBean {
      * 日別一覧表示の為のプロセスを実行します。
      * @param modelMap
      */
-    private void executeReadTmgDaily(ModelMap modelMap) {
+    private void executeReadTmgDaily(ModelMap modelMap,PsDBBean psDBBean) {
         // TODO
         _reqDYYYYMMDD ="2020/01/01";
 
@@ -456,10 +456,10 @@ public class PermStatListBean {
         String empSql = getReferList().buildSQLForSelectEmployees();
 
         // 打刻反映処理
-        execReflectionTimePunch(empSql);
+        execReflectionTimePunch(empSql,psDBBean);
 
         // 承認状況表示項目を取得しセット
-        List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(_psDBBean.getCustID(), _psDBBean.getCompCode(), _psDBBean.getLanguage());
+        List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage());
         List<String> monthlyItems = new ArrayList<String>();
 
         for (ItemVO itemVO : itemVOList) {
@@ -499,12 +499,12 @@ public class PermStatListBean {
      * </p>
      *    @exception Exception
      */
-    private void executeReadMonthlyList(ModelMap modelMap) {
+    private void executeReadMonthlyList(ModelMap modelMap,PsDBBean psDBBean) {
 
         String empSql = getReferList().buildSQLForSelectEmployees();
 
         // 打刻反映処理を行う。
-        execReflectionTimePunch(empSql);
+        execReflectionTimePunch(empSql,psDBBean);
 
 
         // 月次一覧表示データを取得する。
@@ -523,10 +523,10 @@ public class PermStatListBean {
         }
 
         List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
-                _psDBBean.getCustID(),
-                _psDBBean.getCompCode(),
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
                 getReqDYYYYMM(),
-                _psDBBean.getLanguage(),
+                psDBBean.getLanguage(),
                 getToDay(),
                 empSql,
                 colNameList
@@ -534,8 +534,8 @@ public class PermStatListBean {
         modelMap.addAttribute("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
 
         // 1 カレンダー情報の取得
-        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
-                _psDBBean.getCompCode(), referList.getTargetSec(), _psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
         modelMap.addAttribute("calenderVo", calenderVo);
 
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
@@ -566,7 +566,7 @@ public class PermStatListBean {
 
         String empSql = referList.buildSQLForSelectEmployees();
         // 打刻反映処理を行う。
-        execReflectionTimePunch(empSql);
+        execReflectionTimePunch(empSql,psDBBean);
         // 6 表示月遷移リスト情報取得
         return iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
 
@@ -599,7 +599,7 @@ public class PermStatListBean {
 
     /*************************************************************/
     //一覧表示ステップ　４
-    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList() {
+    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
 
         String empSql = referList.buildSQLForSelectEmployees();
 
@@ -619,10 +619,10 @@ public class PermStatListBean {
         }
 
         List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
-                _psDBBean.getCustID(),
-                _psDBBean.getCompCode(),
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
                 getReqDYYYYMM(),
-                _psDBBean.getLanguage(),
+                psDBBean.getLanguage(),
                 getToDay(),
                 empSql,
                 colNameList
@@ -633,10 +633,10 @@ public class PermStatListBean {
 
     /*************************************************************/
     //一覧表示ステップ　5
-    public CalenderVo selectGetCalendarList() {
+    public CalenderVo selectGetCalendarList(PsDBBean psDBBean) {
         // 1 カレンダー情報の取得
-        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
-                _psDBBean.getCompCode(), referList.getTargetSec(), _psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
         return calenderVo;
     }
 
@@ -753,7 +753,7 @@ public class PermStatListBean {
     /**
      * 月次一覧、また日次承認画面表示時の打刻反映処理
      */
-    private void execReflectionTimePunch(String empSql) {
+    private void execReflectionTimePunch(String empSql,PsDBBean psDBBean) {
 
         // アクション
         String action = _sAction;
@@ -808,9 +808,9 @@ public class PermStatListBean {
         }
 
         // 打刻反映処理
-        iTmgTriggerService.buildSQLForInsertTmgTriggerByTimePunch(_psDBBean.getUserCode(), action, stDate, endDate, empSql);
-        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", _psDBBean.getCustID())
-                .eq("TTR_CCOMPANYID", _psDBBean.getCompCode())
+        iTmgTriggerService.buildSQLForInsertTmgTriggerByTimePunch(psDBBean.getUserCode(), action, stDate, endDate, empSql);
+        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TTR_CMODIFIERUSERID", _loginUserCode)
                 .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + action));
 
@@ -889,7 +889,7 @@ public class PermStatListBean {
                     String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
 
                     // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    setReferList(sPrevMonth);
+                    setReferList(sPrevMonth,psDBBean);
 
                     // 参照権限の設定:
                     // 初期表示時の対象年月の時点の参照権限が無い場合に、
@@ -913,7 +913,7 @@ public class PermStatListBean {
                         setAuthorityMonth(CB_CAN_REFER);
                     } else {
                         // 対象年月を元に戻します
-                        setReferList(getReqDYYYYMM());
+                        setReferList(getReqDYYYYMM(),psDBBean);
 
                         setAuthorityMonth(CB_CANT_REFER);
                     }
@@ -1061,9 +1061,9 @@ public class PermStatListBean {
      *
      * @param pDate 対象年月日
      */
-    private void setReferList(String pDate)  throws Exception{
+    private void setReferList(String pDate,PsDBBean psDBBean)  throws Exception{
 
-        referList = new TmgReferList(_psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
+        referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
 //        referList.putReferList(modelMap);
 
     }

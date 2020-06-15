@@ -68,7 +68,7 @@ public class PermStatListController {
     @ResponseBody
     public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.getTmgMonthlyInfoVOList();
+        return permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
     }
 
 
@@ -79,7 +79,7 @@ public class PermStatListController {
     @ResponseBody
     public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        return permStatListBean.selectGetCalendarList();
+        return permStatListBean.selectGetCalendarList(psDBBean);
     }
 
 
