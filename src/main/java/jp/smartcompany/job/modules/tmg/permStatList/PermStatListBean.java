@@ -501,7 +501,7 @@ public class PermStatListBean {
      * </p>
      *    @exception Exception
      */
-    private void executeReadMonthlyList(ModelMap modelMap){
+    private void executeReadMonthlyList(ModelMap modelMap) {
 
         String empSql = getReferList().buildSQLForSelectEmployees();
 
@@ -533,7 +533,7 @@ public class PermStatListBean {
                 empSql,
                 colNameList
         );
-        modelMap.addAttribute("tmgMonthlyInfoVOList",tmgMonthlyInfoVOList);
+        modelMap.addAttribute("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
 
         // 1 カレンダー情報の取得
         CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
@@ -542,45 +542,45 @@ public class PermStatListBean {
 
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
-        modelMap.addAttribute("oneMonthDetailVoList",oneMonthDetailVoList);
+        modelMap.addAttribute("oneMonthDetailVoList", oneMonthDetailVoList);
 
         // 3 表示対象月の前月データを持つ職員数
-        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
-        modelMap.addAttribute("tmgMonthlyInfoPrevCount",tmgMonthlyInfoPrevCount);
+        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+        modelMap.addAttribute("tmgMonthlyInfoPrevCount", tmgMonthlyInfoPrevCount);
 
         // 4 表示対象月の翌月データを持つ職員数
-        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
-        modelMap.addAttribute("tmgMonthlyInfoNextCount",tmgMonthlyInfoNextCount);
+        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
+        modelMap.addAttribute("tmgMonthlyInfoNextCount", tmgMonthlyInfoNextCount);
 
         // 5 選択組織名称の取得
         String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), _loginCustId, _loginCompCode);
-        modelMap.addAttribute("sectionName",sectionName);
+        modelMap.addAttribute("sectionName", sectionName);
 
         // 6 表示月遷移リスト情報取得
         List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
-        modelMap.addAttribute("cispMonthlyVOList",cispMonthlyVOList);
+        modelMap.addAttribute("cispMonthlyVOList", cispMonthlyVOList);
 
     }
 
     /*************************************************************/
     //一覧表示ステップ　１
-    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception{
+    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception {
 
         String empSql = referList.buildSQLForSelectEmployees();
         // 打刻反映処理を行う。
         execReflectionTimePunch(empSql);
         // 6 表示月遷移リスト情報取得
-        return  iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
+        return iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
 
     }
 
     /*************************************************************/
     //一覧表示ステップ　２
-    public int dispMonthlyPrev(){
+    public int dispMonthlyPrev() {
 
         String empSql = referList.buildSQLForSelectEmployees();
         // 3 表示対象月の前月データを持つ職員数
-        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
 
         return tmgMonthlyInfoPrevCount;
 
@@ -631,6 +631,22 @@ public class PermStatListBean {
         );
 
         return tmgMonthlyInfoVOList;
+    }
+
+    /*************************************************************/
+    //一覧表示ステップ　5
+    public CalenderVo selectGetCalendarList() {
+        // 1 カレンダー情報の取得
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(_psDBBean.getCustID(),
+                _psDBBean.getCompCode(), referList.getTargetSec(), _psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+        return calenderVo;
+    }
+
+    //一覧表示ステップ　5
+    public List<OneMonthDetailVo> selectDayCount() {
+        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
+        return oneMonthDetailVoList;
     }
 //
 //

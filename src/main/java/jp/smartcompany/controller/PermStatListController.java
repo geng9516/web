@@ -3,6 +3,8 @@ package jp.smartcompany.controller;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
@@ -60,7 +62,7 @@ public class PermStatListController {
     }
 
     /**
-     * 表示対象月の翌月データを持つ職員数
+     * 表示月情報の取得
      */
     @GetMapping("getTmgMonthlyInfoVOList")
     @ResponseBody
@@ -68,6 +70,29 @@ public class PermStatListController {
         permStatListBean.execute(psDBBean);
         return permStatListBean.getTmgMonthlyInfoVOList();
     }
+
+
+    /**
+     * 表示月情報の取得
+     */
+    @GetMapping("getTmgMonthlyInfoVOList")
+    @ResponseBody
+    public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
+        return permStatListBean.selectGetCalendarList();
+    }
+
+
+    /**
+     * 表示月情報の取得
+     */
+    @GetMapping("getTmgMonthlyInfoVOList")
+    @ResponseBody
+    public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
+        return permStatListBean.selectDayCount();
+    }
+
 
 //
 //    /**
