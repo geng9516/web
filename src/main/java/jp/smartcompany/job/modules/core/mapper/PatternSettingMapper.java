@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
 import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO;
 import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -30,7 +31,7 @@ public interface PatternSettingMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    TmgPatternDTO selectTmgPatternOwn(HashMap<String, Object> params);
+    List<TmgPatternDTO> selectTmgPatternOwn(HashMap<String, Object> params);
 
     /**
      * 該当者毎に設定されている勤務パターンの情報を取得する
@@ -40,7 +41,27 @@ public interface PatternSettingMapper extends BaseMapper<Object> {
      */
     List<TmgPatternAppliesDTO> selectTmgPatternApplies(HashMap<String, Object> params);
 
+    /**
+     * 勤務時間・休憩時間の制限値取得
+     *
+     * @param params
+     */
+    List<RestTimeLimitDTO> selectRestTimeLimit(HashMap<String, Object> params);
 
+    /**
+     * パターン編集画面のパターン情報
+     *
+     * @param params
+     * @return
+     */
+    TmgPatternDTO selectTmgPatternById(HashMap<String, Object> params);
 
+    /**
+     * パターン編集画面のパターン情報
+     *
+     * @param params
+     * @return
+     */
+    List<TmgPatternDTO> selectPatternSelectList(HashMap<String, Object> params);
 
 }
