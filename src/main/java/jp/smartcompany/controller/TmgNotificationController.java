@@ -66,7 +66,7 @@ public class TmgNotificationController {
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("RestYearList")
-    public List<restYearPaidHolidayVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public List<restYearVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getRestYear(psDBBean);
     }
 
