@@ -563,14 +563,156 @@ public class PermStatListBean {
     }
 
     /*************************************************************/
-    //TODO
+    //一覧表示ステップ　１
     public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception{
 
+        String empSql = referList.buildSQLForSelectEmployees();
+        // 打刻反映処理を行う。
+        execReflectionTimePunch(empSql);
         // 6 表示月遷移リスト情報取得
-        return  iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), referList.buildSQLForSelectEmployees());
-
+        return  iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
 
     }
+
+    /*************************************************************/
+    //一覧表示ステップ　２
+    public int dispMonthlyPrev(){
+
+        String empSql = referList.buildSQLForSelectEmployees();
+        // 3 表示対象月の前月データを持つ職員数
+        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql,TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+
+        return tmgMonthlyInfoPrevCount;
+
+    }
+
+    /*************************************************************/
+    //一覧表示ステップ　３
+    public int dispMonthlyNext() {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+
+        // 4 表示対象月の翌月データを持つ職員数
+        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
+        return tmgMonthlyInfoNextCount;
+
+    }
+
+
+    /*************************************************************/
+    //一覧表示ステップ　４
+    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList() {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+
+        // 月次一覧表示データを取得する。
+        // 0 表示月情報の取得
+        List<ColNameDto> colNameList = new ArrayList<>();
+
+        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+
+        for (int i = 1; i <= monthLen; i++) {
+            ColNameDto dto = new ColNameDto();
+            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
+            dto.setDisppermStatus("DISPPERM_STATUS" + i);
+            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
+            colNameList.add(dto);
+        }
+
+        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
+                _psDBBean.getCustID(),
+                _psDBBean.getCompCode(),
+                getReqDYYYYMM(),
+                _psDBBean.getLanguage(),
+                getToDay(),
+                empSql,
+                colNameList
+        );
+
+        return tmgMonthlyInfoVOList;
+    }
+//
+//
+//    /**
+//     * 日別承認状況一覧画面の一括承認ボタンの表示可能か判定します。
+//     * <p>
+//     * 以下の条件を満たしている場合に表示可能になります。
+//     * <ol>
+//     *  <li>一覧で表示されている職員の中に該当月の日次情報が全て「承認済」の職員が存在する。</li>
+//     *  <li>一覧で表示されている職員の中に該当月のステータスが「未承認」の職員が存在する。</li>
+//     *  <li>勤怠管理サイトの場合は1．と2．の条件が真であれば真を返す。</li>
+//     *  <li>勤怠承認サイトの場合は、1．と 2．の条件が真でかつ、
+//     *      一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する。</li>
+//     * </ol>
+//     * </p>
+//     * @return boolean 表示制御値
+//     *
+//     */
+//    public boolean isDispEnableBatchApproval(int piSqlNumber) {
+//
+//        if (!isMonthlyApproval()){ return false; }
+//
+//        try {
+//            for (int i = 0; i < getCount(piSqlNumber); i++) {
+//
+//                if (CsApprovedDailyCount.equals(valueAtColumnRow(piSqlNumber, COL_DAILY_COUNT, i)) &&
+//                        TmgUtil.Cs_MGD_DATASTATUS_0.equals(valueAtColumnRow(piSqlNumber, COL_MONTHLY_STATUSFLG, i))) {
+//
+//                    return existsDispMonthlyApproval(valueAtColumnRow(piSqlNumber, COL_MONTHLY_INFO_EMPLOYEEID, i),
+//                            getReqDYYYYMM(), valueAtColumnRow(piSqlNumber, COL_MONTHLY_LASTDAY, i));
+//                }
+//
+//            }
+//
+//        } catch (Exception e) {
+//            return false;
+//        }
+//
+//        return false;
+//    }
+//
+//
+//    /**
+//     * 指定の職員の指定年月における、月次承認エラーチェック結果を取得する。
+//     *
+//     * @param  sEmpid  職員番号
+//     * @param  sYYYYMM 年月
+//     * @return boolean チェック結果(true：エラー、false：正常)
+//     */
+//    public boolean isErrForCheckMonthlyApproval(String sEmpid, String sYYYYMM) {
+//
+//        boolean bRes = true;
+//
+//        Vector vQry = new Vector();
+//
+//        vQry.add(buildSelectDataForTMG_F_CHECK_MONTHLY(
+//                escDBString(getCustID()),
+//                escDBString(getCompCode()),
+//                escDBString(sEmpid),
+//                toDBDate(sYYYYMM)));
+//
+//        try {
+//
+//            // 検索結果を取得する。
+//            PsResult res = (PsResult)getValuesforMultiquery(vQry, BEANDESC);
+//            Vector   resList     = res.getResult();
+//            Vector   resRecList  = (Vector)resList.get(0);     // ０番目クエリ検索結果
+//            Vector   resDataList = (Vector)resRecList.get(0);  // ０レコード目データ
+//            String   resData     = (String)resDataList.get(0); // ０項目目データ
+//
+//            // エラーチェック結果が"0"の場合、チェック結果「正常」となる
+//            if ("0".equals(resData)) {
+//                bRes = false;
+//            }
+//
+//        } catch(Exception e) {
+//            return true;
+//        }
+//
+//        return bRes;
+//    }
+
 
     /************************************************************/
 

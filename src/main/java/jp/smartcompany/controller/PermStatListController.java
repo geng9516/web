@@ -4,6 +4,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
+import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,37 @@ public class PermStatListController {
         return permStatListBean.dispMonthlyList(psDBBean);
     }
 
+
+    /**
+     * 表示対象月の前月データを持つ職員数
+     */
+    @GetMapping("dispMonthlyPrev")
+    @ResponseBody
+    public int dispMonthlyPrev(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
+        return permStatListBean.dispMonthlyPrev();
+    }
+
+
+    /**
+     * 表示対象月の翌月データを持つ職員数
+     */
+    @GetMapping("dispMonthlyNext")
+    @ResponseBody
+    public int dispMonthlyNext(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
+        return permStatListBean.dispMonthlyNext();
+    }
+
+    /**
+     * 表示対象月の翌月データを持つ職員数
+     */
+    @GetMapping("getTmgMonthlyInfoVOList")
+    @ResponseBody
+    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        permStatListBean.execute(psDBBean);
+        return permStatListBean.getTmgMonthlyInfoVOList();
+    }
 
 //
 //    /**
