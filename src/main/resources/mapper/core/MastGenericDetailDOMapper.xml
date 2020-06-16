@@ -323,18 +323,18 @@
     <select id="selectMasterTmgNtfTypeDispAppList"
             resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo">
         SELECT
-        G.MGD_CMASTERCODE AS GROUP_ID,
-        G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
-        T1.MGD_CMASTERCODE AS NTFI_D,
-        T1.MGD_CGENERICDETAILDESC AS NTF_NAME,
-        T1.MGD_NSPARENUM2 AS VIEW_TYPE,
-        T1.MGD_CSPARECHAR3 AS CONFIM_COMMENT,
-        T2.MGD_CSPARECHAR3 AS BIKO,
-        T2.MGD_NSPARENUM2 AS CONFIRM_FILE
+            G.MGD_CMASTERCODE AS GROUP_ID,
+            G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
+            T1.MGD_CMASTERCODE AS NTFI_D,
+            T1.MGD_CGENERICDETAILDESC AS NTF_NAME,
+            T1.MGD_NSPARENUM2 AS VIEW_TYPE,
+            T1.MGD_CSPARECHAR3 AS CONFIM_COMMENT,
+            T2.MGD_CSPARECHAR3 AS BIKO,
+            T2.MGD_NSPARENUM2 AS CONFIRM_FILE
         FROM
-        MAST_GENERIC_DETAIL G,
-        MAST_GENERIC_DETAIL T1,
-        MAST_GENERIC_DETAIL T2
+            MAST_GENERIC_DETAIL G,
+            MAST_GENERIC_DETAIL T1,
+            MAST_GENERIC_DETAIL T2
         WHERE
             G.MGD_CCUSTOMERID = #{companyId}
         AND G.MGD_CCOMPANYID_CK_FK = #{companyId}
@@ -357,8 +357,8 @@
         AND T1.MGD_DEND >= #{yyyymmdd,jdbcType=DATE}
         AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
         ORDER BY
-        G.MGD_NSPARENUM1,
-        T2.MGD_NSPARENUM1;
+            G.MGD_NSPARENUM1,
+            T2.MGD_NSPARENUM1;
     </select>
 
     <select id="selectGenericDetail" parameterType="java.lang.String" resultType="map">
@@ -552,14 +552,14 @@
 
     <select id="selectMasterTmgNtfType" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo">
         SELECT
-        G.MGD_CMASTERCODE AS G_MGD_CMASTERCODE,
-        G.MGD_CGENERICDETAILDESC AS G_MGD_CGENERICDETAILDESC,
-        T1.MGD_CMASTERCODE AS T1_MGD_CMASTERCODE,
-        T1.MGD_CGENERICDETAILDESC AS T1_MGD_MGD_CGENERICDETAILDESC,
-        T1.MGD_NSPARENUM2 AS T1_MGD_MGD_NSPARENUM2,
-        T1.MGD_CSPARECHAR3 AS T1_MGD_CSPARECHAR3,
-        T2.MGD_CSPARECHAR3 AS T2_MGD_CSPARECHAR3,
-        T2.MGD_NSPARENUM2 AS T2_MGD_NSPARENUM2,
+            G.MGD_CMASTERCODE AS G_MGD_CMASTERCODE,
+            G.MGD_CGENERICDETAILDESC AS G_MGD_CGENERICDETAILDESC,
+            T1.MGD_CMASTERCODE AS T1_MGD_CMASTERCODE,
+            T1.MGD_CGENERICDETAILDESC AS T1_MGD_CGENERICDETAILDESC,
+            T1.MGD_NSPARENUM2 AS T1_MGD_NSPARENUM2,
+            T1.MGD_CSPARECHAR3 AS T1_MGD_CSPARECHAR3,
+            T2.MGD_CSPARECHAR3 AS T2_MGD_CSPARECHAR3,
+            T2.MGD_NSPARENUM2 AS T2_MGD_NSPARENUM2,
         (
             SELECT
             TMG_F_GET_MGD_N ( MGD_CSPARECHAR2, to_date( '${baseDate}', 'yyyy/mm/dd' ), 1, T1.MGD_CCUSTOMERID, T1.MGD_CCOMPANYID_CK_FK )
@@ -589,11 +589,11 @@
             AND MGD_CSPARECHAR1 = T1.MGD_CMASTERCODE
         ) AS GENERICDETAILDESC
         FROM
-        MAST_GENERIC_DETAIL G,
-        MAST_GENERIC_DETAIL T1,
-        MAST_GENERIC_DETAIL T2
+            MAST_GENERIC_DETAIL G,
+            MAST_GENERIC_DETAIL T1,
+            MAST_GENERIC_DETAIL T2
         WHERE
-        G.MGD_CCUSTOMERID = '${custId}'
+            G.MGD_CCUSTOMERID = '${custId}'
         AND G.MGD_CCOMPANYID_CK_FK =  '${compId}'
         AND G.MGD_CGENERICGROUPID = 'TMG_NTFGROUP'
         AND G.MGD_CLANGUAGE_CK =  '${language}'
@@ -614,24 +614,24 @@
         AND T1.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
         AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
         AND T1.MGD_CMASTERCODE IN (
-        SELECT
-        MGD_CSPARECHAR2
-        FROM
-        MAST_GENERIC_DETAIL R
-        WHERE
-        R.MGD_CCUSTOMERID = T1.MGD_CCUSTOMERID
-        AND R.MGD_CCOMPANYID_CK_FK = T1.MGD_CCOMPANYID_CK_FK
-        AND R.MGD_CGENERICGROUPID = 'TMG_NTF_RELATION'
-        AND R.MGD_CLANGUAGE_CK = T1.MGD_CLANGUAGE_CK
-        AND R.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
-        AND R.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
-        AND R.MGD_CSPARECHAR1 = TMG_F_GET_WORKERTYPE ('${employeeId}', to_date( '${baseDate}', 'yyyy/mm/dd' ), '${custId}', '${compId}')
-        AND R.MGD_NSPARENUM1 = 1
+            SELECT
+                MGD_CSPARECHAR2
+            FROM
+                MAST_GENERIC_DETAIL R
+            WHERE
+                R.MGD_CCUSTOMERID = T1.MGD_CCUSTOMERID
+            AND R.MGD_CCOMPANYID_CK_FK = T1.MGD_CCOMPANYID_CK_FK
+            AND R.MGD_CGENERICGROUPID = 'TMG_NTF_RELATION'
+            AND R.MGD_CLANGUAGE_CK = T1.MGD_CLANGUAGE_CK
+            AND R.MGD_DSTART_CK <![CDATA[<=]]> to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND R.MGD_DEND >= to_date( '${baseDate}', 'yyyy/mm/dd' )
+            AND R.MGD_CSPARECHAR1 = '${workType}'
+            AND R.MGD_NSPARENUM1 = 1
         )
         AND INSTR( T1.MGD_CSPARECHAR5, '${siteId}' ) > 0
         ORDER BY
-        G.MGD_NSPARENUM1,
-        T2.MGD_NSPARENUM1
+            G.MGD_NSPARENUM1,
+            T2.MGD_NSPARENUM1
         ;
     </select>
 

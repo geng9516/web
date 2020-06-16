@@ -30,7 +30,10 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
 
         List<notificationListVo> selectNotificationList(@Param("paramNotificationList") paramNotificationListDto params);
 
-
+        /**
+         * 休業申請を一覧COUNT
+         */
+        int selectNotificationListCount(@Param("paramNotificationList") paramNotificationListDto params);
 
         /**
          * 申請詳細を取得するSQLを返す

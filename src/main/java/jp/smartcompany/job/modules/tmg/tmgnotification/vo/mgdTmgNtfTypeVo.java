@@ -22,13 +22,13 @@ public class mgdTmgNtfTypeVo {
     // 3 申請区分名称
     private String t1MgdCgenericdetaildesc;
     // 4 表示項目タイプ
-    private int t1MgdNsparenum2;
+    private String t1MgdNsparenum2;
     // 5 申請事由必須有無
     private String t1MgdCsparechar3;
     // 6 注釈
     private String t2MgdCsparechar3;
     // 7 添付ファイル必須有無
-    private int t2MgdNsparenum2;
+    private String t2MgdNsparenum2;
     // 8 決裁レベル
     private String sparechar2;
     //決裁レベル(名称)

@@ -19,5 +19,7 @@ public class OneMonthDetailVo {
     private String dayOfWeek;
     /**日付*/
     private String day;
+    /**休暇区分*/
+    private String tcaCholflg;
 
 }

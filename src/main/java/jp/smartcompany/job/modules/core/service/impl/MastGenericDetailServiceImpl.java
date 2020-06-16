@@ -576,7 +576,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * @return String
      */
     @Override
-    public List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId) {
+    public List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId,String workType) {
         Map<String, Object> map = MapUtil.newHashMap(5);
         map.put("custId", custId);
         map.put("compId", compId);
@@ -584,6 +584,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         map.put("employeeId", employeeId);
         map.put("language", language);
         map.put("siteId", siteId);
+        map.put("workType", workType);
 
         return baseMapper.selectMasterTmgNtfType(map);
     }

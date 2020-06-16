@@ -301,7 +301,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @param siteId
      * @return String
      */
-    List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId);
+    List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId,String workType);
 
     /**
      * 画面項目名称の設定マスタ
