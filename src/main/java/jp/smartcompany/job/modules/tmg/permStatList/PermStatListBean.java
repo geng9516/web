@@ -16,11 +16,14 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -81,97 +84,160 @@ public class PermStatListBean {
 
     public static final String APPLICATION_ID = "PermStatList";
 
-    /** リクエストキー - アクション */
-    public static final String REQ_ACTION          = "txtAction";
-    /** リクエストキー - 対象組織 */
-    public static final String REQ_SECTION_ID      = "txtSectionId";
-    /** リクエストキー - 対象勤務年月日 */
-    public static final String REQ_DYYYYMMDD       = "txtDYYYYMMDD";
-    /** リクエストキー - 対象年月 */
-    public static final String REQ_DYYYYMM         = "txtDYYYYMM";
-    /** リクエストキー - 対象職員番号 */
-    public static final String REQ_CEMPLOYEEID     = "txtCEMPLOYEEID";
-    /** リクエストキー - リダイレクトBean名 */
-    public static final String REQ_REDIRECT_BEAN   = "txtRedirectBean";
-    /** リクエストキー - リダイレクト先アクション値 */
+    /**
+     * リクエストキー - アクション
+     */
+    public static final String REQ_ACTION = "txtAction";
+    /**
+     * リクエストキー - 対象組織
+     */
+    public static final String REQ_SECTION_ID = "txtSectionId";
+    /**
+     * リクエストキー - 対象勤務年月日
+     */
+    public static final String REQ_DYYYYMMDD = "txtDYYYYMMDD";
+    /**
+     * リクエストキー - 対象年月
+     */
+    public static final String REQ_DYYYYMM = "txtDYYYYMM";
+    /**
+     * リクエストキー - 対象職員番号
+     */
+    public static final String REQ_CEMPLOYEEID = "txtCEMPLOYEEID";
+    /**
+     * リクエストキー - リダイレクトBean名
+     */
+    public static final String REQ_REDIRECT_BEAN = "txtRedirectBean";
+    /**
+     * リクエストキー - リダイレクト先アクション値
+     */
     public static final String REQ_REDIRECT_ACTION = "txtRedirectACTION";
-    /** リクエストキー - コールバック先アクション値 */
-    public static final String REQ_CALL_ACTION     = "txtCallBeanAction";
-    /** リクエストキー - 処理対象職員番号 */
-    public static final String REQ_EXECUTEEMPID    = "txtExecuteEmpId";
-    /** リクエストキー - 再表示ボタン使用判定用 */
-    private static final String TREEVIEW_KEY_REFRESH_FLG  = "txtTmgReferListTreeViewRefreshFlg";
+    /**
+     * リクエストキー - コールバック先アクション値
+     */
+    public static final String REQ_CALL_ACTION = "txtCallBeanAction";
+    /**
+     * リクエストキー - 処理対象職員番号
+     */
+    public static final String REQ_EXECUTEEMPID = "txtExecuteEmpId";
+    /**
+     * リクエストキー - 再表示ボタン使用判定用
+     */
+    private static final String TREEVIEW_KEY_REFRESH_FLG = "txtTmgReferListTreeViewRefreshFlg";
 
-    /** アクション - 月別一覧画面表示) */
-    public static final String ACT_DISP_MONTHLY   = "ACT_DISP_MONTHLY";
-    /** アクション - 月別一括承認処理 */
+    /**
+     * アクション - 月別一覧画面表示)
+     */
+    public static final String ACT_DISP_MONTHLY = "ACT_DISP_MONTHLY";
+    /**
+     * アクション - 月別一括承認処理
+     */
     public static final String ACT_MONTHLY_PERMIT = "ACT_MONTHLY_PERMIT";
-    /** アクション - 日別一括承認画面表示 */
-    public static final String ACT_EDIT_DAIRY     = "ACT_EDIT_DAIRY";
-    /** アクション - 日別一括承認処理 */
-    public static final String ACT_PERMIT         = "ACT_PERMIT";
+    /**
+     * アクション - 日別一括承認画面表示
+     */
+    public static final String ACT_EDIT_DAIRY = "ACT_EDIT_DAIRY";
+    /**
+     * アクション - 日別一括承認処理
+     */
+    public static final String ACT_PERMIT = "ACT_PERMIT";
 
 
-    /** 汎用参照リスト */
+    /**
+     * 汎用参照リスト
+     */
     private TmgReferList referList = null;
 
-    /** 日付形式1 */
+    /**
+     * 日付形式1
+     */
     private static final String FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
-    private static final String FORMAT_SLASH      = "/";
-    private static final String FORMAT_ZERO       = "00";
+    private static final String FORMAT_SLASH = "/";
+    private static final String FORMAT_ZERO = "00";
 
-    /** 1ヵ月後 */
-    private static final int PARAM_NEXT_MONTH =  0;
-    /** 今月 */
+    /**
+     * 1ヵ月後
+     */
+    private static final int PARAM_NEXT_MONTH = 0;
+    /**
+     * 今月
+     */
     private static final int PARAM_THIS_MONTH = -1;
-    /** 1ヶ月前 */
+    /**
+     * 1ヶ月前
+     */
     private static final int PARAM_PREV_MONTH = -2;
 
-    /** アクション */
-    private String _sAction           = null;
+    /**
+     * アクション
+     */
+    private String _sAction = null;
 
-    /** システム年月日 */
-    private String _sysdate           = null;
-    /** 対象組織 */
-    private String _reqSectionId      = null;
-    /** 対象勤務年月日 */
-    private String _reqDYYYYMMDD      = null;
-    /** 対象年月(検索対象年月) */
-    private String _reqDYYYYMM        = null;
-    /** 対象職員番号 */
-    private String _reqEmployeeId     = null;
-    /** 登録対象職員番号 */
-    private String _reqExecuteEmpId   = null;
+    /**
+     * 対象組織
+     */
+    private String _reqSectionId = null;
+    /**
+     * 対象勤務年月日
+     */
+    private String _reqDYYYYMMDD = null;
+    /**
+     * 対象年月(検索対象年月)
+     */
+    private String _reqDYYYYMM = null;
+//    /**
+//     * 対象職員番号
+//     */
+//    private String _reqEmployeeId = null;
+    /**
+     * 登録対象職員番号
+     */
+  //  private String _reqExecuteEmpId = null;
 
-    /** 対象年月の前月 */
+    /**
+     * 対象年月の前月
+     */
     private String _prevMonth = null;
-    /** 対象年月の翌月 */
+    /**
+     * 対象年月の翌月
+     */
     private String _nextMonth = null;
-    /** 今月 */
+    /**
+     * 今月
+     */
     private String _thisMonth = null;
 
     /**
      * 対象組織が選択されているかどうかを表します。
      * <p>
-     * 	true(選択あり) / false(選択なし) <br>
-     * 	初回遷移時などでは汎用参照コンポーネントで組織が選択されていない状態
-     * 	のためfalseとなります。
+     * true(選択あり) / false(選択なし) <br>
+     * 初回遷移時などでは汎用参照コンポーネントで組織が選択されていない状態
+     * のためfalseとなります。
      * </p>
      */
     private boolean _isSelectSection = false;
 
-    /** 勤怠シートの参照権限(基準日の翌月) */
-    boolean _authorityNextMonth       = false;
-    /** 勤怠シートの参照権限(基準月) */
-    boolean _authorityMonth           = false;
-    /** 参照権限：参照可能 */
+    /**
+     * 勤怠シートの参照権限(基準日の翌月)
+     */
+    boolean _authorityNextMonth = false;
+    /**
+     * 勤怠シートの参照権限(基準月)
+     */
+    boolean _authorityMonth = false;
+    /**
+     * 参照権限：参照可能
+     */
     private static final boolean CB_CAN_REFER = true;
-    /** 参照権限：参照不可能  */
+    /**
+     * 参照権限：参照不可能
+     */
     private static final boolean CB_CANT_REFER = false;
 
     /**
      * 検索対象年月を返す
+     *
      * @return String 検索対象年月
      */
     public String getReqDYYYYMM() {
@@ -186,11 +252,11 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actDispMonthly(ModelMap modelMap) throws Exception{
+    public void actDispMonthly(ModelMap modelMap) throws Exception {
 //        execute(modelMap);
 
         // 月別一覧表示の為のプロセスを実行します。
- //       executeReadMonthlyList(modelMap,);
+//       executeReadMonthlyList(modelMap,);
     }
 
 
@@ -202,9 +268,9 @@ public class PermStatListBean {
      *
      * @param modelMap
      */
-    public void actEditDairy(ModelMap modelMap) throws Exception{
+    public void actEditDairy(ModelMap modelMap) throws Exception {
 //        execute(modelMap);
- //       executeReadTmgDaily(modelMap);
+//       executeReadTmgDaily(modelMap);
 
     }
 
@@ -265,7 +331,8 @@ public class PermStatListBean {
      */
     private void executeUpdateTmgDaily(PsDBBean psDBBean) {
 
-        String[] empIds = this.getExecuteEmpId();
+        // TODO　パラメータ　txtExecuteEmpId
+        String[] empIds = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
 
         String empSql = referList.buildSQLForSelectEmployees();
 
@@ -281,14 +348,14 @@ public class PermStatListBean {
 
         // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
         // 一括承認データを更新する
-        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
+        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
 
         iTmgTriggerService.buildSQLForInsertTmgTrigger(psDBBean.getUserCode(), sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
 
         iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
-                .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction ));
+                .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction));
 
         // TODO
         //TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
@@ -297,17 +364,19 @@ public class PermStatListBean {
 
     /**
      * 別コンテンツへのリダイレクトを実行します。
+     *
      * @see TmgReferList#setTargetEmployee(String)
      */
     private void executeRedirect(ModelMap modelMap, PsDBBean psDBBean) {
 
+        String reqEmployeeId = String.valueOf(psDBBean.getRequestHash().get(REQ_CEMPLOYEEID));
         String sBean = psDBBean.getReqParam(REQ_REDIRECT_BEAN);
         Hashtable htRequest = new Hashtable();
         htRequest.put(REQ_ACTION, psDBBean.getReqParam(REQ_REDIRECT_ACTION));
         htRequest.put(REQ_SECTION_ID, _reqSectionId);
         htRequest.put(REQ_DYYYYMMDD, _reqDYYYYMMDD);
         htRequest.put(REQ_DYYYYMM, _reqDYYYYMM);
-        htRequest.put(REQ_CEMPLOYEEID, _reqEmployeeId);
+        htRequest.put(REQ_CEMPLOYEEID, reqEmployeeId);
 
         htRequest.put(REQ_REDIRECT_BEAN, APPLICATION_ID);
 
@@ -319,7 +388,7 @@ public class PermStatListBean {
             htRequest.put(REQ_REDIRECT_ACTION, ACT_DISP_MONTHLY);
         }
 
-        referList.setTargetEmployee(_reqEmployeeId);
+        referList.setTargetEmployee(reqEmployeeId);
         modelMap.addAttribute("htRequest", htRequest);
 //        // リダイレクト
 //        TmgUtil.getTmgUtil().setRedirect(sBean, htRequest, this);
@@ -335,21 +404,21 @@ public class PermStatListBean {
      *      <li>クエリを実行する。</li>
      *  </ul>
      * </p>
-     * @exception Exception
+     *
+     * @throws Exception
      */
     private void executeUpdateTmgMonthly(PsDBBean psDBBean) {
+        // TODO　パラメータ　txtExecuteEmpId
 
-
-        String sCustId        = psDBBean.getCustID();
-        String sCompId        = psDBBean.getCompCode();
-        String sDyyyyMm       = getReqDYYYYMM();
+        String sCustId = psDBBean.getCustID();
+        String sCompId = psDBBean.getCompCode();
+        String sDyyyyMm = getReqDYYYYMM();
 
         String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
 
-        /*
-         * 更新処理は職員単位で行う。
-         */
-        String[] sEmpId = getExecuteEmpId();
+         // 更新処理は職員単位で行う。
+        String[] sEmpId  = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
+
         for (int i = 0; i < sEmpId.length; i++) {
 
             /*
@@ -371,7 +440,9 @@ public class PermStatListBean {
     }
 
 
-    /** システムプロパティ：月次就業実績承認機能を使用するか判定し制御します */
+    /**
+     * システムプロパティ：月次就業実績承認機能を使用するか判定し制御します
+     */
     private final String SYSPROP_TMG_BULK_MONTHLY_APPROVAL = "TMG_BULK_MONTHLY_APPROVAL";
     private final String Cs_YES = "yes";
     private Boolean gbMonthlyApproval = null;
@@ -379,7 +450,7 @@ public class PermStatListBean {
     /**
      * システムプロパティから値を取得後、月次就業実績承認機能を使用するか判定し値を返却します
      *
-     * @return boolean(true:使用する、false:使用しない)
+     * @return boolean(true : 使用する 、 false : 使用しない)
      */
     public boolean isMonthlyApproval(PsDBBean psDBBean) {
 
@@ -421,30 +492,23 @@ public class PermStatListBean {
         return false;
     }
 
-    /**
-     * 処理対象となる職員の番号を加工して返却
-     *
-     * @return 対象職員番号
-     */
-    private String[] getExecuteEmpId() {
-
-
-        String[] sWorkEmpId = _reqExecuteEmpId.split(",");
-
-        return sWorkEmpId;
-    }
 
     /**
      * 日別一覧表示の為のプロセスを実行します。
+     *
      * @param modelMap
      */
-    private void executeReadTmgDaily(ModelMap modelMap,PsDBBean psDBBean) {
+    private void executeReadTmgDaily(ModelMap modelMap, PsDBBean psDBBean) throws Exception {
 
         // 組織の職員取得ｓｑｌ
         String empSql = getReferList().buildSQLForSelectEmployees();
 
         // 打刻反映処理
-        execReflectionTimePunch(empSql,psDBBean);
+        execReflectionTimePunch(empSql, psDBBean);
+
+        // 所属情報
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
+        modelMap.addAttribute("sectionName", sectionName);
 
         // 承認状況表示項目を取得しセット
         List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage());
@@ -456,13 +520,188 @@ public class PermStatListBean {
         // TODO　タイトル未実装
 
         // 承認状況欄情報
-        List<HashMap> tmgDailyMapList = iTmgDailyService.buildSQLForSelectTmgDaily(_reqDYYYYMMDD,empSql,monthlyItems);
-        modelMap.addAttribute("tmgDailyMapList",tmgDailyMapList);
+        List<HashMap> tmgDailyMapList = iTmgDailyService.buildSQLForSelectTmgDaily(_reqDYYYYMMDD, empSql, monthlyItems);
 
-        // 所属情報
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("sectionName",sectionName);
+
+        // 承認ボタン表示制御
+        boolean Approval = false;
+
+        String sysdate = psDBBean.getSysDate();
+
+        // 未来日については、一括承認ボタンを表示させない。
+        if (0 <= toDate(sysdate).compareTo(toDate(_reqDYYYYMMDD))) {
+
+            /*
+             * 表示対象の職員について、判定を行う。
+             * だれか一人でも条件を満たせば、一括承認ボタンを表示とする。
+             */
+            for (HashMap map : tmgDailyMapList) {
+                /*
+                 * 承認対象となる承認状態「承認待」でなければ、次の職員を処理する。
+                 * また、『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態をチェックする。
+                 */
+                if (TmgUtil.Cs_MGD_DATASTATUS_3.equals(map.get("TRANS_DISPPERMSTATUS")) && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))) {
+
+                    // 承認サイトの場合は、一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する場合のみ、一括承認ボタンを表示させる。
+                    if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
+                        if (referList.hasAuthorityAtEmployee(_reqDYYYYMMDD, String.valueOf(map.get("TDA_CEMPLOYEEID")), TmgUtil.Cs_AUTHORITY_RESULT)) {
+                            Approval = true;
+                            break;
+                        }
+
+                        // 勤怠管理サイトの場合、一律、一括承認ボタンを表示させる。
+                    } else {
+                        Approval = true;
+                        break;
+                    }
+                }
+
+
+            }
+        }
+
+        for (HashMap map : tmgDailyMapList) {
+
+            /*
+             * 対象職員の勤怠承認権限チェック
+             * 承認権限があり、且つ承認状態が「承認待」の場合、チェックボックスにチェックを設定
+             * それ以外の場合は、チェックボックスを無効（disabled）にする。
+             */
+            // 対象職員番号、日次ステータス
+            String sEmpId = String.valueOf(map.get("TDA_CEMPLOYEEID"));
+            String sStatus = String.valueOf(map.get("TRANS_DISPPERMSTATUS"));
+
+            // 対象職員への承認権限状態
+            boolean bAuthorityEmp = getReferList().hasAuthorityAtEmployee(
+                    getReqDYYYYMMDD(),
+                    sEmpId,
+                    TmgUtil.Cs_AUTHORITY_RESULT);
+
+            /*
+             * チェックボックスの制御処理
+             *
+             * ・日次ステータスが「承認待」以外はチェックボックスを無効化する。
+             * ・終業打刻が無く、予定終業時刻以降の超過勤務申請・命令がある場合はチェックボックスを無効化する。
+             * ・システムプロパティ「TMG_DISABLE_NO_OVERHOURPERM_APPROVAL」がオン設定で、
+             *   且つ、対象者への超過勤務命令権限が無く、未承認の超過勤務命令の登録がある場合はチェックボックスを無効化する。
+             */
+            String sChkOption = "";
+            if (bAuthorityEmp
+                    && TmgUtil.Cs_MGD_DATASTATUS_3.equals(sStatus)
+                    && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))
+                    && !isDisableNoOverHourpermApprovalEmp(
+                    sEmpId,
+                    getReqDYYYYMMDD(),
+                    String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")),
+                    psDBBean
+            )
+            ) {
+
+                sChkOption = "checked";  // チェックボックスへチェックを設定
+            } else {
+
+                sChkOption = "disabled"; // チェックボックスを無効設定
+            }
+
+            map.put("CHKOPTION", sChkOption);
+        }
+
+        modelMap.addAttribute("tmgDailyMapList", tmgDailyMapList);
     }
+
+    private final String Cs_TRUE = "true";
+
+    /**
+     * 「超勤命令権限が無い、かつ申請中の超勤命令が登録されている時」のアラート表示対象者か判定する。
+     *
+     * @param empId             対象職員番号
+     * @param targetDate        対象日
+     * @param nonAppOverhourFlg 対象職員氏名（※対象日に未承認の超過勤務命令が無い場合はNULLを指定してください）
+     * @return 判定結果（true：対象者、false：対象外者）
+     * @throws Exception
+     */
+    public boolean isDisableNoOverHourpermApprovalEmp(String empId, String targetDate, String nonAppOverhourFlg, PsDBBean psDBBean) throws Exception {
+        // 機能の使用可否設定
+        String gDisableNoOverhourpermApproval = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_DISABLE_NO_OVERHOURPERM_APPROVAL);
+        // 設定を返す
+        boolean flg = gDisableNoOverhourpermApproval != null && Cs_TRUE.equalsIgnoreCase(gDisableNoOverhourpermApproval) // システムプロパティ「TMG_DISABLE_NO_OVERHOURPERM_APPROVAL」がtrue、かつ
+                && !referList.hasAuthorityAtEmployee(targetDate, empId, TmgUtil.Cs_AUTHORITY_OVERTIME)  // 承認者が超勤命令権限を持っていない、かつ
+                && "1".equals(nonAppOverhourFlg);                                                        // 対象日に申請中の超勤命令がある場合は、アラート表示対象者と判定する（=trueを返す）
+        return flg;
+    }
+
+
+    /**
+     * 一括承認を出来ない『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態であるか判定する。
+     *
+     * @return boolean(true : 一括承認不可 、 false : 一括承認可能)
+     */
+    public boolean isNoClosetpWithOvertime(PsDBBean psDBBean, String empName) {
+
+        // 「「承認待」の超勤命令を有する未終業打刻者をチェックする機能」の使用可否設定がオフの場合、判定不要の為、一律falseを返す。
+        if (!isCheckNoClosetpWithOvertime(psDBBean)) {
+            return false;
+        }
+
+        // 『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態の職員氏名を取得する。（条件に該当しない場合、空文字となる）
+
+        // 該当者氏名が取得できた場合、trueを返す。
+        if (StringUtils.isNotEmpty(empName)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * システムプロパティ：「「承認待」の超勤命令を有する未終業打刻者をチェックする機能」の使用可否設定
+     */
+    private Boolean gsCheckNoClosetpWithOvertime = null;
+
+    /**
+     * システムプロパティから「「承認待」の超勤命令を有する未終業打刻者をチェックする機能」の使用可否設定を取得します。
+     *
+     * @return boolean(true : 使用する 、 false : 使用しない)
+     */
+    public boolean isCheckNoClosetpWithOvertime(PsDBBean psDBBean) {
+
+        // 一度も判定を行っていない場合のみ、システムプロパティを参照し、判定を行う。
+        if (gsCheckNoClosetpWithOvertime == null) {
+
+            String sCheckNoClosetpWithOvertime = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_CHECK_NO_CLOSETP_WITH_OVERTIMEINST4PERMSTATLIST);
+
+            // 設定値「yes」の場合、判定結果をtrue(使用する)とする。
+            if (sCheckNoClosetpWithOvertime != null && Cs_YES.equalsIgnoreCase(sCheckNoClosetpWithOvertime)) {
+                gsCheckNoClosetpWithOvertime = true;
+            } else {
+                gsCheckNoClosetpWithOvertime = false;
+            }
+
+        }
+
+        return gsCheckNoClosetpWithOvertime;
+    }
+
+
+    /**
+     * 日付形式「yyyy/mm/dd」のString型文字列をDate型にキャストします。
+     *
+     * @param strDate
+     * @return Dateオブジェクト
+     */
+    private Date toDate(String strDate) {
+
+        Date date = new Date();
+        try {
+            DateFormat format = new SimpleDateFormat(FORMAT_DATE_TYPE1);
+            date = format.parse(strDate);
+        } catch (ParseException e) {
+
+        }
+
+        return date;
+    }
+
 
     /**
      * 月別一覧表示の為のプロセスを実行します。
@@ -487,12 +726,12 @@ public class PermStatListBean {
      * </p>
      *    @exception Exception
      */
-    private void executeReadMonthlyList(ModelMap modelMap,PsDBBean psDBBean) {
+    private void executeReadMonthlyList(ModelMap modelMap, PsDBBean psDBBean) {
 
         String empSql = getReferList().buildSQLForSelectEmployees();
 
         // 打刻反映処理を行う。
-        execReflectionTimePunch(empSql,psDBBean);
+        execReflectionTimePunch(empSql, psDBBean);
 
 
         // 月次一覧表示データを取得する。
@@ -548,94 +787,27 @@ public class PermStatListBean {
 
     }
 
-    /*************************************************************/
-    //一覧表示ステップ　１
-    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception {
 
-        String empSql = referList.buildSQLForSelectEmployees();
-        // 打刻反映処理を行う。
-        execReflectionTimePunch(empSql,psDBBean);
-        // 6 表示月遷移リスト情報取得
-        return iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
+    private final String DISABLED = "disabled";
 
-    }
+    /**
+     * 月次就業実績対象者選択チェックボックスの表示制御を行う
+     *
+     * @param psDailyCount 表示月の日数
+     * @param psEmployeeId 対象者職員番号
+     * @param psStatus     承認状態
+     * @param psStartDay   対象期間開始日
+     * @param psEndDay     対象期間終了日
+     * @return String(表示しない ： disabled 、 表示する ： 空白)
+     */
+    public String getEnableCheckBox(String psDailyCount, String psEmployeeId, String psStatus, String psStartDay, String psEndDay) {
 
-    /*************************************************************/
-    //一覧表示ステップ　２
-    public int dispMonthlyPrev() {
-
-        String empSql = referList.buildSQLForSelectEmployees();
-        // 3 表示対象月の前月データを持つ職員数
-        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
-
-        return tmgMonthlyInfoPrevCount;
-
-    }
-
-    /*************************************************************/
-    //一覧表示ステップ　３
-    public int dispMonthlyNext() {
-
-        String empSql = referList.buildSQLForSelectEmployees();
-
-        // 4 表示対象月の翌月データを持つ職員数
-        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
-        return tmgMonthlyInfoNextCount;
-
-    }
-
-
-    /*************************************************************/
-    //一覧表示ステップ　４
-    public Map getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
-
-        String empSql = referList.buildSQLForSelectEmployees();
-
-        // 月次一覧表示データを取得する。
-        // 0 表示月情報の取得
-        List<ColNameDto> colNameList = new ArrayList<>();
-
-        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
-        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
-
-        for (int i = 1; i <= monthLen; i++) {
-            ColNameDto dto = new ColNameDto();
-            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
-            dto.setDisppermStatus("DISPPERM_STATUS" + i);
-            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
-            colNameList.add(dto);
+        if (CsApprovedDailyCount.equals(psDailyCount) && !TmgUtil.Cs_MGD_DATASTATUS_5.equals(psStatus) &&
+                existsDispMonthlyApproval(psEmployeeId, psStartDay, psEndDay)) {
+            return "";
         }
 
-        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                getReqDYYYYMM(),
-                psDBBean.getLanguage(),
-                getToDay(),
-                empSql,
-                colNameList
-        );
-        Map map = MapUtil.newHashMap();
-        map.put("tmgMonthlyInfoVOList",tmgMonthlyInfoVOList);
-        boolean approval = isDispEnableBatchApproval(psDBBean,tmgMonthlyInfoVOList);
-        map.put("approval",approval);
-        return map;
-    }
-
-    /*************************************************************/
-    //一覧表示ステップ　5
-    public CalenderVo selectGetCalendarList(PsDBBean psDBBean) {
-        // 1 カレンダー情報の取得
-        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
-        return calenderVo;
-    }
-
-    //一覧表示ステップ　5
-    public List<OneMonthDetailVo> selectDayCount() {
-        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
-        return oneMonthDetailVoList;
+        return DISABLED;
     }
 
 
@@ -653,8 +825,8 @@ public class PermStatListBean {
      *      一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する。</li>
      * </ol>
      * </p>
-     * @return boolean 表示制御値
      *
+     * @return boolean 表示制御値
      */
     public boolean isDispEnableBatchApproval(PsDBBean psDBBean, List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList) {
 
@@ -678,8 +850,7 @@ public class PermStatListBean {
     /**
      * 勤怠承認権限(月次)があるかどうか判定を行い返却する
      *
-     * @return boolean(true:権限あり、false:権限なし)
-     *
+     * @return boolean(true : 権限あり 、 false : 権限なし)
      */
     private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay) {
 
@@ -696,47 +867,6 @@ public class PermStatListBean {
         }
 
     }
-//
-//
-//    /**
-//     * 指定の職員の指定年月における、月次承認エラーチェック結果を取得する。
-//     *
-//     * @param  sEmpid  職員番号
-//     * @param  sYYYYMM 年月
-//     * @return boolean チェック結果(true：エラー、false：正常)
-//     */
-//    public boolean isErrForCheckMonthlyApproval(String sEmpid, String sYYYYMM) {
-//
-//        boolean bRes = true;
-//
-//        Vector vQry = new Vector();
-//
-//        vQry.add(buildSelectDataForTMG_F_CHECK_MONTHLY(
-//                escDBString(getCustID()),
-//                escDBString(getCompCode()),
-//                escDBString(sEmpid),
-//                toDBDate(sYYYYMM)));
-//
-//        try {
-//
-//            // 検索結果を取得する。
-//            PsResult res = (PsResult)getValuesforMultiquery(vQry, BEANDESC);
-//            Vector   resList     = res.getResult();
-//            Vector   resRecList  = (Vector)resList.get(0);     // ０番目クエリ検索結果
-//            Vector   resDataList = (Vector)resRecList.get(0);  // ０レコード目データ
-//            String   resData     = (String)resDataList.get(0); // ０項目目データ
-//
-//            // エラーチェック結果が"0"の場合、チェック結果「正常」となる
-//            if ("0".equals(resData)) {
-//                bRes = false;
-//            }
-//
-//        } catch(Exception e) {
-//            return true;
-//        }
-//
-//        return bRes;
-//    }
 
 
     /************************************************************/
@@ -744,7 +874,7 @@ public class PermStatListBean {
     /**
      * 月次一覧、また日次承認画面表示時の打刻反映処理
      */
-    private void execReflectionTimePunch(String empSql,PsDBBean psDBBean) {
+    private void execReflectionTimePunch(String empSql, PsDBBean psDBBean) {
 
         // アクション
         String action = _sAction;
@@ -811,27 +941,28 @@ public class PermStatListBean {
 
     /**
      * 対象月の日数を返す
+     *
      * @param targetDate 対象年月データ
      * @return int 対象月の日数
      */
     public int getActualMaximumOfMonth(String targetDate) {
 
 
-        String sYear  = "";
+        String sYear = "";
         String sMonth = "";
 
-        StringTokenizer st = new StringTokenizer(targetDate,FORMAT_SLASH,false);
+        StringTokenizer st = new StringTokenizer(targetDate, FORMAT_SLASH, false);
 
-        sYear  = st.nextToken();
+        sYear = st.nextToken();
         sMonth = st.nextToken();
 
         // 対象月の日数を求める
         Calendar cal = Calendar.getInstance();
         try {
             // 対象年をセット
-            cal.set(Calendar.YEAR,  Integer.parseInt(sYear));
+            cal.set(Calendar.YEAR, Integer.parseInt(sYear));
             // 対象月をセット
-            cal.set(Calendar.MONTH, Integer.parseInt(sMonth)-1);
+            cal.set(Calendar.MONTH, Integer.parseInt(sMonth) - 1);
         } catch (NumberFormatException e) {
             throw e;
         }
@@ -848,7 +979,6 @@ public class PermStatListBean {
 
         setExecuteParameter(psDBBean);
 
-        // 2007/08/03 	H.Kawabata		参照権限チェック仕様変更対応
         // ■初期表示時：
         //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
         //   評価状況一覧コンテンツの参照権限をチェックする。
@@ -868,7 +998,7 @@ public class PermStatListBean {
         if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
             // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
             // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
-            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())  && StrUtil.isEmpty(_sAction) ||
+            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) ||
                     TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) && isSelectSection()
             ) {
                 // 参照権限チェック(現在時点での年月)
@@ -880,7 +1010,7 @@ public class PermStatListBean {
                     String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
 
                     // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    setReferList(sPrevMonth,psDBBean);
+                    setReferList(sPrevMonth, psDBBean);
 
                     // 参照権限の設定:
                     // 初期表示時の対象年月の時点の参照権限が無い場合に、
@@ -904,7 +1034,7 @@ public class PermStatListBean {
                         setAuthorityMonth(CB_CAN_REFER);
                     } else {
                         // 対象年月を元に戻します
-                        setReferList(getReqDYYYYMM(),psDBBean);
+                        setReferList(getReqDYYYYMM(), psDBBean);
 
                         setAuthorityMonth(CB_CANT_REFER);
                     }
@@ -965,13 +1095,9 @@ public class PermStatListBean {
      */
     public void setExecuteParameter(PsDBBean psDBBean) throws Exception {
 
-        _sysdate = psDBBean.getSysDate();
-
-        _sAction =  (String)psDBBean.getRequestHash().get(REQ_ACTION);
-        _reqDYYYYMM = (String)psDBBean.getRequestHash().get(REQ_DYYYYMM);
-        _reqDYYYYMMDD = (String)psDBBean.getRequestHash().get(REQ_DYYYYMMDD);
-        _reqEmployeeId =  (String)psDBBean.getRequestHash().get(REQ_CEMPLOYEEID);
-        _reqExecuteEmpId = (String)psDBBean.getRequestHash().get(REQ_EXECUTEEMPID);
+        _sAction = (String) psDBBean.getRequestHash().get(REQ_ACTION);
+        _reqDYYYYMM = (String) psDBBean.getRequestHash().get(REQ_DYYYYMM);
+        _reqDYYYYMMDD = (String) psDBBean.getRequestHash().get(REQ_DYYYYMMDD);
 
         // 検索対象年月の入力がなければ、現在日付月初を検索対象年月する。
         if (_reqDYYYYMM == null || _reqDYYYYMM.length() == 0) {
@@ -1047,7 +1173,7 @@ public class PermStatListBean {
      *
      * @param pDate 対象年月日
      */
-    private void setReferList(String pDate,PsDBBean psDBBean)  throws Exception{
+    private void setReferList(String pDate, PsDBBean psDBBean) throws Exception {
 
         referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
 
@@ -1055,7 +1181,9 @@ public class PermStatListBean {
     }
 
 
-    /** 対象組織有無フラグを返却します。
+    /**
+     * 対象組織有無フラグを返却します。
+     *
      * @return 対象組織有無フラグ
      */
     public boolean isSelectSection() {
@@ -1064,6 +1192,7 @@ public class PermStatListBean {
 
     /**
      * 生成したReferListを返す
+     *
      * @return referList
      */
     public TmgReferList getReferList() {
@@ -1111,6 +1240,7 @@ public class PermStatListBean {
 
     /**
      * 今日の日付を返す(基準日があればその日付)
+     *
      * @return String 今日の日付
      */
     private String getToDay() {
@@ -1125,6 +1255,7 @@ public class PermStatListBean {
 
     /**
      * システム日付を返す
+     *
      * @return String システム日付
      */
     private String getSysdate() {
@@ -1147,5 +1278,252 @@ public class PermStatListBean {
         return _authorityNextMonth;
     }
 
+
+    /*********************************************executeReadMonthlyList***********************************************/
+
+    //一覧表示ステップ　１
+    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+        // 打刻反映処理を行う。
+        execReflectionTimePunch(empSql, psDBBean);
+        // 6 表示月遷移リスト情報取得
+        return iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
+
+    }
+
+    //一覧表示ステップ　２
+    public int dispMonthlyPrev() {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+        // 3 表示対象月の前月データを持つ職員数
+        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+
+        return tmgMonthlyInfoPrevCount;
+
+    }
+
+    //一覧表示ステップ　３
+    public int dispMonthlyNext() {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+
+        // 4 表示対象月の翌月データを持つ職員数
+        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
+        return tmgMonthlyInfoNextCount;
+
+    }
+
+
+    //一覧表示ステップ　４
+    public Map getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
+
+        String empSql = referList.buildSQLForSelectEmployees();
+
+        // 月次一覧表示データを取得する。
+        // 0 表示月情報の取得
+        List<ColNameDto> colNameList = new ArrayList<>();
+
+        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+
+        for (int i = 1; i <= monthLen; i++) {
+            ColNameDto dto = new ColNameDto();
+            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
+            dto.setDisppermStatus("DISPPERM_STATUS" + i);
+            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
+            colNameList.add(dto);
+        }
+
+        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getReqDYYYYMM(),
+                psDBBean.getLanguage(),
+                getToDay(),
+                empSql,
+                colNameList
+        );
+
+        for (TmgMonthlyInfoVO tmgMonthlyInfoVO : tmgMonthlyInfoVOList) {
+
+            // チェックボックスの表示状態を取得（disabledかどうか）
+            String sChkBoxStatus = this.getEnableCheckBox(tmgMonthlyInfoVO.getDailyCount(),
+                    tmgMonthlyInfoVO.getEmpid(),
+                    tmgMonthlyInfoVO.getTmoCstatusflg(),
+                    getReqDYYYYMM(),
+                    tmgMonthlyInfoVO.getLastBaseDate());
+
+            // 月次承認対象の場合、対象職員を月次承認エラーチェックする。
+            if ("".equals(sChkBoxStatus)) {
+
+                // エラーチェック結果、ＮＧの場合、チェックボックスをdisabled化設定する。
+                if (isCheckMonthly(psDBBean.getCustID(), psDBBean.getCompCode(), tmgMonthlyInfoVO.getEmpid(), getReqDYYYYMM())) {
+                    sChkBoxStatus = "disabled";
+
+                    // エラーチェックＮＧだった職員をエラー氏名リストへ追加
+                    // vecErrEmpname.add(tmgMonthlyInfoVO.getEmpname());
+                }
+            }
+            tmgMonthlyInfoVO.setChkBoxStatus(sChkBoxStatus);
+        }
+
+        Map map = MapUtil.newHashMap();
+        map.put("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
+        boolean approval = isDispEnableBatchApproval(psDBBean, tmgMonthlyInfoVOList);
+        map.put("approval", approval);
+        return map;
+    }
+
+
+    //一覧表示ステップ　5
+    public CalenderVo selectGetCalendarList(PsDBBean psDBBean) {
+        // 1 カレンダー情報の取得
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+        return calenderVo;
+    }
+
+    //一覧表示ステップ　6
+    public List<OneMonthDetailVo> selectDayCount() {
+        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
+        return oneMonthDetailVoList;
+    }
+
+    /*******終了**************************************executeReadMonthlyList***********************************************/
+
+    /******開始***************************************executeReadTmgDaily***********************************************/
+
+    /**
+     * 所属情報を取得する
+     * @param psDBBean PsDBBean
+     * @return 所属情報
+     */
+    public String getSectionName(PsDBBean psDBBean) {
+
+        // 組織の職員取得ｓｑｌ
+        String empSql = getReferList().buildSQLForSelectEmployees();
+
+        // 打刻反映処理
+        execReflectionTimePunch(empSql, psDBBean);
+
+        // 所属情報
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
+        return sectionName;
+
+    }
+
+    /**
+     * 日別一覧表示の為のプロセスを実行します。
+     *
+     * @return Map
+     */
+    public Map getReadTmgDaily(PsDBBean psDBBean) throws Exception {
+
+        Map resultMap = MapUtil.newHashMap();
+
+        // 組織の職員取得ｓｑｌ
+        String empSql = getReferList().buildSQLForSelectEmployees();
+
+        // 承認状況表示項目を取得しセット
+        List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage());
+        resultMap.put("itemVOList", itemVOList);
+
+        List<String> monthlyItems = new ArrayList<String>();
+
+        for (ItemVO itemVO : itemVOList) {
+            monthlyItems.add(itemVO.getMgdCsql() + " AS " + itemVO.getTempColumnid());
+        }
+
+        // 承認状況欄情報
+        List<HashMap> tmgDailyMapList = iTmgDailyService.buildSQLForSelectTmgDaily(_reqDYYYYMMDD, empSql, monthlyItems);
+
+        // 承認ボタン表示制御
+        boolean approval = false;
+
+        String sysdate = psDBBean.getSysDate();
+
+        // 未来日については、一括承認ボタンを表示させない。
+        if (0 <= toDate(sysdate).compareTo(toDate(_reqDYYYYMMDD))) {
+
+            /*
+             * 表示対象の職員について、判定を行う。
+             * だれか一人でも条件を満たせば、一括承認ボタンを表示とする。
+             */
+            for (HashMap map : tmgDailyMapList) {
+                /*
+                 * 承認対象となる承認状態「承認待」でなければ、次の職員を処理する。
+                 * また、『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態をチェックする。
+                 */
+                if (TmgUtil.Cs_MGD_DATASTATUS_3.equals(map.get("TRANS_DISPPERMSTATUS")) && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))) {
+
+                    // 承認サイトの場合は、一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する場合のみ、一括承認ボタンを表示させる。
+                    if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
+                        if (referList.hasAuthorityAtEmployee(_reqDYYYYMMDD, String.valueOf(map.get("TDA_CEMPLOYEEID")), TmgUtil.Cs_AUTHORITY_RESULT)) {
+                            approval = true;
+                            break;
+                        }
+
+                        // 勤怠管理サイトの場合、一律、一括承認ボタンを表示させる。
+                    } else {
+                        approval = true;
+                        break;
+                    }
+                }
+
+
+            }
+        }
+
+        resultMap.put("approval", approval);
+
+        for (HashMap map : tmgDailyMapList) {
+
+            /*
+             * 対象職員の勤怠承認権限チェック
+             * 承認権限があり、且つ承認状態が「承認待」の場合、チェックボックスにチェックを設定
+             * それ以外の場合は、チェックボックスを無効（disabled）にする。
+             */
+            // 対象職員番号、日次ステータス
+            String sEmpId = String.valueOf(map.get("TDA_CEMPLOYEEID"));
+            String sStatus = String.valueOf(map.get("TRANS_DISPPERMSTATUS"));
+
+            // 対象職員への承認権限状態
+            boolean bAuthorityEmp = getReferList().hasAuthorityAtEmployee(
+                    getReqDYYYYMMDD(),
+                    sEmpId,
+                    TmgUtil.Cs_AUTHORITY_RESULT);
+
+            /*
+             * チェックボックスの制御処理
+             *
+             * ・日次ステータスが「承認待」以外はチェックボックスを無効化する。
+             * ・終業打刻が無く、予定終業時刻以降の超過勤務申請・命令がある場合はチェックボックスを無効化する。
+             * ・システムプロパティ「TMG_DISABLE_NO_OVERHOURPERM_APPROVAL」がオン設定で、
+             *   且つ、対象者への超過勤務命令権限が無く、未承認の超過勤務命令の登録がある場合はチェックボックスを無効化する。
+             */
+            String sChkOption = "";
+
+            boolean flg = bAuthorityEmp
+                    && TmgUtil.Cs_MGD_DATASTATUS_3.equals(sStatus)
+                    && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))
+                    && !isDisableNoOverHourpermApprovalEmp(sEmpId, getReqDYYYYMMDD(), String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")), psDBBean);
+            if (flg) {
+                // チェックボックスへチェックを設定
+                sChkOption = "checked";
+            } else {
+                // チェックボックスを無効設定
+                sChkOption = "disabled";
+            }
+
+            map.put("CHKOPTION", sChkOption);
+        }
+
+        resultMap.put("tmgDailyMapList", tmgDailyMapList);
+
+        return resultMap;
+    }
+    /******終了***************************************executeReadTmgDaily***********************************************/
 
 }
