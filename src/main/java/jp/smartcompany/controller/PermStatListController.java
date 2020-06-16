@@ -192,7 +192,7 @@ public class PermStatListController {
      * @return Map
      * @throws Exception
      */
-    @GetMapping("getSectionName")
+    @GetMapping("getReadTmgDaily")
     @ResponseBody
     public Map getReadTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
