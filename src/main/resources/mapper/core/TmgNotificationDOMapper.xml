@@ -32,11 +32,11 @@
         <choose>
             <when test='paramNotificationList.evaluator =="ONLY" '>
             --次の承認者（自分のみ）
-                TMG_F_GET_NEXT_NTFAPPROVER(TNTF_CNTFNO, TRUNC(SYSDATE), '<![CDATA[<br/>]]>', 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID,  '${paramNotificationList.lang}'  , " + '${paramNotificationList.userCode}' +  ") AS NTFAPPROVER,
+                TMG_F_GET_NEXT_NTFAPPROVER(TNTF_CNTFNO, TRUNC(SYSDATE), ',', 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID,  '${paramNotificationList.lang}' , '${paramNotificationList.userCode}') AS NTFAPPROVER,
             </when>
             <otherwise>
             --次の承認者（全て）
-                NVL(TMG_F_GET_NEXT_NTFAPPROVER(TNTF_CNTFNO, TRUNC(SYSDATE), '<![CDATA[<br/>]]>', 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID,  '${paramNotificationList.lang}' ), ' ') AS NTFAPPROVER,
+                NVL(TMG_F_GET_NEXT_NTFAPPROVER(TNTF_CNTFNO, TRUNC(SYSDATE), ',', 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID,  '${paramNotificationList.lang}' ), ' ') AS NTFAPPROVER,
             </otherwise>
         </choose>
 

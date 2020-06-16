@@ -31,18 +31,18 @@ public class TmgNotificationController {
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("StatusFlg")
-   public List<StutasFlgVo> getStutas() {
+   public List<StutasFlgVo> getStutas(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        return tmgNotificationBean.getStutas();
+        return tmgNotificationBean.getStutas(psDBBean);
     }
 
     /**
-     * 一覧
+     * 履歴データ一覧
      *
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("NotificationList")
-    public List<notificationListVo> getNotificationList(@RequestParam("statusFlg") String statusFlg,
+    public List<NotificationDispDetailVo> getNotificationList(@RequestParam("statusFlg") String statusFlg,
                                                         @RequestParam("ntfTypeId") String ntfTypeId,
                                                         @RequestParam("year") String year,
                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -50,15 +50,25 @@ public class TmgNotificationController {
     }
 
     /**
-     * 申請区分マスタ
+     * 申請区分マスタ 新規用
      *
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("NtfTypeList")
+    public List<TypeGroupVo> getMgdNtfTypeAppList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgNotificationBean.getMgdNtfTypeList(psDBBean);
+    }
+
+
+    /**
+     * 申請区分マスタ 一覧用
+     *
+     * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
+     */
+    @GetMapping("NtfTypeDispList")
     public List<TypeGroupVo> getMgdNtfTypeDispAppList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getMgdNtfTypeDispAppList(psDBBean);
     }
-
 
     /**
      * 获得历史申请数据

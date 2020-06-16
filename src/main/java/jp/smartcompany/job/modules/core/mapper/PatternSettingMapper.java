@@ -64,4 +64,24 @@ public interface PatternSettingMapper extends BaseMapper<Object> {
      */
     List<TmgPatternDTO> selectPatternSelectList(HashMap<String, Object> params);
 
+    /**
+     * DELETE TMG_PATTERN
+     *
+     * @param params
+     */
+    void deleteTmgPattern(HashMap<String, Object> params);
+
+    /**
+     * DELETE TMG_PATTERN_REST
+     *
+     * @param params
+     */
+    void deleteTmgPatternRest(HashMap<String, Object> params);
+
+    /**
+     * DELETE TMG_PATTERN_APPLIES
+     *
+     * @param params
+     */
+    void deleteTmgPatternApplies(HashMap<String, Object> params);
 }

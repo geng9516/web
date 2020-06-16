@@ -26,11 +26,13 @@ public class PatternSettingController {
 
     /**
      * 【表示】TMG_PATTERNより利用可能な勤務パターンを取得する
+     * tpa_csectionid = tpa_cgroupid.substr(0,indexOf(tpa_cgroupid,'|'))の場合、編集できます
+     * パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
      * http://localhost:6879/sys/patternSetting/selectTmgPattern?groupId=100000000000
      *
      * @param groupId
      */
-    @GetMapping("selectTmgPattern")
+    @PostMapping("selectTmgPattern")
     public List<TmgPatternDTO> selectTmgPattern(@RequestParam("groupId") String groupId,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
@@ -46,7 +48,7 @@ public class PatternSettingController {
      * @param groupId
      * @param sectionId
      */
-    @GetMapping("selectTmgPatternOwn")
+    @PostMapping("selectTmgPatternOwn")
     public List<TmgPatternDTO> selectTmgPatternOwn(@RequestParam("groupId") String groupId,
                                                    @RequestParam("sectionId") String sectionId,
                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -86,13 +88,15 @@ public class PatternSettingController {
 
     /**
      * 【編集】編集パターン情報
+     * 　   　* パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
      * http://localhost:6879/sys/patternSetting/selectEditPatternInfo?groupId=100000000000&patternId=1234
+     *
      * @param groupId
      * @param patternId
      * @param psDBBean
      * @return
      */
-    @GetMapping("selectEditPatternInfo")
+    @PostMapping("selectEditPatternInfo")
     public TmgPatternVO selectEditPatternInfo(@RequestParam("groupId") String groupId,
                                               @RequestParam("patternId") String patternId,
                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -101,9 +105,25 @@ public class PatternSettingController {
         return patternSettingBean.selectEditPatternInfo(groupId, patternId);
     }
 
-
-
-
+    /**
+     * 【編集】編集パターン情報
+     * パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
+     * http://localhost:6879/sys/patternSetting/deletePattern?groupId=100000000000|000000&sectionId=100000000000&patternId=23238989
+     *
+     * @param groupId
+     * @param patternId
+     * @param psDBBean
+     * @return
+     */
+    @PostMapping("deletePattern")
+    public void deletePattern(@RequestParam("groupId") String groupId,
+                              @RequestParam("sectionId") String sectionId,
+                              @RequestParam("patternId") String patternId,
+                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(null, psDBBean);
+        patternSettingBean.deletePattern(groupId, sectionId, patternId);
+    }
 
 
 }

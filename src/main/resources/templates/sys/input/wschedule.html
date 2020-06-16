@@ -143,8 +143,8 @@
                     isScroll: false,
                     titleStartMonth: '',     //デフォルト開始月
                     tableDataSum:[],         //月出勤情報統計
-                    preDisabled: false,      //年度選択制御
-                    nextDisabled: false      //年度選択制御
+                    preDisabled: true,      //年度選択制御
+                    nextDisabled: true      //年度選択制御
                 }
             },
             async mounted() {
@@ -272,16 +272,11 @@
                     this.loading = true
                     const { data } = await this.http.get(`sys/attendanceBook/selectExistsAttendanceBook`, this.query)
                     this.existsAttendanceBook  = data
+                    if (!this.existsAttendanceBook.lastYear) this.preDisabled = true
+                    else this.preDisabled = false
 
-                    if (this.existsAttendanceBook.lastYear == null) {
-                        this.preDisabled = true
-                    } else {this.preDisabled = false
-                    }
-
-                    if (this.existsAttendanceBook.nextYear == null) {
-                        this.nextDisabled = true
-                    } else {this.nextDisabled = false
-                    }
+                    if (!this.existsAttendanceBook.nextYear) this.nextDisabled = true
+                    else this.nextDisabled = false
                 },
                 async getqueryHolidayInfo() {
                     const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
