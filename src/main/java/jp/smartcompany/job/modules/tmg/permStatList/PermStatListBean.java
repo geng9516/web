@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.tmg.permStatList;
 
+import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -1105,7 +1107,7 @@ public class PermStatListBean {
         }
 
         // TmgReferListの生成
-        referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
+        TmgReferList  referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
 
         // 組織コードの取得
         _reqSectionId = referList.getTargetSec();
@@ -1385,9 +1387,25 @@ public class PermStatListBean {
     }
 
     //一覧表示ステップ　6
-    public List<OneMonthDetailVo> selectDayCount() {
+    public List<OneMonthDetailVo> selectDayCount(PsDBBean psDBBean) {
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
+        // 1 カレンダー情報の取得
+        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+
+        Map map = BeanUtil.beanToMap(calenderVo);
+
+        List<String> tcaCholflgList = new ArrayList<>();
+        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+
+        int i = 1;
+        for (OneMonthDetailVo oneMonthDetailVo : oneMonthDetailVoList) {
+
+            oneMonthDetailVo.setTcaCholflg(String.valueOf(map.get("tcaCholflg" + nDayFormat.format(i))));
+            i++;
+        }
+
         return oneMonthDetailVoList;
     }
 
