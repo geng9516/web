@@ -6,7 +6,6 @@ import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedHashMap;
@@ -28,6 +27,7 @@ public class AttendanceBookController {
 
     /**
      * ディフォルト表示時間を取得する
+     * http://localhost:6879/sys/attendanceBook/queryDate?employeeId=46402406&year=2019&month=04
      *
      * @param employeeId
      * @param year
@@ -44,6 +44,7 @@ public class AttendanceBookController {
 
     /**
      * ディフォルト表示時間を取得する
+     * http://localhost:6879/sys/attendanceBook/defaultDate?employeeId=46402406
      *
      * @param employeeId
      * @return {"msg":"リクエスト成功","code":0,"data":{"mgd_ndefault_month":"4","dispterm_start":"2020/04/01","dispterm_end":"2021/03/01"}}
@@ -142,8 +143,8 @@ public class AttendanceBookController {
     @GetMapping("selectExistsAttendanceBook")
     @ResponseBody
     public AttendanceExistsVO selectExistsAttendanceBook(@RequestParam("employeeId") String employeeId,
-                                                @RequestParam("year") String year,
-                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                         @RequestParam("year") String year,
+                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         attendanceBookBean.setExecuteParameters(year, null, employeeId, psDBBean);
         return attendanceBookBean.selectExistsAttendanceBook(employeeId, year);

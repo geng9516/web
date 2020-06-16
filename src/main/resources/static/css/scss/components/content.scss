@@ -25,6 +25,19 @@
       background: var(--white);
       border: solid 1px var(--border-grey);
       border-bottom: none;
+      .icon-left {
+        font-size: 19px;
+        margin-right: -5px;
+        padding-right: 0;
+      }
+      .icon-center {
+        padding: 0 10px;
+      }
+      .icon-right {
+        font-size: 19px;
+        margin-left: -5px;
+        padding-left: 0;
+      }
     }
   }
   .searchwrap {

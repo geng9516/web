@@ -21,8 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -597,13 +595,13 @@ public class TmgScheduleBean {
     /**
      * 汎用リンクコンポーネントを生成します。
      */
-    protected void setReferList(String pBaseDate) {
+    private void setReferList(String pBaseDate) {
         try {
             referList = new TmgReferList(psDBBean, "TmgSchedule", pBaseDate,
                     TmgReferList.TREEVIEW_TYPE_EMP, true, true, false, false,
                     true);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("汎用リンクコンポーネントを生成することは失敗しました", e);
         }
     }
 

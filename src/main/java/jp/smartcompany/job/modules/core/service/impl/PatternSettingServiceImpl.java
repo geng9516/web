@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.PatternSettingMapper;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
+import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
 import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO;
 import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
 import org.springframework.stereotype.Repository;
@@ -29,7 +30,7 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
     }
 
     @Override
-    public TmgPatternDTO selectTmgPatternOwn(String custId, String compCode, String groupId, String sectionId) {
+    public List<TmgPatternDTO> selectTmgPatternOwn(String custId, String compCode, String groupId, String sectionId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("groupId", groupId);
         params.put("sectionId", sectionId);
@@ -45,5 +46,34 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
         params.put("targetEmployees", targetEmployees);
         params.put("language", language);
         return baseMapper.selectTmgPatternApplies(params);
+    }
+
+    @Override
+    public List<RestTimeLimitDTO> selectRestTimeLimit(String custId, String compCode, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        return baseMapper.selectRestTimeLimit(params);
+    }
+
+    @Override
+    public TmgPatternDTO selectTmgPatternById(String custId, String compCode, String groupId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("patternId", patternId);
+        return baseMapper.selectTmgPatternById(params);
+    }
+
+    @Override
+    public List<TmgPatternDTO> selectPatternSelectList(String custId, String compCode, String groupId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("patternId", patternId);
+        return baseMapper.selectPatternSelectList(params);
     }
 }

@@ -33,7 +33,7 @@ public interface IPatternSettingService extends IService<Object> {
      * @param sectionId
      * @return
      */
-    TmgPatternDTO selectTmgPatternOwn(String custId, String compCode, String groupId, String sectionId);
+    List<TmgPatternDTO> selectTmgPatternOwn(String custId, String compCode, String groupId, String sectionId);
 
     /**
      * 該当者毎に設定されている勤務パターンの情報を取得する
@@ -45,7 +45,37 @@ public interface IPatternSettingService extends IService<Object> {
      */
     List<TmgPatternAppliesDTO> selectTmgPatternApplies(String baseDate, String targetEmployees, String language);
 
+    /**
+     * 勤務時間・休憩時間の制限値取得
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @return
+     */
+    List<RestTimeLimitDTO> selectRestTimeLimit(String custId, String compCode, String language);
 
+    /**
+     * パターン編集画面のパターン情報
+     *
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     * @return
+     */
+    TmgPatternDTO selectTmgPatternById(String custId, String compCode, String groupId, String patternId);
+
+    /**
+     * 編集画面の翌日勤務パターンリスト
+     *
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     * @return
+     */
+    List<TmgPatternDTO> selectPatternSelectList(String custId, String compCode, String groupId, String patternId);
 
 
 }
