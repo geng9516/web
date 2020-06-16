@@ -14,11 +14,12 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
- * @author 陳毅力
- * @description test controller
+ * @author Nie Wanqun
+ * @description controller
  * @objectSource
  * @date 2020/05/18
  **/
@@ -35,9 +36,9 @@ public class PermStatListController {
      * @param psDBBean PsDBBean
      *                 txtAction アクション (ACT_DISP_MONTHLY)
      *                 txtDYYYYMM　対象月
-     *                 txtDYYYYMMDD　対象日
-     *                 txtCEMPLOYEEID　職員ID
-     *                 txtExecuteEmpId　チェックした対象者
+     *                 txtDYYYYMMDD　対象日　(NULL可)
+     *                 txtCEMPLOYEEID　職員ID　(NULL可)
+     *                 txtExecuteEmpId　チェックした対象者　(NULL可)
      * @return List<DispMonthlyVO>
      * @throws Exception
      */
@@ -101,14 +102,16 @@ public class PermStatListController {
      *                 txtCEMPLOYEEID　職員ID
      *                 txtExecuteEmpId　チェックした対象者
      * @return List<TmgMonthlyInfoVO>
+     * [TmgMonthlyInfoVO(empid=40010001, empname=40010001 氏名, tmoCstatusflg=TMG_DATASTATUS|0, StatusName= , dailyCount=22, lastBaseDate=2020/03/31, disppermStatus1=TMG_DATASTATUS|0, disppermStatusName1= , disppermStatus2=TMG_DATASTATUS|0, disppermStatusName2= , disppermStatus3=TMG_DATASTATUS|0, disppermStatusName3= , disppermStatus4=TMG_DATASTATUS|0, disppermStatusName4= , disppermStatus5=TMG_DATASTATUS|0, disppermStatusName5= , disppermStatus6=TMG_DATASTATUS|0, disppermStatusName6= , disppermStatus7=TMG_DATASTATUS|0, disppermStatusName7= , disppermStatus8=TMG_DATASTATUS|0, disppermStatusName8= , disppermStatus9=TMG_DATASTATUS|0, disppermStatusName9= , disppermStatus10=TMG_DATASTATUS|0, disppermStatusName10= , disppermStatus11=TMG_DATASTATUS|0, disppermStatusName11= , disppermStatus12=TMG_DATASTATUS|0, disppermStatusName12= , disppermStatus13=TMG_DATASTATUS|0, disppermStatusName13= , disppermStatus14=TMG_DATASTATUS|0, disppermStatusName14= , disppermStatus15=TMG_DATASTATUS|0, disppermStatusName15= , disppermStatus16=TMG_DATASTATUS|0, disppermStatusName16= , disppermStatus17=TMG_DATASTATUS|0, disppermStatusName17= , disppermStatus18=TMG_DATASTATUS|0, disppermStatusName18= , disppermStatus19=TMG_DATASTATUS|0, disppermStatusName19= , disppermStatus20=TMG_DATASTATUS|0, disppermStatusName20= , disppermStatus21=TMG_DATASTATUS|0, disppermStatusName21= , disppermStatus22=TMG_DATASTATUS|0, disppermStatusName22= , disppermStatus23=TMG_DATASTATUS|5, disppermStatusName23=済, disppermStatus24=TMG_DATASTATUS|5, disppermStatusName24=済, disppermStatus25=TMG_DATASTATUS|5, disppermStatusName25=済, disppermStatus26=TMG_DATASTATUS|5, disppermStatusName26=済, disppermStatus27=TMG_DATASTATUS|5, disppermStatusName27=済, disppermStatus28=TMG_DATASTATUS|5, disppermStatusName28=済, disppermStatus29=TMG_DATASTATUS|5, disppermStatusName29=済, disppermStatus30=TMG_DATASTATUS|5, disppermStatusName30=済, disppermStatus31=TMG_DATASTATUS|5, disppermStatusName31=済),
+     *  TmgMonthlyInfoVO(empid=40070002, empname=40070002 氏名, tmoCstatusflg=TMG_DATASTATUS|0, StatusName= , dailyCount=31, lastBaseDate=2020/03/31, disppermStatus1=TMG_DATASTATUS|0, disppermStatusName1= , disppermStatus2=TMG_DATASTATUS|0, disppermStatusName2= , disppermStatus3=TMG_DATASTATUS|0, disppermStatusName3= , disppermStatus4=TMG_DATASTATUS|0, disppermStatusName4= , disppermStatus5=TMG_DATASTATUS|0, disppermStatusName5= , disppermStatus6=TMG_DATASTATUS|0, disppermStatusName6= , disppermStatus7=TMG_DATASTATUS|0, disppermStatusName7= , disppermStatus8=TMG_DATASTATUS|0, disppermStatusName8= , disppermStatus9=TMG_DATASTATUS|0, disppermStatusName9= , disppermStatus10=TMG_DATASTATUS|0, disppermStatusName10= , disppermStatus11=TMG_DATASTATUS|0, disppermStatusName11= , disppermStatus12=TMG_DATASTATUS|0, disppermStatusName12= , disppermStatus13=TMG_DATASTATUS|0, disppermStatusName13= , disppermStatus14=TMG_DATASTATUS|0, disppermStatusName14= , disppermStatus15=TMG_DATASTATUS|0, disppermStatusName15= , disppermStatus16=TMG_DATASTATUS|0, disppermStatusName16= , disppermStatus17=TMG_DATASTATUS|0, disppermStatusName17= , disppermStatus18=TMG_DATASTATUS|0, disppermStatusName18= , disppermStatus19=TMG_DATASTATUS|0, disppermStatusName19= , disppermStatus20=TMG_DATASTATUS|0, disppermStatusName20= , disppermStatus21=TMG_DATASTATUS|0, disppermStatusName21= , disppermStatus22=TMG_DATASTATUS|0, disppermStatusName22= , disppermStatus23=TMG_DATASTATUS|0, disppermStatusName23= , disppermStatus24=TMG_DATASTATUS|0, disppermStatusName24= , disppermStatus25=TMG_DATASTATUS|0, disppermStatusName25= , disppermStatus26=TMG_DATASTATUS|0, disppermStatusName26= , disppermStatus27=TMG_DATASTATUS|0, disppermStatusName27= , disppermStatus28=TMG_DATASTATUS|0, disppermStatusName28= , disppermStatus29=TMG_DATASTATUS|0, disppermStatusName29= , disppermStatus30=TMG_DATASTATUS|0, disppermStatusName30= , disppermStatus31=TMG_DATASTATUS|0, disppermStatusName31= )]
      * @throws Exception
      */
     @GetMapping("getTmgMonthlyInfoVOList")
     @ResponseBody
-    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public Map getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
-        return tmgMonthlyInfoVOList;
+        Map map = permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
+        return map;
     }
 
 

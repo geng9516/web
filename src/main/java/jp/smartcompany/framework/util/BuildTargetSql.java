@@ -4,7 +4,6 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Vector;
 
 /**
@@ -43,10 +42,6 @@ public class BuildTargetSql {
     private PsDBBean psDBBean;
     private PsResult psResult;
 
-    public BuildTargetSql() {
-        this.psResult = new PsResult();
-    }
-
     public BuildTargetSql(PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         this.psResult = new PsResult();
@@ -69,11 +64,10 @@ public class BuildTargetSql {
         String sWhere = "";
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectCondition());
-        PsResult rsResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
+        PsResult rsResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
         if(rsResult.getException().size() > 0 && !rsResult.getException().get(0).equals("")) {
             throw new Exception();
         }
-
 
         // 先読みして組織と役職の関係を取得する
         Vector vecSecPost = new Vector();
@@ -95,15 +89,14 @@ public class BuildTargetSql {
         String sSecPostAndOr = "";
 
         for(int i = 0; i < ((Vector)rsResult.getResult().get(0)).size(); i++) {
-            Hashtable hshRow = new Hashtable();
-            String sAndOr = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
-            String sOpenedParenthsis = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
-            String sOperator = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
-            String sClosedParenthsis = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
-            String sTableID = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
-            String sColumnID = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
-            String sMasterTableName = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
-            String sMyFlag = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
+            String sAndOr = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
+            String sOpenedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
+            String sOperator = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
+            String sClosedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
+            String sTableID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
+            String sColumnID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
+            String sMasterTableName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
+            String sMyFlag = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
 
             // 途中でORが出たら組織と役職の間につながりはなし
             if(bSecPost && sAndOr.equals("OR")) {
@@ -174,27 +167,27 @@ public class BuildTargetSql {
 
         // １行ずつ読んでSQLを組み立てる
         for(int i = 0; i < ((Vector)rsResult.getResult().get(0)).size(); i++) {
-            String sAndOr = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
+            String sAndOr = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
             if(sAndOr == null) {
                 sAndOr = "";
             }
-            String sOpenedParenthsis = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
+            String sOpenedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
             if(sOpenedParenthsis == null) {
                 sOpenedParenthsis = "";
             }
-            String sColumnName = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNNAME, i);
-            String sOperator = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
-            String sDisplayValue = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CDISPLAYVALUE, i);
-            String sClosedParenthsis = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
+            String sColumnName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNNAME, i);
+            String sOperator = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
+            String sDisplayValue = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CDISPLAYVALUE, i);
+            String sClosedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
             if(sClosedParenthsis == null) {
                 sClosedParenthsis = "";
             }
-            String sTableID = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
-            String sColumnID = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
-            String sTypeOfColumn = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTYPEOFCOLUMN, i);
-            String sMasterTableName = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
-            String sValue = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CVALUE, i);
-            String sMyFlag = (String)valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
+            String sTableID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
+            String sColumnID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
+            String sTypeOfColumn = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTYPEOFCOLUMN, i);
+            String sMasterTableName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
+            String sValue = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CVALUE, i);
+            String sMyFlag = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
 
             // マスタ参照カラムの場合
             if(sMasterTableName != null) {
@@ -320,7 +313,7 @@ public class BuildTargetSql {
             // 組織と役職が組み合わせて使われている場合のみ組み立を行う
             if(checkSecPost(pvecSecPost, pnLineSeq)) {
                 // 検索者がグループに該当する時にヒットした組織、役職の組み合わせを取得する
-                Vector vecSecPost = getGroupSecPost();
+                Vector vecSecPost = getGroupSecPost(psDBBean);
 
                 // 対応するテーブルID、カラムIDを取得する
                 String sSectionTableID = "";
@@ -583,7 +576,7 @@ public class BuildTargetSql {
                 return "";
             }
             // 検索者がグループに該当する時にヒットした組織、役職の組み合わせを取得する
-            Vector vecSecPost = getGroupSecPost();
+            Vector vecSecPost = getGroupSecPost(psDBBean);
 
             sWhere += "(";
             for(int i = 0; i < vecSecPost.size(); i++) {
@@ -836,41 +829,41 @@ public class BuildTargetSql {
      * 検索者がグループに該当した時の所属、役職を取得します
      * @return
      */
-    private Vector getGroupSecPost() throws Exception {
-        return getGroupSecPost("TRUNC(SYSDATE)");
+    private Vector getGroupSecPost(PsDBBean psDBBean) throws Exception {
+        return getGroupSecPost(psDBBean,"TRUNC(SYSDATE)");
     }
 
     /**
      * 検索者がグループに該当した時の所属、役職を取得します
      * @return
      */
-    public Vector getGroupSecPost(String psCreterialDate) throws Exception {
+    public Vector getGroupSecPost(PsDBBean psDBBean,String psCreterialDate) throws Exception {
         Vector vecGroupSecPost = new Vector();
         // MAST_GROUPDEFINITIONSを読み込む
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectGroupDefinitions());
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
+        psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
         if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
             throw new Exception();
         }
 
         // 該当するグループは１件のみの前提なので内側でpsResultを使い回しても大丈夫
         for(int i = 0; i < ((Vector)psResult.getResult().get(0)).size(); i++) {
-            String sBaseFlag = valueAtColumnRow(0, COL_MGP_BASEFLAG, i);
-            String sQuery = valueAtColumnRow(0, COL_MGP_CQUERY, i);
+            String sBaseFlag = psDBBean.valueAtColumnRow(psResult,0, COL_MGP_BASEFLAG, i);
+            String sQuery = psDBBean.valueAtColumnRow(psResult,0, COL_MGP_CQUERY, i);
             // MAST_GROUPSECTIONPOSTMAPPINGで定義の場合
             if(sBaseFlag.equals("0")) {
                 // 該当する所属・役職の組み合わせを取得する
                 vecQuery.clear();
                 vecQuery.add(buildSQLForSelectGroupSecPost(psCreterialDate));
-                psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
+                psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
                 if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
                     throw new Exception();
                 }
                 for(int j = 0; j < ((Vector)psResult.getResult().get(0)).size(); j++) {
                     Vector vecRow = new Vector();
-                    String sSectionID = valueAtColumnRow(0, COL_HD_CSECTIONID_FK, j);
-                    String sPostID = valueAtColumnRow(0, COL_HD_CPOSTID_FK, j);
+                    String sSectionID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
+                    String sPostID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
                     vecRow.add(sSectionID);
                     vecRow.add(sPostID);
                     vecGroupSecPost.add(vecRow);
@@ -883,14 +876,14 @@ public class BuildTargetSql {
                 // 該当する所属・役職の組み合わせを取得する
                 vecQuery.clear();
                 vecQuery.add(buildSQLForSelectGroupDefinitionsQuery(sQuery, psCreterialDate));
-                psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
+                psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
                 if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
                     throw new Exception();
                 }
                 for(int j = 0; j < ((Vector)psResult.getResult().get(0)).size(); j++) {
                     Vector vecRow = new Vector();
-                    String sSectionID = valueAtColumnRow(0, COL_HD_CSECTIONID_FK, j);
-                    String sPostID = valueAtColumnRow(0, COL_HD_CPOSTID_FK, j);
+                    String sSectionID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
+                    String sPostID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
                     vecRow.add(sSectionID);
                     vecRow.add(sPostID);
                     vecGroupSecPost.add(vecRow);
@@ -970,110 +963,6 @@ public class BuildTargetSql {
             sSql = SysUtil.replaceString(sSql, "TRUNC(SYSDATE)", SysUtil.transDateNullToDB(psCreterialDate));
         }
         return sSql;
-    }
-
-    // テーブル結合用カラム名情報の取得
-    private Vector getColumnIDs(String psTableID) throws Exception {
-        Vector vecColumnIDs = new Vector();
-
-        // 検索を実行し、結果を取得
-        Vector vecQuery = new Vector();
-
-        // 顧客コードカラムIDの取得
-        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCUSTOMERID"));
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-        if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-            throw new Exception();
-        }
-        if(((Vector)psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-        }
-        else {
-            vecColumnIDs.add(null);
-        }
-
-        // 会社コードカラムIDの取得
-        vecQuery.clear();
-        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCOMPANYID"));
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-        if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-            throw new Exception();
-        }
-        if(((Vector)psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-        }
-        else {
-            vecColumnIDs.add(null);
-        }
-
-        // 社員番号カラムIDの取得
-        vecQuery.clear();
-        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CEMPLOYEEID"));
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-        if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-            throw new Exception();
-        }
-        if(((Vector)psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-        }
-        else {
-            vecColumnIDs.add(null);
-        }
-
-        // 開始日カラムIDの取得
-        // DSTARTDATEを含むカラムがあればそれを使う
-        vecQuery.clear();
-        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTARTDATE"));
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-        if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-            throw new Exception();
-        }
-        if(((Vector)psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-        }
-        // DSTARTDATEを含むカラムがなければDSTARTを含むカラムを使う
-        else {
-            vecQuery.clear();
-            vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTART"));
-            psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-            if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-                throw new Exception();
-            }
-            if(((Vector)psResult.getResult().get(0)).size() > 0) {
-                vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-            }
-            else {
-                vecColumnIDs.add(null);
-            }
-        }
-        // 終了日カラムIDの取得
-        // DENDDATEを含むカラムがあればそれを使う
-        vecQuery.clear();
-        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DENDDATE"));
-        psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-        if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-            throw new Exception();
-        }
-        if(((Vector)psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-        }
-        // DENDDATEを含むカラムがなければDENDを含むカラムを使う
-        else {
-            vecQuery.clear();
-            vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DEND"));
-            psResult = getValuesforMultiquery(vecQuery, BEAN_DESC);
-            if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
-                throw new Exception();
-            }
-            if(((Vector)psResult.getResult().get(0)).size() > 0) {
-                vecColumnIDs.add(valueAtColumnRow(0, 0, 0));
-            }
-            else {
-                vecColumnIDs.add(null);
-            }
-        }
-
-        return vecColumnIDs;
     }
 
     // テーブル結合用カラム名情報を検索するSQLを組み立てます
@@ -1208,90 +1097,94 @@ public class BuildTargetSql {
      * ============== DB操作公共方法 ==============
      * ------------------------------------------
      */
-    public String valueAtColumnRow(int queryindex,int column,int row )
-            throws ArrayIndexOutOfBoundsException,Exception
-    {
-        Vector retvec = null;
-        retvec = psResult.getException();
-        try
-        {
-            if (retvec.size() != 0 && !retvec.get(queryindex).equals(""))
-            {
-                String errmsg = (String)retvec.get(queryindex);
-                throw new Exception(errmsg);
-            }
-            retvec = psResult.getResult();
-            return (String)((Vector)((Vector)retvec.get(queryindex)).get(row)).get(column);
-        }
-        catch(Exception e)
-        {
-        }
-        return null;
-    }
 
-    /**
-     * １つ以上のSELECT文をセキュリティ判定なしで実行します。
-     * @param vecQuery	   SELECT文のVector
-     * @param strBeanDesc ログ出力用Bean識別子
-     * @return PsResult   SQLの実行結果
-     * @throws Exception  システム例外
-     */
-    public PsResult getValuesforMultiquery(Vector vecQuery, String strBeanDesc)
-            throws Exception {
-        try {
-            if (vecQuery != null && strBeanDesc != null) {
-                return psDBBean.getV3Logic().executeMultiQuery(
-                        vecQuery, psDBBean.getCustID(),
-                        psDBBean.getCompCode(), psDBBean.getUserCode(),
-                        psDBBean.getGroupID(), 	strBeanDesc,
-                        psDBBean.getSystemCode(), psDBBean.getStrGUID(),
-                        false);
+    private Vector getColumnIDs(String psTableID) throws Exception {
+        Vector vecColumnIDs = new Vector();
+
+        Vector vecQuery = new Vector();
+
+        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCUSTOMERID"));
+        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        if ((this.psResult.getException().size() > 0)
+                && (!this.psResult.getException().get(0).equals(""))) {
+            throw new Exception();
+        }
+        if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+        } else {
+            vecColumnIDs.add(null);
+        }
+        vecQuery.clear();
+        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCOMPANYID"));
+        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        if ((this.psResult.getException().size() > 0)
+                && (!this.psResult.getException().get(0).equals(""))) {
+            throw new Exception();
+        }
+        if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+        } else {
+            vecColumnIDs.add(null);
+        }
+        vecQuery.clear();
+        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CEMPLOYEEID"));
+        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        if ((this.psResult.getException().size() > 0)
+                && (!this.psResult.getException().get(0).equals(""))) {
+            throw new Exception();
+        }
+        if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+        } else {
+            vecColumnIDs.add(null);
+        }
+        vecQuery.clear();
+        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTARTDATE"));
+        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        if ((this.psResult.getException().size() > 0)
+                && (!this.psResult.getException().get(0).equals(""))) {
+            throw new Exception();
+        }
+        if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+        } else {
+            vecQuery.clear();
+            vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTART"));
+            this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+            if ((this.psResult.getException().size() > 0)
+                    && (!this.psResult.getException().get(0).equals(""))) {
+                throw new Exception();
+            }
+            if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+                vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
             } else {
-                throw new Exception(
-                        SysUtil.getpropertyvalue(
-                                psDBBean.getLanguage(), "ErrorCode_25"));
+                vecColumnIDs.add(null);
             }
-        } catch (Exception e) {
-            throw e;
         }
+        vecQuery.clear();
+        vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DENDDATE"));
+        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        if ((this.psResult.getException().size() > 0)
+                && (!this.psResult.getException().get(0).equals(""))) {
+            throw new Exception();
+        }
+        if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+        } else {
+            vecQuery.clear();
+            vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DEND"));
+            this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+            if ((this.psResult.getException().size() > 0)
+                    && (!this.psResult.getException().get(0).equals(""))) {
+                throw new Exception();
+            }
+            if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
+                vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            } else {
+                vecColumnIDs.add(null);
+            }
+        }
+        return vecColumnIDs;
     }
-
-    public Object valueAtColumnRow(Vector result,int column,int row ) throws ArrayIndexOutOfBoundsException
-    {
-        int vnest = 0;
-        Object odummy = result;
-        while(true){
-            if(odummy instanceof Vector == true){
-                vnest++;
-                if(((Vector)odummy).size() > 0){
-                    odummy = ((Vector)odummy).get(0);
-                }else{
-                    break;
-                }
-            }else{
-                break;
-            }
-        }
-        System.out.println("odummy:" + vnest);
-        if(vnest == 3){
-            //result = (Vector)result.get(0);
-        }
-        int realRow = row + 1;
-        if (result == null) {
-            throw new ArrayIndexOutOfBoundsException ("Result set is empty.");
-        }
-
-        if (realRow > result.size()) {
-            throw new ArrayIndexOutOfBoundsException ("Row is out of bounds.");
-        }
-        try
-        {
-            return ((Vector)result.get(row)).get(column);
-        } catch (Exception e)
-        {
-            e.printStackTrace();
-        }
-        return null;
-    }//end of valueAtColumnRow()................
 
 }

@@ -3,16 +3,24 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Vector;
 
+/**
+ * @author Wu chenjun
+ * @update Xiao Wenpeng
+ *      添加 TmgSearchRangeUtil类
+ */
 @Slf4j
 public class TmgOrgTree {
 
@@ -39,6 +47,7 @@ public class TmgOrgTree {
     private boolean withTarget = true;
 
     private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     /**
      * コンストラクタ
@@ -60,13 +69,25 @@ public class TmgOrgTree {
         keyArray = DEFAULT_KEY_ARRAY;
     }
 
-    public void createOrgTree(String custId, String compCode, String language, String baseDate) throws Exception{
+    /**
+     *
+     * @param bean
+     * @param beanDesc
+     * @param bWithTarget	検索対象範囲設定を考慮するかどうか（true: 条件に含む、false: 条件に含まない→全件）
+     */
+    public TmgOrgTree(PsDBBean bean,String beanDesc, boolean bWithTarget) {
+        this.psDBBean =  bean;
+        this.beanDesc = beanDesc;
+        this.beanDesc = beanDesc;
+        keyArray = DEFAULT_KEY_ARRAY;
+        this.withTarget = bWithTarget;
+    }
 
+
+    public void createOrgTree(String custId, String compCode, String language, String baseDate) throws Exception{
         String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate);
-        //String sSQL = buildSQLForSelectOrgTree(custId, compCode, language, baseDate, psDBBean.requestHash, psDBBean.session);
         Connection connection = null;
         List entityList = null;
-        log.info("createOrgTree_SQL1：{}",sSQL);
         try {
             connection = dataSource.getConnection();
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
@@ -77,18 +98,32 @@ public class TmgOrgTree {
                 connection.close();
             }
         }
-        log.debug("【createOrgTree查询结果：{}】",entityList);
         dataArray = JSONArrayGenerator.entityListTowardList(entityList);
-        log.debug("【dataArray获取结果：{}】",dataArray);
+    }
+
+    /**
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * @param pSession
+     * @return
+     */
+    public String getOrgTreeSearchRangeForTreeBuild(HttpSession pSession) {
+        String sExists;
+        try {
+            //sExists = tmgSearchRangeUtil.getExistsQuery(pRequestHash, pSession, "d.HD_CCOMPANYID_CK", "d.HD_CEMPLOYEEID_CK");
+            sExists = tmgSearchRangeUtil.getExistsQueryOrganisation(psDBBean, pSession, "o.MO_CLAYEREDSECTIONID");
+        } catch(Exception e) {
+            sExists = "";
+        }
+        return sExists;
     }
 
     public String buildSQLForSelectOrgTree(String cust, String comp, String language, String baseDate){
-
-        StringBuffer sSQL = new StringBuffer();
-
-        // TODO とりあえず検索対象範囲を見ないとして対応すること。
+        StringBuilder sSQL = new StringBuilder();
         // 検索対象範囲設定を見るかどうかのフラグを参照し、見るときだけ条件に加える
         String sExists = "";
+        if (this.withTarget) {
+            sExists = getOrgTreeSearchRangeForTreeBuild(Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession());
+        }
         sSQL.append(" SELECT ");
         sSQL.append(    " org.MO_NLEVEL");
         sSQL.append(    ",org.MO_CSECTIONNICK");
@@ -102,8 +137,8 @@ public class TmgOrgTree {
         sSQL.append("		where");
         sSQL.append("				d.HD_CCUSTOMERID_CK		= org.MO_CCUSTOMERID_CK_FK");
         sSQL.append("			and d.HD_CCOMPANYID_CK		= org.MO_CCOMPANYID_CK_FK");
-        sSQL.append("			and d.HD_DSTARTDATE_CK		<= " + baseDate);
-        sSQL.append("			and d.HD_DENDDATE			>= " + baseDate);
+        sSQL.append("			and d.HD_DSTARTDATE_CK		<= ").append(baseDate);
+        sSQL.append("			and d.HD_DENDDATE			>= ").append(baseDate);
         sSQL.append("			and d.HD_CIFKEYORADDITIONALROLE = 0");
         sSQL.append("			and d.HD_CSECTIONID_FK = org.MO_CSECTIONID_CK ");
 
@@ -202,11 +237,10 @@ public class TmgOrgTree {
         return sRet;
     }
 
-        public String getJSONArrayForTreeView(){
+    public String getJSONArrayForTreeView(){
         if(dataArray == null){
             return null;
         }
-        log.debug("【getJSONArrayForTreeView里的dataArray:{}】",dataArray);
         try{
             return JSONArrayGenerator.getJSONArrayForTreeView(dataArray,keyArray,1);
         }catch(Exception e){

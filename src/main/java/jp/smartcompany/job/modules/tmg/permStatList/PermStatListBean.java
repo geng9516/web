@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.permStatList;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
@@ -586,7 +587,7 @@ public class PermStatListBean {
 
     /*************************************************************/
     //一覧表示ステップ　４
-    public List<TmgMonthlyInfoVO> getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
+    public Map getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
 
         String empSql = referList.buildSQLForSelectEmployees();
 
@@ -614,9 +615,11 @@ public class PermStatListBean {
                 empSql,
                 colNameList
         );
-        this.isDispEnableBatchApproval(psDBBean,tmgMonthlyInfoVOList);
-
-        return tmgMonthlyInfoVOList;
+        Map map = MapUtil.newHashMap();
+        map.put("tmgMonthlyInfoVOList",tmgMonthlyInfoVOList);
+        boolean approval = isDispEnableBatchApproval(psDBBean,tmgMonthlyInfoVOList);
+        map.put("approval",approval);
+        return map;
     }
 
     /*************************************************************/
@@ -624,7 +627,7 @@ public class PermStatListBean {
     public CalenderVo selectGetCalendarList(PsDBBean psDBBean) {
         // 1 カレンダー情報の取得
         CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
         return calenderVo;
     }
 
@@ -928,7 +931,7 @@ public class PermStatListBean {
                 // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
                 String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
                 if (getReferList().existsAnyone(getFirstDayOfSysdate()) && getReferList().isThereSomeEmployees(getFirstDayOfSysdate()) ||
-                        getReferList().existsAnyone(sPrevMonth)             && getReferList().isThereSomeEmployees(sPrevMonth)
+                        getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth)
                 ) {
                     setAuthorityMonth(CB_CAN_REFER);
                 } else {
@@ -964,7 +967,6 @@ public class PermStatListBean {
 
         _sysdate = psDBBean.getSysDate();
 
-
         _sAction =  (String)psDBBean.getRequestHash().get(REQ_ACTION);
         _reqDYYYYMM = (String)psDBBean.getRequestHash().get(REQ_DYYYYMM);
         _reqDYYYYMMDD = (String)psDBBean.getRequestHash().get(REQ_DYYYYMMDD);
@@ -978,7 +980,7 @@ public class PermStatListBean {
 
         // TmgReferListの生成
         referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
-//        referList.putReferList(modelMap);
+
         // 組織コードの取得
         _reqSectionId = referList.getTargetSec();
 
@@ -988,7 +990,6 @@ public class PermStatListBean {
         } else {
             _isSelectSection = true;
         }
-
 
         // 検索対象年月の前月
         _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
@@ -1005,7 +1006,7 @@ public class PermStatListBean {
             // 今月の月初
             _thisMonth = TmgUtil.getFirstDayOfMonth(psDBBean.getSysDate(), PARAM_THIS_MONTH);
         } else {
-                       // 組織ツリー基準日
+            // 組織ツリー基準日
             _thisMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
 
             // 初期表示、再表示ボタン使用時処理
@@ -1049,7 +1050,7 @@ public class PermStatListBean {
     private void setReferList(String pDate,PsDBBean psDBBean)  throws Exception{
 
         referList = new TmgReferList(psDBBean, "PermStatList", pDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
-//        referList.putReferList(modelMap);
+
 
     }
 
