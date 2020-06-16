@@ -483,6 +483,10 @@ public class TmgReferList {
         modelMap.addAttribute(REQUEST_KEY_TMG_REFER_LIST_OBJECT, this);
     }
 
+    public String getTargetDate() {
+      return this.targetDate;
+    }
+
     private void init() throws Exception{
         // 日付の処理
         setSysdate();
