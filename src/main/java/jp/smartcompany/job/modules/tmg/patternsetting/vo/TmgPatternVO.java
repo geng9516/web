@@ -1,6 +1,6 @@
-package jp.smartcompany.job.modules.tmg.PatternSetting.vo;
+package jp.smartcompany.job.modules.tmg.patternsetting.vo;
 
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

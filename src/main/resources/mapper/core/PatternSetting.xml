@@ -3,7 +3,7 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.PatternSettingMapper">
 
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
-    <resultMap id="selectTmgPatternMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO">
+    <resultMap id="selectTmgPatternMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO">
         <result column="tpa_ccustomerid" property="tpa_ccustomerid"/>
         <result column="tpa_ccompanyid" property="tpa_ccompanyid"/>
         <result column="tpa_csectionid" property="tpa_csectionid"/>
@@ -20,7 +20,7 @@
     </resultMap>
 
     <!-- 該当者毎に設定されている勤務パターンの情報を取得する -->
-    <resultMap id="selectTmgPatternAppliesMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO">
+    <resultMap id="selectTmgPatternAppliesMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO">
         <result column="cust" property="cust"/>
         <result column="comp" property="comp"/>
         <result column="empid" property="empid"/>
@@ -32,7 +32,7 @@
     </resultMap>
 
     <!-- 勤務時間・休憩時間の制限値取得 -->
-    <resultMap id="selectRestTimeLimitMap" type="jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO">
+    <resultMap id="selectRestTimeLimitMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO">
         <result column="genericCode" property="genericCode"/>
         <result column="genericDesc" property="genericDesc"/>
         <result column="limit_rest_lower" property="limit_rest_lower"/>
@@ -40,6 +40,25 @@
         <result column="limit_work_upper" property="limit_work_upper"/>
     </resultMap>
 
+    <!-- 勤務パターン　保存する -->
+    <parameterMap id="insertTmgPatternMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO">
+        <parameter property="custId"/>
+        <parameter property="compCode"/>
+        <parameter property="sectionId"/>
+        <parameter property="groupId"/>
+        <parameter property="minDate"/>
+        <parameter property="maxDate"/>
+        <parameter property="employeeId"/>
+        <parameter property="modifierprogramid"/>
+        <parameter property="patternId"/>
+        <parameter property="patternName"/>
+        <parameter property="defaultFlag"/>
+        <parameter property="changeTime"/>
+        <parameter property="nextptn"/>
+        <parameter property="c2caldays"/>
+        <parameter property="nopen"/>
+        <parameter property="nclose"/>
+    </parameterMap>
 
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
     <select id="selectTmgPattern" parameterType="java.util.HashMap" resultMap="selectTmgPatternMap">
@@ -239,6 +258,52 @@
         </if>
         and tpaa_cpatternid = #{patternId}
     </delete>
+
+    <!-- ディフォルトセット -->
+    <update id="updateTmgPattern" parameterType="java.util.HashMap">
+        update tmg_pattern
+        set tpa_cmodifieruserid = #{employeeId},
+            tpa_dmodifieddate = sysdate,
+            tpa_cmodifierprogramid = #{modifierprogramid},
+            tpa_cdefaultflg = 'TMG_ONOFF|0'
+        where tpa_ccustomerid = #{custId}
+        and tpa_ccompanyid = #{compCode}
+        and tpa_csectionid =  #{sectionId}
+        and tpa_cgroupid = #{groupId}
+        and tpa_cdefaultflg = 'TMG_ONOFF|1'
+        and tpa_dstartdate <![CDATA[<=]]> trunc(sysdate)
+        and tpa_denddate <![CDATA[>=]]> trunc(sysdate)
+    </update>
+
+    <!-- 勤務パターン　保存する -->
+    <insert id="insertTmgPattern" parameterMap="insertTmgPatternMap">
+        insert into tmg_pattern
+            (tpa_ccustomerid, tpa_ccompanyid, tpa_csectionid, tpa_cgroupid,
+            tpa_dstartdate, tpa_denddate, tpa_cmodifieruserid,
+            tpa_dmodifieddate, tpa_cmodifierprogramid, tpa_cpatternid,
+            tpa_cpatternname, tpa_cdefaultflg, tpa_ndate_change_time,
+            tpa_cnextptn, tpa_c2caldays, tpa_nopen, tpa_nclose)
+        values
+            (#{custId},#{compCode}, #{sectionId},  #{groupId},
+            to_date(#{minDate}, 'yyyy/mm/dd'), to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId},
+            sysdate,#{modifierprogramid},#{patternId},
+            #{patternName},#{defaultFlag}, tmg_f_conv_hhmi2min(#{changeTime}),
+            #{nextptn},#{c2caldays}, tmg_f_conv_hhmi2min(#{nopen}), tmg_f_conv_hhmi2min(#{nclose}))
+    </insert>
+
+    <!-- 勤務パターン休憩時間　保存する -->
+    <insert id="insertTmgPatternRestPlural" parameterMap="insertTmgPatternRestPluralMap">
+        insert into tmg_pattern_rest
+            (tpr_ccustomerid, tpr_ccompanyid, tpr_csectionid, tpr_cgroupid,
+            tpr_dstartdate, tpr_denddate, tpr_cmodifieruserid,
+            tpr_dmodifieddate, tpr_cmodifierprogramid, tpr_cpatternid, tpr_seq,
+            tpr_nrestopen, tpr_nrestclose)
+        values
+            (#{custId},#{compCode}, #{sectionId},  #{groupId},
+             to_date(#{minDate}, 'yyyy/mm/dd'), to_date(#{maxDate},'yyyy/mm/dd'), #{employeeId},
+            sysdate, #{modifierprogramid},#{patternId}, 1,
+            tmg_f_conv_hhmi2min(#{restOpen}), tmg_f_conv_hhmi2min(#{restClose}))
+    </insert>
 
 
 </mapper>
