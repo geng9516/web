@@ -1,20 +1,19 @@
 package jp.smartcompany.job.modules.tmg.tmgnotification.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+
+import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfAttachedfileDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @author Wang Ziyue
- * Vo for  NotificationList
- */
 @Getter
 @Setter
 @ToString
-public class notificationListVo {
+public class NotificationDispDetailVo {
+
 
     /**0 職員番号*/
     private String tntfCemployeeid;
@@ -46,16 +45,11 @@ public class notificationListVo {
     private String tntfDcancel2;
     /**14 再申請可能な申請種類*/
     private String remakeApply;
-    /**15*/
-    private String sort1;
-    /**16*/
+    /**16site 显示*/
     private String tntfCtypeChar5;
-    /**17 Intra_mart用*/
-    private String tntfCntfnoIm;
-    /**18*/
+
+    /**18 typeId*/
     private String tntfCtypeCode;
-    /**19 決済レベル*/
-    private String capprovalLevel;
     /**20 次の承認者*/
     private String ntfapprover;
     /**21 0:全取消、1:部分取消*/
@@ -72,4 +66,10 @@ public class notificationListVo {
     private String tntfCowncomment;
 
 
+    //  申請区分略称を取得
+    private String ntfName;
+    //  添付ファイル
+    private List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = new ArrayList<TmgNtfAttachedfileDO>();
+    //  申請ログ
+    private List<ntfActionLogVo> tmgNtfactionlogDOList = new ArrayList<ntfActionLogVo>();
 }
