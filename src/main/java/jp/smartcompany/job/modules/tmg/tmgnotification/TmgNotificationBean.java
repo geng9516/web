@@ -492,7 +492,9 @@ public class TmgNotificationBean {
             nddVo.setRemakeApply(nlVo.getRemakeApply());
             nddVo.setTntfCtypeChar5(nlVo.getTntfCtypeChar5());
             nddVo.setTntfCtypeCode(nlVo.getTntfCtypeCode());
-            nddVo.setNtfapprover(nlVo.getNtfapprover());
+            if(nlVo.getNtfapprover().indexOf(",")>-1){
+                nddVo.setNtfapprover(nlVo.getNtfapprover().split(","));
+            }
             nddVo.setAllCancellation(nlVo.getAllCancellation());
             nddVo.setTntfNtimezoneOpen(nlVo.getTntfNtimezoneOpen());
             nddVo.setTntfNtimezoneClose(nlVo.getTntfNtimezoneClose());

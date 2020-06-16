@@ -51,7 +51,7 @@ public class NotificationDispDetailVo {
     /**18 typeId*/
     private String tntfCtypeCode;
     /**20 次の承認者*/
-    private String ntfapprover;
+    private String[] ntfapprover;
     /**21 0:全取消、1:部分取消*/
     private String allCancellation;
     /**22 開始時刻*/
