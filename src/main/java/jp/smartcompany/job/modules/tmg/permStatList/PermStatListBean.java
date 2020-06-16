@@ -1107,7 +1107,7 @@ public class PermStatListBean {
         }
 
         // TmgReferListの生成
-        TmgReferList  referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
+        referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
 
         // 組織コードの取得
         _reqSectionId = referList.getTargetSec();
