@@ -7,6 +7,7 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.framework.dbaccess.DbAccessLogic;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +20,7 @@ import java.util.*;
  * @author Xiao Wenpeng
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DbControllerLogicImpl implements DbControllerLogic {
 
@@ -123,6 +125,7 @@ public class DbControllerLogicImpl implements DbControllerLogic {
                 vecResult.add(vColuData);
             }
         }
+        log.info("【convertData:{}】",vecResult);
         return vecResult;
     }
 

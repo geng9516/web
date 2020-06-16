@@ -6,6 +6,7 @@ import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 public class TmgEmpList {
@@ -60,7 +62,7 @@ public class TmgEmpList {
     private String dateFormat = null;
 
     private final DataSource dataSource = SpringUtil.getBean("dataSource");
-
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
     /**
      * コンストラクタ
      * @param bean
@@ -275,20 +277,19 @@ public class TmgEmpList {
                                            boolean isJoinTmgEmployees, boolean useManageFLG, String psSearchItems, String psSearchCondition,
                                            String psSearchData
     ){
-        StringBuffer sSQL = new StringBuffer();
+        StringBuilder sSQL = new StringBuilder();
         String layeredSection = "";
 
 //        検索対象範囲の適用
-//        if (this.withTarget) {
-//            try {
-//                layeredSection = new TmgSearchRangeUtil().getExistsQueryOrganisation(bean.requestHash, bean.session, "o.MO_CLAYEREDSECTIONID");
-//            }
-//            catch(Exception e) {
-//                layeredSection = "";
-//                e.printStackTrace(); // 念の為
-//            }
-//        }
-
+        if (this.withTarget) {
+            try {
+                layeredSection = tmgSearchRangeUtil.getExistsQueryOrganisation(bean, Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession(), "o.MO_CLAYEREDSECTIONID");
+            }
+            catch(Exception e) {
+                layeredSection = "";
+                e.printStackTrace(); // 念の為
+            }
+        }
         sSQL.append(" SELECT  ");
         sSQL.append(    " 0 as MO_NLEVEL");
 
@@ -671,14 +672,13 @@ public class TmgEmpList {
 
         // TODO: こっちはまだ this.withTarget による分岐を適用していません。いまのところここは関係ないので・・・。
         // 検索対象範囲の適用
-        // TmgSearchRangeUtil tmgSearchRangeUtil = new TmgSearchRangeUtil();
           String sExists = "";
-        // try {
-        //  sExists = tmgSearchRangeUtil.getExistsQuery(bean.requestHash, bean.session, "d.HD_CCOMPANYID_CK", "d.HD_CEMPLOYEEID_CK");
-        //   }
-        //  catch(Exception e) {
-        //      sExists = "";
-        //  }
+         try {
+          sExists = tmgSearchRangeUtil.getExistsQuery(bean, Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession(), "d.HD_CCOMPANYID_CK", "d.HD_CEMPLOYEEID_CK");
+           }
+          catch(Exception e) {
+              sExists = "";
+          }
         sSQL.append(sExists);
 
         // 終了日(降順)、部署コード、役職ID、開始日(昇順)、社員番号、でソート

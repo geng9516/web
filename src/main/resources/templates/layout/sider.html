@@ -59,7 +59,14 @@
                     this.curMenu = item.menu.menuId
                 },
                 handleSubMenuClick(e, i) {
-                    this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}`
+                    var pageId = e.pageId
+                    if (pageId){
+                        var index = pageId.indexOf('_')
+                        if (index>-1) {
+                            pageId = pageId.substring(0, index)
+                        }
+                    }
+                    this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}`
                     this.showSider = false
                     this.switchFrame()
                 },

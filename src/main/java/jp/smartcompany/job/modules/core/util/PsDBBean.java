@@ -138,6 +138,10 @@ public class PsDBBean {
         return (String)this.requestHash.get("SiteId");
     }
 
+    public String getAppId() {
+      return (String)this.requestHash.get("AppId");
+    }
+
     public String getUserCode() {
         return this.strUserID;
     }
@@ -662,8 +666,7 @@ public class PsDBBean {
     }//end of valueAtColumnRow()................
 
     public String valueAtColumnRow(PsResult psResult,int queryindex,int column,int row ) {
-        Vector retvec;
-        retvec = psResult.getException();
+        Vector retvec = psResult.getException();
         try
         {
             if (retvec.size() != 0 && !retvec.get(queryindex).equals(""))
@@ -672,7 +675,8 @@ public class PsDBBean {
                 throw new Exception(errmsg);
             }
             retvec = psResult.getResult();
-            return (String)((Vector)((Vector)retvec.get(queryindex)).get(row)).get(column);
+            Object val = ((Vector)((Vector)retvec.get(queryindex)).get(row)).get(column);
+            return val+"";
         }
         catch(Exception e)
         {

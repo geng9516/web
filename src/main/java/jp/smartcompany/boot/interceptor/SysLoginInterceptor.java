@@ -15,6 +15,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.Designation;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -262,9 +263,13 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(targetGroup)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
         }
-        String siteId = request.getParameter("psSite");
+        String siteId = request.getParameter(PsConst.PARAM_KEY_SITEID);
         if (StrUtil.isNotBlank(siteId)) {
             hashtable.put("SiteId", siteId);
+        }
+        String appId = request.getParameter(PsConst.PARAM_KEY_APPID);
+        if (StrUtil.isNotBlank(appId)) {
+            hashtable.put("AppId",appId);
         }
 
         psDBBean.setSysControl(hashtable);

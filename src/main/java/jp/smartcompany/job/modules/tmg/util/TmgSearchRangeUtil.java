@@ -7,11 +7,11 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.BuildTargetSql;
 import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
-import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpSession;
@@ -25,6 +25,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Service
+@Slf4j
 public class TmgSearchRangeUtil  {
 
     private final ScCacheUtil scCacheUtil;
@@ -81,7 +82,8 @@ public class TmgSearchRangeUtil  {
     public String getExistsQueryOrganisation(HttpSession pSession, String psCompanyColumn, String psSectionColumn) throws Exception {
         // 動作フレームワーク判定
         // V3の処理
-        if (getFrameVersion().equals("3")) {
+        String frameVersion = getFrameVersion();
+        if (frameVersion.equals("3")) {
             // 検索対象範囲情報を取得してEXISTS句を組み立てる
             //return createExistsQuery(pRequestHash, pSession, psCompanyColumn, psEmployeeColumn);
             return " and 1 = 0 ";//V3のときは適当
@@ -110,13 +112,14 @@ public class TmgSearchRangeUtil  {
      */
     public String getExistsQueryOrganisation(PsDBBean psDBBean, HttpSession pSession,String psSectionColumn) throws Exception {
         // 初期化
-        String sSiteId = (String) psDBBean.getRequestHash().get(PsConst.PARAM_KEY_SITEID);
-        String sAppId = (String) psDBBean.getRequestHash().get(PsConst.PARAM_KEY_APPID);
+        String sSiteId = psDBBean.getSiteId();
+        String sAppId = psDBBean.getAppId();
 
         StringBuilder sb =new StringBuilder();
+        String frameVersion = getFrameVersion();
         // 動作フレームワーク判定
         // V3の処理
-        if (getFrameVersion().equals("3")) {
+        if (frameVersion.equals("3")) {
             // 検索対象範囲情報を取得してEXISTS句を組み立てる
             //return createExistsQuery(pRequestHash, pSession, psCompanyColumn, psEmployeeColumn);
             return " and 1 = 0 ";//V3のときは適当
@@ -265,8 +268,8 @@ public class TmgSearchRangeUtil  {
      */
     public String getExistsQueryBaseSection(PsDBBean psDBBean, HttpSession pSession,String psSectionColumn) throws Exception {
         // 初期化
-        String sSiteId = (String) psDBBean.getRequestHash().get(PsConst.PARAM_KEY_SITEID);
-        String sAppId = (String) psDBBean.getRequestHash().get(PsConst.PARAM_KEY_APPID);
+        String sSiteId = psDBBean.getSiteId();
+        String sAppId = psDBBean.getAppId();
 
         StringBuilder sb =new StringBuilder();
         // 動作フレームワーク判定
@@ -278,7 +281,6 @@ public class TmgSearchRangeUtil  {
         }
         // V4の処理
         else {
-
             // 検索対象範囲APIを呼び出してEXISTS句を取得する
             // ログインユーザーのグループをin句に挿入する形で取得
             String userGroupCodeListString = getUserGroupCodeListString(pSession);
@@ -330,6 +332,7 @@ public class TmgSearchRangeUtil  {
     private int getBaseSectionCount(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectBaseSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString));
+        log.info("【getBaseSectionCount：{}】",vecQuery);
         PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
         String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
         int nUserSectionCount = Integer.parseInt(sConut);
@@ -359,6 +362,7 @@ public class TmgSearchRangeUtil  {
     private void addUserSectionLayerList(PsDBBean psDBBean,List<String> sectionLayerList) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectUserSectionLayerList(psDBBean));
+        log.info("【addUserSectionLayerList：{}】",vecQuery);
         PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
         for(int i = 0 ;i < psDBBean.getCount(psResult,0); i++){
             sectionLayerList.add(psDBBean.valueAtColumnRow(psResult,0, 0, i));
@@ -389,6 +393,7 @@ public class TmgSearchRangeUtil  {
     private int getUserSectionCount(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectUserSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString));
+        log.info("【getUserSectionCount：{}】",vecQuery);
         PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
         String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
         int nUserSectionCount = Integer.parseInt(sConut);
@@ -418,9 +423,11 @@ public class TmgSearchRangeUtil  {
     private int getAllSectionCount(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectALLSectionCheck(psDBBean,sSiteId, sAppId, userGroupCodeListString));
+        log.info("【getAllSectionCount，query：{}】",vecQuery);
         PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+        log.info("【getAllSectionCount，psResult：{}】",psResult);
+        // PsResult(result=[[[0]]], exception=[])
         String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
-
         int nUserSectionCount = Integer.parseInt(sConut);
         return nUserSectionCount;
     }
