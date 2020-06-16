@@ -431,7 +431,7 @@
                 }
             },
             created() {
-                this.getRestTypeForApply()
+                setTimeout(()=> this.getRestTypeForApply())
                 this.getRestTypeForReview()
                 this.getRestInfo()
                 this.getStatusList()
