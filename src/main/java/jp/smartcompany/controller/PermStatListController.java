@@ -154,7 +154,7 @@ public class PermStatListController {
     @ResponseBody
     public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         permStatListBean.execute(psDBBean);
-        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount();
+        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean);
         return oneMonthDetailVoList;
     }
 
