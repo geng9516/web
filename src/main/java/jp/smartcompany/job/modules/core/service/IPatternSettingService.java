@@ -77,5 +77,32 @@ public interface IPatternSettingService extends IService<Object> {
      */
     List<TmgPatternDTO> selectPatternSelectList(String custId, String compCode, String groupId, String patternId);
 
+    /**
+     * DELETE TMG_PATTERN
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     */
+    void deleteTmgPattern(String custId, String compCode, String groupId,String sectionId, String patternId);
+
+    /**
+     * DELETE TMG_PATTERN_REST
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     */
+    void deleteTmgPatternRest(String custId, String compCode, String groupId,String sectionId, String patternId);
+
+    /**
+     * DELETE TMG_PATTERN_APPLIES
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param patternId
+     */
+    void deleteTmgPatternApplies(String custId, String compCode, String groupId,String sectionId, String patternId);
+
 
 }

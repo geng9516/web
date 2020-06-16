@@ -183,8 +183,8 @@
     <!-- DELETE TMG_PATTERN -->
     <delete id="deleteTmgPattern" parameterType="java.util.HashMap">
         delete from tmg_pattern
-        where tpa_ccustomerid = '01'
-        and tpa_ccompanyid = '01'
+        where tpa_ccustomerid = #{custId}
+        and tpa_ccompanyid = #{compCode}
         <if test="sectionId != null">
             and tpa_csectionid = #{sectionId}
         </if>
@@ -203,8 +203,8 @@
     <!-- DELETE TMG_PATTERN_REST -->
     <delete id="deleteTmgPatternRest" parameterType="java.util.HashMap">
         delete from tmg_pattern_rest
-        where tpr_ccustomerid = '01'
-        and tpr_ccompanyid = '01'
+        where tpr_ccustomerid = #{custId}
+        and tpr_ccompanyid = #{compCode}
         <if test="sectionId != null">
             and tpr_csectionid = #{sectionId}
         </if>
@@ -223,8 +223,8 @@
     <!-- DELETE TMG_PATTERN_APPLIES -->
     <delete id="deleteTmgPatternApplies" parameterType="java.util.HashMap">
         delete from tmg_pattern_applies
-        where tpaa_ccustomerid = '01'
-        and tpaa_ccompanyid = '01'
+        where tpaa_ccustomerid = #{custId}
+        and tpaa_ccompanyid = #{compCode}
         <if test="sectionId != null">
             and tpaa_csectionid = #{sectionId}
         </if>

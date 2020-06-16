@@ -76,4 +76,37 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
         params.put("patternId", patternId);
         return baseMapper.selectPatternSelectList(params);
     }
+
+    @Override
+    public void deleteTmgPattern(String custId, String compCode, String groupId,String sectionId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("sectionId", sectionId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("patternId", patternId);
+        baseMapper.deleteTmgPattern(params);
+    }
+
+    @Override
+    public void deleteTmgPatternRest(String custId, String compCode, String groupId,String sectionId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("sectionId", sectionId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("patternId", patternId);
+        baseMapper.deleteTmgPatternRest(params);
+    }
+
+    @Override
+    public void deleteTmgPatternApplies(String custId, String compCode, String groupId,String sectionId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("sectionId", sectionId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("patternId", patternId);
+        baseMapper.deleteTmgPatternApplies(params);
+    }
 }

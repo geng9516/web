@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.PatternSetting;
 
 import cn.hutool.core.date.DateUtil;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -174,6 +176,32 @@ public class PatternSettingBean {
         tmgPatternVO.setTmgPatternDTO(this.selectTmgPatternById(groupId, patternId));
         tmgPatternVO.setPatternList(this.selectPatternSelectList(groupId, patternId));
         return tmgPatternVO;
+    }
+
+    /**
+     * パターンを削除
+     *　
+     * @param groupId
+     * @param sectionId
+     * @param patternId
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public void deletePattern(String groupId, String sectionId, String patternId) {
+        if (null == groupId || "".equals(groupId)) {
+            logger.warn("GROUP番号が空です");
+        }
+        if (null == sectionId || "".equals(sectionId)) {
+            logger.warn("SECTION番号が空です");
+        }
+        if (null == patternId || "".equals(patternId)) {
+            logger.warn("パターン番号が空です");
+            return;
+        }
+
+        iPatternSettingService.deleteTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);
+        iPatternSettingService.deleteTmgPatternApplies(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);
+        iPatternSettingService.deleteTmgPatternRest(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);
+
     }
 
 
