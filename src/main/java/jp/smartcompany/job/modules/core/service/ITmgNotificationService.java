@@ -26,7 +26,13 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          */
         List<notificationListVo> selectNotificationList(paramNotificationListDto params);
 
-
+        /**
+         * 休暇・休業申請を一覧COUNT
+         *
+         * @param params 　params
+         * @return String パターン
+         */
+        int selectNotificationListCount(paramNotificationListDto params);
 
         /**
          * 申請詳細を取得するSQLを返す

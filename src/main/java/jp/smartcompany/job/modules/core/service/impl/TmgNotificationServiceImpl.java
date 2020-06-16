@@ -37,7 +37,16 @@ import java.util.Map;
                 List<notificationListVo> notificationListVoList = baseMapper.selectNotificationList(params);
                 return notificationListVoList;
         }
-
+        /**
+         * 休業申請を一覧COUNT
+         *
+         * @param params 　params
+         * @return int パターン
+         */
+        @Override
+        public int selectNotificationListCount(paramNotificationListDto params){
+                return baseMapper.selectNotificationListCount(params);
+        }
 
         /**
          * 申請詳細を取得するSQLを返す

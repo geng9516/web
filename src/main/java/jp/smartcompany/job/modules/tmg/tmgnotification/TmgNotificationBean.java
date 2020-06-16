@@ -441,7 +441,7 @@ public class TmgNotificationBean {
     }
 
     //一覧
-    public List<NotificationDispDetailVo> getNotificationList(String statusFlg,String ntfTypeId,String year,PsDBBean psDBBean){
+    public NotificationDispVo getNotificationList(String statusFlg,String ntfTypeId,String year,int page,PsDBBean psDBBean){
 
         //基本信息
         param.setCompId(psDBBean.getCustID());
@@ -449,9 +449,9 @@ public class TmgNotificationBean {
         param.setTargetUser(psDBBean.getTargetUser());
         param.setUserCode(psDBBean.getUserCode());
         param.setSiteId(psDBBean.getSiteId());
-        //param.setSiteId("TMG_INP");
         param.setLang(psDBBean.getLanguage());
-
+        param.setPage(page);
+        //基准日取得 入力site为系统日期
         param.setToday(TmgUtil.getSysdate());
         param.setTodayD(DateUtil.parse(param.getToday()));
         //アクション
@@ -468,11 +468,17 @@ public class TmgNotificationBean {
         } else if (statusFlg == null) {
             statusFlg = STATUS_WAIT;
         }
+        //申请状态取得
         param.setStatus(statusFlg);
-
+        //申请typesql取得
         param.setMgdSql(buildSQLForSelectGenericDetail("TMG_NTFTYPE", null, "MGD_CMASTERCODE"));
+        //默认page
+        if(StrUtil.hasEmpty(String.valueOf(param.getPage()))){
+            param.setPage(1);
+        }
+        //数据取得
         List<notificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
-
+        //数据处理
         List<NotificationDispDetailVo> dispVo=new ArrayList<NotificationDispDetailVo>();
         for(notificationListVo nlVo:notificationListVoList){
             NotificationDispDetailVo nddVo = new NotificationDispDetailVo();
@@ -501,7 +507,6 @@ public class TmgNotificationBean {
             nddVo.setDayOfWeek(nlVo.getDayOfWeek());
             nddVo.setFinalApprovelLevel(nlVo.getFinalApprovelLevel());
             nddVo.setTntfCowncomment(nlVo.getTntfCowncomment());
-
             //数据取消文本处理
             if(nddVo.getTntfCstatusflg().equals(STATUS_WITHDRAW)||nddVo.getTntfCstatusflg().equals(STATUS_REJECT)){
 
@@ -518,7 +523,6 @@ public class TmgNotificationBean {
                     nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
                 }
             }
-
             if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())){
                 param.setNtfNo(nlVo.getTntfCntfNo());
                 // 4 申請区分略称を取得
@@ -532,8 +536,10 @@ public class TmgNotificationBean {
             dispVo.add(nddVo);
 
         }
-
-        return dispVo;
+        NotificationDispVo notificationDispVo= new NotificationDispVo();
+        notificationDispVo.setList(dispVo);
+        notificationDispVo.setCount(iTmgNotificationService.selectNotificationListCount(param));
+        return notificationDispVo;
     }
 
     /**
@@ -994,7 +1000,7 @@ public class TmgNotificationBean {
         //String sectionNAme=iHistDesignationService.selectSectionNAme(param.getCustId(),param.getCompId(),param.getTodayD(),referList.getTargetSec());
         //modelMap.addAttribute("sectionNAme", sectionNAme);
         // TODO 5 件数
-        //int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
+        int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
         //modelMap.addAttribute("selectNotificationCount", selectNotificationCount);
         // 6 遡り期限
         String selectBackLimit = iTmgNotificationService.selectBackLimit(param.getCustId(), param.getCompId(), param.getTargetUser());

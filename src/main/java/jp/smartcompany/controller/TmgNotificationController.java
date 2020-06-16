@@ -42,11 +42,12 @@ public class TmgNotificationController {
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("NotificationList")
-    public List<NotificationDispDetailVo> getNotificationList(@RequestParam("statusFlg") String statusFlg,
+    public NotificationDispVo getNotificationList(@RequestParam("statusFlg") String statusFlg,
                                                         @RequestParam("ntfTypeId") String ntfTypeId,
                                                         @RequestParam("year") String year,
+                                                        @RequestParam("page") int page,
                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,psDBBean);
+        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,page,psDBBean);
     }
 
     /**
