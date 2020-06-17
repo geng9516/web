@@ -1,21 +1,15 @@
 package jp.smartcompany.controller;
 
-import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
-import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
-
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -153,10 +147,21 @@ public class PermStatListController {
      */
     @GetMapping("selectDayCount")
     @ResponseBody
-    public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public ArrayList<HashMap> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        ArrayList<HashMap> ids = new ArrayList<>();
+
         TmgReferList referList =permStatListBean.execute(psDBBean);
         List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean, referList);
-        return oneMonthDetailVoList;
+
+        for (OneMonthDetailVo item : oneMonthDetailVoList){
+            LinkedHashMap listHashMap = new LinkedHashMap();
+            listHashMap.put("name",item.getSeq()+"\n"+item.getDayOfWeek());
+            listHashMap.put("tcaCholflg",item.getTcaCholflg());
+            listHashMap.put("day",item.getDay());
+            ids.add(listHashMap);
+        }
+        return ids;
     }
 
     /******************************************************************************************************************/

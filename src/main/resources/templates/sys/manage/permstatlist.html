@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head
-        th:replace="layout/header::common_header(title='承認状況一覧',cssPaths='/pages/content.min.css,' + '/pages/permstatlist.min.css')">
+        th:replace="layout/header::common_header(title='承認状況一覧',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
@@ -40,7 +40,8 @@
                             所属
                         </div>
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
-                              empty-text="所属データなし"></Tree>
+                              empty-text="所属データなし">
+                        </Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             社員
@@ -113,11 +114,13 @@
                 showDayApply: false,
                 emplistLoading: false,
                 referListObject: {
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                     [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
-                    psSite: Utils.getUrlParam(location.href, 'psSite')
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 21
                 },
                 deptDrawShow: false,
                 treeData: [],
@@ -127,10 +130,12 @@
                 query: {
                     employeeId: [[${ session.psSession.loginEmployee }]],
                     txtAction: 'ACT_DISP_MONTHLY',
-                    txtDYYYYMM: '',
+                    txtDYYYYMM: '2020/03/01',
                     txtDYYYYMMDD: '',
                     txtCEMPLOYEEID: '',
-                    psSite: Utils.getUrlParam(location.href, 'psSite')
+                    sectionid: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
                 selectDisabled: false,    //年月選択可否制御
                 dispMonthlyList: [],       //年月リスト
@@ -139,7 +144,15 @@
         },
         async mounted() {
             console.log([[${ session }]])
-            this.getOrgTree()
+            // this.getOrgTree(),
+            this.getTableHead(),
+
+            this.getSelectDayCount(),
+            this.getSelectGetCalendarList(),
+            this.getTmgMonthlyInfoVOList(),
+
+
+            this.getTableData()
         },
         computed: {
             tableHeadFixed() {
@@ -164,11 +177,11 @@
                 this.tableHead.forEach((e, i) => {
                     result = result.concat({
                         // title: e,
-                        className: e.indexOf('土') > -1 || e.indexOf('日') > -1 ? 'rest' : '',
+                        className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
                         minWidth: 25,
                         renderHeader: (h, params) => {
                             return (
-                                <span style="cursor: pointer;" class={'table-head'} onClick={this.handleClickHead.bind(this, params)}>{e}</span>
+                                <span style="cursor: pointer;" class={'table-head'} onClick={this.handleClickHead.bind(this, params)}>{e.name}</span>
                             )
                         },
                         slot: `m${i + 1}`,
@@ -180,6 +193,8 @@
                     width: 60,
                     align: 'center'
                 })
+                console.log("result")
+                console.log(result)
                 return result
             }
         },
@@ -197,11 +212,28 @@
 
             },
             async getTableHead() {
-                const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableHead`)
+                // const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableHead`)
+                const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
                 this.tableHead = data
+                console.log(this.tableHead)
             },
             async getTableData() {
-                const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
+                // const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
+                // this.tableData = data
+                // this.getDeptName(this.treeData)
+            },
+            async getSelectDayCount() {
+                // const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
+                // this.tableHead = data
+                // this.tableHead(this.treeData)
+            },
+            async getSelectGetCalendarList() {
+                const { data } = await this.http.get('sys/permStatList/selectGetCalendarList', this.query)
+                // this.tableHead = data
+                // this.tableHead(this.treeData)
+            },
+            async getTmgMonthlyInfoVOList() {
+                const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                 this.tableData = data
                 this.getDeptName(this.treeData)
             },
@@ -340,7 +372,8 @@
                 const result = e.match(/^[\s\S]+(?=\()/g)
                 return (result && result[0]) || e
             },
-            handleClickHead() {
+            handleClickHead(e) {
+                console.log(e)
                 this.showDayApply = true
             },
             toWorkPage() {
