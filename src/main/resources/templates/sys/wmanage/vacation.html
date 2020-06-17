@@ -33,8 +33,19 @@
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
-                        <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                        <Row class="tl">
+                            <i-col span="8" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="8" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                class="mb5" placeholder="日付け" format="yyyy/MM/dd" ref="datePicker"
+                                @on-change="handleDeptDateChange"></date-picker>
+                            </i-col>
+                        </Row>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
                     </Drawer>
                 </span>
                 <span style="flex:1"></span>
@@ -122,10 +133,12 @@
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                         [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
                     },
+                    empDeptLoading: false,
                     deptDrawShow: false,
                     treeData: [],
                     defaultDeptId: '',
@@ -149,20 +162,28 @@
                         this.loading = false
                     }
                 },
-                async getOrgTree() {
+                async getOrgTree(refreshDept) {
+                    if(refreshDept) this.empDeptLoading = true
                     try {
-                        const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
+                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
-                        this.treeData = Utils.convertTreeData(Utils.convertToData(data))
+                        this.treeData = Utils.convertTreeData(orgList)
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
+                        this.empDeptLoading = false
                     }
                 },
                 showDay() {
                     //todo: 跳到详情页
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
+                },
+                async handleDeptDateChange(e) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    await this.getOrgTree(true)
+                    this.$Message.success('所属図更新完了')
                 },
                 getDeptName(data) {
                     // 根据id遍历找出deptName

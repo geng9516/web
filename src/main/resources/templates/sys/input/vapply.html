@@ -431,7 +431,7 @@
                 }
             },
             created() {
-                setTimeout(()=> this.getRestTypeForApply())
+                this.getRestTypeForApply()
                 this.getRestTypeForReview()
                 this.getRestInfo()
                 this.getStatusList()
@@ -497,7 +497,7 @@
                 async getRestInfo() {
                     this.restInfoLoading = true
                     try {
-                        const { data } = await this.http.get('/sys/vapply/RestYearList')
+                        const { data } = await this.http.get('/sys/vapply/RestYearList', this.opts)
                         this.restInfoList = data
                     } catch (error) {
                         return
@@ -506,7 +506,7 @@
                     }
                 },
                 async getStatusList() {
-                    const { data } = await this.http.get('/sys/vapply/StatusFlg')
+                    const { data } = await this.http.get('/sys/vapply/StatusFlg', this.opts)
                     this.statusList = data
                 },
                 getApplyHistory: Debounce(async function () {
