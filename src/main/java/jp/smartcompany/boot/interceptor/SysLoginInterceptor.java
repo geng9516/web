@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
@@ -52,6 +53,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
+        ContextUtil.add(psDBBean);
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
         String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
@@ -223,8 +225,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put("custid",session.getLoginCustomer());
         }
 
-        psDBBean.setTargetComp(session.getLoginCompany());
-        psDBBean.setTargetCust(session.getLoginCustomer());
+        PsDBBean dbBean = ContextUtil.getDbBean();
+        dbBean.setTargetComp(session.getLoginCompany());
+        dbBean.setTargetCust(session.getLoginCustomer());
 
         // 管理Site的选中员工和部门
         String targetAdminSection = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
@@ -244,20 +247,20 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
         if (StrUtil.isNotBlank(targetAdminSection)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,targetAdminSection);
-            psDBBean.setTargetDept(targetAdminSection);
+            dbBean.setTargetDept(targetAdminSection);
         }
         if (StrUtil.isNotBlank(targetAdminEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,targetAdminEmp);
-            psDBBean.setTargetUser(targetAdminEmp);
+            dbBean.setTargetUser(targetAdminEmp);
         }
 
         if (StrUtil.isNotBlank(targetPermSection)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetPermSection);
-            psDBBean.setTargetDept(targetPermSection);
+            dbBean.setTargetDept(targetPermSection);
         }
         if (StrUtil.isNotBlank(targetPermEmp)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
-            psDBBean.setTargetDept(targetPermEmp);
+            dbBean.setTargetDept(targetPermEmp);
         }
 
         if (StrUtil.isNotBlank(targetGroup)){
@@ -271,9 +274,8 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(appId)) {
             hashtable.put("AppId",appId);
         }
-
-        psDBBean.setSysControl(hashtable);
-        request.setAttribute("BeanName",psDBBean);
+        dbBean.setSysControl(hashtable);
+        request.setAttribute("BeanName",dbBean);
 
     }
 

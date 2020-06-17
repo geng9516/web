@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.util;
 
+import jp.smartcompany.job.modules.core.util.PsDBBean;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -11,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author xiao wenpeng
  */
 public class ContextUtil {
+
+  private static final ThreadLocal<PsDBBean> beanHolder = new ThreadLocal<>();
 
   public static HttpServletRequest getHttpRequest() {
     RequestAttributes servletRequestAttributes = RequestContextHolder.getRequestAttributes();
@@ -43,6 +46,14 @@ public class ContextUtil {
 
   public static Object getAttr(String key) {
     return getHttpRequest().getAttribute(key);
+  }
+
+  public static void add(PsDBBean psDbBean) {
+    beanHolder.set(psDbBean);
+  }
+
+  public static PsDBBean getDbBean() {
+    return beanHolder.get();
   }
 
 }
