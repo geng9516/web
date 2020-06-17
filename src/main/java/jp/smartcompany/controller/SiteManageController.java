@@ -4,7 +4,6 @@ import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -97,10 +96,20 @@ public class SiteManageController {
      * @return
      */
     @GetMapping("permstatlist")
-    public String toManagePermstatList(@RequestParam("moduleIndex") Integer moduleIndex,
-                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+    public String toManagePermstatList(
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            @RequestParam("moduleIndex") Integer moduleIndex,
+            @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
         modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+                .addAttribute("menuId",menuId)
+                .addAttribute("targetSection",referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
         return "sys/manage/permstatlist";
     }
 
