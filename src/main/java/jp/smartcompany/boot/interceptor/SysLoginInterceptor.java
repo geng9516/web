@@ -59,8 +59,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
         // customerId固定为01
         String customerId = "01";
-        System.out.println(systemCode+"***");
-        System.out.println(iMastSystemService);
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
         if (StrUtil.isBlank(systemCode)) {
             systemCode = systemList.get(0).getMsCsystemidPk();
