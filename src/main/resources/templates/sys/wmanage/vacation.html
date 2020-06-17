@@ -183,7 +183,7 @@
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
                     await this.getOrgTree(true)
-                    this.$Message.success('所属図更新完了')
+                    this.$Notice.success({ title:'所属図更新完了' })
                 },
                 getDeptName(data) {
                     // 根据id遍历找出deptName

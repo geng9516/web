@@ -1,17 +1,21 @@
 package jp.smartcompany.controller;
 
-
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 /**
  * 部門ツリー
@@ -24,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class TreeController {
 
     @GetMapping
-    public GlobalResponse orgTree(@RequestAttribute("BeanName") PsDBBean psDBBean,
+    public GlobalResponse tree(@RequestAttribute("BeanName") PsDBBean psDBBean,
                                   @RequestParam("type") Integer type,
                                   @RequestParam(value = "useRecordDate",required = false,defaultValue = "true") Boolean useRecordDate,
                                   @RequestParam(value="useManage",required = false,defaultValue = "false") Boolean useManage,
@@ -103,6 +107,20 @@ public class TreeController {
             }
         }
         return globalResponse;
+    }
+
+    @GetMapping("conditions")
+    public GlobalResponse searchTreeConditions() {
+        Map<String,String> searchTypes = MapUtil.newHashMap();
+        searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_KANANAME,TmgUtil.getPropertyValue("TTV_PERM_MSG_KANA_NAME"));
+        searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_KANJINAME,TmgUtil.getPropertyValue("TTV_PERM_MSG_KANA_NAME"));
+        searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_EMPLOYEEID,TmgUtil.getPropertyValue("TTV_PERM_MSG_EMPLOYEEID"));
+        Map<String,String> searchConditions = MapUtil.newHashMap();
+        searchConditions.put(TmgUtil.Cs_TREE_VIEW_CONDITION_BROADMATCH,TmgUtil.getPropertyValue("TTV_PERM_MSG_MATCH_BROAD"));
+        searchConditions.put(TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH,TmgUtil.getPropertyValue("TTV_PERM_MSG_MATCH_PREVIOUS"));
+        searchConditions.put(TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH,TmgUtil.getPropertyValue("TTV_PERM_MSG_MATCH_BACKWARD"));
+        TreeSearchConditionVO treeSearchConditionVO = new TreeSearchConditionVO(TmgUtil.getPropertyValue("TTV_PERM_BTN_SEARCH"),searchTypes,searchConditions);
+        return GlobalResponse.ok(treeSearchConditionVO);
     }
 
     @GetMapping("emplist")

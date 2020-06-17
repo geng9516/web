@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import jp.smartcompany.boot.util.SysUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import cn.hutool.core.date.DateUtil;
@@ -2000,7 +2001,15 @@ public class TmgUtil {
     }
 
 
-
+    /****************************************************************************
+     * リソースバンドルファイル(TmgUtil_ja_JP.Properties)から値を取得します。
+     *
+     * @param	sKey	キー文字列
+     * @return String	値
+     */
+    public static String getPropertyValue(String sKey){
+        return SysUtil.getpropertyvalue("ja", sKey, "jp.smartcompany.job.modules.tmg.util.TmgUtil");
+    }
 
     public static String Mintue2HHmi(int date){
         String HHmi;

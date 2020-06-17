@@ -9,7 +9,10 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.Acquired5DaysListVO;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,11 +37,18 @@ public class TmgAcquired5DaysHolidayBean {
      * PsDBBean
      */
     private PsDBBean psDBBean;
-
+    /**
+     * IMastGenericDetailService
+     */
+    public final IMastGenericDetailService iMastGenericDetailService;
     /**
      * ITmgDailyService
      */
     private final ITmgDailyService iTmgDailyService;
+    /**
+     * ITmgCalendarService
+     */
+    private final ITmgCalendarService iTmgCalendarService;
 
     /**
      * ITmgAcquired5daysholidayService
@@ -214,6 +224,293 @@ public class TmgAcquired5DaysHolidayBean {
                     psDBBean.getCompCode()
             );
         }
+    }
+
+    public String baseDate = null;
+
+    private String getSysdate(){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+        return sdf.format(new Date());
+    }
+    public void setReferList(int pnTreeViewType){
+        try{
+            referList = new TmgReferList(psDBBean, "TmgSample", baseDate, pnTreeViewType, true,
+                    true, false, false, true
+            );
+
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 表示対象者の職員番号格納処理
+     * @param   psSite サイトID
+     *          psUserCode ログインユーザの職員番号
+     *          psEmp 検索条件の職員番号
+     *          psTargetEmpId 申請者の職員番号
+     * @return  なし
+     */
+    private void setTargetUser(String psSite, String psUserCode){
+
+        // 汎用参照リスト
+        setReferList(TmgReferList.TREEVIEW_TYPE_EMP);
+
+        psDBBean.setTargetUser(referList.getTargetEmployee());
+        // 組織ツリー情報でパラメータの再構築を行う
+        getParam(1);
+
+    }
+    public TmgReferList getReferList(){
+        return referList;
+    }
+    /** 参照権限：参照可能 */
+    private static final boolean CB_CAN_REFER = true;
+    /** 参照権限：参照不可能  */
+    private static final boolean CB_CANT_REFER = false;
+
+    /** 勤怠シートの参照権限(基準日の翌月) */
+    boolean _authorityNextYear       = false;
+    /** 勤怠シートの参照権限(基準日の翌年)設定メソッド */
+    public void setAuthorityNextYear(boolean bValue) {
+        _authorityNextYear = bValue;
+    }
+    /** 勤怠シートの参照権限(基準日の翌年)取得メソッド */
+    public boolean getAuthorityNextYear() {
+        return _authorityNextYear;
+    }
+
+    /**
+     * メインメソッド
+     */
+    public void execute() throws Exception {
+
+
+        // パラメータ
+        getParam(0);
+
+        // 表示対象日付をセット
+        try{
+            if(psDBBean.getReqParam("txtDATE") == null || psDBBean.getReqParam("txtDATE").equals("") == true){
+                baseDate = getSysdate();
+            }else{
+                baseDate = psDBBean.getReqParam("txtDATE");
+            }
+        }catch(Exception e){
+            baseDate = getSysdate();
+        }
+
+        // 表示対象者の職員番号格納処理
+        setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode());
+
+        String sBaseDate = getReferList().getRecordDate(); // 組織ツリーの基準日の設定ここから
+        try {
+            sBaseDate = String.valueOf(this.getYear()) + sBaseDate.substring(4);
+        } catch (Exception e) {
+
+        }
+        // カレンダー関連
+        getCalender(sBaseDate);
+
+        // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
+        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
+
+            String sAction           = psDBBean.getReqParam("txtAction");
+            String sTargetSec        = referList.getTargetSec();
+            String sStartDateSysdate = TmgUtil.getSysdate();
+
+            // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
+            // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
+            if((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && (sAction == null || sAction.length() == 0))
+                    || (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && !(sTargetSec == null || sTargetSec.length() == 0) && (sAction == null || sAction.length() == 0))) {
+
+                // 参照権限チェック(現在時点での年度)
+                if (referList.existsAnyone(sStartDateSysdate) && referList.isThereSomeEmployees(sStartDateSysdate)) {
+                    //setAuthorityYear(CB_CAN_REFER);
+                    setAuthorityNextYear(CB_CAN_REFER);
+                    // 参照権限が無い場合
+                } else {
+                    //setAuthorityYear(CB_CANT_REFER);
+                    setAuthorityNextYear(CB_CANT_REFER);
+                }
+                // 初期表示時以外
+            } else {
+                // 組織未選択時は権限チェックを行わない
+                if(!(sTargetSec == null || sTargetSec.length() == 0)) {
+                    if((referList.existsAnyone(sStartDateSysdate) && referList.isThereSomeEmployees(sStartDateSysdate))) {
+                        //setAuthorityYear(CB_CAN_REFER);
+                        setAuthorityNextYear(CB_CAN_REFER);
+                    } else {
+                        //setAuthorityYear(CB_CANT_REFER);
+                        setAuthorityNextYear(CB_CANT_REFER);
+                    }
+
+                }
+            }
+        }
+
+    }
+    /** 日付フォーマット */
+    public static final String DATE_FORMAT      			= "yyyy/MM/dd";
+
+    /**
+     * カレンダー関連情報を取得するメソッド
+     *
+     * @return int    年度
+     */
+    private void getCalender(String psDate) {
+
+        SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+
+        // 検索
+        // 年度開始・終了日
+        dateDto dateDto = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
+        // 前翌年度有無判定
+        calendarDto calendarDto = iTmgCalendarService.selectCalendar(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
+
+        try {
+
+            // 年度開始日・終了日
+            setStartDate(dateDto.getStartDate());
+            setEndDate(dateDto.getEndDate());
+            setToday(dateDto.getBaseDate());
+
+            // 前翌年度
+            Date dMin = sdf.parse(calendarDto.getMinMonth());
+            Date dMax = sdf.parse(calendarDto.getMaxMonth());
+            Date dStart = sdf.parse(calendarDto.getStartYearDate());
+            Date dEnd = sdf.parse(calendarDto.getEndYearDate());
+
+            if (dMin.before(dStart)) {
+                setPreviousYear(true);
+            }
+            if (dMax.after(dEnd)) {
+                setNextYear(true);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private String  gsStartDate     = null;  // 年度開始日
+    private String  gsEndDate       = null;  // 年度終了日
+    private String  gsToday         = null;  // 今日
+
+    public String getStartDate() {
+        return gsStartDate;
+    }
+
+    public void setStartDate(String startDate) {
+        gsStartDate = startDate;
+    }
+
+    public String getEndDate() {
+        return gsEndDate;
+    }
+
+    public void setEndDate(String endDate) {
+        gsEndDate = endDate;
+    }
+
+    public String getToday() {
+        return gsToday;
+    }
+
+    public void setToday(String today) {
+        gsToday = today;
+    }
+
+    /** 開始年度 */
+    public static final int START_YEAR 		= 2019;
+
+    public boolean isPreviousYear() {
+        return gbPreviousYear;
+    }
+
+    public void setPreviousYear(boolean previousYear) {
+        gbPreviousYear = previousYear;
+    }
+    public boolean isNextYear() {
+        return gbNextYear;
+    }
+
+    public void setNextYear(boolean nextYear) {
+        gbNextYear = nextYear;
+    }
+
+
+    private boolean gbPreviousYear  = false; // 前年度ボタン
+    private boolean gbNextYear      = false; // 翌年度ボタン
+
+    /** 初期処理判定フラグ */
+    private static final int INITIAL_TREATMENT = 0;
+    private int     giThisYear      = 0;     // 今年度
+    public int getThisYear() {
+        return giThisYear;
+    }
+
+    public void setThisYear(int thisYear) {
+        giThisYear = thisYear;
+    }
+
+    // 変数
+    private int     giYear          = 0;     // 年度
+
+    public int getYear() {
+        return giYear;
+    }
+
+    public void setYear(int year) {
+        giYear = year;
+    }
+
+    /** リクエストキー - 再表示ボタン使用判定用 */
+    private static final String TREEVIEW_KEY_REFRESH_FLG  	= "txtTmgReferListTreeViewRefreshFlg";
+    /**
+     * パラメータを取得するメソッド
+     * @param  piPBranchingProcess  0:初期処理、1:組織ツリー情報使用処理
+     * @return  なし
+
+     */
+    private void getParam(int piPBranchingProcess){
+
+        // 初期処理
+        if (piPBranchingProcess == INITIAL_TREATMENT){
+            // 今年度
+            setThisYear(getDefaultYear());
+            // 年度
+            try {
+                setYear(Integer.parseInt(psDBBean.getReqParam("year")));
+            } catch (Exception e){
+                // 取得出来なかったらDBより取得
+                setYear(getThisYear());
+            }
+        }
+        // 組織ツリー情報取得後再構築を行う
+        else {
+            // 組織ツリー基準日情報チェック
+            if (referList.getRecordDate() != null){
+                setThisYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
+                // 再表示ボタン使用判定
+                if (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) != null && !"".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))){
+                    setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
+                }
+            }
+        }
+    }
+
+    /**
+     * 年度を取得するメソッド
+     * @return int    年度
+     */
+    private int getDefaultYear() {
+
+
+        int year = iMastGenericDetailService.selectYear(psDBBean.getCustID(), psDBBean.getCompCode());
+        return year;
+
     }
 
 }

@@ -38,6 +38,12 @@ public class GlobalResponse extends HashMap<String, Object> {
         return r;
     }
 
+    public static <T> GlobalResponse ok(T data) {
+        GlobalResponse r = putData(SuccessMessage.SUCCESS.code(), SuccessMessage.SUCCESS.msg());
+        r.put(Constant.DATA, data);
+        return r;
+    }
+
     public static GlobalResponse error() {
         return error(ErrorMessage.SERVER_INTERNAL_ERROR);
     }

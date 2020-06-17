@@ -65,10 +65,13 @@ public class TmgReferList {
     // 返回给前端使用的树状参数键名，前端用来作为公共参数的建明
     public static final String ATTR_TREEVIEW_RECORD_DATE = "TREEVIEW_KEY_RECORD_DATE";
     public static final String ATTR_TREEVIEW_REFRESH_FLG = "TREEVIEW_KEY_REFRESH_FLG";
+
     public static final String ATTR_TREEVIEW_ADMIN_TARGET_EMP = "TREEVIEW_KEY_ADMIN_TARGET_EMP";
     public static final String ATTR_TREEVIEW_ADMIN_TARGET_SECTION = "TREEVIEW_KEY_ADMIN_TARGET_SECTION";
+
     public static final String ATTR_TREEVIEW_PERM_TARGET_EMP = "TREEVIEW_KEY_PERM_TARGET_EMP";
     public static final String ATTR_TREEVIEW_PERM_TARGET_SECTION = "TREEVIEW_KEY_PERM_TARGET_SECTION";
+    public static final String ATTR_TREEVIEW_PERM_TARGET_GROUP = "TREEVIEW_KEY_PERM_TARGET_GROUP";
 
     private PsDBBean psDBBean;
     private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
