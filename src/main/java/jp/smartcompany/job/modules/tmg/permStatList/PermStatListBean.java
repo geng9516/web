@@ -1,8 +1,7 @@
 package jp.smartcompany.job.modules.tmg.permStatList;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.date.DateUtil;
+
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
@@ -182,14 +181,6 @@ public class PermStatListBean {
      * 対象年月(検索対象年月)
      */
     private String _reqDYYYYMM = null;
-//    /**
-//     * 対象職員番号
-//     */
-//    private String _reqEmployeeId = null;
-    /**
-     * 登録対象職員番号
-     */
-    //  private String _reqExecuteEmpId = null;
 
     /**
      * 対象年月の前月
