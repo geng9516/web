@@ -332,7 +332,7 @@ public class SysUtil {
      * JDKのバージョンが1.4.1以上かどうか判定する
      * @return boolean true:1.4.1以上 false:1.4.0以下
      */
-    public static final boolean isUpper141() {
+    public static boolean isUpper141() {
 
         // ▼2005/04/04 Saito
 //        ResourceBundle rb = ResourceBundle.getBundle("datasource");
@@ -383,6 +383,60 @@ public class SysUtil {
         }
 
         return false;
+    }
+
+    /***********************************************************************************************
+     * プロパティファイルより値を取得 言語区分がNULLの場合には英語モードとなります、また指定した取得キーが存在しない
+     * 場合には[default]をキーとした値を返す、[default]が存在しない場合にはNULLを返します。
+     * ResourceBundleのBaseNameはsApplicationnameにて指定
+     *
+     * @param psLanguage 言語区分 ja または en-us
+     * @param psValue プロパティファイルの取得キー
+     * @param psApplicationName ResourceBundleのBaseName
+     * @return String プロパティファイルの値
+     */
+    public static String getpropertyvalue(String psLanguage, String psValue,
+                                         String psApplicationName) {
+        ResourceBundle rb = null;
+        try {
+            if (psLanguage == null) {
+                psLanguage = "en-us";
+            }
+            int index = psLanguage.indexOf(",");
+            if (index != -1) {
+                psLanguage = psLanguage.substring(0, index);
+            }
+            Locale locale = null;
+            if (psLanguage.equalsIgnoreCase("en-us")) {
+                locale = Locale.US;
+            } else if (psLanguage.equalsIgnoreCase("ja")) {
+                locale = Locale.JAPAN;
+            } else {
+                locale = Locale.US;
+            }
+            rb = ResourceBundle.getBundle(psApplicationName, locale);
+            if (psLanguage.equalsIgnoreCase("ja")) {
+                if (isUpper141()) {
+                    return new String(rb.getString(psValue).getBytes("8859_1"),
+                            "Windows-31J");
+                }
+                return new String(rb.getString(psValue).getBytes("8859_1"),
+                        "Shift_JIS");
+            }
+            return rb.getString(psValue);
+        } catch (Exception e) {
+            e.printStackTrace();
+            try {
+                if (isUpper141()) {
+                    return new String(rb.getString("default")
+                            .getBytes("8859_1"), "Windows-31J");
+                }
+                return new String(rb.getString("default").getBytes("8859_1"),
+                        "Shift_JIS");
+            } catch (Exception e1) {
+            }
+        }
+        return null;
     }
 
 }
