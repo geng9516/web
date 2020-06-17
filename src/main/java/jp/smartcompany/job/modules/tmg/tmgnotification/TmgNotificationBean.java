@@ -6,7 +6,6 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.sun.org.apache.xpath.internal.objects.XNodeSetForDOM;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import java.io.IOException;
-import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
