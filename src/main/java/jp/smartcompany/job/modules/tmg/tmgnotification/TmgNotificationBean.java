@@ -35,7 +35,7 @@ import java.util.*;
 public class TmgNotificationBean {
 
     public final TmgReferList referList = null; // 汎用参照リスト;
-    public final PsDBBean psDBBean;
+    public  PsDBBean psDBBean;
     public final IMastGenericDetailService iMastGenericDetailService;
     public final ITmgNotificationService iTmgNotificationService;
     public final ITmgPaidHolidayService iTmgPaidHolidayService;

@@ -37,7 +37,7 @@ public class TmgResultsBean {
     /**
      * PsDBBean
      */
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
 
     /**
      * IMastGenericDetailService

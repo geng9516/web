@@ -16,10 +16,11 @@ import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+//import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
@@ -33,9 +34,6 @@ import java.util.*;
 @Getter
 @Setter
 @ToString
-@Service
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class PsDBBean {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
@@ -58,11 +56,19 @@ public class PsDBBean {
     protected Object ObjectQueries = null;
     protected String strGUID = null;
 
-    private final BaseSectionBusiness baseSectionBusiness;
-    private final IMastOrganisationService iMastOrganisationService;
-    private final IMastEmployeesService iMastEmployeesService;
-    private final IHistDesignationService iHistDesignationService;
-    private final ScCacheUtil scCacheUtil;
+    private BaseSectionBusiness baseSectionBusiness;
+    private IMastOrganisationService iMastOrganisationService;
+    private IMastEmployeesService iMastEmployeesService;
+    private IHistDesignationService iHistDesignationService;
+    private ScCacheUtil scCacheUtil;
+
+    public PsDBBean() {
+        baseSectionBusiness = SpringUtil.getBean(BaseSectionBusiness.class);
+        iMastOrganisationService = SpringUtil.getBean(IMastOrganisationService.class);
+        iMastEmployeesService = SpringUtil.getBean(IMastEmployeesService.class);
+        iHistDesignationService =SpringUtil.getBean(IHistDesignationService.class);
+        scCacheUtil = SpringUtil.getBean(ScCacheUtil.class);
+    }
 
     public HttpSession getSession(){
         HttpServletRequest request = ContextUtil.getHttpRequest();

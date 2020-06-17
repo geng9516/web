@@ -33,7 +33,7 @@ public class PaidholidayBean {
     /**
      * PsDBBean
      */
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
 
     private final IMastEmployeesService iMastEmployeesService;
 

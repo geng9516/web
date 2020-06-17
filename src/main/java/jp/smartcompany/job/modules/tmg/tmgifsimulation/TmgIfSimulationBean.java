@@ -25,7 +25,7 @@ public class TmgIfSimulationBean {
     /**
      * PsDBBean
      */
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
     /**
      * IMastGenericDetailService
      */

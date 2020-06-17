@@ -33,7 +33,7 @@ public class TmgAcquired5DaysHolidayBean {
     /**
      * PsDBBean
      */
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
 
     /**
      * ITmgDailyService

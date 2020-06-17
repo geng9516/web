@@ -48,24 +48,28 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
-    private final PsDBBean psDBBean;
     private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
+
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
-        ContextUtil.add(psDBBean);
+        ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
         String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
         // customerId固定为01
         String customerId = "01";
+        System.out.println(systemCode+"***");
+        System.out.println(iMastSystemService);
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
+        System.out.println("---");
         if (StrUtil.isBlank(systemCode)) {
             systemCode = systemList.get(0).getMsCsystemidPk();
             // 默认customerId都为01
             httpSession.setAttribute(Constant.SYSTEM_CODE, systemCode);
             httpSession.setAttribute(Constant.CUSTOMER_ID, customerId);
         }
+        System.out.println("---");
         // 初始化PsSession对象
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {
@@ -81,7 +85,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
                 loadMenus(request, systemCode, customerId, systemList);
             }
         }
-
+        System.out.println("===");
         return true;
     }
 
@@ -225,9 +229,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put("custid",session.getLoginCustomer());
         }
 
-        PsDBBean dbBean = ContextUtil.getDbBean();
-        dbBean.setTargetComp(session.getLoginCompany());
-        dbBean.setTargetCust(session.getLoginCustomer());
+        PsDBBean psDBBean = ContextUtil.getDbBean();
+        psDBBean.setTargetComp(session.getLoginCompany());
+        psDBBean.setTargetCust(session.getLoginCustomer());
 
         // 管理Site的选中员工和部门
         String targetAdminSection = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
@@ -247,20 +251,20 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
         if (StrUtil.isNotBlank(targetAdminSection)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,targetAdminSection);
-            dbBean.setTargetDept(targetAdminSection);
+            psDBBean.setTargetDept(targetAdminSection);
         }
         if (StrUtil.isNotBlank(targetAdminEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,targetAdminEmp);
-            dbBean.setTargetUser(targetAdminEmp);
+            psDBBean.setTargetUser(targetAdminEmp);
         }
 
         if (StrUtil.isNotBlank(targetPermSection)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetPermSection);
-            dbBean.setTargetDept(targetPermSection);
+            psDBBean.setTargetDept(targetPermSection);
         }
         if (StrUtil.isNotBlank(targetPermEmp)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
-            dbBean.setTargetDept(targetPermEmp);
+            psDBBean.setTargetDept(targetPermEmp);
         }
 
         if (StrUtil.isNotBlank(targetGroup)){
@@ -274,8 +278,8 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(appId)) {
             hashtable.put("AppId",appId);
         }
-        dbBean.setSysControl(hashtable);
-        request.setAttribute("BeanName",dbBean);
+        psDBBean.setSysControl(hashtable);
+        request.setAttribute("BeanName",psDBBean);
 
     }
 

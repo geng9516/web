@@ -31,7 +31,7 @@ public class DeptStatListBean {
     /**
      * PsDBBean
      */
-    private final PsDBBean psDBBean;
+    private PsDBBean psDBBean;
 
     /**
      * IMastGenericDetailService

@@ -48,7 +48,7 @@ public class OvertimeInstructBean {
     public final ITmgDailyDetailService iTmgDailyDetailService;
     public final ITmgDailyDetailCheckService ITmgDailyDetailCheckService;
     public final ITmgTriggerService  iTmgTriggerService;
-    public final PsDBBean psDBBean;
+    public PsDBBean psDBBean;
 
     ParamOvertimeInstructDto param = new ParamOvertimeInstructDto();
     OverTimeLimitDto overTimeLimitDtos= new OverTimeLimitDto();
