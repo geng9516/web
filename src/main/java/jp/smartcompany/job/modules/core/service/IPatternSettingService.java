@@ -126,5 +126,16 @@ public interface IPatternSettingService extends IService<Object> {
      */
     void insertTmgPattern(TmgPatternInsertDTO tmgPatternInsertDTO);
 
+    /**
+     * 勤務パターン休憩時間　保存する
+     */
+    void insertTmgPatternRestPlural(TmgPatternRestDTO tmgPatternRestDTO);
+
+    /**
+     * 勤務パターンを適用可能な最少日付を取得
+     *
+     * @return
+     */
+    String selectEditPeriodDate();
 
 }

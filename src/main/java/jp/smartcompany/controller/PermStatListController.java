@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.tmg.permStatList.PermStatListBean;
 import jp.smartcompany.job.modules.tmg.permStatList.vo.TmgMonthlyInfoVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +33,7 @@ public class PermStatListController {
 
 
     /**
-     * 年月を取得する
+     * 表示月遷移リスト情報を取得する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション (ACT_DISP_MONTHLY)
@@ -47,14 +48,14 @@ public class PermStatListController {
     @ResponseBody
     public List<DispMonthlyVO> dispMonthlyList(
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean);
+        TmgReferList referList = permStatListBean.execute(psDBBean);
+        List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean,referList);
         return dispMonthlyList;
     }
 
 
     /**
-     * 表示対象月の前月データを持つ職員数
+     * 前月リンクを作成する為の勤怠データ件数を取得する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション(ACT_DISP_MONTHLY)
@@ -68,14 +69,14 @@ public class PermStatListController {
     @GetMapping("dispMonthlyPrev")
     @ResponseBody
     public int dispMonthlyPrev(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        int dispMonthlyPrev = permStatListBean.dispMonthlyPrev();
+        TmgReferList referList = permStatListBean.execute(psDBBean);
+        int dispMonthlyPrev = permStatListBean.dispMonthlyPrev(referList);
         return dispMonthlyPrev;
     }
 
 
     /**
-     * 表示対象月の翌月データを持つ職員数
+     * 翌月リンクを作成する為の勤怠データ件数を取得する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション(ACT_DISP_MONTHLY)
@@ -89,13 +90,13 @@ public class PermStatListController {
     @GetMapping("dispMonthlyNext")
     @ResponseBody
     public int dispMonthlyNext(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        int dispMonthlyNext = permStatListBean.dispMonthlyNext();
+        TmgReferList referList =permStatListBean.execute(psDBBean);
+        int dispMonthlyNext = permStatListBean.dispMonthlyNext(referList);
         return dispMonthlyNext;
     }
 
     /**
-     * 表示月情報の取得
+     *  職員氏名と、承認ステータス状態を取得する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション(ACT_DISP_MONTHLY)
@@ -111,14 +112,14 @@ public class PermStatListController {
     @GetMapping("getTmgMonthlyInfoVOList")
     @ResponseBody
     public Map getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        Map map = permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
+        TmgReferList referList =permStatListBean.execute(psDBBean);
+        Map map = permStatListBean.getTmgMonthlyInfoVOList(psDBBean, referList);
         return map;
     }
 
 
     /**
-     * カレンダー情報の取得
+     * カレンダーテーブルより休日フラグを取得する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション(ACT_DISP_MONTHLY)
@@ -132,14 +133,14 @@ public class PermStatListController {
     @GetMapping("selectGetCalendarList")
     @ResponseBody
     public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        CalenderVo calenderVo = permStatListBean.selectGetCalendarList(psDBBean);
+        TmgReferList referList =permStatListBean.execute(psDBBean);
+        CalenderVo calenderVo = permStatListBean.selectGetCalendarList(psDBBean, referList);
         return calenderVo;
     }
 
 
     /**
-     * 対象勤務年月の1ヶ月間の日付・曜日を取得
+     * 一覧のタイトル取得して、編集する
      *
      * @param psDBBean PsDBBean
      *                 txtAction アクション(ACT_DISP_MONTHLY)
@@ -153,8 +154,8 @@ public class PermStatListController {
     @GetMapping("selectDayCount")
     @ResponseBody
     public List<OneMonthDetailVo> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean);
+        TmgReferList referList =permStatListBean.execute(psDBBean);
+        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean, referList);
         return oneMonthDetailVoList;
     }
 
@@ -175,8 +176,8 @@ public class PermStatListController {
     @GetMapping("getSectionName")
     @ResponseBody
     public String getSectionName(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        String sectionName = permStatListBean.getSectionName(psDBBean);
+        TmgReferList referList =permStatListBean.execute(psDBBean);
+        String sectionName = permStatListBean.getSectionName(psDBBean, referList);
         return sectionName;
     }
 
@@ -195,9 +196,53 @@ public class PermStatListController {
     @GetMapping("getReadTmgDaily")
     @ResponseBody
     public Map getReadTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        permStatListBean.execute(psDBBean);
-        Map resultMap = permStatListBean.getReadTmgDaily(psDBBean);
+        TmgReferList referList = permStatListBean.execute(psDBBean);
+        Map resultMap = permStatListBean.getReadTmgDaily(psDBBean, referList);
         return resultMap;
     }
+
+    /**
+     * 日次一括承認処理の為のプロセスを実行します。
+     *
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_EDIT_DAIRY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日(必須)
+     *                 txtCEMPLOYEEID　職員ID　(NULL可)
+     *                 txtExecuteEmpId　チェックした対象者　(必須)
+     * @return Map
+     * @throws Exception
+     */
+    @GetMapping("executeUpdateTmgDaily")
+    @ResponseBody
+    public void executeUpdateTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList = permStatListBean.execute(psDBBean);
+        permStatListBean.executeUpdateTmgDaily(psDBBean, referList);
+
+    }
+
+    /**
+     * 月次就業実績一括承認処理の為のプロセスを実行します。
+     *
+     * @param psDBBean PsDBBean
+     *                 txtAction アクション(ACT_EDIT_DAIRY)
+     *                 txtDYYYYMM　対象月
+     *                 txtDYYYYMMDD　対象日(必須)
+     *                 txtCEMPLOYEEID　職員ID　(NULL可)
+     *                 txtExecuteEmpId　チェックした対象者　(必須)
+     * @return Map
+     * @throws Exception
+     */
+    @GetMapping("executeUpdateTmgMonthly")
+    @ResponseBody
+    public void executeUpdateTmgMonthly(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList = permStatListBean.execute(psDBBean);
+        permStatListBean.executeUpdateTmgMonthly(psDBBean);
+
+    }
+
+
+
+
 
 }

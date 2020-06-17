@@ -3,10 +3,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.PatternSettingMapper;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -127,4 +124,15 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
     public void insertTmgPattern(TmgPatternInsertDTO tmgPatternInsertDTO) {
         baseMapper.insertTmgPattern(tmgPatternInsertDTO);
     }
+
+    @Override
+    public void insertTmgPatternRestPlural(TmgPatternRestDTO tmgPatternRestDTO) {
+        baseMapper.insertTmgPatternRestPlural(tmgPatternRestDTO);
+    }
+
+    @Override
+    public String selectEditPeriodDate() {
+        return baseMapper.selectEditPeriodDate();
+    }
+
 }

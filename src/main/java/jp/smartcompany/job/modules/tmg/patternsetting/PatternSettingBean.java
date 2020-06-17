@@ -1,13 +1,11 @@
 package jp.smartcompany.job.modules.tmg.patternsetting;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingConst;
 import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingUtil;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.PatternSettingParam;
@@ -234,9 +232,43 @@ public class PatternSettingBean {
         } else {
             logger.error("勤務パターン対象が空です");
         }
-
-
     }
+
+    /**
+     * テストデータ
+     * 臨時ファンクショ　　本番環境では削除します
+     *
+     * @return
+     */
+    private TmgPatternInsertDTO tmgPatternInsertDTOData() {
+
+        TmgPatternInsertDTO tmgPatternInsertDTO = new TmgPatternInsertDTO();
+        tmgPatternInsertDTO.setCustId("01");
+        tmgPatternInsertDTO.setCompCode("01");
+        tmgPatternInsertDTO.setSectionId("000000000000");
+        tmgPatternInsertDTO.setGroupId("000000000000|000000");
+        tmgPatternInsertDTO.setEmployeeId("46402406");
+        tmgPatternInsertDTO.setPatternId("23242323");
+        tmgPatternInsertDTO.setPatternName("23236698989");
+        tmgPatternInsertDTO.setDefaultFlag(PatternSettingConst.tmgOn);
+        tmgPatternInsertDTO.setChangeTime("22:22");
+        tmgPatternInsertDTO.setNextptn("09001330");
+        tmgPatternInsertDTO.setC2caldays(PatternSettingConst.tmgOn);
+        tmgPatternInsertDTO.setNopen("10:00");
+        tmgPatternInsertDTO.setNclose("19:00");
+        List<HashMap<String, String>> restList = new ArrayList<HashMap<String, String>>();
+        HashMap<String, String> rest1 = new HashMap<String, String>();
+        rest1.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, "12:00");
+        rest1.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, "13:00");
+        HashMap<String, String> rest2 = new HashMap<String, String>();
+        rest2.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, "13:00");
+        rest2.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, "13:30");
+        restList.add(rest1);
+        restList.add(rest2);
+        tmgPatternInsertDTO.setRestList(restList);
+        return tmgPatternInsertDTO;
+    }
+
 
     /**
      * 勤務パターン更新またはインサート
@@ -246,32 +278,64 @@ public class PatternSettingBean {
         /**
          * 画面から
          */
-        TmgPatternInsertDTO tmgPatternInsertDTO = new TmgPatternInsertDTO();
+        TmgPatternInsertDTO tmgPatternInsertDTO = this.tmgPatternInsertDTOData();
 
-        if (PatternSettingUtil.isEmpty(tmgPatternInsertDTO.getGroupId())) {
-            tmgPatternInsertDTO.setGroupId(tmgPatternInsertDTO.getSectionId() + "|000000");
-        }
-        iPatternSettingService.deleteTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
-        if (tmgPatternInsertDTO.getDefaultFlag().equals("TMG_ONOFF|1")) {
-            // デフォルト設定値 選択すれば
-            updateTmgPattern(tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), psDBBean.getUserCode());
-        }
-        // 勤務パターン　保存する
-        this.insertPattern(tmgPatternInsertDTO);
-        // 勤務パターンの休憩時間を削除する
-        iPatternSettingService.deleteTmgPatternRest(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
-        List<HashMap<String, String>> restList = tmgPatternInsertDTO.getRestList();
-        if (null != restList) {
-            String restOpen = "";
-            String restClose = "";
-            for (int i = 0; i < restList.size(); i++) {
-                HashMap<String, String> rest =  restList.get(i);
-                restOpen = rest.get(PatternSettingConst.REQUEST_KEY_RESTOPEN);
-                restClose = rest.get(PatternSettingConst.REQUEST_KEY_RESTCLOSE);
+        if (null != tmgPatternInsertDTO) {
+            tmgPatternInsertDTO.setModifierprogramid(PatternSettingConst.modifierProgramId);
+            tmgPatternInsertDTO.setMinDate(PatternSettingConst.SQL_MIN_DATE);
+            tmgPatternInsertDTO.setMaxDate(PatternSettingConst.SQL_MAX_DATE);
 
+            if (PatternSettingUtil.isEmpty(tmgPatternInsertDTO.getGroupId())) {
+                tmgPatternInsertDTO.setGroupId(tmgPatternInsertDTO.getSectionId() + "|000000");
             }
+            iPatternSettingService.deleteTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
+            if (tmgPatternInsertDTO.getDefaultFlag().equals(PatternSettingConst.tmgOn)) {
+                // デフォルト設定値 選択すれば
+                updateTmgPattern(tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), psDBBean.getUserCode());
+            }
+            // 勤務パターン　保存する
+            this.insertPattern(tmgPatternInsertDTO);
+            // 勤務パターンの休憩時間を削除する
+            iPatternSettingService.deleteTmgPatternRest(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
+            List<HashMap<String, String>> restList = tmgPatternInsertDTO.getRestList();
+            TmgPatternRestDTO tmgPatternRestDTO = new TmgPatternRestDTO();
+            tmgPatternRestDTO.setCustId(tmgPatternInsertDTO.getCustId());
+            tmgPatternRestDTO.setCompCode(tmgPatternInsertDTO.getCompCode());
+            tmgPatternRestDTO.setSectionId(tmgPatternInsertDTO.getSectionId());
+            tmgPatternRestDTO.setGroupId(tmgPatternInsertDTO.getGroupId());
+            tmgPatternRestDTO.setMinDate(tmgPatternInsertDTO.getMinDate());
+            tmgPatternRestDTO.setMaxDate(tmgPatternInsertDTO.getMaxDate());
+            tmgPatternRestDTO.setEmployeeId(tmgPatternInsertDTO.getEmployeeId());
+            tmgPatternRestDTO.setModifierprogramid(tmgPatternInsertDTO.getModifierprogramid());
+            tmgPatternRestDTO.setPatternId(tmgPatternInsertDTO.getPatternId());
+
+            if (null != restList) {
+                String restOpen = "";
+                String restClose = "";
+                for (int i = 0; i < restList.size(); i++) {
+                    HashMap<String, String> rest = restList.get(i);
+                    restOpen = rest.get(PatternSettingConst.REQUEST_KEY_RESTOPEN);
+                    restClose = rest.get(PatternSettingConst.REQUEST_KEY_RESTCLOSE);
+                    tmgPatternRestDTO.setRestOpen(restOpen);
+                    tmgPatternRestDTO.setRestClose(restClose);
+                    if (ObjectUtil.isNotNull(restOpen) && ObjectUtil.isNotNull(restClose)) {
+                        iPatternSettingService.insertTmgPatternRestPlural(tmgPatternRestDTO);
+                    }
+                }
+            }
+
+        } else {
+            logger.warn("勤務パターン更新またはインサート対象が空です");
         }
     }
 
+    /**
+     * 勤務パターンを適用可能な最少日付を取得
+     *
+     * @return
+     */
+    public String selectEditPeriodDate() {
+        return iPatternSettingService.selectEditPeriodDate();
+    }
 
 }
