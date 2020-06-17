@@ -1,5 +1,7 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.enums.SuccessMessage;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
@@ -10,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.view.RedirectView;
 
 /**
@@ -37,9 +40,10 @@ public class AuthController {
      * 登录API
      */
     @PostMapping("login")
-    public RedirectView login(@RequestParam LoginDTO loginDTO) {
+    @ResponseBody
+    public GlobalResponse login(@RequestParam LoginDTO loginDTO) {
         authBusiness.login(loginDTO);
-        return new RedirectView("/sys");
+        return GlobalResponse.data(SuccessMessage.LOGIN.msg());
     }
 
     /**

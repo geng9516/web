@@ -68,16 +68,15 @@ public class AuthBusiness {
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
-        saveLoginInfo(true, username);
     }
 
     public void logout() {
         String username = ShiroUtil.getUsername();
-        saveLoginInfo(true, username);
+        saveLoginInfo(false, username);
         ShiroUtil.getSubject().logout();
     }
 
-    private void saveLoginInfo(boolean status,String username) {
+    public void saveLoginInfo(boolean status,String username) {
         LoginAuditDO loginAuditDO = new LoginAuditDO();
         HttpServletRequest request = ContextUtil.getHttpRequest();
         Date now = DateUtil.date();
@@ -93,6 +92,4 @@ public class AuthBusiness {
         }
         loginAuditService.save(loginAuditDO);
     }
-
-
 }

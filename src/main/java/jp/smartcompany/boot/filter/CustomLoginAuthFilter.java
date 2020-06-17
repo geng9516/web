@@ -1,7 +1,10 @@
 package jp.smartcompany.boot.filter;
 
+import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ShiroUtil;
+import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.SneakyThrows;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -40,6 +43,8 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
 
     @Override
     public boolean onLoginSuccess(AuthenticationToken token, Subject subject, ServletRequest request, ServletResponse response) throws Exception {
+        AuthBusiness authBusiness = SpringUtil.getBean(AuthBusiness.class);
+        authBusiness.saveLoginInfo(true, ShiroUtil.getUsername());
         return true;
     }
 
