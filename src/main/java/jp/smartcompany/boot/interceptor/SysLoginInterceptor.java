@@ -235,6 +235,22 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 承认Site的选中员工和部门
         String targetPermSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
         String targetPermEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+        String targetPermGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+
+        // 树状图搜索用参数
+        String searchItems = request.getParameter(TmgReferList.TREEVIEW_OBJ_HIDSEARCHITEMES);
+        String searchCondition = request.getParameter(TmgReferList.TREEVIEW_OBJ_HIDSEARCHCONDITION);
+        String searchData = request.getParameter(TmgReferList.TREEVIEW_OBJ_HIDSEARCHDATA);
+
+        if (StrUtil.isNotBlank(searchItems)) {
+            hashtable.put(TmgReferList.TREEVIEW_OBJ_HIDSEARCHITEMES,searchItems);
+        }
+        if (StrUtil.isNotBlank(searchCondition)) {
+            hashtable.put(TmgReferList.TREEVIEW_OBJ_HIDSEARCHCONDITION,searchCondition);
+        }
+        if (StrUtil.isNotBlank(searchData)) {
+            hashtable.put(TmgReferList.TREEVIEW_OBJ_HIDSEARCHDATA,searchData);
+        }
 
         // 部门基准日
         String recordDate = request.getParameter(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
@@ -253,6 +269,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             psDBBean.setTargetUser(targetAdminEmp);
         }
 
+
         if (StrUtil.isNotBlank(targetPermSection)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetPermSection);
             psDBBean.setTargetDept(targetPermSection);
@@ -260,6 +277,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(targetPermEmp)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
             psDBBean.setTargetDept(targetPermEmp);
+        }
+        if (StrUtil.isNotBlank(targetPermGroup)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetPermGroup);
         }
 
         if (StrUtil.isNotBlank(targetGroup)){
