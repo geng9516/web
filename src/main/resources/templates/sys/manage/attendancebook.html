@@ -31,7 +31,7 @@
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
                         style="width: calc(100% - 120px);border-radius:0">
-                        {{ showName(deptName) }}
+                        {{ deptName }}
                     </i-button>
 
                     <!-- 共通組織図画面 start-->
@@ -41,16 +41,36 @@
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
-                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
+                        <Row class="tl mb2">
+                            <i-col span="8" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="9" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                            placeholder="日付け" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                            </i-col>
+                        </Row>
+                        <Row class="tl mb2">
+                            <i-col span="8" class="label tc" style="height: 32px;">ビュー選択</i-col>
+                            <div style="display: inline-block;width: 31.5%;" class="no-border-radius">
+                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                                <i-option :value="1">全て</i-option>
+                                <i-option :value="2">グループごとに</i-option>
+                                <i-option :value="3">部署ごとに</i-option>
+                            </i-select>
+                        </div>
+                        </Row>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                             empty-text="所属データなし"></Tree>
-                        <div class="titlenorm mt15">
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
+                        <!-- <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             社員
                         </div>
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
-                        </div>
+                        </div> -->
                     </Drawer>
                     <!-- 共通組織図画面 end-->
                 </span>
@@ -173,7 +193,6 @@
                     contentScrollTop: 0,
                     kanjiName: '',　         　 //選択した職員の氏名
                     loginEmployee: '',          //選択した職員の職員番号
-                    sectionName: '',　          //選択した職員の所属
                     query: {
                         employeeId: '',        //組織ツリーで選択した職員番号
                         year: '',              //年度情報
@@ -192,21 +211,23 @@
                     isScroll: false,
                     titleStartMonth: '',    //デフォルト開始月
                     data: [],
-                    emplistLoading: false,  //職員番号ローディング用動画
                     referListObject: {       //組織ツリー共通
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                         [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href,'psApp'),
                         type: 11
                     },
+                    selectedDeptViewType: 3,
+                    empDeptLoading: false,  // 組織ツリーloading用
                     deptDrawShow: false,    //組織ツリー用
-                    treeData: [],           //組織ツリー用
+                    deptData: [],           //組織ツリー用
                     empTreeData: [],        //組織ツリー用
                     defaultDeptId: '',      //選択した部門コード
-                    deptName: '選んでください',   //所属名称
+                    deptName: '選んでください',   //選択した職員の所属
                     tableDataSum:[],        //月出勤情報統計
                     existsAttendanceBook: {},　 //年度選択制御
                     preDisabled: true,   //年度選択制御
@@ -224,6 +245,16 @@
                 tableHeadFixed() {
                     if (this.contentScrollTop > 300) return true
                     else return false
+                },
+                treeData() {
+                    // 切换组织图view显示
+                    if(this.selectedDeptViewType === 3) {
+                        return this.deptData.sectionMemberList
+                    }
+                    if(this.selectedDeptViewType === 2) {
+                        return this.deptData.groupMemberList
+                    }
+                    return this.deptData.memberList
                 },
                 columns() {
                     return [
@@ -378,36 +409,40 @@
                         this.tableData = data.slice(7)
                         console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
-                        this.getDeptName(this.treeData)
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
                     }
                 },
-                async getOrgTree() {
+                async getOrgTree(refreshDept) {
+                    if(refreshDept) this.empDeptLoading = true
                     try {
-                        const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
+                        const { groupMemberList, memberList, sectionMemberList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
-                        this.treeData = Utils.convertTreeData(Utils.convertToData(data))
-
-                        this.getDeptName(this.treeData)
+                        this.deptData = {
+                            groupMemberList:Utils.convertTreeData(groupMemberList),
+                            memberList:Utils.convertTreeData(memberList),
+                            sectionMemberList:Utils.convertTreeData(sectionMemberList)
+                        }
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
+                        this.empDeptLoading = false
                     }
                 },
-                async getEmpList() {
-                    try {
-                        this.emplistLoading = true
-                        const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
-                        this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.emplistLoading = false
-                    }
+                async handleDeptDateChange(e) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    await this.getOrgTree(true)
+                    this.$Notice.success({ title:'所属図更新完了' })
+                },
+                handleDeptViewTypeChange() {
+                    this.$nextTick(()=>{
+                        this.empDeptLoading = true
+                        setTimeout(()=>this.empDeptLoading = false, 500)
+                    })
                 },
                 handleStartMonth: Debounce(async function (e) {
                     this.titleStartMonth = e
@@ -463,65 +498,24 @@
                     this.query.year = Utils.formatDate(this.existsAttendanceBook.currentYear, 'yyyy')
                     this.getData()
                 },
-                convertTreeData(treeData = []) {
-                    return treeData.map(e => {
-                        const children = e.child || e.children
-                        if (children) {
-                            return {
-                                ...e.data,
-                                title: e.data.label,
-                                // 前两层级默认展开方便查看
-                                expand: e.data.level < 2 || !e.data.level,
-                                children: this.convertTreeData(children)
-                            }
-                        } else {
-                            return {
-                                ...e.data,
-                                title: e.data.label
-                            }
-                        }
-                    })
-                },
                 showDay() {
                     //todo: 跳到详情页
                     location.href = "./VacationTablePanel/vacationtablepanel.html";
                 },
                 handleSelector() { },
-                getDeptName(data) {
-                    // 根据id遍历找出deptName
-                    data.forEach(e => {
-                        if (e.secid === this.defaultDeptId) {
-                            this.deptName = e.label
-                        } else {
-                            const children = e.child || e.children
-                            if (children) {
-                                this.getDeptName(children)
-                            }
-                        }
-                    })
-                },
                 async handleClickLeaf(e) {
+                    this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid
                     this.defaultDeptId = e[0].secid
                     // this.getTableData()
-                    this.getEmpList()
-                },
-                // todo: 点完员工树干什么
-                handleClickEmpLeaf(e) {
-                    this.deptDrawShow = false
-
                     this.loginEmployee = e[0].empid
-                    this.sectionName = e[0].secnic
+                    this.deptName = e[0].secnic
                     this.query.employeeId = e[0].empid
                     this.kanjiName = e[0].empname
                     this.selectDisabled = true
                     this.remarksDisabled = true
                     this.getData(true)
-                },
-                showName(e) {
-                    const result = e.match(/^[\s\S]+(?=\()/g)
-                    return (result && result[0]) || e
                 },
                 // 摘要更新
                 async updateComment() {
@@ -531,7 +525,7 @@
 
                     if(this.query.comment != null){
                         if (this.query.comment.length > 400) {
-                            alert('摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。');
+                            this.$Notice.error({ title:'摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。' })
                             this.commentBtnLoading = false
                             return
                         } else {
