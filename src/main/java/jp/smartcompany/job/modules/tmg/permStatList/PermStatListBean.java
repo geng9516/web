@@ -301,54 +301,6 @@ public class PermStatListBean {
 //        executeRedirect(modelMap);
     }
 
-
-    /**
-     * 一括承認処理の為のプロセスを実行します。
-     * <p>
-     * 	<ul>
-     * 		<li>更新対象職員のROWIDを取得するSQL文を取得する。</li>
-     * 		<li>結果セットからROWIDを取得し編集する。</li>
-     * 		<li>一括承認対象者を取得するSQL文を取得する。</li>
-     * 		<li>日別テーブルから更新対象者のみ検出し、
-     * 			勤怠トリガーテーブルにレコードを挿入するSQL文を取得する。</li>
-     * 		<li>勤怠トリガーテーブルにレコードを削除するSQL文を取得する。</li>
-     * 		<li>クエリを実行する。</li>
-     * 	</ul>
-     * </p>
-     */
-    private void executeUpdateTmgDaily(PsDBBean psDBBean, TmgReferList referList) {
-
-        // TODO　パラメータ　txtExecuteEmpId
-        String[] empIds = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
-
-        String empSql = referList.buildSQLForSelectEmployees();
-
-        // サイトIDを判定し更新対象の職員番号
-        List<String> empIdList = iMastEmployeesService.selectEmpIdListForTmgDaily(psDBBean.getSiteId(), _reqDYYYYMMDD, empSql, empIds);
-
-        // 更新対象職員のROWIDを取得する
-        List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
-
-        //  一括承認データを更新する
-        String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
-        iTmgDailyService.buildSQLForUpdateTmgDaily(psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList);
-
-        // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
-        // 一括承認データを更新する
-        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
-
-        iTmgTriggerService.buildSQLForInsertTmgTrigger(psDBBean.getUserCode(), sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
-
-        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
-                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
-                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
-                .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction));
-
-        // TODO
-        //TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
-
-    }
-
     /**
      * 別コンテンツへのリダイレクトを実行します。
      *
@@ -379,50 +331,6 @@ public class PermStatListBean {
         modelMap.addAttribute("htRequest", htRequest);
 //        // リダイレクト
 //        TmgUtil.getTmgUtil().setRedirect(sBean, htRequest, this);
-
-    }
-
-
-    /**
-     * 月次就業実績一括承認処理の為のプロセスを実行します。
-     * <p>
-     *  <ul>
-     *      <li>月次情報(ステータス)を更新するSQL文を取得する。</li>
-     *      <li>クエリを実行する。</li>
-     *  </ul>
-     * </p>
-     *
-     * @throws Exception
-     */
-    private void executeUpdateTmgMonthly(PsDBBean psDBBean) {
-        // TODO　パラメータ　txtExecuteEmpId
-
-        String sCustId = psDBBean.getCustID();
-        String sCompId = psDBBean.getCompCode();
-        String sDyyyyMm = getReqDYYYYMM();
-
-        String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
-
-        // 更新処理は職員単位で行う。
-        String[] sEmpId = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
-
-        for (int i = 0; i < sEmpId.length; i++) {
-
-            /*
-             * 月次承認機能がオンの場合、
-             * 月次承認エラーチェック結果がＯＫの職員のみ更新を行う。
-             */
-            if (isMonthlyApproval(psDBBean) && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
-                continue;
-            }
-
-            // 月次情報の更新
-            iTmgMonthlyInfoService.buildSQLForUpdateTmgMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm, psDBBean.getUserCode(), sModifierProgramId);
-        }
-
-        // TODO
-        // TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
-
 
     }
 
@@ -479,123 +387,6 @@ public class PermStatListBean {
         return false;
     }
 
-
-    /**
-     * 日別一覧表示の為のプロセスを実行します。
-     *
-     * @param modelMap
-     */
-    private void executeReadTmgDaily(ModelMap modelMap, PsDBBean psDBBean, TmgReferList referList) throws Exception {
-
-        // 組織の職員取得ｓｑｌ
-        String empSql = referList.buildSQLForSelectEmployees();
-
-        // 打刻反映処理
-        execReflectionTimePunch(empSql, psDBBean);
-
-        // 所属情報
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(referList), psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("sectionName", sectionName);
-
-        // 承認状況表示項目を取得しセット
-        List<ItemVO> itemVOList = iMastGenericDetailService.buildSQLForSelectTmgDisppermstatlist(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage());
-        List<String> monthlyItems = new ArrayList<String>();
-
-        for (ItemVO itemVO : itemVOList) {
-            monthlyItems.add(itemVO.getMgdCsql() + " AS " + itemVO.getTempColumnid());
-        }
-        // TODO　タイトル未実装
-
-        // 承認状況欄情報
-        List<HashMap> tmgDailyMapList = iTmgDailyService.buildSQLForSelectTmgDaily(_reqDYYYYMMDD, empSql, monthlyItems);
-
-
-        // 承認ボタン表示制御
-        boolean Approval = false;
-
-        String sysdate = psDBBean.getSysDate();
-
-        // 未来日については、一括承認ボタンを表示させない。
-        if (0 <= toDate(sysdate).compareTo(toDate(_reqDYYYYMMDD))) {
-
-            /*
-             * 表示対象の職員について、判定を行う。
-             * だれか一人でも条件を満たせば、一括承認ボタンを表示とする。
-             */
-            for (HashMap map : tmgDailyMapList) {
-                /*
-                 * 承認対象となる承認状態「承認待」でなければ、次の職員を処理する。
-                 * また、『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態をチェックする。
-                 */
-                if (TmgUtil.Cs_MGD_DATASTATUS_3.equals(map.get("TRANS_DISPPERMSTATUS")) && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))) {
-
-                    // 承認サイトの場合は、一覧に表示される職員の中に「勤怠承認権限」を持った職員が存在する場合のみ、一括承認ボタンを表示させる。
-                    if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
-                        if (referList.hasAuthorityAtEmployee(_reqDYYYYMMDD, String.valueOf(map.get("TDA_CEMPLOYEEID")), TmgUtil.Cs_AUTHORITY_RESULT)) {
-                            Approval = true;
-                            break;
-                        }
-
-                        // 勤怠管理サイトの場合、一律、一括承認ボタンを表示させる。
-                    } else {
-                        Approval = true;
-                        break;
-                    }
-                }
-
-
-            }
-        }
-
-        for (HashMap map : tmgDailyMapList) {
-
-            /*
-             * 対象職員の勤怠承認権限チェック
-             * 承認権限があり、且つ承認状態が「承認待」の場合、チェックボックスにチェックを設定
-             * それ以外の場合は、チェックボックスを無効（disabled）にする。
-             */
-            // 対象職員番号、日次ステータス
-            String sEmpId = String.valueOf(map.get("TDA_CEMPLOYEEID"));
-            String sStatus = String.valueOf(map.get("TRANS_DISPPERMSTATUS"));
-
-            // 対象職員への承認権限状態
-            boolean bAuthorityEmp = referList.hasAuthorityAtEmployee(
-                    getReqDYYYYMMDD(),
-                    sEmpId,
-                    TmgUtil.Cs_AUTHORITY_RESULT);
-
-            /*
-             * チェックボックスの制御処理
-             *
-             * ・日次ステータスが「承認待」以外はチェックボックスを無効化する。
-             * ・終業打刻が無く、予定終業時刻以降の超過勤務申請・命令がある場合はチェックボックスを無効化する。
-             * ・システムプロパティ「TMG_DISABLE_NO_OVERHOURPERM_APPROVAL」がオン設定で、
-             *   且つ、対象者への超過勤務命令権限が無く、未承認の超過勤務命令の登録がある場合はチェックボックスを無効化する。
-             */
-            String sChkOption = "";
-            if (bAuthorityEmp
-                    && TmgUtil.Cs_MGD_DATASTATUS_3.equals(sStatus)
-                    && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))
-                    && !isDisableNoOverHourpermApprovalEmp(
-                    sEmpId,
-                    getReqDYYYYMMDD(),
-                    String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")),
-                    psDBBean,
-                    referList
-            )
-            ) {
-
-                sChkOption = "checked";  // チェックボックスへチェックを設定
-            } else {
-
-                sChkOption = "disabled"; // チェックボックスを無効設定
-            }
-
-            map.put("CHKOPTION", sChkOption);
-        }
-
-        modelMap.addAttribute("tmgDailyMapList", tmgDailyMapList);
-    }
 
     private final String Cs_TRUE = "true";
 
@@ -690,90 +481,90 @@ public class PermStatListBean {
         return date;
     }
 
-
-    /**
-     * 月別一覧表示の為のプロセスを実行します。
-     * <p>
-     * 実行するSQL生成プロセスは以下になります。
-     * 	<ol>
-     * 		<li>職員氏名と、承認ステータス状態を取得する。</li>
-     * 		<li>カレンダーテーブルより休日フラグを取得する。</li>
-     * 		<li>対象勤務年月の1ヶ月間の日付・曜日を取得する。</li>
-     * 		<li>翌月リンクを作成する為の勤怠データ件数を取得する。</li>
-     * 		<li>前月リンクを作成する為の勤怠データ件数を取得する。</li>
-     * 		<li>職員情報を取得する。</li>
-     * 		<li>表示月遷移リスト情報を取得する。</li>
-     * 	</ol>
-     * </p>
-     * <p>
-     * 	結果セット編集プロセスは以下になります。
-     * 	<ol>
-     * 		<li>カレンダーリストを設定する。</li>
-     * 		<li>承認状況一覧を設定する。</li>
-     * 	</ol>
-     * </p>
-     *    @exception Exception
-     */
-    private void executeReadMonthlyList(ModelMap modelMap, PsDBBean psDBBean, TmgReferList referList) {
-
-        String empSql = referList.buildSQLForSelectEmployees();
-
-        // 打刻反映処理を行う。
-        execReflectionTimePunch(empSql, psDBBean);
-
-
-        // 月次一覧表示データを取得する。
-        // 0 表示月情報の取得
-        List<ColNameDto> colNameList = new ArrayList<>();
-
-        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
-        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
-
-        for (int i = 1; i <= monthLen; i++) {
-            ColNameDto dto = new ColNameDto();
-            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
-            dto.setDisppermStatus("DISPPERM_STATUS" + i);
-            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
-            colNameList.add(dto);
-        }
-
-        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                getReqDYYYYMM(),
-                psDBBean.getLanguage(),
-                getToDay(referList),
-                empSql,
-                colNameList
-        );
-        modelMap.addAttribute("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
-
-        // 1 カレンダー情報の取得
-        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
-        modelMap.addAttribute("calenderVo", calenderVo);
-
-        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
-        modelMap.addAttribute("oneMonthDetailVoList", oneMonthDetailVoList);
-
-        // 3 表示対象月の前月データを持つ職員数
-        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
-        modelMap.addAttribute("tmgMonthlyInfoPrevCount", tmgMonthlyInfoPrevCount);
-
-        // 4 表示対象月の翌月データを持つ職員数
-        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
-        modelMap.addAttribute("tmgMonthlyInfoNextCount", tmgMonthlyInfoNextCount);
-
-        // 5 選択組織名称の取得
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(referList), psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("sectionName", sectionName);
-
-        // 6 表示月遷移リスト情報取得
-        List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
-        modelMap.addAttribute("cispMonthlyVOList", cispMonthlyVOList);
-
-    }
+//
+//    /**
+//     * 月別一覧表示の為のプロセスを実行します。
+//     * <p>
+//     * 実行するSQL生成プロセスは以下になります。
+//     * 	<ol>
+//     * 		<li>職員氏名と、承認ステータス状態を取得する。</li>
+//     * 		<li>カレンダーテーブルより休日フラグを取得する。</li>
+//     * 		<li>対象勤務年月の1ヶ月間の日付・曜日を取得する。</li>
+//     * 		<li>翌月リンクを作成する為の勤怠データ件数を取得する。</li>
+//     * 		<li>前月リンクを作成する為の勤怠データ件数を取得する。</li>
+//     * 		<li>職員情報を取得する。</li>
+//     * 		<li>表示月遷移リスト情報を取得する。</li>
+//     * 	</ol>
+//     * </p>
+//     * <p>
+//     * 	結果セット編集プロセスは以下になります。
+//     * 	<ol>
+//     * 		<li>カレンダーリストを設定する。</li>
+//     * 		<li>承認状況一覧を設定する。</li>
+//     * 	</ol>
+//     * </p>
+//     *    @exception Exception
+//     */
+//    private void executeReadMonthlyList(ModelMap modelMap, PsDBBean psDBBean, TmgReferList referList) {
+//
+//        String empSql = referList.buildSQLForSelectEmployees();
+//
+//        // 打刻反映処理を行う。
+//        execReflectionTimePunch(empSql, psDBBean);
+//
+//
+//        // 月次一覧表示データを取得する。
+//        // 0 表示月情報の取得
+//        List<ColNameDto> colNameList = new ArrayList<>();
+//
+//        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
+//        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
+//
+//        for (int i = 1; i <= monthLen; i++) {
+//            ColNameDto dto = new ColNameDto();
+//            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
+//            dto.setDisppermStatus("DISPPERM_STATUS" + i);
+//            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
+//            colNameList.add(dto);
+//        }
+//
+//        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
+//                psDBBean.getCustID(),
+//                psDBBean.getCompCode(),
+//                getReqDYYYYMM(),
+//                psDBBean.getLanguage(),
+//                getToDay(referList),
+//                empSql,
+//                colNameList
+//        );
+//        modelMap.addAttribute("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
+//
+//        // 1 カレンダー情報の取得
+//        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+//                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+//        modelMap.addAttribute("calenderVo", calenderVo);
+//
+//        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
+//        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
+//        modelMap.addAttribute("oneMonthDetailVoList", oneMonthDetailVoList);
+//
+//        // 3 表示対象月の前月データを持つ職員数
+//        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
+//        modelMap.addAttribute("tmgMonthlyInfoPrevCount", tmgMonthlyInfoPrevCount);
+//
+//        // 4 表示対象月の翌月データを持つ職員数
+//        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
+//        modelMap.addAttribute("tmgMonthlyInfoNextCount", tmgMonthlyInfoNextCount);
+//
+//        // 5 選択組織名称の取得
+//        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(referList), psDBBean.getCustID(), psDBBean.getCompCode());
+//        modelMap.addAttribute("sectionName", sectionName);
+//
+//        // 6 表示月遷移リスト情報取得
+//        List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
+//        modelMap.addAttribute("cispMonthlyVOList", cispMonthlyVOList);
+//
+//    }
 
 
     private final String DISABLED = "disabled";
@@ -1532,4 +1323,97 @@ public class PermStatListBean {
     }
     /******終了***************************************executeReadTmgDaily***********************************************/
 
+    /******開始****************************************executeUpdateTmgDaily*********************************************/
+
+    /**
+     * 一括承認処理の為のプロセスを実行します。
+     * <p>
+     * 	<ul>
+     * 		<li>更新対象職員のROWIDを取得するSQL文を取得する。</li>
+     * 		<li>結果セットからROWIDを取得し編集する。</li>
+     * 		<li>一括承認対象者を取得するSQL文を取得する。</li>
+     * 		<li>日別テーブルから更新対象者のみ検出し、
+     * 			勤怠トリガーテーブルにレコードを挿入するSQL文を取得する。</li>
+     * 		<li>勤怠トリガーテーブルにレコードを削除するSQL文を取得する。</li>
+     * 		<li>クエリを実行する。</li>
+     * 	</ul>
+     * </p>
+     */
+    public void executeUpdateTmgDaily(PsDBBean psDBBean, TmgReferList referList) {
+
+        String[] empIds = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
+
+        String empSql = referList.buildSQLForSelectEmployees();
+
+        // サイトIDを判定し更新対象の職員番号
+        List<String> empIdList = iMastEmployeesService.selectEmpIdListForTmgDaily(psDBBean.getSiteId(), _reqDYYYYMMDD, empSql, empIds);
+
+        // 更新対象職員のROWIDを取得する
+        List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
+
+        //  一括承認データを更新する
+        String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
+        iTmgDailyService.buildSQLForUpdateTmgDaily(psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList);
+
+        // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
+        // 一括承認データを更新する
+        iTmgDailyDetailService.buildSQLForUpdateTmgDailyDetail(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList, "TMG_ITEMS|Overhours");
+
+        iTmgTriggerService.buildSQLForInsertTmgTrigger(psDBBean.getUserCode(), sProgramId, _sAction, _reqDYYYYMMDD, rowIdList);
+
+        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
+                .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
+                .eq("TTR_CMODIFIERPROGRAMID", APPLICATION_ID + "_" + _sAction));
+
+        // TODO
+        //TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
+
+    }
+
+    /******終了****************************************executeUpdateTmgDaily*********************************************/
+
+
+    /******開始****************************************executeUpdateTmgMonthly*********************************************/
+    /**
+     * 月次就業実績一括承認処理の為のプロセスを実行します。
+     * <p>
+     *  <ul>
+     *      <li>月次情報(ステータス)を更新するSQL文を取得する。</li>
+     *      <li>クエリを実行する。</li>
+     *  </ul>
+     * </p>
+     *
+     * @throws Exception
+     */
+    public void executeUpdateTmgMonthly(PsDBBean psDBBean) {
+
+        String sCustId = psDBBean.getCustID();
+        String sCompId = psDBBean.getCompCode();
+        String sDyyyyMm = getReqDYYYYMM();
+
+        String sModifierProgramId = APPLICATION_ID + "_" + _sAction;
+
+        // 更新処理は職員単位で行う。
+        String[] sEmpId = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
+
+        for (int i = 0; i < sEmpId.length; i++) {
+
+            /*
+             * 月次承認機能がオンの場合、
+             * 月次承認エラーチェック結果がＯＫの職員のみ更新を行う。
+             */
+            if (isMonthlyApproval(psDBBean) && !isCheckMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm)) {
+                continue;
+            }
+
+            // 月次情報の更新
+            iTmgMonthlyInfoService.buildSQLForUpdateTmgMonthly(sCustId, sCompId, sEmpId[i], sDyyyyMm, psDBBean.getUserCode(), sModifierProgramId);
+        }
+
+        // TODO
+        // TmgUtil.checkInsertErrors(setInsertValues(vQuery,BEANDESC), session, BEANDESC);
+    }
+
+    /******終了****************************************executeUpdateTmgMonthly*********************************************/
 }
