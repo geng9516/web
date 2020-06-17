@@ -62,14 +62,12 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         System.out.println(systemCode+"***");
         System.out.println(iMastSystemService);
         List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
-        System.out.println("---");
         if (StrUtil.isBlank(systemCode)) {
             systemCode = systemList.get(0).getMsCsystemidPk();
             // 默认customerId都为01
             httpSession.setAttribute(Constant.SYSTEM_CODE, systemCode);
             httpSession.setAttribute(Constant.CUSTOMER_ID, customerId);
         }
-        System.out.println("---");
         // 初始化PsSession对象
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {
@@ -85,7 +83,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
                 loadMenus(request, systemCode, customerId, systemList);
             }
         }
-        System.out.println("===");
         return true;
     }
 

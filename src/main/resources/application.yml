@@ -49,47 +49,47 @@ spring:
       enabled: on
   mvc:
     throw-exception-if-no-handler-found: on
-  datasource:
-    type: com.alibaba.druid.pool.DruidDataSource
-    druid:
-      initial-size: 20
-      max-active: 400
-      min-idle: 80
-      max-wait: 60000
-      pool-prepared-statements: true
-      max-pool-prepared-statement-per-connection-size: 80
-      time-between-eviction-runs-millis: 60000
-      min-evictable-idle-time-millis: 300000
-      #Oracle需要打开注释
-      validation-query: SELECT 1 FROM DUAL
-      test-while-idle: false
-      test-on-borrow: false
-      test-on-return: false
-      stat-view-servlet:
-        enabled: true
-        url-pattern: /druid/*
-        #login-username: admin
-        #login-password: admin
-      filter:
-        stat:
-          log-slow-sql: true
-          slow-sql-millis: 5000
-          merge-sql: false
-        wall:
-          config:
-            multi-statement-allow: true
 #  datasource:
-#    hikari:
-#      poolName: next-job-pool
-#      # 自动提交从池中返回的连接
-#      auto-commit: on
-#      # 连接最大等待毫秒数
-#      connectionTimeout: 30000
-#      # 池中连接最长生命周期(1800000ms=30m)
-#      maxLifetime: 1800000
-#      # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
-#      idle-timeout: 600000
-#      connection-test-query: SELECT 1 FROM DUAL
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    druid:
+#      initial-size: 20
+#      max-active: 400
+#      min-idle: 80
+#      max-wait: 60000
+#      pool-prepared-statements: true
+#      max-pool-prepared-statement-per-connection-size: 80
+#      time-between-eviction-runs-millis: 60000
+#      min-evictable-idle-time-millis: 300000
+#      #Oracle需要打开注释
+#      validation-query: SELECT 1 FROM DUAL
+#      test-while-idle: false
+#      test-on-borrow: false
+#      test-on-return: false
+#      stat-view-servlet:
+#        enabled: true
+#        url-pattern: /druid/*
+#        #login-username: admin
+#        #login-password: admin
+#      filter:
+#        stat:
+#          log-slow-sql: true
+#          slow-sql-millis: 5000
+#          merge-sql: false
+#        wall:
+#          config:
+#            multi-statement-allow: true
+  datasource:
+    hikari:
+      poolName: next-job-pool
+      # 自动提交从池中返回的连接
+      auto-commit: on
+      # 连接最大等待毫秒数
+      connectionTimeout: 30000
+      # 池中连接最长生命周期(1800000ms=30m)
+      maxLifetime: 1800000
+      # 600000ms 连接池中允许连接闲置的最长时间（如果idleTimeout+1秒>maxLifetime 且 maxLifetime>0，则会被重置为0（代表永远不会退出）；如果idleTimeout!=0且小于10秒，则会被重置为10秒）
+      idle-timeout: 600000
+      connection-test-query: SELECT 1 FROM DUAL
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
