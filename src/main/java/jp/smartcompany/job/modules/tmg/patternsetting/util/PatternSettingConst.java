@@ -570,12 +570,12 @@ public class PatternSettingConst {
     /**
      * MIN DATE
      */
-    public static final String SQL_MIN_DATE = "TO_DATE('1900/01/01', 'yyyy/MM/dd')";
+    public static final String SQL_MIN_DATE = "1900/01/01";
 
     /**
      * MAX DATE
      */
-    public static final String SQL_MAX_DATE = "TO_DATE('2222/12/31', 'yyyy/MM/dd')";
+    public static final String SQL_MAX_DATE = "2222/12/31";
 
     /**
      * LANGUAGE
@@ -616,5 +616,16 @@ public class PatternSettingConst {
      * ピクセル設定
      */
     public static final String TIMEBER_MIN_STYLE = "width: 1px";
+
+    /**
+     * 翌日勤務パターン ある場合
+     */
+    public static final String tmgOn = "TMG_ONOFF|1";
+
+    /**
+     * 翌日勤務パターン ない場合
+     */
+    public static final String tmgOff = "TMG_ONOFF|0";
+
 
 }

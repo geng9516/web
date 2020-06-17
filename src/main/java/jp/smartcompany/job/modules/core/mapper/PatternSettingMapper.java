@@ -1,10 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
-import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -99,4 +96,18 @@ public interface PatternSettingMapper extends BaseMapper<Object> {
      * @param tmgPatternInsertDTO
      */
     void insertTmgPattern(TmgPatternInsertDTO tmgPatternInsertDTO);
+
+    /**
+     * 勤務パターン休憩時間　保存する
+     */
+    void insertTmgPatternRestPlural(TmgPatternRestDTO tmgPatternRestDTO);
+
+    /**
+     * 勤務パターンを適用可能な最少日付を取得
+     *
+     * @return
+     */
+    String selectEditPeriodDate();
+
+
 }

@@ -107,8 +107,8 @@ public class PatternSettingController {
 
     /**
      * 【編集】編集パターン情報
-     * パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
-     * http://localhost:6879/sys/patternSetting/deletePattern?groupId=100000000000|000000&sectionId=100000000000&patternId=23238989
+     * <p>パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
+     * <p>http://localhost:6879/sys/patternSetting/deletePattern?groupId=100000000000|000000&sectionId=100000000000&patternId=23238989
      *
      * @param groupId
      * @param patternId
@@ -123,6 +123,36 @@ public class PatternSettingController {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
         patternSettingBean.deletePattern(groupId, sectionId, patternId);
+    }
+
+    /**
+     * 【編集&新規】勤務パターン更新またはインサート
+     * <p>get request できない　　（post，form だけ）
+     * http://localhost:6879/sys/patternSetting/modifiEditAndNew
+     *
+     * @param psDBBean
+     * @return
+     */
+    @PostMapping("modifiEditAndNew")
+    public void modifiEditAndNew(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(null, psDBBean);
+        patternSettingBean.modifiEditAndNew();
+    }
+
+    /**
+     * 【編集&新規】勤務パターンを適用可能な最少日付を取得
+     *
+     * http://localhost:6879/sys/patternSetting/selectEditPeriodDate
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("selectEditPeriodDate")
+    public String selectEditPeriodDate(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(null, psDBBean);
+        return patternSettingBean.selectEditPeriodDate();
     }
 
 

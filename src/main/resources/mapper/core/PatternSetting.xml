@@ -60,6 +60,21 @@
         <parameter property="nclose"/>
     </parameterMap>
 
+    <!-- 勤務パターン休憩時間DTO -->
+    <parameterMap id="insertTmgPatternRestPluralMap" type="jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternRestDTO">
+        <parameter property="custId"/>
+        <parameter property="compCode"/>
+        <parameter property="sectionId"/>
+        <parameter property="groupId"/>
+        <parameter property="minDate"/>
+        <parameter property="maxDate"/>
+        <parameter property="employeeId"/>
+        <parameter property="modifierprogramid"/>
+        <parameter property="patternId"/>
+        <parameter property="restOpen"/>
+        <parameter property="restClose"/>
+    </parameterMap>
+
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する  -->
     <select id="selectTmgPattern" parameterType="java.util.HashMap" resultMap="selectTmgPatternMap">
         select ccustomerid as tpa_ccustomerid
@@ -304,6 +319,11 @@
             sysdate, #{modifierprogramid},#{patternId}, 1,
             tmg_f_conv_hhmi2min(#{restOpen}), tmg_f_conv_hhmi2min(#{restClose}))
     </insert>
+
+    <!-- 勤務パターンを適用可能な最少日付を取得 -->
+    <select id="selectEditPeriodDate" resultType="java.lang.String">
+        select to_char(add_months(trunc(sysdate,'mm'), 1), 'yyyy/mm/dd') as periodDate from dual
+    </select>
 
 
 </mapper>
