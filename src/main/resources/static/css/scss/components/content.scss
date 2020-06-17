@@ -64,6 +64,21 @@
     .ivu-select-selection,.ivu-input{
       border-radius: 1px;
     }
+    .like-select {
+      width: 15%;
+      top: 0;
+      .ivu-input-group-append {
+        background: var(--table-head);
+        border: none;
+        &:hover {
+          background: var(--theme-blue);
+        }
+        &:before {
+          top: 0px;
+          bottom: 0px;
+        }
+      }
+    }
   }
   .btnbox {
     flex: 1;

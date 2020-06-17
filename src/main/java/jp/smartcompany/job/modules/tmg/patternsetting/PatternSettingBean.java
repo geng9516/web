@@ -1,14 +1,17 @@
-package jp.smartcompany.job.modules.tmg.PatternSetting;
+package jp.smartcompany.job.modules.tmg.patternsetting;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.vo.TmgPatternVO;
-import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingConst;
+import jp.smartcompany.job.modules.tmg.patternsetting.util.PatternSettingUtil;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.PatternSettingParam;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -180,7 +183,7 @@ public class PatternSettingBean {
 
     /**
      * パターンを削除
-     *　
+     *
      * @param groupId
      * @param sectionId
      * @param patternId
@@ -202,6 +205,72 @@ public class PatternSettingBean {
         iPatternSettingService.deleteTmgPatternApplies(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);
         iPatternSettingService.deleteTmgPatternRest(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, patternId);
 
+    }
+
+    /**
+     * デフォルト設定値 選択すれば
+     *
+     * @param groupId
+     * @param sectionId
+     * @param employeeId
+     */
+    private void updateTmgPattern(String groupId, String sectionId, String employeeId) {
+        iPatternSettingService.updateTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId, employeeId, PatternSettingConst.modifierProgramId);
+    }
+
+    /**
+     * 勤務パターンをインサート
+     *
+     * @param tmgPatternInsertDTO
+     */
+    private void insertPattern(TmgPatternInsertDTO tmgPatternInsertDTO) {
+        if (null != tmgPatternInsertDTO) {
+            tmgPatternInsertDTO.setCustId(psDBBean.getCustID());
+            tmgPatternInsertDTO.setCompCode(psDBBean.getCompCode());
+            tmgPatternInsertDTO.setMinDate(PatternSettingConst.SQL_MIN_DATE);
+            tmgPatternInsertDTO.setMaxDate(PatternSettingConst.SQL_MAX_DATE);
+            tmgPatternInsertDTO.setEmployeeId(psDBBean.getUserCode());
+            iPatternSettingService.insertTmgPattern(tmgPatternInsertDTO);
+        } else {
+            logger.error("勤務パターン対象が空です");
+        }
+
+
+    }
+
+    /**
+     * 勤務パターン更新またはインサート
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public void modifiEditAndNew() {
+        /**
+         * 画面から
+         */
+        TmgPatternInsertDTO tmgPatternInsertDTO = new TmgPatternInsertDTO();
+
+        if (PatternSettingUtil.isEmpty(tmgPatternInsertDTO.getGroupId())) {
+            tmgPatternInsertDTO.setGroupId(tmgPatternInsertDTO.getSectionId() + "|000000");
+        }
+        iPatternSettingService.deleteTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
+        if (tmgPatternInsertDTO.getDefaultFlag().equals("TMG_ONOFF|1")) {
+            // デフォルト設定値 選択すれば
+            updateTmgPattern(tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), psDBBean.getUserCode());
+        }
+        // 勤務パターン　保存する
+        this.insertPattern(tmgPatternInsertDTO);
+        // 勤務パターンの休憩時間を削除する
+        iPatternSettingService.deleteTmgPatternRest(psDBBean.getCustID(), psDBBean.getCompCode(), tmgPatternInsertDTO.getGroupId(), tmgPatternInsertDTO.getSectionId(), tmgPatternInsertDTO.getPatternId());
+        List<HashMap<String, String>> restList = tmgPatternInsertDTO.getRestList();
+        if (null != restList) {
+            String restOpen = "";
+            String restClose = "";
+            for (int i = 0; i < restList.size(); i++) {
+                HashMap<String, String> rest =  restList.get(i);
+                restOpen = rest.get(PatternSettingConst.REQUEST_KEY_RESTOPEN);
+                restClose = rest.get(PatternSettingConst.REQUEST_KEY_RESTCLOSE);
+
+            }
+        }
     }
 
 

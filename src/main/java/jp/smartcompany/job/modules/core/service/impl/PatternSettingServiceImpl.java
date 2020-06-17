@@ -3,9 +3,10 @@ package jp.smartcompany.job.modules.core.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.PatternSettingMapper;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternInsertDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -78,7 +79,7 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
     }
 
     @Override
-    public void deleteTmgPattern(String custId, String compCode, String groupId,String sectionId, String patternId) {
+    public void deleteTmgPattern(String custId, String compCode, String groupId, String sectionId, String patternId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("groupId", groupId);
         params.put("sectionId", sectionId);
@@ -89,7 +90,7 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
     }
 
     @Override
-    public void deleteTmgPatternRest(String custId, String compCode, String groupId,String sectionId, String patternId) {
+    public void deleteTmgPatternRest(String custId, String compCode, String groupId, String sectionId, String patternId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("groupId", groupId);
         params.put("sectionId", sectionId);
@@ -100,7 +101,7 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
     }
 
     @Override
-    public void deleteTmgPatternApplies(String custId, String compCode, String groupId,String sectionId, String patternId) {
+    public void deleteTmgPatternApplies(String custId, String compCode, String groupId, String sectionId, String patternId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("groupId", groupId);
         params.put("sectionId", sectionId);
@@ -108,5 +109,22 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
         params.put("custId", custId);
         params.put("patternId", patternId);
         baseMapper.deleteTmgPatternApplies(params);
+    }
+
+    @Override
+    public void updateTmgPattern(String custId, String compCode, String groupId, String sectionId, String employeeId, String modifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("groupId", groupId);
+        params.put("sectionId", sectionId);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("employeeId", employeeId);
+        params.put("modifierprogramid", modifierprogramid);
+        baseMapper.updateTmgPattern(params);
+    }
+
+    @Override
+    public void insertTmgPattern(TmgPatternInsertDTO tmgPatternInsertDTO) {
+        baseMapper.insertTmgPattern(tmgPatternInsertDTO);
     }
 }

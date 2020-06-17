@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.*;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -79,30 +79,52 @@ public interface IPatternSettingService extends IService<Object> {
 
     /**
      * DELETE TMG_PATTERN
+     *
      * @param custId
      * @param compCode
      * @param groupId
      * @param patternId
      */
-    void deleteTmgPattern(String custId, String compCode, String groupId,String sectionId, String patternId);
+    void deleteTmgPattern(String custId, String compCode, String groupId, String sectionId, String patternId);
 
     /**
      * DELETE TMG_PATTERN_REST
+     *
      * @param custId
      * @param compCode
      * @param groupId
      * @param patternId
      */
-    void deleteTmgPatternRest(String custId, String compCode, String groupId,String sectionId, String patternId);
+    void deleteTmgPatternRest(String custId, String compCode, String groupId, String sectionId, String patternId);
 
     /**
      * DELETE TMG_PATTERN_APPLIES
+     *
      * @param custId
      * @param compCode
      * @param groupId
      * @param patternId
      */
-    void deleteTmgPatternApplies(String custId, String compCode, String groupId,String sectionId, String patternId);
+    void deleteTmgPatternApplies(String custId, String compCode, String groupId, String sectionId, String patternId);
+
+    /**
+     * ディフォルトセット
+     *
+     * @param custId
+     * @param compCode
+     * @param groupId
+     * @param sectionId
+     * @param employeeId
+     * @param modifierprogramid
+     */
+    void updateTmgPattern(String custId, String compCode, String groupId, String sectionId, String employeeId, String modifierprogramid);
+
+    /**
+     * 勤務パターン　保存する
+     *
+     * @param tmgPatternInsertDTO
+     */
+    void insertTmgPattern(TmgPatternInsertDTO tmgPatternInsertDTO);
 
 
 }

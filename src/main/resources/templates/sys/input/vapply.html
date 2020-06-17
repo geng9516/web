@@ -16,7 +16,7 @@
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-show="this.rotate">全て</i-option>
-                            <option-group v-for="(item, i) of restTypeList" :key="i" :label="item.groupName">
+                            <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
@@ -63,12 +63,9 @@
                             申請へ
                         </i-button>
                         <i-select :value="RadioStatusHelper" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleRadioStatusHelper" slot="extra">
-                            <!-- <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
-                            </i-option> -->
-                            <i-option label="全て" :value="6"></i-option>
-                            <i-option label="待ち" :value="0"></i-option>
-                            <i-option label="済み" :value="1"></i-option>
-                            <i-option label="拒否" :value="2"></i-option>
+                            <i-option label="全て" :value="0"></i-option>
+                            <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
+                            </i-option>
                         </i-select>
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
                             icon="md-refresh" @click="getApplyHistory(true)" :loading="loading"></i-button>
@@ -139,7 +136,7 @@
                                         {{ `申請日時：${item.updateTime}` }}</i-col>
                                 </Row>
                             </li>
-                            <!-- <div v-loading="listLoading" style="top:-20px"></div> -->
+                            <Spin size="large" fix v-if="listLoading"></Spin>
                             <i-button class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
@@ -246,27 +243,34 @@
                                         <p class="mb5">氏名</p>
                                         <i-input class="mb15" />
                                     </section>
+
                                     <!-- 是有続柄的-->
                                     <section v-show="selectedRestInfo.relation" class="tl">
                                         <p class="mb5">続柄</p>
                                         <i-input class="mb5" />
                                     </section>
+
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
                                         <i-input class="mb5" />
                                     </section>
+
                                     <!-- 有生年月日-->
                                     <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
                                         <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
                                             format="yyyy-MM-dd" ref="datePicker"></date-picker>
                                     </section>
+
                                     <!-- 有伤病-->
                                     <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
                                         <i-input />
                                     </section>
+
+                                    <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
+                                    label,restTime,sickApply -->
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
                                     <Upload ref="upload" :format="['pdf','csv','png','xlsx']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :on-success="handleSuccess" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
@@ -305,6 +309,7 @@
                         { name: '日', value: 7 }
                     ],
                     restInfoList:[],
+                    statusList:[],
                     open: true,
                     timerangeType: 1,
                     loading: false,
@@ -394,16 +399,19 @@
                         }
                     ],
                     opts: {
-                        page: null,
-                        limit: 50,
-                        self: true,
-                        status: null
+                        ntfTypeId:'',
+                        statusFlg:'',
+                        year:2020,
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        page: 1,
+                        txtAction:''
                     },
                     errorMsg: '',
                     restApply: {
                         useVacation: false
                     },
-                    restTypeList: [],
+                    restTypeListForReview: [],
+                    restTypeListForApply: [],
                     selectedRestInfo: {},
                     uploadList:[]
                 }
@@ -423,8 +431,10 @@
                 }
             },
             created() {
-                this.getData()
+                setTimeout(()=> this.getRestTypeForApply())
+                this.getRestTypeForReview()
                 this.getRestInfo()
+                this.getStatusList()
             },
             mounted () {
                 this.uploadList = this.$refs.upload.fileList;;
@@ -432,8 +442,8 @@
             computed: {
                 flatRestTypeList() {
                     let result = []
-                    if (this.restTypeList.length > 0) {
-                        this.restTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
+                    if (this.curRestTypeList.length > 0) {
+                        this.curRestTypeList.forEach(e => (result = result.concat(e.ntfTypeValue)))
                     }
                     return result
                 },
@@ -447,16 +457,20 @@
                         result = result.concat(' full-name')
                     }
                     return result
+                },
+                curRestTypeList() {
+                    if(this.rotate) return this.restTypeListForReview
+                        else return this.restTypeListForApply
                 }
             },
             methods: {
-                async getData() {
-                    // 获得休假选择
+                async getRestTypeForApply() {
+                    // 获得休假选择 申请用
                     this.loading = true
                     try {
-                        const { data } = await this.http.get(`/sys/vapply/NtfTypeList`)
-                        console.log(data)
-                        this.restTypeList = data
+                        console.log(this.opts)
+                        const { data } = await this.http.get('/sys/vapply/NtfTypeList', this.opts)
+                        this.restTypeListForApply = data
                     } catch (error) {
                         return
                     } finally {
@@ -465,10 +479,25 @@
                     // 获得历史申请数据
                     // this.getApplyHistory()
                 },
+                async getRestTypeForReview() {
+                    // 获得休假选择 照会用
+                    this.loading = true
+                    try {
+                        const { data } = await this.http.get('/sys/vapply/NtfTypeDispList', this.opts)
+                        this.restTypeListForReview = data
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                    // 获得历史申请数据
+                    // this.getApplyHistory()
+                },
+                // 左边的年休残
                 async getRestInfo() {
                     this.restInfoLoading = true
                     try {
-                        const { data } = await this.http.get(`/sys/vapply/RestYearList`)
+                        const { data } = await this.http.get('/sys/vapply/RestYearList')
                         this.restInfoList = data
                     } catch (error) {
                         return
@@ -476,20 +505,17 @@
                         this.restInfoLoading = false
                     }
                 },
-                getApplyHistory: Debounce(async function (isRefresh, isReachBottom) {
+                async getStatusList() {
+                    const { data } = await this.http.get('/sys/vapply/StatusFlg')
+                    this.statusList = data
+                },
+                getApplyHistory: Debounce(async function () {
                     // 获得历史申请数据
                     try {
                         // 触底的再拉走独自的loading, 因为全loading的样式有bug, 在变长的list时无法cover整个容器
-                        if (isReachBottom) {
-                            this.listLoading = true
-                        } else {
-                            this.opts.limit = 50
-                            this.loading = true
-                        }
-                        const { data } = await this.api.apply('applyHistory', this.opts)
-                        this.tableData = data.list
-                        this.totalCount = data.totalCount
-                        if (isRefresh) this.$Message.success('再表示完了')
+                        const { data } = await this.http.get('/sys/vapply/NotificationList', this.opts)
+                        console.log(data)
+                        // if (isRefresh) this.$Message.success('再表示完了')
                     } catch (error) {
                         return
                     } finally {

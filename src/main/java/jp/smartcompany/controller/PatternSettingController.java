@@ -1,11 +1,11 @@
 package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.PatternSetting.PatternSettingBean;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.RestTimeLimitDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternAppliesDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.dto.TmgPatternDTO;
-import jp.smartcompany.job.modules.tmg.PatternSetting.vo.TmgPatternVO;
+import jp.smartcompany.job.modules.tmg.patternsetting.PatternSettingBean;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
