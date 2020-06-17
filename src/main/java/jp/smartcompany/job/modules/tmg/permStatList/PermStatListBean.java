@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.text.DateFormat;
@@ -481,91 +483,6 @@ public class PermStatListBean {
         return date;
     }
 
-//
-//    /**
-//     * 月別一覧表示の為のプロセスを実行します。
-//     * <p>
-//     * 実行するSQL生成プロセスは以下になります。
-//     * 	<ol>
-//     * 		<li>職員氏名と、承認ステータス状態を取得する。</li>
-//     * 		<li>カレンダーテーブルより休日フラグを取得する。</li>
-//     * 		<li>対象勤務年月の1ヶ月間の日付・曜日を取得する。</li>
-//     * 		<li>翌月リンクを作成する為の勤怠データ件数を取得する。</li>
-//     * 		<li>前月リンクを作成する為の勤怠データ件数を取得する。</li>
-//     * 		<li>職員情報を取得する。</li>
-//     * 		<li>表示月遷移リスト情報を取得する。</li>
-//     * 	</ol>
-//     * </p>
-//     * <p>
-//     * 	結果セット編集プロセスは以下になります。
-//     * 	<ol>
-//     * 		<li>カレンダーリストを設定する。</li>
-//     * 		<li>承認状況一覧を設定する。</li>
-//     * 	</ol>
-//     * </p>
-//     *    @exception Exception
-//     */
-//    private void executeReadMonthlyList(ModelMap modelMap, PsDBBean psDBBean, TmgReferList referList) {
-//
-//        String empSql = referList.buildSQLForSelectEmployees();
-//
-//        // 打刻反映処理を行う。
-//        execReflectionTimePunch(empSql, psDBBean);
-//
-//
-//        // 月次一覧表示データを取得する。
-//        // 0 表示月情報の取得
-//        List<ColNameDto> colNameList = new ArrayList<>();
-//
-//        int monthLen = getActualMaximumOfMonth(getReqDYYYYMM());
-//        DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
-//
-//        for (int i = 1; i <= monthLen; i++) {
-//            ColNameDto dto = new ColNameDto();
-//            dto.setColName("TMI_CINFO" + nDayFormat.format(i));
-//            dto.setDisppermStatus("DISPPERM_STATUS" + i);
-//            dto.setDisppermStatusName("DISPPERM_STATUS_NAME" + i);
-//            colNameList.add(dto);
-//        }
-//
-//        List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfo(
-//                psDBBean.getCustID(),
-//                psDBBean.getCompCode(),
-//                getReqDYYYYMM(),
-//                psDBBean.getLanguage(),
-//                getToDay(referList),
-//                empSql,
-//                colNameList
-//        );
-//        modelMap.addAttribute("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
-//
-//        // 1 カレンダー情報の取得
-//        CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-//                psDBBean.getCompCode(), referList.getTargetSec(), psDBBean.escDBString(referList.getTargetGroup()), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
-//        modelMap.addAttribute("calenderVo", calenderVo);
-//
-//        // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
-//        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
-//        modelMap.addAttribute("oneMonthDetailVoList", oneMonthDetailVoList);
-//
-//        // 3 表示対象月の前月データを持つ職員数
-//        int tmgMonthlyInfoPrevCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_PREV_MONTH));
-//        modelMap.addAttribute("tmgMonthlyInfoPrevCount", tmgMonthlyInfoPrevCount);
-//
-//        // 4 表示対象月の翌月データを持つ職員数
-//        int tmgMonthlyInfoNextCount = iTmgMonthlyInfoService.buildSQLForSelectTmgMonthlyInfoCount(empSql, TmgUtil.getFirstDayOfMonth(getReqDYYYYMM(), PARAM_NEXT_MONTH));
-//        modelMap.addAttribute("tmgMonthlyInfoNextCount", tmgMonthlyInfoNextCount);
-//
-//        // 5 選択組織名称の取得
-//        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(referList), psDBBean.getCustID(), psDBBean.getCompCode());
-//        modelMap.addAttribute("sectionName", sectionName);
-//
-//        // 6 表示月遷移リスト情報取得
-//        List<DispMonthlyVO> cispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(getThisMonth(), empSql);
-//        modelMap.addAttribute("cispMonthlyVOList", cispMonthlyVOList);
-//
-//    }
-
 
     private final String DISABLED = "disabled";
 
@@ -649,6 +566,7 @@ public class PermStatListBean {
     /**
      * 月次一覧、また日次承認画面表示時の打刻反映処理
      */
+    @Transactional(rollbackFor = GlobalException.class)
     private void execReflectionTimePunch(String empSql, PsDBBean psDBBean) {
 
         // アクション
@@ -1339,6 +1257,7 @@ public class PermStatListBean {
      * 	</ul>
      * </p>
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public void executeUpdateTmgDaily(PsDBBean psDBBean, TmgReferList referList) {
 
         String[] empIds = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
@@ -1386,6 +1305,7 @@ public class PermStatListBean {
      *
      * @throws Exception
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public void executeUpdateTmgMonthly(PsDBBean psDBBean) {
 
         String sCustId = psDBBean.getCustID();
