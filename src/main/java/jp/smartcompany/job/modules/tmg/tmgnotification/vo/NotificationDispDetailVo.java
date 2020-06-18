@@ -66,6 +66,14 @@ public class NotificationDispDetailVo {
     private String tntfCowncomment;
 
 
+    // 承認者コメント
+    private String tntfCbosscomment;
+    // 承認日
+    private String tntfDboss;
+    // 28 解除者コメント
+    private String tntfCcancelcomment;
+
+
     //  申請区分略称を取得
     private String ntfName;
     //  添付ファイル

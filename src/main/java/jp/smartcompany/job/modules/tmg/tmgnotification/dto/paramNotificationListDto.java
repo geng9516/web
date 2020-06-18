@@ -84,28 +84,47 @@ public class paramNotificationListDto {
 
     private String employeeListSql;
 
-
-
 //更新用
-    /**シーケンス*/
+    /**
+     * シーケンス 申请番号
+     * */
     private String seq;
 
+    /**
+     * 決裁レベル判定用　最終レベル（代理申請用）
+     */
     private String finalApprovalLevel;
-
+    /**
+     * 決裁レベル判定用　当前レベル（代理申請用）
+     */
     private String approvalLevel;
 
+    /**
+     * 開始日
+     */
     private Date begin;
-
+    /**
+     * 終了日
+     */
     private Date end;
-
+    /**
+     * 始業後
+     */
     private String timeOpen;
-
+    /**
+     * 終業前
+     */
     private String timeClose;
-
+    /**
+     * 開始時刻
+     */
     private String timezoneOpen;
-
+    /**
+     * 終了時刻
+     */
     private String timezoneClose;
 
+    /**指定なし*/
     private String noreserved;
     /**曜日*/
     private String mon;
@@ -116,28 +135,46 @@ public class paramNotificationListDto {
     private String sat;
     private String sun;
 
+    /**申請区分*/
     private String typeNew;
+
     /**申請事由*/
     private String owncomment;
-
+    /**承認者事由*/
     private String bosscomment;
     /**傷病*/
     private String txtSickName;
+
     /**労災申請*/
     private String sickApply;
+
     /**起算日*/
     private Date txtPeriod;
     /**加算日数*/
     private String txtAddDate;
+
+    /**休憩開始時刻*/
     private String txtRestOpen;
+    /**休憩終了時刻*/
     private String txtRestClose;
+
+    /**氏名*/
     private String txtName;
+    /**続柄*/
     private String txtRelation;
+    /**生年月日*/
     private Date txtBirthday;
+    /**対象の人数*/
     private String txtTargetNumber;
+
+    /**操作*/
     private String ntfAction;
+//取消用
+    /**申請取消日*/
     private Date cancel;
+    /**取消終了日*/
     private Date txtDCancelEnd;
+    /**取消事由*/
     private String cancelcomment;
 
 

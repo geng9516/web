@@ -4,6 +4,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
+import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
+import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
@@ -45,5 +48,22 @@ public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCa
     @Override
     public List<CalenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
         return baseMapper.selectGetCalendarList(custId, compId, secId, groupId, targetYYYY, sBaseDate);
+    }
+
+    /**
+     * カレンダー情報(全学)を取得します
+     */
+    @Override
+    public List<CalendarDispVo> selectCalenderDisp(String custID, String compCode, String year){
+        return baseMapper.selectCalenderDisp(custID, compCode, year);
+    }
+
+
+    /**
+     * カレンダー情報を更新します。
+     */
+    @Override
+    public int updateCalendar(String custID, String compCode, String userCode,String month, List<CalendarColumnDto> monthDto){
+        return baseMapper.updateCalendar( custID, compCode, userCode,month, monthDto);
     }
 }

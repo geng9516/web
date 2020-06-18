@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper">
+    <update id="updateCalendar">
+        UPDATE
+            TMG_CALENDAR
+        SET
+        <foreach collection="list" index="index" item="List" separator="," close="," open="">
+            ${List.columnName} = '${List.columnValue}'
+        </foreach>
+            TCA_CMODIFIERUSERID = #{userCode},
+            TCA_DMODIFIEDDATE = SYSDATE,
+            TCA_CMODIFIERPROGRAMID = 'TMG_CALANDER_EDIT',
+            TCA_EDITFLAG = TO_NUMBER( TCA_EDITFLAG ) + 1
+        WHERE
+                TCA_CCUSTOMERID = #{custID}
+            AND TCA_CCOMPANYID = #{userCode}
+            AND TCA_DYYYYMM = #{month};
+    </update>
     <select id="selectCalendar" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto">
         SELECT
             TO_CHAR( MIN( TCA_DYYYYMM ), 'yyyy/MM/dd' ) MIN_MONTH,
@@ -66,6 +82,79 @@
                 TCA_CCUSTOMERID = #{custId}
             AND TCA_CCOMPANYID = #{compId}
             AND TCA_DYYYYMM = to_date( #{sBaseDate} );
+    </select>
+    <select id="selectCalenderDisp" resultType="jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo">
+        SELECT
+            TCA_DYYYYMM,
+            TCA_CHOLFLG01,
+            TCA_CHOLFLG02,
+            TCA_CHOLFLG03,
+            TCA_CHOLFLG04,
+            TCA_CHOLFLG05,
+            TCA_CHOLFLG06,
+            TCA_CHOLFLG07,
+            TCA_CHOLFLG08,
+            TCA_CHOLFLG09,
+            TCA_CHOLFLG10,
+            TCA_CHOLFLG11,
+            TCA_CHOLFLG12,
+            TCA_CHOLFLG13,
+            TCA_CHOLFLG14,
+            TCA_CHOLFLG15,
+            TCA_CHOLFLG16,
+            TCA_CHOLFLG17,
+            TCA_CHOLFLG18,
+            TCA_CHOLFLG19,
+            TCA_CHOLFLG20,
+            TCA_CHOLFLG21,
+            TCA_CHOLFLG22,
+            TCA_CHOLFLG23,
+            TCA_CHOLFLG24,
+            TCA_CHOLFLG25,
+            TCA_CHOLFLG26,
+            TCA_CHOLFLG27,
+            TCA_CHOLFLG28,
+            TCA_CHOLFLG29,
+            TCA_CHOLFLG30,
+            TCA_CHOLFLG31,
+            DECODE(
+            TO_CHAR( TCA_DYYYYMM, 'Day' ),
+            '日曜日',
+            0,
+            DECODE(
+            TO_CHAR( TCA_DYYYYMM, 'Day' ),
+            '月曜日',
+            1,
+            DECODE(
+            TO_CHAR( TCA_DYYYYMM, 'Day' ),
+            '火曜日',
+            2,
+            DECODE(
+            TO_CHAR( TCA_DYYYYMM, 'Day' ),
+            '水曜日',
+            3,
+            DECODE(
+            TO_CHAR( TCA_DYYYYMM, 'Day' ),
+            '木曜日',
+            4,
+            DECODE( TO_CHAR( TCA_DYYYYMM, 'Day' ), '金曜日', 5, DECODE( TO_CHAR( TCA_DYYYYMM, 'Day' ), '土曜日', 6, '' ) )
+            )
+            )
+            )
+            )
+            ) AS START_DAY,
+            TO_CHAR( LAST_DAY( TCA_DYYYYMM ), 'dd' ) AS LAST_DAY,
+            DECODE( TCA_CHOLFLG01, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG02, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG03, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG04, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG05, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG06, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG07, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG08, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG09, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG10, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG11, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG12, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG13, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG14, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG15, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG16, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG17, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG18, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG19, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG20, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG21, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG22, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG23, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG24, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG25, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG26, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG27, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG28, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG29, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG30, 'TMG_HOLFLG|0', 1, 0 ) + DECODE( TCA_CHOLFLG31, 'TMG_HOLFLG|0', 1, 0 ) AS STANDAR_DDAY,
+            '{1:''' || TCA_CHOLFLG01 || ''',2:''' || TCA_CHOLFLG02 || ''',3:''' || TCA_CHOLFLG03 || ''',4:''' || TCA_CHOLFLG04 || ''',5:''' || TCA_CHOLFLG05 || ''',6:''' || TCA_CHOLFLG06 || ''',7:''' || TCA_CHOLFLG07 || ''',8:''' || TCA_CHOLFLG08 || ''',9:''' || TCA_CHOLFLG09 || ''',10:''' || TCA_CHOLFLG10 || ''',11:''' || TCA_CHOLFLG11 || ''',12:''' || TCA_CHOLFLG12 || ''',13:''' || TCA_CHOLFLG13 || ''',14:''' || TCA_CHOLFLG14 || ''',15:''' || TCA_CHOLFLG15 || ''',16:''' || TCA_CHOLFLG16 || ''',17:''' || TCA_CHOLFLG17 || ''',18:''' || TCA_CHOLFLG18 || ''',19:''' || TCA_CHOLFLG19 || ''',20:''' || TCA_CHOLFLG20 || ''',21:''' || TCA_CHOLFLG21 || ''',22:''' || TCA_CHOLFLG22 || ''',23:''' || TCA_CHOLFLG23 || ''',24:''' || TCA_CHOLFLG24 || ''',25:''' || TCA_CHOLFLG25 || ''',26:''' || TCA_CHOLFLG26 || ''',27:''' || TCA_CHOLFLG27 || ''',28:''' || TCA_CHOLFLG28 || ''',29:''' || TCA_CHOLFLG29 || ''',30:''' || TCA_CHOLFLG30 || ''',31:''' || TCA_CHOLFLG31 || '''}' AS MONTH_PARA
+        FROM
+            TMG_CALENDAR
+        WHERE
+            TCA_CCUSTOMERID = #{custID}
+        AND TCA_CCOMPANYID = #{compCode}
+        AND TCA_DYYYYMM <![CDATA[<=]]> '${year}'||'/12/31'
+        AND TCA_DYYYYMM >= '${year}'||'/01/01'
+        ORDER BY
+            TCA_DYYYYMM;
     </select>
 
 

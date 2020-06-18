@@ -7,6 +7,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -18,8 +19,10 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.javassist.util.proxy.ProxyObjectOutputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.io.IOException;
@@ -525,6 +528,14 @@ public class TmgNotificationBean {
             }
             if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())){
                 param.setNtfNo(nlVo.getTntfCntfNo());
+                //详细数据取得
+                notificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
+                // 承認者コメント
+                nddVo.setTntfCbosscomment(notificationDetailVo.getTntfCbosscomment());
+                // 承認日
+                nddVo.setTntfDboss(notificationDetailVo.getTntfDboss());
+                //  解除者コメント
+                nddVo.setTntfCcancelcomment(notificationDetailVo.getTntfCcancelcomment());
                 // 4 申請区分略称を取得
                 nddVo.setNtfName(iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(), param.getNtfNo()));
                 // 5 添付ファイル
@@ -863,7 +874,8 @@ public class TmgNotificationBean {
      *
      * @param modelMap makeApply
      */
-    public void actionMakeApply(ModelMap modelMap) {
+    @Transactional(rollbackFor = GlobalException.class)
+    public String actionMakeApply(ModelMap modelMap) {
         paramSetting();
 
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
@@ -895,6 +907,8 @@ public class TmgNotificationBean {
         int deleteTrigger = deleteTrigger();
         int deleteErrMsgAfter = deleteErrMsg();
         int deleteNotificationCheckAfter = deleteNotificationnCheck();
+
+        return selectErrMsg;
     }
 
     /**
@@ -903,6 +917,7 @@ public class TmgNotificationBean {
      * @return なし
      * editWithdraw
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public void actionEditWithdraw(ModelMap modelMap) {
         paramSetting();
 
@@ -918,6 +933,7 @@ public class TmgNotificationBean {
      * @return なし
      * updateApply
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public void actionUpdateApply(ModelMap modelMap) {
         paramSetting();
 
@@ -1018,7 +1034,8 @@ public class TmgNotificationBean {
      *
      * @throws
      */
-    private void actionUpdateItem(ModelMap modelMap) {
+    @Transactional(rollbackFor = GlobalException.class)
+    public void actionUpdateItem(ModelMap modelMap) {
         paramSetting();
 
         int updateNotificationItem = iTmgNotificationService.updateNotificationItem(param);
