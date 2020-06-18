@@ -83,20 +83,20 @@
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
-                                                        {{e.avatar ? '' : e.split(' ')[0]}}
+                                                        {{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}
                                                     </Avatar>
                                                 </li>
                                                 <li style="margin-right:10px" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
-                                                    <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(' ')[0]}}</Avatar>
-                                                    <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(' ')[0]}}</Avatar>
-                                                    <Avatar class="ml-13" :src="item.ntfapprover[2].avatar || ''">{{item.ntfapprover[2].avatar ? '' : item.ntfapprover[2].split(' ')[0]}}</Avatar>
+                                                    <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(/\u3000|\s/)[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(/\u3000|\s/)[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.ntfapprover[2].avatar || ''">{{item.ntfapprover[2].avatar ? '' : item.ntfapprover[2].split(/\u3000|\s/)[0]}}</Avatar>
                                                     <Avatar class="more-user">{{`+${item.ntfapprover.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
                                             <div class="tl" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
-                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(' ')[0]}}</Avatar>
+                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                     <span>{{ e }}</span>
                                                 </div>
                                             </div>
@@ -131,8 +131,7 @@
                                     </i-col>
                                 </Row>
                                 <Row>
-                                    <i-col span="20" style="margin-left: 4.5%" class="description light-grey">
-                                        {{ item.tntfCowncomment }}</i-col>
+                                    <i-col span="20" style="margin-left: 4.5%" class="description light-grey">{{ item.tntfCowncomment }}</i-col>
                                 </Row>
                                 <!-- toask: 拒否理由? -->
                                 <!-- <Row v-if="item.status === 2">
@@ -140,8 +139,7 @@
                                         {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
                                 </Row> -->
                                 <Row>
-                                    <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">
-                                        {{ `申請日時：${item.tntfDnotification}` }}</i-col>
+                                    <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">{{ `申請日時：${item.tntfDnotification}` }}</i-col>
                                 </Row>
                             </li>
                             <Spin size="large" fix v-if="listLoading"></Spin>
