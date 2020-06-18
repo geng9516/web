@@ -31,88 +31,86 @@
                     @on-change="handleDatePicker" format="yyyy年"></date-picker>
             </div>
         </div>
-        <div class="content_body">
-            <div class="content_body">
-                <div style="display:inline-block;width:80%;margin-left: -14%;">
-                    <div v-for="(e, i) of calData" :key="i" style="display:inline-block;width:30%">
-                        <span class="label big" style="display:block;width:87.5%;">{{ `${i + 1}月` }}</span>
-                        <Row class="calendar-row">
-                            <i-col class="cal-week sun" span="3">日</i-col>
-                            <i-col class="cal-week" span="3">月</i-col>
-                            <i-col class="cal-week" span="3">火</i-col>
-                            <i-col class="cal-week" span="3">水</i-col>
-                            <i-col class="cal-week" span="3">木</i-col>
-                            <i-col class="cal-week" span="3">金</i-col>
-                            <i-col class="cal-week sat" span="3">土</i-col>
-                        </Row>
-                        <Row class="calendar-row mb20">
-                            <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3"
-                                v-for="(n, t) of e.begin" :key="t+500">
+        <div class="content_body tc">
+            <div style="display:inline-block;width:80%;margin-left: -14%;">
+                <div v-for="(e, i) of calData" :key="i" style="display:inline-block;width:30%">
+                    <span class="label big" style="display:block;width:87.5%;">{{ `${i + 1}月` }}</span>
+                    <Row class="calendar-row">
+                        <i-col class="cal-week sun" span="3">日</i-col>
+                        <i-col class="cal-week" span="3">月</i-col>
+                        <i-col class="cal-week" span="3">火</i-col>
+                        <i-col class="cal-week" span="3">水</i-col>
+                        <i-col class="cal-week" span="3">木</i-col>
+                        <i-col class="cal-week" span="3">金</i-col>
+                        <i-col class="cal-week sat" span="3">土</i-col>
+                    </Row>
+                    <Row class="calendar-row mb20">
+                        <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3" v-for="(n, t) of e.begin"
+                            :key="t+500">
                             &nbsp;
-                            </i-col>
-                            <i-col :class="handleWeekStyle(e, t)" span="3" v-for="(n, t) of e.num" :key="t + 1000"
-                                @click.native.stop="changeCalendar(e, t)">
+                        </i-col>
+                        <i-col :class="handleWeekStyle(e, t)" span="3" v-for="(n, t) of e.num" :key="t + 1000"
+                            @click.native.stop="changeCalendar(e, t)">
                             {{ n }}
-                            </i-col>
-                            <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3"
-                                v-for="(q, p) of addGreyCalendar(e)" :key="p+2000">
+                        </i-col>
+                        <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3"
+                            v-for="(q, p) of addGreyCalendar(e)" :key="p+2000">
                             &nbsp;
-                            </i-col>
-                        </Row>
-                    </div>
-                </div>
-                <div style="display:inline-block;position: relative;width:16%;top: -139px;margin-left: -50px;">
-                    <Row>
-                        <i-col span="18" class="label big">1月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">18日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">2月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">18日</span>
-                        </i-col>
-                        <i-col span="18" class="label big mb30">3月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">21日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">4月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">21日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">5月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">18日</span>
-                        </i-col>
-                        <i-col span="18" class="label big mb30">6月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">22日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">7月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">21日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">8月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">20日</span>
-                        </i-col>
-                        <i-col span="18" class="label big mb30">9月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">20日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">10月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">22日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">11月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">19日</span>
-                        </i-col>
-                        <i-col span="18" class="label big">12月 基準日数</i-col>
-                        <i-col span="6">
-                        <span class="input-like-span">20日</span>
                         </i-col>
                     </Row>
                 </div>
+            </div>
+            <div style="display:inline-block;position: relative;width:16%;top: -139px;margin-left: -50px;">
+                <Row>
+                    <i-col span="18" class="label big">1月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">18日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">2月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">18日</span>
+                    </i-col>
+                    <i-col span="18" class="label big mb30">3月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">21日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">4月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">21日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">5月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">18日</span>
+                    </i-col>
+                    <i-col span="18" class="label big mb30">6月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">22日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">7月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">21日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">8月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">20日</span>
+                    </i-col>
+                    <i-col span="18" class="label big mb30">9月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">20日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">10月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">22日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">11月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">19日</span>
+                    </i-col>
+                    <i-col span="18" class="label big">12月 基準日数</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">20日</span>
+                    </i-col>
+                </Row>
             </div>
     </main>
     <div th:replace="layout/script::common_script"></div>
