@@ -62,7 +62,13 @@
                             style="position:relative;right:676px;font-size:14px" slot="extra" @click="onRefresh">
                             申請へ
                         </i-button>
-                        <i-select :value="RadioStatusHelper" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleRadioStatusHelper" slot="extra">
+                        <date-picker type="year" :open="openDatePicker" format="yyyy" style="position: absolute;left: -600px;" v-model="curYear" @on-change="handleDatePicker" slot="extra">
+                            <a href="javascript:void(0)" @click="openDatePicker = !openDatePicker">
+                                <Icon type="ios-calendar-outline"></Icon>
+                                <span>{{ opts.year }}</span>
+                            </a>
+                        </date-picker>
+                        <i-select v-model="opts.statusFlg" class="mr5" style="position: absolute;left: -38px;" size="small"  @on-change="handleHistoryStatusChange" slot="extra">
                             <i-option label="全て" :value="0"></i-option>
                             <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
                             </i-option>
@@ -109,7 +115,6 @@
                                                 <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
-                                        
                                     </i-col>
                                     <span style="position: absolute;right: 47px;" :class="handleApplyMarkShow(item.tntfCstatusflg)" />
                                 </Row>
@@ -133,11 +138,11 @@
                                 <Row>
                                     <i-col span="20" style="margin-left: 4.5%" class="description light-grey">{{ item.tntfCowncomment }}</i-col>
                                 </Row>
-                                <!-- toask: 拒否理由? -->
-                                <!-- <Row v-if="item.status === 2">
-                                    <i-col span="20" style="margin-left: 4.5%" class="description red">
-                                        {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
-                                </Row> -->
+                                <!-- todo: 需要根据状态判断 -->
+                                <Row v-if="item.status === 2">
+                                    <i-col span="20" style="margin-left: 4.5%" class="description">
+                                        {{ `承認者コメント：${item.tntfCcancelcomment || item.tntfCbosscomment}` }}</i-col>
+                                </Row>
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">{{ `申請日時：${item.tntfDnotification}` }}</i-col>
                                 </Row>
@@ -279,7 +284,7 @@
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
                                     label,restTime,sickApply -->
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload ref="upload" :format="['pdf','csv','png','xlsx']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :on-success="handleSuccess" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
+                                    <Upload ref="upload" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :on-success="handleSuccess" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
@@ -315,6 +320,7 @@
                         { name: '土', value: 6 },
                         { name: '日', value: 7 }
                     ],
+                    curYear: new Date(),
                     restInfoList:[],
                     statusList:[],
                     open: true,
@@ -326,16 +332,14 @@
                     rotate: false,
                     weekSelected: [],
                     errorInfo: false,
-                    // 用于为全て时删除status字段
-                    RadioStatusHelper: 0,
                     totalCount: 0,
                     restInfoLoading:false,
                     listLoading: false,
                     applyHistoryListData: [],
                     opts: {
                         ntfTypeId:'',
-                        statusFlg:'',
-                        year:2020,
+                        statusFlg: 0,
+                        year: 2020,
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         page: 1,
                         txtAction:''
@@ -344,6 +348,7 @@
                     restApply: {
                         useVacation: false
                     },
+                    openDatePicker: false,
                     applyHistoryListAmount:0,
                     restTypeListForReview: [],
                     restTypeListForApply: [],
@@ -370,7 +375,7 @@
                 this.getRestTypeForReview()
                 this.getRestInfo()
                 this.getStatusList()
-                this.getApplyHistory()
+                this.getApplyHistory(true)
             },
             mounted () {
                 this.uploadList = this.$refs.upload.fileList;;
@@ -445,16 +450,26 @@
                     const { data } = await this.http.get('/sys/vapply/StatusFlg', this.opts)
                     this.statusList = data
                 },
-                getApplyHistory: Debounce(async function () {
+                handleDatePicker(e) {
+                    this.opts.year = +e
+                    this.openDatePicker = false
+                    this.getApplyHistory()
+                },
+                getApplyHistory: Debounce(async function (isInit) {
                     this.listLoading = true
                     // 获得历史申请数据
                     try {
                         // 触底的再拉走独自的loading, 因为全loading的样式有bug, 在变长的list时无法cover整个容器
-                        const { data } = await this.http.get('/sys/vapply/NotificationList', this.opts)
+                        // OPTS后端发送分离
+                        let OPTS = {...this.opts}
+                        if(this.opts.statusFlg === 0) {
+                            OPTS.statusFlg = ''
+                        }
+                        const { data } = await this.http.get('/sys/vapply/NotificationList', OPTS)
                         this.applyHistoryListData = data.list
                         this.applyHistoryListAmount = data.count
                         console.log(data)
-                        // if (isRefresh) this.$Message.success('再表示完了')
+                        if (!isInit) this.$Message.success('再表示完了')
                     } catch (error) {
                         return
                     } finally {
@@ -485,8 +500,8 @@
                     //     this.getApplyHistory()
                     // }
                 }),
-                handleRadioStatusHelper(e) {
-                    // todo: 根据不同状态获得筛选数据
+                handleHistoryStatusChange(e) {
+                    this.getApplyHistory()
                 },
                 apply: Debounce(async function () {
                     // 以下是模拟申请一条，应该全删掉
@@ -557,7 +572,7 @@
                 handleFormatError (file) {
                     this.$Notice.warning({
                         title: 'The file format is incorrect',
-                        desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, or xlsx.'
+                        desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
                     });
                 },
                 handleBeforeUpload () {
