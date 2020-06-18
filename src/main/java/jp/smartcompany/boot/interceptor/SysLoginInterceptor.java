@@ -86,6 +86,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        ContextUtil.removeDbBean();
     }
 
     // 设置PsDBBean和PsSession

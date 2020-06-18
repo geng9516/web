@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -129,11 +130,12 @@ public class TreeController {
                                   @RequestParam(value = "useRecordDate",required = false,defaultValue = "true") Boolean useRecordDate,
                                   @RequestParam(value="useManage",required = false,defaultValue = "false") Boolean useManage,
                                   @RequestParam(value="joinEmployees",required = false,defaultValue = "true") Boolean joinEmployees,
+                                  @RequestParam(value="useSearch",required = false,defaultValue = "true") Boolean useSearch,
                                   @RequestParam(value="useTargetDate",required = false,defaultValue = "false")Boolean useTargetDate) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
 //        psDBBean.getRequestHash().put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, type, joinEmployees,
-                useRecordDate, useManage, useTargetDate, joinEmployees);
+                useRecordDate, useManage, useTargetDate, useSearch);
         GlobalResponse globalResponse = GlobalResponse.ok();
         globalResponse.put("type",type);
         if (useRecordDate) {
@@ -152,4 +154,38 @@ public class TreeController {
         return globalResponse;
     }
 
+    // /sys/tree/search?hidSearchItems=EMPLOYEEID&hidSearchCondition=BROADMATCH&hidSearchData=464&type=11&psSite=TMG_PERM&psApp=AttendanceBook
+    @GetMapping("search")
+    public GlobalResponse search(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                 @RequestParam("type") Integer type,
+                                 @RequestParam(value = "useRecordDate",required = false,defaultValue = "true") Boolean useRecordDate,
+                                 @RequestParam(value="useManage",required = false,defaultValue = "false") Boolean useManage,
+                                 @RequestParam(value="joinEmployees",required = false,defaultValue = "true") Boolean joinEmployees,
+                                 @RequestParam(value="useSearch",required = false,defaultValue = "true") Boolean useSearch,
+                                 @RequestParam(value="useTargetDate",required = false,defaultValue = "false")Boolean useTargetDate
+    ) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        psDBBean.getRequestHash().put(TmgReferList.TREEVIEW_OBJ_HIDSELECT,1);
+//        psDBBean.getRequestHash().put("SiteId", TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, type, joinEmployees,
+                useRecordDate, useManage, useTargetDate, useSearch);
+        String searchMemberList = referList.getJSONArrayForMemberListSearch();
+        if (StrUtil.isBlank(searchMemberList)) {
+            return GlobalResponse.ok(TmgUtil.getPropertyValue("MSG_ZERO_SEARCH_RESULTS"));
+        }
+        JSONArray jsonArray = JSONUtil.parseArray(searchMemberList);
+        if (CollUtil.isNotEmpty(jsonArray)) {
+            int size = jsonArray.size();
+            String dispLimit4Tree = referList.getDispLimit4Tree();
+            GlobalResponse r = GlobalResponse.ok(jsonArray);
+            if (StrUtil.isNotBlank(dispLimit4Tree)){
+                int limitCount = Integer.parseInt(dispLimit4Tree);
+                if (size>limitCount) {
+                    r.put("overTip",StrUtil.replace(TmgUtil.getPropertyValue("MSG_SEARCH_CAUTION"),"@1@",dispLimit4Tree));
+                }
+            }
+            return r;
+        }
+        return GlobalResponse.ok();
+    }
 }

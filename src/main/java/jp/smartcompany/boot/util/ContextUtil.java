@@ -56,4 +56,8 @@ public class ContextUtil {
     return beanHolder.get();
   }
 
+  public static void removeDbBean() {
+    beanHolder.remove();
+  }
+
 }

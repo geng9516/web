@@ -1039,7 +1039,7 @@ public class TmgReferList {
     private void createEmpList4SearchView(String psBase, String psTarget, String psTargetSection,
                                           SimpleDateFormat pSdf) throws Exception{
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
-        if((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
+        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
                 getRecordDate().equals(gsSessionDate) && isSession4SearchTabItem()
         ){
             empList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
@@ -1214,11 +1214,14 @@ public class TmgReferList {
      */
     private void createMemberList4SearchView(TmgMemberList pTmgMemberList, String psBase) throws Exception{
 
-        if((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
+        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
             // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
             pTmgMemberList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
             pTmgMemberList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
         } else {
+//            log.info("【搜索参数：searchItems:{},searchCondition:{},searchData:{},type:{},psSite:{},psApp:{}】");
+            log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
+                    getSearchCondition(),getSearchData());
             if (isSelectedSearchTab()){
                 pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
                         getSearchItems(), getSearchCondition(), getSearchData()
