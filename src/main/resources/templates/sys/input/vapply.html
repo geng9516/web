@@ -28,7 +28,7 @@
                         <div style="position: relative;min-height: 120px;">
                             <div v-for="(item, i) of restInfoList" :key="i">
                                 <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
-                                <Row class="ft13 mb5 mt15">
+                                <Row class="ft13 mb5 mt10">
                                     <i-col span="12">
                                         <p class="head-info mr1">期間</p>
                                     </i-col>
@@ -68,21 +68,21 @@
                             </i-option>
                         </i-select>
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
-                            icon="md-refresh" @click="getApplyHistory(true)" :loading="loading"></i-button>
+                            icon="md-refresh" @click="getApplyHistory" :loading="loading"></i-button>
                         <!-- PersonalApplyTable -->
                         <ul class="apply-history-list">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
-                            <li :class="handleTimelineDotShow(item.status)" v-for="(item, index) of tableData" :key="index">
+                            <li :class="handleTimelineDotShow(item.tntfCstatusflg)" v-for="(item, index) of applyHistoryListData" :key="index">
                                 <Row>
                                     <!-- 申请休假的时间的显示 -->
                                     <i-col span="7" style="margin-left: 4.5%" class="title">
-                                        {{ handleApplyDayShow(item.dateList) }}</i-col>
+                                        {{ handleApplyDayShow(item.tntfDbegin, item.tntfDend) }}</i-col>
                                     <i-col span="12" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
-                                            <ul style="display:flex">
-                                                <li style="margin-right:10px" v-if="item.nextAdminList.length <= 3">
+                                            <ul style="display:flex" v-if="item.ntfapprover">
+                                                <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
-                                                    <Avatar v-for="(e,i) of item.nextAdminList" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
+                                                    <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
                                                         {{e.avatar ? '' : e.name.split(' ')[0]}}
                                                     </Avatar>
                                                 </li>
@@ -95,7 +95,7 @@
                                                 </li>
                                             </ul>
                                             <div class="tr" slot="content">
-                                                <div class="mb5" v-for="(e,i) of item.nextAdminList" :key="i">
+                                                <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
                                                     <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.name.split(' ')[0]}}</Avatar>
                                                     <span>{{ e.name }}</span>
                                                 </div>
@@ -106,38 +106,46 @@
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <span class="blue" style="text-decoration: underline;">file.jpg</span>
+                                                <span class="blue" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;">{{ e.tnafCfilename }}</span>
                                             </div>
                                         </Poptip>
-                                        <span :class="handleApplyMarkShow(item.status)" />
+                                        <span :class="handleApplyMarkShow(item.tntfCstatusflg)" />
                                     </i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="12" style="font-weight:bold;margin-left: 4.5%" class="description">
-                                        {{ item.restTypeName }}
+                                        {{ item.tntfCtype }}
                                     </i-col>
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
-                                        v-if="item.status === 0">
-                                        <!-- todo: 也可能是再申请按钮S -->
-                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item.applyId)">取り消し
+                                        v-if="item.tntfCstatusflg.indexOf('2') > -1">
+                                        <!-- 承认中可以自行取消 -->
+                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item)">取り消し
+                                        </i-button>
+                                    </i-col>
+                                    <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
+                                        v-if="item.tntfCstatusflg.indexOf('3') > -1 || item.tntfCstatusflg.indexOf('9') > -1">
+                                        <!-- 否认或者error则再申请  -->
+                                        <i-button  type="primary" ghost style="width: 97%;" size="small" @click="reApply(item)">再申請
                                         </i-button>
                                     </i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="20" style="margin-left: 4.5%" class="description light-grey">
-                                        {{ item.remark }}</i-col>
+                                        {{ item.tntfCowncomment }}</i-col>
                                 </Row>
-                                <Row v-if="item.status === 2">
+                                <!-- toask: 拒否理由? -->
+                                <!-- <Row v-if="item.status === 2">
                                     <i-col span="20" style="margin-left: 4.5%" class="description red">
                                         {{ `拒否理由：${item.denyReason ? item.denyReason : 'なし'}` }}</i-col>
-                                </Row>
+                                </Row> -->
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">
-                                        {{ `申請日時：${item.updateTime}` }}</i-col>
+                                        {{ `申請日時：${item.tntfDnotification}` }}</i-col>
                                 </Row>
                             </li>
                             <Spin size="large" fix v-if="listLoading"></Spin>
-                            <i-button class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
+                            <!-- 还有更多数据的时候 -->
+                            <i-button v-show="applyHistoryListData.length - applyHistoryListAmount > 0" class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
@@ -324,80 +332,7 @@
                     totalCount: 0,
                     restInfoLoading:false,
                     listLoading: false,
-                    tableData: [
-                        {
-                            status: 1,
-                            remark: '申請承認済み',
-                            updateTime: '2020/03/02 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
-                        },
-                        {
-                            status: 2,
-                            remark: '申請承認拒否',
-                            updateTime: '2020/03/01 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02', '2020/03/05'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
-                        },
-                        {
-                            status: 3,
-                            remark: '自分取り消し',
-                            updateTime: '2020/02/28 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[],
-                        },
-                        {
-                            status: 1,
-                            remark: '申請承認済み',
-                            updateTime: '2020/03/02 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
-                        },
-                        {
-                            status: 2,
-                            remark: '申請承認拒否',
-                            updateTime: '2020/03/01 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02', '2020/03/05'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
-                        },
-                        {
-                            status: 3,
-                            remark: '自分取り消し',
-                            updateTime: '2020/02/28 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[],
-                        },
-                        {
-                            status: 1,
-                            remark: '申請承認済み',
-                            updateTime: '2020/03/02 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:1}],
-                        },
-                        {
-                            status: 2,
-                            remark: '申請承認拒否',
-                            updateTime: '2020/03/01 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02', '2020/03/05'],
-                            nextAdminList:[{name:'田中 1さん',status:1,avatar},{name:'田中 2さん',status:1,avatar},{name:'田中 2さん',status:2,avatar}],
-                        },
-                        {
-                            status: 3,
-                            remark: '自分取り消し',
-                            updateTime: '2020/02/28 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[],
-                        }
-                    ],
+                    applyHistoryListData: [],
                     opts: {
                         ntfTypeId:'',
                         statusFlg:'',
@@ -410,6 +345,7 @@
                     restApply: {
                         useVacation: false
                     },
+                    applyHistoryListAmount:0,
                     restTypeListForReview: [],
                     restTypeListForApply: [],
                     selectedRestInfo: {},
@@ -435,6 +371,7 @@
                 this.getRestTypeForReview()
                 this.getRestInfo()
                 this.getStatusList()
+                this.getApplyHistory()
             },
             mounted () {
                 this.uploadList = this.$refs.upload.fileList;;
@@ -510,10 +447,13 @@
                     this.statusList = data
                 },
                 getApplyHistory: Debounce(async function () {
+                    this.listLoading = true
                     // 获得历史申请数据
                     try {
                         // 触底的再拉走独自的loading, 因为全loading的样式有bug, 在变长的list时无法cover整个容器
                         const { data } = await this.http.get('/sys/vapply/NotificationList', this.opts)
+                        this.applyHistoryListData = data.list
+                        this.applyHistoryListAmount = data.count
                         console.log(data)
                         // if (isRefresh) this.$Message.success('再表示完了')
                     } catch (error) {
@@ -552,58 +492,63 @@
                 apply: Debounce(async function () {
                     // 以下是模拟申请一条，应该全删掉
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
-                    this.loading = true
-                    const that = this
-                    setTimeout(() => {
-                        this.$Message.success('申请完了')
-                        this.rotate = !this.rotate
-                        this.loading = false
-                        this.tableData.unshift({
-                            status: 0,
-                            remark: '自分取り消し',
-                            updateTime: '2020/02/28 09:56:03',
-                            restTypeName: 'test',
-                            dateList: ['2020/03/02'],
-                            nextAdminList:[],
-                        })
-                    }, 1000)
+                    // this.loading = true
+                    // this.$Message.success('申请完了')
+                    //     this.rotate = !this.rotate
+                    //     this.loading = false
                 }),
                 handleApplyMarkShow(e) {
-                    switch (e) {
-                        case 0:
-                            return 'apply-status ing'
-                        case 1:
-                            return 'apply-status ok'
-                        case 2:
-                            return 'apply-status deny'
-                        case 3:
-                            return 'apply-status ok'
-                        default:
-                            return 'apply-status'
-                    }
+                  // TMG_NTFSTATUS|0	取下
+                  if(e.indexOf('0') > -1) {
+                    return 'apply-status'
+                  }
+
+                  // TMG_NTFSTATUS|2	承認待
+                  if(e.indexOf('2') > -1) {
+                    return 'apply-status ing'
+                  }
+
+                  // TMG_NTFSTATUS|3	差戻
+                  if(e.indexOf('3') > -1) {
+                    return 'apply-status deny'
+                  }
+                  // TMG_NTFSTATUS|9	エラー
+                  if(e.indexOf('9') > -1) {
+                    return 'apply-status error'
+                  }
+
+                  // TMG_NTFSTATUS|5	承認済
+                  return 'apply-status ok'
                 },
                 handleTimelineDotShow(e) {
-                    switch (e) {
-                        case 0:
-                            return 'with-dot ing'
-                        case 2:
-                            return 'with-dot deny'
-                        case 3:
-                            return 'with-dot cancel'
-                        default:
-                            return 'with-dot'
-                    }
+                  // TMG_NTFSTATUS|0	取下
+                  if(e.indexOf('0') > -1) {
+                    return 'with-dot cancel'
+                  }
+
+                  // TMG_NTFSTATUS|2	承認待
+                  if(e.indexOf('2') > -1) {
+                    return 'with-dot ing'
+                  }
+
+                  // TMG_NTFSTATUS|3	差戻
+                  // TMG_NTFSTATUS|9	エラー
+                  if(e.indexOf('3') > -1 || e.indexOf('9') > -1) {
+                    return 'with-dot deny'
+                  }
+
+                  // TMG_NTFSTATUS|5	承認済
+                  return 'with-dot'
                 },
-                handleApplyDayShow(e) {
-                    if (e.length === 1) {
-                        return e.join('')
-                    }
-                    return `${e[0]} ～ ${e[e.length - 1]}`
+                handleApplyDayShow(begin, end) {
+                    if(begin === end) return begin
+                    else return `${begin} ～ ${end}`
                 },
                 cancel() {
                     // todo
                     // this.$emit('cancel', e)
                 },
+                reApply() {},
                 handleSuccess (res, file) {
                     this.$Notice.success({
                         title: 'Done!',
