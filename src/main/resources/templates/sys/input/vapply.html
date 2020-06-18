@@ -83,34 +83,35 @@
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">
-                                                        {{e.avatar ? '' : e.name.split(' ')[0]}}
+                                                        {{e.avatar ? '' : e.split(' ')[0]}}
                                                     </Avatar>
                                                 </li>
                                                 <li style="margin-right:10px" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
-                                                    <Avatar :src="item.nextAdminList[0].avatar || ''">{{item.nextAdminList[0].avatar ? '' : item.nextAdminList[0].name.split(' ')[0]}}</Avatar>
-                                                    <Avatar class="ml-13" :src="item.nextAdminList[1].avatar || ''">{{item.nextAdminList[1].avatar ? '' : item.nextAdminList[1].name.split(' ')[0]}}</Avatar>
-                                                    <Avatar class="ml-13" :src="item.nextAdminList[2].avatar || ''">{{item.nextAdminList[2].avatar ? '' : item.nextAdminList[2].name.split(' ')[0]}}</Avatar>
-                                                    <Avatar class="more-user">{{`+${item.nextAdminList.length - 3}`}}</Avatar>
+                                                    <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(' ')[0]}}</Avatar>
+                                                    <Avatar class="ml-13" :src="item.ntfapprover[2].avatar || ''">{{item.ntfapprover[2].avatar ? '' : item.ntfapprover[2].split(' ')[0]}}</Avatar>
+                                                    <Avatar class="more-user">{{`+${item.ntfapprover.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
-                                            <div class="tr" slot="content">
+                                            <div class="tl" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
-                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.name.split(' ')[0]}}</Avatar>
-                                                    <span>{{ e.name }}</span>
+                                                    <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(' ')[0]}}</Avatar>
+                                                    <span>{{ e }}</span>
                                                 </div>
                                             </div>
                                         </Poptip>
                                     </i-col>
                                     <i-col span="4" style="margin-left: 44%">
-                                        <Poptip trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
+                                        <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <span class="blue" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;">{{ e.tnafCfilename }}</span>
+                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
-                                        <span :class="handleApplyMarkShow(item.tntfCstatusflg)" />
+                                        
                                     </i-col>
+                                    <span style="position: absolute;right: 47px;" :class="handleApplyMarkShow(item.tntfCstatusflg)" />
                                 </Row>
                                 <Row>
                                     <i-col span="12" style="font-weight:bold;margin-left: 4.5%" class="description">
