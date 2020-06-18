@@ -80,13 +80,15 @@
                 :disabled-hover="true" :loading="loading" no-data-text="所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
                     <span @click="toWorkPage"
-                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.name }}</span>
+                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
                 </template>
 
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-                    <span @click="showDay" v-if="row[item] === 1" class="confirm-sytle ing">待</span>
-                    <span @click="showDay" v-if="row[item] === 2" class="confirm-sytle">済</span>
-                    <span @click="showDay" v-if="row[item] === 3" class="confirm-sytle undo">エ</span>
+                    <span @click="showDay" v-if="row[item] === '未'" class="confirm-sytle ing">未</span>
+                    <span @click="showDay" v-if="row[item] === 'エ'" class="confirm-sytle undo">エ</span>
+                    <span @click="showDay" v-if="row[item] === '待'" class="confirm-sytle ing">待</span>
+                    <span @click="showDay" v-if="row[item] === '済'" class="confirm-sytle">済</span>
+                    <span @click="showDay" v-if="row[item] === '確'" class="confirm-sytle">確</span>
                 </template>
             </i-table>
         </div>
@@ -103,7 +105,7 @@
                     curDate: new Date(),
                     tableHead: [],
                     tableData: [],
-                    slotList: Utils.getNumArray(1, 31).map(e => `m${e}`),
+                    slotList: Utils.getNumArray(1, 31).map(e => `disppermStatusName${e}`),
                     dailyShow: true,
                     rawData: [],
                     isShow: false,
@@ -128,10 +130,10 @@
                     query: {
                         employeeId: [[${ session.psSession.loginEmployee }]],
                         txtAction: 'ACT_DISP_MONTHLY',
-                        txtDYYYYMM: '2020/03/01',
+                        txtDYYYYMM: '2020/02/01',
                         txtDYYYYMMDD: '',
                         txtCEMPLOYEEID: '',
-                        sectionid: '',
+                        sectionid: '201000000000',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp')
                     },
@@ -144,13 +146,10 @@
                 console.log([[${ session }]])
                 // this.getOrgTree(),
                 this.getTableHead(),
+                this.getSelectGetCalendarList(),
 
-                    this.getSelectDayCount(),
-                    this.getSelectGetCalendarList(),
-                    this.getTmgMonthlyInfoVOList(),
-
-
-                    this.getTableData()
+                // this.getTmgMonthlyInfoVOList(),
+                this.getTableData()
             },
             computed: {
                 tableHeadFixed() {
@@ -197,7 +196,7 @@
                                     }
                                 )
                             },
-                            slot: `m${i + 1}`,
+                            slot: `disppermStatusName${i + 1}`,
                             align: 'center'
                         })
                     })
@@ -226,20 +225,18 @@
                     // const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableHead`)
                     const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
                     this.tableHead = data
-                    console.log(this.tableHead)
                 },
                 async getTableData() {
-                    const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
-                    this.tableData = data
+                    // const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
+                    const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
+                    this.tableData = data.tmgMonthlyInfoVOList
                     this.getDeptName(this.treeData)
-                },
-                async getSelectDayCount() {
-                    // const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
-                    // this.tableHead = data
-                    // this.tableHead(this.treeData)
+
+                    console.log("getTableData")
+                    console.log(this.tableData)
                 },
                 async getSelectGetCalendarList() {
-                    const { data } = await this.http.get('sys/permStatList/selectGetCalendarList', this.query)
+                    const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
                     // this.tableHead = data
                     // this.tableHead(this.treeData)
                 },
