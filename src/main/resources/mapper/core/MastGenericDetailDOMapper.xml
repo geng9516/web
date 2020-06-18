@@ -850,7 +850,7 @@
         FROM
             TMG_V_MGD_EMPATTSET_DISP
         WHERE
-            　MGD_CCUSTOMERID =　#{custId}
+            MGD_CCUSTOMERID =#{custId}
         AND  MGD_CCOMPANYID_CK_FK = #{compId}
         AND  MGD_DSTART_CK <![CDATA[<=]]> #{baseDate}
         AND  MGD_DEND >= #{baseDate}
@@ -875,7 +875,6 @@
         select
             TMG_F_GET_TMG_WEEKDAYS_COM ( #{custId}, #{compId},#{baseDate},#{daysOfWeeks,jdbcType=BIGINT},#{allMinutes,jdbcType=BIGINT}  )
         from dual
-        ;
     </select>
     <select id="selectDateOfEmploymentWithMGD" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmploymentWithMgdVo">
         SELECT
@@ -895,6 +894,57 @@
             MGD_DSTART_CK DESC
         ;
     </select>
-
-
+    <select id="buildSQLForSelectSimulationMaster"
+            resultType="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto">
+        SELECT
+            MGD_EXCLUDECOND_TYPE,
+            MGD_EXCLUDECOND_FROM,
+            MGD_EXCLUDECOND_TO,
+            TO_CHAR(MGD_DSTART_CK, 'yyyy/mm/dd') AS MGD_DSTART_CK,
+            TO_CHAR(MGD_DEND, 'yyyy/mm/dd') AS MGD_DEND
+        FROM
+            TMG_V_MGD_EXCLUDECOND4THW
+        WHERE
+            MGD_CCUSTOMERID      = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND MGD_CLANGUAGE_CK     = #{language}
+        AND MGD_CGENERICGROUPID  = #{groupId}
+        ORDER BY
+            MGD_DSTART_CK,
+            MGD_EXCLUDECOND_TYPE,
+            MGD_EXCLUDECOND_FROM
+    </select>
+    <select id="buildSQLForSelectSumSimulationMaster" resultType="java.lang.Integer">
+        SELECT
+           COUNT(*)
+        FROM
+           TMG_V_MGD_EXCLUDECOND4THW
+        WHERE
+           MGD_CCUSTOMERID      = #{custID}
+        AND MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND MGD_CLANGUAGE_CK     = #{language}
+        AND MGD_CGENERICGROUPID  = #{groupId}
+        GROUP BY
+           MGD_DSTART_CK,
+           MGD_DEND
+    </select>
+    <select id="buildSQLForSelectExcludecondCtl"
+            resultType="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto">
+        SELECT
+            MGD_EXCLUDECOND_TYPE,
+            MGD_EXCLUDECOND_TYPE_NAME,
+            MGD_EXCLUDECOND_LENGTH,
+            MGD_EXCLUDECOND_GID
+        FROM
+            TMG_V_MGD_EXCLUDECOND_CTL
+        WHERE
+            MGD_CCUSTOMERID           = #{custID}
+        AND MGD_CCOMPANYID_CK_FK      = #{compCode}
+        AND MGD_DSTART_CK            <![CDATA[ <= ]]> TRUNC(SYSDATE)
+        AND MGD_DEND                 >= TRUNC(SYSDATE)
+        AND MGD_CLANGUAGE_CK          = #{language}
+        AND MGD_EXCLUDECOND_EDIT_FLG  = 'TMG_ONOFF|1'
+        ORDER BY
+        MGD_EXCLUDECOND_TYPE
+    </select>
 </mapper>

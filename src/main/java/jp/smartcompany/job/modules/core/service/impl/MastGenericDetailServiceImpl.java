@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
@@ -807,7 +808,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      */
     @Override
     public List<SimulationMasterDto> buildSQLForSelectSimulationMaster(String custID, String compCode, String language, String groupId){
-        return null;
+        return baseMapper.buildSQLForSelectSimulationMaster( custID, compCode, language, groupId);
     }
 
 
@@ -876,5 +877,32 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public int insertMgdKinmuStart(String custId, String compId, String targetUser, String userCode, String baseDate,String startDate,String endDate,String beginDate){
         return baseMapper.insertMgdKinmuStart( custId,  compId,  targetUser, userCode,  baseDate,startDate,endDate,beginDate);
+    }
+
+    /**
+     * HR連携除外条件マスタ情報の件数を取得するSQL文を返却します。
+     *
+     * @param custID   顧客コード
+     * @param compCode 　法人コード
+     * @param language 　言語
+     * @param groupId groupId
+     * @return
+     */
+    @Override
+    public List<Integer> buildSQLForSelectSumSimulationMaster(String custID, String compCode, String language, String groupId) {
+        return baseMapper.buildSQLForSelectSumSimulationMaster(custID, compCode, language, groupId);
+    }
+
+    /**
+     * HR連携除外条件区分マスタ情報の件数を取得する
+     *
+     * @param custID   顧客コード
+     * @param compCode 　法人コード
+     * @param language 　言語
+     * @return
+     */
+    @Override
+    public List<ExcludecondCtlDto> buildSQLForSelectExcludecondCtl(String custID, String compCode, String language){
+        return baseMapper.buildSQLForSelectExcludecondCtl(custID, compCode, language);
     }
 }

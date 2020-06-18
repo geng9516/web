@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
+import jp.smartcompany.job.modules.tmg.deptstatlist.vo.LinkOfMonthVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.CommonUI;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -27,11 +28,6 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DeptStatListBean {
-
-    /**
-     * PsDBBean
-     */
-    private PsDBBean psDBBean;
 
     /**
      * IMastGenericDetailService
@@ -69,13 +65,13 @@ public class DeptStatListBean {
      * <p>
      * ACT_DISP_RLIST
      */
-    public void actDispRlist(ModelMap modelMap) throws Exception {
-        execute(modelMap);
+    public void actDispRlist(PsDBBean psDBBean) throws Exception {
+        execute(psDBBean);
 
         // 組織が選択されてる場合
         if (referList.getTargetSec() != null) {
-            executeInsertTmgTrigger();
-            executeDispStatList(modelMap);
+            executeInsertTmgTrigger(psDBBean);
+            executeDispStatList(psDBBean);
         }
     }
 
@@ -85,9 +81,9 @@ public class DeptStatListBean {
      * <p>
      * ACT_DISP_CDOWNLOAD
      */
-    public void actDispCdownload(ModelMap modelMap) throws Exception {
-        execute(modelMap);
-        executeDownloadDownload();
+    public void actDispCdownload(PsDBBean psDBBean) throws Exception {
+        execute(psDBBean);
+        executeDownloadDownload(psDBBean);
     }
 
     /**
@@ -95,7 +91,11 @@ public class DeptStatListBean {
      *
      * @since rev:1319 #175
      */
-    private void executeInsertTmgTrigger() {
+    public void executeInsertTmgTrigger(PsDBBean psDBBean) {
+
+        if (referList.getTargetSec() == null) {
+            return;
+        }
 
         // ログインユーザコード
         String pLoginUserCode = psDBBean.getUserCode();
@@ -115,11 +115,88 @@ public class DeptStatListBean {
 
         //TmgUtil.checkInsertErrors(setInsertValues(vQuery, beanDesc), session, beanDesc);
     }
+//
+//    /**
+//     * 参照画面表示処理を実行します。
+//     */
+//    private void executeDispStatList1(PsDBBean psDBBean) throws Exception {
+//
+//        // 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅をTMG_DISPDEPTSTATLISTマスタから取得し、dispItemMapにセットする。
+//        List<DispItemsDto> dispItemsDtoList = this.iMastGenericDetailService.buildSQLForSelectTmgDispdeptStatlist(psDBBean.getCustID(),
+//                psDBBean.getTargetComp(),
+//                psDBBean.getLanguage(),
+//                baseDate);
+//
+//        List<Map> dispItemsList = new ArrayList<>();
+//        Map title = new HashMap();
+//        title.put(CommonUI.TITLE, "氏名");
+//        title.put(CommonUI.WIDTH, CommonUI.WIDTH_100);
+//        title.put(CommonUI.KEY,"EMPNAME");
+//        dispItemsList.add(title);
+//        for (DispItemsDto dispItemsDto : dispItemsDtoList) {
+//            title = new HashMap();
+//            title.put(CommonUI.TITLE, dispItemsDto.getMgdCitemname());
+//            title.put(CommonUI.KEY,dispItemsDto.getTempColumnid());
+//            title.put(CommonUI.WIDTH, CommonUI.WIDTH_36);
+//        }
+//
+//        //modelMap.addAttribute("dispItemsList", dispItemsList);
+//
+//        //対象部署に属する社員全ての合計値を取得
+//        Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate);
+//        sectionMap.put("EMPNAME", "合計");
+//        int count = (int) sectionMap.get("CNT");
+//        //modelMap.addAttribute("count", count);
+//
+//        //社員別のデータを取得
+//        int startSeq = (getPage() - 1) * LINE_PER_PAGE + 1;
+//        int endSeq = getPage() * LINE_PER_PAGE;
+//        List<Map> employyesMap = iTmgMonthlyService.buildSQLSelectEmployyes(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate, startSeq, endSeq);
+//
+//        List<Map> sectionAndEmployyesMap = new ArrayList<Map>();
+//        sectionAndEmployyesMap.add(sectionMap);
+//        sectionAndEmployyesMap.addAll(employyesMap);
+//        //modelMap.addAttribute("sectionAndEmployyesMap", sectionAndEmployyesMap);
+//
+//        //前月リンクを取得
+//        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
+//        //modelMap.addAttribute("preMonth", preMonth);
+//
+//        //翌月リンクを取得
+//        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
+//        //modelMap.addAttribute("nextMonth", nextMonth);
+//
+//    }
+
+    /**
+     * 前翌月リンクを取得
+     */
+    public LinkOfMonthVO buildSQLSelectLinkOfMonth(){
+        LinkOfMonthVO linkOfMonthVO = new LinkOfMonthVO();
+        if (referList.getTargetSec() == null) {
+            return linkOfMonthVO;
+        }
+
+        //前月リンクを取得
+        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
+        //翌月リンクを取得
+        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
+
+        linkOfMonthVO.setPreMonth(preMonth);
+        linkOfMonthVO.setNextMonth(nextMonth);
+
+        return linkOfMonthVO;
+    }
 
     /**
      * 参照画面表示処理を実行します。
      */
-    private void executeDispStatList(ModelMap modelMap) throws Exception {
+    public Map executeDispStatList(PsDBBean psDBBean){
+
+        Map resultMap = new HashMap();
+        if (referList.getTargetSec() == null) {
+            return resultMap;
+        }
 
         // 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅をTMG_DISPDEPTSTATLISTマスタから取得し、dispItemMapにセットする。
         List<DispItemsDto> dispItemsDtoList = this.iMastGenericDetailService.buildSQLForSelectTmgDispdeptStatlist(psDBBean.getCustID(),
@@ -138,35 +215,33 @@ public class DeptStatListBean {
             title.put(CommonUI.TITLE, dispItemsDto.getMgdCitemname());
             title.put(CommonUI.KEY,dispItemsDto.getTempColumnid());
             title.put(CommonUI.WIDTH, CommonUI.WIDTH_36);
+            dispItemsList.add(title);
         }
 
-        modelMap.addAttribute("dispItemsList", dispItemsList);
+        // タイトルを保存する
+        resultMap.put("dispItemsList", dispItemsList);
+
 
         //対象部署に属する社員全ての合計値を取得
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate);
         sectionMap.put("EMPNAME", "合計");
-        int count = (int) sectionMap.get("CNT");
-        modelMap.addAttribute("count", count);
+        //int count = (int) sectionMap.get("CNT");
+
+        //部署別統計 を保存する
+        resultMap.put("sectionMap", sectionMap);
+
 
         //社員別のデータを取得
         int startSeq = (getPage() - 1) * LINE_PER_PAGE + 1;
         int endSeq = getPage() * LINE_PER_PAGE;
         List<Map> employyesMap = iTmgMonthlyService.buildSQLSelectEmployyes(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate, startSeq, endSeq);
 
-        List<Map> sectionAndEmployyesMap = new ArrayList<Map>();
-        sectionAndEmployyesMap.add(sectionMap);
-        sectionAndEmployyesMap.addAll(employyesMap);
-        modelMap.addAttribute("sectionAndEmployyesMap", sectionAndEmployyesMap);
+        // 個人別情報 を保存する
+        resultMap.put("employyesMap", employyesMap);
 
-        //前月リンクを取得
-        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
-        modelMap.addAttribute("preMonth", preMonth);
-
-        //翌月リンクを取得
-        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
-        modelMap.addAttribute("nextMonth", nextMonth);
-
+        return resultMap;
     }
+
 
     /**
      * 表示中のページ
@@ -187,7 +262,7 @@ public class DeptStatListBean {
     /**
      * 部署別統計情報データCSV出力処理
      */
-    private void executeDownloadDownload() throws Exception {
+    public void executeDownloadDownload(PsDBBean psDBBean) throws Exception {
 
         // CSV出力ヘッダー・項目取得
         List<ItemVO> headerList = iMastGenericDetailService.buildSQLForSelectTmgDeptstatcsvitems(
@@ -357,14 +432,14 @@ public class DeptStatListBean {
      *
      * @throws Exception
      */
-    public void execute(ModelMap modelMap) throws Exception {
+    public void execute(PsDBBean psDBBean) throws Exception {
         //リクエストからパラメータを取得
-        setReferList(modelMap);
+        setReferList( psDBBean);
 
         // 2007/10/03  H.Kawabata  #248 勤怠系コンテンツの参照権限の統一対応
         // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
         if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
-            String sAction = getRequestString("txtAction");
+            String sAction = getRequestString("txtAction",psDBBean);
             String sTargetSec = getReferList().getTargetSec();
 
             // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
@@ -381,7 +456,6 @@ public class DeptStatListBean {
                     String sPrevMonth = addMonthOfDateFromatString(getSysdate(), -1);
                     // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
                     referList = new TmgReferList(psDBBean, beanDesc, sPrevMonth, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-                    referList.putReferList(modelMap);
 
                     // 参照権限チェック(現在時点より1年度過去の年度)
                     if (getReferList().existsAnyone(sPrevMonth) &&
@@ -407,7 +481,7 @@ public class DeptStatListBean {
                     } else {
                         // 対象年月を元に戻します
                         referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-                        referList.putReferList(modelMap);
+
                         setAuthorityMonth(CB_CANT_REFER);
                     }
                 }
@@ -464,7 +538,7 @@ public class DeptStatListBean {
      */
     public String baseDate = null;
 
-    public String getRequestString(String key) {
+    public String getRequestString(String key,PsDBBean psDBBean) {
         String data = "";
         try {
             data = (String) psDBBean.getReqParam(key);
@@ -531,6 +605,10 @@ public class DeptStatListBean {
         wrkDate.append(labelDay);
         objWorkDate = wrkDate.toString();
     }
+    /** 勤務年月を返却します。 */
+    public String getObjWorkDate() {
+        return objWorkDate;
+    }
 
     /**
      * 汎用参照オブジェクト
@@ -554,9 +632,9 @@ public class DeptStatListBean {
      * 汎用コンポーネント設定処理
      * 基準日時点の汎用コンポーネントをnewするメソッドです。
      */
-    private void setReferList(ModelMap modelMap) {
+    private void setReferList(PsDBBean psDBBean) {
         //基準日の取得
-        baseDate = getRequestString("txtTDA_DYYYYMM");
+        baseDate = getRequestString("txtTDA_DYYYYMM",psDBBean);
         if (baseDate == null || baseDate.length() == 0) {
             baseDate = getSysdate();
         }
@@ -565,7 +643,7 @@ public class DeptStatListBean {
 
         try {
             referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-            referList.putReferList(modelMap);
+
         } catch (Exception e) {
             e.printStackTrace();
         }

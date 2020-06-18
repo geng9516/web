@@ -2,4 +2,33 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSimMapper">
 
+    <select id="buildSQLForSelectTmgStatusWorkTypeSim"
+            resultType="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto">
+        SELECT
+            TSWS_CSTATUS,
+            MGD_WTSIMSTATUS_NAME
+        FROM
+            TMG_STATUS_WORKTYPE_SIM,
+            (
+                SELECT
+                MGD_CCUSTOMERID,
+                MGD_CCOMPANYID_CK_FK,
+                MGD_WTSIMSTATUS_CODE,
+                MGD_WTSIMSTATUS_NAME
+                FROM
+                TMG_V_MGD_WTSIMSTATUS
+                WHERE
+                MGD_DSTART_CK      <![CDATA[<=]]> TRUNC(SYSDATE)
+                AND MGD_DEND           >= TRUNC(SYSDATE)
+                AND MGD_CLANGUAGE_CK    = #{language}
+            )
+        WHERE
+            TSWS_CCUSTOMERID    = #{custID}
+        AND TSWS_CCOMPANYID     = #{compCode}
+        AND TSWS_DSTARTDATE    <![CDATA[<=]]> TRUNC(SYSDATE)
+        AND TSWS_DENDDATE      >= TRUNC(SYSDATE)
+        AND TSWS_CCUSTOMERID    = MGD_CCUSTOMERID(+)
+        AND TSWS_CCOMPANYID     = MGD_CCOMPANYID_CK_FK(+)
+        AND TSWS_CSTATUS        = MGD_WTSIMSTATUS_CODE(+)
+    </select>
 </mapper>

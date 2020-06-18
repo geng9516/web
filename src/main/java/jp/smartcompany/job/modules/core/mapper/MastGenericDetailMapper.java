@@ -11,6 +11,8 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
@@ -311,5 +313,20 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                             @Param("startDate")String startDate,
                             @Param("endDate")String endDate,
                             @Param("beginDate")String beginDate);
+
+
+    List<SimulationMasterDto> buildSQLForSelectSimulationMaster(@Param("custID")String custID,
+                                                                @Param("compCode")String compCode,
+                                                                @Param("language")String language,
+                                                                @Param("groupId")String groupId);
+
+    List<Integer> buildSQLForSelectSumSimulationMaster(@Param("custID")String custID,
+                                                 @Param("compCode")String compCode,
+                                                 @Param("language")String language,
+                                                 @Param("groupId")String groupId);
+
+    List<ExcludecondCtlDto> buildSQLForSelectExcludecondCtl(@Param("custID")String custID,
+                                                            @Param("compCode")String compCode,
+                                                            @Param("language")String language);
 }
 
