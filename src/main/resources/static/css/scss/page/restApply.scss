@@ -207,7 +207,14 @@
     color: var(--red);
     background-color: var(--light-pink);
     &:after {
-      content: '否';
+      content: '差';
+    }
+  }
+  &.error {
+    color: var(--red);
+    background-color: var(--light-pink);
+    &:after {
+      content: 'エ';
     }
   }
   &.ing {
@@ -258,19 +265,5 @@
     &.cancel::before {
       background: linear-gradient(120deg, var(--user-avatar-background), var(--text-light-grey));
     }
-    &:hover::before {
-      animation: twinkleBluepot 1s ease infinite alternate;
-    }
-  }
-}
-@keyframes twinkleBluepot {
-  from {
-    box-shadow: 0 0 0 4px var(--light-blue);
-  }
-  50% {
-    box-shadow: 0 0 4px 7px var(--light-blue);
-  }
-  to {
-    box-shadow: 0 0 0 4px var(--light-blue);
   }
 }
