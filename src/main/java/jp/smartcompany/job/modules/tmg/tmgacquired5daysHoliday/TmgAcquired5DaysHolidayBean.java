@@ -33,10 +33,10 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgAcquired5DaysHolidayBean {
 
-    /**
-     * PsDBBean
-     */
-    private PsDBBean psDBBean;
+//    /**
+//     * PsDBBean
+//     */
+//    private PsDBBean psDBBean;
     /**
      * IMastGenericDetailService
      */
@@ -69,9 +69,9 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_DISP
      */
-    public void actDisp(ModelMap modelMap) throws Exception {
+    public void actDisp(PsDBBean psDBBean) throws Exception {
 
-        selectList(modelMap, null);
+        selectList(null,psDBBean);
     }
 
 
@@ -81,9 +81,9 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_EDIT
      */
-    public void actEdit(ModelMap modelMap) {
+    public void actEdit(ModelMap modelMap,PsDBBean psDBBean) {
         String userCode = psDBBean.getReqParam("txtUserCode");
-        selectList(modelMap, userCode);
+        selectList(userCode,psDBBean);
     }
 
     /**
@@ -92,9 +92,9 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_DETAIL
      */
-    public void actDetail(ModelMap modelMap) {
+    public void actDetail(PsDBBean psDBBean) {
         //転送項目取得
-        showDisp(modelMap);
+        showDisp(psDBBean);
     }
 
     /**
@@ -103,23 +103,23 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_UPDTE
      */
-    public void actUpdte(ModelMap modelMap) {
+    public void actUpdte(ModelMap modelMap,PsDBBean psDBBean) {
 
         // 編集内容を更新する
-        update();
+        update(psDBBean);
         // 転送項目の取得
-        selectList(modelMap, null);
+        selectList(null,psDBBean);
     }
 
     /**
      * 一覧の検索
      */
-    private void selectList(ModelMap modelMap, String userCode) {
+    private void selectList( String userCode,PsDBBean psDBBean) {
         String baseDate = psDBBean.getReqParam("txtYear") + referList.getRecordDate().substring(4);
         String empsql = referList.buildSQLForSelectEmployees();
 
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
-        modelMap.addAttribute("acquired5DaysVOList", acquired5DaysVOList);
+//        modelMap.addAttribute("acquired5DaysVOList", acquired5DaysVOList);
     }
 
     /**
@@ -127,7 +127,7 @@ public class TmgAcquired5DaysHolidayBean {
      *
      * @throws Exception
      */
-    private void showDisp(ModelMap modelMap) {
+    private void showDisp(PsDBBean psDBBean) {
         String dispUserCode;
         if (psDBBean.getReqParam("txtUserCode") != null && psDBBean.getReqParam("txtUserCode").equals("") == false) {
             dispUserCode = psDBBean.getReqParam("txtUserCode");
@@ -154,7 +154,7 @@ public class TmgAcquired5DaysHolidayBean {
         // 詳細画面検索用SQLを作成
         List<PaidHolidayVO> paidHolidayVOList = iTmgDailyService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), dispUserCode, searchStart, searchEnd);
 
-        modelMap.addAttribute("paidHolidayVOList", paidHolidayVOList);
+//        modelMap.addAttribute("paidHolidayVOList", paidHolidayVOList);
     }
 
     /**
@@ -175,7 +175,7 @@ public class TmgAcquired5DaysHolidayBean {
      *
      * @throws Exception
      */
-    private void update() {
+    private void update(PsDBBean psDBBean) {
 
         iTmgPaiduseinfoFixService.getBaseMapper().delete(SysUtil.<TmgPaiduseinfoFixDO>query()
                 .eq("TPF_CCUSTOMERID", psDBBean.getCustID())
@@ -232,7 +232,7 @@ public class TmgAcquired5DaysHolidayBean {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         return sdf.format(new Date());
     }
-    public void setReferList(int pnTreeViewType){
+    public void setReferList(int pnTreeViewType,PsDBBean psDBBean){
         try{
             referList = new TmgReferList(psDBBean, "TmgSample", baseDate, pnTreeViewType, true,
                     true, false, false, true
@@ -252,14 +252,14 @@ public class TmgAcquired5DaysHolidayBean {
      *          psTargetEmpId 申請者の職員番号
      * @return  なし
      */
-    private void setTargetUser(String psSite, String psUserCode){
+    private void setTargetUser(String psSite, String psUserCode, PsDBBean psDBBean){
 
         // 汎用参照リスト
-        setReferList(TmgReferList.TREEVIEW_TYPE_EMP);
+        setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
 
         psDBBean.setTargetUser(referList.getTargetEmployee());
         // 組織ツリー情報でパラメータの再構築を行う
-        getParam(1);
+        getParam(1,psDBBean);
 
     }
     public TmgReferList getReferList(){
@@ -284,11 +284,10 @@ public class TmgAcquired5DaysHolidayBean {
     /**
      * メインメソッド
      */
-    public void execute() throws Exception {
-
+    public void execute(PsDBBean psDBBean) throws Exception {
 
         // パラメータ
-        getParam(0);
+        getParam(0,psDBBean);
 
         // 表示対象日付をセット
         try{
@@ -302,7 +301,7 @@ public class TmgAcquired5DaysHolidayBean {
         }
 
         // 表示対象者の職員番号格納処理
-        setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode());
+        setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode(),psDBBean);
 
         String sBaseDate = getReferList().getRecordDate(); // 組織ツリーの基準日の設定ここから
         try {
@@ -311,7 +310,7 @@ public class TmgAcquired5DaysHolidayBean {
 
         }
         // カレンダー関連
-        getCalender(sBaseDate);
+        getCalender(sBaseDate, psDBBean);
 
         // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
         if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
@@ -359,7 +358,7 @@ public class TmgAcquired5DaysHolidayBean {
      *
      * @return int    年度
      */
-    private void getCalender(String psDate) {
+    private void getCalender(String psDate,PsDBBean psDBBean) {
 
         SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 
@@ -474,12 +473,13 @@ public class TmgAcquired5DaysHolidayBean {
      * @return  なし
 
      */
-    private void getParam(int piPBranchingProcess){
+    private void getParam(int piPBranchingProcess,PsDBBean psDBBean){
 
         // 初期処理
         if (piPBranchingProcess == INITIAL_TREATMENT){
             // 今年度
-            setThisYear(getDefaultYear());
+            int year = iMastGenericDetailService.selectYear(psDBBean.getCustID(), psDBBean.getCompCode());
+            setThisYear(year);
             // 年度
             try {
                 setYear(Integer.parseInt(psDBBean.getReqParam("year")));
@@ -493,24 +493,8 @@ public class TmgAcquired5DaysHolidayBean {
             // 組織ツリー基準日情報チェック
             if (referList.getRecordDate() != null){
                 setThisYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
-                // 再表示ボタン使用判定
-                if (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) != null && !"".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))){
-                    setYear(Integer.parseInt(referList.getRecordDate().substring(0, 4)));
-                }
             }
         }
-    }
-
-    /**
-     * 年度を取得するメソッド
-     * @return int    年度
-     */
-    private int getDefaultYear() {
-
-
-        int year = iMastGenericDetailService.selectYear(psDBBean.getCustID(), psDBBean.getCompCode());
-        return year;
-
     }
 
 }

@@ -35,9 +35,12 @@ public class DeptStatListController {
      */
     @GetMapping("getObjWorkDate")
     @ResponseBody
-    public String getObjWorkDate(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public String getObjWorkDate(@RequestAttribute("txtAction") String txtAction,
+                                 @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                 @RequestAttribute("page") String page,
+                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(psDBBean);
+        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
         return deptStatListBean.getObjWorkDate();
     }
 
@@ -48,9 +51,12 @@ public class DeptStatListController {
      */
     @GetMapping("executeInsertTmgTrigger")
     @ResponseBody
-    public void executeInsertTmgTrigger(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public void executeInsertTmgTrigger(@RequestAttribute("txtAction") String txtAction,
+                                        @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                        @RequestAttribute("page") String page,
+                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(psDBBean);
+        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
         deptStatListBean.executeInsertTmgTrigger(psDBBean);
     }
 
@@ -61,9 +67,12 @@ public class DeptStatListController {
      */
     @GetMapping("buildSQLSelectLinkOfPreMonth")
     @ResponseBody
-    public LinkOfMonthVO buildSQLSelectLinkOfMonth(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public LinkOfMonthVO buildSQLSelectLinkOfMonth(@RequestAttribute("txtAction") String txtAction,
+                                                   @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                                   @RequestAttribute("page") String page,
+                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(psDBBean);
+        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
         LinkOfMonthVO linkOfMonthVO = deptStatListBean.buildSQLSelectLinkOfMonth();
         return linkOfMonthVO;
     }
@@ -75,9 +84,12 @@ public class DeptStatListController {
      */
     @GetMapping("executeDispStatList")
     @ResponseBody
-    public Map executeDispStatList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public Map executeDispStatList(@RequestAttribute("txtAction") String txtAction,
+                                   @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                   @RequestAttribute("page") String page,
+                                   @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(psDBBean);
+        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
         Map resultMap = deptStatListBean.executeDispStatList(psDBBean);
         return resultMap;
     }
@@ -89,9 +101,12 @@ public class DeptStatListController {
      */
     @GetMapping("executeDownloadDownload")
     @ResponseBody
-    public void executeDownloadDownload(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public void executeDownloadDownload(@RequestAttribute("txtAction") String txtAction,
+                                        @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                        @RequestAttribute("page") String page,
+                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(psDBBean);
+        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
         deptStatListBean.executeDownloadDownload(psDBBean);
 
     }

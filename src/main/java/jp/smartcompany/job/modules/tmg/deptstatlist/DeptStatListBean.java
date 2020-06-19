@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.deptstatlist;
 
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
@@ -14,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.text.SimpleDateFormat;
@@ -60,30 +62,19 @@ public class DeptStatListBean {
     public static final int LINE_PER_PAGE = 50;
 
     /**
-     * 承認サイト
-     * 部署別統計情
-     * <p>
-     * ACT_DISP_RLIST
+     * 表示中のページ
      */
-    public void actDispRlist(PsDBBean psDBBean) throws Exception {
-        execute(psDBBean);
-
-        // 組織が選択されてる場合
-        if (referList.getTargetSec() != null) {
-            executeInsertTmgTrigger(psDBBean);
-            executeDispStatList(psDBBean);
-        }
-    }
+    private int giPage = 1;
 
     /**
-     * 承認サイト・管理サイト
-     * 部署別統計情
-     * <p>
-     * ACT_DISP_CDOWNLOAD
+     * 表示中のページ
      */
-    public void actDispCdownload(PsDBBean psDBBean) throws Exception {
-        execute(psDBBean);
-        executeDownloadDownload(psDBBean);
+    public void setPage(int i) {
+        giPage = i;
+    }
+
+    public int getPage() {
+        return giPage;
     }
 
     /**
@@ -91,10 +82,11 @@ public class DeptStatListBean {
      *
      * @since rev:1319 #175
      */
-    public void executeInsertTmgTrigger(PsDBBean psDBBean) {
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean executeInsertTmgTrigger(PsDBBean psDBBean) {
 
         if (referList.getTargetSec() == null) {
-            return;
+            return true;
         }
 
         // ログインユーザコード
@@ -112,61 +104,10 @@ public class DeptStatListBean {
                 .eq("TTR_CMODIFIERPROGRAMID", PROGRAMID)
                 .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", (psDBBean.getCompCode())));
+        boolean authorityMonthFlg = !getAuthorityMonth() && !psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP);
+        return authorityMonthFlg;
 
-        //TmgUtil.checkInsertErrors(setInsertValues(vQuery, beanDesc), session, beanDesc);
     }
-//
-//    /**
-//     * 参照画面表示処理を実行します。
-//     */
-//    private void executeDispStatList1(PsDBBean psDBBean) throws Exception {
-//
-//        // 表示項目のヘッダー・職員毎select句・部署別合計用select句・テーブルセル幅をTMG_DISPDEPTSTATLISTマスタから取得し、dispItemMapにセットする。
-//        List<DispItemsDto> dispItemsDtoList = this.iMastGenericDetailService.buildSQLForSelectTmgDispdeptStatlist(psDBBean.getCustID(),
-//                psDBBean.getTargetComp(),
-//                psDBBean.getLanguage(),
-//                baseDate);
-//
-//        List<Map> dispItemsList = new ArrayList<>();
-//        Map title = new HashMap();
-//        title.put(CommonUI.TITLE, "氏名");
-//        title.put(CommonUI.WIDTH, CommonUI.WIDTH_100);
-//        title.put(CommonUI.KEY,"EMPNAME");
-//        dispItemsList.add(title);
-//        for (DispItemsDto dispItemsDto : dispItemsDtoList) {
-//            title = new HashMap();
-//            title.put(CommonUI.TITLE, dispItemsDto.getMgdCitemname());
-//            title.put(CommonUI.KEY,dispItemsDto.getTempColumnid());
-//            title.put(CommonUI.WIDTH, CommonUI.WIDTH_36);
-//        }
-//
-//        //modelMap.addAttribute("dispItemsList", dispItemsList);
-//
-//        //対象部署に属する社員全ての合計値を取得
-//        Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate);
-//        sectionMap.put("EMPNAME", "合計");
-//        int count = (int) sectionMap.get("CNT");
-//        //modelMap.addAttribute("count", count);
-//
-//        //社員別のデータを取得
-//        int startSeq = (getPage() - 1) * LINE_PER_PAGE + 1;
-//        int endSeq = getPage() * LINE_PER_PAGE;
-//        List<Map> employyesMap = iTmgMonthlyService.buildSQLSelectEmployyes(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate, startSeq, endSeq);
-//
-//        List<Map> sectionAndEmployyesMap = new ArrayList<Map>();
-//        sectionAndEmployyesMap.add(sectionMap);
-//        sectionAndEmployyesMap.addAll(employyesMap);
-//        //modelMap.addAttribute("sectionAndEmployyesMap", sectionAndEmployyesMap);
-//
-//        //前月リンクを取得
-//        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
-//        //modelMap.addAttribute("preMonth", preMonth);
-//
-//        //翌月リンクを取得
-//        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
-//        //modelMap.addAttribute("nextMonth", nextMonth);
-//
-//    }
 
     /**
      * 前翌月リンクを取得
@@ -221,7 +162,6 @@ public class DeptStatListBean {
         // タイトルを保存する
         resultMap.put("dispItemsList", dispItemsList);
 
-
         //対象部署に属する社員全ての合計値を取得
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), baseDate);
         sectionMap.put("EMPNAME", "合計");
@@ -240,23 +180,6 @@ public class DeptStatListBean {
         resultMap.put("employyesMap", employyesMap);
 
         return resultMap;
-    }
-
-
-    /**
-     * 表示中のページ
-     */
-    private int giPage = 1;
-
-    /**
-     * 表示中のページ
-     */
-    public void setPage(int i) {
-        giPage = i;
-    }
-
-    public int getPage() {
-        return giPage;
     }
 
     /**
@@ -347,21 +270,15 @@ public class DeptStatListBean {
      * @throws NumberFormatException
      * @throws ArrayIndexOutOfBoundsException
      */
-    public int[] devideDateFormatString(String date)
-            throws NumberFormatException, ArrayIndexOutOfBoundsException {
+    public int[] devideDateFormatString(String date) {
 
         int[] dates = new int[3]; //日付値格納配列
 
-        try {
-            StringTokenizer st = new StringTokenizer(date, "/");
-            for (int i = 0; st.hasMoreTokens(); i++) {
-                dates[i] = Integer.parseInt(st.nextToken());
-            }
-        } catch (NumberFormatException e) {
-
-        } catch (ArrayIndexOutOfBoundsException e) {
-
+        StringTokenizer st = new StringTokenizer(date, "/");
+        for (int i = 0; st.hasMoreTokens(); i++) {
+            dates[i] = Integer.parseInt(st.nextToken());
         }
+
         return dates;
     }
 
@@ -376,22 +293,18 @@ public class DeptStatListBean {
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
         Date objDate = null;
 
-        try {
-            // 日付文字列を分割
-            int dates[] = devideDateFormatString(date);
-            Calendar calendar = Calendar.getInstance();
-            // カレンダーに設定
-            calendar.set(dates[0], dates[1], dates[2]);
+        // 日付文字列を分割
+        int dates[] = devideDateFormatString(date);
+        Calendar calendar = Calendar.getInstance();
+        // カレンダーに設定
+        calendar.set(dates[0], dates[1], dates[2]);
 
-            // 月の追加処理
-            calendar.add(Calendar.MONTH, mvValue - 1);
-            calendar.set(Calendar.DATE, 1);
+        // 月の追加処理
+        calendar.add(Calendar.MONTH, mvValue - 1);
+        calendar.set(Calendar.DATE, 1);
 
-            objDate = calendar.getTime();
+        objDate = calendar.getTime();
 
-        } catch (Exception e) {
-
-        }
         return df.format(objDate);
 
     }
@@ -432,14 +345,29 @@ public class DeptStatListBean {
      *
      * @throws Exception
      */
-    public void execute(PsDBBean psDBBean) throws Exception {
+    public void execute(String txtAction, String txtDYYYYMM,String txtPage,PsDBBean psDBBean) throws Exception {
         //リクエストからパラメータを取得
-        setReferList( psDBBean);
+        //基準日の取得
+        baseDate = getRequestString(txtDYYYYMM);
+        if (baseDate == null || baseDate.length() == 0) {
+            baseDate = getSysdate();
+        }
+
+        //基準日から勤務年月を設定
+        setObjWorkDate(baseDate);
+
+        referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
+
+        // 当日・当月日付の情報を再格納する
+        if (referList.getRecordDate() != null) {
+            // 当月情報更新
+            setThisMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH));
+        }
 
         // 2007/10/03  H.Kawabata  #248 勤怠系コンテンツの参照権限の統一対応
         // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
         if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
-            String sAction = getRequestString("txtAction",psDBBean);
+            String sAction = getRequestString(txtAction);
             String sTargetSec = getReferList().getTargetSec();
 
             // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
@@ -531,6 +459,15 @@ public class DeptStatListBean {
         } else {
             setAuthorityMonth(CB_CAN_REFER);
         }
+
+        //ページ
+        int iPage = 1;
+        String sPage = txtPage;
+        try {
+            iPage = Integer.parseInt(sPage);
+        } catch( Exception e ) {
+        }
+        setPage(iPage);
     }
 
     /**
@@ -538,14 +475,10 @@ public class DeptStatListBean {
      */
     public String baseDate = null;
 
-    public String getRequestString(String key,PsDBBean psDBBean) {
-        String data = "";
-        try {
-            data = (String) psDBBean.getReqParam(key);
-            if (data == null) {
-                data = "";
-            }
-        } catch (Exception e) {
+    public String getRequestString(String txtDYYYYMM) {
+
+        String data = txtDYYYYMM;
+        if (data == null) {
             data = "";
         }
 
@@ -623,43 +556,5 @@ public class DeptStatListBean {
         this.thisMonth = thisMonth;
     }
 
-    /**
-     * リクエストキー - 再表示ボタン使用判定用
-     */
-    private static final String TREEVIEW_KEY_REFRESH_FLG = "txtTmgReferListTreeViewRefreshFlg";
-
-    /**
-     * 汎用コンポーネント設定処理
-     * 基準日時点の汎用コンポーネントをnewするメソッドです。
-     */
-    private void setReferList(PsDBBean psDBBean) {
-        //基準日の取得
-        baseDate = getRequestString("txtTDA_DYYYYMM",psDBBean);
-        if (baseDate == null || baseDate.length() == 0) {
-            baseDate = getSysdate();
-        }
-        //基準日から勤務年月を設定
-        setObjWorkDate(baseDate);
-
-        try {
-            referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // 当日・当月日付の情報を再格納する
-        if (referList.getRecordDate() != null) {
-            // 当月情報更新
-            setThisMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH));
-            // 再表示ボタンを使用したか判定
-            if (!(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) == null || "".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG)))) {
-                // 退避
-                baseDate = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH);
-                // 表示用
-                setObjWorkDate(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH));
-            }
-        }
-    }
 
 }

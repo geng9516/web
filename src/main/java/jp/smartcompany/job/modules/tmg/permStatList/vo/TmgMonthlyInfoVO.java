@@ -83,6 +83,6 @@ public class TmgMonthlyInfoVO {
     private String disppermStatusName30;
     private String disppermStatus31;
     private String disppermStatusName31;
-    private String chkBoxStatus;
+    private String _disabled;
 
 }

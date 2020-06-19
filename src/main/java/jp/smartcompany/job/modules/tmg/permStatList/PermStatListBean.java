@@ -389,6 +389,28 @@ public class PermStatListBean {
         return false;
     }
 
+    /**
+     * 指定の職員の指定年月における、月次承認エラーチェック結果を取得する。
+     *
+     * @param psCustId  顧客コード
+     * @param psCompId  法人コード
+     * @param psEmpId   職員番号
+     * @param psDyyyyMm 対象年月
+     * @return boolean  チェック結果（チェック結果ＯＫ：true、チェック結果ＮＧ：false）
+     */
+    private boolean isErrForCheckMonthlyApproval(String psCustId, String psCompId, String psEmpId, String psDyyyyMm) {
+        boolean bRes = true;
+        // 月次承認エラーチェックを行う。
+        String resData = iTmgMonthlyService.checkMonthly(psEmpId, psDyyyyMm, psCustId, psCompId);
+
+        // チェック結果エラーがなければ、チェック結果ＯＫとする。
+        if ("0".equals(resData)) {
+            bRes = false;
+        }
+
+        return bRes;
+    }
+
 
     private final String Cs_TRUE = "true";
 
@@ -484,7 +506,7 @@ public class PermStatListBean {
     }
 
 
-    private final String DISABLED = "disabled";
+    private final String DISABLED = "true";
 
     /**
      * 月次就業実績対象者選択チェックボックスの表示制御を行う
@@ -567,7 +589,7 @@ public class PermStatListBean {
      * 月次一覧、また日次承認画面表示時の打刻反映処理
      */
     @Transactional(rollbackFor = GlobalException.class)
-    private void execReflectionTimePunch(String empSql, PsDBBean psDBBean) {
+    public void execReflectionTimePunch(String empSql, PsDBBean psDBBean) {
 
         // アクション
         String action = _sAction;
@@ -1092,14 +1114,14 @@ public class PermStatListBean {
             if ("".equals(sChkBoxStatus)) {
 
                 // エラーチェック結果、ＮＧの場合、チェックボックスをdisabled化設定する。
-                if (isCheckMonthly(psDBBean.getCustID(), psDBBean.getCompCode(), tmgMonthlyInfoVO.getEmpid(), getReqDYYYYMM())) {
-                    sChkBoxStatus = "disabled";
+                if (isErrForCheckMonthlyApproval(psDBBean.getCustID(), psDBBean.getCompCode(), tmgMonthlyInfoVO.getEmpid(), getReqDYYYYMM())) {
+                    sChkBoxStatus = "true";
 
                     // エラーチェックＮＧだった職員をエラー氏名リストへ追加
                     // vecErrEmpname.add(tmgMonthlyInfoVO.getEmpname());
                 }
             }
-            tmgMonthlyInfoVO.setChkBoxStatus(sChkBoxStatus);
+            tmgMonthlyInfoVO.set_disabled(sChkBoxStatus);
         }
 
         Map map = MapUtil.newHashMap();
@@ -1224,15 +1246,12 @@ public class PermStatListBean {
                     && TmgUtil.Cs_MGD_DATASTATUS_3.equals(sStatus)
                     && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))
                     && !isDisableNoOverHourpermApprovalEmp(sEmpId, getReqDYYYYMMDD(), String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")), psDBBean, referList);
-            if (flg) {
-                // チェックボックスへチェックを設定
-                sChkOption = "checked";
-            } else {
+            if (!flg) {
                 // チェックボックスを無効設定
-                sChkOption = "disabled";
+                sChkOption = "true";
             }
 
-            map.put("CHKOPTION", sChkOption);
+            map.put("_disabled", sChkOption);
         }
 
         resultMap.put("tmgDailyMapList", tmgDailyMapList);
