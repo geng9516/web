@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
-import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.Designation;
@@ -380,7 +379,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 获取系统角色组
         groupBusiness.getGroupList(language,systemList);
         // アプリケーション起動判定処理実施(戻り値をセッションに設定)
-        session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
+//        session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
 
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();
