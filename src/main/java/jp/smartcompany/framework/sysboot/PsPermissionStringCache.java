@@ -18,7 +18,7 @@ import java.util.List;
 @Slf4j
 public class PsPermissionStringCache {
 
-    private final Map<String, String> gPermissionStringMap = MapUtil.newHashMap();
+    private final Map<String, String> gPermissionStringMap = MapUtil.newConcurrentHashMap();
 
     public String getValue(String sKey) {
         if (CollUtil.isEmpty(gPermissionStringMap)) {

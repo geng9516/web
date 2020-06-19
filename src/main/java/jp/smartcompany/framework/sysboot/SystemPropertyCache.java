@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,7 +23,7 @@ public class SystemPropertyCache {
 
 
     /** システムプロパティ情報MAP */
-    private Map<String, SystemPropertyDTO> systemPropertyMap = MapUtil.newHashMap();
+    private Map<String, SystemPropertyDTO> systemPropertyMap = MapUtil.newConcurrentHashMap();
     LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
 
     /**

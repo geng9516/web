@@ -19,7 +19,7 @@ import java.util.Map;
 public class AppSearchRangeInfoCache {
 
     /** 常駐変数用HashMap */
-    private final Map<String, List<AppSearchRangeInfoDTO>> gAppSearchRangeInfo = MapUtil.newHashMap();
+    private final Map<String, List<AppSearchRangeInfoDTO>> gAppSearchRangeInfo = MapUtil.newConcurrentHashMap();
 
     /**
      * 情報取得.

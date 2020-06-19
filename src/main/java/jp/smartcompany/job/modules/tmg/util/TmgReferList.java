@@ -637,11 +637,11 @@ public class TmgReferList {
                 }
                 break;
             case csSessionControl4SearchTreeSave:
-                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
-                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
-                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
-                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
-                psDBBean.getSession().setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
+//                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
+//                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
+//                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
+//                psDBBean.getSession().setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
+//                psDBBean.getSession().setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
                 break;
 
         }
@@ -3024,14 +3024,14 @@ public class TmgReferList {
      * 現在選択されているタブの値を返却する
      */
     public int getHidSelectTab() {
-        if (hidSelectTab == null){
+//        if (hidSelectTab == null){
             hidSelectTab = ciSelectTreeTab;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSELECT) != null){
                 hidSelectTab = Integer.parseInt(psDBBean.getReqParam(TREEVIEW_OBJ_HIDSELECT));
             } else if (psDBBean.getSession().getAttribute(TREEVIEW_OBJ_HIDSELECT) != null){
                 hidSelectTab = Integer.parseInt(psDBBean.getSession().getAttribute(TREEVIEW_OBJ_HIDSELECT).toString());
             }
-        }
+//        }
         return hidSelectTab;
     }
 
@@ -3047,15 +3047,14 @@ public class TmgReferList {
      */
     private String searchItems = null;
     public String getSearchItems() {
-        if (searchItems == null){
+//        if (searchItems == null){
             searchItems = TmgUtil.Cs_TREE_VIEW_ITEMS_KANANAME;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
                 searchItems = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES);
             } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS) != null){
                 searchItems = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS);
             }
-
-        }
+//        }
         return searchItems;
     }
 
@@ -3070,14 +3069,14 @@ public class TmgReferList {
     private String searchCondition = null;
 
     public String getSearchCondition() {
-        if (searchCondition == null){
+//        if (searchCondition == null){
             searchCondition = TmgUtil.Cs_TREE_VIEW_CONDITION_BROADMATCH;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION) != null){
                 searchCondition = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION);
             } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION) != null){
                 searchCondition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
             }
-        }
+//        }
         return searchCondition;
     }
 
@@ -3087,14 +3086,14 @@ public class TmgReferList {
      */
     private String searchData = null;
     public String getSearchData() {
-        if (searchData == null){
+//        if (searchData == null){
             searchData = "";
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA) != null){
                 searchData =psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA);
             } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA) != null){
                 searchData = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
             }
-        }
+//        }
         return searchData;
     }
 

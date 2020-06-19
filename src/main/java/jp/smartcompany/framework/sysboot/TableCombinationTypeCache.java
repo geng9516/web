@@ -19,7 +19,7 @@ import java.util.List;
 public class TableCombinationTypeCache {
 
     /** テーブル結合条件情報MAP */
-    private final Map<String, TableCombinationTypeDTO> tableCombinationTypeMap = MapUtil.newHashMap();
+    private final Map<String, TableCombinationTypeDTO> tableCombinationTypeMap = MapUtil.newConcurrentHashMap();
 
     /**
      * テーブル結合条件情報取得.

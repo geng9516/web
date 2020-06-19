@@ -50,7 +50,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final ITGroupMenuService itGroupMenuService;
     private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
 
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
         ContextUtil.add(new PsDBBean());
@@ -380,7 +379,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 获取系统角色组
         groupBusiness.getGroupList(language,systemList);
         // アプリケーション起動判定処理実施(戻り値をセッションに設定)
-        session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
+//        session.setLoginAppPermission(appAuthJudgmentBusiness.getAppAuthJudgmentInfo());
 
         // 获取基点组织
         baseSectionBusiness.getBaseSectionList();
@@ -401,6 +400,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         });
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+
+//        List<GroupAppManagerPermissionDTO> groupAppManagerPermissions= iMastGroupapppermissionService.selectPermissionList("01", DateUtil.date(),groupCodes,request.getParameter("psSite"),
+//                request.getParameter("psApp"),"ja");
         // 测试时打开
 //        List<String> groupCodes = CollUtil.newArrayList("4","7");
         List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);
