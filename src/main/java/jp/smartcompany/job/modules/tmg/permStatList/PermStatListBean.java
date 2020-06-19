@@ -405,7 +405,7 @@ public class PermStatListBean {
 
         // チェック結果エラーがなければ、チェック結果ＯＫとする。
         if ("0".equals(resData)) {
-            bRes = true;
+            bRes = false;
         }
 
         return bRes;
