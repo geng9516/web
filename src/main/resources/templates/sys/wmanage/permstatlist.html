@@ -95,6 +95,32 @@
                     <span @click="showDay" v-if="row[item] === '確'" class="confirm-sytle">確</span>
                 </template>
             </i-table>
+            <FormDrawer
+                    :isAdmin="true"
+                    title="2020年03月24日(火)"
+                    :isShow="isShow"
+                    @close="() => (this.isShow = false)"
+            ></FormDrawer>
+            <Drawer :title="title" width="1200" v-model="showDayApply" draggable>
+                <Row :gutter="16" class="mb10">
+                    <Col span="13" offset="11" class="tr">
+                    <i-button type="primary" size="large" class="mr5" ghost @click="handleSelectAll2(false)">
+                        選択状態をクリア
+                    </i-button>
+                    <i-button type="primary" size="large" class="mr5" ghost @click="handleSelectAll2(true)">
+                        承認対象者を全選択
+                    </i-button>
+                    <i-button type="primary" size="large" class="tr">一括承認</i-button>
+                    </Col>
+                </Row>
+                <i-table border :columns="columns2" :data="tableData2" ref="selection2">
+                    <template slot-scope="{ row }" slot="workApplyStatus">
+                        <span @click="showDay" v-if="row.workApplyStatus === 1" class="confirm-sytle ing">待</span>
+                        <span @click="showDay" v-if="row.workApplyStatus === 2" class="confirm-sytle">済</span>
+                        <span @click="showDay" v-if="row.workApplyStatus === 3" class="confirm-sytle undo">エ</span>
+                    </template>
+                </i-table>
+            </Drawer>
         </div>
     </main>
 
@@ -131,11 +157,12 @@
                     defaultDeptId: '',
                     deptName: '選んでください',
                     query: {
-                        txtTmgReferListTreeViewRecordDate: '',
-                        txtTmgReferListTreeViewAdminTargetSection: '',
                         txtAction: 'ACT_DISP_MONTHLY',
                         txtDYYYYMM: '',
                         txtDYYYYMMDD: '',
+                        txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                        txtTmgReferListTreeViewRecordDate: '',
+                        txtTmgReferListTreeViewAdminTargetSection: '',
                         txtCEMPLOYEEID: '',
                         sectionid: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -148,7 +175,10 @@
                     selectDisabled: false,   　//年月選択可否制御
                     dispMonthlyList: [],       //年月リスト
                     model1: '',
-                    approval: false
+                    approval: false,
+
+                    title: '2020年03月24日(火)',
+                    tableData2: []
                 }
             },
             async mounted() {
@@ -210,7 +240,114 @@
                         align: 'center'
                     })
                     return result
-                }
+                },
+                columns2: [
+                    {
+                        title: '氏名',
+                        key: 'name',
+                        minWidth: 100,
+                        align: 'right'
+                    },
+                    {
+                        title: '区分',
+                        minWidth: 36,
+                        key: 'wordkDivision',
+                        align: 'center'
+                    },
+                    {
+                        title: '予定',
+                        align: 'center',
+                        children: [
+                            {
+                                title: '始業',
+                                align: 'center',
+                                minWidth: 36,
+                                key: 'workStartFinal'
+                            },
+                            {
+                                title: '終業',
+                                minWidth: 36,
+                                key: 'workEndFinal',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '打刻',
+                        align: 'center',
+                        children: [
+                            {
+                                title: '始業',
+                                minWidth: 36,
+                                key: 'workStartReal',
+                                align: 'center'
+                            },
+                            {
+                                title: '終業',
+                                minWidth: 36,
+                                key: 'workEndReal',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '就業',
+                        align: 'center',
+                        children: [
+                            {
+                                title: '始業',
+                                minWidth: 36,
+                                key: 'workStartReal',
+                                align: 'center'
+                            },
+                            {
+                                title: '終業',
+                                minWidth: 36,
+                                key: 'workEndReal',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '超勤',
+                        minWidth: 150,
+                        key: 'overWork',
+                        tooltip: true,
+                        align: 'center'
+                    },
+                    {
+                        title: '用務内容',
+                        minWidth: 150,
+                        tooltip: true,
+                        key: 'reason',
+                        align: 'center'
+                    },
+                    {
+                        title: '備考',
+                        minWidth: 70,
+                        key: 'remark',
+                        tooltip: true,
+                        align: 'center'
+                    },
+                    {
+                        title: '本人コメント',
+                        minWidth: 70,
+                        key: 'remark',
+                        tooltip: true,
+                        align: 'center'
+                    },
+                    {
+                        title: '承認',
+                        slot: 'workApplyStatus',
+                        width: 30,
+                        align: 'center'
+                    },
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    }
+                ],
             },
             methods: {
                 async getDispTmgMonthlyList() {
@@ -384,7 +521,7 @@
                 },
                 handleClickHead(e) {
                     console.log(e)
-                    // this.showDayApply = true
+                    this.showDayApply = true
                 },
                 toWorkPage() {
                     // this.$router.push('/sys/confirmer/applyWork')
