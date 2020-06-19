@@ -188,7 +188,7 @@
             TMO_CCUSTOMERID = v.cust
         AND TMO_CCOMPANYID  = v.comp
         AND TMO_CEMPLOYEEID = v.EMPID
-        AND TMO_DYYYYMM    <![CDATA[<]]> #{baseDate} <!-- 基準日年月以下-->
+        AND TMO_DYYYYMM    <![CDATA[<=]]> #{baseDate} <!-- 基準日年月以下-->
         GROUP BY
             t.TMO_DYYYYMM
         ORDER BY
