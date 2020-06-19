@@ -389,6 +389,28 @@ public class PermStatListBean {
         return false;
     }
 
+    /**
+     * 指定の職員の指定年月における、月次承認エラーチェック結果を取得する。
+     *
+     * @param psCustId  顧客コード
+     * @param psCompId  法人コード
+     * @param psEmpId   職員番号
+     * @param psDyyyyMm 対象年月
+     * @return boolean  チェック結果（チェック結果ＯＫ：true、チェック結果ＮＧ：false）
+     */
+    private boolean isErrForCheckMonthlyApproval(String psCustId, String psCompId, String psEmpId, String psDyyyyMm) {
+        boolean bRes = true;
+        // 月次承認エラーチェックを行う。
+        String resData = iTmgMonthlyService.checkMonthly(psEmpId, psDyyyyMm, psCustId, psCompId);
+
+        // チェック結果エラーがなければ、チェック結果ＯＫとする。
+        if ("0".equals(resData)) {
+            bRes = true;
+        }
+
+        return bRes;
+    }
+
 
     private final String Cs_TRUE = "true";
 
@@ -1092,7 +1114,7 @@ public class PermStatListBean {
             if ("".equals(sChkBoxStatus)) {
 
                 // エラーチェック結果、ＮＧの場合、チェックボックスをdisabled化設定する。
-                if (isCheckMonthly(psDBBean.getCustID(), psDBBean.getCompCode(), tmgMonthlyInfoVO.getEmpid(), getReqDYYYYMM())) {
+                if (isErrForCheckMonthlyApproval(psDBBean.getCustID(), psDBBean.getCompCode(), tmgMonthlyInfoVO.getEmpid(), getReqDYYYYMM())) {
                     sChkBoxStatus = "true";
 
                     // エラーチェックＮＧだった職員をエラー氏名リストへ追加
