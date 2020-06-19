@@ -22,7 +22,7 @@ import java.util.Map;
 @Slf4j
 public class AppAuthJudgmentCache {
 
-    private final Map< String, List<AppAuthJudgmentDTO>> gAppAuthJudgmentInfo = MapUtil.newHashMap();
+    private final Map< String, List<AppAuthJudgmentDTO>> gAppAuthJudgmentInfo = MapUtil.newConcurrentHashMap();
 
     /**
      * 情報取得.

@@ -29,10 +29,10 @@ public class DataDictionaryCache {
     private static final String ERR_MAST_DATADIC_SECLEVEL = "MAST_DATADIC_SECLEVEL";
 
     /** データディクショナリ情報MAP */
-    private final Map<String, MastDatadictionaryDO> ghmDataDictionary = MapUtil.newHashMap();
+    private final Map<String, MastDatadictionaryDO> ghmDataDictionary = MapUtil.newConcurrentHashMap();
 
     /** データディクショナリ機密レベル情報MAP */
-    private final Map<String, MastDatadicSeclevelDTO> ghmDatadicSeclevel = MapUtil.newHashMap();
+    private final Map<String, MastDatadicSeclevelDTO> ghmDatadicSeclevel = MapUtil.newConcurrentHashMap();
 
     /**
      * データディクショナリ情報読込.

@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
+import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.Designation;
@@ -49,7 +50,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
     private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
-
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
@@ -401,6 +401,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         });
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
+
+//        List<GroupAppManagerPermissionDTO> groupAppManagerPermissions= iMastGroupapppermissionService.selectPermissionList("01", DateUtil.date(),groupCodes,request.getParameter("psSite"),
+//                request.getParameter("psApp"),"ja");
         // 测试时打开
 //        List<String> groupCodes = CollUtil.newArrayList("4","7");
         List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);

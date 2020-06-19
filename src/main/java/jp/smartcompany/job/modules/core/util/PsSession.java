@@ -16,10 +16,7 @@ import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Xiao Wenpeng
@@ -59,6 +56,8 @@ public class PsSession implements Serializable {
     private TopPageInfo loginAppPermission;
     /** ビヘイビアを適用する(V3互換用) */
     private boolean useBehaviorForV3Compatible;
+    /** 言語区分(リソースバンドルファイル用) */
+    private String locale;
 
     private PsDesignationCache designationCache;
     private PsEmpRelationCache loginEmpRelationCache;
@@ -71,7 +70,7 @@ public class PsSession implements Serializable {
                 return getLoginDesignation();
             }
             if ((this.designationCache != null) && (this.designationCache.containsKey(psDate))) {
-                return (List<Designation>) this.designationCache.get(psDate);
+                return this.designationCache.get(psDate);
             }
             if (this.designationCache == null) {
                 this.designationCache = new PsDesignationCache(16);
@@ -129,6 +128,31 @@ public class PsSession implements Serializable {
             lDesignationList.add(designation);
         }
         return lDesignationList;
+    }
+
+    /**
+     * 言語ロケール(リソースバンドルファイル用)を取得します
+     * @return 言語ロケール(リソースバンドルファイル用)
+     */
+    public Locale getResourceLocale() {
+        if(locale == null) {
+            return new Locale("ja", "JP");
+        }
+        StringTokenizer stLocale = new StringTokenizer(locale, "_");
+        String sCountry = null;
+        String sLanguage = null;
+        if(stLocale.hasMoreTokens()) {
+            sCountry = stLocale.nextToken();
+        }
+        if(stLocale.hasMoreTokens()) {
+            sLanguage = stLocale.nextToken();
+        }
+        if(sLanguage == null) {
+            return new Locale(sCountry);
+        }
+        else {
+            return new Locale(sCountry, sLanguage);
+        }
     }
 
 }

@@ -1,20 +1,21 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
 
 @Controller
 @RequestMapping("sys/test")
@@ -23,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class TestController {
 
     private String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
+    private final IMastGroupapppermissionService iMastGroupapppermissionService;
 
     // 勤怠管理サイト Test  11
     // TmgTreeViewForAdminEmp.jsp
@@ -88,6 +90,10 @@ public class TestController {
         return GlobalResponse.ok();
     }
 
-
+    @GetMapping("perm")
+    @ResponseBody
+    public List<GroupAppManagerPermissionDTO> getUserPerms() {
+        return iMastGroupapppermissionService.selectPermissionList("01",DateUtil.date(), CollUtil.newArrayList("1","2","4","7"),null,null,"ja");
+    }
 
 }
