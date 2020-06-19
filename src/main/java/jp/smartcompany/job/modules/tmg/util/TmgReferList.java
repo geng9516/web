@@ -950,6 +950,7 @@ public class TmgReferList {
                     empList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
                 } else {
                     System.out.println("----isSelectedSearchTab");
+                    System.out.println(getSearchItems()+","+getSearchCondition()+","+getSearchData());
                     if (isSelectedSearchTab()){
                         empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
                                 "'"+targetSection+"'", target, base, "'"+psDBBean.getLanguage()+"'", true,
@@ -1222,7 +1223,7 @@ public class TmgReferList {
 //            log.info("【搜索参数：searchItems:{},searchCondition:{},searchData:{},type:{},psSite:{},psApp:{}】");
             log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
                     getSearchCondition(),getSearchData());
-            if (isSelectedSearchTab()){
+            if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
                 pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
                         getSearchItems(), getSearchCondition(), getSearchData()
                 );

@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
@@ -48,7 +47,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
     private final ITGroupMenuService itGroupMenuService;
-    private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {

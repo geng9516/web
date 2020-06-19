@@ -10,6 +10,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,7 +94,10 @@ public class TestController {
     @GetMapping("perm")
     @ResponseBody
     public List<GroupAppManagerPermissionDTO> getUserPerms() {
-        return iMastGroupapppermissionService.selectPermissionList("01",DateUtil.date(), CollUtil.newArrayList("1","2","4","7"),null,null,"ja");
+        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList("01",DateUtil.date(), CollUtil.newArrayList("1","2","4","7"), TmgUtil.Cs_SITE_ID_TMG_PERM,null,"ja");
+        List<GroupAppManagerPermissionDTO> tmgAdminList = iMastGroupapppermissionService.selectPermissionList("01",DateUtil.date(), CollUtil.newArrayList("1","2","4","7"), TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,"ja");
+        List<GroupAppManagerPermissionDTO> tmgInpList = iMastGroupapppermissionService.selectPermissionList("01",DateUtil.date(), CollUtil.newArrayList("1","2","4","7"), TmgUtil.Cs_SITE_ID_TMG_INP,null,"ja");
+        return null;
     }
 
 }
