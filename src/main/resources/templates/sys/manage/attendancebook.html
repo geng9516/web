@@ -431,11 +431,6 @@
                     try {
                         const { groupMemberList, memberList, sectionMemberList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
-                        this.deptData = {
-                            groupMemberList:Utils.convertTreeData(groupMemberList),
-                            memberList:Utils.convertTreeData(memberList),
-                            sectionMemberList:Utils.convertTreeData(sectionMemberList)
-                        }
                         if(this.selectedDeptViewType === 3) {
                             this.treeData = Utils.convertTreeData(sectionMemberList)
                         }
@@ -458,7 +453,7 @@
                     this.searchConditionsList= Object.keys(data.searchConditions).map(e=> { return { name:data.searchConditions[e], value:e }})
                     this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
                 },
-                async searchOrgTree() {
+                searchOrgTree: Debounce( async function() {
                     this.empDeptLoading = true
                     try {
                         const { data } = await this.http.get('sys/tree/search', this.referListObject)
@@ -469,7 +464,7 @@
                     } finally {
                         this.empDeptLoading = false
                     }
-                },
+                }),
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
                     this.isSearchHistory = true
