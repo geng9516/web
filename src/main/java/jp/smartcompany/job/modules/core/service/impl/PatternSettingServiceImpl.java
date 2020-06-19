@@ -135,4 +135,17 @@ public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper,
         return baseMapper.selectEditPeriodDate();
     }
 
+    @Override
+    public HashMap<String, String> selectDayOpenClose() {
+        return baseMapper.selectDayOpenClose();
+    }
+
+    @Override
+    public String checkPatternId(String compCode, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("patternId", patternId);
+        return baseMapper.checkPatternId(params);
+    }
+
 }

@@ -12,6 +12,9 @@ public class PatternSettingConst {
 
     public static final String modifierProgramId = "PatternSetting_ACTION_EDIT_SAVE";
 
+    public static final String uploadProgramId = "ACTION_CSV_DOWNLOAD";
+
+
     /**
      * プログラム名
      */

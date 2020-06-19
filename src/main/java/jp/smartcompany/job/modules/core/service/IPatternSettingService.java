@@ -138,4 +138,22 @@ public interface IPatternSettingService extends IService<Object> {
      */
     String selectEditPeriodDate();
 
+    /**
+     * 時刻の規定範囲を取得します
+     *
+     * @return
+     */
+    HashMap<String, String> selectDayOpenClose();
+
+    /**
+     * 指定された勤務パターンIDがDBに存在している場合
+     *
+     * @param compCode
+     * @param patternId
+     * @return
+     */
+    String checkPatternId(String compCode, String patternId);
+
+    
+
 }

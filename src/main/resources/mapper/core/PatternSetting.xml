@@ -325,5 +325,14 @@
         select to_char(add_months(trunc(sysdate,'mm'), 1), 'yyyy/mm/dd') as periodDate from dual
     </select>
 
+    <!-- 時刻の規定範囲を取得します -->
+    <select id="selectDayOpenClose" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+        select tmg_f_conv_min2hhmi(tco_nopen) as OPEN,tmg_f_conv_min2hhmi(tco_nclose) as CLOSE from tmg_company
+    </select>
+
+    <!-- 指定された勤務パターンIDがDBに存在している場合 -->
+    <select id="checkPatternId" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tpa_cpatternid from tmg_pattern where tpa_cpatternid = #{patternid} and tpa_ccompanyid=#{compcode} and tpa_dstartdate <![CDATA[<=]]> trunc(sysdate)
+    </select>
 
 </mapper>

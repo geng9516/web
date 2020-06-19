@@ -5,10 +5,13 @@ import jp.smartcompany.job.modules.tmg.patternsetting.PatternSettingBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.PeriodDateVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -142,18 +145,38 @@ public class PatternSettingController {
 
     /**
      * 【編集&新規】勤務パターンを適用可能な最少日付を取得
-     *
+     * <p>
      * http://localhost:6879/sys/patternSetting/selectEditPeriodDate
      *
      * @param psDBBean
      * @return
      */
     @GetMapping("selectEditPeriodDate")
-    public String selectEditPeriodDate(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    @ResponseBody
+    public PeriodDateVO selectEditPeriodDate(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        return patternSettingBean.selectEditPeriodDate();
+        String periodDate = patternSettingBean.selectEditPeriodDate();
+        PeriodDateVO periodDateVO = new PeriodDateVO();
+        periodDateVO.setPeriodDate(periodDate);
+        return periodDateVO;
     }
 
+    /**
+     * 勤務パターン CSV取り込み
+     *
+     * @param file
+     * @param psDBBean
+     */
+    @GetMapping("modifiCSVDwnload")
+    @ResponseBody
+    public void modifiCSVDwnload(@RequestParam("upfile") MultipartFile file,
+                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(null, psDBBean);
+        patternSettingBean.uploadCSV(file);
+
+
+    }
 
 }
