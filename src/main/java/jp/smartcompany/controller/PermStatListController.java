@@ -214,7 +214,7 @@ public class PermStatListController {
      *                 txtDYYYYMM　対象月
      *                 txtDYYYYMMDD　対象日(必須)
      *                 txtCEMPLOYEEID　職員ID　(NULL可)
-     *                 txtExecuteEmpId　チェックした対象者　(必須)
+     *                 txtExecuteEmpId　チェックした対象者　(必須)[1001,1002]
      * @return Map
      * @throws Exception
      */
