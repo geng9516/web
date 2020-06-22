@@ -170,33 +170,32 @@
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
                                             :class="timerangeType === 3 ? 'datepicker-double' : 'datepicker-single'"
-                                            style="transition: width .5s" v-model="restApply.dateList"
-                                            @on-change="restApply.dateList = $event" placeholder="日付け"
-                                            format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                            style="transition: width .5s" :value="restApply._dateList"
+                                            @on-change="restApply.dateList = $event" placeholder="日付け"></date-picker>
                                     </Row>
                                 </section>
                                 <!-- 有振休 -->
                                 <section v-show="selectedRestInfo.transfer" class="tl">
                                     <p class="mb5">出勤にする休日</p>
-                                    <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                    <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5" placeholder="日付け"
+                                        format="yyyy/mm/dd"  @on-change="restApply._begin = $event"></date-picker>
                                     <p class="mb5">振休日とする出勤日</p>
-                                    <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                    <date-picker type="date"  :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
+                                        format="yyyy/mm/dd"  @on-change="restApply._end = $event"></date-picker>
                                 </section>
 
                                 <!-- 有起算日-->
                                 <section v-show="selectedRestInfo.period" class="tl mt20">
                                     <p class="mb5">起算日</p>
-                                    <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                    <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5" placeholder="日付け"
+                                        format="yyyy/mm/dd"  @on-change="restApply.txtPeriod = $event"></date-picker>
                                 </section>
 
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日</p>
-                                    <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                    <date-picker type="date" :value="restApply.txtAddDate" class="datepicker-single mb5" placeholder="日付け"
+                                        format="yyyy/mm/dd"  @on-change="restApply.txtAddDate = $event"></date-picker>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
@@ -204,13 +203,13 @@
                                     <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
-                                            <i-input placeholder="開始時間"/>
+                                            <i-input v-model="restApply.timezoneOpen" placeholder="開始時間"/>
                                         </i-col>
                                         <i-col span="2">
                                             <p style="padding: 4px;">-</p>
                                         </i-col>
                                         <i-col span="10">
-                                            <i-input placeholder="終了時間"/>
+                                            <i-input v-model="restApply.timezoneClose" placeholder="終了時間"/>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -220,13 +219,13 @@
                                     <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
-                                            <i-input placeholder="始業後" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
+                                            <i-input placeholder="始業後" v-model="restApply.timeOpen" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
                                         </i-col>
                                         <i-col span="2">
                                             <p style="padding: 4px;">-</p>
                                         </i-col>
                                         <i-col span="10">
-                                            <i-input placeholder="終業前" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
+                                            <i-input placeholder="終業前" v-model="restApply.timeClose" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -236,13 +235,11 @@
                                     <Divider size="small" orientation="left">曜日</Divider>
                                     <Row style="margin-bottom:20px">
                                         <i-col span="7">
-                                            <Checkbox v-model="weekSelectFlag">指定なし</Checkbox>
+                                            <Checkbox v-model="restApply.noreserved" true-value="1" false-value="0">指定なし</Checkbox>
                                         </i-col>
                                         <i-col span="17">
-                                            <checkbox-group v-model="weekSelected" @on-change="handleWeekSelect"
-                                                class="tl">
-                                                <Checkbox v-for="item of week" :key="item.value" :label="item.name"
-                                                    class="mb5" :disabled="weekSelectFlag" />
+                                            <checkbox-group v-model="restApply.weekSelected" @on-change="handleWeekSelect" class="tl">
+                                                <Checkbox v-for="item of week" :key="item.value" :label="item.value" class="mb5" :disabled="restApply.noreserved === '1'">{{ item.name }}</Checkbox>
                                             </checkbox-group>
                                         </i-col>
                                     </Row>
@@ -253,32 +250,32 @@
                                     <!-- 是有氏名的-->
                                     <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
-                                        <i-input class="mb15" />
+                                        <i-input class="mb15" v-model="restApply.txtName" />
                                     </section>
 
                                     <!-- 是有続柄的-->
                                     <section v-show="selectedRestInfo.relation" class="tl">
                                         <p class="mb5">続柄</p>
-                                        <i-input class="mb5" />
+                                        <i-input class="mb5" v-model="restApply.txtRelation" />
                                     </section>
 
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
-                                        <i-input class="mb5" />
+                                        <i-input class="mb5" v-model="restApply.txtTargetNumber" />
                                     </section>
 
                                     <!-- 有生年月日-->
                                     <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
                                         <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
-                                            format="yyyy-MM-dd" ref="datePicker"></date-picker>
+                                            format="yyyy/MM/dd"  @on-change="restApply.txtBirthday = $event"></date-picker>
                                     </section>
 
                                     <!-- 有伤病-->
                                     <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
-                                        <i-input />
+                                        <i-input v-model="restApply.txtSickName" />
                                     </section>
 
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
@@ -295,7 +292,7 @@
                             </i-col>
                         </Row>
                         <Divider size="small" orientation="left">申請事由</Divider>
-                        <i-input v-model="restApply.reason" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
+                        <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
                         <i-button class="btn" type="primary" long @click="apply" icon="md-create" :loading="loading">申請
                         </i-button>
                     </Card>
@@ -327,10 +324,8 @@
                     timerangeType: 1,
                     loading: false,
                     moreDataLoading: false,
-                    weekSelectFlag: true,
                     modeId: null,
                     rotate: false,
-                    weekSelected: [],
                     errorInfo: false,
                     totalCount: 0,
                     restInfoLoading:false,
@@ -346,7 +341,10 @@
                     },
                     errorMsg: '',
                     restApply: {
-                        useVacation: false
+                        useVacation: false,
+                        weekSelected:[],
+                        noreserved:'1',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -358,9 +356,9 @@
             },
             watch: {
                 // 重置曜日选择器
-                weekSelectFlag(newValue) {
-                    if (newValue) {
-                        return (this.weekSelected = [])
+                'restApply.noreserved'(newValue) {
+                    if (newValue === '1') {
+                        return (this.restApply.weekSelected = [])
                     }
                 },
                 rotate(newValue) {
@@ -477,7 +475,9 @@
                         this.listLoading = false
                     }
                 }),
-                handleWeekSelect() { },
+                handleWeekSelect(e) {
+                    console.log(e)
+                 },
                 handleRestType(e) {
                     // 选择不同的休假时，判断显示不同的项目
                     if  (!e || e === '全て') {
@@ -490,6 +490,7 @@
                     this.rotate = !this.rotate
                 },
                 onCancel: Debounce(async function (id) {
+                    this.apply.action = 'ACT_EditApply_UWithdraw'
                     // 自己取消后无论如何都应该再拉取一遍最新的数据
                     // try {
                     //     await this.api.apply('cancel', { id })
@@ -504,12 +505,36 @@
                     this.getApplyHistory()
                 },
                 apply: Debounce(async function () {
-                    // 以下是模拟申请一条，应该全删掉
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
                     // this.loading = true
-                    // this.$Message.success('申请完了')
-                    //     this.rotate = !this.rotate
-                    //     this.loading = false
+                    this.restApply.action = 'ACT_MakeApply_CAppl'
+                    this.restApply.typeNew = this.selectedRestInfo.ntfId
+                    this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel
+                    this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
+                    const week = ['mon','tue','wed','thu','fri','sat','sun']
+                    week.forEach((e, i) =>{
+                        if(this.restApply.weekSelectedHelper.indexOf(`${i+1}`) > -1) this.restApply[e] = '1'
+                        else  this.restApply[e] = '0'
+                    })
+                    if(!this.selectedRestInfo.transfer) {
+                        if(this.timerangeType === 2) {
+                            this.restApply.begin = this.restApply.dateList[0]
+                            this.restApply.end = this.restApply.dateList[1]
+                        }
+                        if(this.timerangeType === 1) {
+                            this.restApply.begin = this.restApply.dateList
+                            this.restApply.end = this.restApply.dateList
+                        }
+                    } else {
+                        this.restApply.begin = this.restApply._begin
+                        this.restApply.end = this.restApply._end
+                    }
+                    console.log(this.restApply)
+                    await this.http.post('sys/vapply/MakeNewApply', this.restApply)
+                    this.$Message.success('申请完了')
+                        this.rotate = !this.rotate
+                        this.loading = false
+                        this.getApplyHistory()
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
@@ -581,8 +606,8 @@
                         this.$Notice.warning({
                         title: 'Up to five files can be uploaded.'
                     })
-                }
-                return check;
+                    }
+                    return false;
                 },
                 handleMaxSize (file) {
                     this.$Notice.warning({
