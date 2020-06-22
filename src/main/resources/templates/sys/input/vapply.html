@@ -532,8 +532,8 @@
                     }
                     console.log(this.restApply)
                     console.log(this.uploadFiles)
-                    this.http.post('sys/vapply/MakeApply', {param:this.restApply})
-                    this.http.uploadFiles('sys/vapply/MakeApply',{uploadFiles:this.uploadFiles} )
+                    // this.http.post('sys/vapply/MakeApply', {param:this.restApply})
+                    this.http.uploadFiles('sys/vapply/MakeApply',{param:this.restApply,uploadFiles:this.uploadFiles} )
 
                     // this.$Message.success('申请完了')
                     //     this.rotate = !this.rotate
