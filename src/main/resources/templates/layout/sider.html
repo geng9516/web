@@ -6,33 +6,30 @@
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
         <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
             :key="item.menu.pageId" @click="handleMenuGroupChange(item)">
-            <svg class="cursor i-svg" aria-hidden="true"
-                :style="{fill: curMenu === item.menuId ? 'rgb(45, 140, 240)' : 'white'}">
-                <use :xlink:href="`#${item.icon || 'cat'}`"></use>
+            <svg class="cursor i-svg" aria-hidden="true">
+                <use :xlink:href="`#${item.icon || 'AccessLog41'}`"></use>
             </svg>
         </li>
-        <li class="nav-item">
-            <svg class="i-svg" aria-hidden="true">
-                <use xlink:href="#dog"></use>
-            </svg>
-        </li>
+        <li class="nav-item"></li>
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
         <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.pageId"
             :class="curMenu === e.menu.pageId ? 'actived-menu' : ''"
             @click.native="handleMenuGroupChange(e)">
-            <div v-show="curMenu === e.menu.pageId">
-                <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId"
-                    @click.native="handleSubMenuClick(t, i)">
-                    <div>
-                        <svg class="i-svg" aria-hidden="true"
-                            style="width:50px;height:50px;fill: rgb(48,118,242);margin-top:12px">
-                            <use :xlink:href="`#${t.icon || 'cat'}`"></use>
-                        </svg>
-                    </div>
-                    <p class="p">{{ t.jaName }}</p>
-                </menu-item>
+            <div style="overflow-x: hidden">
+                <div v-show="curMenu === e.menu.pageId" style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
+                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId"
+                        @click.native="handleSubMenuClick(t, i)">
+                        <div>
+                            <svg class="i-svg" aria-hidden="true"
+                                style="width:50px;height:50px;margin-top:12px">
+                                <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
+                            </svg>
+                        </div>
+                        <p class="p">{{ t.jaName }}</p>
+                    </menu-item>
+                </div>
             </div>
         </menu-group>
     </i-menu>

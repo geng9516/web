@@ -13,7 +13,7 @@
 }
 .i-svg {
   fill: white;
-  margin: 12px 10px 0 8px;
+  margin: 5px 0px 0px 11px;
   overflow: hidden;
   width: 24px;
   height: 24px;
@@ -27,6 +27,7 @@
 }
 .ivu-menu-light.ivu-menu-vertical
   .ivu-menu-item-active:not(.ivu-menu-submenu){
+    background: rgba(236, 239, 241, 0.2);
     &:before{
       display: none;
     }
@@ -58,7 +59,8 @@
     margin: 0 2px 4px;
     display: inline-block;
     white-space: nowrap;
-    background: rgba(122, 182, 247, 0.18);
+    background: rgba(236, 239, 241, .6);
+    transition: fill 0.1s ease-in-out;
     width: 120px;
     height: 120px;
     &:before {
@@ -68,7 +70,7 @@
       left: 0; top: 0; right: 0; bottom: 0;
       border: 2px solid var(--text-green);
       clip: rect(74px 120px 120px 98px);
-
+      filter: grayscale(1);
     }
     &:after{
       content: '';
@@ -77,19 +79,24 @@
       left: 0; top: 0; right: 0; bottom: 0;
       border: 2px solid var(--primary);
       clip: rect(0px 35px 52px 0px);
+      filter: grayscale(1);
+    }
+    .i-svg {
+      filter: grayscale(1);
     }
     &:hover {
       &:before {
         display: block;
         animation: borderClipBottom .5s forwards ease-in;
+        filter: none;
       }
       &:after{
         display: block;
         animation: borderClipTop .5s forwards ease-in;
+        filter: none;
       }
-      svg {
-        transition: fill 0.1s ease-in-out;
-        fill: white !important;
+      .i-svg {
+        filter: none;
       }
     }
     .p {
@@ -103,9 +110,17 @@
   &.nav-item {
     transition: background-color 0.2s ease;
     background-color: rgb(240, 250, 255);
+    svg {
+      filter: none !important;
+    }
   }
   .ivu-menu-item-group-title {
     color: var(--primary);
+  }
+}
+.ivu-menu-item-selected {
+  .i-svg {
+    filter: none !important;
   }
 }
 .navbar-wrap {
@@ -128,6 +143,9 @@
       align-items: center;
       &:last-child {
         margin-top: auto;
+      }
+      .i-svg {
+        filter: brightness(5);
       }
     }
   }
