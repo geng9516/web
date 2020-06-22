@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -42,4 +43,12 @@ public interface TmgTriggerMapper extends BaseMapper<TmgTriggerDO> {
      * トリガーテーブルにデータを入れる
      */
     void buildSQLForInsertTriggerTable(Map<String, Object> map);
+
+    /**
+     * [HR連携除外条件区分マスタ情報]トリガーテーブルにデータを入れる
+     */
+    int buildSQLForInsertTmgTrgger(@Param("custID") String custID,
+                                   @Param("compCode") String compCode,
+                                   @Param("userCode") String userCode,
+                                   @Param("programId") String programId);
 }

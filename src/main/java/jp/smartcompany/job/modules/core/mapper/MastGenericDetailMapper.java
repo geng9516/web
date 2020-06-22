@@ -328,5 +328,21 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     List<ExcludecondCtlDto> buildSQLForSelectExcludecondCtl(@Param("custID")String custID,
                                                             @Param("compCode")String compCode,
                                                             @Param("language")String language);
+
+    /**
+     * 名称マスタ詳細情報に登録する
+     */
+    void buildSQLForInsertTmgDailyDetail(@Param("psCustId") String psCustId,
+                                         @Param("psCompId") String psCompId,
+                                         @Param("psLanguage") String psLanguage,
+                                         @Param("psGroupCode") String psGroupCode,
+                                         @Param("psDetailId") String psDetailId,
+                                         @Param("psMasterCode") String psMasterCode,
+                                         @Param("psStartDate") String psStartDate,
+                                         @Param("psEndDate") String psEndDate,
+                                         @Param("psUpdateUser") String psUpdateUser,
+                                         @Param("psExuludecondType") String psExuludecondType,
+                                         @Param("psExuludecondForm") String psExuludecondForm,
+                                         @Param("psExuludecondTo") String psExuludecondTo);
 }
 

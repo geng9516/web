@@ -490,4 +490,26 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @return
      */
     List<ExcludecondCtlDto> buildSQLForSelectExcludecondCtl(String custID, String compCode, String language);
+
+    /**
+     * 名称マスタ詳細情報に登録する
+     *
+     * @param psCustId          顧客コード
+     * @param psCompId          法人コード
+     * @param psLanguage        言語
+     * @param psGroupCode       グループコード
+     * @param psDetailId        明細データコード
+     * @param psMasterCode      マスタコード
+     * @param psStartDate       データ開始日
+     * @param psEndDate         データ終了日
+     * @param psUpdateUser      更新者ID
+     * @param psExuludecondType 絞込み項目区分
+     * @param psExuludecondForm 範囲(FROM)
+     * @param psExuludecondTo   範囲(TO)
+     */
+    void buildSQLForInsertTmgDailyDetail(String psCustId, String psCompId,
+                                         String psLanguage, String psGroupCode, String psDetailId,
+                                         String psMasterCode, String psStartDate, String psEndDate,
+                                         String psUpdateUser, String psExuludecondType, String psExuludecondForm,
+                                         String psExuludecondTo);
 }

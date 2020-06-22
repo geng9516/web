@@ -95,4 +95,15 @@ public interface ITmgTriggerService extends IService<TmgTriggerDO> {
      * @param baseDate　対象日
      */
     void buildSQLForInsertTriggerTable(String custID,String compCode,String dispUserCode,String userCode,String baseDate);
+
+    /**
+     * TMG_TRIGGERへINSERTする
+     *
+     * @param custID 顧客コード
+     * @param compCode  法人コード
+     * @param userCode 更新者
+     * @param programId プログラムID
+     * @return
+     */
+    int buildSQLForInsertTmgTrgger(String custID, String compCode, String userCode, String programId);
 }

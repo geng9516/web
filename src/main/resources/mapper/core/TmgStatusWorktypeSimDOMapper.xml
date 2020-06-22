@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSimMapper">
+    <update id="buildSQLForUpdateTmgStatusWorkTypeSim">
+        UPDATE
+           TMG_STATUS_WORKTYPE_SIM
+        SET
+           TSWS_CMODIFIERPROGRAMID = #{programId}
+           TSWS_CMODIFIERUSERID    = #{userCode}
+           TSWS_DMODIFIEDDATE      = SYSDATE
+           TSWS_CSTATUS            = #{status}
+        WHERE
+           TSWS_CCUSTOMERID        = #{custId}
+        AND TSWS_CCOMPANYID        = #{compCode}
+        AND TSWS_DSTARTDATE        <![CDATA[<=]]> TRUNC(SYSDATE)
+        AND TSWS_DENDDATE          >= TRUNC(SYSDATE)
+    </update>
 
     <select id="buildSQLForSelectTmgStatusWorkTypeSim"
             resultType="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto">

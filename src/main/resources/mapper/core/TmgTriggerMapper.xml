@@ -245,4 +245,27 @@
             )
         )
     </insert>
+    <insert id="buildSQLForInsertTmgTrgger">
+        INSERT INTO TMG_TRIGGER (
+           TTR_CCUSTOMERID,
+           TTR_CCOMPANYID,
+           TTR_CEMPLOYEEID,
+           TTR_DSTARTDATE,
+           TTR_DENDDATE,
+           TTR_CMODIFIERUSERID,
+           TTR_DMODIFIEDDATE,
+           TTR_CMODIFIERPROGRAMID,
+           TTR_CPROGRAMID
+        ) VALUES (
+           #{custID},
+           #{compCode} ,
+           #{userCode} ,
+           TO_DATE('1900/01/01', 'YYYY/MM/DD') ,
+           TO_DATE('2222/12/31', 'YYYY/MM/DD') ,
+           #{userCode} ,
+           TRUNC(SYSDATE, 'DD'),
+           #{programId} ,
+           #{programId}
+        )
+    </insert>
 </mapper>

@@ -170,4 +170,18 @@ public class TmgTriggerServiceImpl extends ServiceImpl<TmgTriggerMapper, TmgTrig
         baseMapper.buildSQLForInsertTriggerTable(map);
     }
 
+    /**
+     * TMG_TRIGGERへINSERTする
+     *
+     * @param custID 顧客コード
+     * @param compCode  法人コード
+     * @param userCode 更新者
+     * @param programId プログラムID
+     * @return
+     */
+    @Override
+    public int buildSQLForInsertTmgTrgger(String custID, String compCode, String userCode, String programId){
+       return baseMapper.buildSQLForInsertTmgTrgger(custID, compCode, userCode, programId);
+    }
+
 }

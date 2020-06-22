@@ -81,9 +81,9 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_EDIT
      */
-    public void actEdit(ModelMap modelMap,PsDBBean psDBBean) {
-        String userCode = psDBBean.getReqParam("txtUserCode");
-        selectList(userCode,psDBBean);
+    public void actEdit(String year, String userCode,PsDBBean psDBBean) {
+
+        selectList( userCode, psDBBean);
     }
 
     /**
@@ -92,9 +92,9 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_DETAIL
      */
-    public void actDetail(PsDBBean psDBBean) {
+    public List<PaidHolidayVO> actDetail(String txtUserCode, String kijunbi, String pdSearchStart, String pdSearchEnd, PsDBBean psDBBean) {
         //転送項目取得
-        showDisp(psDBBean);
+        return showDisp( txtUserCode,  kijunbi,  pdSearchStart,  pdSearchEnd, psDBBean);
     }
 
     /**
@@ -103,46 +103,50 @@ public class TmgAcquired5DaysHolidayBean {
      * <p>
      * ACT_UPDTE
      */
-    public void actUpdte(ModelMap modelMap,PsDBBean psDBBean) {
+    public void actUpdte(String year, String userCode,PsDBBean psDBBean) {
 
         // 編集内容を更新する
         update(psDBBean);
         // 転送項目の取得
-        selectList(null,psDBBean);
+        selectList(userCode, psDBBean);
     }
 
     /**
      * 一覧の検索
+     *
+     * @param userCode　対象者
+     * @param psDBBean　PsDBBean
+     * @return
      */
-    private void selectList( String userCode,PsDBBean psDBBean) {
-        String baseDate = psDBBean.getReqParam("txtYear") + referList.getRecordDate().substring(4);
+    public List<Acquired5DaysListVO> selectList( String userCode, PsDBBean psDBBean) {
+        String baseDate = String.valueOf(this.getYear()) + referList.getRecordDate().substring(4);
         String empsql = referList.buildSQLForSelectEmployees();
 
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
-//        modelMap.addAttribute("acquired5DaysVOList", acquired5DaysVOList);
+
+        return acquired5DaysVOList;
     }
 
     /**
-     * 画面表示項目を取り出す
-     *
-     * @throws Exception
+     *画面表示項目を取り出す
+     * @param txtUserCode 対象者
+     * @param kijunbi　基準日
+     * @param pdSearchStart　年休調査期間（開始日）
+     * @param pdSearchEnd　年休調査期間（終了日）
+     * @param psDBBean　PsDBBean
      */
-    private void showDisp(PsDBBean psDBBean) {
+    public List<PaidHolidayVO> showDisp(String txtUserCode, String kijunbi, String pdSearchStart, String pdSearchEnd, PsDBBean psDBBean) {
         String dispUserCode;
-        if (psDBBean.getReqParam("txtUserCode") != null && psDBBean.getReqParam("txtUserCode").equals("") == false) {
-            dispUserCode = psDBBean.getReqParam("txtUserCode");
+        if (txtUserCode != null && !txtUserCode.equals("")) {
+            dispUserCode = txtUserCode;
 
         } else {
             dispUserCode = referList.getTargetEmployee();
         }
 
-        // 一覧画面転送データをセット
-        String kijunbi = psDBBean.getReqParam("kijunbi");
-        String syuRyobi = psDBBean.getReqParam("syuRyobi");
-        String useddays = psDBBean.getReqParam("useddays");
-
-        String searchStart = psDBBean.getReqParam("pdSearchStart");
-        String searchEnd = psDBBean.getReqParam("pdSearchEnd");
+        // 年休調査期間設定
+        String searchStart = pdSearchStart;
+        String searchEnd = pdSearchEnd;
         if (StrUtil.isBlank(searchStart) || "null".equals(searchStart)) {
             searchStart = kijunbi;
         }
@@ -154,7 +158,8 @@ public class TmgAcquired5DaysHolidayBean {
         // 詳細画面検索用SQLを作成
         List<PaidHolidayVO> paidHolidayVOList = iTmgDailyService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), dispUserCode, searchStart, searchEnd);
 
-//        modelMap.addAttribute("paidHolidayVOList", paidHolidayVOList);
+        return paidHolidayVOList;
+
     }
 
     /**
@@ -304,11 +309,9 @@ public class TmgAcquired5DaysHolidayBean {
         setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode(),psDBBean);
 
         String sBaseDate = getReferList().getRecordDate(); // 組織ツリーの基準日の設定ここから
-        try {
-            sBaseDate = String.valueOf(this.getYear()) + sBaseDate.substring(4);
-        } catch (Exception e) {
 
-        }
+        sBaseDate = String.valueOf(this.getYear()) + sBaseDate.substring(4);
+
         // カレンダー関連
         getCalender(sBaseDate, psDBBean);
 
@@ -381,7 +384,7 @@ public class TmgAcquired5DaysHolidayBean {
             Date dStart = sdf.parse(calendarDto.getStartYearDate());
             Date dEnd = sdf.parse(calendarDto.getEndYearDate());
 
-            if (dMin.before(dStart)) {
+            if (dMin.before(dStart)&& this.getYear() > START_YEAR) {
                 setPreviousYear(true);
             }
             if (dMax.after(dEnd)) {
@@ -439,7 +442,6 @@ public class TmgAcquired5DaysHolidayBean {
         gbNextYear = nextYear;
     }
 
-
     private boolean gbPreviousYear  = false; // 前年度ボタン
     private boolean gbNextYear      = false; // 翌年度ボタン
 
@@ -455,7 +457,7 @@ public class TmgAcquired5DaysHolidayBean {
     }
 
     // 変数
-    private int     giYear          = 0;     // 年度
+    private int giYear = 0;     // 年度
 
     public int getYear() {
         return giYear;
@@ -465,8 +467,6 @@ public class TmgAcquired5DaysHolidayBean {
         giYear = year;
     }
 
-    /** リクエストキー - 再表示ボタン使用判定用 */
-    private static final String TREEVIEW_KEY_REFRESH_FLG  	= "txtTmgReferListTreeViewRefreshFlg";
     /**
      * パラメータを取得するメソッド
      * @param  piPBranchingProcess  0:初期処理、1:組織ツリー情報使用処理
