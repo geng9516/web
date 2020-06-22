@@ -213,7 +213,7 @@ public class PatternSettingConst {
     /**
      * アプリケーションの絶対パス
      */
-    public static final String PATTEN_SETTING_PAGE_NAME = "ps.c01.tmg.PatternSetting.PatternSetting";
+    public static final String PATTEN_SETTING_PAGE_NAME = "jp.smartcompany.job.modules.tmg.patternsetting.PatternSetting";
 
     /**
      * システムプロパティー キー値 休憩MAX値

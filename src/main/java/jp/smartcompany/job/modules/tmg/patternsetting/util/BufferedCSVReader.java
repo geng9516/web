@@ -26,7 +26,8 @@ public class BufferedCSVReader extends BufferedReader {
     public String readLine() throws IOException {
         String sResult = "";
         String sLine = "";
-        char[] sLine2 = new char['?'];
+//        char[] sLine2 = new char['?'];
+        char[] sLine2 = new char[4095];
         for (; ; ) {
             mark(4096);
 

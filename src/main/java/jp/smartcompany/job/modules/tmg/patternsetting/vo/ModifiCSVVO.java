@@ -18,14 +18,28 @@ import java.util.List;
 public class ModifiCSVVO {
 
     /**
-     *
+     * グループ
+     */
+    private String sGroupId;
+
+    /**
+     * 部局(組織)
+     */
+    private String sSectionId;
+
+    /**
+     * 取り込み結果メッセージ
      */
     private List lMsgList;
+
     /**
-     *
+     * 　データリスト
      */
     private List lPatternList;
 
+    /**
+     * データのごとの取り込み結果
+     */
     private boolean[] insertFlg;
 
 }

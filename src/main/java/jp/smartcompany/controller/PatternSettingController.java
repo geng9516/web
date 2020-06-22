@@ -1,10 +1,12 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.PatternSettingBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.vo.ModifiCSVVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.PeriodDateVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -164,19 +167,36 @@ public class PatternSettingController {
 
     /**
      * 勤務パターン CSV取り込み
+     * http://localhost:6879/sys/patternSetting/modifiCSVDwnload
      *
      * @param file
      * @param psDBBean
      */
-    @GetMapping("modifiCSVDwnload")
+    @PostMapping("modifiCSVDwnload")
     @ResponseBody
-    public void modifiCSVDwnload(@RequestParam("upfile") MultipartFile file,
-                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public ModifiCSVVO modifiCSVDwnload(@RequestParam("file") MultipartFile file,
+                                        @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        patternSettingBean.uploadCSV(file);
-
-
+        return patternSettingBean.uploadCSV(file);
     }
 
+    /**
+     * 勤務パターン適用 編集バターンをチェックする
+     * http://localhost:6879/sys/patternSetting/checkAppliesButton
+     *
+     * @param psDBBean
+     * @return TRUE の場合、enableになる　　FALSEの場合、disableになる
+     */
+    @GetMapping("checkAppliesButton")
+    @ResponseBody
+    public boolean checkAppliesButton(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化対象
+        patternSettingBean.setExecuteParameters(null, psDBBean);
+        //勤務パターンを適用可能な最少日付
+        String periodDate = patternSettingBean.selectEditPeriodDate();
+        //TRUE の場合、enableになる　　FALSEの場合、disableになる
+        boolean check = DateUtil.date().isAfter(DateUtil.parse(periodDate, "yyyy/MM/dd"));
+        return check;
+    }
 }

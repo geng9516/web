@@ -39,7 +39,7 @@ public class PatternSettingUtil {
     public static String getMessage(String sLang, String sKey) {
 
         // システムプロパティからメッセージを取得し、返却する
-        return SysUtil.getpropertyvalue(sLang, sKey);
+        return SysUtil.getpropertyvalue(sLang, sKey,PatternSettingConst.PATTEN_SETTING_PAGE_NAME);
 
     }
 

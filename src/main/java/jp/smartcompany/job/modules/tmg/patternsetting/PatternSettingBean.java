@@ -44,6 +44,8 @@ public class PatternSettingBean {
     private PsDBBean psDBBean;
     private TmgReferList referList;
     private final IPatternSettingService iPatternSettingService;
+    private final String beanDesc = "PatternSetting";
+
 
     /**
      * パラメータを初期化する
@@ -61,7 +63,7 @@ public class PatternSettingBean {
      */
     private void setReferList(String pBaseDate) {
         try {
-            referList = new TmgReferList(psDBBean, "PatternSetting", pBaseDate, TmgReferList.TREEVIEW_TYPE_LIST, true, true);
+            referList = new TmgReferList(psDBBean, beanDesc, pBaseDate, TmgReferList.TREEVIEW_TYPE_LIST, true, true);
         } catch (Exception e) {
             logger.error("汎用リンクコンポーネントを生成することは失敗しました", e);
         }
@@ -444,7 +446,7 @@ public class PatternSettingBean {
         List lPstParamList = new ArrayList();
 
         // リクエストからCSVデータ情報を取得
-        String sCSVData = "";
+        // String sCSVData = "";
         // 取り込めるデータが無いときは、エラー
         /*if (sCSVData == null || sCSVData.length() == 0) {
             // データベース更新フラグを返却
@@ -485,7 +487,7 @@ public class PatternSettingBean {
         }
         // 文字コードの制約で、1行目に不要な改行コードが入ってしまうため
         // 明示的に1行目だけは削除する
-        lPstParamList.remove(0);
+        // lPstParamList.remove(0);
         // 登録成功フラグ配列
         bSuccessList = new boolean[lPstParamList.size()];
         // CSVデータリストを返却
@@ -1015,7 +1017,12 @@ public class PatternSettingBean {
             return null;
         }
         ModifiCSVVO modifiCSVVO = new ModifiCSVVO();
+
         PatternSettingParam patternSettingParam = this.modifiCSVDwnload(file);
+
+        modifiCSVVO.setSSectionId(patternSettingParam.getSectionId());
+        modifiCSVVO.setSGroupId(patternSettingParam.getGroupId());
+
         /**
          * データリスト
          */
