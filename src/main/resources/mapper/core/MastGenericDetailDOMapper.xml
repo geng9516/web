@@ -338,6 +338,26 @@
             MGD_NSEQ
         ;
     </select>
+    <select id="selectLedgerSheetList" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo">
+        SELECT
+            MGD_LEDGER_SHEET_ID,
+            MGD_LEDGER_SHEET_NAME,
+            MGD_OUTPUT_TARGET_TYPE,
+            MGD_OUTPUT_TERM_TYPE,
+            MGD_PDF_DLFLG,
+            MGD_CSV_DLFLG
+        FROM
+            TMG_V_MGD_LEDGER_SHEET
+        WHERE
+                MGD_CCUSTOMERID = #{custID}
+            AND MGD_CCOMPANYID_CK_FK = #{compCode}
+            AND MGD_CLANGUAGE_CK = #{language}
+            AND SYSDATE BETWEEN MGD_DSTART_CK
+            AND MGD_DEND
+        ORDER BY
+            MGD_SORT ASC
+        ;
+    </select>
 
 
     <select id="selectDispDailyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">

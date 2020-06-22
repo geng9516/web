@@ -40,8 +40,8 @@ public class paramNotificationListDto {
     /**対象社員*/
     private String targetUser;
     /** 年度 */
-    private int year;
-    private int     thisYear;     // 今年度
+    private String  year;
+    private String  thisYear;     // 今年度
     private String  gsStartDate;  // 年度開始日
     private String  gsEndDate;  // 年度終了日
     private boolean gbPreviousYear  = false; // 前年度ボタン
@@ -100,11 +100,11 @@ public class paramNotificationListDto {
     private String approvalLevel;
 
     /**
-     * 開始日
+     * 開始日/出勤にする休日
      */
     private Date begin;
     /**
-     * 終了日
+     * 終了日/振休日とする出勤日
      */
     private Date end;
     /**

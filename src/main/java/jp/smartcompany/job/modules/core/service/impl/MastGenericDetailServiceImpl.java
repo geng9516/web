@@ -4,7 +4,6 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.mapper.MastGenericDetailMapper;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
@@ -20,6 +19,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
+import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
@@ -31,7 +31,6 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdAttributeVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MgdCsparechar4VO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -934,4 +933,13 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
                 psUpdateUser, psExuludecondType, psExuludecondForm,
                 psExuludecondTo);
     }
+
+    /**
+     * 帳票種別リストボックスのデータを取得するクエリ文を生成します。
+     */
+    @Override
+    public List<LedgerSheetVo> selectLedgerSheetList(String custID, String compCode, String language){
+        return baseMapper.selectLedgerSheetList( custID, compCode, language);
+    }
+
 }

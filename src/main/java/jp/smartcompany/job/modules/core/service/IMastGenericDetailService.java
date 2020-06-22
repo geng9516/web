@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
+import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
@@ -512,4 +513,10 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
                                          String psMasterCode, String psStartDate, String psEndDate,
                                          String psUpdateUser, String psExuludecondType, String psExuludecondForm,
                                          String psExuludecondTo);
+
+    /**
+     * 帳票種別リストボックスのデータを取得するクエリ文を生成します。
+     */
+    List<LedgerSheetVo> selectLedgerSheetList(String custID, String compCode, String language);
+
 }

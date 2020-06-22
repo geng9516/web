@@ -11,6 +11,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
@@ -344,5 +345,10 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                          @Param("psExuludecondType") String psExuludecondType,
                                          @Param("psExuludecondForm") String psExuludecondForm,
                                          @Param("psExuludecondTo") String psExuludecondTo);
+
+    List<LedgerSheetVo> selectLedgerSheetList(@Param("custID")String custID,
+                                              @Param("compCode")String compCode,
+                                              @Param("language")String language);
+
 }
 

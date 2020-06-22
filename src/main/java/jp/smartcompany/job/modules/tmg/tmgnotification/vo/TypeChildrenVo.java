@@ -22,7 +22,8 @@ public class TypeChildrenVo {
     private String biko;
     /**7 添付ファイル必須有無*/
     private String confirmFile;
-
+    // 8 決裁レベル
+    private String sparechar2;
 
 
 

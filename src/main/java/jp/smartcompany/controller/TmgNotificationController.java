@@ -1,14 +1,25 @@
 package jp.smartcompany.controller;
 
 
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.tmgnotification.TmgNotificationBean;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,7 +34,7 @@ public class TmgNotificationController {
 
     @Autowired
     private TmgNotificationBean tmgNotificationBean;
-
+    private HttpServletRequest request;
 
     /**
          * 申請ステータス
@@ -80,5 +91,53 @@ public class TmgNotificationController {
     public List<restYearVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getRestYear(psDBBean);
     }
+
+
+    /**
+     * 新規申請
+     *
+     * @return　エラー
+     */
+    @PostMapping("MakeNewApply")
+    public String makeNewApply(
+            @RequestParam("Param") paramNotificationListDto param,
+            @RequestParam("uploadFiles")MultipartFile[] uploadFiles,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        //todo
+        TmgReferList referList = null;
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            referList=null;
+        }else{
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getToday(), TmgReferList.TREEVIEW_TYPE_LIST, true,
+                    false, false, false, false);
+        }
+        String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
+        return tmgNotificationBean.actionMakeApply(psDBBean,param,referList,uploadFiles,filePath);
+    }
+
+    /**
+     * 入力site 取下处理
+     *需要siteid
+     * @return　エラー(-1　失敗　１成功)
+     */
+    @GetMapping("EditWithdrop")
+    public int makeNewApply(
+            @RequestParam("NtfNo") String ntfNo,
+            @RequestParam("Action") String action,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        return tmgNotificationBean.actionEditWithdrop(action,ntfNo,psDBBean);
+    }
+
+    /**
+     * 組織図
+     *
+     * @return　エラー
+     */
+    @GetMapping("ReferList")
+    public int getReferliSt() throws Exception {
+        return TmgReferList.TREEVIEW_TYPE_LIST;
+    }
+
 
 }

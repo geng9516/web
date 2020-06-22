@@ -6,6 +6,7 @@ package jp.smartcompany.job.modules.core.service.impl;
         import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
         import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
         import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
+        import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
         import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
         import org.springframework.stereotype.Repository;
 import cn.hutool.core.map.MapUtil;
@@ -319,4 +320,19 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
         return baseMapper.buildSQLSelectEmployyes(map);
     }
 
+
+    /**
+     * 対象年リストボックスのデータを取得するクエリ文を生成します。
+     */
+    @Override
+    public List<ListBoxVo> selectYearDate(String custID, String compCode){
+        return baseMapper.selectYearDate(custID, compCode);
+    }
+    /**
+     * 対象月リストボックスのデータを取得するクエリ文を生成します。
+     */
+    @Override
+    public List<ListBoxVo> selectMonthDate(String custID, String compCode){
+        return baseMapper.selectMonthDate(custID, compCode);
+    }
 }

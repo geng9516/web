@@ -264,6 +264,38 @@
         WHERE
             o.SEQ between #{startSeq} and  #{endSeq}
     </select>
+    <select id="selectYearDate" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo">
+        SELECT
+            TO_CHAR( TRUNC( TMO_DYYYYMM, 'YYYY' ), 'YYYY' ) AS VAL,
+            TO_CHAR( TRUNC( TMO_DYYYYMM, 'YYYY' ), 'YYYY' ) AS DISP
+        FROM
+            TMG_MONTHLY
+        WHERE
+            TMO_CCUSTOMERID = #{custID}
+        AND TMO_CCOMPANYID = #{compCode}
+        AND TMO_DYYYYMM  <![CDATA[<]]> TRUNC( SYSDATE, 'MM' )
+        GROUP BY
+        TRUNC( TMO_DYYYYMM, 'YYYY' )
+        ORDER BY
+        TRUNC( TMO_DYYYYMM, 'YYYY' ) DESC
+        ;
+    </select>
+    <select id="selectMonthDate" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo">
+        SELECT
+            TO_CHAR( TRUNC( TMO_DYYYYMM, 'MM' ), 'YYYY/MM/DD' ) AS VAL,
+            TO_CHAR( TMO_DYYYYMM, 'YYYY/MM' ) AS DISP
+        FROM
+            TMG_MONTHLY
+        WHERE
+            TMO_CCUSTOMERID = #{custID}
+        AND TMO_CCOMPANYID = #{compCode}
+        AND TMO_DYYYYMM <![CDATA[<]]> TRUNC( SYSDATE, 'MM' )
+        GROUP BY
+            TMO_DYYYYMM
+        ORDER BY
+            TMO_DYYYYMM DESC
+        ;
+    </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE
             TMG_MONTHLY M
