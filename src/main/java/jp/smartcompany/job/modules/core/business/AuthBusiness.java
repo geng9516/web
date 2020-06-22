@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.business;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -30,6 +31,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +46,9 @@ public class AuthBusiness {
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
+    private final LRUCache<Object,Object> lruCache;
+
+    public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
     public boolean checkPassword(MastAccountDO account, String password) throws AuthenticationException {
         Date passwordSetDate = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
@@ -232,25 +237,34 @@ public class AuthBusiness {
             }
             List<MenuBO> secondMenuList = CollUtil.newArrayList();
             List<GroupAppManagerPermissionDTO> secondAppList = appList.stream().filter(item -> StrUtil.equals(item.getType(), "3")).collect(Collectors.toList());
-            for (GroupAppManagerPermissionDTO secondApp : secondAppList) {
-                if (StrUtil.equals(secondApp.getPermission(),"2")) {
-                    continue;
-                }
-                if (StrUtil.equals(secondApp.getPermission(),"1")) {
-                    MenuBO secondMenuDO = new MenuBO();
-                    secondMenuDO.setPageId(secondApp.getMgpCapp());
-                    secondMenuDO.setPerms(secondApp.getMgpCobjectid());
-                    secondMenuDO.setOrderNum(secondApp.getMtrNseq());
-                    secondMenuDO.setUrl(secondApp.getMtrCurl2());
-                    secondMenuDO.setJaName(secondApp.getObjectName());
-                    secondMenuDO.setIcon(secondApp.getMtrIcon());
-                    secondMenuDO.setType(secondApp.getType());
-                    secondMenuDO.setCompanyId("01");
-                    secondMenuDO.setCustomerId("01");
-                    secondMenuDO.setMenuId(secondApp.getMtrId());
-                    CollUtil.addAllIfNotContains(secondMenuList,CollUtil.newArrayList(secondMenuDO));
+
+            List<List<GroupAppManagerPermissionDTO>> secondGroupAppList = CollUtil.groupByField(secondAppList,"mgpCobjectid");
+            for (List<GroupAppManagerPermissionDTO> groupPerms : secondGroupAppList) {
+                for (GroupAppManagerPermissionDTO groupPerm : groupPerms) {
+                    String permission = groupPerm.getPermission();
+                    if (StrUtil.equals(permission,"2")) {
+                        break;
+                    }
+                    if (StrUtil.equals(permission,"0")) {
+                        continue;
+                    }
+                    if (StrUtil.equals(permission,"1")) {
+                        MenuBO secondMenuDO = new MenuBO();
+                        secondMenuDO.setPageId(groupPerm.getMgpCapp());
+                        secondMenuDO.setPerms(groupPerm.getMgpCobjectid());
+                        secondMenuDO.setOrderNum(groupPerm.getMtrNseq());
+                        secondMenuDO.setUrl(groupPerm.getMtrCurl2());
+                        secondMenuDO.setJaName(groupPerm.getObjectName());
+                        secondMenuDO.setIcon(groupPerm.getMtrIcon());
+                        secondMenuDO.setType(groupPerm.getType());
+                        secondMenuDO.setCompanyId("01");
+                        secondMenuDO.setCustomerId("01");
+                        secondMenuDO.setMenuId(groupPerm.getMtrId());
+                        CollUtil.addAllIfNotContains(secondMenuList,CollUtil.newArrayList(secondMenuDO));
+                    }
                 }
             }
+
             menuGroupBO.setSecondMenuList(secondMenuList);
 
             menuGroupList.add(menuGroupBO);
@@ -258,4 +272,27 @@ public class AuthBusiness {
         return menuGroupList;
     }
 
+    public Set<String> getAllUserPerms(String systemId, String language, List<String> groupIds) {
+        Set<String> perms =(Set<String>)lruCache.get(LOGIN_PERMISSIONS);
+        if (CollUtil.isEmpty(perms)) {
+            List<GroupAppManagerPermissionDTO> permissionList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, null,null,language);
+            List<List<GroupAppManagerPermissionDTO>> secondGroupAppList = CollUtil.groupByField(permissionList,"mgpCobjectid");
+            for (List<GroupAppManagerPermissionDTO> groupPerms : secondGroupAppList) {
+                for (GroupAppManagerPermissionDTO groupPerm : groupPerms) {
+                    String permission = groupPerm.getPermission();
+                    if (StrUtil.equals(permission,"2")) {
+                        break;
+                    }
+                    if (StrUtil.equals(permission,"0")) {
+                        continue;
+                    }
+                    if (StrUtil.equals(permission,"1")) {
+                        perms.add(permission);
+                    }
+                }
+            }
+            lruCache.put(LOGIN_PERMISSIONS,perms);
+        }
+        return perms;
+    }
 }
