@@ -19,6 +19,29 @@ const postForm = (url, params) => {
   })
 }
 
+const uploadFiles = (url, formData) => {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const { data } = await axios({
+        method: 'post',
+        url,
+        data: formData,
+        transformRequest: [function (data) {
+          const formData = new FormData()
+          for (const key of Object.keys(data)) {
+            formData.append(key, data[key])
+          }
+          return formData
+        }],
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      resolve(data)
+    } catch (e) {
+      reject(e)
+    }
+  })
+}
+
 const get = (url, params) => {
   return new Promise(async (resolve, reject) => {
     try {
@@ -50,7 +73,7 @@ const post = (url, params) => {
   })
 }
 
-const http = { get, post, postForm }
+const http = { get, post, postForm, uploadFiles }
 
 Object.defineProperties(Vue.prototype, {
   http: {

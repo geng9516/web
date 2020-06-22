@@ -351,7 +351,8 @@
                     restTypeListForReview: [],
                     restTypeListForApply: [],
                     selectedRestInfo: {},
-                    uploadList:[]
+                    uploadList:[],
+                    uploadFiles:[],
                 }
             },
             watch: {
@@ -376,7 +377,7 @@
                 this.getApplyHistory(true)
             },
             mounted () {
-                this.uploadList = this.$refs.upload.fileList;;
+                this.uploadList = this.$refs.upload.fileList;
             },
             computed: {
                 flatRestTypeList() {
@@ -530,12 +531,14 @@
                         this.restApply.end = this.restApply._end
                     }
                     console.log(this.restApply)
-                    this.reApply.uploadFiles = this.uploadList
-                    await this.http.post('sys/vapply/MakeNewApply', {param:this.restApply})
-                    this.$Message.success('申请完了')
-                        this.rotate = !this.rotate
-                        this.loading = false
-                        this.getApplyHistory()
+                    console.log(this.uploadFiles)
+                    this.http.post('sys/vapply/MakeApply', {param:this.restApply})
+                    this.http.uploadFiles('sys/vapply/MakeApply',{uploadFiles:this.uploadFiles} )
+
+                    // this.$Message.success('申请完了')
+                    //     this.rotate = !this.rotate
+                    //     this.loading = false
+                    //     this.getApplyHistory()
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
@@ -601,14 +604,15 @@
                         desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
                     });
                 },
-                handleBeforeUpload () {
+                handleBeforeUpload (files) {
+                    this.uploadFiles.push(files)
                     const check = this.uploadList.length < 5;
                      if (!check) {
                         this.$Notice.warning({
                         title: 'Up to five files can be uploaded.'
                     })
                     }
-                    return false;
+                    return check;
                 },
                 handleMaxSize (file) {
                     this.$Notice.warning({
