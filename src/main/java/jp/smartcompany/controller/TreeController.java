@@ -84,19 +84,29 @@ public class TreeController {
             }
         } else if (type==TmgReferList.TREEVIEW_TYPE_LIST) {
             System.out.println("---TREEVIEW_TYPE_LIST---");
-            String groupListStr = referList.getJSONArrayForGroupList();
-            if (StrUtil.isNotBlank(groupListStr)) {
-                JSONArray groupList = JSONUtil.parseArray(groupListStr);
-                globalResponse.put("groupList",groupList);
+            if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                String groupListStr = referList.getJSONArrayForGroupList();
+                if (StrUtil.isNotBlank(groupListStr)) {
+                    JSONArray groupList = JSONUtil.parseArray(groupListStr);
+                    globalResponse.put("groupList", groupList);
+                } else {
+                    globalResponse.put("groupList", groupListStr);
+                }
+                String sectionListStr = referList.getJSONArrayForSectionList();
+                if (StrUtil.isNotBlank(sectionListStr)) {
+                    JSONArray sectionList = JSONUtil.parseArray(sectionListStr);
+                    globalResponse.put("sectionList", sectionList);
+                } else {
+                    globalResponse.put("sectionList", sectionListStr);
+                }
             } else {
-                globalResponse.put("groupList", groupListStr);
-            }
-            String sectionListStr = referList.getJSONArrayForSectionList();
-            if (StrUtil.isNotBlank(sectionListStr)) {
-                JSONArray sectionList = JSONUtil.parseArray(sectionListStr);
-                globalResponse.put("sectionList",sectionList);
-            } else {
-                globalResponse.put("sectionList",sectionListStr);
+                String jsonOrgStr = referList.getJSONArrayForOrgTree();
+                if (StrUtil.isNotBlank(jsonOrgStr)) {
+                    JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
+                    globalResponse.put("orgList",jsonOrg);
+                } else {
+                    globalResponse.put("orgList",jsonOrgStr);
+                }
             }
         } else if (type == TmgReferList.TREEVIEW_TYPE_DIVLIST) {
             String divisionTreeStr = referList.getJSONArrayForDivisionTree();
