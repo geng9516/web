@@ -24,7 +24,10 @@
             ) OBJECTNAME,
             MTR_CTYPE TYPE,
             MG_NWEIGHTAGE,
-            MTR_NSEQ
+            MTR_NSEQ,
+            MTR_CURL2,
+            MTR_ICON,
+            MTR_ID
         FROM
             (
              MAST_APPTREE

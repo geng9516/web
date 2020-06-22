@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.core.pojo.bo;
 
-import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -18,7 +17,7 @@ import java.util.List;
 @Accessors(chain = true)
 public class MenuGroupBO {
 
-    private TMenuDO menu;
-    private List<TMenuDO> secondMenuList;
+    private MenuBO menu;
+    private List<MenuBO> secondMenuList;
 
 }

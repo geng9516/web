@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupappmanager.dto;
 
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -10,8 +11,10 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode(of={"mgpCsite","mgpCsubapp"})
 public class GroupAppManagerPermissionDTO {
 
+    private Long mtrId;
     private String mgpCgroupid;
     private String mgpCobjectid;
     private String mgpCsite;
@@ -27,5 +30,7 @@ public class GroupAppManagerPermissionDTO {
     private String type;
     private String mtrNseq;
     private String mgNweightage;
+    private String mtrCurl2;
+    private String mtrIcon;
 
 }

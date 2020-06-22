@@ -5,15 +5,14 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TMenuDO;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
-import jp.smartcompany.job.modules.core.service.ITGroupMenuService;
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -46,7 +45,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final IMastSystemService iMastSystemService;
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
-    private final ITGroupMenuService itGroupMenuService;
+    private final AuthBusiness authBusiness;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
@@ -73,9 +72,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         configGlobalParameters(request,systemList.get(0));
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {
-            executeLoginSequence(systemList,language,session);
+            executeLoginSequence(systemList,language);
             if (request.getAttribute(Constant.TOP_NAVS) == null) {
-                loadMenus(request, systemCode, customerId, systemList);
+                loadMenus(request, systemCode, systemList);
             }
         }
         return true;
@@ -370,7 +369,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
 
     // 登录后加载角色组和基点组织
-    private void executeLoginSequence(List<MastSystemDO> systemList, String language,PsSession session) {
+    private void executeLoginSequence(List<MastSystemDO> systemList, String language) {
         if (CollUtil.isEmpty(systemList)){
             throw new GlobalException("Master not found");
         }
@@ -384,44 +383,20 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     }
 
     // 加载系统菜单
-    private void loadMenus(HttpServletRequest request, String systemCode, String customerId, List<MastSystemDO> systemList) {
-        // 获取用户拥有的用户组（测试时注释）
+    private void loadMenus(HttpServletRequest request, String systemCode,  List<MastSystemDO> systemList) {
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
         List<LoginGroupBO> groupList = CollUtil.newArrayList();
-        systemList.forEach(system -> {
+        systemList.forEach(system ->
             loginGroupList.forEach((key,value)-> {
                  if (StrUtil.equals(system.getMsCsystemidPk(),key)) {
                      CollUtil.addAllIfNotContains(groupList,value);
                  }
-            });
-        });
+            })
+        );
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
-
-//        List<GroupAppManagerPermissionDTO> groupAppManagerPermissions= iMastGroupapppermissionService.selectPermissionList("01", DateUtil.date(),groupCodes,request.getParameter("psSite"),
-//                request.getParameter("psApp"),"ja");
-        // 测试时打开
-//        List<String> groupCodes = CollUtil.newArrayList("4","7");
-        List<TMenuDO> topMenus = itGroupMenuService.listTopMenuByGroupCode(groupCodes, systemCode,customerId);
-        List<TMenuDO> topNavs = CollUtil.addAllIfNotContains(topMenus,CollUtil.newArrayList());
-        log.info("【topNavs:{}】",topNavs);
-        // 第一种菜单展现方式，每一个主菜单都对应有一个主页
-//        List<TMenuDO> secondMenus = itGroupMenuService.listSecondMenuByGroupCode(groupCodes, systemCode,customerId);
-//        List<TMenuDO> secondNavs = CollUtil.addAllIfNotContains(secondMenus,CollUtil.newArrayList());
-//        request.setAttribute(Constant.TOP_NAVS,topNavs);
-//        request.setAttribute(Constant.SECOND_NAVS,secondNavs);
-
-        // 第二种菜单展现方式，只有一级菜单存在一个主页
-        List<MenuGroupBO> menuGroupList = CollUtil.newArrayList();
-        for (TMenuDO topNav : topNavs) {
-            MenuGroupBO menuGroupBO = new MenuGroupBO();
-            menuGroupBO.setMenu(topNav);
-            List<TMenuDO> secondMenuList = itGroupMenuService.listMenuByGroupCodeAndParentId(
-                    topNav.getMenuId(),systemCode,customerId);
-            menuGroupBO.setSecondMenuList(secondMenuList);
-            menuGroupList.add(menuGroupBO);
-        }
+        List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes);
         request.setAttribute(Constant.TOP_NAVS,menuGroupList);
     }
 

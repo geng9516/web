@@ -4,8 +4,8 @@
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
-        <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.menuId ? 'actived-menu' : ''"
-            :key="item.menu.menuId" @click="handleMenuGroupChange(item)">
+        <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
+            :key="item.menu.pageId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true"
                 :style="{fill: curMenu === item.menuId ? 'rgb(45, 140, 240)' : 'white'}">
                 <use :xlink:href="`#${item.icon || 'cat'}`"></use>
@@ -19,11 +19,11 @@
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
-        <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.menuId"
-            :class="curMenu === e.menu.menuId ? 'actived-menu' : ''"
+        <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.pageId"
+            :class="curMenu === e.menu.pageId ? 'actived-menu' : ''"
             @click.native="handleMenuGroupChange(e)">
-            <div v-show="curMenu === e.menu.menuId">
-                <menu-item v-for="(t, i) of e.secondMenuList" :key="t.menuId" :name="t.menuId"
+            <div v-show="curMenu === e.menu.pageId">
+                <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId"
                     @click.native="handleSubMenuClick(t, i)">
                     <div>
                         <svg class="i-svg" aria-hidden="true"
@@ -44,28 +44,23 @@
                 return {
                     topNavs: [[${ #httpServletRequest.getAttribute('topNavs') }]],
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
-                    curMenu: 1000,
+                    curMenu: '',
                     toUrl: '',
                     showSider: false,
                     siteId: ''
                 }
             },
             mounted() {
+                this.curMenu = this.topNavs[0].menu.pageId
                 this.siteId = this.topNavs[0].menu.pageId
             },
             methods: {
                 handleMenuGroupChange(item) {
                     this.siteId = item.menu.pageId
-                    this.curMenu = item.menu.menuId
+                    this.curMenu = item.menu.pageId
                 },
                 handleSubMenuClick(e, i) {
                     var pageId = e.pageId
-                    if (pageId){
-                        var index = pageId.indexOf('_')
-                        if (index>-1) {
-                            pageId = pageId.substring(0, index)
-                        }
-                    }
                     this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}`
                     this.showSider = false
                     this.switchFrame()
@@ -76,7 +71,8 @@
                 handleNavLeave() {
                     this.showSider = false
                 },
-                switchFrame(e) {
+                switchFrame() {
+                    console.log(this.toUrl)
                     document.getElementById('moduleFrame').src = this.toUrl
                 }
             },
