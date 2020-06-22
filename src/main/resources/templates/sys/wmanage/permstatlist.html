@@ -113,12 +113,8 @@
                     <i-button type="primary" size="large" class="tr">一括承認</i-button>
                     </Col>
                 </Row>
-                <i-table border :columns="columns2" :data="tableData2" ref="selection2">
-                    <template slot-scope="{ row }">
-<!--                    <template slot-scope="{ row }" slot="workApplyStatus">-->
-<!--                        <span @click="showDay" v-if="row.workApplyStatus === 1" class="confirm-sytle ing">待</span>-->
-<!--                        <span @click="showDay" v-if="row.workApplyStatus === 2" class="confirm-sytle">済</span>-->
-<!--                        <span @click="showDay" v-if="row.workApplyStatus === 3" class="confirm-sytle undo">エ</span>-->
+                <i-table border :columns="columns3" :data="tableData2" ref="selection2">
+                    <template v-for="item of slotList2" slot-scope="{ row }" :slot="item">
                     </template>
                 </i-table>
             </Drawer>
@@ -132,11 +128,11 @@
             el: '.permstatlist-warp',
             data() {
                 return {
-                    monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
                     curDate: new Date(),
                     tableHead: [],
                     tableData: [],
                     slotList: Utils.getNumArray(1, 31).map(e => `disppermStatusName${e}`),
+                    slotList2: Utils.getNumArray(1, 13).map(e => `COLUMNID${e}`),
                     dailyShow: true,
                     rawData: [],
                     isShow: false,
@@ -179,6 +175,7 @@
                     approval: false,
 
                     title: '2020年03月24日(火)',
+                    tableHead2: [],
                     tableData2: []
                 }
             },
@@ -242,113 +239,37 @@
                     })
                     return result
                 },
-                columns2: [
-                    {
-                        title: '氏名',
-                        key: 'name',
-                        minWidth: 100,
-                        align: 'right'
-                    },
-                    {
-                        title: '区分',
-                        minWidth: 36,
-                        key: 'wordkDivision',
-                        align: 'center'
-                    },
-                    {
-                        title: '予定',
-                        align: 'center',
-                        children: [
-                            {
-                                title: '始業',
-                                align: 'center',
-                                minWidth: 36,
-                                key: 'workStartFinal'
+                columns3() {
+                    let result = []
+                    const that = this
+                    this.tableHead2.forEach((e, i) => {
+                        result = result.concat({
+                             minWidth: 25,
+                            renderHeader: (h, params) => {
+                                return h(
+                                    'span',
+                                    {
+                                        style: {
+                                            cursor: 'pointer',
+                                        },
+                                        domProps: {
+                                            className: 'table-head',
+                                            innerHTML: e.mgdCheader,
+                                        }
+                                    }
+                                )
                             },
-                            {
-                                title: '終業',
-                                minWidth: 36,
-                                key: 'workEndFinal',
-                                align: 'center'
-                            }
-                        ]
-                    },
-                    {
-                        title: '打刻',
-                        align: 'center',
-                        children: [
-                            {
-                                title: '始業',
-                                minWidth: 36,
-                                key: 'workStartReal',
-                                align: 'center'
-                            },
-                            {
-                                title: '終業',
-                                minWidth: 36,
-                                key: 'workEndReal',
-                                align: 'center'
-                            }
-                        ]
-                    },
-                    {
-                        title: '就業',
-                        align: 'center',
-                        children: [
-                            {
-                                title: '始業',
-                                minWidth: 36,
-                                key: 'workStartReal',
-                                align: 'center'
-                            },
-                            {
-                                title: '終業',
-                                minWidth: 36,
-                                key: 'workEndReal',
-                                align: 'center'
-                            }
-                        ]
-                    },
-                    {
-                        title: '超勤',
-                        minWidth: 150,
-                        key: 'overWork',
-                        tooltip: true,
-                        align: 'center'
-                    },
-                    {
-                        title: '用務内容',
-                        minWidth: 150,
-                        tooltip: true,
-                        key: 'reason',
-                        align: 'center'
-                    },
-                    {
-                        title: '備考',
-                        minWidth: 70,
-                        key: 'remark',
-                        tooltip: true,
-                        align: 'center'
-                    },
-                    {
-                        title: '本人コメント',
-                        minWidth: 70,
-                        key: 'remark',
-                        tooltip: true,
-                        align: 'center'
-                    },
-                    {
-                        minWidth: 70,
-                        key: 'remark',
-                        tooltip: true,
-                        align: 'center'
-                    },
-                    {
+                            slot: `COLUMNID${i + 1}`,
+                            align: 'center'
+                        })
+                    })
+                    result = result.concat({
                         type: 'selection',
                         width: 60,
                         align: 'center'
-                    }
-                ],
+                    })
+                    return result
+                }
             },
             methods: {
                 async getDispTmgMonthlyList() {
@@ -498,7 +419,6 @@
                     await this.getTableHead()
                     await this.getTableData()
 
-                    // this.getEmpList()
                 },
                 async getEmpList() {
                     try {
@@ -511,7 +431,6 @@
                         this.emplistLoading = false
                     }
                 },
-                // todo: 点完员工树干什么
                 handleClickEmpLeaf(e) {
                     this.deptDrawShow = false
                     // this.getData(true)
@@ -529,10 +448,12 @@
                     this.query.txtTmgReferListTreeViewRecordDate = '2020/06/19'
 
                     const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+                    this.tableHead2 = data.itemVOList
                     this.tableData2 = data.tmgDailyMapList
 
                     this.showDayApply = true
-
+                    console.log("this.handleClickHead")
+                    console.log(this.tableHead2)
                     console.log(this.tableData2)
                 },
                 toWorkPage() {
