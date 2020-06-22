@@ -96,7 +96,7 @@ public class TmgNotificationController {
     /**
      * 新規申請
      *
-     * @return　エラー
+     * @return　エラー null 为正常申请
      */
     @PostMapping("MakeNewApply")
     public String makeNewApply(
@@ -120,8 +120,8 @@ public class TmgNotificationController {
      *需要siteid
      * @return　エラー(-1　失敗　１成功)
      */
-    @GetMapping("EditWithdrop")
-    public int makeNewApply(
+    @PostMapping("EditWithdrop")
+    public int editWithdrop(
             @RequestParam("NtfNo") String ntfNo,
             @RequestParam("Action") String action,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {

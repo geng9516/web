@@ -867,8 +867,14 @@ public class TmgNotificationBean {
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_3);
         } else if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
+            //新規申請
             param.setTargetUser(param.getUserCode());
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_1);
+        }else if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
+            //再申請
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_2);
         }
 
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
@@ -888,18 +894,17 @@ public class TmgNotificationBean {
         }
 
         int insertErrmsg = insertErrMsg(param);
-        int insertTrigger = insertTrigger(param);
         String selectErrMsg = selectErrCode(param);
-        int deleteTrigger = deleteTrigger(param);
-        int deleteErrMsgAfter = deleteErrMsg(param);
-        int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
-
-        return selectErrMsg;
+        if(!StrUtil.hasEmpty(selectErrMsg)){
+            return selectErrMsg;
+        }else{
+            int insertTrigger = insertTrigger(param);
+            int deleteTrigger = deleteTrigger(param);
+            int deleteErrMsgAfter = deleteErrMsg(param);
+            int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
+            return null;
+        }
     }
-
-
-
-
 
     /**
      * 申請取下の処理をするメソッド
@@ -917,6 +922,7 @@ public class TmgNotificationBean {
         param.setUserCode(psDBBean.getUserCode());
         param.setNtfNo(ntfNo);
         param.setSiteId(psDBBean.getSiteId());
+        param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_4);
         // 申請取下
         int updateNotificationWithdraw = updateNotificationWithdraw(param);
         int insertTrigger = insertTrigger(param);
@@ -952,6 +958,7 @@ public class TmgNotificationBean {
         int deleteTrigger = deleteTrigger(param);
         int deleteErrMsgAfter = deleteErrMsg(param);
         int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
+
 
 
         if (!isPartOfReserveApplication(param)) {
@@ -1278,7 +1285,7 @@ public class TmgNotificationBean {
         if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 新規申請の場合は、新規申請用
             int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
-            int insertErrMsgUpdate = deleteNotificationnCheck(param);
+            int insertErrMsgNew = insertErrMsgNew(param);
         }
 
         int insertErrmsg = insertErrMsg(param);
@@ -2108,7 +2115,8 @@ public class TmgNotificationBean {
         tmgErrmsgDO.setTerCmodifieruserid(param.getUserCode());
         tmgErrmsgDO.setTerDmodifieddate(DateTime.now());
         tmgErrmsgDO.setTerCmodifierprogramid(sProgramId);
-        tmgErrmsgDO.setTerCerrcode("0");
+        tmgErrmsgDO.setTerCerrcode(iTmgNotificationCheckService.tmgFCheckNotification(param.getNtfNo(),
+                param.getCustId(), param.getCompId(), param.getSiteId()));
         tmgErrmsgDO.setTerClanguage(param.getLang());
 
         return iTmgErrmsgService.getBaseMapper().insert(tmgErrmsgDO);
