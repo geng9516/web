@@ -94,12 +94,12 @@ public class TmgNotificationController {
 
 
     /**
-     * 新規申請
+     * 新規申請/再申請/代理申請
      *
      * @return　エラー null 为正常申请
      */
-    @PostMapping("MakeNewApply")
-    public String makeNewApply(
+    @PostMapping("MakeApply")
+    public String makeApply(
             @RequestParam("Param") paramNotificationListDto param,
             @RequestParam("uploadFiles")MultipartFile[] uploadFiles,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
@@ -114,6 +114,8 @@ public class TmgNotificationController {
         String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
         return tmgNotificationBean.actionMakeApply(psDBBean,param,referList,uploadFiles,filePath);
     }
+
+
 
     /**
      * 入力site 取下处理
