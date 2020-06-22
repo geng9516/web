@@ -74,7 +74,7 @@
                             </i-option>
                         </i-select>
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
-                            icon="md-refresh" @click="getApplyHistory" :loading="loading"></i-button>
+                            icon="md-refresh" @click="getApplyHistory()" :loading="loading"></i-button>
                         <!-- PersonalApplyTable -->
                         <ul class="apply-history-list">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
@@ -343,8 +343,7 @@
                     restApply: {
                         useVacation: false,
                         weekSelected:[],
-                        noreserved:'1',
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        noreserved:'1'
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -490,24 +489,27 @@
                 onRefresh() {
                     this.rotate = !this.rotate
                 },
-                onCancel: Debounce(async function (id) {
-                    this.apply.action = 'ACT_EditApply_UWithdraw'
+                cancel: Debounce(async function (e) {
                     // 自己取消后无论如何都应该再拉取一遍最新的数据
-                    // try {
-                    //     await this.api.apply('cancel', { id })
-                    //     this.$Message.success('取り消し完了')
-                    // } catch (error) {
-                    //     return
-                    // } finally {
-                    //     this.getApplyHistory()
-                    // }
+                    try {
+                        await this.http.get('sys/vapply/EditWithdrop',{
+                            action:'ACT_EditApply_UWithdraw',
+                            ntfNo:e.tntfCntfNo,
+                            psSite: this.opts.psSite
+                        })
+                        this.$Message.success('取り消し完了')
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.getApplyHistory()
+                    }
                 }),
                 handleHistoryStatusChange(e) {
                     this.getApplyHistory()
                 },
                 apply: Debounce(async function () {
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
-                    // this.loading = true
+                    this.errorInfo = false
                     this.restApply.action = 'ACT_MakeApply_CAppl'
                     this.restApply.typeNew = this.selectedRestInfo.ntfId
                     this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel
@@ -532,17 +534,32 @@
                     }
                     console.log(this.restApply)
                     console.log(this.uploadFiles)
-                    // this.http.post('sys/vapply/MakeApply', {param:this.restApply})
-                    this.http.uploadFiles('sys/vapply/MakeApply',{
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
-                        params:JSON.stringify(this.restApply),
-                        uploadFiles: this.uploadFiles
-                    })
-
-                    // this.$Message.success('申请完了')
-                    //     this.rotate = !this.rotate
-                    //     this.loading = false
-                    //     this.getApplyHistory()
+                    if(!this.restApply.typeNew) {
+                        this.errorInfo = true
+                        this.errorMsg = '申請区分を選んでください。'
+                        return
+                    }
+                    if(!this.restApply.begin || !this.restApply.end) {
+                        this.errorInfo = true
+                        this.errorMsg = '期間を選んでください。'
+                        return
+                    }
+                    try {
+                        this.loading = true
+                        await this.http.uploadFiles('sys/vapply/MakeApply',{
+                        param:JSON.stringify(this.restApply),
+                        uploadFiles:this.uploadFiles,
+                        psSite: this.opts.psSite
+                        })
+                        this.$Message.success('申请完了')
+                        this.rotate = !this.rotate
+                        this.loading = false
+                        this.getApplyHistory()
+                    } catch (error) {
+                        console.log(error.response.data.msg)
+                    } finally {
+                        this.loading = false
+                    }
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
@@ -590,10 +607,6 @@
                 handleApplyDayShow(begin, end) {
                     if(begin === end) return begin
                     else return `${begin} ～ ${end}`
-                },
-                cancel() {
-                    // todo
-                    // this.$emit('cancel', e)
                 },
                 reApply() {},
                 handleSuccess (res, file) {
