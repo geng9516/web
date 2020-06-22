@@ -2,9 +2,9 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationListVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationListVo;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          * @param params 　params
          * @return String パターン
          */
-        List<notificationListVo> selectNotificationList(paramNotificationListDto params);
+        List<NotificationListVo> selectNotificationList(ParamNotificationListDto params);
 
         /**
          * 休暇・休業申請を一覧COUNT
@@ -32,7 +32,7 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          * @param params 　params
          * @return String パターン
          */
-        int selectNotificationListCount(paramNotificationListDto params);
+        int selectNotificationListCount(ParamNotificationListDto params);
 
         /**
          * 申請詳細を取得するSQLを返す
@@ -40,7 +40,7 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          * @param params 　params
          * @return String パターン
          */
-        notificationDetailVo selectNotificationDetail(paramNotificationListDto params);
+        NotificationDetailVo selectNotificationDetail(ParamNotificationListDto params);
 
         /**
          * シーケンス採番
@@ -60,7 +60,7 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          * 一覧の対象件数を取得するSQLを返す
          * buildSQLForSelectNotificationCount
          */
-        int selectNotificationCount(paramNotificationListDto params);
+        int selectNotificationCount(ParamNotificationListDto params);
 
 
         /**
@@ -73,5 +73,5 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
         /**承認後更新のSEQ
          * buildSQLForUpdateNotificationItem
          * */
-        int updateNotificationItem(paramNotificationListDto params);
+        int updateNotificationItem(ParamNotificationListDto params);
         }

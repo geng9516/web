@@ -3,11 +3,10 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
-import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
 import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public interface ITmgCalendarService extends IService<TmgCalendarDO> {
     /**
      * 前翌年度有無判定を取得するSQLを返す
      */
-    calendarDto selectCalendar(String custId, String compId, int year, String baseDate);
+    CalendarDto selectCalendar(String custId, String compId, int year, String baseDate);
 
     /**
      * 対象勤務年月の1ヶ月間の日付・曜日を取得

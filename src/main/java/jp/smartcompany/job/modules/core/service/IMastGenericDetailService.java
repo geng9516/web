@@ -15,10 +15,10 @@ import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.*;
 
@@ -236,7 +236,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     * @return String パターン
     */
 
-    List<mgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language);
+    List<MgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language);
 
     /**
      * マスタを取得するSQL
@@ -303,7 +303,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @param siteId
      * @return String
      */
-    List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId,String workType);
+    List<MgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId, String workType);
 
     /**
      * 画面項目名称の設定マスタ
@@ -312,7 +312,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @param language
      * @return String
      */
-    mgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language);
+    MgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language);
 
     /**現在日付を取得するクエリ文を生成します*/
     String selectSysdate();
@@ -323,7 +323,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     /**
      * 年度開始終了日を取得するSQLを返す
      */
-    dateDto selectDate(String custId, String compId, int year, String baseDate);
+    DateDto selectDate(String custId, String compId, int year, String baseDate);
 
     /**
      * 日付関連情報を取得

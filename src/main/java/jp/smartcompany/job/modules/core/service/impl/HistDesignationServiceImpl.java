@@ -9,8 +9,8 @@ import jp.smartcompany.job.modules.core.mapper.HistDesignationMapper;
 import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.SectionGroupId;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeListVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.boot.util.SysUtil;
@@ -103,7 +103,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
 
         /**ヘッダ情報(新規申請用)を取得するSQLを生成します。*/
         @Override
-        public employeeDetailVo selectemployeeDetail(String custId, String compId, String employeeId, String language){
+        public EmployeeDetailVo selectemployeeDetail(String custId, String compId, String employeeId, String language){
                 Map<String, Object> map = MapUtil.newHashMap(5);
                 map.put("custId", custId);
                 map.put("compId", compId);
@@ -115,7 +115,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
 
 
         @Override
-        public employeeDetailVo selectemployee(String custId, String compId, String employeeId, String language,String sectionId){
+        public EmployeeDetailVo selectemployee(String custId, String compId, String employeeId, String language, String sectionId){
                 Map<String, Object> map = MapUtil.newHashMap(5);
                 map.put("custId", custId);
                 map.put("compId", compId);
@@ -129,7 +129,7 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
          * 職員一覧を取得するSQLを返す
          * */
         @Override
-        public List<employeeListVo> selectemployeeList(String custId,String compId,String date,String sql){
+        public List<EmployeeListVo> selectemployeeList(String custId, String compId, String date, String sql){
                 return baseMapper.selectemployeeList(custId,compId,date,sql);
         }
 

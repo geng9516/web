@@ -1,25 +1,20 @@
 package jp.smartcompany.controller;
 
 
-import cn.hutool.core.date.DateUtil;
+import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
 import jp.smartcompany.job.modules.tmg.tmgnotification.TmgNotificationBean;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -58,7 +53,8 @@ public class TmgNotificationController {
                                                         @RequestParam("year") String year,
                                                         @RequestParam("page") int page,
                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,page,psDBBean);
+       // String filepath=request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/uploadFile";
+        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,page,psDBBean,"");
     }
 
     /**
@@ -88,7 +84,7 @@ public class TmgNotificationController {
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("RestYearList")
-    public List<restYearVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public List<RestYearVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getRestYear(psDBBean);
     }
 
@@ -99,20 +95,14 @@ public class TmgNotificationController {
      * @return　エラー null 为正常申请
      */
     @PostMapping("MakeApply")
-    public String makeApply(
-            @RequestParam("Param") paramNotificationListDto param,
-            @RequestParam("uploadFiles")MultipartFile[] uploadFiles,
+    public GlobalResponse makeApply(
+            @RequestParam("params") String params,
+            @RequestParam("uploadFiles") MultipartFile[] uploadFiles,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        //todo
-        TmgReferList referList = null;
-        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
-            referList=null;
-        }else{
-            referList = new TmgReferList(psDBBean, "TmgNotification", param.getToday(), TmgReferList.TREEVIEW_TYPE_LIST, true,
-                    false, false, false, false);
-        }
+        ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
+        request=ContextUtil.getHttpRequest();
         String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
-        return tmgNotificationBean.actionMakeApply(psDBBean,param,referList,uploadFiles,filePath);
+        return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,filePath);
     }
 
 
@@ -123,7 +113,7 @@ public class TmgNotificationController {
      * @return　エラー(-1　失敗　１成功)
      */
     @PostMapping("EditWithdrop")
-    public int editWithdrop(
+    public GlobalResponse editWithdrop(
             @RequestParam("NtfNo") String ntfNo,
             @RequestParam("Action") String action,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {

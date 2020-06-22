@@ -3,11 +3,10 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
-import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
 import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -26,7 +25,7 @@ import java.util.List;
 public interface TmgCalendarMapper extends BaseMapper<TmgCalendarDO> {
 
 
-    calendarDto selectCalendar(@Param("custId") String custId,
+    CalendarDto selectCalendar(@Param("custId") String custId,
                                @Param("compId") String compId,
                                @Param("year") int year,
                                @Param("baseDate") String baseDate);

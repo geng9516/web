@@ -5,11 +5,10 @@ import jp.smartcompany.job.modules.core.mapper.TmgCalendarMapper;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
-import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
 import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -30,7 +29,7 @@ public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCa
      * 前翌年度有無判定を取得するSQLを返す
      */
     @Override
-    public calendarDto selectCalendar(String custId, String compId, int year, String baseDate) {
+    public CalendarDto selectCalendar(String custId, String compId, int year, String baseDate) {
         return baseMapper.selectCalendar(custId, compId, year, baseDate);
     }
 

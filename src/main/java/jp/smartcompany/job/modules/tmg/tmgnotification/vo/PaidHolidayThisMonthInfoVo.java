@@ -13,7 +13,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class paidHolidayThisMonthInfoVo {
+public class PaidHolidayThisMonthInfoVo {
     /**付与後：年休月初残日数/付与前：年休残日数*/
     private String tmoNpaidBeginingDays;
     /**付与後：年休月初残時間数/付与前：年休残時間数*/

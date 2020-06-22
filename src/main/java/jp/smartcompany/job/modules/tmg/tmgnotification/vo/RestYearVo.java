@@ -13,7 +13,7 @@ import java.util.List;
 @Setter
 @ToString
 @EqualsAndHashCode(of = "typeId")
-public class restYearVo {
+public class RestYearVo {
 
     private String typeId;
     private String typeName;

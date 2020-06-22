@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class mgdTmgNtfTypeVo {
+public class MgdTmgNtfTypeVo {
     // 0 グループの区分
     private String gMgdCmastercode;
     // 1 グループの名称

@@ -4,10 +4,10 @@
 
     <select id="tmgFCheckNotification" resultType="java.lang.String">
         SELECT  TMG_F_CHECK_NOTIFICATION(
-        #{ntfNo},
-        #{custId},
-        #{compId},
-        #{siteId}
+        '${ntfNo}',
+        '${custId}',
+        '${compId}',
+        '${siteId}'
         )
         FROM
             DUAL

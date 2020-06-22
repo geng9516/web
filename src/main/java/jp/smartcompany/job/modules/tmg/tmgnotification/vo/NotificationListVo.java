@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class notificationListVo {
+public class NotificationListVo {
 
     /**0 職員番号*/
     private String tntfCemployeeid;

@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.RestYearPaidHolidayVo;
 
 import java.util.Date;
 import java.util.List;
@@ -31,7 +31,7 @@ public interface ITmgPaidHolidayService extends IService<TmgPaidHolidayDO> {
      * @param params 　params
      * @return String パターン
      */
-    List<restYearPaidHolidayVo> selectNenjikyukazannissu(paramNotificationListDto params, int detailFlg);
+    List<RestYearPaidHolidayVo> selectNenjikyukazannissu(ParamNotificationListDto params, int detailFlg);
 
         /**
          *[勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する

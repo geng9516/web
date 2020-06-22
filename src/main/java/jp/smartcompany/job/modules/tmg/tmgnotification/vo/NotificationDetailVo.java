@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class notificationDetailVo {
+public class NotificationDetailVo {
     //  0 申請者職員番号
     private String tntfCalteremployeeid;
     //  1 申請者氏名

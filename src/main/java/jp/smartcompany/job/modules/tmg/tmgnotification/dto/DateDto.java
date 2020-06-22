@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class dateDto {
+public class DateDto {
     private String startDate;// 0 開始日
     private String endDate;// 1 終了日
     private String baseDate; // 2 本日

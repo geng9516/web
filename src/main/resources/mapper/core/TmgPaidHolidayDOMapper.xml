@@ -71,7 +71,7 @@
 
       </select>
 
-    <select id="selectNenjikyukazannissu"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo" >
+    <select id="selectNenjikyukazannissu"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.RestYearPaidHolidayVo" >
         SELECT
             NREST_DAYS,
             NREST_HOURS,

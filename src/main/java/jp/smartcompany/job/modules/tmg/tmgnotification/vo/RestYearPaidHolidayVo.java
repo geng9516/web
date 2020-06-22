@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class restYearPaidHolidayVo {
+public class RestYearPaidHolidayVo {
 
     /**剩余天*/
     private Double nrestDays;

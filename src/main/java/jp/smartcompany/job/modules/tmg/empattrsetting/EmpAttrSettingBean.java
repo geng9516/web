@@ -13,7 +13,7 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.dto.EmpAttrSettingDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateCheckInfoDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateGroupInfoDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.*;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.employeeDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -120,7 +120,7 @@ public class EmpAttrSettingBean {
 
 
         // 平均勤務時間編集：社員情報：SELECT
-        employeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
+        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
                 param.getLang(),param.getTargetSectionId());
 
         // 平均勤務時間編集：平均勤務時間：SELECT
@@ -243,7 +243,7 @@ public class EmpAttrSettingBean {
 
 
         // 平均勤務時間編集：社員情報：SELECT
-        employeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
+        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
                 param.getLang(),param.getTargetSectionId());
 
         // 勤務開始日設定状況：SELECT

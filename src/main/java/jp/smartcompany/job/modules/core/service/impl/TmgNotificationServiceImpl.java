@@ -5,10 +5,9 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgNotificationDO;
 import jp.smartcompany.job.modules.core.mapper.TmgNotificationMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNotificationService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationDetailVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationListVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationListVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -33,8 +32,8 @@ import java.util.Map;
          * @return String パターン
          */
         @Override
-        public List<notificationListVo> selectNotificationList(paramNotificationListDto params){
-                List<notificationListVo> notificationListVoList = baseMapper.selectNotificationList(params);
+        public List<NotificationListVo> selectNotificationList(ParamNotificationListDto params){
+                List<NotificationListVo> notificationListVoList = baseMapper.selectNotificationList(params);
                 return notificationListVoList;
         }
         /**
@@ -44,7 +43,7 @@ import java.util.Map;
          * @return int パターン
          */
         @Override
-        public int selectNotificationListCount(paramNotificationListDto params){
+        public int selectNotificationListCount(ParamNotificationListDto params){
                 return baseMapper.selectNotificationListCount(params);
         }
 
@@ -55,7 +54,7 @@ import java.util.Map;
          * @return String パターン
          */
         @Override
-        public notificationDetailVo selectNotificationDetail(paramNotificationListDto params){
+        public NotificationDetailVo selectNotificationDetail(ParamNotificationListDto params){
 
                 Map<String, Object> map = MapUtil.newHashMap(3);
                 map.put("customerId", params.getCustId());
@@ -65,7 +64,7 @@ import java.util.Map;
                 map.put("baseDate", params.getToday());
                 map.put("datetimeFormat", "yyyy/MM/dd hh24:mi");
                 map.put("dateFormat", "yyyy/MM/dd");
-                notificationDetailVo notificationDetailVo = baseMapper.selectNotificationDetail(map);
+                NotificationDetailVo notificationDetailVo = baseMapper.selectNotificationDetail(map);
                 return notificationDetailVo;
         }
 
@@ -93,7 +92,7 @@ import java.util.Map;
          * 一覧の対象件数を取得するSQLを返す
          */
         @Override
-        public int selectNotificationCount(paramNotificationListDto params){
+        public int selectNotificationCount(ParamNotificationListDto params){
                 return  baseMapper.selectNotificationCount(params);
         }
 
@@ -109,7 +108,7 @@ import java.util.Map;
 
         /**承認後更新のSEQ*/
         @Override
-        public int updateNotificationItem(paramNotificationListDto params){
+        public int updateNotificationItem(ParamNotificationListDto params){
                 return  baseMapper.updateNotificationItem(params);
         }
         }

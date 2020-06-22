@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class mgdNtfPropVo {
+public class MgdNtfPropVo {
     /**0 申請区分*/
     private String mgdNtftypeid;
     /**1 画面キー*/

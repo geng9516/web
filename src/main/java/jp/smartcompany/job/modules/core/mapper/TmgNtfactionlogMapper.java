@@ -2,10 +2,9 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.ntfActionLogVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NtfActionLogVo;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,5 +27,5 @@ public interface TmgNtfactionlogMapper extends BaseMapper<TmgNtfactionlogDO> {
          * @param map Map
          * @return Map
          */
-        List<ntfActionLogVo> selectNtfActionLog(Map<String, Object> map);
+        List<NtfActionLogVo> selectNtfActionLog(Map<String, Object> map);
         }

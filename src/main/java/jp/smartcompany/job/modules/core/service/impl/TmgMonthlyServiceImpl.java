@@ -7,16 +7,10 @@ package jp.smartcompany.job.modules.core.service.impl;
         import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
         import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
         import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
-        import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
+        import jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo;
         import org.springframework.stereotype.Repository;
-import cn.hutool.core.map.MapUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
-import jp.smartcompany.job.modules.core.mapper.TmgMonthlyMapper;
-import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+        import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO;
-import org.springframework.stereotype.Repository;
 
         import java.text.SimpleDateFormat;
         import java.util.Date;
@@ -24,8 +18,6 @@ import org.springframework.stereotype.Repository;
         import java.util.Map;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -183,13 +175,13 @@ public class TmgMonthlyServiceImpl extends ServiceImpl<TmgMonthlyMapper, TmgMont
          */
 
         @Override
-        public List<paidHolidayThisMonthInfoVo> selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId){
+        public List<PaidHolidayThisMonthInfoVo> selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId){
                 Map<String, Object> map = MapUtil.newHashMap(3);
                 map.put("customerId", customerId);
                 map.put("companyId", companyId);
                 map.put("employeeId", employeeId);
 
-                List<paidHolidayThisMonthInfoVo> list = baseMapper.selectPaidHolidayThisMonthInfo(map);
+                List<PaidHolidayThisMonthInfoVo> list = baseMapper.selectPaidHolidayThisMonthInfo(map);
 
                 return list;
         }

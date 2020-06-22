@@ -19,7 +19,7 @@
     </select>
 
 
-    <select id="selectPaidHolidayThisMonthInfo"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo" >
+    <select id="selectPaidHolidayThisMonthInfo"  resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo" >
         SELECT
         TMO_NPAID_BEGINING_DAYS,
         TMO_NPAID_BEGINING_HOURS,

@@ -2,16 +2,17 @@ spring:
   thymeleaf:
     cache: off
   datasource:
-    url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
-    username: tmg_iyaku2
-    password: tmg_iyakupass
-    driver-class-name: oracle.jdbc.OracleDriver
+#    url: jdbc:oracle:thin:@192.168.40.253:1521/SJK
+#    username: NTMG
+#    password: NTMGPASS
+#    driver-class-name: oracle.jdbc.OracleDriver
 #  datasource:
 #    druid:
-#      driver-class-name: oracle.jdbc.OracleDriver
-#      url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
-#      username: tmg_iyaku2
-#      password: tmg_iyakupass
+
+      url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
+      username: tmg_iyaku2
+      password: tmg_iyakupass
+      driver-class-name: oracle.jdbc.OracleDriver
 logging:
   level:
     jp.smartcompany.job.modules.core.service: debug

@@ -14,10 +14,10 @@ import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
@@ -111,7 +111,7 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
         /**
          * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
          */
-        List<mgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(Map<String, Object> map);
+        List<MgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(Map<String, Object> map);
 
         /**
          * mast_generic_detail 内容取り
@@ -191,12 +191,12 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
     /**
      * 申請画面用 申請区分マスタ取得SQL
      */
-    List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(Map<String, Object> map);
+    List<MgdTmgNtfTypeVo> selectMasterTmgNtfType(Map<String, Object> map);
 
     /**
      * 画面項目名称の設定マスタ
      */
-    mgdNtfPropVo selectMasterNtfProp(Map<String, Object> map);
+    MgdNtfPropVo selectMasterNtfProp(Map<String, Object> map);
 
     /**
      * 現在日付を取得するクエリ文を生成します
@@ -210,7 +210,7 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                    @Param("compId")String compId);
 
 
-    dateDto selectDate(@Param("custId")String custId,
+    DateDto selectDate(@Param("custId")String custId,
                        @Param("compId")String compId,
                        @Param("year")int year,
                        @Param("baseDate")String baseDate);

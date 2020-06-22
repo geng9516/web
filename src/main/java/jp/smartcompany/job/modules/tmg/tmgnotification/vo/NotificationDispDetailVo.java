@@ -72,12 +72,12 @@ public class NotificationDispDetailVo {
     private String tntfDboss;
     // 28 解除者コメント
     private String tntfCcancelcomment;
-
-
+    //file　path
+    private String filePath;
     //  申請区分略称を取得
     private String ntfName;
     //  添付ファイル
     private List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = new ArrayList<TmgNtfAttachedfileDO>();
     //  申請ログ
-    private List<ntfActionLogVo> tmgNtfactionlogDOList = new ArrayList<ntfActionLogVo>();
+    private List<NtfActionLogVo> tmgNtfactionlogDOList = new ArrayList<NtfActionLogVo>();
 }

@@ -17,7 +17,7 @@
             AND TCA_CCOMPANYID = #{userCode}
             AND TCA_DYYYYMM = #{month};
     </update>
-    <select id="selectCalendar" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto">
+    <select id="selectCalendar" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto">
         SELECT
             TO_CHAR( MIN( TCA_DYYYYMM ), 'yyyy/MM/dd' ) MIN_MONTH,
             TO_CHAR( MAX( TCA_DYYYYMM ), 'yyyy/MM/dd' ) MAX_MONTH,

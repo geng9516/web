@@ -14,7 +14,7 @@ import java.security.PrivateKey;
 @Getter
 @Setter
 @ToString
-public class calendarDto {
+public class CalendarDto {
 
     private String minMonth;// 0 年月の最小
     private String maxMonth;// 1 年月の最大

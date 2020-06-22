@@ -379,7 +379,7 @@
 
 
     <select id="selectMasterTmgNtfTypeDispAppList"
-            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo">
+            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo">
         SELECT
             G.MGD_CMASTERCODE AS GROUP_ID,
             G.MGD_CGENERICDETAILDESC AS GROUP_NAME,
@@ -451,30 +451,34 @@
 
 
     <select id="selectApprovelLevel" resultType="java.lang.String">
-        SELECT MGD_CMASTERCODE FROM MAST_GENERIC_DETAIL
-        WHERE MGD_CCUSTOMERID=#{custId}
-        AND MGD_CCOMPANYID_CK_FK=#{compId}
-        AND MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
-        AND MGD_CLANGUAGE_CK=#{language}
-        AND MGD_DSTART_CK=#{today}
-        AND MGD_DEND=#{today}
-        AND MGD_NSPARENUM1=(
         SELECT
-        MIN(MGD_NSPARENUM1)
+            MGD_CMASTERCODE
+        FROM
+            MAST_GENERIC_DETAIL
         WHERE
-        MAST_GENERIC_DETAIL
-        WHERE MGD_CCUSTOMERID=#{custId}
-        AND MGD_CCOMPANYID_CK_FK=#{compId}
-        AND MGD_CGENERICGROUPID='TMG_APPROVAL_LEVEL'
-        AND MGD_CLANGUAGE_CK=#{language}
-        AND MGD_DSTART_CK=#{today}
-        AND MGD_DEND=#{today}
-        <if test="piMode==0">
-            AND MGD_NSPARENUM1 > #{approvelLevel}
-        </if>
-
-        )
-
+            MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
+        AND MGD_CGENERICGROUPID = 'TMG_APPROVAL_LEVEL'
+        AND MGD_CLANGUAGE_CK = #{language}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{today}
+        AND MGD_DEND >= #{today}
+        AND MGD_NSPARENUM1=(
+                            SELECT
+                                MIN(MGD_NSPARENUM1)
+                            FROM
+                                MAST_GENERIC_DETAIL
+                            WHERE
+                                MGD_CCUSTOMERID = #{custId}
+                            AND MGD_CCOMPANYID_CK_FK = #{compId}
+                            AND MGD_CGENERICGROUPID = 'TMG_APPROVAL_LEVEL'
+                            AND MGD_CLANGUAGE_CK = #{language}
+                            AND MGD_DSTART_CK <![CDATA[<=]]> #{today}
+                            AND MGD_DEND >= #{today}
+                            <if test="piMode==0">
+                                AND MGD_NSPARENUM1 > #{approvelLevel}
+                            </if>
+                             )
+        ;
     </select>
 
     <select id="buildSQLForSelectTmgDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
@@ -608,7 +612,7 @@
         </choose>
     </select>
 
-    <select id="selectMasterTmgNtfType" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo">
+    <select id="selectMasterTmgNtfType" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo">
         SELECT
             G.MGD_CMASTERCODE AS G_MGD_CMASTERCODE,
             G.MGD_CGENERICDETAILDESC AS G_MGD_CGENERICDETAILDESC,
@@ -693,7 +697,7 @@
         ;
     </select>
 
-    <select id="selectMasterNtfProp" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo">
+    <select id="selectMasterNtfProp" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo">
         SELECT
             MGD_NTFTYPEID,
             MGD_PROPID,
@@ -724,9 +728,9 @@
     </select>
 
 
-    <select id="selectDate" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto">
-        SELECT TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},0,'${baseDate}','${custId}','${compId}')) AS START_DATE,
-               TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},1,'${baseDate}','${custId}','${compId}')) AS END_DATE,
+    <select id="selectDate" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto">
+        SELECT TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},0,'${baseDate}','${custId}','${compId}'),'yyyy/MM/dd') AS START_DATE,
+               TO_CHAR(TMG_F_GET_THE_YEARZONE(${year},1,'${baseDate}','${custId}','${compId}'),'yyyy/MM/dd') AS END_DATE,
                '${baseDate}' AS BASE_DATE
         FROM
             DUAL

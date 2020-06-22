@@ -5,7 +5,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
 import jp.smartcompany.job.modules.core.mapper.TmgNtfactionlogMapper;
 import jp.smartcompany.job.modules.core.service.ITmgNtfactionlogService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.ntfActionLogVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NtfActionLogVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -33,7 +33,7 @@ import java.util.Map;
          * @return List<ntfActionLogVo>
          */
         @Override
-        public List<ntfActionLogVo> selectNtfActionLog(Date psDate, String psLanguage, String psCustId, String psCompCode, String psNtfNo){
+        public List<NtfActionLogVo> selectNtfActionLog(Date psDate, String psLanguage, String psCustId, String psCompCode, String psNtfNo){
                 Map<String, Object> map = MapUtil.newHashMap(3);
                 map.put("psDate", psDate);
                 map.put("psLanguage", psLanguage);
@@ -41,7 +41,7 @@ import java.util.Map;
                 map.put("psCompCode", psCompCode);
                 map.put("psNtfNo", psNtfNo);
                 //
-                List<ntfActionLogVo> ntfActionLogVoList = baseMapper.selectNtfActionLog(map);
+                List<NtfActionLogVo> ntfActionLogVoList = baseMapper.selectNtfActionLog(map);
 
                 return ntfActionLogVoList;
         }

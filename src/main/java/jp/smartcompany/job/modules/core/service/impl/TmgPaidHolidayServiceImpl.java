@@ -6,10 +6,9 @@ import jp.smartcompany.job.modules.core.mapper.TmgPaidHolidayMapper;
 import jp.smartcompany.job.modules.core.service.ITmgPaidHolidayService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;
-import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.RestYearPaidHolidayVo;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -49,11 +48,11 @@ public class TmgPaidHolidayServiceImpl extends ServiceImpl<TmgPaidHolidayMapper,
      * @return String パターン
      */
     @Override
-    public List<restYearPaidHolidayVo> selectNenjikyukazannissu(paramNotificationListDto params, int detailFlg) {
+    public List<RestYearPaidHolidayVo> selectNenjikyukazannissu(ParamNotificationListDto params, int detailFlg) {
 
 
         // 年休ルールを取得
-        List<restYearPaidHolidayVo> restYearPaidHolidayVoList = baseMapper.selectNenjikyukazannissu(params, detailFlg);
+        List<RestYearPaidHolidayVo> restYearPaidHolidayVoList = baseMapper.selectNenjikyukazannissu(params, detailFlg);
 
         return restYearPaidHolidayVoList;
     }

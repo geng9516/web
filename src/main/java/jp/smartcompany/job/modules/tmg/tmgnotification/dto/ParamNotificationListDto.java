@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class paramNotificationListDto {
+public class ParamNotificationListDto {
 
     /**承認者*/
     private String evaluator;

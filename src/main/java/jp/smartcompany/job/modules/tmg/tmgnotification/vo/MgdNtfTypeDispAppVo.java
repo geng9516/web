@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class mgdNtfTypeDispAppVo {
+public class MgdNtfTypeDispAppVo {
     /**0 グループの区分*/
     private String groupId;
     /**1 グループの名称*/

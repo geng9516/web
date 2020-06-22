@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class ntfActionLogVo {
+public class NtfActionLogVo {
     private String empname;//更新者
     private String ntfactionname;// 操作
     private String statusname;// 状態

@@ -4,7 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.paidHolidayThisMonthInfoVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.PaidHolidayThisMonthInfoVo;
 
 import java.util.Date;
 import java.util.List;
@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.MonthlyLinkVO;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * <p>
@@ -48,7 +47,7 @@ public interface ITmgMonthlyService extends IService<TmgMonthlyDO> {
          * @return List<paidHolidayThisMonthInfoVo> パターン
          */
 
-        List<paidHolidayThisMonthInfoVo>  selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId);
+        List<PaidHolidayThisMonthInfoVo>  selectPaidHolidayThisMonthInfo(String customerId, String companyId, String employeeId);
 
 
 

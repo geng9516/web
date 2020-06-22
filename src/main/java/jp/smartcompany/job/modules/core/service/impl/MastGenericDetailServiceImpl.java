@@ -20,10 +20,10 @@ import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfPropVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdNtfTypeDispAppVo;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.mgdTmgNtfTypeVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfTypeDispAppVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdTmgNtfTypeVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
@@ -245,14 +245,14 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * @return String パターン
      */
     @Override
-    public List<mgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language) {
+    public List<MgdNtfTypeDispAppVo> selectMasterTmgNtfTypeDispAppList(String customerId, String companyId, Date yyyymmdd, String language) {
         Map<String, Object> map = MapUtil.newHashMap(3);
         map.put("customerId", customerId);
         map.put("companyId", companyId);
         map.put("yyyymmdd", yyyymmdd);
         map.put("language", language);
         //
-        List<mgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = baseMapper.selectMasterTmgNtfTypeDispAppList(map);
+        List<MgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = baseMapper.selectMasterTmgNtfTypeDispAppList(map);
 
         return mgdNtfTypeDispAppVoList;
     }
@@ -576,7 +576,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * @return String
      */
     @Override
-    public List<mgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId,String workType) {
+    public List<MgdTmgNtfTypeVo> selectMasterTmgNtfType(String custId, String compId, String baseDate, String employeeId, String language, String siteId, String workType) {
         Map<String, Object> map = MapUtil.newHashMap(5);
         map.put("custId", custId);
         map.put("compId", compId);
@@ -598,7 +598,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * @return String
      */
     @Override
-    public mgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language) {
+    public MgdNtfPropVo selectMasterNtfProp(String custId, String compId, String language) {
         Map<String, Object> map = MapUtil.newHashMap(5);
         map.put("custId", custId);
         map.put("compId", compId);
@@ -627,7 +627,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * 年度開始終了日を取得するSQLを返す
      */
     @Override
-    public dateDto selectDate(String custId, String compId, int year, String baseDate) {
+    public DateDto selectDate(String custId, String compId, int year, String baseDate) {
         return baseMapper.selectDate(custId, compId, year, baseDate);
     }
 

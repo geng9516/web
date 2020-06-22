@@ -12,7 +12,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class employeeDetailVo {
+public class EmployeeDetailVo {
     private String name;// 0 漢字氏名
 
     private String section; // 1 所属名称

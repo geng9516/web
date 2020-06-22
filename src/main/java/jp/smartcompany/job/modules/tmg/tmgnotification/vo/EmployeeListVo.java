@@ -11,7 +11,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class employeeListVo {
+public class EmployeeListVo {
     //0 職員番号
     private  String TntfCemployeeid;
     //1 職員氏名

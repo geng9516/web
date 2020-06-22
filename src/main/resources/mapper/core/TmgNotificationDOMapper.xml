@@ -4,8 +4,8 @@
 
 
 
-    <select id="selectNotificationList" parameterType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto"
-            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationListVo">
+    <select id="selectNotificationList" parameterType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto"
+            resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationListVo">
         SELECT
         TNTF_CEMPLOYEEID,
         TNTF_CEMPLOYEEID_NAME,
@@ -438,7 +438,7 @@
 
 
 
-    <select id="selectNotificationDetail" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.notificationDetailVo">
+    <select id="selectNotificationDetail" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.NotificationDetailVo">
         SELECT
             TNTF_CALTEREMPLOYEEID,
             TMG_F_GET_ME_NAME ( TNTF_CALTEREMPLOYEEID, to_date( #{baseDate}, #{dateFormat} ), 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID ) TNTF_CALTEREMPLOYEEID_NAME,

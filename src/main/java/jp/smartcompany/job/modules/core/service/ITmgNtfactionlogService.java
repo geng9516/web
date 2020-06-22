@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfactionlogDO;
 import com.baomidou.mybatisplus.extension.service.IService;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.ntfActionLogVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.NtfActionLogVo;
 
 import java.util.Date;
 import java.util.List;
@@ -27,6 +27,6 @@ public interface ITmgNtfactionlogService extends IService<TmgNtfactionlogDO> {
          * @param  psNtfNo    申請番号
          * @return List<ntfActionLogVo>
          */
-        List<ntfActionLogVo> selectNtfActionLog(Date psDate, String psLanguage, String psCustId, String psCompCode, String psNtfNo);
+        List<NtfActionLogVo> selectNtfActionLog(Date psDate, String psLanguage, String psCustId, String psCompCode, String psNtfNo);
 
         }

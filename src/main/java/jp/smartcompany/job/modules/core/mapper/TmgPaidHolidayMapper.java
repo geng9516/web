@@ -4,8 +4,8 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.paramNotificationListDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.restYearPaidHolidayVo;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.vo.RestYearPaidHolidayVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,7 +29,7 @@ public interface TmgPaidHolidayMapper extends BaseMapper<TmgPaidHolidayDO> {
         List<Date> selectNykLoseDate(Map<String, Object> map);
 
 
-        List<restYearPaidHolidayVo> selectNenjikyukazannissu(@Param("params") paramNotificationListDto params, @Param("detailFlg")int detailFlg);
+        List<RestYearPaidHolidayVo> selectNenjikyukazannissu(@Param("params") ParamNotificationListDto params, @Param("detailFlg")int detailFlg);
 
     /**
      * [勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する

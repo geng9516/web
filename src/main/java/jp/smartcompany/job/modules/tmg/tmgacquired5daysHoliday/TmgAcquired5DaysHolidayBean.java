@@ -9,14 +9,13 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.Acquired5DaysListVO;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.calendarDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.dateDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.text.SimpleDateFormat;
 
@@ -367,9 +366,9 @@ public class TmgAcquired5DaysHolidayBean {
 
         // 検索
         // 年度開始・終了日
-        dateDto dateDto = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
+        DateDto dateDto = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
         // 前翌年度有無判定
-        calendarDto calendarDto = iTmgCalendarService.selectCalendar(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
+        CalendarDto calendarDto = iTmgCalendarService.selectCalendar(psDBBean.getCustID(), psDBBean.getCompCode(), getYear(), psDate);
 
         try {
 

@@ -343,7 +343,8 @@
                     restApply: {
                         useVacation: false,
                         weekSelected:[],
-                        noreserved:'1'
+                        noreserved:'1',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -531,10 +532,11 @@
                     }
                     console.log(this.restApply)
                     console.log(this.uploadFiles)
+                    // this.http.post('sys/vapply/MakeApply', {param:this.restApply})
                     this.http.uploadFiles('sys/vapply/MakeApply',{
-                        Param:JSON.stringify(this.restApply),
-                        uploadFiles:this.uploadFiles,
-                        psSite: this.opts.psSite
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        params:JSON.stringify(this.restApply),
+                        uploadFiles: this.uploadFiles
                     })
 
                     // this.$Message.success('申请完了')
