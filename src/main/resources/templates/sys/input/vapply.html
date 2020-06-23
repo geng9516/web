@@ -560,7 +560,8 @@
                         await this.getApplyHistory()
                         this.$Message.success('申请完了')
                     } catch (error) {
-                        console.log(error)
+                        this.errorInfo = true
+                        this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
                     } finally {
                         this.loading = false
                         this.$refs.upload.clearFiles();
