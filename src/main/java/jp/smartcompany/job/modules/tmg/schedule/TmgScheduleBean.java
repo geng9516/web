@@ -301,9 +301,8 @@ public class TmgScheduleBean {
      *
      * @param txtBaseDate 2020/03/15
      * @param txtEndDate  2020/04/11
-     * @param employeeId
      */
-    public void setExecuteParameters(String txtBaseDate, String txtEndDate, String employeeId, PsDBBean psDBBean) {
+    public void setExecuteParameters(String txtBaseDate, String txtEndDate, PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         //変数初期化
         _baseDate = "";
@@ -316,8 +315,8 @@ public class TmgScheduleBean {
         _thisMonthLastDay = "";
         _isVariationalWorkType = false;
         detailPeriod = "";
-
-        _targetUserCode = employeeId;
+        //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
+        _targetUserCode = psDBBean.getTargetUser() == null ? psDBBean.getUserCode() : psDBBean.getTargetUser();
 
         //WEBから基準時間を渡せれば
         if (null != txtBaseDate && !"".equals(txtBaseDate)) {
@@ -763,10 +762,9 @@ public class TmgScheduleBean {
      *
      * @param startDispDate
      * @param endDispDate
-     * @param employeeId
      * @return
      */
-    public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate, String employeeId) {
+    public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate) {
 
         if (null != startDispDate && !"".equals(startDispDate)) {
             _startDispDate = startDispDate;
@@ -774,6 +772,8 @@ public class TmgScheduleBean {
         if (null != endDispDate && !"".equals(endDispDate)) {
             _endDispDate = endDispDate;
         }
+
+        String employeeId = _targetUserCode;
 
         ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
         PaidHolidayVO paidHolidayVO = new PaidHolidayVO();
@@ -793,6 +793,7 @@ public class TmgScheduleBean {
         scheduleInfoVO.setPeriod(period);
         List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
+
         /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
         ArrayList _TCA_CHOLFlgList = new ArrayList();
         int weekday = 0;
@@ -985,11 +986,25 @@ public class TmgScheduleBean {
     /**
      * [区分][出張][勤務パターン]
      *
-     * @param sectionid
-     * @param groupid
      * @return
      */
-    public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid) {
+    public HashMap<String, Object> selectIkkaInfo() {
+        if (null == referList) {
+            logger.error("referList対象が空です");
+            return null;
+        }
+        String sectionid = referList.getTargetSec();
+        String groupid = referList.getTargetGroup();
+
+        if ("".equals(sectionid) || null == sectionid) {
+            logger.error("sectionidが空です");
+            return null;
+        }
+        if ("".equals(groupid) || null == groupid) {
+            logger.error("groupIdが空です");
+            return null;
+        }
+
         //[区分]
         List<HashMap<String, Object>> kubunnList = this.selectGenericDetail();
         //[出張]
@@ -1131,7 +1146,6 @@ public class TmgScheduleBean {
                                 NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_RESULT_REST.equals(NOTWORKINGID_RESULT_REST));
                     }
                 }
-
             }
             iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),
                     Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, ACT_EDITMONTHLY_USCHEDULE);
@@ -1149,13 +1163,10 @@ public class TmgScheduleBean {
      */
     private boolean isNoWorkingId(String sWorkingId) {
 
-        if (TmgUtil.Cs_MGD_WORK_200.equals(sWorkingId)
-                || TmgUtil.Cs_MGD_WORK_412.equals(sWorkingId)) {
-
+        if (TmgUtil.Cs_MGD_WORK_200.equals(sWorkingId) || TmgUtil.Cs_MGD_WORK_412.equals(sWorkingId)) {
             // 就業禁止(有給)、就業禁止(無給)の場合
             return true;
         } else {
-
             // 就業禁止(有給)、就業禁止(無給)以外の場合
             return false;
         }
@@ -1182,8 +1193,7 @@ public class TmgScheduleBean {
 
         // 終了日と開始日の差分を算出
         // nDifference = new Long((nEnd - nStart) / (86400000)).intValue();
-        nDifference = new Long((nEnd - nStart) / (1000 * 60 * 60 * 24))
-                .intValue();
+        nDifference = new Long((nEnd - nStart) / (1000 * 60 * 60 * 24)).intValue();
 
         if (nDifference < 0) {
             nDifference = 0;
@@ -1229,13 +1239,16 @@ public class TmgScheduleBean {
     /**
      * 週勤務パターンを取得する
      *
-     * @param employeeId
      * @param twp_nid
      * @return
      */
-    public TmgWeekPatternVO selectCsvReference(String employeeId, int twp_nid) {
+    public TmgWeekPatternVO selectCsvReference(int twp_nid) {
 
         if (ObjectUtil.isNotNull(twp_nid)) {
+            String employeeId = _targetUserCode;
+            if (null == employeeId || "".equals(employeeId)) {
+                logger.error("目標ユーザーが空です");
+            }
             return iTmgScheduleService.selectCsvReference(_targetCustCode, _targetCompCode, _loginLanguageCode, employeeId, twp_nid);
         } else {
             logger.error("データidが空です");
@@ -1246,11 +1259,13 @@ public class TmgScheduleBean {
     /**
      * 週勤務パターンを取得する
      *
-     * @param employeeId
      * @return
      */
-    public List<TmgWeekPatternVO> selectCsvReference(String employeeId) {
-
+    public List<TmgWeekPatternVO> selectCsvReference() {
+        String employeeId = _targetUserCode;
+        if (null == employeeId || "".equals(employeeId)) {
+            logger.error("目標ユーザーが空です");
+        }
         return iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, employeeId);
     }
 
