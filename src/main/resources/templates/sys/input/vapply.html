@@ -83,7 +83,7 @@
                                     <!-- 申请休假的时间的显示 -->
                                     <i-col span="7" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.tntfDbegin, item.tntfDend) }}</i-col>
-                                    <i-col span="12" style="position: absolute;left: 238px;" class="title" v-if="item.status !== 3">
+                                    <i-col span="12" style="position: relative;top:-5px" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
                                             <ul style="display:flex" v-if="item.ntfapprover">
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
@@ -126,7 +126,7 @@
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
                                         v-if="item.tntfCstatusflg.indexOf('2') > -1">
                                         <!-- 承认中可以自行取消 -->
-                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="reApply(item)">取り消し
+                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item)">取り消し
                                         </i-button>
                                     </i-col>
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
