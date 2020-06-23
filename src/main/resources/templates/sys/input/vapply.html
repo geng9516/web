@@ -492,7 +492,7 @@
                 cancel: Debounce(async function (e) {
                     // 自己取消后无论如何都应该再拉取一遍最新的数据
                     try {
-                        await this.http.get('sys/vapply/EditWithdrop',{
+                        await this.http.post('sys/vapply/EditWithdrop',{
                             action:'ACT_EditApply_UWithdraw',
                             ntfNo:e.tntfCntfNo,
                             psSite: this.opts.psSite
@@ -547,14 +547,13 @@
                     try {
                         this.loading = true
                         await this.http.uploadFiles('sys/vapply/MakeApply',{
-                        param:JSON.stringify(this.restApply),
-                        uploadFiles:this.uploadFiles,
-                        psSite: this.opts.psSite
+                            params:JSON.stringify(this.restApply),
+                            uploadFiles:this.uploadFiles,
+                            psSite: this.opts.psSite
                         })
-                        this.$Message.success('申请完了')
                         this.rotate = !this.rotate
-                        this.loading = false
-                        this.getApplyHistory()
+                        await this.getApplyHistory()
+                        this.$Message.success('申请完了')
                     } catch (error) {
                         console.log(error.response.data.msg)
                     } finally {
