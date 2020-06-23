@@ -282,11 +282,11 @@ public class TmgScheduleBean {
     /**
      * 対象ユーザー情報
      *
-     * @param employeeId
      * @return
      */
-    public TargetUserDetailDTO selectTargetUserDetail(String employeeId) {
+    public TargetUserDetailDTO selectTargetUserDetail() {
 
+        String employeeId = _targetUserCode;
         if (ObjectUtil.isNull(employeeId) || ObjectUtil.isEmpty(employeeId)) {
             logger.error("社員IDは空です");
             return null;

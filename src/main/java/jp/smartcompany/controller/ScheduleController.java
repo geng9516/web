@@ -188,4 +188,19 @@ public class ScheduleController {
     }
 
 
+    /**
+     * 週勤務パターン登録画面　登録処理
+     * http://localhost:6879/sys/schedule/selectTargetUserDetail
+     *
+     * @param psDBBean
+     */
+    @GetMapping("selectTargetUserDetail")
+    @ResponseBody
+    public void selectTargetUserDetail(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        tmgScheduleBean.selectTargetUserDetail();
+    }
+
+
 }
