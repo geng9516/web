@@ -3,6 +3,25 @@ axios.defaults.baseURL = 'http://localhost:6879/'
 // 请求需要携带cookie时
 // axios.defaults.withCredentials = true
 
+// http response 拦截器
+axios.interceptors.response.use(
+  response => {
+    // 登录中是跳页应跳过
+    if (response.config.url === '/login' || response.data.code === 0 || /csv|pdf|octet/g.test(response.headers['content-type'])) {
+      // VUE.$Spin.hide()
+      return response
+    }
+    return Promise.reject(JSON.parse(response.data.msg))
+  },
+  error => {
+    Vue.prototype.$Notice.error({
+      title: 'Error!',
+      desc: `${error.response && error.response.data.msg}`
+    })
+    return Promise.reject(error.response)
+  }
+)
+
 const postForm = (url, params) => {
   return new Promise(async (resolve, reject) => {
     try {
