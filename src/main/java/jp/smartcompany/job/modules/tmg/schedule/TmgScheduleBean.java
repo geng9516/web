@@ -1248,6 +1248,7 @@ public class TmgScheduleBean {
             String employeeId = _targetUserCode;
             if (null == employeeId || "".equals(employeeId)) {
                 logger.error("目標ユーザーが空です");
+                return null;
             }
             return iTmgScheduleService.selectCsvReference(_targetCustCode, _targetCompCode, _loginLanguageCode, employeeId, twp_nid);
         } else {
@@ -1265,6 +1266,7 @@ public class TmgScheduleBean {
         String employeeId = _targetUserCode;
         if (null == employeeId || "".equals(employeeId)) {
             logger.error("目標ユーザーが空です");
+            return null;
         }
         return iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, employeeId);
     }
