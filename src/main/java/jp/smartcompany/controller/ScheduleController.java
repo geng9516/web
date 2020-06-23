@@ -34,7 +34,6 @@ public class ScheduleController {
      * http://localhost:6879/sys/schedule/selectScheduleInfo?employeeId=C1000015&txtBaseDate=2020/03/15&txtEndDate=2020/04/11 (変形労働制)
      * txtBaseDateとtxtEndDateは初めてのアクセスの場合、空値可能です
      *
-     * @param employeeId
      * @param txtBaseDate 2020/03/15　　または　空値
      * @param txtEndDate  2020/04/11　　または　空値
      * @param psDBBean
