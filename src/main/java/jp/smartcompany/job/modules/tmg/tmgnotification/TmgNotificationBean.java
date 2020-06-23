@@ -912,10 +912,10 @@ public class TmgNotificationBean {
      * editWithdraw
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public GlobalResponse actionEditWithdrop(String action,String ntfNo,PsDBBean psDBBean) {
+    public GlobalResponse actionEditWithdrop(String action,String ntfNo,PsDBBean psDBBean) throws Exception{
         ParamNotificationListDto param=new ParamNotificationListDto();
         param.setAction(action);
-        param.setCompId(psDBBean.getCustID());
+        param.setCustId(psDBBean.getCustID());
         param.setCompId(psDBBean.getCompCode());
         param.setTargetUser(psDBBean.getTargetUser());
         param.setUserCode(psDBBean.getUserCode());

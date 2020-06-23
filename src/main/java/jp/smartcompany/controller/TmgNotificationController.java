@@ -9,13 +9,13 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.TmgNotificationBean;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Wang Ziyue
@@ -110,15 +110,14 @@ public class TmgNotificationController {
     /**
      * 入力site 取下处理
      *需要siteid
-     * @return　エラー(-1　失敗　１成功)
+     * @return　エラー
      */
     @PostMapping("EditWithdrop")
     public GlobalResponse editWithdrop(
-            @RequestParam("NtfNo") String ntfNo,
-            @RequestParam("Action") String action,
+            @RequestBody Map map,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return tmgNotificationBean.actionEditWithdrop(action,ntfNo,psDBBean);
+        return tmgNotificationBean.actionEditWithdrop(map.get("action").toString(),map.get("ntfNo").toString(),psDBBean);
     }
 
     /**
