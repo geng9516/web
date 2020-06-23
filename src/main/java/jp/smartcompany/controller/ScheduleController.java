@@ -2,6 +2,7 @@ package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
+import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
@@ -24,7 +25,6 @@ public class ScheduleController {
 
     @Autowired
     private TmgScheduleBean tmgScheduleBean;
-
 
     /**
      * 前月時間 と　翌月時間
@@ -62,7 +62,6 @@ public class ScheduleController {
     public HashMap<String, Object> getDefaultDate() {
         return tmgScheduleBean.getDefaultDate();
     }
-
 
     /**
      * [区分][出張][勤務パターン]
@@ -128,7 +127,6 @@ public class ScheduleController {
         return tmgScheduleBean.selectCsvReference(twp_nid);
     }
 
-
     /**
      * 週勤務パターンlistを取得する
      * http://localhost:6879/sys/schedule/selectWeekPatternInfoList?employeeId=40010001&txtBaseDate=&txtEndDate=
@@ -147,7 +145,6 @@ public class ScheduleController {
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
         return tmgScheduleBean.selectCsvReference();
     }
-
 
     /**
      * 週勤務パターンを取得する
@@ -168,7 +165,6 @@ public class ScheduleController {
         return tmgScheduleBean.selectTmgWeekPattern();
     }
 
-
     /**
      * 週勤務パターン登録画面　登録処理
      * http://localhost:6879/sys/schedule/executeMakeWeekPattern?employeeId=29042924&txtBaseDate=&txtEndDate=
@@ -187,7 +183,6 @@ public class ScheduleController {
         tmgScheduleBean.executeMakeWeekPattern_UWPtn();
     }
 
-
     /**
      * 週勤務パターン登録画面　登録処理
      * http://localhost:6879/sys/schedule/selectTargetUserDetail
@@ -196,11 +191,10 @@ public class ScheduleController {
      */
     @GetMapping("selectTargetUserDetail")
     @ResponseBody
-    public void selectTargetUserDetail(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public TargetUserDetailDTO selectTargetUserDetail(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
-        tmgScheduleBean.selectTargetUserDetail();
+        return tmgScheduleBean.selectTargetUserDetail();
     }
-
 
 }
