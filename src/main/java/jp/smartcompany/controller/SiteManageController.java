@@ -88,7 +88,7 @@ public class SiteManageController {
         return "sys/manage/attendancebook";
     }
 
-    @GetMapping("toTmgSchedule")
+    @GetMapping("tmgschedule")
     public String toTmgSchedule(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex,
