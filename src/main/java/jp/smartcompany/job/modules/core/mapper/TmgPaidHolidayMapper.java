@@ -37,6 +37,7 @@ public interface TmgPaidHolidayMapper extends BaseMapper<TmgPaidHolidayDO> {
     List<PaidHolidayDispVO> buildSQLForSelectPaidHoliday(@Param("custID") String custID,
                                                          @Param("compCode") String compCode,
                                                          @Param("userCode") String userCode,
+                                                         @Param("baseDate") String baseDate,
                                                          @Param("targetDate") String targetDate);
 
     /**

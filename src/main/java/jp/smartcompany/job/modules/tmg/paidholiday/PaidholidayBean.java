@@ -30,11 +30,6 @@ import java.util.List;
 public class PaidholidayBean {
 
 
-    /**
-     * PsDBBean
-     */
-    private PsDBBean psDBBean;
-
     private final IMastEmployeesService iMastEmployeesService;
 
     private final ITmgPaidHolidayService iTmgPaidHolidayService;
@@ -52,21 +47,21 @@ public class PaidholidayBean {
      * 年次休暇付与状況表示
      * ACT_DISP_RLIST
      */
-    public void actDispRlist(ModelMap modelMap){
+    public void actDispRlist(PsDBBean psDBBean){
         //転送項目取得
-        showDisp(modelMap);
+       // showDisp(psDBBean);
 
     }
     /**
      * 登録ボタン
      * ACT_UADJUST
      */
-    public void actUadjust(ModelMap modelMap, String empSql){
+    public void actUadjust(PsDBBean psDBBean, String empSql) {
         //更新処理をする
-        execUpdate();
+        execUpdate(psDBBean);
         //転送項目の取得
-        List<PaidHolidayInitVO> listPaidHolidayInit= iMastEmployeesService.listPaidHolidayInit(empSql);
-        modelMap.addAttribute("listPaidHolidayInit",listPaidHolidayInit);
+        List<PaidHolidayInitVO> listPaidHolidayInit = iMastEmployeesService.listPaidHolidayInit(empSql);
+       // modelMap.addAttribute("listPaidHolidayInit",listPaidHolidayInit);
     }
     /** 更新プログラムID */
     private static final String MOD_PROGRAM_ID = "PaidHoliday_ACT_UADJUST";
@@ -75,7 +70,7 @@ public class PaidholidayBean {
     /**
      * 更新処理をする
      */
-    private void execUpdate(){
+    private void execUpdate(PsDBBean psDBBean){
         TmgPaidHolidayDto tmgPaidHolidayDto= new TmgPaidHolidayDto();
         tmgPaidHolidayDto.setTphCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayDto.setTphCmodifierprogramid(MOD_PROGRAM_ID);
@@ -126,37 +121,76 @@ public class PaidholidayBean {
     public String getDispUserCode(){
         return this.sDispUser;
     }
+
     private TmgReferList referList = null;
+
     public TmgReferList getReferList(){
         return referList;
     }
+
     /**
      * 画面表示項目を取り出す
+     *
      * @throws Exception
      */
-    private void showDisp(ModelMap modelMap) {
+    public PaidHolidayDispVO showDispDetail(PsDBBean psDBBean, String txtUserCode, String txtDate) {
 
-        if(psDBBean.getReqParam("txtDATE") == null || psDBBean.getReqParam("txtDATE").equals("") == true){
-            baseDate = getSysdate();
-        }else{
-            baseDate = psDBBean.getReqParam("txtDATE");
-        }
+//        if (txtDate == null || "".equals(txtDate)) {
+//            baseDate = getSysdate();
+//        } else {
+//            baseDate = txtDate;
+//        }
+        baseDate = txtDate;
+        setDispUserCode(txtUserCode);
 
-        if(psDBBean.getReqParam("txtUserCode") != null && psDBBean.getReqParam("txtUserCode").equals("") == false){
-            setDispUserCode( psDBBean.getReqParam("txtUserCode") );
-            getReferList().setTargetEmployee( psDBBean.getReqParam("txtUserCode") );
-        }else{
-            setDispUserCode( getReferList().getTargetEmployee() );
-        }
-        //年次休暇付与状況一覧
-        List<PaidHolidayDispVO> paidHolidayDispVOList = iTmgPaidHolidayService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(),getDispUserCode(), baseDate, null);
-        modelMap.addAttribute("paidHolidayDispVOList",paidHolidayDispVOList);
+//        if (txtUserCode != null && !"".equals(txtUserCode)) {
+//            setDispUserCode(txtUserCode);
+//            getReferList().setTargetEmployee(txtUserCode);
+//        } else {
+//            setDispUserCode(getReferList().getTargetEmployee());
+//        }
+
         // 年次休暇付与状況
         PaidHolidayDispVO paidHolidayDispVO = iTmgPaidHolidayService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), getDispUserCode(), baseDate, baseDate).get(0);
-        modelMap.addAttribute("paidHolidayDispVO",paidHolidayDispVO);
+
+        return paidHolidayDispVO;
+
+    }
+
+    /**
+     * 画面表示項目を取り出す
+     *
+     * @throws Exception
+     */
+    public List<PaidHolidayDispVO> showDispList(PsDBBean psDBBean, String txtUserCode, String txtDate) {
+
+//        if (txtDate == null || "".equals(txtDate)) {
+//            baseDate = getSysdate();
+//        } else {
+//            baseDate = txtDate;
+//        }
+        baseDate = txtDate;
+        setDispUserCode(txtUserCode);
+//
+//        if (txtUserCode != null && !"".equals(txtUserCode)) {
+//            setDispUserCode(txtUserCode);
+//            getReferList().setTargetEmployee(txtUserCode);
+//        } else {
+//            setDispUserCode(getReferList().getTargetEmployee());
+//        }
+
+        //年次休暇付与状況一覧
+        List<PaidHolidayDispVO> paidHolidayDispVOList = iTmgPaidHolidayService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), getDispUserCode(), baseDate, null);
+        return paidHolidayDispVOList;
+
     }
 
 
+
+    /**
+     * 今日日付を取得
+     * @return
+     */
     private String getSysdate(){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         return sdf.format(new Date());
@@ -194,7 +228,7 @@ public class PaidholidayBean {
      * true:表示する、false:表示しない
      * @return boolean
      */
-    public boolean isCheck40InvestLimit(){
+    public boolean isCheck40InvestLimit(PsDBBean psDBBean){
 
         String sCheck40InvestLimit = psDBBean.getSystemProperty(SYSPROP_TMG_CHECK_40_INVEST_LIMIT);
         if (sCheck40InvestLimit != null && "yes".equals(sCheck40InvestLimit)) {

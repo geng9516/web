@@ -67,17 +67,6 @@ public class SiteWManageController {
         return "sys/wmanage/vacation";
     }
 
-    /**
-     * 年次休暇管理一览界面数据获取
-     */
-    @GetMapping("vacation/list")
-    @ResponseBody
-    public List<PaidHolidayInitVO> wManageVacation(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
-        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
-                true, false, false, true);
-        return paidHolidayBean.actionInitHandler(referList.buildSQLForSelectEmployees());
-    }
 
     /**
      * 跳转到月次集計データ作成界面

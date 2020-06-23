@@ -68,8 +68,8 @@ public class TmgPaidHolidayServiceImpl extends ServiceImpl<TmgPaidHolidayMapper,
      * @return
      */
     @Override
-    public List<PaidHolidayDispVO> buildSQLForSelectPaidHoliday(String custID, String compCode, String userCode, String baseDate, String targetDate){
-            return baseMapper.buildSQLForSelectPaidHoliday(custID, compCode,userCode,targetDate);
+    public List<PaidHolidayDispVO> buildSQLForSelectPaidHoliday(String custID, String compCode, String userCode, String baseDate, String targetDate) {
+        return baseMapper.buildSQLForSelectPaidHoliday(custID, compCode, userCode, baseDate, targetDate);
     }
     /**
      * [勤怠]年次休暇情報を更新する
