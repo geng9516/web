@@ -170,9 +170,9 @@
                                     </Row>
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
-                                            :class="timerangeType === 3 ? 'datepicker-double' : 'datepicker-single'"
-                                            style="transition: width .5s" :value="restApply.dateList"
+                                            class="datepicker-single" :value="restApply._dateList"
                                             @on-change="restApply.dateList = $event" placeholder="日付け"></date-picker>
+
                                     </Row>
                                 </section>
                                 <!-- 有振休 -->
@@ -572,27 +572,27 @@
                     }
                     this.restApply.deleteFiles = [...new Set(this.restApply.deleteFiles)]
                     console.log(this.restApply)
-                    // try {
-                    //     this.loading = true
-                    //     await this.http.uploadFiles('sys/vapply/MakeApply',{
-                    //         params:JSON.stringify(this.restApply),
-                    //         uploadFiles:this.uploadFiles,
-                    //         psSite: this.opts.psSite
-                    //     })
-                    //     this.rotate = !this.rotate
-                    //     this.isReApplyIng = false
-                    //     await this.getApplyHistory()
-                    //     this.restApply = this._restApply
-                    //     this.$Message.success('申请完了')
-                    // } catch (error) {
-                    //     if(error.config || error.response.status === 500) return
-                    //     this.errorInfo = true
-                    //     this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
-                    // } finally {
-                    //     this.loading = false
-                    //     this.restApply.deleteFiles = []
-                    //     this.uploadFiles = []
-                    // }
+                    try {
+                        this.loading = true
+                        await this.http.uploadFiles('sys/vapply/MakeApply',{
+                            params:JSON.stringify(this.restApply),
+                            uploadFiles:this.uploadFiles,
+                            psSite: this.opts.psSite
+                        })
+                        this.rotate = !this.rotate
+                        this.isReApplyIng = false
+                        await this.getApplyHistory()
+                        this.restApply = this._restApply
+                        this.$Message.success('申请完了')
+                    } catch (error) {
+                        if(error.config || error.response.status === 500) return
+                        this.errorInfo = true
+                        this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
+                    } finally {
+                        this.loading = false
+                        this.restApply.deleteFiles = []
+                        this.uploadFiles = []
+                    }
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
@@ -651,9 +651,11 @@
                         // 是时间不是振休
                         if(this.timerangeType === 2) {
                             // 是范围不是单一时间
+                            this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
                             this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
                         }
                         if(this.timerangeType === 1) {
+                            this.restApply._dateList = item.tntfDbegin
                             this.restApply.dateList = item.tntfDbegin
                         }
                     } else {
@@ -701,7 +703,15 @@
 
                     // 曜日
                     this.restApply.noreserved = data.tntfNnoreserved
-                    this.restApply.weekSelected = [data.tntfNmon, data.tntfNtue, data.tntfNwed, data.tntfNthu, data.tntfNfri ,data.tntfNsat, data.tntfNsun]
+                    this.restApply.weekSelected = [
+                        data.tntfNmon ===1 ? 1 : 0,,
+                        data.tntfNtue ===1 ? 2 : 0,,
+                        data.tntfNwed ===1 ? 3 : 0,,
+                        data.tntfNthu ===1 ? 4 : 0,,
+                        data.tntfNfri ===1 ? 5 : 0,,
+                        data.tntfNsat ===1 ? 6 : 0,,
+                        data.tntfNsun ===1 ? 7 : 0,
+                    ]
 
                     // 氏名
                     this.restApply.txtName = data.tntfCemployeeidName
