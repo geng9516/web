@@ -202,6 +202,9 @@ const Throttle = (fn, t) => {
   }
 }
 
+// 语言日文
+iview.lang('ja-JP');
+
 window.requestAnimFrame =
     window.requestAnimationFrame ||
     window.webkitRequestAnimationFrame ||

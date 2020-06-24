@@ -108,11 +108,11 @@
                                             </div>
                                         </Poptip>
                                     </i-col>
-                                    <i-col span="4" style="margin-left: 44%">
+                                    <i-col span="4" style="position: absolute;right: 40px;">
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;">{{ e.tnafCfilename }}</div>
+                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(`${e.tnafFilepath}`, '_blank')">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -296,7 +296,9 @@
                         <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
                         <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply" icon="md-create" :loading="loading">申請
                         </i-button>
-                        <i-button v-show="this.isReApplyIng" class="btn" type="primary" ghost long @click="apply" icon="md-create" :loading="loading">再申請
+                        <i-button v-show="this.isReApplyIng" class="btn width75 mr15"  style="display: inline-block"  type="primary" ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
+                        </i-button>
+                        <i-button v-show="this.isReApplyIng" class="btn" style="display: inline-block;width: 22%;" @click="()=> history.go(0)" :loading="loading">キャンセル
                         </i-button>
                     </Card>
                 </i-col>
@@ -305,8 +307,6 @@
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
-        const aliURL = 'https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func'
-        const avatar = "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1591796311247&di=e1c71d93b97a2a0357f6514e767bf41b&imgtype=0&src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201705%2F19%2F20170519100709_aEPhS.thumb.700_0.jpeg"
         const REST_APPLY = new Vue({
             el: '.restApply-warp',
             data() {
@@ -346,6 +346,7 @@
                     restApply: {
                         useVacation: false,
                         weekSelected:[],
+                        deleteFiles:[],
                         noreserved:'1'
                     },
                     openDatePicker: false,
@@ -514,10 +515,14 @@
                 handleHistoryStatusChange(e) {
                     this.getApplyHistory()
                 },
-                apply: Debounce(async function () {
+                apply: Debounce(async function (isRestApply) {
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
                     this.errorInfo = false
-                    this.restApply.action = 'ACT_MakeApply_CAppl'
+                    if(isRestApply) {
+                        this.restApply.action = 'ACT_ReMakeApply_CAppl'
+                    } else {
+                        this.restApply.action = 'ACT_MakeApply_CAppl'
+                    }
                     this.restApply.typeNew = this.selectedRestInfo.ntfId
                     this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel
                     this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
@@ -560,11 +565,13 @@
                         await this.getApplyHistory()
                         this.$Message.success('申请完了')
                     } catch (error) {
+                        if(error.config) return
                         this.errorInfo = true
                         this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
                     } finally {
                         this.loading = false
                         this.$refs.upload.clearFiles();
+                        this.restApply.deleteFiles = []
                         this.uploadFiles = []
                     }
                 }),
@@ -617,10 +624,10 @@
                 },
                 reApply(item) {
                     this.$refs.upload.clearFiles();
+                    this.restApply.deleteFiles = []
                     this.uploadFiles = []
                     this.rotate = !this.rotate
                     this.isReApplyIng = true
-                    this.restApply.action = 'ACT_ReMakeApply_CAppl'
                     // 时间部分
                     if(!this.selectedRestInfo.transfer) {
                         // 是时间不是振休
@@ -681,6 +688,8 @@
                 },
                 handleDelFile(files) {
                     // 删除文件
+                    this.restApply.deleteFiles.push(files.name)
+                    console.log(this.uploadList)
                     this.uploadFiles = this.uploadFiles.filter(e=> e.uid !== files.uid)
                 },
                 handleMaxSize (file) {

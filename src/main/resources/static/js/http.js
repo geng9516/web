@@ -16,7 +16,8 @@ axios.interceptors.response.use(
   error => {
     Vue.prototype.$Notice.error({
       title: 'Error!',
-      desc: `${error.response && error.response.data.msg}`
+      desc: `${error.response && error.response.data.msg}`,
+      duration: 0
     })
     return Promise.reject(error.response)
   }
