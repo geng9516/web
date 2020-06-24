@@ -518,10 +518,9 @@
                 apply: Debounce(async function (isRestApply) {
                     // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
                     this.errorInfo = false
+                    this.restApply.action = 'ACT_MakeApply_CAppl'
                     if(isRestApply) {
                         this.restApply.action = 'ACT_ReMakeApply_CAppl'
-                    } else {
-                        this.restApply.action = 'ACT_MakeApply_CAppl'
                     }
                     this.restApply.typeNew = this.selectedRestInfo.ntfId
                     this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel
