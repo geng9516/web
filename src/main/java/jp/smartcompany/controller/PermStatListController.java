@@ -230,11 +230,11 @@ public class PermStatListController {
      * 月次就業実績一括承認処理の為のプロセスを実行します。
      *
      * @param psDBBean PsDBBean
-     *                 txtAction アクション(ACT_EDIT_DAIRY)
+     *                 txtAction アクション(ACT_MONTHLY_PERMIT)
      *                 txtDYYYYMM　対象月
      *                 txtDYYYYMMDD　対象日(必須)
      *                 txtCEMPLOYEEID　職員ID　(NULL可)
-     *                 txtExecuteEmpId　チェックした対象者　(必須)
+     *                 txtExecuteEmpId　チェックした対象者　(必須)[1001,1002]
      * @return Map
      * @throws Exception
      */

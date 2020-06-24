@@ -17,7 +17,7 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" size="large" :disabled="!approval">月次一括承認</i-button>
+                    <i-button type="primary" @click="bulkApproval" size="large" :disabled="!approval" :loading="bulkApprovalLoading">月次一括承認</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
             </div>
@@ -62,11 +62,11 @@
             <div class="table-top">
                 <Row :gutter="16">
                     <Col span="11">
-                    <i-button type="text" @click="preMonth">
+                    <i-button type="text" @click="preMonthApproval" :disabled="!preMonthShow">
                         <Icon type="ios-arrow-back"></Icon>
                         前月
                     </i-button>
-                    <i-button type="text" @click="nextMonth">
+                    <i-button type="text" @click="nextMonthApproval" :disabled="!nextMonthShow">
                         翌月
                         <Icon type="ios-arrow-forward"></Icon>
                     </i-button>
@@ -77,8 +77,8 @@
                     </Col>
                 </Row>
             </div>
-            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData"
-                :disabled-hover="true" :loading="loading" no-data-text="所属を選択して下さい。">
+            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange"
+                :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
                     <span @click="toWorkPage"
                         class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
@@ -115,10 +115,10 @@
                     <i-button type="primary" size="large" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(true)">
                         承認対象者を全選択
                     </i-button>
-                    <i-button type="primary" size="large"  :disabled="!drawApproval" class="tr">一括承認</i-button>
+                    <i-button type="primary" size="large"  :disabled="!drawApproval" :loading="bulkApprovalLoading2" class="tr" @click="bulkApproval2">一括承認</i-button>
                     </Col>
                 </Row>
-                <i-table border :columns="columns2" :data="tableData2" ref="selection2">
+                <i-table border :columns="columns2" :data="tableData2" @on-select="tableSelect2" @on-selection-change="tableSelectChange2" ref="selection2">
                     <template v-for="(item, i) of slotList2" slot-scope="{ row }" :slot="item">
                         <span v-if="i === 0">
                             <span @click="showDay" v-if="row[item] === '未'" class="confirm-sytle ing">未</span>
@@ -136,7 +136,7 @@
 
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
-        const aliyun = "https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func"
+        // const aliyun = "https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func"
         const PERM_STATLIST = new Vue({
             el: '.permstatlist-warp',
             data() {
@@ -175,6 +175,7 @@
                         txtTmgReferListTreeViewAdminTargetSection: '',
                         txtCEMPLOYEEID: '',
                         sectionid: '',
+                        txtExecuteEmpId: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
@@ -190,7 +191,18 @@
 
                     title: '',
                     tableHead2: [],
-                    tableData2: []
+                    tableData2: [],
+                    empIds: [],
+                    empIds2: [],
+
+                    bulkApprovalLoading: false,
+                    bulkApprovalLoading2: false,
+
+                    thisMonth: '',
+                    preMonth: '',
+                    nextMonth: '',
+                    preMonthShow: false,
+                    nextMonthShow: false
                 }
             },
             async mounted() {
@@ -287,18 +299,31 @@
             },
             methods: {
                 async getDispTmgMonthlyList() {
+                    this.query.txtAction = 'ACT_DISP_MONTHLY'
+
                     this.loading = false
                     const { data } = await this.http.get('sys/permStatList/dispTmgMonthlyList', this.query)
                     this.dispMonthlyList = data
 
-                    this.model1 = data[0].val
-                    let result = this.model1.replace("年","/")
-                    result = result.replace("月","/")
-                    result = result + "01"
-                    this.query.txtDYYYYMM = result
+                    if (data.length > 0){
+                        this.model1 = data[0].val
+
+                        let result = this.model1.replace("年","/")
+                        result = result.replace("月","/")
+                        result = result + "01"
+                        this.query.txtDYYYYMM = result
+
+                        this.thisMonth = result
+                        this.preNextMonth(data[0].val)
+                    }
+
                     this.selectDisabled = true
+
+
                 },
                 async getTableHead() {
+                    this.query.txtAction = 'ACT_DISP_MONTHLY'
+
                     const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
                     this.tableHead = data
                 },
@@ -314,6 +339,8 @@
                 //     // this.tableHead(this.treeData)
                 // },
                 async getTmgMonthlyInfoVOList() {
+                    this.query.txtAction = 'ACT_DISP_MONTHLY'
+
                     const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                     this.tableData = data
                     this.getDeptName(this.treeData)
@@ -351,9 +378,58 @@
                     })
                 },
 
-                preMonth() {
+                async preMonthApproval() {
+                    console.log("preMonthApproval")
+                    console.log(this.preMonth)
+                    this.query.txtDYYYYMM = this.dateFormat(this.preMonth)
+                    await this.getTableHead()
+                    await this.getTableData()
+                    this.model1 = this.preMonth
+                    this.preNextMonth(this.preMonth)
+
                 },
-                nextMonth() {
+                async nextMonthApproval() {
+                    this.query.txtDYYYYMM = this.dateFormat(this.nextMonth)
+                    await this.getTableHead()
+                    await this.getTableData()
+                    this.model1 = this.nextMonth
+                    this.preNextMonth(this.nextMonth)
+                },
+                preNextMonth(e) {
+                    console.log("preNextMonth_s")
+                    console.log(this.dispMonthlyList.length)
+                    console.log(e)
+                    for (var i=0;i < this.dispMonthlyList.length;i++){
+                            if (e===this.dispMonthlyList[i].val) {
+                                if (i===0){
+                                    this.preMonthShow = true
+                                    this.nextMonthShow = false
+
+                                    this.preMonth = this.dispMonthlyList[i+1].val
+                                    this.nextMonth = ''
+                                    break
+
+                                } else if (i===this.dispMonthlyList.length-1) {
+
+                                    this.preMonthShow = false
+                                    this.nextMonthShow = true
+
+                                    this.preMonth = ''
+                                    this.nextMonth = this.dispMonthlyList[i-1].val
+                                    break
+                                } else {
+                                    this.preMonthShow = true
+                                    this.nextMonthShow = true
+
+                                    this.preMonth = this.dispMonthlyList[i+1].val
+                                    this.nextMonth = this.dispMonthlyList[i-1].val
+                                    break
+                                }
+                            }
+                    }
+                    console.log(this.preMonth)
+                    console.log(this.nextMonth)
+                    console.log("preNextMonth_e")
                 },
                 rowClass(row) {
                     // 表格变色
@@ -421,6 +497,7 @@
                     console.log('e2')
                     console.log(e)
                     this.deptDrawShow = false
+                    this.query.txtAction = 'ACT_DISP_MONTHLY'
                     this.defaultDeptId = e[0].secid
 
                     this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
@@ -459,22 +536,34 @@
                     this.query.txtDYYYYMMDD = e
                     this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
 
-                    this.title = "承認状況 " + Utils.formatDate(e, 'yyyy年mm月d日')
+                    this.title = "承認状況 " + Utils.formatDate(e, 'yyyy年m月d日')
 
-                    // this.query.txtTmgReferListTreeViewAdminTargetSection = '100000000000'
-                    // this.query.txtTmgReferListTreeViewRecordDate = '2020/06/19'
+                    this.getReadTmgDaily()
+                    // const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+                    //
+                    // //日別詳細画面のボタンを制御
+                    // this.drawApproval = data.approval
+                    //
+                    // this.tableHead2 = data.itemVOList
+                    // this.tableData2 = data.tmgDailyMapList
+
+                    this.showDayApply = true
+
+                    //選択した職員リストをクリアする
+                    this.handleSelectAll2(false)
+                    console.log("this.handleClickHead")
+                    console.log(this.tableHead2)
+                    console.log(this.tableData2)
+                },
+                async getReadTmgDaily() {
 
                     const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+
                     //日別詳細画面のボタンを制御
                     this.drawApproval = data.approval
 
                     this.tableHead2 = data.itemVOList
                     this.tableData2 = data.tmgDailyMapList
-
-                    this.showDayApply = true
-                    console.log("this.handleClickHead")
-                    console.log(this.tableHead2)
-                    console.log(this.tableData2)
                 },
                 toWorkPage() {
                     // this.$router.push('/sys/confirmer/applyWork')
@@ -482,20 +571,154 @@
                 handleSelectAll(status) {
                     this.$refs.selection.selectAll(status)
                 },
+                //行が選択される場合、トリガーされる
+                tableSelect(selection, row) {
+                    console.log("tableSelect")
+                    console.log(selection)
+                    console.log(row)
+                },
+                //選択した行の状態が変わる場合、トリガーされる
+                tableSelectChange(selection, row) {
+                    console.log("tableSelectChange")
+                    console.log(selection)
+
+                    this.empIds = []
+                    for (var i=0;i < selection.length;i++){
+                        this.empIds.push(selection[i].empid)
+                    }
+                    this.query.txtExecuteEmpId = this.empIds.join(',')
+                    console.log(this.query.txtExecuteEmpId)
+
+                },
+
+                //行が選択される場合、トリガーされる
+                tableSelect2(selection, row) {
+                    console.log("tableSelect")
+                    console.log(selection)
+                    console.log(row)
+                },
+                //選択した行の状態が変わる場合、トリガーされる
+                tableSelectChange2(selection, row) {
+                    console.log("tableSelectChange2")
+                    console.log(selection)
+
+                    this.empIds2 = []
+                    for (var i=0;i < selection.length;i++){
+                        this.empIds2.push(selection[i].TDA_CEMPLOYEEID)
+                    }
+                    this.query.txtExecuteEmpId = this.empIds2.join(',')
+                    console.log(this.query.txtExecuteEmpId)
+
+                },
                 handleSelectAll2(status) {
                     this.$refs.selection2.selectAll(status)
                 },
                 handleStartMonth(e) {
-                    let result = e.replace("年","/")
-                    result = result.replace("月","/")
-                    result = result+"01"
-                    this.query.txtDYYYYMM = result
 
+                    this.query.txtDYYYYMM = this.dateFormat(e)
                     this.getTableHead()
                     this.getTableData()
 
                     console.log("handleStartMonth")
+                    console.log(e)
                     console.log(this.query.txtDYYYYMM)
+
+                    this.preNextMonth(e)
+                },
+                async bulkApproval(e) {
+                    this.query.txtAction = 'ACT_MONTHLY_PERMIT'
+                    this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
+
+                    //月次一括承認Loading制御
+                    this.bulkApprovalLoading = true
+
+                    console.log("bulkApproval")
+                    console.log(this.empIds)
+                    console.log(this.empIds.length)
+
+                    if (this.empIds.length === 0){
+                        this.$Message.error("月次一括承認の対象者が選択されていません")
+                        //月次一括承認Loading制御
+                        this.bulkApprovalLoading = false
+
+                    } else {
+                        this.$Modal.confirm({
+                            title: '',
+                            content: 'チェックされた職員の月次就業実績を承認しますか。よろしいでしょうか？',
+                            okText: 'OK',
+                            cancelText: 'キャンセル',
+                            onOk: async () => {
+                                const { data } = await this.http.get('sys/permStatList/executeUpdateTmgMonthly', this.query)
+
+                                //月次承認状況一覧検索処理
+                                await this.getTableData()
+
+                                //月次一括承認Loading制御
+                                this.bulkApprovalLoading = false
+                            },
+                            onCancel: () => {
+                                //選択した職員リストをクリアする
+                                this.handleSelectAll(false)
+
+                                //月次一括承認Loading制御
+                                this.bulkApprovalLoading = false
+                           　　 console.log(this.empIds)
+
+                        }
+                        })
+                    }
+                },
+                async bulkApproval2(e) {
+                    this.query.txtAction = 'ACT_EDIT_DAIRY'
+                    this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
+
+                    //月次一括承認Loading制御
+                    this.bulkApprovalLoading2 = true
+
+                    console.log("bulkApproval2")
+                    console.log(this.empIds2)
+                    console.log(this.empIds2.length)
+
+                    if (this.empIds2.length === 0){
+                        this.$Message.error("日次一括承認の対象者が選択されていません")
+                        //日次一括承認Loading制御
+                        this.bulkApprovalLoading2 = false
+
+                    } else {
+                        this.$Modal.confirm({
+                            title: '',
+                            content: 'チェックされた職員の日次就業実績を承認しますか。よろしいでしょうか？',
+                            okText: 'OK',
+                            cancelText: 'キャンセル',
+                            onOk: async () => {
+                                const { data } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.query)
+
+                                //日次承認状況一覧検索処理
+                                this.getReadTmgDaily()
+
+                                //月次承認状況一覧検索処理
+                                await this.getTableData()
+
+                                //日次一括承認Loading制御
+                                this.bulkApprovalLoading2 = false
+                            },
+                            onCancel: () => {
+                                //選択した職員リストをクリアする
+                                this.handleSelectAll2(false)
+
+                                //日次一括承認Loading制御
+                                this.bulkApprovalLoading2 = false
+                                console.log(this.empIds2)
+                            }
+                        })
+                    }
+                },
+                dateFormat(e) {
+                    //YYYY年MM月からYYYY/MM/01へ変換する
+                    let yearMMDD = e.replace("年","/")
+                    yearMMDD = yearMMDD.replace("月","/")
+                    yearMMDD = yearMMDD+"01"
+                    return  yearMMDD
                 }
             }
         })
