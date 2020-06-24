@@ -650,6 +650,8 @@
 
                     // 申请区分
                     this.restApply.restTypeId = item.remakeApply
+                    this.restApply.ntfNo = item.tntfCntfNo
+
                     this.$nextTick(()=>this.handleRestType(item.remakeApply))
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
 
