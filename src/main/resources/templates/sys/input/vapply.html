@@ -112,7 +112,7 @@
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(`${e.tnafFilepath}`, '_blank')">{{ e.tnafCfilename }}</div>
+                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(e.tnafFilepath, '_blank')">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -132,7 +132,7 @@
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
                                         v-if="item.tntfCstatusflg.indexOf('3') > -1 || item.tntfCstatusflg.indexOf('9') > -1">
                                         <!-- 否认或者error则再申请  -->
-                                        <i-button  type="primary" ghost style="width: 97%;" size="small" @click="reApply(item)">再申請
+                                        <i-button  type="primary" ghost style="width: 97%;" size="small" @click="handleReApplybtn(item)">再申請
                                         </i-button>
                                     </i-col>
                                 </Row>
@@ -171,7 +171,7 @@
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
                                             :class="timerangeType === 3 ? 'datepicker-double' : 'datepicker-single'"
-                                            style="transition: width .5s" :value="restApply._dateList"
+                                            style="transition: width .5s" :value="restApply.dateList"
                                             @on-change="restApply.dateList = $event" placeholder="日付け"></date-picker>
                                     </Row>
                                 </section>
@@ -179,24 +179,24 @@
                                 <section v-show="selectedRestInfo.transfer" class="tl">
                                     <p class="mb5">出勤にする休日</p>
                                     <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy/mm/dd"  @on-change="restApply._begin = $event"></date-picker>
+                                        format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
                                     <p class="mb5">振休日とする出勤日</p>
-                                    <date-picker type="date"  :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy/mm/dd"  @on-change="restApply._end = $event"></date-picker>
+                                    <date-picker type="date" :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
+                                        format="yyyy/MM/dd" @on-change="restApply.end = $event"></date-picker>
                                 </section>
 
                                 <!-- 有起算日-->
                                 <section v-show="selectedRestInfo.period" class="tl mt20">
                                     <p class="mb5">起算日</p>
                                     <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy/mm/dd"  @on-change="restApply.txtPeriod = $event"></date-picker>
+                                        format="yyyy/MM/dd"  @on-change="restApply.txtPeriod = $event"></date-picker>
                                 </section>
 
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日</p>
                                     <date-picker type="date" :value="restApply.txtAddDate" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy/mm/dd"  @on-change="restApply.txtAddDate = $event"></date-picker>
+                                        format="yyyy/MM/dd"  @on-change="restApply.txtAddDate = $event"></date-picker>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
@@ -269,7 +269,7 @@
                                     <!-- 有生年月日-->
                                     <section v-show="selectedRestInfo.birthday" class="tl mt10">
                                         <p class="mb5">生年月日</p>
-                                        <date-picker type="date" class="datepicker-single mb5" placeholder="日付け"
+                                        <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付け"
                                             format="yyyy/MM/dd"  @on-change="restApply.txtBirthday = $event"></date-picker>
                                     </section>
 
@@ -282,19 +282,29 @@
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
                                     label,restTime,sickApply -->
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload ref="upload" :default-file-list="defaultFileList" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple action="//jsonplaceholder.typicode.com/posts/" type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :on-remove="handleDelFile" :max-size="500" :on-exceeded-size="handleMaxSize">
+                                    <Upload ref="upload"  :show-upload-list="false" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
                                         </div>
                                     </Upload>
+                                    <ul class="ivu-upload-list tl mb10">
+                                        <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+                                            <span @click="applyCardDownloadFile(item)">
+                                                <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
+                                            </span>
+                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)" v-if="item.isDefault">既存</p>
+                                            <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
+                                            <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
+                                        </li>
+                                    </ul>
                                     <Alert class="primary-info mb20">各上限 500kBytes</Alert>
                                 </Alert>
                             </i-col>
                         </Row>
                         <Divider size="small" orientation="left">申請事由</Divider>
                         <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
-                        <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply" icon="md-create" :loading="loading">申請
+                        <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply()" icon="md-create" :loading="loading">申請
                         </i-button>
                         <i-button v-show="this.isReApplyIng" class="btn width75 mr15"  style="display: inline-block"  type="primary" ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
                         </i-button>
@@ -349,14 +359,18 @@
                         deleteFiles:[],
                         noreserved:'1'
                     },
+                    _restApply: {
+                        useVacation: false,
+                        weekSelected:[],
+                        deleteFiles:[],
+                        noreserved:'1'
+                    },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
                     restTypeListForReview: [],
                     restTypeListForApply: [],
                     selectedRestInfo: {},
-                    uploadList:[],
-                    uploadFiles:[],
-                    defaultFileList:[],
+                    uploadFiles:[{name:"4.xlsx",type:'"4.xlsx',isDefault:true}],
                     isReApplyIng: false,
                 }
             },
@@ -372,6 +386,8 @@
                         this.restApply.restTypeId = '全て'
                         return
                     }
+                    // 浏览历史时，将搜索的置空
+                    this.opts.ntfTypeId = ''
                     if(!this.isReApplyIng) {
                         return this.$refs.select.clearSingleSelect()
                     }
@@ -385,7 +401,6 @@
                 this.getApplyHistory(true)
             },
             mounted () {
-                this.uploadList = this.$refs.upload.fileList;
             },
             computed: {
                 flatRestTypeList() {
@@ -487,6 +502,11 @@
                     console.log(e)
                  },
                 handleRestType(e) {
+                    if(this.rotate) {
+                        this.opts.ntfTypeId = e
+                        this.getApplyHistory()
+                        return
+                    }
                     // 选择不同的休假时，判断显示不同的项目
                     if  (!e || e === '全て') {
                         return (this.selectedRestInfo = {})
@@ -539,9 +559,6 @@
                             this.restApply.begin = this.restApply.dateList
                             this.restApply.end = this.restApply.dateList
                         }
-                    } else {
-                        this.restApply.begin = this.restApply._begin
-                        this.restApply.end = this.restApply._end
                     }
                     if(!this.restApply.typeNew) {
                         this.errorInfo = true
@@ -553,26 +570,29 @@
                         this.errorMsg = '期間を選んでください。'
                         return
                     }
-                    try {
-                        this.loading = true
-                        await this.http.uploadFiles('sys/vapply/MakeApply',{
-                            params:JSON.stringify(this.restApply),
-                            uploadFiles:this.uploadFiles,
-                            psSite: this.opts.psSite
-                        })
-                        this.rotate = !this.rotate
-                        await this.getApplyHistory()
-                        this.$Message.success('申请完了')
-                    } catch (error) {
-                        if(error.config) return
-                        this.errorInfo = true
-                        this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
-                    } finally {
-                        this.loading = false
-                        this.$refs.upload.clearFiles();
-                        this.restApply.deleteFiles = []
-                        this.uploadFiles = []
-                    }
+                    this.restApply.deleteFiles = [...new Set(this.restApply.deleteFiles)]
+                    console.log(this.restApply)
+                    // try {
+                    //     this.loading = true
+                    //     await this.http.uploadFiles('sys/vapply/MakeApply',{
+                    //         params:JSON.stringify(this.restApply),
+                    //         uploadFiles:this.uploadFiles,
+                    //         psSite: this.opts.psSite
+                    //     })
+                    //     this.rotate = !this.rotate
+                    //     this.isReApplyIng = false
+                    //     await this.getApplyHistory()
+                    //     this.restApply = this._restApply
+                    //     this.$Message.success('申请完了')
+                    // } catch (error) {
+                    //     if(error.config || error.response.status === 500) return
+                    //     this.errorInfo = true
+                    //     this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
+                    // } finally {
+                    //     this.loading = false
+                    //     this.restApply.deleteFiles = []
+                    //     this.uploadFiles = []
+                    // }
                 }),
                 handleApplyMarkShow(e) {
                   // TMG_NTFSTATUS|0	取下
@@ -621,8 +641,7 @@
                     if(begin === end) return begin
                     else return `${begin} ～ ${end}`
                 },
-                reApply(item) {
-                    this.$refs.upload.clearFiles();
+                async handleReApplybtn(item) {
                     this.restApply.deleteFiles = []
                     this.uploadFiles = []
                     this.rotate = !this.rotate
@@ -632,19 +651,15 @@
                         // 是时间不是振休
                         if(this.timerangeType === 2) {
                             // 是范围不是单一时间
-                            this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
                             this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
                         }
                         if(this.timerangeType === 1) {
-                            this.restApply._dateList = item.tntfDbegin
                             this.restApply.dateList = item.tntfDbegin
                         }
                     } else {
                         // 振休
                         this.restApply.begin = item.tntfDbegin
                         this.restApply.end = item.tntfDbegin
-                        this.restApply._begin = item.tntfDbegin
-                        this.restApply._end = item.tntfDbegin
                     }
 
                     // 申请区分
@@ -655,17 +670,53 @@
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
 
                     // 文件
-                    this.defaultFileList = item.tmgNtfAttachedfileDoList.map(e=>{
+                    this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
                             name:e.tnafCfilename,
                             url:e.tnafBattach,
+                            type:e.tnafCfilename,
+                            isDefault: true
                         }
                     })
 
                     // comment
                     this.restApply.owncomment = item.tntfCowncomment
-                    // console.log(this.uploadList)
 
+                    // 再拿更多详细
+                    const { data } = await this.http.get('sys/vapply/NotificationDetail', {ntfNo:item.tntfCntfNo})
+
+                    // 起算日
+                    this.restApply.txtPeriod = data.tntfDperiodDate
+
+                    // 加算日
+                    this.restApply.txtAddDate = data.tntfNuapperAddition
+
+                    // 時間帯
+                    this.restApply.timezoneOpen = data.tntfNtimeOpenHhmi
+                    this.restApply.timezoneClose = data.tntfNtimeCloseHhmi
+
+                    // 始业终业
+                    this.restApply.timeOpen = data.tntfNtimeOpen
+                    this.restApply.timeClose = data.tntfNtimeClose
+
+                    // 曜日
+                    this.restApply.noreserved = data.tntfNnoreserved
+                    this.restApply.weekSelected = [data.tntfNmon, data.tntfNtue, data.tntfNwed, data.tntfNthu, data.tntfNfri ,data.tntfNsat, data.tntfNsun]
+
+                    // 氏名
+                    this.restApply.txtName = data.tntfCemployeeidName
+
+                    // 続柄
+                    this.restApply.txtRelation = data.tntfCrelation
+
+                    // 対象の人数
+                    this.restApply.txtTargetNumber = data.tntfNnumberOfTarget
+
+                    // 生年月日
+                    this.restApply.txtBirthday = data.tntfDdateofbirth
+
+                    // 伤病
+                    this.restApply.txtSickName = data.tntfCsickName
                 },
                 handleFormatError (file) {
                     this.$Notice.warning({
@@ -674,9 +725,8 @@
                     });
                 },
                 handleBeforeUpload (files) {
-                    // 返回true, 显示已上传文件
-                    console.log('kankan')
-                    const check = this.uploadFiles.length + this.defaultFileList.length < 5;
+                    // 返回false, 取消自带上传
+                    const check = this.uploadFiles.length < 5;
                      if (!check) {
                         this.$Notice.warning({
                         title: 'Up to five files can be uploaded.'
@@ -684,14 +734,12 @@
                     } else {
                         this.uploadFiles.push(files)
                     }
-                    console.log(this.uploadFiles)
-                    return check;
+                    return false;
                 },
-                handleDelFile(files) {
+                handleDelFile(file) {
                     // 删除文件
-                    this.restApply.deleteFiles.push(files.name)
-                    console.log(this.uploadList)
-                    this.uploadFiles = this.uploadFiles.filter(e=> e.uid !== files.uid)
+                    this.restApply.deleteFiles.push(file.name)
+                    this.uploadFiles = this.uploadFiles.filter(e=> e.name !== file.name)
                 },
                 handleMaxSize (file) {
                     this.$Notice.warning({
@@ -702,6 +750,12 @@
                 // 加载更多按钮
                 handleMoreDataLoading () {
                     this.moreDataLoading = true
+                },
+                // 打开上传的文件
+                applyCardDownloadFile(e) {
+                    if(e.url) {
+                        window.open(e.url, '_blank')
+                    }
                 }
             }
         })
