@@ -48,7 +48,7 @@ private static final long serialVersionUID=1L;
         /**
          * 申請番号
          */
-                @TableId(value = "tnaf_cntfno", type = IdType.AUTO)
+                @TableId(value = "tnaf_cntfno", type = IdType.INPUT)
                 private String tnafCntfno;
 
         /**
@@ -66,8 +66,8 @@ private static final long serialVersionUID=1L;
         /**
          * 添付ファイル
          */
-    @TableField("tnaf_battach")
-        private String tnafBattach;
+    @TableField("tnaf_filepath")
+        private String tnafFilepath;
 
         /**
          * 更新ユーザーid

@@ -5,7 +5,8 @@
         SELECT
             TNAF_CNTFNO,
             TNAF_CFILENAME,
-            TNAF_NSEQ
+            TNAF_NSEQ,
+            TNAF_FILEPATH
         FROM
             TMG_NTF_ATTACHEDFILE
         WHERE

@@ -12,6 +12,7 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,6 +30,7 @@ public class TmgNotificationController {
 
     @Autowired
     private TmgNotificationBean tmgNotificationBean;
+    @Autowired
     private HttpServletRequest request;
 
     /**
@@ -56,6 +58,17 @@ public class TmgNotificationController {
        // String filepath=request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/uploadFile";
         return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,page,psDBBean,"");
     }
+
+    /**
+     * 再申請履歴データ
+     *
+     */
+    @GetMapping("NotificationDetail")
+    public NotificationDetailVo getNotificationDetail(@RequestParam("ntfNo") String ntfNo,
+                                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgNotificationBean.getNotificationDetail(ntfNo,psDBBean);
+    }
+
 
     /**
      * 申請区分マスタ 新規用
@@ -95,14 +108,15 @@ public class TmgNotificationController {
      * @return　エラー null 为正常申请
      */
     @PostMapping("MakeApply")
+    @ResponseBody
     public GlobalResponse makeApply(
             @RequestParam("params") String params,
             @RequestParam("uploadFiles") MultipartFile[] uploadFiles,
+            @RequestParam("deleteFiles") String[] deleteFiles,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
-        request=ContextUtil.getHttpRequest();
-        String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
-        return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,filePath);
+        //String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
+        return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFiles);
     }
 
 

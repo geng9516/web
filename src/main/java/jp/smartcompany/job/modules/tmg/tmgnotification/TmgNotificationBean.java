@@ -528,6 +528,23 @@ public class TmgNotificationBean {
         return notificationDispVo;
     }
 
+
+    public NotificationDetailVo getNotificationDetail(String ntfNo ,PsDBBean psDBBean){
+        ParamNotificationListDto param=new ParamNotificationListDto();
+        //基本信息
+        param.setCompId(psDBBean.getCustID());
+        param.setCustId(psDBBean.getCompCode());
+        param.setLang(psDBBean.getLanguage());
+        param.setNtfNo(ntfNo);
+        //基准日取得 入力site为系统日期
+        param.setToday(TmgUtil.getSysdate());
+        param.setTodayD(DateUtil.parse(param.getToday()));
+        //详细数据取得
+        return iTmgNotificationService.selectNotificationDetail(param);
+    }
+
+
+
     /**
      * 申請区分マスタ　全て　新規画面用
      * @param psDBBean
@@ -826,7 +843,8 @@ public class TmgNotificationBean {
      * 新規申請・再申請・代理申請
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public GlobalResponse actionMakeApply(PsDBBean psDBBean, ParamNotificationListDto param, MultipartFile[] uploadFiles, String path) throws Exception {
+    public GlobalResponse actionMakeApply(PsDBBean psDBBean, ParamNotificationListDto param, MultipartFile[] uploadFiles,
+                                          String[]deleteFiles) throws Exception {
         //基本信息
         param.setCompId(psDBBean.getCustID());
         param.setCustId(psDBBean.getCompCode());
@@ -859,9 +877,18 @@ public class TmgNotificationBean {
         //決裁レベル返却
         param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
+        String path = psDBBean.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
+        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
+            //file upload
+            deleteFiles(param.getNtfNo(),deleteFiles,path);
+            //ファイル保存SQL
+            deleteNtfAttachdFile(param,deleteFiles);
+        }
+
+        //file upload
         uploadFiles(param.getNtfNo(),uploadFiles,path);
         //ファイル保存SQL
-        insertNtfAttachdFile(param, uploadFiles);
+        insertNtfAttachdFile(param, uploadFiles,path);
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
@@ -904,6 +931,34 @@ public class TmgNotificationBean {
             return GlobalResponse.ok();
         }
     }
+
+    private void deleteNtfAttachdFile(ParamNotificationListDto param, String[] deleteFiles) {
+        if(deleteFiles.length<1){
+            return;
+        }
+        for(String name:deleteFiles){
+            QueryWrapper<TmgNtfAttachedfileDO> tnafDo = new QueryWrapper<TmgNtfAttachedfileDO>();
+            tnafDo.eq("TNAF_CCUSTOMERID", param.getCustId());
+            tnafDo.eq("TNAF_CCOMPANYID", param.getCompId());
+            tnafDo.eq("TNAF_CNTFNO", param.getNtfNo());
+            tnafDo.eq("TNAF_CFILENAME", name);
+            iTmgNtfAttachedfileService.getBaseMapper().delete(tnafDo);
+        }
+    }
+
+    private void deleteFiles(String ntfNo, String[] deleteFiles, String path) {
+        if (deleteFiles.length > 0) {
+            for (int i = 0; i < deleteFiles.length; i++) {
+                File file = new File(path+ntfNo+"/"+deleteFiles[i]);
+                // 判断目录或文件是否存在
+                if (file.exists()) {  // 不存在返回 false
+                    file.delete();
+                }
+            }
+        }
+    }
+
+
 
     /**
      * 申請取下の処理をするメソッド
@@ -1105,7 +1160,7 @@ public class TmgNotificationBean {
     /**
      * ファイル保存SQL
      */
-    private void insertNtfAttachdFile(ParamNotificationListDto param, MultipartFile[] uploadFiles) throws IOException {
+    private void insertNtfAttachdFile(ParamNotificationListDto param, MultipartFile[] uploadFiles,String path) throws IOException {
         for (int i = 0; i < uploadFiles.length; i++) {
             TmgNtfAttachedfileDO tnafDo = new  TmgNtfAttachedfileDO();
             tnafDo.setTnafCcustomerid(param.getCustId());
@@ -1114,7 +1169,7 @@ public class TmgNotificationBean {
             tnafDo.setTnafCntfno(param.getNtfNo());
             tnafDo.setTnafCfilename(uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafNseq((long) i+1);
-            tnafDo.setTnafBattach(uploadFiles[i].getBytes().toString());
+            tnafDo.setTnafFilepath(path+param.getNtfNo()+"/"+uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafCmodifieruserid(param.getUserCode());
             tnafDo.setTnafDmodifieddate(DateTime.now());
             iTmgNtfAttachedfileService.getBaseMapper().insert(tnafDo);
