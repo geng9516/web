@@ -887,10 +887,14 @@ public class TmgNotificationBean {
 
 
         param.setTodayD(DateUtil.parse(param.getToday()));
-        // 3 シーケンス採番
-        String seq = iTmgNotificationService.selectNotificationSeq();
-        param.setSeq(seq);
-        param.setNtfNo(param.getTargetUser()+"|"+seq);
+        //再申請の場合、元番号を使用する
+        if(!param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
+            // 3 シーケンス採番
+            String seq = iTmgNotificationService.selectNotificationSeq();
+            param.setSeq(seq);
+            param.setNtfNo(param.getTargetUser()+"|"+seq);
+        }
+
         //決裁レベル返却
         param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
@@ -918,23 +922,27 @@ public class TmgNotificationBean {
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_1);
         }else if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
             //再申請
-            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_2);
-        }
 
+                param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_2);
+
+
+        }
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
         int deleteErrMsg = deleteErrMsg(param);
         int deleteNotificationCheck = deleteNotificationnCheck(param);
 
         if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
-            // 再申請の場合は、再申請用
-            int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
-            //int insertErrMsgUpdate=insertErrMsgUpdate(param);
+            // 再申請の場合は、再申請用  申请番号非空
+            if(!StrUtil.hasEmpty(param.getNtfNo())){
+                int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
+            }else{
+                return  GlobalResponse.error();
+            }
         }
 
         if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 新規申請の場合は、新規申請用
             int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
-            //int insertErrMsgUpdate=deleteNotificationnCheck(param);
         }
 
         int insertErrmsg = insertErrMsg(param);
@@ -1743,8 +1751,8 @@ public class TmgNotificationBean {
         tncDo.setTntfCcustomerid(tnDo.getTntfCcustomerid());
         tncDo.setTntfCcompanyid(tnDo.getTntfCcompanyid());
         tncDo.setTntfCemployeeid(tnDo.getTntfCemployeeid());
-        tncDo.setTntfDstartdate(tncDo.getTntfDstartdate());
-        tncDo.setTntfDenddate(tncDo.getTntfDenddate());
+        tncDo.setTntfDstartdate(tnDo.getTntfDstartdate());
+        tncDo.setTntfDenddate(tnDo.getTntfDenddate());
 
         tncDo.setTntfCmodifieruserid(param.getUserCode());
 
@@ -1837,14 +1845,19 @@ public class TmgNotificationBean {
         tncDo.setTntfCsickName(param.getTxtSickName());
         tncDo.setTntfCdisaster(param.getSickApply());
         tncDo.setTntfDperiodDate(param.getTxtPeriod());
-        tncDo.setTntfNuapperAddition(Long.parseLong(param.getTxtAddDate()));
-
+        if(!StrUtil.hasEmpty(param.getTxtAddDate())){
+            tncDo.setTntfNuapperAddition(Long.parseLong(param.getTxtAddDate()));
+        }
         tncDo.setTntfCntfnoIm(param.getNtfNo());// 申請番号
 
         // 休憩時間From
-        tncDo.setTntfNrestopen(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTxtRestOpen()));
+        if(!StrUtil.hasEmpty(param.getTxtRestOpen())){
+            tncDo.setTntfNrestopen(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTxtRestOpen()));
+        }
         // 休憩時間To
-        tncDo.setTntfNrestclose(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTxtRestClose()));
+        if(!StrUtil.hasEmpty(param.getTxtRestClose())){
+            tncDo.setTntfNrestclose(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTxtRestClose()));
+        }
         // 氏名
         tncDo.setTntfCkanjiname(param.getTxtName());
         // 続柄
@@ -1852,8 +1865,9 @@ public class TmgNotificationBean {
         // 生年月日
         tncDo.setTntfDdateofbirth(param.getTxtBirthday());
         // 対象の人数
-        tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
-
+        if(!StrUtil.hasEmpty(param.getTxtTargetNumber())){
+            tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
+        }
         tncDo.setTntfCntfnoMoto(tnDo.getTntfCntfnoMoto());// 分割前申請番号
 
 

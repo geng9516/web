@@ -167,27 +167,6 @@ public class OvertimeInstructBean {
      */
     public void actionExecuteDispResult(ModelMap modelMap) {
 
-
-        //paramSetting();
-
-        // 対象者の組織コードが空白の場合は以下の処理を実行しません(勤怠管理サイト対応)
-   /*     param.setTargetSec(referList.getTargetSec());
-        if(StrUtil.hasEmpty(param.getTargetSec())) {
-
-            // 組織未選択なので、呼出元メソッドへ制御を返す。
-            return;
-        }
-        param.setAction("ACT_DISP_RMONTHLY_RESULT");
-        param.setCustId("01");
-        param.setCompId("01");
-        param.setTargetSec("201000000000");
-        param.setBaseDate("2020/03/01");
-        param.setBaseDateMM("2020/03/01");
-        param.setLang("ja");
-        param.setBaseDateYYYY("2020");
-        param.setToday("2020/06/04");
-        param.setEmployeeListSql("SELECT '29042924' as empid,'黒川 弘樹' as empname,1 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '17452600' as empid,'日野原 友佳子' as empname,2 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '46402406' as empid,'松野 強' as empname,3 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '46404536' as empid,'吉田 正和' as empname,4 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '32948535' as empid,'柴田 隆' as empname,5 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '91544761' as empid,'内田 信也' as empname,6 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '49271150' as empid,'渡邉 大輝' as empname,7 as seq,'01' as cust,'01' as comp FROM DUAL UNION ALL SELECT '33760045' as empid,'小西 雅治' as empname,8 as seq,'01' as cust,'01' as comp FROM DUAL ");
-
         /* 情報をDB用(SQLで使用できる形)へ加工 */
         /**
          * コンテンツＩＤはアクションコードによって、切替する。
@@ -230,6 +209,8 @@ public class OvertimeInstructBean {
         String limit = iMastGenericDetailService.selectLimit(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getLang(), TmgUtil.Cs_MGD_LIMIT_MONTHLY_OVERTIME_36);
         //处理后MonthlyInfoOtVo　list
         List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
+
+
         for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
             //合計(月)
             monthlyInfoOtVo.setOvertime(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getOvertime(),CATEGORY_SUM_MONTH)));
