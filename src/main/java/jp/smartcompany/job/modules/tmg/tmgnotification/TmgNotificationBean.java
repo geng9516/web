@@ -401,6 +401,9 @@ public class TmgNotificationBean {
         param.setSiteId(psDBBean.getSiteId());
 
         param.setLang(psDBBean.getLanguage());
+
+
+
         param.setToday(TmgUtil.getSysdate());
         param.setTodayD(DateUtil.parse(param.getToday()));
 
@@ -428,9 +431,15 @@ public class TmgNotificationBean {
         param.setSiteId(psDBBean.getSiteId());
         param.setLang(psDBBean.getLanguage());
         param.setPage(page);
+
+
+
         //基准日取得 入力site为系统日期
         param.setToday(TmgUtil.getSysdate());
         param.setTodayD(DateUtil.parse(param.getToday()));
+
+
+
         //アクション
         param.setAction(psDBBean.getReqParam("txtAction"));
 
@@ -622,6 +631,10 @@ public class TmgNotificationBean {
      * @return
      */
     public List<TypeGroupVo> getMgdNtfTypeDispAppList(PsDBBean psDBBean){
+
+
+
+
 
         List<MgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(psDBBean.getCustID(),
                 psDBBean.getCompCode(), DateTime.now(), psDBBean.getLanguage());
@@ -852,6 +865,7 @@ public class TmgNotificationBean {
         param.setUserCode(psDBBean.getUserCode());
         param.setSiteId(psDBBean.getSiteId());
         param.setLang(psDBBean.getLanguage());
+
         //申请日期
         if (referList != null){
             param.setToday(referList.getRecordDate());
@@ -869,6 +883,9 @@ public class TmgNotificationBean {
             referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
                     false, false, false, false);
         }
+
+
+
         param.setTodayD(DateUtil.parse(param.getToday()));
         // 3 シーケンス採番
         String seq = iTmgNotificationService.selectNotificationSeq();
@@ -878,7 +895,7 @@ public class TmgNotificationBean {
         param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
         String path = psDBBean.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
-        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
+        if (deleteFiles!=null&&param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
             //file upload
             deleteFiles(param.getNtfNo(),deleteFiles,path);
             //ファイル保存SQL
@@ -886,9 +903,11 @@ public class TmgNotificationBean {
         }
 
         //file upload
-        uploadFiles(param.getNtfNo(),uploadFiles,path);
-        //ファイル保存SQL
-        insertNtfAttachdFile(param, uploadFiles,path);
+        if(uploadFiles!=null){
+            uploadFiles(param.getNtfNo(),uploadFiles,path);
+            //ファイル保存SQL
+            insertNtfAttachdFile(param, uploadFiles,path);
+        }
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
@@ -2407,5 +2426,6 @@ public class TmgNotificationBean {
             return false;
         }
     }
+
 
 }

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css')">
+</head>
+
+<body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main class="content overtimeinstruchinfo-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `超過勤務命令` }}
+                </h1>
+            </div>
+            <div class="btnbox">
+                <div style="height:40px;margin:2px"></div>
+            </div>
+        </div>
+        <div class="searchwrap">
+            <span class="label">年月</span>
+            <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val":value="item.val">
+                </i-option>
+            </i-select>
+            <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                              style="width: calc(100% - 120px);border-radius:0">
+                        {{ showName(deptName) }}
+                    </i-button>
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                            v-model="deptDrawShow">
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Row class="tl">
+                            <i-col span="8" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="8" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                         class="mb5" placeholder="日付け" format="yyyy/MM/dd" ref="datePicker"
+                                         @on-change="handleDeptDateChange"></date-picker>
+                            </i-col>
+                        </Row>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                  empty-text="所属データなし"></Tree>
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
+                    </Drawer>
+            </span>
+            <span style="flex:1"></span>
+        </div>
+    </div>
+    <div class="content_body">
+        <div class="table-top">
+
+        </div>
+        <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading">
+
+        </i-table>
+    </div>
+</main>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const MONTH_SUM_INFO = new Vue({
+        el: '.overtimeinstruchinfo-warp',
+        data() {
+            return {
+                selectDisabled: true,   　//年月選択可否制御
+                showPre: true,
+                curDate: new Date(),
+                columns: [
+                    {
+                        title: '年月',
+                        key: 'month',
+                        align: 'center'
+                    },
+                    {
+                        title: '承認状況',
+                        slot: 'status',
+                        align: 'center'
+                    },
+                    {
+                        title: '締め',
+                        slot: 'end',
+                        align: 'center'
+                    },
+                    {
+                        title: '集計',
+                        slot: 'sum',
+                        align: 'center'
+                    },
+                    {
+                        title: 'ダウンロード',
+                        slot: 'download',
+                        align: 'center'
+                    },
+                    {
+                        title: '締め未完了部局',
+                        slot: 'notEnd',
+                        align: 'center'
+                    },
+                    {
+                        title: '確定',
+                        slot: 'confirm',
+                        align: 'center'
+                    }
+                ],
+                loading: false,
+                tableData: [],
+                pageValue: {
+                    amount: 0,
+                    curPage: 1,
+                    list: [20, 30, 50, 100],
+                    curSize: 20
+                },
+                opts: {
+                    month: 0,
+                    status: 0,
+                    page: null,
+                    keyword: null,
+                    limit: 20
+                },
+                empDeptLoading: false,  // 組織ツリーloading用
+                deptDrawShow: false,    //組織ツリー用
+                treeData: [],            //組織ツリー用
+                isSearchHistory: false,
+                empTreeData: [],        //組織ツリー用
+                deptName: '選んでください',   //選択した職員の所属
+                referListObject: {       //組織ツリー共通
+                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 41
+                },
+            }
+        },
+        async mounted() {
+            this.getData()
+            this.getOrgTree()
+        },
+        computed: {
+        },
+        methods: {
+
+
+        }
+    })
+</script>
+</body>
+
+</html>
