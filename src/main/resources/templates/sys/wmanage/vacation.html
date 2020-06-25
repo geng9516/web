@@ -75,26 +75,7 @@
         </i-table>
     </div>
 
-    <!--        <FormDrawer-->
-    <!--                :isAdmin="true"-->
-    <!--                title=""-->
-    <!--                :isShow="isShow"-->
-    <!--                @close="() => (this.isShow = false)">-->
-    <!--        </FormDrawer>-->
-    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" draggable>
-        <div class="content_head">
-            <div class="header">
-                <div class="title1">
-                    <h1>
-                        <Icon type="i-happytime colored"></Icon>
-                        年次休暇管理
-                    </h1>
-                </div>
-                <div class="btnbox">
-                    <div style="height:40px;margin:2px"></div>
-                </div>
-            </div>
-        </div>
+    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" draggable :mask-closable ="false">
         <div class="content_body">
             <Row>
                 <i-col span="6" class="label tc">所属</i-col>
@@ -138,7 +119,7 @@
             </Row>
             <div style="position: relative;">
                 <Row :gutter="10" class="mt20 mb10">
-                    <i-col span="12" >
+                    <i-col span="12">
                         <div class="titlenorm">
                             <Icon type="logo-buffer"></Icon>
                             今期付与情報
@@ -151,20 +132,20 @@
                         </Row>
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2">
-                            <template slot-scope="{ row }" slot="days">
-                                <i-input v-model="row.days" v-if="row.isEditable"></i-input>
+                            <template slot-scope="{ row ,index }" slot="days">
+                                <i-input  v-model="paidNowData[index].days" v-if="row.isEditable" ></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
-                            <template slot-scope="{ row }" slot="times">
-                                <i-input v-model="row.times" v-if="row.isEditable" ></i-input>
-                                <p v-else>{{ row.times| addNumDeci(true) }}</p>
+                            <template slot-scope="{ row,index }" slot="times">
+                                <i-input v-model="paidNowData[index].times" v-if="row.isEditable" ></i-input>
+                                <p v-else>{{ row.times| addNumDeci }}</p>
                             </template>
 
-                            <template slot-scope="{ row }" slot="expiryDate">
-                                <date-picker type="date" class="mar" :value="row.expiryDate"
-                                             format="yyyy/MM/dd" ref="datePicker" v-if="row.isEditable" :editable = "false" ></date-picker>
-<!--                                 <i-input v-model="row.expiryDate" v-if="row.isEditable"></i-input>-->
+                            <template slot-scope="{ row ,index}" slot="expiryDate">
+                                <!--                                <date-picker type="date" class="mar" v-model="paidNowData[index].expiryDate" transfer="true"-->
+                                <!--                                             format="yyyy/MM/dd" ref="datePicker" v-if="row.isEditable" :editable = "false" ></date-picker>-->
+                                <i-input v-model="paidNowData[index].expiryDate" v-if="row.isEditable"></i-input>
                                 <p v-else>{{ row.expiryDate }}</p>
                             </template>
                         </i-table>
@@ -184,7 +165,6 @@
                             <i-col span="14">
                               <span class="input-like-span" style="white-space:pre-line;height:51px;line-height:10px">
                                   {{ dataDetail.nconfirm}}{{'\n\n'}}({{dataDetail.nplanworkdayLimit}})
-                                  <!--                                {{ `240\n\n(101)` }}-->
                               </span>
                             </i-col>
                         </Row>
@@ -211,7 +191,7 @@
                             変更者コメント
                         </div>
                         <!--                        :autosize="{ miFnRows: 2, maxRows: 5 }"-->
-                        <i-input type="textarea" :rows="3" :value ="dataDetail.ccomment"></i-input>
+                        <i-input type="textarea" :rows="3" v-model="dataDetail.ccomment"></i-input>
                     </i-col>
                 </Row>
                 <Spin size="large" fix v-if="paidDetailsLoading"></Spin>
@@ -220,7 +200,7 @@
             <div class="tr mb10">
                 <i-button type="primary" ghost class="mr15" @click="calculation">計算</i-button>
                 <i-button type="primary" ghost class="mr15" @click="clear">クリア</i-button>
-                <i-button type="success" ghost class="mr15">登録</i-button>
+                <i-button type="success" ghost class="mr15" @click="exeUpdate">登録</i-button>
             </div>
             <div class="titlenorm mb10">
                 <Icon type="logo-buffer"></Icon>
@@ -306,7 +286,7 @@
                     {
                         title: '有効期限',
                         align: 'center',
-                        width: 135,
+                        width: 120,
                         slot: 'expiryDate'
                     }
                 ],
@@ -393,10 +373,7 @@
                     }
                 ],
                 paidNowLoading: false,
-
                 paidDetailsData: [],
-
-
                 isSearchHistory: false,
                 empDeptLoading: false,
                 deptDrawShow: false,
@@ -407,12 +384,24 @@
                 title: '',
                 name: '',
                 workertypenm: '',
+                cemployeeid:'',
                 param: {
                     txtDate: '',
                     txtUserCode: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
+                },
+                paramters:{
+                    cemployeeid: '',
+                    dyyyymmdd: '',
+                    nadjust: '',
+                    nadjustHours: '',
+                    nadjustTo: '',
+                    nadjustHoursTo: '',
+                    dexpireAdjust:'',
+                    dexpireAdjustTo: '',
+                    ccomment: ''
                 },
                 dataDetailBack: [],
                 dataDetail: {
@@ -542,27 +531,6 @@
                     this.empDeptLoading = false
                 }
             },
-            showDay(e) {
-                this.dataDetail = ''
-
-                this.paidHolidayInitRList = true
-                console.log(e)
-                this.name = e[0].name
-                this.workertypenm = e[0].workertypenm
-                this.cemployeeid = e[0].tphCemployeeid
-                this.getDetail(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
-                this.getDetailList(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
-
-            },
-            async showDayList(e) {
-                this.dataDetail =''
-                this.paidDetailsLoading = true
-                await this
-                this.dataDetail = e[0]
-                this.dataDetailBack = e[0]
-                this.paidDetailsLoading = false
-
-            },
             async handleDeptDateChange(e) {
                 const date = [[${ TREEVIEW_KEY_RECORD_DATE }]]
                 this.referListObject[date] = e
@@ -588,61 +556,559 @@
                     return [0, 0]
                 }
             },
-            async getDetail(tphDyyyymmdd, tphCemployeeid) {
+            // 年次休暇管理のレコードを選択する
+            showDay(e) {
+                this.dataDetail = ''
+                this.paidDetailsData=[]
+
+                this.paidHolidayInitRList = true
+                this.title='年次休暇管理'
+
+                this.name = e[0].name
+                this.workertypenm = e[0].workertypenm
+
+                this.cemployeeid = e[0].tphCemployeeid
+                console.log(this.cemployeeid)
+                this.getDetailList(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
+
+            },
+            // 年次休暇管理
+            async getDetailList(tphDyyyymmdd, tphCemployeeid) {
                 this.paidDetailsLoading = true
                 try {
                     this.param.txtDate = tphDyyyymmdd
                     this.param.txtUserCode = tphCemployeeid
-                    const {data} = await this.http.get('sys/paidholiday/detail', this.param)
-                    console.log(data)
-                    this.dataDetail = data
-                    this.dataDetailBack = data
+                    //年次休暇付与状況取得
+                    const {data} = await this.http.get('sys/paidholiday/detailList', this.param)
+
+                    //今期付与情報
+                    data.forEach(e => {
+                        if (e.dyyyymmdd === tphDyyyymmdd) {
+                            this.dataDetail = {...e}
+                            this.dataDetailBack = e
+                        }
+                    })
+
+                    this.paidDetailsData = data
 
                 } catch (error) {
                     return
                 } finally {
                     this.paidDetailsLoading = false
                 }
+            },
+            async showDayList(e) {
+                this.dataDetail = ''
+                this.paidDetailsLoading = true
+
+                this.dataDetail = {...e[0]}
+                this.dataDetailBack = e[0]
+                setTimeout(()=>this.paidDetailsLoading = false)
 
             },
-            async getDetailList(tphDyyyymmdd, tphCemployeeid) {
-                try {
-                    this.param.txtDate = tphDyyyymmdd
-                    this.param.txtUserCode = tphCemployeeid
-                    const {data} = await this.http.get('sys/paidholiday/detailList', this.param)
-                    this.paidDetailsData = data
+            // async getDetail(tphDyyyymmdd, tphCemployeeid) {
+            //     this.paidDetailsLoading = true
+            //     try {
+            //         this.param.txtDate = tphDyyyymmdd
+            //         this.param.txtUserCode = tphCemployeeid
+            //         const {data} = await this.http.get('sys/paidholiday/detail', this.param)
+            //
+            //         this.dataDetail = data
+            //         this.dataDetailBack = data
+            //
+            //     } catch (error) {
+            //         return
+            //     } finally {
+            //         this.paidDetailsLoading = false
+            //     }
+            // },
 
-                } catch (error) {
-                    return
-                } finally {
+            //クリアボタン押下
+            async clear() {
+                this.dataDetail = ''
+                this.paidDetailsLoading = true
+
+                this.dataDetail = {...this.dataDetailBack}
+                setTimeout(()=>this.paidDetailsLoading = false)
+
+            },
+            //登録ボタン押下
+            exeUpdate: Debounce(function () {
+                if (this.calculation()) {
+                    this.paramters.cemployeeid = this.cemployeeid
+                    this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
+                    this.paramters.nadjust = this.dataDetail.nadjust
+                    this.paramters.nadjustHours = this.dataDetail.nadjustHours
+                    this.paramters.nadjustTo = this.dataDetail.nadjustTo
+                    this.paramters.nadjustHoursTo = this.dataDetail.nadjustHoursTo
+                    this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
+                    this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
+                    this.paramters.ccomment = this.dataDetail.ccomment
+
+                    this.http.get('sys/paidholiday/execUpdate', this.paramters)
+                }
+            }),
+            // 計算ボタン押下
+            calculation() {
+
+                let nadjust = this.paidNowData[3].days
+                let nadjustHours = this.paidNowData[3].times
+                let dexpireAdjust = this.paidNowData[3].expiryDate
+
+                let nadjustTo = this.paidNowData[4].days
+                let nadjustHoursTo = this.paidNowData[4].times
+                let dexpireAdjustTo = this.paidNowData[4].expiryDate
+
+                if (!this.checkError()) {
+                    this.dataDetail.nadjust = nadjust
+                    this.dataDetail.nadjustHours = nadjustHours
+                    this.dataDetail.dexpireAdjust = dexpireAdjust
+
+                    this.dataDetail.nadjustTo = nadjustTo
+                    this.dataDetail.nadjustHoursTo = nadjustHoursTo
+                    this.dataDetail.dexpireAdjustTo = dexpireAdjustTo
+                    return false
+                }
+
+                this.paidDetailsLoading = true
+
+                this.dataDetail.ninvestDays = (eval(this.dataDetail.ninvest)
+                    + eval(this.dataDetail.nthroughout)
+                    + eval(nadjust)
+                    + eval(nadjustTo))
+
+                this.dataDetail.ninvestHours = (this.toMinuteFromHours(this.dataDetail.nthroughoutHours)
+                    + this.toMinuteFromHours(nadjustHours)
+                    + this.toMinuteFromHours(nadjustHoursTo))/60
+                this.dataDetail.nadjust = nadjust
+                this.dataDetail.nadjustHours = nadjustHours
+                this.dataDetail.dexpireAdjust = dexpireAdjust
+
+                this.dataDetail.nadjustTo = nadjustTo
+                this.dataDetail.nadjustHoursTo = nadjustHoursTo
+                this.dataDetail.dexpireAdjustTo = dexpireAdjustTo
+
+                setTimeout(()=>this.paidDetailsLoading = false)
+
+                // 日付不足チェック
+                let nKonkiShutoku = parseFloat(this.paidNowData[7].days) + parseFloat(this.paidNowData[7].times) / this.dataDetail.navgworktimeCalc;
+
+                if (
+                    (
+                        eval(this.paidNowData[0].days)
+                        + eval(this.paidNowData[1].days)
+                        + eval(this.paidNowData[3].days)
+                        + eval(this.paidNowData[4].days)
+                        + (
+                            this.toHoursFromMinutes(
+                                this.toMinuteFromHours(this.paidNowData[1].times) +
+                                this.toMinuteFromHours(this.paidNowData[3].times) +
+                                this.toMinuteFromHours(this.paidNowData[4].times)
+                            ) / this.dataDetail.navgworktimeCalc
+                        )
+                    ) < nKonkiShutoku
+                ) {
+                    // MSG_NO_DAY
+                    this.$Notice.warning({desc: "調整付与日数が不足しています。"})
+                     return false;
+                }
+
+                // 合計付与日数と合計付与時間数の合計
+                let nDaySum = (eval(this.paidNowData[0].days)
+                    + eval(this.paidNowData[1].days)
+                    + eval(this.paidNowData[3].days)
+                    + eval(this.paidNowData[4].days))
+                let nHouSum = (this.toMinuteFromHours(this.paidNowData[1].times)
+                    + this.toMinuteFromHours(this.paidNowData[3].times)
+                    + this.toMinuteFromHours(this.paidNowData[4].times))/60
+                let nDHSum  = (parseFloat(nDaySum) + (parseFloat(nHouSum) / this.dataDetail.navgworktimeCalc))
+
+                if(nDaySum > 40) {
+                     //MSG_OVER_SUM_DAY
+                    this.$Notice.warning({desc: "調整付与日数と今期付与日数の合計は40を超えないようにして下さい。 "})
+                     return false;
+                } else if(nDHSum > 40) {
+                    // MSG_OVER_SUM_DAYHOURS
+                    this.$Notice.warning({desc: "合計付与日数と合計付与時間数の合計は40を超えないようにして下さい。 "})
+                     return false
+                }
+
+                return true
+
+            },
+            checkError() {
+
+                // 未入力チェック
+                // 調整付与日数
+                if (this.paidNowData[3].days === '') {
+                    this.$Notice.warning({desc: "調整付与日数を入力してください。"})
+                    return false
+                }
+                // 調整付与時間数
+                if (this.paidNowData[3].times === '') {
+                    this.$Notice.warning({desc: "調整付与時間数を入力してください。"})
+                    return false
+                }
+                // 調整繰越日数
+                if (this.paidNowData[4].days === '') {
+                    this.$Notice.warning({desc: "調整繰越日数を入力してください。"})
+                    return false
+                }
+                // 調整繰越時間数
+                if (this.paidNowData[4].times === '') {
+                    this.$Notice.warning({desc: "調整繰越時間数を入力してください。"})
+                    return false
+                }
+
+                //整数チェック
+                // 調整付与日数
+                if (isNaN(this.paidNowData[3].days) || this.paidNowData[3].days % 0.5 > 0) {
+                    this.$Notice.warning({desc: "調整付与日数は半休単位(0.5)で入力してください。"})
+                    return false;
+                }
+                //調整付与時間数
+                if (isNaN(this.paidNowData[3].times)) {
+                    this.$Notice.warning({desc: "調整付与時間数には０以上の数を指定してください。"})
+                    return false;
+                }
+                // 調整繰越日数
+                if (isNaN(this.paidNowData[4].days) || this.paidNowData[4].days % 0.5 > 0) {
+                    this.$Notice.warning({desc: "調整繰越日数は半休単位(0.5)で入力してください。"})
+                    return false;
+                }
+                //調整繰越時間数
+                if (isNaN(this.paidNowData[4].times)) {
+                    this.$Notice.warning({desc: "調整繰越時間数には０以上の数を指定してください。"})
+                    return false;
+                }
+
+                // 調整付与時間数
+                if (!this.numeric_check(this.paidNowData[3].times * 1000 / 10) ||
+                    this.toMinuteFromHours(this.paidNowData[3].times) % 15 > 0 ||
+                    (this.paidNowData[3].times * 10 % 10) * 10 > 45) {
+                    this.$Notice.warning({desc: "調整付与時間数は0.15単位で入力してください。"})
+
+                    return false;
+                }
+
+                // 調整繰越時間数
+                if (!this.numeric_check(this.paidNowData[4].times * 1000 / 10) ||
+                    this.toMinuteFromHours(this.paidNowData[4].times) % 15 > 0 ||
+                    (this.paidNowData[3].times * 10 % 10) * 10 > 45) {
+                    this.$Notice.warning({desc: "調整繰越時間数は0.15単位で入力してください。"})
+
+                    return false;
+                }
+
+                // 調整付与時間が(週平均勤務時間 - 15分)より大きい場合は入力エラー
+                // ただし、調整時間が0の場合は、チェック不要
+                if (this.paidNowData[3].times > 0 && this.paidNowData[3].times >= this.dataDetail.navgworktimeCalc) {
+                    this.$Notice.warning({desc: "調整付与時間数は週平均勤務時間数を超える値は入力できません。(0～" + this.dataDetail.navgworktimeCalc + ")"})
+                    return false;
+                }
+
+                // 繰越調整時間が(週平均勤務時間 - 15分)より大きい場合は入力エラー
+                if (this.paidNowData[4].times > 0 && this.paidNowData[4].times >= this.dataDetail.navgworktimeCalc) {
+                    //繰越調整時間は週平均勤務時間を超える時間は入力できません。(0～
+                    this.$Notice.warning({desc: "調整繰越時間数は週平均勤務時間数を超える値は入力できません。(0～" + this.dataDetail.navgworktimeCalc + ")"})
+                    return false;
+                }
+
+                // 調整付与時間数、前期繰越時間数、調整繰越時間数の合計チェック
+                if (
+                    this.toHoursFromMinutes(
+                        this.toMinuteFromHours(this.paidNowData[3].times) +
+                        this.toMinuteFromHours(this.paidNowData[4].times) +
+                        this.toMinuteFromHours(this.paidNowData[1].times)
+                    ) > 0 &&
+                    this.toHoursFromMinutes(
+                        this.toMinuteFromHours(this.paidNowData[3].times) +
+                        this.toMinuteFromHours(this.paidNowData[4].times) +
+                        this.toMinuteFromHours(this.paidNowData[1].times)
+                    ) >= this.dataDetail.navgworktimeCalc) {
+                    //調整付与時間数、前期繰越時間数、調整繰越時間数の合計が週平均勤務時間数を超えないようにして下さい。(0～
+                    this.$Notice.warning({desc: "調整付与時間数、前期繰越時間数、調整繰越時間数の合計が週平均勤務時間数を超えないようにして下さい。(0～" + this.dataDetail.navgworktimeCalc + ")"})
+
+                    return false;
+                }
+
+                // 調整付与日数と今期付与日数の合計
+                if (parseInt(this.paidNowData[0].days) + parseInt(this.paidNowData[3].days) > 100) {
+                    // MSG_NO_OVER_SUM_HUYO
+                    this.$Notice.warning({desc: "調整付与日数と今期付与日数の合計は100を超えないようにして下さい。"})
+
+                    return false;
+                }
+                // 調整繰越日数と前期繰越日数の合計
+                if (parseInt(this.paidNowData[1].days) + parseInt(this.paidNowData[4].days) > 100) {
+                    // MSG_NO_OVER_SUM_KURIKOSI
+                    this.$Notice.warning({desc: "調整繰越日数と前期繰越日数の合計は100を超えないようにして下さい。"})
+
+                    return false;
+                }
+
+                // 付与日数の合計
+                if (parseInt(this.paidNowData[0].days) + eval(this.paidNowData[3].days) < 0) {
+                    //MSG_LESS_KIJUNHUYONISSU
+                    this.$Notice.warning({desc: "付与日数の合計はマイナスに設定できません。"})
+                    return false;
+                }
+
+                // 越日数の合計
+                if (parseInt(this.paidNowData[1].days) + eval(this.paidNowData[4].days) < 0) {
+                    //MSG_LESS_TYOSEIKURIKOSINISSU
+                    this.$Notice.warning({desc: "繰越日数の合計はマイナスに設定できません。"})
+                    return false;
+                }
+
+                // 有効期限（調整付与）
+                if (this.toNumber(this.paidNowData[3].days) !== 0 || this.toNumber(this.paidNowData[3].times) !== 0) {
+                    // 未入力
+                    if (this.paidNowData[3].expiryDate === '') {
+                        // MSG_NO_INPUT_EXPIRE
+
+                        this.$Notice.warning({desc: "有効期限（調整付与）を入力してください。"})
+
+                        return false;
+                    }
+                    // 	形式チェック
+                    if (!this.date_check(this.paidNowData[3].expiryDate)) {
+                        //MSG_NO_DATE_EXPIRE
+                        this.$Notice.warning({desc: "有効期限（調整付与）はyyyy/mm/dd形式で入力してください。"})
+
+                        return false;
+                    }
+                    //付与日チェック
+                    if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[3].expiryDate) < 0) {
+                        // MSG_BEFORE_EXPIRE
+                        this.$Notice.warning({desc: "有効期限（調整付与）は降の日付を指定してください。"})
+                        return false;
+                    }
 
                 }
+                //有効期限（調整繰越）
+                if (this.toNumber(this.paidNowData[4].days) !== 0 || this.toNumber(this.paidNowData[4].times) !== 0) {
+
+                    // 未入力
+                    if (this.paidNowData[4].expiryDate === '') {
+                        // MSG_NO_INPUT_EXPIRE_TO
+
+                        this.$Notice.warning({desc: "有効期限（調整繰越）を入力してください。"})
+
+                        return false;
+                    }
+                    // 	形式チェック
+                    if (!this.date_check(this.paidNowData[4].expiryDate)) {
+                        //MSG_NO_DATE_EXPIRE_TO
+                        this.$Notice.warning({desc: "有効期限（調整繰越）はyyyy/mm/dd形式で入力してください。"})
+
+                        return false;
+                    }
+                    //付与日チェック
+                    if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[4].expiryDate) < 0) {
+                        // MSG_BEFORE_EXPIRE_TO
+                        this.$Notice.warning({desc: "有効期限（調整繰越）は付与日以降の日付を指定してください。"})
+                        return false;
+                    }
+                }
+
+                // 変更者コメント
+                if (!this.length_check(this.dataDetail.ccomment, '3', 1000)) {
+
+                    // MSG_LONG_COMMENT
+                    this.$Notice.warning({desc: "変更者コメントは半角1000文字、全角500文字以内で入力してください。"})
+                    return false;
+                }
+
+                return true
+
             },
-            async clear() {
-
-                this.dataDetail =''
-
-                this.paidDetailsLoading = true
-
-                await this
-                 this.dataDetail = this.dataDetailBack
-                this.paidDetailsLoading = false
+            toMinuteFromHours(pHours) {
+                let nMin = (Math.floor(Math.abs(pHours)) * 60) + Math.floor(Math.abs(pHours) * 1000 / 10 % 100);
+                if (0 > pHours) {
+                    nMin = nMin * -1;
+                }
+                return nMin;
             },
-            async calculation() {
+            toHoursFromMinutes(pMin) {
+                let nHours = Math.floor(Math.abs(pMin) / 60) + (Math.floor(Math.abs(pMin) % 60) / 100);
+                if (0 > pMin) {
+                    nHours = nHours * -1;
+                }
+                return nHours;
+            },
+            numeric_check(pValue) {
+                let parm1 = pValue;
 
-                this.paidDetailsLoading = true
-                console.log(this.dataDetail.nadjust)
-                console.log(this.dataDetail.nadjustTo)
+                for (let i = 0; i < parm1.length; i++) {
 
-                await this
-               this.dataDetail.ninvestDays= parseInt(this.dataDetail.ninvest)
-                   +  parseInt(this.dataDetail.nthroughout)
-                   + parseInt(this.dataDetail.nadjust)
-                   + parseInt(this.dataDetail.nadjustTo)
+                    if (i === 0) {
+                        if (parm1.substring(i, i + 1) !== "-" && (parm1.substring(i, i + 1) < "0" || parm1.substring(i, i + 1) > "9")) {
+                            return false;
+                        }
+                    } else if (parm1.substring(i, i + 1) < "0" || parm1.substring(i, i + 1) > "9") {
+                        return false;
+                    }
+                }
+                return true;
+            },
+            toNumber(Ps_para) {
+                let Ln_result = '';
+                let Ln_offset = Ps_para.length;
+                let Ln_point;
+                let Ln_j
+                // \記号を除く
+                if (Ps_para.charAt(0) === '\\') {
+                    Ps_para = Ps_para.substring(1, Ps_para.length);
+                }
+                // サインをチェック
+                if (Ps_para.charAt(Ps_para.length - 1) === '-') {
+                    Ln_offset = Ps_para.length - 1;
+                }
+                // 小数点のチェック
+                Ln_point = Ps_para.lastIndexOf('.', Ln_offset);
+                if (Ln_point >= 0) {
+                    Ln_result = Ps_para.substring(Ln_point + 1, Ln_offset);
+                    if (this.numeric_check(Ln_result) === true) {
+                        Ln_result = '.' + Ln_result;
+                        Ln_point = Ln_point - 1;
+                    } else {
+                        return (false);
+                    }
+                } else {
+                    Ln_point = Ln_offset - 1;
+                }
 
-               this.dataDetail.ninvestHours= parseInt(this.dataDetail.ninvestHours)+11
+                for (let Ln_i = Ln_point; Ln_i >= 0;) {
+                    for (Ln_j = 0; Ln_j < 3; Ln_j++) {
+                        if ((this.numeric_check(Ps_para.charAt(Ln_i)) === true) ||
+                            ((Ps_para.charAt(Ln_i) === '-') && (Ln_i === 0))) {
+                            Ln_result = Ps_para.charAt(Ln_i--) + Ln_result;
+                        } else {
+                            return (false);//			 illegal value
+                        }
+                        if (Ln_i < 0) {
+                            break;
+                        }
+                    }
+                    if ((Ln_j == 3) && (Ps_para.charAt(Ln_i) === ',')) {
+                        Ln_i = Ln_i - 1;
+                    }
+                }
+                if (Ln_offset === Ps_para.length - 1) {//		 back sign
+                    if (Ln_result.charAt(0) !== '-') {
+                        Ln_result = '-' + Ln_result;
+                    } else {
+                        return (false);
+                    }
+                }
+                Ln_result = parseFloat(Ln_result);
+                return (Ln_result);
+            },
+            date_check(psDate) {
+                let y;
+                let m;
+                let d;
+                let sy, sm, sd;
 
-                this.paidDetailsLoading = false
+                /* null チェック */
+                if (psDate === void (0) || psDate === null || psDate === "") {
+                    return false;
+                }
+                /* 形式チェック（9999/#9/#9） */
+                if (!psDate.match(/^(\d\d\d\d)\/(\d?\d)\/(\d?\d)$/)) {
+                    return false;
+                }
+                /* 年、月、日の範囲チェック */
+                y = parseInt(RegExp.$1, 10);
+                m = parseInt(RegExp.$2, 10);
+                d = parseInt(RegExp.$3, 10);
+                // 年：1900～2222
+                if (y < 1900 || y > 2222) {
+                    return false;
+                }
+                // 月：1～12
+                if (m < 1 || m > 12) {
+                    return false;
+                }
+                // 日：1～月末
+                if (d < 1 || d > this.lastDate(y, m)) {
+                    return false;
+                }
+
+                sy = "" + y;
+                sm = "" + m;
+                if (m < 10) {
+                    sm = "0" + m;
+                }
+                sd = "" + d;
+                if (d < 10) {
+                    sd = "0" + d;
+                }
+                return "" + sy + sm + sd;
+            },
+            daysBetween(pDate1, pDate2) {
+                let date1 = this.toDate(pDate1);
+                let date2 = this.toDate(pDate2);
+                let day = (date2 - date1) / 1000 / 60 / 60 / 24;
+                return day;
+            },
+            toDate(pDate) {
+
+                let dateArr = pDate.split("/");
+
+                for (let i = dateArr.length; i < 3; i++) {
+                    dateArr[i] = 1;
+                }
+                let date = new Date(dateArr[0], dateArr[1] - 1, dateArr[2]);
+                return date;
+            },
+            lastDate(Pn_yyyy, Pn_mm) {
+                let Ln_last = new Array(0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31);
+
+                if ((Pn_yyyy % 400 === 0) || ((Pn_yyyy % 4 === 0) && !(Pn_yyyy % 100 === 0))) {
+                    Ln_last[2] = 29;
+                }
+                return (Ln_last[eval(Pn_mm)]);
+            },
+            getLengthB(moji) {
+
+                let i, j, cnt = 0;
+
+                // "§", "¨", "°", "±", "´", "¶"を追加。2005.08.22 Oyama
+                let multiStr = new Array("×", "§", "¨", "°", "±", "´", "¶");
+
+                for (i = 0; i < moji.length; i++) {
+                    for (j = 0; j < multiStr.length; j++) {
+                        if (multiStr[j].length == 0) {
+                            continue;
+                        }
+                        moji = moji.replace(multiStr[j], "00");
+                    }
+                }
+
+                // MAC OSの場合、改行コードが「\n」となり、Windowsの改行コード「\r\n」とバイト数が異なるので、
+                // 改行コードは「\r\n」で桁数を計算する様にする。
+                moji = moji.split("\r\n").join("\n"); // 一旦「\r\n」 ⇒ 「\n」の変換を行い、改行コードを「\n」に合わせる。
+                moji = moji.split("\n").join("\r\n"); // 「\n」 ⇒ 「\r\n」の変換を行い、改行コード全てを「\r\n」にする。
+
+                // バイト数を求めます。
+                for (i = 0; i < moji.length; i++)
+                    if (escape(moji.charAt(i)).length >= 4) cnt += 2; else cnt++;
+                return cnt;
+
+            },
+            length_check(Ps_para, Pn_type, Pn_keta) {
+
+                if (Ps_para === null) {
+                    return true
+                }
+
+                let Ln_length = this.getLengthB(Ps_para)
+                if (Ln_length > Pn_keta)
+                    return false
+                else
+                    return true
             }
         }
     })

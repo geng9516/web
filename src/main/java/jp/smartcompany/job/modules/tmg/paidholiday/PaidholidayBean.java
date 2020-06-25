@@ -57,8 +57,8 @@ public class PaidholidayBean {
      * ACT_UADJUST
      */
     public void actUadjust(PsDBBean psDBBean, String empSql) {
-        //更新処理をする
-        execUpdate(psDBBean);
+//        //更新処理をする
+//        execUpdate(psDBBean);
         //転送項目の取得
         List<PaidHolidayInitVO> listPaidHolidayInit = iMastEmployeesService.listPaidHolidayInit(empSql);
        // modelMap.addAttribute("listPaidHolidayInit",listPaidHolidayInit);
@@ -70,18 +70,26 @@ public class PaidholidayBean {
     /**
      * 更新処理をする
      */
-    private void execUpdate(PsDBBean psDBBean){
+    public void execUpdate(PsDBBean psDBBean,PaidHolidayDispVO paidHolidayDispVO){
         TmgPaidHolidayDto tmgPaidHolidayDto= new TmgPaidHolidayDto();
         tmgPaidHolidayDto.setTphCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayDto.setTphCmodifierprogramid(MOD_PROGRAM_ID);
-        tmgPaidHolidayDto.setTphNinvest(psDBBean.getReqParam("txtTPH_NINVEST"));
-        tmgPaidHolidayDto.setTphNadjust(psDBBean.getReqParam("txtTPH_NADJUST"));
-        tmgPaidHolidayDto.setTphNadjustHours(psDBBean.getReqParam("txtTPH_NADJUST_HOURS")) ;
-        tmgPaidHolidayDto.setTphNadjustTo(psDBBean.getReqParam("txtTPH_NADJUST_TO"));
-        tmgPaidHolidayDto.setTphNadjustHoursTo(psDBBean.getReqParam("txtTPH_NADJUST_HOURS_TO"));
-        tmgPaidHolidayDto.setTphDexpireAdjust(psDBBean.getReqParam("txtTPH_DEXPIRE_ADJUST"));
-        tmgPaidHolidayDto.setTphDexpireAdjustTo(psDBBean.getReqParam("txtTPH_DEXPIRE_ADJUST_TO"));
-        tmgPaidHolidayDto.setTphCcomment(psDBBean.getReqParam("txtTPH_CCOMMENT"));
+        //txtTPH_NINVEST
+        tmgPaidHolidayDto.setTphNinvest(paidHolidayDispVO.getNinvest());
+        //txtTPH_NADJUST
+        tmgPaidHolidayDto.setTphNadjust(paidHolidayDispVO.getNadjust());
+        //txtTPH_NADJUST_HOURS
+        tmgPaidHolidayDto.setTphNadjustHours(paidHolidayDispVO.getNadjustHours()) ;
+        // txtTPH_NADJUST_TO
+        tmgPaidHolidayDto.setTphNadjustTo(paidHolidayDispVO.getNadjustTo());
+        // txtTPH_NADJUST_HOURS_TO
+        tmgPaidHolidayDto.setTphNadjustHoursTo(paidHolidayDispVO.getNadjustHoursTo());
+        //txtTPH_DEXPIRE_ADJUST
+        tmgPaidHolidayDto.setTphDexpireAdjust(paidHolidayDispVO.getDexpireAdjust());
+        //txtTPH_DEXPIRE_ADJUST_TO
+        tmgPaidHolidayDto.setTphDexpireAdjustTo(paidHolidayDispVO.getDexpireAdjustTo());
+        // txtTPH_CCOMMENT
+        tmgPaidHolidayDto.setTphCcomment(paidHolidayDispVO.getCcomment());
 
         tmgPaidHolidayDto.setTphCemployeeid(getDispUserCode()) ;
         tmgPaidHolidayDto.setTphDyyyymmdd(baseDate) ;
@@ -135,26 +143,13 @@ public class PaidholidayBean {
      */
     public PaidHolidayDispVO showDispDetail(PsDBBean psDBBean, String txtUserCode, String txtDate) {
 
-//        if (txtDate == null || "".equals(txtDate)) {
-//            baseDate = getSysdate();
-//        } else {
-//            baseDate = txtDate;
-//        }
         baseDate = txtDate;
         setDispUserCode(txtUserCode);
-
-//        if (txtUserCode != null && !"".equals(txtUserCode)) {
-//            setDispUserCode(txtUserCode);
-//            getReferList().setTargetEmployee(txtUserCode);
-//        } else {
-//            setDispUserCode(getReferList().getTargetEmployee());
-//        }
 
         // 年次休暇付与状況
         PaidHolidayDispVO paidHolidayDispVO = iTmgPaidHolidayService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), getDispUserCode(), baseDate, baseDate).get(0);
 
         return paidHolidayDispVO;
-
     }
 
     /**
@@ -164,60 +159,13 @@ public class PaidholidayBean {
      */
     public List<PaidHolidayDispVO> showDispList(PsDBBean psDBBean, String txtUserCode, String txtDate) {
 
-//        if (txtDate == null || "".equals(txtDate)) {
-//            baseDate = getSysdate();
-//        } else {
-//            baseDate = txtDate;
-//        }
         baseDate = txtDate;
         setDispUserCode(txtUserCode);
-//
-//        if (txtUserCode != null && !"".equals(txtUserCode)) {
-//            setDispUserCode(txtUserCode);
-//            getReferList().setTargetEmployee(txtUserCode);
-//        } else {
-//            setDispUserCode(getReferList().getTargetEmployee());
-//        }
 
         //年次休暇付与状況一覧
         List<PaidHolidayDispVO> paidHolidayDispVOList = iTmgPaidHolidayService.buildSQLForSelectPaidHoliday(psDBBean.getCustID(), psDBBean.getCompCode(), getDispUserCode(), baseDate, null);
         return paidHolidayDispVOList;
 
-    }
-
-
-
-    /**
-     * 今日日付を取得
-     * @return
-     */
-    private String getSysdate(){
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        return sdf.format(new Date());
-    }
-
-
-    /**
-     * 日付の妥当性チェックを行います。
-     * 指定した日付文字列（yyyy/MM/dd or yyyy-MM-dd）が
-     * カレンダーに存在するかどうかを返します。
-     * @param strDate チェック対象の文字列
-     * @return 存在する日付の場合true
-     */
-    public static boolean checkDate(String strDate) {
-        if (strDate == null) {
-            return false;
-        }
-        strDate = strDate.replace('-', '/');
-        DateFormat format = DateFormat.getDateInstance();
-        // 日付/時刻解析を厳密に行うかどうかを設定する。
-        format.setLenient(false);
-        try {
-            format.parse(strDate);
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
     }
 
     /** システムプロパティ：年次休暇管理画面において付与日数の上限チェック(40日)を行うか制御します */
@@ -239,18 +187,4 @@ public class PaidholidayBean {
     }
 
 
-    /**
-     * 組織選択メッセージを表示するか判定し返却する
-     * @return boolean
-     */
-    public boolean isSelectedSecOrEmp(){
-
-        if(getReferList().getTargetSec() == null || "".equals(getReferList().getTargetSec())
-                || "null".equals(getReferList().getTargetSec()) && !getReferList().isEmployeeList()){
-            return true;
-        } else {
-            return false;
-        }
-
-    }
 }
