@@ -45,15 +45,15 @@
                             所属
                         </div>
                         <Row class="tl mb5">
-                             <i-i-col span="4" class="label tc" style="height: 32px;">基準日</i-i-col>
-                            <i-i-col span="7" class="no-border-radius">
+                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="7" class="no-border-radius">
                             <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
                                          placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
-                            </i-i-col>
+                            </i-col>
                         </Row>
 
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-i-select-change="handleClickLeaf" ref="tree"
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                                   empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
@@ -106,7 +106,11 @@
                 },
                 query: {
                     baseMonth: '2020/04/01',
-                    psSite: Utils.getUrlParam(location.href, 'psSite')
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    //目标sec
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    //基准日
+                    txtTmgReferListTreeViewRecordDate: '',
                 },
             }
         },
@@ -114,7 +118,6 @@
             this.getData()
             this.getOrgTree()
             this.getTableHead()
-            this.getTableData()
         },
         computed: {
         },
@@ -157,15 +160,11 @@
             handleDatePicker() {},
             async handleClickLeaf(e) {
                 this.deptDrawShow = false
-                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                this.referListObject[section] = e[0].secid
-                this.loginEmployee = e[0].empid
-                this.deptName = e[0].secnic
-                this.query.employeeId = e[0].empid
-                this.kanjiName = e[0].empname
-                this.selectDisabled = true
-                this.remarksDisabled = true
-                this.getTableData()
+                this.defaultDeptId = e[0].secid
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                await this.getTableHead()
+                await this.getTableData()
             },
             async handleDeptViewTypeChange() {
                 await this.getOrgTree()

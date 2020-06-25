@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class OvertimeInstructBean {
     public final ITmgDailyDetailService iTmgDailyDetailService;
     public final ITmgDailyDetailCheckService ITmgDailyDetailCheckService;
     public final ITmgTriggerService  iTmgTriggerService;
-    public PsDBBean psDBBean;
+    //public PsDBBean psDBBean;
 
     ParamOvertimeInstructDto param = new ParamOvertimeInstructDto();
     OverTimeLimitDto overTimeLimitDtos= new OverTimeLimitDto();
@@ -100,26 +101,26 @@ public class OvertimeInstructBean {
     public static final String CATEGORY_OVERWORK_AVG_MONTH   = "6";
 
     //参数设置
-    private void paramSetting(){
-        param=null;
-
-        //基本信息
-        param.setUserCode(psDBBean.getUserCode());
-        param.setAction(psDBBean.getReqParam("txtACTION"));
-        param.setCustId(psDBBean.getCustID());
-        param.setCompId(psDBBean.getCompCode());
-        param.setSiteId(psDBBean.getSiteId());
-        param.setLang(psDBBean.getLanguage());
-        param.setTargetGroup(referList.getTargetGroup());
-
-        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getTargetGroup());
-
-        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getTargetGroup());
-
-
-
-
-    }
+//    private void paramSetting(){
+//        param=null;
+//
+//        //基本信息
+//        param.setUserCode(psDBBean.getUserCode());
+//        param.setAction(psDBBean.getReqParam("txtACTION"));
+//        param.setCustId(psDBBean.getCustID());
+//        param.setCompId(psDBBean.getCompCode());
+//        param.setSiteId(psDBBean.getSiteId());
+//        param.setLang(psDBBean.getLanguage());
+//        param.setTargetGroup(referList.getTargetGroup());
+//
+//        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
+//
+//        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
+//
+//
+//
+//
+//    }
 
 
     // 凡例画面表示
@@ -165,9 +166,11 @@ public class OvertimeInstructBean {
      *
      * 実績時間画面表示アクション、または実績時間（法定内を含む）画面表示アクションのどちらかのアクションコードを想定
      */
-    public void actionExecuteDispResult(ModelMap modelMap) {
-
-        /* 情報をDB用(SQLで使用できる形)へ加工 */
+    public List<ResultMonthlyVo> actionExecuteDispResult(String baseMonth,PsDBBean psDBBean) throws Exception {
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
         /**
          * コンテンツＩＤはアクションコードによって、切替する。
          *   実績時間画面表示の場合は、「TMG_CONTENTID|OTR」を使用。
@@ -182,68 +185,114 @@ public class OvertimeInstructBean {
         } else {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTR;
         }
-
-
-        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getTargetGroup());
-
-        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getTargetGroup());
-
-
-        // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
-        // 1 カレンダーテーブルより休日フラグを取得
-        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
-                param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
+        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
+        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
         // 2 表示対象社員の今月分の一日毎の超過勤務実績時間を取得
-        List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(param.getCustId(), param.getCompId(), param.getTargetSec(),
-                sDBContentId, param.getBaseDate(), param.getLang(), param.getEmployeeListSql());
+        List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
+                sDBContentId, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
         // 3 前月リンクを取得
-        String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 1);
+        //String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 1);
         // 4 翌月リンクを取得
-        String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 0);
+        //String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 0);
         // 5 表示対象社員の今年度分の合計超過実績時間と、月超過回数を取得
-        List<YearlyInfoVo> yearlyInfoVoList = iTmgMonthlyInfoService.selectYearlyInfo(param.getCustId(), param.getCompId(), sDBContentId,
-                param.getBaseDate(), param.getToday(), param.getLang(), param.getEmployeeListSql());
+        List<YearlyInfoVo> yearlyInfoVoList = iTmgMonthlyInfoService.selectYearlyInfo(psDBBean.getCustID(), psDBBean.getCompCode(), sDBContentId,
+                baseMonth, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
         // 6 36協定における月の超勤限度時間表示用名称取得
 
-        String limit = iMastGenericDetailService.selectLimit(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getLang(), TmgUtil.Cs_MGD_LIMIT_MONTHLY_OVERTIME_36);
-        //处理后MonthlyInfoOtVo　list
-        List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
+        //String limit = iMastGenericDetailService.selectLimit(psDBBean.getCustID(), psDBBean.getCompCode(), baseMonth, psDBBean.getLanguage(), TmgUtil.Cs_MGD_LIMIT_MONTHLY_OVERTIME_36);
 
+        //处理后MonthlyInfoOtVo　list
+        List<ResultMonthlyVo> dealwitchMonthlyList=new ArrayList<ResultMonthlyVo>();
 
         for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
-            //合計(月)
-            monthlyInfoOtVo.setOvertime(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getOvertime(),CATEGORY_SUM_MONTH)));
-            //承認状況ステータス
-            Map<String,Object> monthlyMap=BeanUtil.beanToMap(monthlyInfoOtVo);
-
-            for(String key:monthlyMap.keySet()){//keySet获取map集合key的集合  然后在遍历key即可
-                 if(!key.equals("empid")&&!key.equals("empname")&&!key.equals("overtime")){
-                     monthlyMap.put(key,formatTime(getTypeOfStyleByLimit((String)monthlyMap.get(key),CATEGORY_OVER_WORK)));
-                 }
-            }
             for(YearlyInfoVo yearlyInfoVo:yearlyInfoVoList){
                 if(yearlyInfoVo.getTmiCemployeeid().equals(monthlyInfoOtVo.getEmpid())){
+                    ResultMonthlyVo rVo= new ResultMonthlyVo();
+                    rVo.setEmpid(monthlyInfoOtVo.getEmpid());
+                    rVo.setEmpname(monthlyInfoOtVo.getEmpname());
+                    //合計(月)
+                    rVo.setOvertime(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getOvertime(),CATEGORY_SUM_MONTH)));
                     //合計(年)
-                    yearlyInfoVo.setTmiCinfo01(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo01(),CATEGORY_SUM_YEAR)));
+                    rVo.setOverTimeYear(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo01(),CATEGORY_SUM_YEAR)));
                     //45超(年)
-                    yearlyInfoVo.setTmiCinfo02(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo02(),CATEGORY_COUNT));
+                    rVo.setOverTimeOver45(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo02(),CATEGORY_COUNT));
                     //休日出勤回数
-                    yearlyInfoVo.setTmiCinfo03(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo03(),CATEGORY_HOL_CNT));
+                    rVo.setWorkInHolidayCount(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo03(),CATEGORY_HOL_CNT));
                     //平均超勤時間（月）
-                    yearlyInfoVo.setTmiCinfo04(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo04(),CATEGORY_OVERWORK_AVG_MONTH)));
+                    rVo.setAvgOverTime(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo04(),CATEGORY_OVERWORK_AVG_MONTH)));
+                    rVo.setInfo01(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo01(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo02(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo02(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo03(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo03(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo04(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo04(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo05(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo05(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo06(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo06(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo07(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo07(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo08(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo08(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo09(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo09(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo10(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo10(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo11(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo11(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo12(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo12(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo13(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo13(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo14(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo14(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo15(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo15(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo16(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo16(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo17(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo17(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo18(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo18(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo19(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo19(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo20(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo20(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo21(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo21(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo22(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo22(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo23(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo23(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo24(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo24(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo25(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo25(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo26(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo26(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo27(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo27(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo28(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo28(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo29(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo29(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo30(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo30(),CATEGORY_OVER_WORK)));
+                    rVo.setInfo31(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo31(),CATEGORY_OVER_WORK)));
+                    dealwitchMonthlyList.add(rVo);
                 }
             }
-            dealwitchMonthlyList.add(BeanUtil.toBean(monthlyMap,MonthlyInfoOtVo.class));
         }
+        return dealwitchMonthlyList;
+    }
+
+
+    public List<OneMonthDetailVo>  getTableTop(String baseMonth,PsDBBean psDBBean) throws Exception {
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
+
+        // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
+        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(baseMonth);
+        // 1 カレンダーテーブルより休日フラグを取得
+        CalenderVo calenderVoList = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), baseMonth.substring(0,4), baseMonth);
+
+        Map map = BeanUtil.beanToMap(calenderVoList);
+        //List<String> tcaCholflgList = new ArrayList<>();
+        DecimalFormat nDayFormat = new DecimalFormat("00");
+
+        int i = 1;
+        for(OneMonthDetailVo vo:oneMonthDetailVoList){
+            vo.setTcaCholflg(String.valueOf(map.get("tcaCholflg" + nDayFormat.format(i))));
+            vo.setTableTop(vo.getSeq()+"/n"+vo.getDayOfWeek());
+            vo.setToday(psDBBean.getSysDate().equals(vo.getDay()));
+            i++;
+        }
+        return oneMonthDetailVoList;
     }
 
 
 
 
+
+
     // 月別情報一覧画面.超過勤務命令月別一覧画面
-    public void actionExecuteDisp(ModelMap modelMap) {
-        paramSetting();
+    public void actionExecuteDisp(PsDBBean psDBBean) {
+        //paramSetting();
         /*param.setCompId("01");
         param.setCustId("01");
         param.setBaseDateYYYY("2020");
@@ -252,16 +301,16 @@ public class OvertimeInstructBean {
         // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
         // 1 カレンダーテーブルより休日フラグを取得
-        List<CalenderVo> calenderVoList = iTmgCalendarService.selectGetCalendarList(param.getCustId(),
-                param.getCompId(), param.getTargetSec(), param.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
+        CalenderVo calenderVoList = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
         // 2 表示対象社員の超過勤務命令時間を取得
         //buildSQLForSelectTMG_MONTHLY_INFO_OTI
-        List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(param.getCustId(), param.getCompId(), param.getTargetSec(),
-                null, param.getBaseDate(), param.getLang(), param.getEmployeeListSql());
+        List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
+                null, param.getBaseDate(), psDBBean.getLanguage(), param.getEmployeeListSql());
         // 3 前月リンクを取得
-        String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 1);
+        String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 1);
         // 4 翌月リンクを取得
-        String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(param.getCustId(), param.getCompId(), param.getBaseDate(), param.getEmployeeListSql(), 0);
+        String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 0);
 
         List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
         for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
@@ -281,36 +330,36 @@ public class OvertimeInstructBean {
     }
 
     //超過勤務実績月別平均画面
-    public void actionexecuteDisp6MonthsAvg(){
-        paramSetting();
-        List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(param.getCustId(),param.getCompId(),param.getTargetUser()
+    public void actionexecuteDisp6MonthsAvg(PsDBBean psDBBean){
+        //paramSetting();
+        List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(psDBBean.getCustID(),psDBBean.getCompCode(),param.getTargetUser()
         ,param.getBaseDate(),"-5");
     }
 
     // 日別情報編集画面
-    public void actionExecuteEdit(){
-        paramSetting();
+    public void actionExecuteEdit(PsDBBean psDBBean){
+        //paramSetting();
         // 編集画面表示項目マスタ制御設定取得
-        List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
+        List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),param.getLang());
         // 0 日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得
-        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getBaseDate(),param.getBaseDateMM(),
-                param.getLang(),param.getEmployeeListSql(), DispOverTimeItemsDtos);
+        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getBaseDate(),param.getBaseDateMM(),
+                psDBBean.getLanguage(),param.getEmployeeListSql(), DispOverTimeItemsDtos);
         // 1 予定出社時間・予定退社時間の基準値を取得
-        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(param.getCustId(), param.getCompId(), param.getBaseDate());
+        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate());
         //2 日別詳細情報より超過勤務命令開始・終了時間を取得
-        List<DailyDetailOverHoursVo> dailyDetailOverHoursVoList = iTmgDailyService.selectDailyDetailOverHours(param.getCustId(),param.getCompId(),param.getTargetSec()
-                ,param.getBaseDate(),param.getLang(),param.getEmployeeListSql());
+        List<DailyDetailOverHoursVo> dailyDetailOverHoursVoList = iTmgDailyService.selectDailyDetailOverHours(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec()
+                ,param.getBaseDate(),psDBBean.getLanguage(),param.getEmployeeListSql());
         // 3 基準日時点の超勤限度時間取得
-        List<LimitOfBaseDate> limitOfBaseDateList = iTmgGroupAttributeService.selectLimitOfBaseDate(param.getCustId(),param.getCompId(),param.getTargetSec(),param.getBaseDate());
+        List<LimitOfBaseDate> limitOfBaseDateList = iTmgGroupAttributeService.selectLimitOfBaseDate(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getBaseDate());
         // 4 標準の勤務パターンを取得
-        int workTime=iTmgPatternService.selectStandardWorkTime(param.getCustId(),param.getCompId(),param.getBaseDate());
+        int workTime=iTmgPatternService.selectStandardWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate());
         // 5 日別詳細情報より勤務予定時間外の休憩開始・終了時間を取得
-        List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getEmployeeListSql());
+        List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),param.getEmployeeListSql());
     }
 
     // 日別情報更新処理
-    public void actioneExecuteUpdate(){
-        paramSetting();
+    public void actioneExecuteUpdate(PsDBBean psDBBean){
+        //paramSetting();
 
         List<UpdateDto> updateDtoList=new ArrayList<UpdateDto>();
 

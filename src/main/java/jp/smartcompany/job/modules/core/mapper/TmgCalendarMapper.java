@@ -34,7 +34,7 @@ public interface TmgCalendarMapper extends BaseMapper<TmgCalendarDO> {
     List<OneMonthDetailVo> selectDayCount(@Param("baseDate") String baseDate);
 
 
-    List<CalenderVo> selectGetCalendarList(@Param("custId") String custId,
+    CalenderVo selectGetCalendarList(@Param("custId") String custId,
                                            @Param("compId") String compId,
                                            @Param("secId") String secId,
                                            @Param("groupId") String groupId,

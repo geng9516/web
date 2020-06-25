@@ -1031,7 +1031,7 @@ public class PermStatListBean {
     public CalenderVo selectGetCalendarList(PsDBBean psDBBean, TmgReferList referList) {
         // 1 カレンダー情報の取得
         CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM());
         return calenderVo;
     }
 
@@ -1047,11 +1047,11 @@ public class PermStatListBean {
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
         // 1 カレンダー情報の取得
         CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM()).get(0);
+                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM());
 
         Map map = BeanUtil.beanToMap(calenderVo);
 
-        List<String> tcaCholflgList = new ArrayList<>();
+        //List<String> tcaCholflgList = new ArrayList<>();
         DecimalFormat nDayFormat = new DecimalFormat(FORMAT_ZERO);
 
         int i = 1;

@@ -45,7 +45,7 @@ public class TmgCalendarServiceImpl extends ServiceImpl<TmgCalendarMapper, TmgCa
      * カレンダーテーブルより休日フラグを取得。
      */
     @Override
-    public List<CalenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
+    public CalenderVo selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate) {
         return baseMapper.selectGetCalendarList(custId, compId, secId, groupId, targetYYYY, sBaseDate);
     }
 
