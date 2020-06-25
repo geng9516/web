@@ -10,12 +10,6 @@ const Clock = {
     <span style="font-size:35px;color: rgb(169,169,169)">{{ timeView.hourMsg.substring(6, 8) }}</span>
   </div>
 </div>` ,
-  props: {
-    time: {
-      type: Number,
-      default: Date.now()
-    }
-  },
   data: function () {
     return {
       timemachine: {},
@@ -38,13 +32,12 @@ const Clock = {
   },
   methods: {
     showTime() {
-      // 手机部分
-      // const Sever_Time = localStorage.getItem('SO_Mobile_Sever_Time')
-      // const Local_Time = localStorage.getItem('SO_Mobile_Local_Time')
-      // const time = Date.now() - Local_Time + +Sever_Time
-      // const { dateMsg, hourMsg, week } = Utils.getTime(time)
-      this.$emit('updatetime', 1000)
-      const { dateMsg, hourMsg, week } = Utils.getTime(this.time)
+      const Sever_Time = localStorage.getItem('Mobile_Sever_Time')
+      const Local_Time = localStorage.getItem('Mobile_Local_Time')
+      const time = Date.now() - Local_Time + +Sever_Time
+      const { dateMsg, hourMsg, week } = Utils.getTime(time)
+      // this.$emit('updatetime', 1000)
+      // const { dateMsg, hourMsg, week } = Utils.getTime(this.time)
       this.timeView = { dateMsg, hourMsg, week }
       this.timemachine = setTimeout(this.showTime, 1000)
     },

@@ -6,7 +6,7 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
-    <svg th:replace="layout/icons::svg_icons"></svg>
+    <svg:replace="layout/icons::svg_icons"></svg>
     <main class="content">
         <section class="stamp-warp tc">
             <div class="schedule">
@@ -21,7 +21,7 @@
                 </span>
             </div>
             <div class="stamp">
-                <Clock :time="data.serverTime" @updatetime="e => (data.serverTime += e)" ref="clock"></Clock>
+                <Clock ref="clock"></Clock>
                 <Row>
                     <i-col span="12" class="pr5">
                         <i-button long @click="handleStamp('1')"
@@ -118,7 +118,8 @@
                     checkOutLoading: false
                 }
             },
-            mounted() {
+            async mounted() {
+                await this.getData()
                 this.$refs.clock.showTime()
             },
             beforeDestroy() {
@@ -167,6 +168,8 @@
                     //   console.log(e)
                     //   this.data.serverTime = Date.now()
                     // }
+                    localStorage.setItem('Mobile_Sever_Time',Date.now() )
+                    localStorage.setItem('Mobile_Local_Time',Date.now() )
                     this.data.serverTime = Date.now()
                     console.log(this.data.serverTime)
                 },
