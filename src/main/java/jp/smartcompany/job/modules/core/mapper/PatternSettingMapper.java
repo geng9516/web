@@ -111,15 +111,16 @@ public interface PatternSettingMapper extends BaseMapper<Object> {
 
     /**
      * 時刻の規定範囲を取得します
+     *
      * @return
      */
-    HashMap<String,String> selectDayOpenClose();
+    HashMap<String, String> selectDayOpenClose();
 
     /**
      * 指定された勤務パターンIDがDBに存在している場合
+     *
      * @return
      */
     String checkPatternId(HashMap<String, Object> params);
-
 
 }
