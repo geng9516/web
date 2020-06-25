@@ -574,16 +574,16 @@
                     console.log(this.restApply)
                     try {
                         this.loading = true
-                        await this.http.uploadFiles('sys/vapply/MakeApply',{
+                        await this.http.uploadFiles('/sys/vapply/MakeApply',{
                             params:JSON.stringify(this.restApply),
                             uploadFiles:this.uploadFiles.filter(e=> !e.isDefault),
-                            deleteFiles: this.deleteFiles,
+                            deleteFiles:JSON.stringify(this.deleteFiles),
                             psSite: this.opts.psSite
                         })
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
-                        // this.restApply =  this._restApply
+                        this.restApply =  this._restApply
                         this.$Message.success('申请完了')
                     } catch (error) {
                         if(error.config || error.response && error.response.status === 500) return
