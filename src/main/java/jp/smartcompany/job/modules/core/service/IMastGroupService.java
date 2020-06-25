@@ -1,9 +1,11 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,5 +32,11 @@ public interface IMastGroupService extends IService<MastGroupDO> {
          * @return
          */
         List<DBMastGroupBO> getPretreatGroupByLanguageUserId(String language, String userId);
+
+        /**
+         * グループ一覧取得
+          */
+        List<GroupAppManagerGroupDTO> selectAppManagerGroup(String customerId, String systemId, String language,
+        Date searchDate, String companyId,List<String> companyIds);
 
 }

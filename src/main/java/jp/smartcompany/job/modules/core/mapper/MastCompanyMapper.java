@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -20,4 +21,10 @@ import java.util.List;
 public interface MastCompanyMapper extends BaseMapper<MastCompanyDO> {
 
        List<MastCompanyDO> selectCompanyInfo(@Param("custId") String sCustid,@Param("language") String sLanguage,@Param("date") String sDate);
+
+       List<HistDesignationDO> selectTargetCompany(@Param("existsSql") String existsSql,
+                                                   @Param("searchDate") String searchDate);
+
+       List<HistDesignationDO> selectAllCompany(@Param("custId") String custId,
+                                                   @Param("searchDate") String searchDate);
 }

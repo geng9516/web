@@ -15,6 +15,8 @@ import lombok.ToString;
 public class GroupAppManagerPermissionDTO {
 
     private Long mtrId;
+    private String mgpCcompanyid;
+    private String mgpCsystemid;
     private String mgpCgroupid;
     private String mgpCobjectid;
     private String mgpCsite;
@@ -32,5 +34,7 @@ public class GroupAppManagerPermissionDTO {
     private String mgNweightage;
     private String mtrCurl2;
     private String mtrIcon;
+    /** セルの背景色 */
+    private String bgColor;
 
 }

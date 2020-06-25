@@ -233,6 +233,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String targetPermSection = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
         String targetPermEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
         String targetPermGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+        String selectedView = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_SELECTED_VIEW);
 
         // 树状图搜索用参数
         String searchItems = request.getParameter(TmgReferList.TREEVIEW_OBJ_HIDSEARCHITEMES);
@@ -247,6 +248,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
         if (StrUtil.isNotBlank(searchData)) {
             hashtable.put(TmgReferList.TREEVIEW_OBJ_HIDSEARCHDATA,searchData);
+        }
+        if (StrUtil.isNotBlank(selectedView)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_SELECTED_VIEW,selectedView);
         }
 
         // 部门基准日

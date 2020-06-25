@@ -1,6 +1,9 @@
 package jp.smartcompany.framework.appcontrol.business.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.framework.appcontrol.AppInfo;
 import jp.smartcompany.framework.appcontrol.SiteInfo;
 import jp.smartcompany.framework.appcontrol.TopPageInfo;
@@ -54,6 +57,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
      */
     @Override
     public String getAppId(String sUrl) {
+        setRequest(ContextUtil.getHttpRequest());
         // ▼ 2007/07/31 Saito
         // サイト検索時のアプリケーションIDはnull
         if (sUrl.contains(SITE_HTML)) {
@@ -66,63 +70,21 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
         // ▲ 2007/07/31 Saito
 
         //▼2007/08/24 Konno 複数箇所で使うのでメソッド化
-        List<String> lUrl = separateURL(sUrl);
+        List<String> lUrl = CollUtil.newArrayList();
 
         // サイトID取得
         String sSiteId = getSiteId(sUrl);
 
         //▼ 2007/08/24 V3互換アプリケーション起動時はパラメータより値を取得
-        try {
-            String sApp = lUrl.get(lUrl.size()-1);
-            if (sApp.equalsIgnoreCase(V3APP_HTML)){
-                //パラメータよりアプリケーションId、サブアプリケーションIdを取得
-                //URLの後続パラメータをURLから分離
-                StringTokenizer st1 = new StringTokenizer(sUrl, "?");
-                String sURLSecondHalf = st1.nextToken();
-                //後続パラメータを"&"を区切りとして分割
-                StringTokenizer st2 = new StringTokenizer(sURLSecondHalf, "&");
-                String sAppId = null;
-                String sSubAppId = null;
-
-                while (st2.hasMoreTokens()) {
-                    //KeywordとValueを分解
-                    String sParam = st2.nextToken();
-                    if (!sParam.startsWith(PsConst.PARAM_KEY_APPID)) {
-                        // アプリケーションIDのパラメータ以外は、以降の処理を行わない
-                        continue;
-                    }
-                    String sKey = null;
-                    String sValue = null;
-                    StringTokenizer st3 = new StringTokenizer(sParam, "=");
-                    while (st3.hasMoreTokens()) {
-                        sKey = st3.nextToken();
-                        // 対応する値が存在する場合のみ、値を取得する
-                        if (st3.hasMoreTokens()) {
-                            sValue = st3.nextToken();
-                        }
-                        break;
-                    }
-                    //アプリケーションID取得
-                    if (StrUtil.equalsIgnoreCase(sKey,PsConst.PARAM_KEY_APPID)){
-                        sAppId = sValue;
-                        // ここでは、アプリケーションIDが取得できればOKなので、ループを抜ける
-                        break;
-                    }
-                }
-                // アプリケーションIDのチェック
-                if (this.getAppInfo(sSiteId, sAppId).getAppID().equals(sAppId)) {
-                    return sAppId;
-                }
-            }
-        } catch (Exception e) {
-            System.err.println("アプリケーションIDの取得エラー");
-            e.printStackTrace();
-        }
+        // サイトID返却値
+        String sAppId = gRequest.getParameter(PsConst.PARAM_KEY_APPID);
+        // リクエストパラメータの取得
         //▲ 2007/08/24
         AppInfo appInfo;
-        String sAppId;
         // アプリケーションIDの取得(サブアプリケーションが無い場合の位置)
-        sAppId = lUrl.get(lUrl.size() - 3);
+//        System.out.println("-----+======");
+//        System.out.println(lUrl);
+//        sAppId = lUrl.get(lUrl.size() - 3);
 
         // アプリケーションIDのチェック
         appInfo = this.getAppInfo(sSiteId, sAppId);
@@ -132,7 +94,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
             }
         }
         // アプリケーションIDの取得(サブアプリケーションが有る場合の位置)
-        sAppId = lUrl.get(lUrl.size() - 4);
+//        sAppId = lUrl.get(lUrl.size() - 4);
         // アプリケーションIDのチェック
         appInfo = this.getAppInfo(sSiteId, sAppId);
         if (appInfo != null) {
@@ -316,6 +278,39 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
 
     @Override
     public SiteInfo getSiteInfo(String sSiteId) {
+        SiteInfo gSiteInfo;
+        // サイトIDが渡されてこなかった場合
+        if(sSiteId == null) {
+            return null;
+        }
+        // すべてのサイト情報をListで取得
+        List < SiteInfo > lSiteInfoAll = this.getSiteList();
+
+        // サイトが１つも登録されていないケースに対応
+        if(lSiteInfoAll == null) {
+            // #1794,1878
+//            throw new ParameterInvalidException("サイトID","");
+            return null;
+        }
+
+        for (int i = 0; i < lSiteInfoAll.size(); i++) {
+
+            gSiteInfo = lSiteInfoAll.get(i);
+
+            // TopPageだったら例外を出さずに終了
+            if (sSiteId.equals("TopPage")) {
+                return null;
+            }
+
+            // 指定サイトIDに属するサイト情報の場合
+            if (sSiteId.equals(gSiteInfo.getSiteID())) {
+                return gSiteInfo;
+            }
+        }
+
+        // #1794,1878
+//        // 例外処理
+//        throw new ParameterInvalidException("サイトID","");
         return null;
     }
 
@@ -391,6 +386,45 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
         sSystemCode = gAppInfo.getSystem();
 
         return sSystemCode;
+    }
+
+    /**
+     * すべてのサイト情報をListで取得します。
+     *
+     * @return lSite サイト情報リスト
+     */
+    public List < SiteInfo > getSiteList() {
+        setRequest(ContextUtil.getHttpRequest());
+        gPsSession = (PsSession) gRequest.getAttribute(Constant.PS_SESSION);
+        List < SiteInfo > lSite = new ArrayList < SiteInfo >();
+
+        TopPageInfo topPageInfo = this.gPsSession.getLoginAppPermission();
+        if(topPageInfo == null) {
+            // #1794,1878
+//            throw new SessionVariableInvalidException("","");
+            return null;
+        }
+
+        Map hSite = topPageInfo.getSiteInfo();
+        // ▼ 2007/07/12 Saito
+        // サイトが一つも登録されていなかったらnullを返すように修正
+        if(hSite == null) {
+            // #1794,1878
+//            throw new ParameterInvalidException("サイトID","");
+            return null;
+        }
+        // ▲ 2007/07/12 Saito
+
+        Set set = hSite.entrySet();
+        Iterator ite = set.iterator();
+
+        while (ite.hasNext()) {
+            Map.Entry entry = (Map.Entry) ite.next();
+            lSite.add((SiteInfo) entry.getValue());
+        }
+
+        return lSite;
+
     }
 
 }

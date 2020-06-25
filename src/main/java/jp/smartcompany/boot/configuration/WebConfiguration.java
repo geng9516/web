@@ -25,18 +25,6 @@ public class WebConfiguration extends WebMvcConfigurationSupport {
     }
 
     @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowCredentials(true)
-                .allowedHeaders("*")
-                .allowedMethods(
-                        "GET",
-                        "POST",
-                        "OPTIONS"
-                ).maxAge(3600);
-    }
-
-    @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/static/**")
                 .addResourceLocations(ResourceUtils.CLASSPATH_URL_PREFIX+"/static/");

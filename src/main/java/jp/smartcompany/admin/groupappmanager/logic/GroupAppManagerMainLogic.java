@@ -1,7 +1,9 @@
 package jp.smartcompany.admin.groupappmanager.logic;
 
+import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+
 import java.util.Date;
-import java.util.Locale;
+import java.util.List;
 
 /**
  * 起動権限設定 メインLogicインターフェース
@@ -9,19 +11,12 @@ import java.util.Locale;
  */
 public interface GroupAppManagerMainLogic {
 
-    /**
-     * 権限データ設定処理
-     *
-     * @param systemId システムID
-     * @param date 検索日付
-     * @param groupId グループID
-     * @param siteId サイトID
-     * @param appId アプリケーションID
-     * @param language 言語区分
-     * @param locale 言語ロケール(リソースバンドルファイル参照用)
-     * @return List
-     */
-//    getUserPermission(String systemId, Date date, String groupId, String siteId,
-//                      String appId, String language, Locale locale);
+    GroupAppManagerTableLayout listPermsTable(
+            String systemId, Date date,
+            String groupId, String psSite,
+            String psApp, String psLanguage,
+            String customerId,String companyId,
+            Boolean isAll
+    );
 
 }

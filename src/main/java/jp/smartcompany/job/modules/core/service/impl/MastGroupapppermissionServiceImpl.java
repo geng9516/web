@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
@@ -28,6 +29,11 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
         ) {
                 String strDate = SysUtil.transDateToString(date);
                 return baseMapper.selectPermissionList(systemId,strDate,groupIds,siteId,appId,language);
+        }
+
+        @Override
+        public GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId) {
+                return baseMapper.selectDate(systemId,pdDate,groupId);
         }
 
 }

@@ -1,11 +1,15 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.mapper.MastCompanyMapper;
 import jp.smartcompany.job.modules.core.service.IMastCompanyService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,5 +26,19 @@ public class MastCompanyServiceImpl extends ServiceImpl<MastCompanyMapper, MastC
         @Override
         public List<MastCompanyDO> getCompanyInfo(String sCustid, String sLanguage, String sDate) {
                 return baseMapper.selectCompanyInfo(sCustid,sLanguage,sDate);
+        }
+
+        @Override
+        public  List<HistDesignationDO> selectTargetCompany(String existsSql, Date searchDate) {
+                return baseMapper.selectTargetCompany(existsSql,SysUtil.transDateToString(searchDate));
+        }
+
+        @Override
+        public  List<HistDesignationDO> selectAllCompany(String custId,
+                                                         Date searchDate) {
+                if (StrUtil.isBlank(custId)){
+                        custId = "01";
+                }
+                return baseMapper.selectAllCompany(custId, SysUtil.transDateToString(searchDate));
         }
 }

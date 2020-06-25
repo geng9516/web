@@ -11,7 +11,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
    "jp.smartcompany.boot",
    "jp.smartcompany.job",
    "jp.smartcompany.framework",
-   "jp.smartcompany.controller"
+   "jp.smartcompany.controller",
+   "jp.smartcompany.admin"
 })
 public class NextJobApplication {
 

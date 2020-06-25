@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -34,4 +35,15 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
          * @return List<LoginUserGroupBO>
          */
         List<DBMastGroupBO> getPretreatGroupByLanguageUserId(@Param("language") String language, @Param("userId") String userId);
+
+        List<GroupAppManagerGroupDTO> selectAppManagerGroup(@Param("customerId") String customerId,@Param("systemId") String systemId,
+                                                            @Param("language") String language,
+                                                            @Param("searchDate") String searchDate,
+                                                            @Param("companyId") String companyId,
+                                                            @Param("searchCompanyList") List<String> companyIds);
+
+        List<GroupAppManagerGroupDTO> selectAppManagerDate(@Param("customerId") String customerId,
+                                                           @Param("systemId") String systemId,
+                                                           @Param("companyId") String companyId,
+                                                           @Param("searchCompanyList") List<String> searchCompanyList);
 }

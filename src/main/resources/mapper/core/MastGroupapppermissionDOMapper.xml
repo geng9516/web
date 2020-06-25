@@ -72,4 +72,60 @@
                 MGP_CGROUPID
     </select>
 
+    <select id="selectDate" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO">
+        -- 有効改定日と前後の改定日を取得するSQL
+        SELECT
+          -- 現在有効
+          BASE.MGP_DSTARTDATE NOWDATE,
+          (SELECT
+             MAX(BEF.MGP_DSTARTDATE)
+           FROM MAST_GROUPAPPPERMISSION BEF
+           WHERE
+             BEF.MGP_CSYSTEMID = '${systemId}'
+             AND BEF.MGP_DSTARTDATE <![CDATA[<]]> BASE.MGP_DSTARTDATE
+             <if test="groupId!=null">
+               AND BEF.MGP_CGROUPID = #{groupId}
+             </if>
+          ) BEFOREDATE, -- 前の改定日(SYSDATE以降)
+        (SELECT
+           MIN(AFT.MGP_DSTARTDATE)
+         FROM MAST_GROUPAPPPERMISSION AFT
+         WHERE
+           AFT.MGP_CSYSTEMID = #{systemId}
+           AND AFT.MGP_DSTARTDATE > BASE.MGP_DSTARTDATE
+           <if test="groupId!=null">
+             AND AFT.MGP_CGROUPID = #{groupId}
+           </if>
+         ) AFTERDATE, -- 次の改定日
+        (SELECT
+           MAX(LAT.MGP_DSTARTDATE)
+         FROM
+           MAST_GROUPAPPPERMISSION LAT
+         WHERE
+           LAT.MGP_CSYSTEMID = #{systemId}
+           AND LAT.MGP_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
+            <if test="groupId!=null">
+                AND LAT.MGP_CGROUPID = #{groupId}
+            </if>
+        ) LATESTDATE -- システム日付時点で有効な改定日
+       FROM
+        (SELECT
+           MAX(MGP_DSTARTDATE) MGP_DSTARTDATE
+         FROM
+           MAST_GROUPAPPPERMISSION
+         WHERE
+           MGP_CSYSTEMID = #{systemId}
+            <choose>
+                <when test="systemDate!=null">
+                    AND	MGP_DSTARTDATE <![CDATA[<=]]> #{systemDate}
+                </when>
+                <otherwise>
+                    AND	MGP_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
+                </otherwise>
+            </choose>
+           <if test="groupId!=null">
+             AND MGP_CGROUPID = #{groupId}
+           </if>
+        ) BASE
+    </select>
 </mapper>

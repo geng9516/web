@@ -16,4 +16,74 @@
             ORDER BY MAC_CCOMPANYID_CK
     </select>
 
+    <select id="selectTargetCompany" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO">
+        -- 法人検索対象範囲による法人一覧取得
+        SELECT
+          MAST_COMPANY.MAC_CCUSTOMERID_CK_FK as HD_CCUSTOMERID_CK,
+          MAST_COMPANY.MAC_CCOMPANYID_CK as HD_CCOMPANYID_CK
+        FROM MAST_COMPANY
+        WHERE
+            <if test="searchDate==null">
+                MAST_COMPANY.MAC_DSTART <![CDATA[ <= ]]> SYSDATE
+                AND MAST_COMPANY.MAC_DEND >= SYSDATE
+            </if>
+            <if test="searchDate!=null">
+                MAST_COMPANY.MAC_DSTART <![CDATA[ <= ]]> #{searchDate}
+                AND MAST_COMPANY.MAC_DEND >= #{searchDate}
+            </if>
+            AND	EXISTS (
+                SELECT 1
+                FROM HIST_DESIGNATION
+                WHERE
+                    HIST_DESIGNATION.HD_CCUSTOMERID_CK = MAST_COMPANY.MAC_CCUSTOMERID_CK_FK
+                    AND HIST_DESIGNATION.HD_CCOMPANYID_CK = MAST_COMPANY.MAC_CCOMPANYID_CK
+                    <if test="searchDate==null">
+                        AND	HIST_DESIGNATION.HD_DSTARTDATE_CK <![CDATA[ <= ]]>SYSDATE
+                        AND HIST_DESIGNATION.HD_DENDDATE >= SYSDATE
+                    </if>
+                    <if test="searchDate!=null">
+                        AND	HIST_DESIGNATION.HD_DSTARTDATE_CK <![CDATA[ <= ]]> #{searchDate}
+                        AND HIST_DESIGNATION.HD_DENDDATE >= #{searchDate}
+                    </if>
+                    -- existsSql
+                    AND (
+                        EXISTS (
+                        SELECT 1 FROM (
+                                 SELECT SR_0.ME_CUSERID AS EX_ME_CUSERID FROM MAST_EMPLOYEES SR_0
+                                 WHERE
+                                 SR_0.ME_DSTARTDATE <![CDATA[ <= ]]>  #{searchDate} AND SR_0.ME_DENDDATE >=  #{searchDate} AND ( ( ( 'A' = 'A' ) ) ) )
+                                 EXSISTB WHERE EXSISTB.EX_ME_CUSERID = HIST_DESIGNATION.HD_CUSERID )
+                                 AND (
+                                    HIST_DESIGNATION.HD_CUSERID IN ( SELECT ME_CUSERID FROM MAST_EMPLOYEES WHERE ME_CCUSTOMERID_CK = '01'
+                                    AND ME_DSTARTDATE <![CDATA[ <= ]]> TO_DATE( #{searchDate},'YYYY/MM/DD') AND ME_DENDDATE >= TO_DATE( #{searchDate},'YYYY/MM/DD') AND ME_CIFSTILLEMPLOYEDID = '0' ) )
+                                 )
+                ) ORDER BY MAST_COMPANY.MAC_CCOMPANYID_CK
+    </select>
+
+    <select id="selectAllCompany" resultType="jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO">
+        -- 有効な法人リストを取得
+        SELECT MAC_CCOMPANYID_CK AS HD_CCOMPANYID_CK
+        FROM MAST_COMPANY
+        WHERE
+            MAC_CCUSTOMERID_CK_FK = #{custId}
+            AND MAC_CLANGUAGE = 'ja'
+            <if test="searchDate==null">
+                AND MAC_DSTART <![CDATA[ <= ]]> SYSDATE
+                AND MAC_DEND >= SYSDATE
+            </if>
+            <if test="searchDate!=null">
+                AND MAC_DSTART <![CDATA[ <= ]]> #{searchDate}
+                AND MAC_DEND >= #{searchDate}
+            </if>
+            AND (MAC_CDELFLAG = '0'
+            OR (
+                <if test="searchDate==null">
+                    MAC_CDELFLAG = '1' AND MAC_DDELDATE > SYSDATE)
+                </if>
+                <if test="searchDate!=null">
+                    MAC_CDELFLAG = '1' AND MAC_DDELDATE > #{searchDate})
+                </if>
+            )
+            ORDER BY MAC_NSEQ
+    </select>
 </mapper>

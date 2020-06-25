@@ -3,7 +3,9 @@ package jp.smartcompany.framework.util;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.appcontrol.AbstractInfo;
@@ -118,6 +120,7 @@ public class PsBuildTargetSql {
      */
     public void setRequest(HttpServletRequest request) {
         this.request = request;
+        gPsSession = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
         // セキュリティ基準日
         setPsSecurityDate(request.getParameter("psSecurityDate"));
     }
@@ -167,19 +170,13 @@ public class PsBuildTargetSql {
         return this.domain;
     }
 
-    public PsSession getGPsSession() {
-        return gPsSession;
-    }
-    public void setGPsSession(PsSession psSession) {
-        gPsSession = psSession;
-    }
-
     /**
      * 検索対象範囲情報を構築する。
      * @param psSiteId サイトId
      * @param psMode			モード（0:通常モード 1:異動歴ID結合モード）
      */
     private void create(String psSiteId, String psMode) {
+        setRequest(ContextUtil.getHttpRequest());
         String sSiteId = psSiteId;
         if (psSiteId == null) {
             // サイトが取得できない場合(ログイン直後＆ダイアログアプリケーションを想定)は
@@ -302,6 +299,7 @@ public class PsBuildTargetSql {
      * 検索対象範囲情報生成ロジックが実行されていない場合にのみ処理が行われます。
      */
     protected void createSearchRange(String psMode) {
+        setRequest(ContextUtil.getHttpRequest());
 // サイトID、アプリケーションID(V3互換)を取得
         String sSiteId = request.getParameter(PsConst.PARAM_KEY_SITEID);
         String sAppId = request.getParameter(PsConst.PARAM_KEY_APPID);
