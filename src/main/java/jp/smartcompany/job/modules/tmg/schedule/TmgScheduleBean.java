@@ -4,6 +4,7 @@ import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -49,7 +50,7 @@ public class TmgScheduleBean {
     /**
      * 日付形式1
      */
-    protected final String FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
+    private final String FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
     /**
      * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(予定(休憩))
@@ -59,22 +60,22 @@ public class TmgScheduleBean {
     /**
      * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(申請(休憩))
      */
-    public static final String NOTWORKINGID_NOTICE_REST = "TMG_ITEMS|NoticeRest";
+    private final String NOTWORKINGID_NOTICE_REST = "TMG_ITEMS|NoticeRest";
 
     /**
      * 複数休憩JSON取得時(TMG_F_GET_MDAILYファンクション使用時)のCTPYE PLAN(実績(休憩))
      */
-    public static final String NOTWORKINGID_RESULT_REST = "TMG_ITEMS|ResultRest";
+    private final String NOTWORKINGID_RESULT_REST = "TMG_ITEMS|ResultRest";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"<b>管理対象外</b>"を表すマスターコードです
      */
-    public final String Cs_MGD_MANAGEFLG_0 = "TMG_MANAGEFLG|0";
+    private final String Cs_MGD_MANAGEFLG_0 = "TMG_MANAGEFLG|0";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"<b>平日</b>"を表すマスターコードです
      */
-    public final String Cs_MGD_HOLFLG_0 = "TMG_HOLFLG|0";
+    private final String Cs_MGD_HOLFLG_0 = "TMG_HOLFLG|0";
 
     /**
      * 日付形式2
@@ -84,12 +85,17 @@ public class TmgScheduleBean {
     /**
      * 日付形式1
      */
-    public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
+    private static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
     /**
      * 日付形式2
      */
-    public static final String Cs_FORMAT_DATE_TYPE2 = "yy-MM-dd";
+    private static final String Cs_FORMAT_DATE_TYPE2 = "yy-MM-dd";
+
+    /**
+     * 日付形式３
+     */
+    private static final String Cs_FORMAT_DATE_TYPE3 = "yyyy年M月dd日";
 
     /**
      * 今月
@@ -113,7 +119,7 @@ public class TmgScheduleBean {
     /**
      * データ表示開始日が4週間区切りの日かをチェックするフラグ
      */
-    protected boolean _isDispVariationalWorkType = false;
+    private boolean _isDispVariationalWorkType = false;
 
     private String _endDateOf4Weeks = null;
     /**
@@ -164,7 +170,7 @@ public class TmgScheduleBean {
     /**
      * 検索対象ユーザーコード
      */
-    protected String _targetUserCode = "";
+    private String _targetUserCode = "";
 
     /**
      * 検索対象ユーザー所属グループコード
@@ -199,22 +205,22 @@ public class TmgScheduleBean {
     /**
      * 更新プログラムID
      */
-    public final String TMG_SCHEDULE_CMODIFIERPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
+    private final String TMG_SCHEDULE_CMODIFIERPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
 
     /**
      * プログラムID
      */
-    public final String TMG_SCHEDULE_CPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
+    private final String TMG_SCHEDULE_CPROGRAMID = "TmgSchedule_ACT_EditMonthly_USchedule";
 
     /**
      * アクションを表すコードです。参照画面.読み出し処理
      */
-    public final String ACT_DISPMONTHLY_RSCHEDULE = "ACT_DispMonthly_RSchedule";
+    private final String ACT_DISPMONTHLY_RSCHEDULE = "ACT_DispMonthly_RSchedule";
 
     /**
      * アクションを表すコードです。編集画面.読み出し処理
      */
-    public final String ACT_EDITMONTHLY_RSCHEDULE = "ACT_EditMonthly_RSchedule";
+    private final String ACT_EDITMONTHLY_RSCHEDULE = "ACT_EditMonthly_RSchedule";
 
     /**
      * アクションを表すコードです。編集画面.更新処理
@@ -222,19 +228,25 @@ public class TmgScheduleBean {
     public final String ACT_EDITMONTHLY_USCHEDULE = "ACT_EditMonthly_USchedule";
 
     /**
-     * データ開始日
+     * プログラムID
      */
-    public final String Cs_MINDATE = "1900/01/01";
+    private final String TMG_SCHEDULE_CHECK_CPROGRAMID = "TmgScheduleCheck";
+
 
     /**
      * データ開始日
      */
-    public final String Cs_MAXDATE = "2222/12/31";
+    private final String Cs_MINDATE = "1900/01/01";
+
+    /**
+     * データ開始日
+     */
+    private final String Cs_MAXDATE = "2222/12/31";
 
     /**
      * 実績クリアの可否
      */
-    public final boolean bClearResult = false;
+    private final boolean bClearResult = false;
 
     /**
      * 4週間後
@@ -260,6 +272,21 @@ public class TmgScheduleBean {
      * 　翌月終了時間
      */
     private String nextEnd = "";
+
+    /**
+     *
+     */
+    private final String CS_ON = "TMG_ONOFF|1";
+
+    /**
+     *
+     */
+    private final String CS_OFF = "TMG_ONOFF|0";
+
+    /**
+     * マスタコード(予定確認)
+     */
+    private final String Cs_MGD_ITEMS_SCHEDULECHECK = "TMG_ITEMS|ScheduleCheck";
 
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
@@ -315,9 +342,11 @@ public class TmgScheduleBean {
         _thisMonthLastDay = "";
         _isVariationalWorkType = false;
         detailPeriod = "";
+        _loginCustCode = "";
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         _targetUserCode = psDBBean.getTargetUser() == null ? psDBBean.getUserCode() : psDBBean.getTargetUser();
-
+        //_targetUserCode = "29042924";
+        _loginCustCode = psDBBean.getUserCode();
         //WEBから基準時間を渡せれば
         if (null != txtBaseDate && !"".equals(txtBaseDate)) {
             _baseDate = txtBaseDate;
@@ -792,6 +821,16 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
         List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        // Arrayにデータフォーマッを変える
+        for (int i = 0; i < scheduleDataDTOS.size(); i++) {
+            ScheduleDataDTO scheduleDataDTO = scheduleDataDTOS.get(i);
+            if (null != scheduleDataDTO.getTimerange() && !"".equals(scheduleDataDTO.getTimerange())) {
+                scheduleDataDTO.setTimerange_arr(JSONUtil.parseArray(scheduleDataDTO.getTimerange()).toArray());
+            }
+            if (null != scheduleDataDTO.getJson() && !"".equals(scheduleDataDTO.getJson())) {
+                scheduleDataDTO.setJson_arr(JSONUtil.parseArray(scheduleDataDTO.getJson()).toArray());
+            }
+        }
         NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
 
         /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
@@ -1424,8 +1463,74 @@ public class TmgScheduleBean {
         iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-
     }
 
+    /**
+     * TmgMonthlyの更新日取得(予定確認画面)
+     *
+     * @return
+     */
+    public String selectMonthlyModifiedDate() {
+
+        String compCode = psDBBean.getCompCode();
+        if (null == _loginCustCode || "".equals(_loginCustCode)) {
+            logger.error("顧客コードが空です");
+            return null;
+        }
+        if (null == compCode || "".equals(compCode)) {
+            logger.error("会社コードが空です");
+            return null;
+        }
+        if (null == _loginUserCode || "".equals(_loginUserCode)) {
+            logger.error("ログインユーザーが空です");
+            return null;
+        }
+        if (null == _baseDate || "".equals(_baseDate)) {
+            logger.error("基準時間が空です");
+            return null;
+        }
+
+        String modifiedDate = iTmgScheduleService.selectMonthlyModifiedDate(_loginCustCode, compCode, _loginUserCode, _baseDate);
+        if (null != modifiedDate && !"".equals(modifiedDate)) {
+            modifiedDate = DateUtil.format(DateUtil.parse(modifiedDate, Cs_FORMAT_DATE_TYPE1), Cs_FORMAT_DATE_TYPE3);
+        } else {
+            logger.warn("予定データの更新日が未取得です");
+        }
+
+        return modifiedDate;
+    }
+
+    /**
+     * 予定確認フラグのレコードを挿入します。
+     *
+     * @return
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean updateSchedulePermStatus() {
+        String compCode = psDBBean.getCompCode();
+        if (null == _loginCustCode || "".equals(_loginCustCode)) {
+            logger.error("顧客コードが空です");
+            return false;
+        }
+        if (null == compCode || "".equals(compCode)) {
+            logger.error("会社コードが空です");
+            return false;
+        }
+        if (null == _loginUserCode || "".equals(_loginUserCode)) {
+            logger.error("ログインユーザーが空です");
+            return false;
+        }
+        if (null == _baseDate || "".equals(_baseDate)) {
+            logger.error("基準時間が空です");
+            return false;
+        }
+
+        /**
+         * 確認ボタンのフラグレコード更新処理（レコードは夜間処理で作成されます）
+         */
+        iTmgScheduleService.updateSchedulePermStatus(_loginCustCode, compCode, _loginUserCode, _baseDate, TMG_SCHEDULE_CHECK_CPROGRAMID, CS_ON, Cs_MGD_ITEMS_SCHEDULECHECK);
+
+        return true;
+    }
 
 }

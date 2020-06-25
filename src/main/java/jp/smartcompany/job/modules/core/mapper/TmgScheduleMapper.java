@@ -302,4 +302,19 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     HashMap<String, String> selectTmgDailyMinAndMax(HashMap<String, Object> params);
 
+    /**
+     * TmgMonthlyの更新日取得
+     *
+     * @param params
+     * @return
+     */
+    String selectMonthlyModifiedDate(HashMap<String, Object> params);
+
+    /**
+     * 確認ボタンのフラグレコード更新処理
+     *
+     * @param params
+     */
+    void updateSchedulePermStatus(HashMap<String, Object> params);
+
 }

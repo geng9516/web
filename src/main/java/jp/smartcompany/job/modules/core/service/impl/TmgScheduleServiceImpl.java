@@ -29,7 +29,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan,String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
+    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("ctpye_plan", ctpye_plan);
         params.put("employeeId", employeeId);
@@ -44,7 +44,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod,String custId, String compCode, String employeeId) {
+    public HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod, String custId, String compCode, String employeeId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("baseDate", baseDate);
@@ -438,6 +438,29 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("compCode", compCode);
         params.put("employeeId", employeeId);
         return baseMapper.selectTmgDailyMinAndMax(params);
+    }
+
+    @Override
+    public String selectMonthlyModifiedDate(String custId, String compCode, String employeeId, String baseDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        return baseMapper.selectMonthlyModifiedDate(params);
+    }
+
+    @Override
+    public void updateSchedulePermStatus(String custId, String compCode, String employeeId, String baseDate, String modifierprogramid, String onff, String type) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("modifierprogramid", modifierprogramid);
+        params.put("onff", onff);
+        params.put("type", type);
+        baseMapper.updateSchedulePermStatus(params);
     }
 
 

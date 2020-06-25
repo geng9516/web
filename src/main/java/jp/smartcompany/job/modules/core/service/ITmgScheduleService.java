@@ -23,7 +23,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param custId
      * @return
      */
-    NpaidRestDTO selectTmgMonthly(String employeeId, String workYear, String compCode, String custId);
+     NpaidRestDTO selectTmgMonthly(String employeeId, String workYear, String compCode, String custId);
 
     /**
      * [勤怠]日別情報より予定データを取得します
@@ -49,7 +49,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param employeeId
      * @return
      */
-    HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod,String custId, String compCode, String employeeId);
+    HashMap<String, Object> selectBaseDateOf4WeeksBeforeDay(String baseDate, String detailPeriod, String custId, String compCode, String employeeId);
 
     /**
      * 4週間単位の変形労働制職員対応
@@ -438,10 +438,37 @@ public interface ITmgScheduleService extends IService<Object> {
 
     /**
      * 対象社員の勤怠日別情報の最小日と最大日を取得する
+     *
      * @param custId
      * @param compCode
      * @param employeeId
      * @return
      */
-    HashMap<String,String> selectTmgDailyMinAndMax(String custId, String compCode, String employeeId);
+    HashMap<String, String> selectTmgDailyMinAndMax(String custId, String compCode, String employeeId);
+
+    /**
+     * TmgMonthlyの更新日取得(予定確認画面)
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param baseDate
+     * @return
+     */
+    String selectMonthlyModifiedDate(String custId, String compCode, String employeeId, String baseDate);
+
+
+    /**
+     * 確認ボタンのフラグレコード更新処理
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param baseDate
+     * @param modifierprogramid
+     * @param onff
+     * @param type
+     */
+    void updateSchedulePermStatus(String custId, String compCode, String employeeId, String baseDate, String modifierprogramid, String onff, String type);
+
 }

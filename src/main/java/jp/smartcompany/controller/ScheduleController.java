@@ -4,10 +4,10 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ModifiedDateVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * @author 陳毅力
  * @description 予定作成コントロール
- * @objectSource
+ * @objectSource null
  * @date 2020/05/29
  **/
 @RestController
@@ -37,8 +37,7 @@ public class ScheduleController {
      * @param txtBaseDate 2020/03/15　　または　空値
      * @param txtEndDate  2020/04/11　　または　空値
      * @param psDBBean
-     * @return
-     * @throws Exception
+     * @return ScheduleInfoVO
      */
     @GetMapping("selectScheduleInfo")
     @ResponseBody
@@ -118,7 +117,7 @@ public class ScheduleController {
      */
     @GetMapping("selectWeekPatternInfo")
     @ResponseBody
-    public TmgWeekPatternVO selectCsvReference( @RequestParam("txtBaseDate") String txtBaseDate,
+    public TmgWeekPatternVO selectCsvReference(@RequestParam("txtBaseDate") String txtBaseDate,
                                                @RequestParam("txtEndDate") String txtEndDate,
                                                @RequestParam("twp_nid") int twp_nid,
                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -138,7 +137,7 @@ public class ScheduleController {
      */
     @GetMapping("selectWeekPatternInfoList")
     @ResponseBody
-    public List<TmgWeekPatternVO> selectCsvReferenceList( @RequestParam("txtBaseDate") String txtBaseDate,
+    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("txtBaseDate") String txtBaseDate,
                                                          @RequestParam("txtEndDate") String txtEndDate,
                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
@@ -195,6 +194,40 @@ public class ScheduleController {
         //初期化
         tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
         return tmgScheduleBean.selectTargetUserDetail();
+    }
+
+    /**
+     * TmgMonthlyの更新日取得(予定確認画面)
+     * http://localhost:6879/sys/schedule/selectMonthlyModifiedDate?txtBaseDate=2020/07/01
+     *
+     * @param txtBaseDate
+     * @param psDBBean
+     */
+    @GetMapping("selectMonthlyModifiedDate")
+    @ResponseBody
+    public ModifiedDateVO selectMonthlyModifiedDate(@RequestParam("txtBaseDate") String txtBaseDate,
+                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
+        ModifiedDateVO modifiedDateVO = new ModifiedDateVO();
+        modifiedDateVO.setModifiedDate(tmgScheduleBean.selectMonthlyModifiedDate());
+        return modifiedDateVO;
+    }
+
+    /**
+     * 予定確認フラグのレコードを挿入します。
+     * http://localhost:6879/sys/schedule/updateSchedulePermStatus?txtBaseDate=2020/07/01
+     *
+     * @param txtBaseDate
+     * @param psDBBean
+     */
+    @GetMapping("updateSchedulePermStatus")
+    @ResponseBody
+    public boolean updateSchedulePermStatus(@RequestParam("txtBaseDate") String txtBaseDate,
+                                            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
+        return tmgScheduleBean.updateSchedulePermStatus();
     }
 
 }

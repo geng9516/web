@@ -611,7 +611,7 @@
         (ttr_ccustomerid , ttr_ccompanyid , ttr_cemployeeid ,
         ttr_dstartdate , ttr_denddate , ttr_cmodifieruserid ,
         ttr_dmodifieddate , ttr_cmodifierprogramid , ttr_cprogramid ,
-         ttr_cparameter1,ttr_dparameter1)
+        ttr_cparameter1,ttr_dparameter1)
         values
         (#{custId} , #{compCode} , #{employeeId},
         to_date('1900/01/01', 'yyyy/mm/dd'),  <!--データ開始日-->
@@ -1178,9 +1178,6 @@
     </select>
 
 
-
-
-
     <!-- [勤怠]週次勤務パターン（エラーチェック用）登録 -->
     <insert id="insertTmgWeekPatternCheck" parameterMap="insertTmgWeekPatternCheckMap">
         insert into tmg_week_pattern_check
@@ -1239,7 +1236,7 @@
     </select>
 
     <!-- 検索対象年月日の開始日 -->
-    <select id="selectBaseDateFor4Week"  parameterType="java.util.HashMap" resultType="java.lang.String">
+    <select id="selectBaseDateFor4Week" parameterType="java.util.HashMap" resultType="java.lang.String">
         select decode(sign(max(tda_dyyyymmdd) - to_date(#{startDate})), - 1,
                     to_char(max(tda_dyyyymmdd) - #{param4WeekAfter}, 'yyyy/mm/dd'), decode(sign(
                             max(tda_dyyyymmdd) - to_date(#{endDate})), - 1,
@@ -1264,6 +1261,31 @@
                and tda_ccustomerid =  #{custId}
 
     </select>
+
+    <!-- TmgMonthlyの更新日取得(予定確認画面) -->
+    <select id="selectMonthlyModifiedDate" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select to_char(tmo_dmodifieddate,'yyyy/mm/dd') as tmo_dmodifieddate
+              from tmg_monthly m
+             where m.tmo_ccustomerid = #{custId}
+               and m.tmo_ccompanyid = #{compCode}
+               and m.tmo_cemployeeid = #{employeeId}
+               and m.tmo_dyyyymm = trunc(to_date(#{baseDate}, 'yyyy/mm/dd'), 'mm')
+    </select>
+
+    <!-- 確認ボタンのフラグレコード更新処理 -->
+    <update id="updateSchedulePermStatus" parameterType="java.util.HashMap">
+        update tmg_employee_attribute a
+        set tes_cattribute = #{onff},
+        tes_cmodifieruserid = #{employeeId},
+        tes_dmodifieddate = sysdate ,
+        tes_cmodifierprogramid = #{modifierprogramid}
+        where a.tes_ccustomerid = #{custId}
+        and a.tes_ccompanyid = #{compCode}
+        and a.tes_cemployeeid = #{employeeId}
+        and a.tes_dstartdate <![CDATA[<=]]> trunc(to_date(#{baseDate}, 'yyyy/mm/dd'),'mm')
+        and a.tes_denddate <![CDATA[>=]]> trunc(to_date(#{baseDate}, 'yyyy/mm/dd'),'mm')
+        and a.tes_ctype = #{type}
+    </update>
 
 
 </mapper>

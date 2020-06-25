@@ -103,6 +103,11 @@ public class ScheduleDataDTO {
     private String mgd_csparechar4;
 
     /**
+     * 　タイプのオブジェクトをArrayに変換する
+     */
+    private Object[] timerange_arr;
+
+    /**
      * 　タイプのオブジェクトをJSONに変換する
      */
     private String timerange;
@@ -118,7 +123,12 @@ public class ScheduleDataDTO {
     private String astem_cworktypeid;
 
     /**
-     * 　EタイプのオブジェクトをJSON
+     * 　EタイプのオブジェクトをArrayに変換する
+     */
+    private Object[] json_arr;
+
+    /**
+     * 　EタイプのオブジェクトをJSONに変換する
      */
     private String json;
 
