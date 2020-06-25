@@ -112,11 +112,12 @@ public class TmgNotificationController {
     public GlobalResponse makeApply(
             @RequestParam("params") String params,
             @RequestParam(value = "uploadFiles" ,required=false) MultipartFile[] uploadFiles,
-            @RequestParam(value ="deleteFiles",required=false) String[] deleteFiles,
+            @RequestParam(value ="deleteFiles",required=false) String deleteFiles,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
+        String[] deleteFileslist =JSONUtil.parse(deleteFiles).toBean(String[].class);
         //String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
-        return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFiles);
+        return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFileslist);
     }
 
 
