@@ -236,11 +236,11 @@
                                     <Divider size="small" orientation="left">曜日</Divider>
                                     <Row style="margin-bottom:20px">
                                         <i-col span="7">
-                                            <Checkbox v-model="restApply.noreserved" true-value="1" false-value="0">指定なし</Checkbox>
+                                            <Checkbox v-model="restApply.noreserved" :true-value="1" :false-value="0">指定なし</Checkbox>
                                         </i-col>
                                         <i-col span="17">
                                             <checkbox-group v-model="restApply.weekSelected" @on-change="handleWeekSelect" class="tl">
-                                                <Checkbox v-for="item of week" :key="item.value" :label="item.value" class="mb5" :disabled="restApply.noreserved === '1'">{{ item.name }}</Checkbox>
+                                                <Checkbox v-for="item of week" :key="item.value" :label="item.value" class="mb5" :disabled="restApply.noreserved === 1">{{ item.name }}</Checkbox>
                                             </checkbox-group>
                                         </i-col>
                                     </Row>
@@ -356,14 +356,13 @@
                     restApply: {
                         useVacation: false,
                         weekSelected:[],
-                        deleteFiles:[],
-                        noreserved:'1'
+                        noreserved:1
                     },
                     _restApply: {
                         useVacation: false,
+                        restTypeId: '全て',
                         weekSelected:[],
-                        deleteFiles:[],
-                        noreserved:'1'
+                        noreserved:1
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -371,13 +370,14 @@
                     restTypeListForApply: [],
                     selectedRestInfo: {},
                     uploadFiles:[],
+                    deleteFiles:[],
                     isReApplyIng: false,
                 }
             },
             watch: {
                 // 重置曜日选择器
                 'restApply.noreserved'(newValue) {
-                    if (newValue === '1') {
+                    if (newValue === 1) {
                         return (this.restApply.weekSelected = [])
                     }
                 },
@@ -570,27 +570,28 @@
                         this.errorMsg = '期間を選んでください。'
                         return
                     }
-                    this.restApply.deleteFiles = [...new Set(this.restApply.deleteFiles)]
+                    this.deleteFiles = [...new Set(this.deleteFiles)]
                     console.log(this.restApply)
                     try {
                         this.loading = true
                         await this.http.uploadFiles('sys/vapply/MakeApply',{
                             params:JSON.stringify(this.restApply),
-                            uploadFiles:this.uploadFiles,
+                            uploadFiles:this.uploadFiles.filter(e=> !e.isDefault),
+                            deleteFiles: this.deleteFiles,
                             psSite: this.opts.psSite
                         })
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
-                        this.restApply = this._restApply
+                        // this.restApply =  this._restApply
                         this.$Message.success('申请完了')
                     } catch (error) {
-                        if(error.config || error.response.status === 500) return
+                        if(error.config || error.response && error.response.status === 500) return
                         this.errorInfo = true
                         this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
                     } finally {
                         this.loading = false
-                        this.restApply.deleteFiles = []
+                        this.deleteFiles = []
                         this.uploadFiles = []
                     }
                 }),
@@ -642,7 +643,7 @@
                     else return `${begin} ～ ${end}`
                 },
                 async handleReApplybtn(item) {
-                    this.restApply.deleteFiles = []
+                    this.deleteFiles = []
                     this.uploadFiles = []
                     this.rotate = !this.rotate
                     this.isReApplyIng = true
@@ -748,7 +749,7 @@
                 },
                 handleDelFile(file) {
                     // 删除文件
-                    this.restApply.deleteFiles.push(file.name)
+                    this.deleteFiles.push(file.name)
                     this.uploadFiles = this.uploadFiles.filter(e=> e.name !== file.name)
                 },
                 handleMaxSize (file) {
