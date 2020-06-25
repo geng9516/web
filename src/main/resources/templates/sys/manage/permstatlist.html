@@ -114,11 +114,6 @@
         <Drawer :title="title" width="1200" v-model="showDayApply" draggable>
             <Row :gutter="16" class="mb10">
                 <Col span="13" offset="11" class="tr">
-                <span class="ml15 label">所属</span>
-                <span class="input-like-span width15" >
-                         {{ showName(deptName) }}
-                     </span>
-
                 <i-button type="primary" size="large" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(false)">
                     選択状態をクリア
                 </i-button>
@@ -332,11 +327,18 @@
 
                     this.thisMonth = result
                     this.preNextMonth(data[0].val)
+
+                    //年月リストを取得する時に、活性化にする
+                    this.selectDisabled = true
                 }
 
-                this.selectDisabled = true
-
-
+                //年月リスト.lengthがゼロ場合、非活性化にする
+                if (data.length === 0){
+                    this.model1 = ''
+                    this.selectDisabled = false
+                    this.preMonthShow = false
+                    this.nextMonthShow = false
+                }
             },
             async getTableHead() {
                 this.query.txtAction = 'ACT_DISP_MONTHLY'
@@ -348,19 +350,12 @@
                 const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                 this.tableData = data.tmgMonthlyInfoVOList
                 this.approval = data.approval
-                this.getDeptName(this.treeData)
             },
-            // async getSelectGetCalendarList() {
-            //     const { data } = await this.http.get(`${aliyun}/workApplyStatus/tableData`)
-            //     // this.tableHead = data
-            //     // this.tableHead(this.treeData)
-            // },
             async getTmgMonthlyInfoVOList() {
                 this.query.txtAction = 'ACT_DISP_MONTHLY'
 
                 const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                 this.tableData = data
-                this.getDeptName(this.treeData)
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -387,42 +382,6 @@
                 await this.getOrgTree()
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
-            async getDeptName(data) {
-                console.log("getDeptName")
-                console.log(data)
-                // 根据id遍历找出deptName
-                if (this.selectedDeptViewType === 3) {
-                    data.forEach(e => {
-                        if (e.secid === this.defaultDeptId) {
-                            this.deptName = e.label
-                            console.log("3")
-                            console.log(this.deptName)
-                        } else {
-                            const children = e.child || e.children
-                            if (children) {
-                                this.getDeptName(children)
-                            }
-                        }
-                    })
-                }
-
-                // 根据id遍历找出deptName
-                if (this.selectedDeptViewType === 2) {
-                    data.forEach(e => {
-                        if (e.secid === this.defaultDeptId) {
-                            this.deptName = e.secnic
-                            console.log("2")
-                            console.log(this.deptName)
-                        } else {
-                            const children = e.child || e.children
-                            if (children) {
-                                this.getDeptName(children)
-                            }
-                        }
-                    })
-                }
-            },
-
             async preMonthApproval() {
                 console.log("preMonthApproval")
                 console.log(this.preMonth)
@@ -431,7 +390,6 @@
                 await this.getTableData()
                 this.model1 = this.preMonth
                 this.preNextMonth(this.preMonth)
-
             },
             async nextMonthApproval() {
                 this.query.txtDYYYYMM = this.dateFormat(this.nextMonth)
@@ -526,15 +484,22 @@
             },
             handleSelector() { },
             async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
                 console.log('e2')
                 console.log(e)
                 this.deptDrawShow = false
 
-                // const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                // this.referListObject[section] = e[0].secid
-
                 this.query.txtAction = 'ACT_DISP_MONTHLY'
-                this.defaultDeptId = e[0].secid
+
+                if (this.selectedDeptViewType === 3) {
+                    this.deptName = e[0].label
+                }
+                if (this.selectedDeptViewType === 2) {
+                    this.deptName = e[0].secnic
+                }
 
                 this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
@@ -576,14 +541,6 @@
                 this.title = "承認状況 " + Utils.formatDate(e, 'yyyy年m月d日')
 
                 this.getReadTmgDaily()
-                // const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
-                //
-                // //日別詳細画面のボタンを制御
-                // this.drawApproval = data.approval
-                //
-                // this.tableHead2 = data.itemVOList
-                // this.tableData2 = data.tmgDailyMapList
-
                 this.showDayApply = true
 
                 //選択した職員リストをクリアする
