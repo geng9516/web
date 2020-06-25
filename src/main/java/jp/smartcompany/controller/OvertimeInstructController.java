@@ -2,12 +2,13 @@ package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOtVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.OneMonthDetailVo;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.ResultMonthlyVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.TypeGroupVo;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,12 +26,23 @@ public class OvertimeInstructController {
     private OvertimeInstructBean overtimeInstructBean;
 
     /**
-     * 申請区分マスタ 一覧用
+     * 超過勤務実績一覧画面表示
      *
-     * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
-    @GetMapping("MonthlyResult")
-    public void getMgdNtfTypeDispAppList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //return overtimeInstructBean.getMgdNtfTypeDispAppList(psDBBean);
+    @GetMapping("monthlyResult")
+    public List<ResultMonthlyVo> getMgdNtfTypeDispAppList(@RequestParam("baseMonth")String baseMonth
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        return overtimeInstructBean.actionExecuteDispResult(baseMonth,psDBBean);
+    }
+
+
+    /**
+     * 表头
+     */
+    @GetMapping("tableTop")
+    public List<OneMonthDetailVo> getTableTop(@RequestParam("baseMonth")String baseMonth
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return overtimeInstructBean.getTableTop(baseMonth,psDBBean);
     }
 }

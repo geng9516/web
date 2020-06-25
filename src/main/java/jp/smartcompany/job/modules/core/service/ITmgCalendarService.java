@@ -32,7 +32,7 @@ public interface ITmgCalendarService extends IService<TmgCalendarDO> {
     /**
      * カレンダーテーブルより休日フラグを取得。
      */
-    List<CalenderVo> selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate);
+    CalenderVo selectGetCalendarList(String custId, String compId, String secId, String groupId, String targetYYYY, String sBaseDate);
 
     /**
      * カレンダー情報(全学)を取得します

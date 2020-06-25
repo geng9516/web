@@ -486,7 +486,7 @@
             TNTF_CSICK_NAME,
             TNTF_CSAME_SICK_TYPE,
             TNTF_CDISASTER,
-            TO_CHAR( TNTF_DPERIOD_DATE, #{dateFormat} ),
+            TO_CHAR( TNTF_DPERIOD_DATE, #{dateFormat} ) TNTF_DPERIOD_DATE,
             TNTF_NUAPPER_ADDITION,
             TNTF_CNTFNO_IM,
             TMG_F_CONV_MIN2HHMI ( TNTF_NRESTOPEN, 0 ) AS TNTF_NRESTOPEN,

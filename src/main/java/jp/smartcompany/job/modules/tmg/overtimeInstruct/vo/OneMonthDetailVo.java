@@ -21,5 +21,9 @@ public class OneMonthDetailVo {
     private String day;
     /**休暇区分*/
     private String tcaCholflg;
+    //是否是今日
+    private boolean today;
+    //显示文言
+    private String tableTop;
 
 }
