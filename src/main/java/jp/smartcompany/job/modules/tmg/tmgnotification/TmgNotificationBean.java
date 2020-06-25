@@ -922,10 +922,7 @@ public class TmgNotificationBean {
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_1);
         }else if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
             //再申請
-
                 param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_2);
-
-
         }
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
         int deleteErrMsg = deleteErrMsg(param);
@@ -1189,8 +1186,10 @@ public class TmgNotificationBean {
      */
     private void insertNtfAttachdFile(ParamNotificationListDto param, MultipartFile[] uploadFiles,String path) throws IOException {
 
-        Long seq= iTmgNtfAttachedfileService.selectSeq(param.getCustId(),param.getCompId(),param.getNtfNo());
-
+        String seq= iTmgNtfAttachedfileService.selectSeq(param.getCustId(),param.getCompId(),param.getNtfNo());
+        if (StrUtil.hasEmpty(seq)){
+            seq="1";
+        }
         for (int i = 0; i < uploadFiles.length; i++) {
             TmgNtfAttachedfileDO tnafDo = new  TmgNtfAttachedfileDO();
             tnafDo.setTnafCcustomerid(param.getCustId());
@@ -1198,7 +1197,7 @@ public class TmgNotificationBean {
             tnafDo.setTnafCemployeeid(param.getTargetUser());
             tnafDo.setTnafCntfno(param.getNtfNo());
             tnafDo.setTnafCfilename(uploadFiles[i].getOriginalFilename());
-            tnafDo.setTnafNseq((long) seq+i);
+            tnafDo.setTnafNseq(Long.valueOf(seq)+i);
             tnafDo.setTnafFilepath(path+param.getNtfNo()+"/"+uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafCmodifieruserid(param.getUserCode());
             tnafDo.setTnafDmodifieddate(DateTime.now());

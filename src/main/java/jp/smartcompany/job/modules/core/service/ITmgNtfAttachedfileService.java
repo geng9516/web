@@ -19,5 +19,5 @@ public interface ITmgNtfAttachedfileService extends IService<TmgNtfAttachedfileD
 
 
         /**seq*/
-        long  selectSeq(String custId,String compId,String ntfNo);
+        String  selectSeq(String custId,String compId,String ntfNo);
         }

@@ -78,9 +78,6 @@
                 </div>
             </div>
         </template>
-        <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" :disabled-hover="true" :loading="loading">
-
-        </i-table>
     </div>
 </main>
 <div th:replace="layout/script::common_script"></div>
@@ -89,6 +86,8 @@
         el: '.overtimeinstruchinfo-warp',
         data() {
             return {
+                tableHead: [],   //表头
+                tableData: [],   //表数据
                 overWorkViewType: 2,
                 treeData: [],            //組織ツリー用
                 curDate: new Date(),
@@ -104,12 +103,18 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 21
-                }
+                },
+                query: {
+                    baseMonth: '2020/04/01',
+                    psSite: Utils.getUrlParam(location.href, 'psSite')
+                },
             }
         },
         async mounted() {
             this.getData()
             this.getOrgTree()
+            this.getTableHead()
+            this.getTableData()
         },
         computed: {
         },
@@ -168,6 +173,18 @@
             },
             handleTypeChange() {
                 this.$emit('changeTableData')
+            },
+
+            async getTableHead() {
+                const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
+                this.tableHead = data
+                console.log(this.tableHead)
+            },
+
+            async getTableData() {
+                const { data } = await this.http.get('sys/overtimeinstruct/monthlyResult', this.query)
+                this.tableData = data
+                console.log(this.tableData)
             },
         }
     })

@@ -28,7 +28,7 @@ import java.util.List;
 
         /**seq*/
         @Override
-        public long  selectSeq(String custId,String compId,String ntfNo){
+        public String  selectSeq(String custId,String compId,String ntfNo){
                 return baseMapper.selectSeq(custId,compId,ntfNo);
         }
 

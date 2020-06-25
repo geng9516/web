@@ -30,7 +30,7 @@
         ORDER BY
         TNAF_NSEQ
     </select>
-    <select id="selectSeq" resultType="java.lang.Long">
+    <select id="selectSeq" resultType="java.lang.String">
         select
             MAX(TNAF_NSEQ) + 1
         from

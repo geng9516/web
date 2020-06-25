@@ -24,7 +24,7 @@ public interface TmgNtfAttachedfileMapper extends BaseMapper<TmgNtfAttachedfileD
                                                    @Param("compId")String compId,
                                                    @Param("ntfNo")String ntfNo);
 
-    long selectSeq(@Param("custId")String custId,
+    String selectSeq(@Param("custId")String custId,
                    @Param("compId")String compId,
                    @Param("ntfNo")String ntfNo);
 }

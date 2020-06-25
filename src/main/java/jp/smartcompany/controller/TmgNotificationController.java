@@ -116,7 +116,6 @@ public class TmgNotificationController {
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
         String[] deleteFileslist =JSONUtil.parse(deleteFiles).toBean(String[].class);
-        //String filePath = request.getSession().getServletContext().getRealPath("uploadFile/notificationUploadFiles/");
         return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFileslist);
     }
 
