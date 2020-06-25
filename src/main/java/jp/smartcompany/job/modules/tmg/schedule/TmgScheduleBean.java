@@ -345,7 +345,7 @@ public class TmgScheduleBean {
         _loginCustCode = "";
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         _targetUserCode = psDBBean.getTargetUser() == null ? psDBBean.getUserCode() : psDBBean.getTargetUser();
-        //_targetUserCode = "29042924";
+     //   _targetUserCode = "29042924";
         _loginCustCode = psDBBean.getUserCode();
         //WEBから基準時間を渡せれば
         if (null != txtBaseDate && !"".equals(txtBaseDate)) {
@@ -1050,6 +1050,14 @@ public class TmgScheduleBean {
         List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip();
         // 勤務パターン
         List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
+        // Arrayにデータフォーマッを変える
+        for (int i = 0; i < workPatternList.size(); i++) {
+            HashMap<String, Object> hashMap = workPatternList.get(i);
+            if (null != hashMap.get("JSON") && !"".equals(hashMap.get("JSON"))) {
+                String json = hashMap.get("JSON").toString();
+                hashMap.put("JSON", JSONUtil.parseArray(json));
+            }
+        }
         HashMap<String, Object> results = new HashMap<String, Object>();
         results.put("kubunnList", kubunnList);
         results.put("syuccyouList", syuccyouList);
