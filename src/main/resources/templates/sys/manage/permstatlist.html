@@ -391,18 +391,36 @@
                 console.log("getDeptName")
                 console.log(data)
                 // 根据id遍历找出deptName
-                data.forEach(e => {
-                    if (e.secid === this.defaultDeptId) {
-                        this.deptName = e.label
-                        console.log(this.deptName)
-                        console.log(e.label)
-                    } else {
-                        const children = e.child || e.children
-                        if (children) {
-                            this.getDeptName(children)
+                if (this.selectedDeptViewType === 3) {
+                    data.forEach(e => {
+                        if (e.secid === this.defaultDeptId) {
+                            this.deptName = e.label
+                            console.log("3")
+                            console.log(this.deptName)
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptName(children)
+                            }
                         }
-                    }
-                })
+                    })
+                }
+
+                // 根据id遍历找出deptName
+                if (this.selectedDeptViewType === 2) {
+                    data.forEach(e => {
+                        if (e.secid === this.defaultDeptId) {
+                            this.deptName = e.secnic
+                            console.log("2")
+                            console.log(this.deptName)
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptName(children)
+                            }
+                        }
+                    })
+                }
             },
 
             async preMonthApproval() {
@@ -507,19 +525,6 @@
                 location.href = "./VacationTablePanel/vacationtablepanel.html";
             },
             handleSelector() { },
-            // getDeptName(data) {
-            //     // 根据id遍历找出deptName
-            //     data.forEach(e => {
-            //         if (e.secid === this.defaultDeptId) {
-            //             this.deptName = e.label
-            //         } else {
-            //             const children = e.child || e.children
-            //             if (children) {
-            //                 this.getDeptName(children)
-            //             }
-            //         }
-            //     })
-            // },
             async handleClickLeaf(e) {
                 console.log('e2')
                 console.log(e)
