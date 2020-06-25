@@ -74,7 +74,7 @@
                             </i-option>
                         </i-select>
                         <i-button slot="extra" style="border-radius: 50%;" type="primary" ghost size="small"
-                            icon="md-refresh" @click="getApplyHistory()" :loading="loading"></i-button>
+                            icon="md-refresh" @click="getApplyHistory()" :loading="listLoading"></i-button>
                         <!-- PersonalApplyTable -->
                         <ul class="apply-history-list">
                             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
@@ -282,7 +282,7 @@
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
                                     label,restTime,sickApply -->
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload ref="upload"  :show-upload-list="false" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag" class="tl mt15 mb10" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
+                                    <Upload ref="upload"  :show-upload-list="false" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag" class="tl mt15 mb10" action="/" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
@@ -432,7 +432,7 @@
                     this.loading = true
                     try {
                         console.log(this.opts)
-                        const { data } = await this.http.get('/sys/vapply/NtfTypeList', this.opts)
+                        const { data } = await this.http.get('sys/vapply/NtfTypeList', this.opts)
                         this.restTypeListForApply = data
                     } catch (error) {
                         return
@@ -446,7 +446,7 @@
                     // 获得休假选择 照会用
                     this.loading = true
                     try {
-                        const { data } = await this.http.get('/sys/vapply/NtfTypeDispList', this.opts)
+                        const { data } = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
                         this.restTypeListForReview = data
                     } catch (error) {
                         return
@@ -460,7 +460,7 @@
                 async getRestInfo() {
                     this.restInfoLoading = true
                     try {
-                        const { data } = await this.http.get('/sys/vapply/RestYearList', this.opts)
+                        const { data } = await this.http.get('sys/vapply/RestYearList', this.opts)
                         this.restInfoList = data
                     } catch (error) {
                         return
@@ -469,7 +469,7 @@
                     }
                 },
                 async getStatusList() {
-                    const { data } = await this.http.get('/sys/vapply/StatusFlg', this.opts)
+                    const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
                     this.statusList = data
                 },
                 handleDatePicker(e) {
@@ -486,10 +486,10 @@
                         if(this.opts.statusFlg === 0) {
                             OPTS.statusFlg = ''
                         }
-                        const { data } = await this.http.get('/sys/vapply/NotificationList', OPTS)
+                        const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                         this.applyHistoryListData = data.list
+                        console.log(this.applyHistoryListData)
                         this.applyHistoryListAmount = data.count
-                        console.log(data)
                         if (!isInit) this.$Message.success('再表示完了')
                     } catch (error) {
                         return
@@ -503,7 +503,8 @@
                  },
                 handleRestType(e) {
                     if(this.rotate) {
-                        this.opts.ntfTypeId = e
+                        if(!e) return
+                        this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
                         return
                     }
@@ -531,7 +532,7 @@
                     } finally {
                         this.getApplyHistory()
                     }
-                }),
+                }, 700),
                 handleHistoryStatusChange(e) {
                     this.getApplyHistory()
                 },
@@ -574,17 +575,18 @@
                     console.log(this.restApply)
                     try {
                         this.loading = true
-                        await this.http.uploadFiles('/sys/vapply/MakeApply',{
+                        await this.http.uploadFiles('sys/vapply/MakeApply',{
                             params:JSON.stringify(this.restApply),
                             uploadFiles:this.uploadFiles.filter(e=> !e.isDefault),
                             deleteFiles:JSON.stringify(this.deleteFiles),
                             psSite: this.opts.psSite
                         })
+                        this.restApply =  {...this._restApply}
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
-                        this.restApply =  this._restApply
                         this.$Message.success('申请完了')
+                        this.uploadFiles = []
                     } catch (error) {
                         if(error.config || error.response && error.response.status === 500) return
                         this.errorInfo = true
@@ -592,7 +594,6 @@
                     } finally {
                         this.loading = false
                         this.deleteFiles = []
-                        this.uploadFiles = []
                     }
                 }),
                 handleApplyMarkShow(e) {
@@ -676,7 +677,7 @@
                     this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
                             name:e.tnafCfilename,
-                            url:e.tnafBattach,
+                            url:e.tnafFilepath,
                             type:e.tnafCfilename,
                             isDefault: true
                         }
@@ -764,6 +765,7 @@
                 },
                 // 打开上传的文件
                 applyCardDownloadFile(e) {
+                    console.log(e)
                     if(e.url) {
                         window.open(e.url, '_blank')
                     }
