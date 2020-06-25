@@ -4,15 +4,15 @@ import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
-import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * @author Xiao Wenpeng
@@ -96,7 +96,6 @@ public class SiteWManageController {
                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
-        overtimeInstructBean.actionExecuteDispResult(modelMap);
         return "sys/wmanage/csvoutput";
     }
 
