@@ -60,6 +60,10 @@ public class GroupBusiness {
     }
 
     public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
+        PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
+        if (MapUtil.isNotEmpty(session.getLoginGroups())){
+            return;
+        }
         String userId = ShiroUtil.getUserId();
         log.info("【setGroupInfo:{}】",userId);
         systemList.forEach(system -> {
@@ -92,7 +96,6 @@ public class GroupBusiness {
 
                 log.info("【groupBusiness：{}】",listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
-                    PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
                 }
             }

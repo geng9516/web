@@ -40,10 +40,12 @@ public class BaseSectionBusiness {
     public void getBaseSectionList() {
         HttpSession httpSession = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-        String date = DateUtil.format(DateUtil.date(),"yyyy/MM/dd");
-        BaseSectionBO baseSection = getBaseSection(date);
-        psSession.setLoginBaseSection(baseSection.getHmCompany());
-        psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
+        if (MapUtil.isEmpty(psSession.getLoginBaseSection())) {
+            String date = DateUtil.format(DateUtil.date(),"yyyy/MM/dd");
+            BaseSectionBO baseSection = getBaseSection(date);
+            psSession.setLoginBaseSection(baseSection.getHmCompany());
+            psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
+        }
     }
 
     /**

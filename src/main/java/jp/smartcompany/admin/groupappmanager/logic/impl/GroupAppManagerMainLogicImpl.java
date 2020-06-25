@@ -1,6 +1,7 @@
 package jp.smartcompany.admin.groupappmanager.logic.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
@@ -8,6 +9,7 @@ import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionTableDTO;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
@@ -56,17 +58,21 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
           String customerId,String companyId,
           Boolean isAll
   ) {
-    System.out.println(psSite);
-    List<GroupAppManagerPermissionDTO> lPermissionList = iMastGroupapppermissionService.selectPermissionList(systemId,date,CollUtil.newArrayList(groupId),psSite, psApp, psLanguage);
-    // 権限一覧が取得できない場合はnullを返却
-    if (CollUtil.isEmpty(lPermissionList)){
-      return null;
-    }
     GroupAppManagerTableLayout layout = new GroupAppManagerTableLayout();
     List<GroupAppManagerGroupDTO> groupList = getGroupList(customerId, systemId, psLanguage,
             date, companyId,isAll);
     if (StrUtil.isNotBlank(groupId)) {
          groupList = groupList.stream().filter(item -> StrUtil.equals(groupId,item.getMgCgroupidPk())).collect(Collectors.toList());
+    }
+
+    List<String> permGroupIds = groupList.stream().map(GroupAppManagerGroupDTO::getMgCgroupidPk).collect(Collectors.toList());
+    if (CollUtil.isEmpty(permGroupIds)){
+      return null;
+    }
+    List<GroupAppManagerPermissionDTO> lPermissionList = iMastGroupapppermissionService.selectPermissionList(systemId,date,permGroupIds,psSite, psApp, psLanguage);
+    // 権限一覧が取得できない場合はnullを返却
+    if (CollUtil.isEmpty(lPermissionList)){
+      return null;
     }
     layout.setTableHeader(groupList);
     // 画面表示のためのイレモノを取得
@@ -122,6 +128,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       }
     }
     layout.setTableBody(lTable);
+    getSearchDate(layout,systemId, date,  groupId);
     return layout;
   }
 
@@ -221,11 +228,24 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
    * @param changeDate 今回改定日
    * @param groupId グループID
    */
-  private void getSearchDate(String systemId,  Date changeDate, String groupId) {
+  private void getSearchDate(GroupAppManagerTableLayout layout,String systemId,  Date changeDate, String groupId) {
     // 改定日取得
-    GroupAppManagerChangeDateDTO changeDateDTO = iMastGroupapppermissionService.selectDate(systemId,changeDate,groupId);
-
-
+    GroupAppManagerChangeDateDTO changeDateDTO = iMastGroupapppermissionService.selectDate(systemId, changeDate, groupId);
+    Date beforeDate = changeDateDTO.getBeforedate();
+    Date afterDate = changeDateDTO.getAfterdate();
+    Date nowDate = changeDateDTO.getNowdate();
+    Date latestDate = changeDateDTO.getLatestdate();
+    layout.setBeforeDate(SysUtil.transDateToString(beforeDate));
+    layout.setAfterDate(SysUtil.transDateToString(afterDate));
+    layout.setChangeDate(SysUtil.transDateToString(changeDate));
+    if (changeDateDTO.getNowdate() != null) {
+      if (changeDateDTO.getLatestdate()!=null && DateUtil.isSameDay(nowDate,latestDate)) {
+        layout.setFutureDate(null);
+      } else {
+        layout.setFutureDate(SysUtil.transDateToString(nowDate));
+      }
+    }
+    layout.setLatestDate(SysUtil.transDateToString(latestDate));
   }
 
 }

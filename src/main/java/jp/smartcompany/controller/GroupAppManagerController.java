@@ -21,6 +21,7 @@ public class GroupAppManagerController {
 
   private final GroupAppManagerMainLogic groupAppManagerMainLogic;
 
+  // /sys/groupappmanager?groupId=5&psSecurityDate=2020/06/24&date=2020/03/30&isAll=true
   @GetMapping
   public GroupAppManagerTableLayout list(@RequestAttribute("BeanName") PsDBBean psDBBean,
 //                                                      @RequestParam GroupAppManagerPermissionTableForm form

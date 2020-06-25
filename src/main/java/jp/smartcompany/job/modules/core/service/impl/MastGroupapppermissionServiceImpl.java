@@ -33,7 +33,8 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
 
         @Override
         public GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId) {
-                return baseMapper.selectDate(systemId,pdDate,groupId);
+                String strDate = SysUtil.transDateToString(pdDate);
+                return baseMapper.selectDate(systemId,strDate,groupId);
         }
 
 }

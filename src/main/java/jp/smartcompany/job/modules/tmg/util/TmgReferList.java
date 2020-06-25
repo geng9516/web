@@ -76,6 +76,7 @@ public class TmgReferList {
     private PsDBBean psDBBean;
     private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
     private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean("tmgSearchRangeUtil");
 
     // psApp参数
     private String beanDesc;
@@ -682,7 +683,7 @@ public class TmgReferList {
             createDivTree();
         }
         else {
-            log.debug("【init方法后的createOrgTree方法开始执行】");
+            log.info("【init方法后的createOrgTree方法开始执行】");
             createOrgTree();
         }
 
@@ -928,8 +929,7 @@ public class TmgReferList {
             String base = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
             String target;
 
-            System.out.println(gcPreYearDate);
-            log.debug("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
+            log.info("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);
@@ -945,12 +945,9 @@ public class TmgReferList {
                         this.gbUseManageFLG
                 );
                 if (target.equals(psDBBean.getSession().getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
-                    System.out.println("++++target.equals");
                     empList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
                     empList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
                 } else {
-                    System.out.println("----isSelectedSearchTab");
-                    System.out.println(getSearchItems()+","+getSearchCondition()+","+getSearchData());
                     if (isSelectedSearchTab()){
                         empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
                                 "'"+targetSection+"'", target, base, "'"+psDBBean.getLanguage()+"'", true,
@@ -994,10 +991,12 @@ public class TmgReferList {
         String condition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_CONDITION);
         // TmgSearchRangeUtil tmgSearchRangeUtil = new TmgSearchRangeUtil();
         // セッションに登録されているデータと、検索条件(対象部署＆結合条件)が同じ場合、そちらのデータを取りに行く
-        if (condition != null) {
-//        if(condition != null && condition.equalsIgnoreCase(tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean.requestHash))){
+//        if (condition != null) {
+        if(condition != null && condition.equalsIgnoreCase(
+                tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean))){
             dataArray = (List)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_RESULT);
         }
+        log.info("【createEmpList4TreeView-before-dataArray:{}】",dataArray);
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
         if(dataArray != null  && getRecordDate().equals(gsSessionDate) && sessionSameCheck()){
             empList.setDataArray(dataArray);
@@ -1016,16 +1015,13 @@ public class TmgReferList {
                     isJoinTmgEmployees,
                     this.gbUseManageFLG //管理対象外を表示するか
             );
-            //TODO
-            //psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean.requestHash));
+            psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean));
             psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_CONDITION, null);
             psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_RESULT, empList.getDataArray());
             psDBBean.getSession().setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
         }
         // 使用するデータを、SYSDATE-targetDateの範囲に絞り込みます
         empList.setDataArray(empList.getDataArrayBetween(pSdf.format(gcSysdate.getTime()),targetDate));
-        System.out.println("createEmpList4TreeView");
-        System.out.println(empList.getDataArray());
     }
 
     /**
@@ -1258,7 +1254,6 @@ public class TmgReferList {
         String sSQL = null;
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             if(treeViewType == TREEVIEW_TYPE_LIST || treeViewType == TREEVIEW_TYPE_LIST_SEC || treeViewType == TREEVIEW_TYPE_LIST_WARD){
-                log.debug("【buildSQLForSelectEmployees：isSelectedSearchTab-{}】",isSelectedSearchTab());
                 sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectEmpList() : buildSQLForSelectEmpList();
             }
         }else

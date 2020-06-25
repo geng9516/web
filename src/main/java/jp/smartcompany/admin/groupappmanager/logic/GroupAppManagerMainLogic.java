@@ -3,7 +3,6 @@ package jp.smartcompany.admin.groupappmanager.logic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 起動権限設定 メインLogicインターフェース

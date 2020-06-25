@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -42,6 +41,6 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
                 @Param("language") String language);
 
         GroupAppManagerChangeDateDTO selectDate(@Param("systemId") String systemId,
-                                                @Param("systemDate") Date pdDate,
+                                                @Param("systemDate") String pdDate,
                                                 @Param("groupId") String groupId);
 }

@@ -16,6 +16,16 @@ import java.util.List;
 @ToString
 public class GroupAppManagerTableLayout {
 
+    /** 今回改定日 */
+    private String changeDate;
+    /** 前回改定日 */
+    private String beforeDate;
+    /** 次回改定日 */
+    private String afterDate;
+    /** 未来改定日 */
+    private String futureDate;
+    /** 最新改定日 */
+    private String latestDate;
     private List<GroupAppManagerGroupDTO> tableHeader;
     private List<GroupAppManagerPermissionTableDTO> tableBody;
 }
