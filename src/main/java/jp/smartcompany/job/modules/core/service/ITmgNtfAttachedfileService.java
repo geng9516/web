@@ -16,4 +16,8 @@ import java.util.List;
 public interface ITmgNtfAttachedfileService extends IService<TmgNtfAttachedfileDO> {
         /**添付ファイル一覧*/
         List<TmgNtfAttachedfileDO>  selectFileDisp(String custId,String compId,String ntfNo);
+
+
+        /**seq*/
+        long  selectSeq(String custId,String compId,String ntfNo);
         }

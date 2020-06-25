@@ -899,7 +899,7 @@ public class TmgNotificationBean {
         param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
         String path = psDBBean.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
-        if (deleteFiles!=null&&param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
+        if (deleteFiles!=null&&param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
             //file upload
             deleteFiles(param.getNtfNo(),deleteFiles,path);
             //ファイル保存SQL
@@ -1188,6 +1188,9 @@ public class TmgNotificationBean {
      * ファイル保存SQL
      */
     private void insertNtfAttachdFile(ParamNotificationListDto param, MultipartFile[] uploadFiles,String path) throws IOException {
+
+        Long seq= iTmgNtfAttachedfileService.selectSeq(param.getCustId(),param.getCompId(),param.getNtfNo());
+
         for (int i = 0; i < uploadFiles.length; i++) {
             TmgNtfAttachedfileDO tnafDo = new  TmgNtfAttachedfileDO();
             tnafDo.setTnafCcustomerid(param.getCustId());
@@ -1195,7 +1198,7 @@ public class TmgNotificationBean {
             tnafDo.setTnafCemployeeid(param.getTargetUser());
             tnafDo.setTnafCntfno(param.getNtfNo());
             tnafDo.setTnafCfilename(uploadFiles[i].getOriginalFilename());
-            tnafDo.setTnafNseq((long) i+1);
+            tnafDo.setTnafNseq((long) seq+i);
             tnafDo.setTnafFilepath(path+param.getNtfNo()+"/"+uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafCmodifieruserid(param.getUserCode());
             tnafDo.setTnafDmodifieddate(DateTime.now());

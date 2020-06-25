@@ -30,4 +30,17 @@
         ORDER BY
         TNAF_NSEQ
     </select>
+    <select id="selectSeq" resultType="java.lang.Long">
+        select
+            MAX(TNAF_NSEQ) + 1
+        from
+            TMG_NTF_ATTACHEDFILE
+        where
+            TNAF_CNTFNO=#{ntfNo}
+        and TNAF_CCUSTOMERID=#{custId}
+        and TNAF_CCOMPANYID=#{compId}
+        ;
+
+
+    </select>
 </mapper>

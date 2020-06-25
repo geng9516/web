@@ -23,4 +23,8 @@ public interface TmgNtfAttachedfileMapper extends BaseMapper<TmgNtfAttachedfileD
         List<TmgNtfAttachedfileDO>  selectFileDisp(@Param("custId")String custId,
                                                    @Param("compId")String compId,
                                                    @Param("ntfNo")String ntfNo);
-        }
+
+    long selectSeq(@Param("custId")String custId,
+                   @Param("compId")String compId,
+                   @Param("ntfNo")String ntfNo);
+}

@@ -26,4 +26,10 @@ import java.util.List;
                 return baseMapper.selectFileDisp(custId,compId,ntfNo);
         }
 
+        /**seq*/
+        @Override
+        public long  selectSeq(String custId,String compId,String ntfNo){
+                return baseMapper.selectSeq(custId,compId,ntfNo);
+        }
+
         }
