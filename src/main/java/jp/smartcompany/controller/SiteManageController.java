@@ -130,7 +130,8 @@ public class SiteManageController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
         return "sys/manage/permstatlist";
     }
 
