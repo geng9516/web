@@ -194,14 +194,13 @@
 
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
-                                    <p class="mb5">加算日</p>
-                                    <date-picker type="date" :value="restApply.txtAddDate" class="datepicker-single mb5" placeholder="日付け"
-                                        format="yyyy/MM/dd"  @on-change="restApply.txtAddDate = $event"></date-picker>
+                                    <p class="mb5">加算日数</p>
+                                    <i-input placeholder="日数" v-model="restApply.txtAddDate" class="mb15"><span slot="append">日</span></i-input>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
                                 <section v-show="selectedRestInfo.timeZone" class="mt30">
-                                    <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
+                                    <Divider size="small" style="margin-top:-15px" orientation="left">開始・終了</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
                                             <i-input v-model="restApply.timezoneOpen" placeholder="開始時間"/>
@@ -217,7 +216,7 @@
 
                                  <!-- 始业终业-->
                                 <section v-show="selectedRestInfo.workTime" class="mt30">
-                                    <Divider size="small" style="margin-top:-15px" orientation="left">時</Divider>
+                                    <Divider size="small" style="margin-top:-15px" orientation="left">始業・終業</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
                                             <i-input placeholder="始業後" v-model="restApply.timeOpen" v-show="selectedRestInfo.workTime"><span slot="append">分</span></i-input>
@@ -257,19 +256,19 @@
                                     <!-- 是有続柄的-->
                                     <section v-show="selectedRestInfo.relation" class="tl">
                                         <p class="mb5">続柄</p>
-                                        <i-input class="mb5" v-model="restApply.txtRelation" />
+                                        <i-input class="mb15" v-model="restApply.txtRelation" />
                                     </section>
 
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
-                                        <i-input class="mb5" v-model="restApply.txtTargetNumber" />
+                                        <i-input placeholder="人数" v-model="restApply.txtTargetNumber" class="mb15"><span slot="append">人</span></i-input>
                                     </section>
 
                                     <!-- 有生年月日-->
-                                    <section v-show="selectedRestInfo.birthday" class="tl mt10">
+                                    <section v-show="selectedRestInfo.birthday" class="tl">
                                         <p class="mb5">生年月日</p>
-                                        <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付け"
+                                        <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb15" placeholder="日付け"
                                             format="yyyy/MM/dd"  @on-change="restApply.txtBirthday = $event"></date-picker>
                                     </section>
 
@@ -582,6 +581,7 @@
                             psSite: this.opts.psSite
                         })
                         this.restApply =  {...this._restApply}
+                        this.restApply._dateList = ''
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
