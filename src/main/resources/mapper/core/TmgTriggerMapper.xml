@@ -149,12 +149,7 @@
 
     <insert id="buildSQLInsertTrigger">
         INSERT INTO
-        (SELECT
-        *
-        FROM
-        TMG_TRIGGER
-        )
-        (
+            TMG_TRIGGER
         SELECT
             e.cust,                                  <!--顧客コード-->
             e.comp,                                  <!--法人コード-->
@@ -195,7 +190,6 @@
         AND d.TDA_CCUSTOMERID = m.TMO_CCUSTOMERID
         AND d.TDA_CCOMPANYID = m.TMO_CCOMPANYID
         AND d.TDA_CSTATUSFLG = 'TMG_DATASTATUS|1'
-        )
     </insert>
     <insert id="buildSQLForInsertTriggerTable">
         INSERT INTO
