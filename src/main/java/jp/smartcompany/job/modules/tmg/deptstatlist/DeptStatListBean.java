@@ -175,9 +175,9 @@ public class DeptStatListBean {
         //対象部署に属する社員全ての合計値を取得
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), txtDYYYYMM);
         sectionMap.put("EMPNAME", "合計");
-        //int count = (int) sectionMap.get("CNT");
 
-//         部署別統計 を保存する
+        //int count = (int) sectionMap.get("CNT");
+        // 部署別統計を保存する
         resultMap.put("sectionMap", sectionMap);
 
         //ページ
@@ -362,10 +362,10 @@ public class DeptStatListBean {
     public void execute(PsDBBean psDBBean) throws Exception {
         //リクエストからパラメータを取得
         //基準日の取得
-        String baseDate =(String)psDBBean.getRequestHash().get(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
+        String baseDate = (String) psDBBean.getRequestHash().get(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
 
         referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-
+    }
 //        String txtDYYYYMM,String txtPage,
 
 //        //基準日から勤務年月を設定
@@ -473,7 +473,7 @@ public class DeptStatListBean {
 //            setAuthorityMonth(CB_CAN_REFER);
 //        }
 
-    }
+//    }
 
 //    /**
 //     * 基準日
