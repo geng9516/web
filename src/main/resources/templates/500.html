@@ -16,18 +16,13 @@
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script>
-        var page505 = new Vue({
+        new Vue({
             el: '.error-page',
-            data() {
-                return {
-                    errorMessage: '[[${error.msg}]]'
-                }
-            },
             methods: {
                 goHomepage() {
                   top.location.href="/";
                 }
-            },
+            }
         })
     </script>
   </body>

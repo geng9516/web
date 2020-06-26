@@ -49,9 +49,11 @@ public class BasicAuthRealm extends AuthorizingRealm {
             return null;
         }
         MastAccountDO mastAccountDO = iMastAccountService.getByUsername(username);
+        //パラメータアカウントがない場合
         if (mastAccountDO == null) {
             throw new UnknownAccountException(ErrorMessage.USER_NOT_EXIST.msg());
         }
+
         if (mastAccountDO.getMaNpasswordlock() == 1) {
             throw new LockedAccountException(CoreError.USER_LOCK.msg());
         }

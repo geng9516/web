@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -22,15 +22,11 @@ import java.util.Date;
 public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, MastPasswordDO> implements IMastPasswordService {
 
         @Override
-        public Date getUpdateDateByUsernamePassword(String userId, String password) {
+        public List<MastPasswordDO> getUpdateDateByUsernamePassword(String userId, String password) {
                 QueryWrapper<MastPasswordDO> qw = SysUtil.query();
                 qw.eq("map_cuserid", userId).eq("map_cpassword", password)
                 .eq("map_nhistory",0).select("map_dpwddate");
-                MastPasswordDO mastPasswordDO = getOne(qw);
-                if (mastPasswordDO!=null){
-                  return mastPasswordDO.getMapDpwddate();
-                }
-                return null;
+                return list(qw);
         }
 
 }

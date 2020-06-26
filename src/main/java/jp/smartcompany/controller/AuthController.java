@@ -51,9 +51,16 @@ public class AuthController {
      * @return RedirectView
      */
     @GetMapping("logout")
-    public RedirectView logout() {
+    @ResponseBody
+    public Boolean logout() {
         authBusiness.logout();
-        return new RedirectView("/login");
+        return true;
+    }
+
+    @GetMapping("isAuth")
+    @ResponseBody
+    public Boolean isLogin() {
+       return ShiroUtil.isAuthenticated();
     }
 
 }

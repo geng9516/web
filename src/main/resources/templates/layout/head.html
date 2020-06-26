@@ -30,10 +30,9 @@
       },
       methods: {
         logout() {
-          // this.api.auth('logout')
-          // sessionStorage.removeItem('SO_login')
-          // this.clearRoutes()
-          // this.$router.push('/')
+          this.http.get('/logout').then(function() {
+            location.href= "/login"
+          })
         },
         goProfile() {
           // if (this.$route.path === '/sys/user/profile') {

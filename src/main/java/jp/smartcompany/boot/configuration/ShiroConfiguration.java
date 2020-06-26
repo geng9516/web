@@ -1,7 +1,6 @@
 package jp.smartcompany.boot.configuration;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
-import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.boot.filter.CustomLoginAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
@@ -57,6 +56,8 @@ public class ShiroConfiguration {
     public SessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         sessionManager.setSessionIdCookie(sessionIdCookie());
+        // 先设为30分钟便于调试
+        sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
         return sessionManager;
     }
 
@@ -85,21 +86,15 @@ public class ShiroConfiguration {
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         Map<String, String> filterChainDefinitionMap = shiroFilterFactoryBean.getFilterChainDefinitionMap();
 
-        // 设置自定义的过滤器
-//        Map<String, Filter> filters = shiroFilterFactoryBean.getFilters();
-//        CustomLoginAuthFilter loginFilter= new CustomLoginAuthFilter();
-//        filters.put("user", loginFilter);
-//        filters.put("authc", loginFilter);
-
         /*
          * anon:所有url都都可以匿名访问，authc:所有url都必须认证通过才可以访问;
          * 过滤链定义，从上向下顺序执行，authc 应放在 anon 下面
          * */
         filterChainDefinitionMap.put("/static/**","anon");
         filterChainDefinitionMap.put("/error","anon");
-
+        filterChainDefinitionMap.put("/isAuth","anon");
         filterChainDefinitionMap.put("/login", "anon");
-        filterChainDefinitionMap.put("/logout", "logout");
+        filterChainDefinitionMap.put("/logout", "anon");
         filterChainDefinitionMap.put("/sys/**", "user");
 
         //登录
@@ -155,9 +150,7 @@ public class ShiroConfiguration {
     @Bean("credentialsMatcher")
     public CredentialsMatcher credentialsMatcher() {
         HashedCredentialsMatcher hashedCredentialsMatcher = new HashedCredentialsMatcher();
-        // 散列算法:这里使用MD5算法;
         hashedCredentialsMatcher.setHashAlgorithmName("MD5");
-        // 散列的次数，相当于 md5(md5(""));
         hashedCredentialsMatcher.setHashIterations(1);
         return hashedCredentialsMatcher;
     }

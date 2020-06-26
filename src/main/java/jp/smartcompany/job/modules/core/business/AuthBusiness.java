@@ -9,11 +9,13 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.CoreBean;
+import jp.smartcompany.job.modules.core.CoreError;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
@@ -21,14 +23,14 @@ import jp.smartcompany.job.modules.core.service.LoginAuditService;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -47,32 +49,34 @@ public class AuthBusiness {
     private final LoginAuditService loginAuditService;
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
     private final LRUCache<Object,Object> lruCache;
+    private final ScCacheUtil scCacheUtil;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
     public boolean checkPassword(MastAccountDO account, String password) throws AuthenticationException {
-        Date passwordSetDate = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
-        // 密码错误
-        if (passwordSetDate == null) {
-// todo: 判断尝试重新登录次数
-//            int retryCount = account.getMaNretrycounter();
-//            if () {
-//                account.setMaNpasswordlock(1).setMaDmodifieddate(DateUtil.date());
-//                iMastAccountService.updateById(account);
-//            }
-//            account.setMaNretrycounter(retryCount + 1)
-//                    .setMaNpasswordlock(0)
-//                    .setMaDmodifieddate(DateUtil.date());
-//            iMastAccountService.updateById(account);
-            throw new IncorrectCredentialsException(ErrorMessage.PASSWORD_INVALID.msg());
-        // 判断密码是否已经过了使用期限
-        } else {
-            if (SysDateUtil.isLess(passwordSetDate, DateUtil.date())) {
-               // 抛出密码过期异常
-            }
+        //パスワード有効日数取得
+        String sPasswordValid = scCacheUtil.getSystemProperty("PasswordValidPeriod");
+        //パスワードﾞ有効日数が設定されていない場合
+        if (sPasswordValid == null) {
+            throw new AuthenticationException("PasswordValidPeriod");
         }
+        //パスワード入力最大許容回数取得
+        String sLoginRetry = scCacheUtil.getSystemProperty("LoginRetry");
+        //パスワード入力最大許容回数が設定されていない場合
+        if (sLoginRetry == null) {
+            throw new AuthenticationException("LoginRetry");
+        }
+        List<MastPasswordDO> passwordHistories = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
+        if (CollUtil.isEmpty(passwordHistories)) {
+            checkPassWordPermission(account, sLoginRetry);
+        } else {
+            checkPassWordPeriod(passwordHistories, sPasswordValid);
+        }
+        // 通常ログイン時のみ、認証ＯＫでパスワード間違い回数1以上の場合、0クリア
+        // アカウントマスタを更新
         if (account.getMaNretrycounter() > 0) {
-            account.setMaNretrycounter(0).setMaCmodifieruserid(account.getMaCuserid());
+            account.setMaNretrycounter(0); // パスワード間違い回数0クリア
+            account.setMaCmodifieruserid(account.getMaCuserid()); // 最終更新者
             iMastAccountService.updateById(account);
         }
         return true;
@@ -295,4 +299,58 @@ public class AuthBusiness {
         }
         return perms;
     }
+
+    /**
+     * パスワード許容回数チェック
+     * @param poAccountEntity パスワードマスタ検索結果
+     * @param psLoginRetry パスワード許容回数
+     */
+    private void checkPassWordPermission(MastAccountDO poAccountEntity, String psLoginRetry) throws UnauthenticatedException {
+        //パスワード間違い回数取得
+        int iRetryCount = poAccountEntity.getMaNretrycounter();
+        int retryCount = iRetryCount+1;
+        Date loginTime = DateUtil.date();
+        if (Integer.parseInt(psLoginRetry) < retryCount) {
+            poAccountEntity.setMaNretrycounter(retryCount);
+            poAccountEntity.setMaNpasswordlock(1);
+            poAccountEntity.setMaDmodifieddate(loginTime);
+            //アカウントマスタ更新処理
+            iMastAccountService.updateById(poAccountEntity);
+            //認証エラー（ロックアウト）
+            throw new LockedAccountException(CoreError.USER_LOCK.msg());
+        } else {
+            poAccountEntity.setMaNretrycounter(iRetryCount);
+            poAccountEntity.setMaNpasswordlock(0);
+            poAccountEntity.setMaDmodifieddate(loginTime);
+            iMastAccountService.updateById(poAccountEntity);
+            //認証エラー（パスワード間違い）
+            throw new IncorrectCredentialsException(ErrorMessage.PASSWORD_INVALID.msg());
+        }
+    }
+
+    /**
+     * パスワード期間チェック
+     * @param poPasswordData パスワードマスタ検索結果
+     * @param psPasswordValid パスワード有効日数
+     */
+    private void checkPassWordPeriod(List<MastPasswordDO> poPasswordData, String psPasswordValid) {
+        poPasswordData.forEach(oPasswordEntity -> {
+            //パスワード設定日取得
+            Date now = DateUtil.date();
+//            Date oSetDay = oPasswordEntity.getMapDpwddate();
+//            Date expireDay = DateUtil.offsetDay(oSetDay,Integer.parseInt(psPasswordValid));
+            //パスワード設定日取得
+            Date oSetDay = oPasswordEntity.getMapDpwddate();
+            oSetDay.setDate(oSetDay.getDate()
+                    + Integer.parseInt(psPasswordValid));
+            System.out.println(oSetDay);
+            System.out.println(now);
+            // 当前时间大于密码设定日时密码过期
+            if (oSetDay.before(now)) {
+                //認証エラー（パスワード期間切れ）
+                throw new ExpiredCredentialsException("パスワード期間切れ");
+            }
+        });
+    }
+
 }

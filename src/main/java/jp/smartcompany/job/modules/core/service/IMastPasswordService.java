@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 
-import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -21,6 +21,6 @@ public interface IMastPasswordService extends IService<MastPasswordDO> {
          * @param password
          * @return
          */
-        Date getUpdateDateByUsernamePassword(String userId,String password);
+        List<MastPasswordDO> getUpdateDateByUsernamePassword(String userId,String password);
 
 }

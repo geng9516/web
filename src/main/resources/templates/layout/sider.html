@@ -69,8 +69,22 @@
                     this.showSider = false
                 },
                 switchFrame() {
-                    console.log(this.toUrl)
-                    document.getElementById('moduleFrame').src = this.toUrl
+                    var that = this
+                    this.http.get('/isAuth').then(function (rs) {
+                         if (rs.data){
+                             document.getElementById('moduleFrame').src = that.toUrl
+                         } else {
+                             that.http.get('/logout').then(function() {
+                                 location.href="/login"
+                             })
+                         }
+                    }).catch(function(e){
+                        Vue.prototype.$Notice.error({
+                            title: 'Error!',
+                            desc: 'Network error',
+                            duration: 6.5
+                        })
+                    })
                 }
             },
         })
