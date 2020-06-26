@@ -112,27 +112,6 @@ public class DeptStatListBean {
         return iTmgMonthlyService.buildSQLForSelectDispTmgMonthlyList(referList.getRecordDate(), referList.buildSQLForSelectEmployees());
     }
 
-
-//    /**
-//     * 前翌月リンクを取得
-//     */
-//    public LinkOfMonthVO buildSQLSelectLinkOfMonth(){
-//        LinkOfMonthVO linkOfMonthVO = new LinkOfMonthVO();
-//            if (referList.getTargetSec() == null) {
-//            return linkOfMonthVO;
-//        }
-//
-//        //前月リンクを取得
-//        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
-//        //翌月リンクを取得
-//        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
-//
-//        linkOfMonthVO.setPreMonth(preMonth);
-//        linkOfMonthVO.setNextMonth(nextMonth);
-//
-//        return linkOfMonthVO;
-//    }
-
     /**
      * 参照画面表示処理を実行します。
      */
@@ -241,6 +220,27 @@ public class DeptStatListBean {
 
         referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
     }
+
+
+//    /**
+//     * 前翌月リンクを取得
+//     */
+//    public LinkOfMonthVO buildSQLSelectLinkOfMonth(){
+//        LinkOfMonthVO linkOfMonthVO = new LinkOfMonthVO();
+//            if (referList.getTargetSec() == null) {
+//            return linkOfMonthVO;
+//        }
+//
+//        //前月リンクを取得
+//        preMonth = iTmgMonthlyService.buildSQLSelectLinkOfPreMonth(referList.buildSQLForSelectEmployees(), baseDate);
+//        //翌月リンクを取得
+//        nextMonth = iTmgMonthlyService.buildSQLSelectLinkOfNextMonth(referList.buildSQLForSelectEmployees(), baseDate);
+//
+//        linkOfMonthVO.setPreMonth(preMonth);
+//        linkOfMonthVO.setNextMonth(nextMonth);
+//
+//        return linkOfMonthVO;
+//    }
 
 //
 //    /**
