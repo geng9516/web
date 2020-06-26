@@ -5,10 +5,14 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.common.Query;
+import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -20,6 +24,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -30,6 +35,7 @@ public class TestController {
 
     private String baseDate = DateUtil.format(DateUtil.date(),TmgReferList.DEFAULT_DATE_FORMAT);
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
+
 
     // 勤怠管理サイト Test  11
     // TmgTreeViewForAdminEmp.jsp
@@ -239,6 +245,15 @@ public class TestController {
             menuGroupList.add(menuGroupBO);
         }
         return GlobalResponse.ok(menuGroupList);
+    }
+
+    @GetMapping("list")
+    @ResponseBody
+    public PageUtil testPage(@RequestParam Map<String, Object> params) {
+        IPage<MastGroupapppermissionDO> page= iMastGroupapppermissionService.pagePermissionList(
+                new Query<MastGroupapppermissionDO>().getPage(params)
+        );
+        return new PageUtil(page);
     }
 
 }

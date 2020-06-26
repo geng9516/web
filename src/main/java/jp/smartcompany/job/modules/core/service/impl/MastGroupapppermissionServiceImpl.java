@@ -1,7 +1,10 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
+import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupapppermissionMapper;
@@ -35,6 +38,11 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
         public GroupAppManagerChangeDateDTO selectDate(String systemId, Date pdDate, String groupId) {
                 String strDate = SysUtil.transDateToString(pdDate);
                 return baseMapper.selectDate(systemId,strDate,groupId);
+        }
+
+        @Override
+        public Page<MastGroupapppermissionDO> pagePermissionList(IPage<MastGroupapppermissionDO> page) {
+               return baseMapper.selectPermissionListPage(page);
         }
 
 }

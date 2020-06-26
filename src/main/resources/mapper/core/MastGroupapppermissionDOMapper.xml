@@ -128,4 +128,9 @@
            </if>
         ) BASE
     </select>
+
+    <select id="selectPermissionListPage" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO">
+        select * from MAST_GROUPAPPPERMISSION
+    </select>
+
 </mapper>
