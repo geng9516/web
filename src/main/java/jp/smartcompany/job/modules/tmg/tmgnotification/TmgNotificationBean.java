@@ -421,7 +421,7 @@ public class TmgNotificationBean {
     }
 
     //履歴データ一覧
-    public NotificationDispVo getNotificationList(String statusFlg,String ntfTypeId,String year,int page,PsDBBean psDBBean,String filePath){
+    public NotificationDispVo getNotificationList(String statusFlg,String ntfTypeId,String serEmpId,String year,int page,PsDBBean psDBBean,String filePath) throws Exception {
         ParamNotificationListDto param=new ParamNotificationListDto();
         //基本信息
         param.setCompId(psDBBean.getCustID());
@@ -432,22 +432,35 @@ public class TmgNotificationBean {
         param.setLang(psDBBean.getLanguage());
         param.setPage(page);
 
+        //初始基准日取得
+        param.setToday(TmgUtil.getSysdate());
 
+        param.setYear(param.getToday().substring(0, 4));
+        param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
+        //referlist 新规
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true,
+                    false, false, false, false);;
+        }else{
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
+                    false, false, false, false);
+        }
 
         //基准日取得 入力site为系统日期
-        param.setToday(TmgUtil.getSysdate());
+        if(!StrUtil.hasEmpty(referList.getRecordDate())&&param.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
+            param.setToday(referList.getRecordDate());
+        }else{
+            param.setToday(TmgUtil.getSysdate());
+        }
         param.setTodayD(DateUtil.parse(param.getToday()));
-
-
-
         //アクション
-        param.setAction(psDBBean.getReqParam("txtAction"));
+        //param.setAction(psDBBean.getReqParam("txtAction"));
 
         getParam(0,Integer.valueOf(year),param,psDBBean);
 
         // 検索条件・申請内
         param.setType(ntfTypeId);
-
+        param.setSearchEmp(serEmpId);
         // 申請一覧（本人）用検索パラメータを取得するメソッド(返すものは常に承認済・取下・却下(選択不可))
         if (param.getAction() == ACT_DISPINP_RLIST && statusFlg == null) {
             statusFlg = STATUS_WAIT;
@@ -461,6 +474,9 @@ public class TmgNotificationBean {
         //默认page
         if(StrUtil.hasEmpty(String.valueOf(param.getPage()))){
             param.setPage(1);
+        }
+        if(psDBBean.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
+            param.setEmployeeListSql(referList.buildSQLForSelectEmployees());
         }
         //数据取得
         List<NotificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
@@ -537,7 +553,7 @@ public class TmgNotificationBean {
         return notificationDispVo;
     }
 
-
+    //再申請用　list
     public NotificationDetailVo getNotificationDetail(String ntfNo ,PsDBBean psDBBean){
         ParamNotificationListDto param=new ParamNotificationListDto();
         //基本信息
@@ -867,11 +883,8 @@ public class TmgNotificationBean {
         param.setLang(psDBBean.getLanguage());
 
         //申请日期
-        if (referList != null){
-            param.setToday(referList.getRecordDate());
-        } else {
-            param.setToday(TmgUtil.getSysdate());
-        }
+        param.setToday(TmgUtil.getSysdate());
+
         //年开始日
         param.setYear(param.getToday().substring(0, 4));
         param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
@@ -883,8 +896,6 @@ public class TmgNotificationBean {
             referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
                     false, false, false, false);
         }
-
-
 
         param.setTodayD(DateUtil.parse(param.getToday()));
         //再申請の場合、元番号を使用する
@@ -1020,10 +1031,33 @@ public class TmgNotificationBean {
      * updateApply
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void actionUpdateApply(ParamNotificationListDto param) {
-        String tempTargetUser = param.getTargetUser();
-        String tempUserCode = param.getUserCode();
-        param.setTargetUser("");
+    public GlobalResponse cancelApply(ParamNotificationListDto param,PsDBBean psDBBean) throws Exception {
+
+
+        //基本信息
+        param.setCompId(psDBBean.getCustID());
+        param.setCustId(psDBBean.getCompCode());
+        param.setTargetUser(psDBBean.getTargetUser());
+        param.setUserCode(psDBBean.getUserCode());
+        param.setSiteId(psDBBean.getSiteId());
+        param.setLang(psDBBean.getLanguage());
+
+        //申请日期
+        param.setToday(TmgUtil.getSysdate());
+
+        //年开始日
+        param.setYear(param.getToday().substring(0, 4));
+        param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
+        //referlist 新规
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true,
+                    false, false, false, false);;
+        }else{
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
+                    false, false, false, false);
+        }
+
+        param.setTodayD(DateUtil.parse(param.getToday()));
 
         // TMG_ERRMSGテーブルにゴミが残っているといつまでも正常に処理されなくなる可能性があるため
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
@@ -1032,14 +1066,20 @@ public class TmgNotificationBean {
         int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
         int insertErrmsg = insertErrMsg(param);
         int insertTrigger = insertTrigger(param);
+
         String selectErrMsg = selectErrCode(param);
-        int deleteTrigger = deleteTrigger(param);
-        int deleteErrMsgAfter = deleteErrMsg(param);
-        int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
+        if(!selectErrMsg.equals("0")){
+            int deleteErrMsgAfter = deleteErrMsg(param);
+            return GlobalResponse.error(selectErrMsg);
+        }else{
+            int deleteTrigger = deleteTrigger(param);
+            int deleteErrMsgAfter = deleteErrMsg(param);
+            int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
+            return GlobalResponse.ok();
+        }
 
-
-
-        if (!isPartOfReserveApplication(param)) {
+        //部分取消 废弃
+/*        if (!isPartOfReserveApplication(param)) {
 
             //requestHash.put(PARAMERTER_KEY_ACTION, ACT_MAKEAPPLY_CAPPLY);
             //TODO
@@ -1063,7 +1103,7 @@ public class TmgNotificationBean {
 
         }
         param.setTargetUser(tempTargetUser);
-        param.setUserCode(tempUserCode);
+        param.setUserCode(tempUserCode);*/
     }
 
     /**
@@ -2194,7 +2234,6 @@ public class TmgNotificationBean {
 
         tmgErrmsgDO.setTerClanguage(param.getLang());
 
-
         return iTmgErrmsgService.getBaseMapper().insert(tmgErrmsgDO);
     }
 
@@ -2307,7 +2346,7 @@ public class TmgNotificationBean {
 
     /**
      * 長期間有効な申請の部分解除か判定し真偽を返します。
-     *
+     *废弃
      * @return 長期間有効な申請の部分解除であればtrue、それ以外はfalse
      */
     private boolean isPartOfReserveApplication(ParamNotificationListDto param) {

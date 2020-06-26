@@ -127,7 +127,7 @@
                     TNTF_COWNCOMMENT
                 From
                     TMG_NOTIFICATION
-                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp =="" '>
+                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp == null '>
                      ,( ${paramNotificationList.employeeListSql} ) e
                 </if>
                 WHERE
@@ -171,7 +171,7 @@
                     </when>
                     <otherwise>
                         <choose>
-                        <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !="" '>
+                        <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !=null '>
                             --氏名選択
                             AND TNTF_CEMPLOYEEID  = '${paramNotificationList.searchEmp}'
                         </when>
@@ -314,7 +314,7 @@
                     TNTF_COWNCOMMENT
                 From
                     TMG_NOTIFICATION
-                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp =="" '>
+                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp ==null '>
                     ,( ${paramNotificationList.employeeListSql} ) e
                 </if>
                 WHERE
@@ -358,7 +358,7 @@
                     </when>
                     <otherwise>
                         <choose>
-                            <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !="" '>
+                            <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !=null '>
                                 --氏名選択
                                 AND TNTF_CEMPLOYEEID  = '${paramNotificationList.searchEmp}'
                             </when>
@@ -395,7 +395,6 @@
                         )
                     </otherwise>
                 </choose>
-
 
                 /*
                 *  管理対象判定条件指定
