@@ -41,8 +41,7 @@ public interface TmgPaidHolidayMapper extends BaseMapper<TmgPaidHolidayDO> {
                                                          @Param("targetDate") String targetDate);
 
     /**
-     *
      * [勤怠]年次休暇情報を更新する
      */
-    int buildSQLForUpdatePaidHolyday(TmgPaidHolidayDto tmgPaidHolidayDto);
+    int buildSQLForUpdatePaidHolyday(@Param("dto") TmgPaidHolidayDto tmgPaidHolidayDto);
 }

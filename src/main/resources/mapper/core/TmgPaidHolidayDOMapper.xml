@@ -5,22 +5,37 @@
         UPDATE
             TMG_PAID_HOLIDAY
         SET
-            TPH_CMODIFIERUSERID    = #{tphCmodifieruserid},
-            TPH_DMODIFIEDDATE      = SYSDATE,
-            TPH_CMODIFIERPROGRAMID = #{tphCmodifierprogramid},
-            TPH_NINVEST            = NVL(#{tphNinvest}, 0),
-            TPH_NADJUST            = #{tphNadjust},
-            TPH_NADJUST_HOURS      = TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{tphNadjustHours}),
-            TPH_NADJUST_TO         = NVL(#{tphNadjustTo}, 0),
-            TPH_NADJUST_HOURS_TO   = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{tphNadjustHoursTo}), 0),
-            TPH_DEXPIRE_ADJUST     = #{tphDexpireAdjust},
-            TPH_DEXPIRE_ADJUST_TO  = #{tphDexpireAdjustTo},
-            TPH_CCOMMENT           = #{tphCcomment}
+            TPH_CMODIFIERUSERID    = #{dto.tphCmodifieruserid}
+            ,TPH_DMODIFIEDDATE      = SYSDATE
+            ,TPH_CMODIFIERPROGRAMID = #{dto.tphCmodifierprogramid}
+            ,TPH_NINVEST            = NVL(#{dto.tphNinvest}, 0)
+            ,TPH_NADJUST            = #{dto.tphNadjust}
+            ,TPH_NADJUST_HOURS      = TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{dto.tphNadjustHours})
+            ,TPH_NADJUST_TO         = NVL(#{dto.tphNadjustTo}, 0)
+            ,TPH_NADJUST_HOURS_TO   = NVL(TMG_F_CONV_HHMI2MIN_WITH_MINUS(#{dto.tphNadjustHoursTo}), 0)
+        <if test="dto.tphDexpireAdjust != null">
+            ,TPH_DEXPIRE_ADJUST     = #{dto.tphDexpireAdjust}
+        </if>
+        <if test="dto.tphDexpireAdjust == null">
+            ,TPH_DEXPIRE_ADJUST     = null
+        </if>
+        <if test="dto.tphDexpireAdjustTo != null">
+            ,TPH_DEXPIRE_ADJUST_TO  = #{dto.tphDexpireAdjustTo}
+        </if>
+        <if test="dto.tphDexpireAdjustTo == null">
+            ,TPH_DEXPIRE_ADJUST_TO  = null
+        </if>
+        <if test="dto.tphCcomment != null">
+            ,TPH_CCOMMENT           = #{dto.tphCcomment}
+        </if>
+        <if test="dto.tphCcomment == null">
+            ,TPH_CCOMMENT           = null
+        </if>
         WHERE
-            TPH_CEMPLOYEEID      = #{tphCemployeeid}
-        AND TPH_DYYYYMMDD        = TO_DATE(#{tphDyyyymmdd}, 'yyyy/MM/dd')
-        AND TPH_CCOMPANYID       = #{tphCcompanyid}
-        AND TPH_CCUSTOMERID      = #{tphCcustomerid}
+            TPH_CEMPLOYEEID      = #{dto.tphCemployeeid}
+        AND TPH_DYYYYMMDD        = TO_DATE(#{dto.tphDyyyymmdd}, 'yyyy/MM/dd')
+        AND TPH_CCOMPANYID       = #{dto.tphCcompanyid}
+        AND TPH_CCUSTOMERID      = #{dto.tphCcustomerid}
     </update>
 
 

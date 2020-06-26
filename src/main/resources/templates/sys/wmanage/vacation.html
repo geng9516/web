@@ -98,25 +98,25 @@
                 </i-col>
             </Row>
 
-            <Row :gutter="10" class="mt20 mb10">
-                <i-col span="16">
-                    <div class="label tc">発令</div>
-                    <div class="tl">
-                        <div class="person-info">
-                            <span class="time">2009/03/01～2009/05/31</span>
-                            <span class="with-split">短時間勤務</span>
-                        </div>
-                        <div class="person-info">
-                            <span class="time">2010/04/01～</span>
-                            <span class="with-split">復帰支援</span>
-                        </div>
-                    </div>
-                </i-col>
-                <i-col span="8">
-                    <div class="label tc">変形労働</div>
-                    <div class="person-info tc">2023/03/01～2025/07/31</div>
-                </i-col>
-            </Row>
+<!--            <Row :gutter="10" class="mt20 mb10">-->
+<!--                <i-col span="16">-->
+<!--                    <div class="label tc">発令</div>-->
+<!--                    <div class="tl">-->
+<!--                        <div class="person-info">-->
+<!--                            <span class="time">2009/03/01～2009/05/31</span>-->
+<!--                            <span class="with-split">短時間勤務</span>-->
+<!--                        </div>-->
+<!--                        <div class="person-info">-->
+<!--                            <span class="time">2010/04/01～</span>-->
+<!--                            <span class="with-split">復帰支援</span>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </i-col>-->
+<!--                <i-col span="8">-->
+<!--                    <div class="label tc">変形労働</div>-->
+<!--                    <div class="person-info tc">2023/03/01～2025/07/31</div>-->
+<!--                </i-col>-->
+<!--            </Row>-->
             <div style="position: relative;">
                 <Row :gutter="10" class="mt20 mb10">
                     <i-col span="12">
@@ -133,12 +133,12 @@
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2">
                             <template slot-scope="{ row ,index }" slot="days">
-                                <i-input  v-model="paidNowData[index].days" v-if="row.isEditable" ></i-input>
+                                <i-input  v-model="paidNowData[index].days" v-if="row.isEditable"  class=" tc"></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
                             <template slot-scope="{ row,index }" slot="times">
-                                <i-input v-model="paidNowData[index].times" v-if="row.isEditable" ></i-input>
+                                <i-input v-model="paidNowData[index].times" v-if="row.isEditable" class=" tc" ></i-input>
                                 <p v-else>{{ row.times| addNumDeci }}</p>
                             </template>
 
@@ -208,6 +208,37 @@
             </div>
             <i-table @on-row-click="showDayList(arguments)" :row-class-name="() => 'select-col'"
                      border :columns="paidDetailsColumns" :data="paidDetailsData" :loading="paidNowLoading">
+                <template slot-scope="{ row }" slot="ninvest">
+                    <span>{{ row.ninvest | addNumDeci(true) }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="nadjust">
+                    <span>{{ row.nadjust | addNumDeci(true) }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="nadjustHours">
+                    <span>{{ row.nadjustHours | addNumDeci }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="nthroughout">
+                    <span>{{ row.nthroughout | addNumDeci(true) }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="nthroughoutHours">
+                    <span>{{ row.nthroughoutHours | addNumDeci }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="nadjustTo">
+                    <span>{{ row.nadjustTo | addNumDeci(true) }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="nadjustHoursTo">
+                    <span>{{ row.nadjustHoursTo | addNumDeci }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="ninvestDays">
+                    <span>{{ row.ninvestDays | addNumDeci(true) }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="ninvestHours">
+                    <span>{{ row.ninvestHours | addNumDeci }}</span>
+                </template>
             </i-table>
         </div>
     </Drawer>
@@ -308,7 +339,7 @@
                     },
                     {
                         title: '今期付与日数',
-                        key: 'ninvest',
+                        slot: 'ninvest',
                         align: 'center'
                     },
                     {
@@ -316,12 +347,12 @@
                         children: [
                             {
                                 title: '日数',
-                                key: 'nadjust',
+                                slot: 'nadjust',
                                 align: 'center'
                             },
                             {
                                 title: '時間数',
-                                key: 'nadjustHours',
+                                slot: 'nadjustHours',
                                 align: 'center'
                             }
                         ]
@@ -331,12 +362,12 @@
                         children: [
                             {
                                 title: '日数',
-                                key: 'nthroughout',
+                                slot: 'nthroughout',
                                 align: 'center'
                             },
                             {
                                 title: '時間数',
-                                key: 'nthroughoutHours',
+                                slot: 'nthroughoutHours',
                                 align: 'center'
                             }
                         ]
@@ -346,12 +377,12 @@
                         children: [
                             {
                                 title: '日数',
-                                key: 'nadjustTo',
+                                slot: 'nadjustTo',
                                 align: 'center'
                             },
                             {
                                 title: '時間数',
-                                key: 'nadjustHoursTo',
+                                slot: 'nadjustHoursTo',
                                 align: 'center'
                             }
                         ]
@@ -361,12 +392,12 @@
                         children: [
                             {
                                 title: '日数',
-                                key: 'ninvestDays',
+                                slot: 'ninvestDays',
                                 align: 'center'
                             },
                             {
                                 title: '時間数',
-                                key: 'ninvestHours',
+                                slot: 'ninvestHours',
                                 align: 'center'
                             }
                         ]
@@ -394,6 +425,7 @@
                 },
                 paramters:{
                     cemployeeid: '',
+                    ninvest:'',
                     dyyyymmdd: '',
                     nadjust: '',
                     nadjustHours: '',
@@ -460,18 +492,18 @@
                     },
                     {
                         name: '調整付与',
-                        days: this.dataDetail.nadjust,
+                        days: this.format_hours(this.dataDetail.nadjust,1),
                         cellClassName: {name: 'rest-title'},
                         isEditable: true,
-                        times: this.dataDetail.nadjustHours,
+                        times: this.format_hours(this.dataDetail.nadjustHours,2),
                         expiryDate: this.dataDetail.dexpireAdjust
                     },
                     {
                         name: '調整繰越',
-                        days: this.dataDetail.nadjustTo,
+                        days: this.format_hours(this.dataDetail.nadjustTo,1),
                         cellClassName: {name: 'rest-title'},
                         isEditable: true,
-                        times: this.dataDetail.nadjustHoursTo,
+                        times: this.format_hours(this.dataDetail.nadjustHoursTo,2),
                         expiryDate: this.dataDetail.dexpireAdjustTo
                     },
                     {
@@ -637,15 +669,19 @@
                 if (this.calculation()) {
                     this.paramters.cemployeeid = this.cemployeeid
                     this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
+                    this.paramters.ninvest = this.dataDetail.ninvest
                     this.paramters.nadjust = this.dataDetail.nadjust
-                    this.paramters.nadjustHours = this.dataDetail.nadjustHours
+                    this.paramters.nadjustHours = this.format_hours(this.dataDetail.nadjustHours,2)
                     this.paramters.nadjustTo = this.dataDetail.nadjustTo
-                    this.paramters.nadjustHoursTo = this.dataDetail.nadjustHoursTo
+                    this.paramters.nadjustHoursTo =  this.format_hours(this.dataDetail.nadjustHoursTo,2)
                     this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
                     this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
                     this.paramters.ccomment = this.dataDetail.ccomment
 
                     this.http.get('sys/paidholiday/execUpdate', this.paramters)
+                    this.paidHolidayInitRList = false
+                    this.getTableData()
+
                 }
             }),
             // 計算ボタン押下
@@ -1109,6 +1145,14 @@
                     return false
                 else
                     return true
+            },
+            format_hours(sHours, nLowerLength) {
+                try {
+                    console.log(sHours)
+                    return eval(sHours).toFixed(nLowerLength);
+                } catch (e) {
+                    return sHours;
+                }
             }
         }
     })
