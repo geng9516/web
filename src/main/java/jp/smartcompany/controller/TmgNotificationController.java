@@ -50,13 +50,14 @@ public class TmgNotificationController {
      * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
      */
     @GetMapping("NotificationList")
-    public NotificationDispVo getNotificationList(@RequestParam("statusFlg") String statusFlg,
-                                                        @RequestParam("ntfTypeId") String ntfTypeId,
+    public NotificationDispVo getNotificationList(@RequestParam(value = "statusFlg",required=false) String statusFlg,
+                                                        @RequestParam(value ="ntfTypeId",required=false) String ntfTypeId,
+                                                        @RequestParam(value ="serchEmpId",required=false) String serchEmpId,
                                                         @RequestParam("year") String year,
                                                         @RequestParam("page") int page,
-                                                        @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
        // String filepath=request.getScheme() + "://" + request.getServerName() + ":"+ request.getServerPort() + "/uploadFile";
-        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,year,page,psDBBean,"");
+        return tmgNotificationBean.getNotificationList(statusFlg,ntfTypeId,serchEmpId,year,page,psDBBean,"");
     }
 
     /**
@@ -103,7 +104,7 @@ public class TmgNotificationController {
 
 
     /**
-     * 新規申請/再申請/代理申請
+     * 新規申請/再申請/代理申請/取消/承认/差し戻す
      *
      * @return　エラー null 为正常申请
      */
