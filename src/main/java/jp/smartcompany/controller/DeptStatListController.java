@@ -1,17 +1,11 @@
 package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
-import jp.smartcompany.job.modules.tmg.attendanceBook.dto.AttendanceDateInfoDTO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayInfoVO;
-import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import jp.smartcompany.job.modules.tmg.deptstatlist.DeptStatListBean;
-import jp.smartcompany.job.modules.tmg.deptstatlist.vo.LinkOfMonthVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -36,12 +30,10 @@ public class DeptStatListController {
      */
     @GetMapping("workDateList")
     @ResponseBody
-    public List<DispMonthlyVO> getWorkDateList(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                               @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public List<DispMonthlyVO> getWorkDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
         //初期化対象
         deptStatListBean.execute(psDBBean);
-        deptStatListBean.executeInsertTmgTrigger(txtDYYYYMM,psDBBean);
         return deptStatListBean.getWorkDateList();
     }
 
@@ -52,13 +44,13 @@ public class DeptStatListController {
      */
     @GetMapping("executeDispStatList")
     @ResponseBody
-    public Map executeDispStatList(@RequestAttribute("txtAction") String txtAction,
-                                   @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+    public Map executeDispStatList(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
                                    @RequestAttribute("page") int page,
                                    @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
         deptStatListBean.execute(psDBBean);
-        Map resultMap = deptStatListBean.executeDispStatList(txtDYYYYMM,page,psDBBean);
+        deptStatListBean.executeInsertTmgTrigger(txtDYYYYMM, psDBBean);
+        Map resultMap = deptStatListBean.executeDispStatList(txtDYYYYMM, page, psDBBean);
         return resultMap;
     }
 
@@ -73,7 +65,7 @@ public class DeptStatListController {
                                         @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
         deptStatListBean.execute(psDBBean);
-        deptStatListBean.executeDownloadDownload(txtDYYYYMM,psDBBean);
+        deptStatListBean.executeDownloadDownload(txtDYYYYMM, psDBBean);
     }
 
     //
