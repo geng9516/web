@@ -44,8 +44,8 @@ public class DeptStatListController {
      */
     @GetMapping("executeDispStatList")
     @ResponseBody
-    public Map executeDispStatList(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                   @RequestAttribute("page") int page,
+    public Map executeDispStatList(@RequestParam("txtDYYYYMM") String txtDYYYYMM,
+                                   @RequestParam("page") int page,
                                    @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
         deptStatListBean.execute(psDBBean);
@@ -61,7 +61,7 @@ public class DeptStatListController {
      */
     @GetMapping("executeDownloadDownload")
     @ResponseBody
-    public void executeDownloadDownload(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+    public void executeDownloadDownload(@RequestParam("txtDYYYYMM") String txtDYYYYMM,
                                         @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
         deptStatListBean.execute(psDBBean);
