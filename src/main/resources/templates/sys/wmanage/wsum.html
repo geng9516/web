@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='部署別統計情報',cssPaths='/pages/content.min.css')">
+</head>
+
+<body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main class="content permstatlist-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{  '部署別統計情報' }}
+                </h1>
+            </div>
+        </div>
+        <div class="searchwrap">
+            <span class="label">年月</span>
+            <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val":value="item.val">
+                </i-option>
+            </i-select>
+            <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                              style="width: calc(100% - 120px);border-radius:0">
+                        {{ deptName }}
+                    </i-button>
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                            :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Row class="tl">
+                            <i-col span="8" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="8" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                         class="mb5" placeholder="日付け" format="yyyy/MM/dd" ref="datePicker"
+                                         @on-change="handleDeptDateChange"></date-picker>
+                            </i-col>
+                        </Row>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                  empty-text="所属データなし"></Tree>
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
+                    </Drawer>
+                </span>
+            <span style="flex:1"></span>
+        </div>
+    </div>
+    <div class="content_body">
+        <div class="table-top">
+            <Row :gutter="16">
+                <Col span="13" class="tr">
+                <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(false)">選択状態をクリア</i-button>
+                <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(true)">承認対象者を全選択</i-button>
+                </Col>
+            </Row>
+        </div>
+        <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData"
+                 :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <template slot-scope="{ row }" slot="name">
+                    <span @click="toWorkPage"
+                          class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="statusName">
+                <span>{{ row.statusName }}</span>
+            </template>
+
+            <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                <span @click="showDay" v-if="row[item] === '未'" class="confirm-sytle ing">未</span>
+                <span @click="showDay" v-if="row[item] === 'エ'" class="confirm-sytle undo">エ</span>
+                <span @click="showDay" v-if="row[item] === '待'" class="confirm-sytle ing">待</span>
+                <span @click="showDay" v-if="row[item] === '済'" class="confirm-sytle">済</span>
+                <span @click="showDay" v-if="row[item] === '確'" class="confirm-sytle">確</span>
+            </template>
+        </i-table>
+    </div>
+</main>
+
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const PERM_STATLIST = new Vue({
+        el: '.permstatlist-warp',
+        data() {
+            return {
+                curDate: new Date(),
+                tableHead: [],
+                tableData: [],
+                slotList: Utils.getNumArray(1, 31).map(e => `disppermStatusName${e}`),
+                dailyShow: true,
+                isShow: false,
+                loading: false,
+                emplistLoading: false,
+                referListObject: {
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 31
+                },
+                empTreeData: [],
+                deptName: '選んでください',
+                query: {
+                    txtAction: 'ACT_Disp_RList',
+                    txtDYYYYMM: '2020/04/01',
+                    txtTDA_DYYYYMM: '2020/03/01',
+                    page: '1',
+                    txtDYYYYMMDD: '',
+                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    // txtCEMPLOYEEID: '',
+                    // sectionid: '',
+                    // txtExecuteEmpId: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                empDeptLoading: false,
+                deptDrawShow: false,
+                treeData: [],
+                selectDisabled: false,   　//年月選択可否制御
+                dispMonthlyList: [],       //年月リスト
+                model1: '',
+                approval: false,
+                drawApproval: false,
+
+                title: '',
+                tableHead2: [],
+                tableData2: [],
+                empIds: [],
+                empIds2: [],
+                isSearchHistory: false
+            }
+        },
+        async mounted() {
+            this.getOrgTree()
+            // this.getTableHead()
+        },
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 300) return true
+                else return false
+            },
+            columns() {
+                let result = [
+                    {
+                        title: '氏名',
+                        slot: 'name',
+                        minWidth: 100,
+                        align: 'right'
+                    },
+                    {
+                        title: '月次\n承認',
+                        slot: 'statusName',
+                        minWidth: 36,
+                        align: 'center'
+                    }
+                ]
+                const that = this
+                this.tableHead.forEach((e, i) => {
+                    result = result.concat({
+                        // title: e,
+                        // className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                        minWidth: 25,
+                        renderHeader: (h, params) => {
+                            return h(
+                                'span',
+                                {
+                                    style: {
+                                        cursor: 'pointer',
+                                    },
+                                    domProps: {
+                                        className: 'table-head',
+                                        innerHTML: e.name,
+                                    },
+                                    on: {
+                                        click(){
+                                            that.handleClickHead(e.day)
+                                        },
+                                    },
+                                }
+                            )
+                        },
+                        slot: `disppermStatusName${i + 1}`,
+                        align: 'center'
+                    })
+                })
+                result = result.concat({
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                })
+                return result
+            },
+            columns2() {
+                let result = []
+                const that = this
+                this.tableHead2.forEach((e, i) => {
+                    result = result.concat({
+                        minWidth: 25,
+                        renderHeader: (h, params) => {
+                            return h(
+                                'span',
+                                {
+                                    style: {
+                                        cursor: 'pointer',
+                                    },
+                                    domProps: {
+                                        className: 'table-head',
+                                        innerHTML: e.mgdCheader,
+                                    }
+                                }
+                            )
+                        },
+                        slot: `COLUMNID${i + 1}`,
+                        align: 'center'
+                    })
+                })
+                result = result.concat({
+                    type: 'selection',
+                    width: 60,
+                    align: 'center'
+                })
+                return result
+            }
+        },
+        methods: {
+            async getWorkDateList() {
+                this.query.txtAction = 'ACT_Disp_RList'
+
+                this.loading = false
+                const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
+                this.dispMonthlyList = data
+
+                if (data.length > 0){
+                    this.model1 = data[0].val
+
+                    let result = this.model1.replace("年","/")
+                    result = result.replace("月","/")
+                    result = result + "01"
+                    this.query.txtTDA_DYYYYMM = result
+
+                    this.thisMonth = result
+                    // this.preNextMonth(data[0].val)
+
+                    //年月リストを取得する時に、活性化にする
+                    this.selectDisabled = true
+                }
+
+                //年月リスト.lengthがゼロ場合、非活性化にする
+                if (data.length === 0){
+                    this.model1 = ''
+                    this.selectDisabled = false
+                }
+            },
+            // async getTableHead() {
+            //     this.query.txtAction = 'ACT_Disp_RList'
+            //
+            //     const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
+            //     this.tableHead = data
+            // },
+            async getTableData() {
+                const { data } = await this.http.get('sys/deptStatList/executeDispStatList', this.query)
+                this.tableData = data.tmgMonthlyInfoVOList
+                this.approval = data.approval
+            },
+            async getOrgTree(refreshDept) {
+                this.empDeptLoading = true
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    this.treeData = Utils.convertTreeData(orgList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                    this.empDeptLoading = false
+                }
+            },
+            async handleDeptDateChange(e) {
+                this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.isSearchHistory = true
+                await this.getOrgTree()
+                this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+            },
+             rowClass(row) {
+                // 表格变色
+                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
+                    return ''
+                }
+                return 'sat'
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
+            showDay: Debounce(function () {
+                this.isShow = true
+            }),
+            toTop() {
+                const animateMachine = requestAnimationFrame(this.toTop)
+                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                if (this.$refs.layout.scrollTop === 0) {
+                    cancelAnimationFrame(animateMachine)
+                }
+            },
+            convertTreeData(treeData = []) {
+                return treeData.map(e => {
+                    const children = e.child || e.children
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            // 前两层级默认展开方便查看
+                            expand: e.data.level < 2 || !e.data.level,
+                            children: this.convertTreeData(children)
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            title: e.data.label
+                        }
+                    }
+                })
+            },
+            showDay() {
+                //todo: 跳到详情页
+                location.href = "./VacationTablePanel/vacationtablepanel.html";
+            },
+            handleSelector() { },
+            async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                console.log('e2')
+                console.log(e)
+                this.deptDrawShow = false
+                this.query.txtAction = 'ACT_Disp_RList'
+                this.deptName = e[0].secnic
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                //年月リストの取得
+                await this.getWorkDateList()
+
+                // await this.getTableHead()
+                await this.getTableData()
+
+            },
+            async getEmpList() {
+                try {
+                    this.emplistLoading = true
+                    const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
+                } catch (error) {
+                    return
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            handleClickEmpLeaf(e) {
+                this.deptDrawShow = false
+                // this.getData(true)
+            },
+            showName(e) {
+                const result = e.match(/^[\s\S]+(?=\()/g)
+                return (result && result[0]) || e
+            },
+             async getReadTmgDaily() {
+
+                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+
+                //日別詳細画面のボタンを制御
+                this.drawApproval = data.approval
+
+                this.tableHead2 = data.itemVOList
+                this.tableData2 = data.tmgDailyMapList
+            },
+            toWorkPage() {
+                // this.$router.push('/sys/confirmer/applyWork')
+            },
+            handleStartMonth(e) {
+
+                this.query.txtTDA_DYYYYMM = this.dateFormat(e)
+                // this.getTableHead()
+                this.getTableData()
+
+                console.log("handleStartMonth")
+                console.log(e)
+                console.log(this.query.txtTDA_DYYYYMM)
+
+                // this.preNextMonth(e)
+            },
+             dateFormat(e) {
+                //YYYY年MM月からYYYY/MM/01へ変換する
+                let yearMMDD = e.replace("年","/")
+                yearMMDD = yearMMDD.replace("月","/")
+                yearMMDD = yearMMDD+"01"
+                return  yearMMDD
+            }
+        }
+    })
+</script>
+</body>
+
+</html>
