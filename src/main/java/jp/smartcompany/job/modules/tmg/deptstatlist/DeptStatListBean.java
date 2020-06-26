@@ -57,9 +57,6 @@ public class DeptStatListBean {
      */
     public TmgReferList referList = null;
 
-    public TmgReferList getReferList() {
-        return referList;
-    }
     /**
      * ドメイン
      */
@@ -176,7 +173,6 @@ public class DeptStatListBean {
         Map sectionMap = iTmgMonthlyService.buildSQLSelectSection(dispItemsDtoList, referList.buildSQLForSelectEmployees(), txtDYYYYMM);
         sectionMap.put("EMPNAME", "合計");
 
-        //int count = (int) sectionMap.get("CNT");
         // 部署別統計を保存する
         resultMap.put("sectionMap", sectionMap);
 
@@ -233,6 +229,20 @@ public class DeptStatListBean {
         psDBBean.setDownloadStream(csvData.toString().getBytes());
         psDBBean.setDownloadContentType(DOWNLOAD_CONTENT_TYPE);
         psDBBean.setDownload(true);
+    }
+
+    /**
+     * メイン処理
+     *
+     * @throws Exception
+     */
+    public void execute(PsDBBean psDBBean) throws Exception {
+
+        //リクエストからパラメータを取得
+        //基準日の取得
+        String baseDate = (String) psDBBean.getRequestHash().get(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
+
+        referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
     }
 
 //
@@ -354,18 +364,8 @@ public class DeptStatListBean {
 //        return authorityNextMonth;
 //    }
 
-    /**
-     * メイン処理
-     *
-     * @throws Exception
-     */
-    public void execute(PsDBBean psDBBean) throws Exception {
-        //リクエストからパラメータを取得
-        //基準日の取得
-        String baseDate = (String) psDBBean.getRequestHash().get(TmgReferList.TREEVIEW_KEY_RECORD_DATE);
 
-        referList = new TmgReferList(psDBBean, beanDesc, baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-    }
+
 //        String txtDYYYYMM,String txtPage,
 
 //        //基準日から勤務年月を設定
