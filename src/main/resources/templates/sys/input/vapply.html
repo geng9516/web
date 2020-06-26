@@ -149,7 +149,7 @@
                             </li>
                             <Spin size="large" fix v-if="listLoading"></Spin>
                             <!-- 还有更多数据的时候 -->
-                            <i-button v-show="applyHistoryListData.length - applyHistoryListAmount > 0" class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
+                            <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" class="width75" style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>もっと見る</i-button>
                         </ul>
                         <!-- PersonalApplyTable -->
                     </Card>
@@ -170,7 +170,7 @@
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
                                             class="datepicker-single" :value="restApply._dateList"
-                                            @on-change="restApply.dateList = $event" placeholder="日付け"></date-picker>
+                                            @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
 
                                     </Row>
                                 </section>
@@ -356,12 +356,6 @@
                         weekSelected:[],
                         noreserved:1
                     },
-                    _restApply: {
-                        useVacation: false,
-                        restTypeId: '全て',
-                        weekSelected:[],
-                        noreserved:1
-                    },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
                     restTypeListForReview: [],
@@ -477,6 +471,7 @@
                 },
                 getApplyHistory: Debounce(async function (isInit) {
                     this.listLoading = true
+                    this.opts.page = 1
                     // 获得历史申请数据
                     try {
                         // OPTS后端发送分离
@@ -486,7 +481,6 @@
                         }
                         const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                         this.applyHistoryListData = data.list
-                        console.log(this.applyHistoryListData)
                         this.applyHistoryListAmount = data.count
                         if (!isInit) this.$Message.success('再表示完了')
                     } catch (error) {
@@ -542,7 +536,8 @@
                         this.restApply.action = 'ACT_ReMakeApply_CAppl'
                     }
                     this.restApply.typeNew = this.selectedRestInfo.ntfId
-                    this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel
+                    // 代理申请用，个人申请此处为空
+                    this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel5
                     this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
                     const week = ['mon','tue','wed','thu','fri','sat','sun']
                     week.forEach((e, i) =>{
@@ -570,7 +565,6 @@
                         return
                     }
                     this.deleteFiles = [...new Set(this.deleteFiles)]
-                    console.log(this.restApply)
                     try {
                         this.loading = true
                         await this.http.uploadFiles('sys/vapply/MakeApply',{
@@ -579,8 +573,14 @@
                             deleteFiles:JSON.stringify(this.deleteFiles),
                             psSite: this.opts.psSite
                         })
-                        this.restApply =  {...this._restApply}
-                        this.restApply._dateList = ''
+                        this.restApply =  {
+                            useVacation: false,
+                            restTypeId: '全て',
+                            weekSelected: [],
+                            noreserved:1,
+                            _dateList:''
+                        }
+                        this.$refs.datepicker.handleClear()
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
@@ -642,6 +642,7 @@
                     if(begin === end) return begin
                     else return `${begin} ～ ${end}`
                 },
+                // 按下背面的再申请按钮
                 async handleReApplybtn(item) {
                     this.deleteFiles = []
                     this.uploadFiles = []
@@ -771,8 +772,24 @@
                     return result
                 },
                 // 加载更多按钮
-                handleMoreDataLoading () {
+                async handleMoreDataLoading () {
+                    this.opts.page += 1
                     this.moreDataLoading = true
+                    // 获得历史申请数据
+                    try {
+                        // OPTS后端发送分离
+                        let OPTS = {...this.opts}
+                        if(this.opts.statusFlg === 0) {
+                            OPTS.statusFlg = ''
+                        }
+                        const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
+                        this.applyHistoryListData = this.applyHistoryListData.concat(data.list)
+                        this.$Message.success('再表示完了')
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.moreDataLoading = false
+                    }
                 },
                 // 打开上传的文件
                 applyCardDownloadFile(e) {
