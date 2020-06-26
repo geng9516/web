@@ -56,6 +56,10 @@ public class DeptStatListBean {
      * 汎用参照オブジェクト
      */
     public TmgReferList referList = null;
+
+    public TmgReferList getReferList() {
+        return referList;
+    }
     /**
      * ドメイン
      */
@@ -70,26 +74,18 @@ public class DeptStatListBean {
      * 1ページ辺りの行数
      */
     public static final int LINE_PER_PAGE = 50;
+    /**
+     * ダウンロードコンテンツタイプ
+     */
+    public static final String DOWNLOAD_CONTENT_TYPE = "application/octetstream;charset=Shift_JIS";
 
     /**
-     * 表示中のページ
+     * OS改行文字
      */
-    private int giPage = 1;
-
-    /**
-     * 表示中のページ
-     */
-    public void setPage(int i) {
-        giPage = i;
-    }
-
-    public int getPage() {
-        return giPage;
-    }
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     /**
      * 勤怠トリガーテーブルへのインサート処理を実行します。
-     *
      */
     @Transactional(rollbackFor = GlobalException.class)
     public void executeInsertTmgTrigger(String txtDYYYYMM, PsDBBean psDBBean) {
@@ -114,6 +110,7 @@ public class DeptStatListBean {
 
     /**
      * 表示月遷移リスト情報を取得する
+     *
      * @return List<DispMonthlyVO>
      */
     public List<DispMonthlyVO> getWorkDateList() {
@@ -145,7 +142,7 @@ public class DeptStatListBean {
     /**
      * 参照画面表示処理を実行します。
      */
-    public Map executeDispStatList(String txtDYYYYMM,int page,PsDBBean psDBBean){
+    public Map executeDispStatList(String txtDYYYYMM, int page, PsDBBean psDBBean) {
 
         Map resultMap = new HashMap();
         if (referList.getTargetSec() == null) {
@@ -162,12 +159,12 @@ public class DeptStatListBean {
         Map title = new HashMap();
         title.put(CommonUI.TITLE, "氏名");
         title.put(CommonUI.WIDTH, CommonUI.WIDTH_100);
-        title.put(CommonUI.KEY,"EMPNAME");
+        title.put(CommonUI.KEY, "EMPNAME");
         dispItemsList.add(title);
         for (DispItemsDto dispItemsDto : dispItemsDtoList) {
             title = new HashMap();
             title.put(CommonUI.TITLE, dispItemsDto.getMgdCitemname());
-            title.put(CommonUI.KEY,dispItemsDto.getTempColumnid());
+            title.put(CommonUI.KEY, dispItemsDto.getTempColumnid());
             title.put(CommonUI.WIDTH, CommonUI.WIDTH_36);
             dispItemsList.add(title);
         }
@@ -180,7 +177,7 @@ public class DeptStatListBean {
         sectionMap.put("EMPNAME", "合計");
         //int count = (int) sectionMap.get("CNT");
 
-        //部署別統計 を保存する
+//         部署別統計 を保存する
         resultMap.put("sectionMap", sectionMap);
 
         //ページ
@@ -199,7 +196,7 @@ public class DeptStatListBean {
     /**
      * 部署別統計情報データCSV出力処理
      */
-    public void executeDownloadDownload(String txtDYYYYMM,PsDBBean psDBBean) throws Exception {
+    public void executeDownloadDownload(String txtDYYYYMM, PsDBBean psDBBean) throws Exception {
 
         // CSV出力ヘッダー・項目取得
         List<ItemVO> headerList = iMastGenericDetailService.buildSQLForSelectTmgDeptstatcsvitems(
@@ -238,121 +235,124 @@ public class DeptStatListBean {
         psDBBean.setDownload(true);
     }
 
-    /**
-     * ダウンロードコンテンツタイプ
-     */
-    public static final String DOWNLOAD_CONTENT_TYPE = "application/octetstream;charset=Shift_JIS";
+//
+//    /**
+//     * 表示中のページ
+//     */
+//    private int giPage = 1;
+//
+//    /**
+//     * 表示中のページ
+//     */
+//    public void setPage(int i) {
+//        giPage = i;
+//    }
+//
+//    public int getPage() {
+//        return giPage;
+//    }
 
-    /**
-     * OS改行文字
-     */
-    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
+//    /**
+//     * 勤怠シートの参照権限(基準日月)
+//     */
+//    boolean authorityMonth = false;
+//
+//    /**
+//     * 勤怠シートの参照権限(基準日)設定メソッド
+//     */
+//    public void setAuthorityMonth(boolean bValue) {
+//        authorityMonth = bValue;
+//    }
+//
+//    /**
+//     * 勤怠シートの参照権限(基準日)取得メソッド
+//     */
+//    public boolean getAuthorityMonth() {
+//        return authorityMonth;
+//    }
+//
+//    /**
+//     * 参照権限フラグ：参照可能
+//     */
+//    private static final boolean CB_CAN_REFER = true;
+//
+//    /**
+//     * 引数で指定されたyyyy/mm/dd形式の日付文字列を「/」で分割しint型配列に格納します。
+//     *
+//     * @param date 基準日 (「yyyy/mm/dd」形式の文字列)
+//     * @throws NumberFormatException
+//     * @throws ArrayIndexOutOfBoundsException
+//     */
+//    public int[] devideDateFormatString(String date) {
+//
+//        int[] dates = new int[3]; //日付値格納配列
+//
+//        StringTokenizer st = new StringTokenizer(date, "/");
+//        for (int i = 0; st.hasMoreTokens(); i++) {
+//            dates[i] = Integer.parseInt(st.nextToken());
+//        }
+//
+//        return dates;
+//    }
 
-    public TmgReferList getReferList() {
-        return referList;
-    }
+//    /**
+//     * 引数で指定された値分だけ基準日の月を追加し、その月の月初めの日付を返却します。
+//     *
+//     * @param date    基準日 (「yyyy/mm/dd」形式の文字列)
+//     * @param mvValue 追加したい月の値
+//     * @return String  移動した年月日 - ※日は月初(1日)になります。
+//     */
+//    public String addMonthOfDateFromatString(String date, int mvValue) {
+//        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+//        Date objDate = null;
+//
+//        // 日付文字列を分割
+//        int dates[] = devideDateFormatString(date);
+//        Calendar calendar = Calendar.getInstance();
+//        // カレンダーに設定
+//        calendar.set(dates[0], dates[1], dates[2]);
+//
+//        // 月の追加処理
+//        calendar.add(Calendar.MONTH, mvValue - 1);
+//        calendar.set(Calendar.DATE, 1);
+//
+//        objDate = calendar.getTime();
+//
+//        return df.format(objDate);
+//
+//    }
 
-    /**
-     * 勤怠シートの参照権限(基準日月)
-     */
-    boolean authorityMonth = false;
+//    /**
+//     * 勤怠シートの参照権限(基準日の翌月)
+//     */
+//    boolean authorityNextMonth = false;
+//    /**
+//     * 基準日の前月
+//     */
+//    private String preMonth = null;
+//    /**
+//     * 基準日の翌月
+//     */
+//    private String nextMonth = null;
+//    /**
+//     * 参照権限フラグ：参照不可能
+//     */
+//    private static final boolean CB_CANT_REFER = false;
 
-    /**
-     * 勤怠シートの参照権限(基準日)設定メソッド
-     */
-    public void setAuthorityMonth(boolean bValue) {
-        authorityMonth = bValue;
-    }
-
-    /**
-     * 勤怠シートの参照権限(基準日)取得メソッド
-     */
-    public boolean getAuthorityMonth() {
-        return authorityMonth;
-    }
-
-    /**
-     * 参照権限フラグ：参照可能
-     */
-    private static final boolean CB_CAN_REFER = true;
-
-    /**
-     * 引数で指定されたyyyy/mm/dd形式の日付文字列を「/」で分割しint型配列に格納します。
-     *
-     * @param date 基準日 (「yyyy/mm/dd」形式の文字列)
-     * @throws NumberFormatException
-     * @throws ArrayIndexOutOfBoundsException
-     */
-    public int[] devideDateFormatString(String date) {
-
-        int[] dates = new int[3]; //日付値格納配列
-
-        StringTokenizer st = new StringTokenizer(date, "/");
-        for (int i = 0; st.hasMoreTokens(); i++) {
-            dates[i] = Integer.parseInt(st.nextToken());
-        }
-
-        return dates;
-    }
-
-    /**
-     * 引数で指定された値分だけ基準日の月を追加し、その月の月初めの日付を返却します。
-     *
-     * @param date    基準日 (「yyyy/mm/dd」形式の文字列)
-     * @param mvValue 追加したい月の値
-     * @return String  移動した年月日 - ※日は月初(1日)になります。
-     */
-    public String addMonthOfDateFromatString(String date, int mvValue) {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-        Date objDate = null;
-
-        // 日付文字列を分割
-        int dates[] = devideDateFormatString(date);
-        Calendar calendar = Calendar.getInstance();
-        // カレンダーに設定
-        calendar.set(dates[0], dates[1], dates[2]);
-
-        // 月の追加処理
-        calendar.add(Calendar.MONTH, mvValue - 1);
-        calendar.set(Calendar.DATE, 1);
-
-        objDate = calendar.getTime();
-
-        return df.format(objDate);
-
-    }
-
-    /**
-     * 勤怠シートの参照権限(基準日の翌月)
-     */
-    boolean authorityNextMonth = false;
-    /**
-     * 基準日の前月
-     */
-    private String preMonth = null;
-    /**
-     * 基準日の翌月
-     */
-    private String nextMonth = null;
-    /**
-     * 参照権限フラグ：参照不可能
-     */
-    private static final boolean CB_CANT_REFER = false;
-
-    /**
-     * 勤怠シートの参照権限(基準日の翌月)設定メソッド
-     */
-    public void setAuthorityNextMonth(boolean bValue) {
-        authorityNextMonth = bValue;
-    }
-
-    /**
-     * 勤怠シートの参照権限(基準日の翌月)取得メソッド
-     */
-    public boolean getAuthorityNextMonth() {
-        return authorityNextMonth;
-    }
+//    /**
+//     * 勤怠シートの参照権限(基準日の翌月)設定メソッド
+//     */
+//    public void setAuthorityNextMonth(boolean bValue) {
+//        authorityNextMonth = bValue;
+//    }
+//
+//    /**
+//     * 勤怠シートの参照権限(基準日の翌月)取得メソッド
+//     */
+//    public boolean getAuthorityNextMonth() {
+//        return authorityNextMonth;
+//    }
 
     /**
      * メイン処理
@@ -475,83 +475,83 @@ public class DeptStatListBean {
 
     }
 
-    /**
-     * 基準日
-     */
-    public String baseDate = null;
+//    /**
+//     * 基準日
+//     */
+//    public String baseDate = null;
+//
+//    public String getRequestString(String txtDYYYYMM) {
+//
+//        String data = txtDYYYYMM;
+//        if (data == null) {
+//            data = "";
+//        }
+//
+//        return data;
+//    }
+//
+//    /**
+//     * 今月日付取得処理
+//     * SYSDATE時点の年月の1日の日付を返します。
+//     * ex)現在「2007年9月23日」の場合は「2007年9月1日」の情報が返却されます。
+//     * また、返却される際の日付書式はは「YYYY/MM/DD」です。
+//     *
+//     * @return 今月の月初めの日付(YYYY / MM / DD)形式
+//     */
+//    private String getSysdate() {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM");
+//        return sdf.format(new Date()) + "/01";
+//    }
+//
+//    /**
+//     * yyyy/MM/dd形式の文字列を「yyyy」,「MM」,「dd」分割し数値型配列に格納します。
+//     */
+//    private int[] divideDate(String date) throws NumberFormatException {
+//        int[] dates = new int[3];
+//        try {
+//            StringTokenizer st = new StringTokenizer(date, "/");
+//            for (int i = 0; st.hasMoreTokens(); i++) {
+//                dates[i] = Integer.parseInt(st.nextToken());
+//            }
+//        } catch (NumberFormatException e) {
+//            e.printStackTrace();
+//        }
+//        return dates;
+//    }
 
-    public String getRequestString(String txtDYYYYMM) {
+//    /**
+//     * 対象勤務年月
+//     */
+//    private String objWorkDate = null;
+//    /**
+//     * システム年月日(今月)
+//     */
+//    private String thisMonth = "";
 
-        String data = txtDYYYYMM;
-        if (data == null) {
-            data = "";
-        }
-
-        return data;
-    }
-
-    /**
-     * 今月日付取得処理
-     * SYSDATE時点の年月の1日の日付を返します。
-     * ex)現在「2007年9月23日」の場合は「2007年9月1日」の情報が返却されます。
-     * また、返却される際の日付書式はは「YYYY/MM/DD」です。
-     *
-     * @return 今月の月初めの日付(YYYY / MM / DD)形式
-     */
-    private String getSysdate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM");
-        return sdf.format(new Date()) + "/01";
-    }
-
-    /**
-     * yyyy/MM/dd形式の文字列を「yyyy」,「MM」,「dd」分割し数値型配列に格納します。
-     */
-    private int[] divideDate(String date) throws NumberFormatException {
-        int[] dates = new int[3];
-        try {
-            StringTokenizer st = new StringTokenizer(date, "/");
-            for (int i = 0; st.hasMoreTokens(); i++) {
-                dates[i] = Integer.parseInt(st.nextToken());
-            }
-        } catch (NumberFormatException e) {
-            e.printStackTrace();
-        }
-        return dates;
-    }
-
-    /**
-     * 対象勤務年月
-     */
-    private String objWorkDate = null;
-    /**
-     * システム年月日(今月)
-     */
-    private String thisMonth = "";
-
-    /**
-     * 基準日から勤務年月を設定します。
-     */
-    private void setObjWorkDate(String baseDate) {
-        int[] date = divideDate(baseDate);
-
-        String labelYear = "年";
-        String labelDay = "月";
-        StringBuffer wrkDate = new StringBuffer();
-        wrkDate.append(String.valueOf(date[0]));
-        wrkDate.append(labelYear);
-        wrkDate.append(String.valueOf(date[1]));
-        wrkDate.append(labelDay);
-        objWorkDate = wrkDate.toString();
-    }
-    /** 勤務年月を返却します。 */
-    public String getObjWorkDate() {
-        return objWorkDate;
-    }
-
-
-    public void setThisMonth(String thisMonth) {
-        this.thisMonth = thisMonth;
-    }
+//    /**
+//     * 基準日から勤務年月を設定します。
+//     */
+//    private void setObjWorkDate(String baseDate) {
+//        int[] date = divideDate(baseDate);
+//
+//        String labelYear = "年";
+//        String labelDay = "月";
+//        StringBuffer wrkDate = new StringBuffer();
+//        wrkDate.append(String.valueOf(date[0]));
+//        wrkDate.append(labelYear);
+//        wrkDate.append(String.valueOf(date[1]));
+//        wrkDate.append(labelDay);
+//        objWorkDate = wrkDate.toString();
+//    }
+//    /** 勤務年月を返却します。 */
+//    public String getObjWorkDate() {
+//        return objWorkDate;
+//    }
+//
+//
+//    public void setThisMonth(String thisMonth) {
+//        this.thisMonth = thisMonth;
+//    }
 
 
 }
