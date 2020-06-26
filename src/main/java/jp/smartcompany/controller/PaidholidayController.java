@@ -65,7 +65,7 @@ public class PaidholidayController {
     public void execUpdate(@RequestAttribute("BeanName") PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO) throws Exception {
 
         System.out.println(paidHolidayUpdateVO);
-//         paidHolidayBean.execUpdate(psDBBean, cemployeeid,paidHolidayDispVO);
+         paidHolidayBean.execUpdate(psDBBean, paidHolidayUpdateVO);
     }
 
 

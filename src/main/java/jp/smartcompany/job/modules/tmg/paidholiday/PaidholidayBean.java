@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgPaidHolidayDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayDispVO;
 import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
+import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayUpdateVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 
 import lombok.RequiredArgsConstructor;
@@ -70,29 +71,29 @@ public class PaidholidayBean {
     /**
      * 更新処理をする
      */
-    public void execUpdate(PsDBBean psDBBean,PaidHolidayDispVO paidHolidayDispVO){
+    public void execUpdate(PsDBBean psDBBean, PaidHolidayUpdateVO paidHolidayUpdateVO){
         TmgPaidHolidayDto tmgPaidHolidayDto= new TmgPaidHolidayDto();
         tmgPaidHolidayDto.setTphCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayDto.setTphCmodifierprogramid(MOD_PROGRAM_ID);
         //txtTPH_NINVEST
-        tmgPaidHolidayDto.setTphNinvest(paidHolidayDispVO.getNinvest());
+        tmgPaidHolidayDto.setTphNinvest(paidHolidayUpdateVO.getNinvest());
         //txtTPH_NADJUST
-        tmgPaidHolidayDto.setTphNadjust(paidHolidayDispVO.getNadjust());
+        tmgPaidHolidayDto.setTphNadjust(paidHolidayUpdateVO.getNadjust());
         //txtTPH_NADJUST_HOURS
-        tmgPaidHolidayDto.setTphNadjustHours(paidHolidayDispVO.getNadjustHours()) ;
+        tmgPaidHolidayDto.setTphNadjustHours(paidHolidayUpdateVO.getNadjustHours()) ;
         // txtTPH_NADJUST_TO
-        tmgPaidHolidayDto.setTphNadjustTo(paidHolidayDispVO.getNadjustTo());
+        tmgPaidHolidayDto.setTphNadjustTo(paidHolidayUpdateVO.getNadjustTo());
         // txtTPH_NADJUST_HOURS_TO
-        tmgPaidHolidayDto.setTphNadjustHoursTo(paidHolidayDispVO.getNadjustHoursTo());
+        tmgPaidHolidayDto.setTphNadjustHoursTo(paidHolidayUpdateVO.getNadjustHoursTo());
         //txtTPH_DEXPIRE_ADJUST
-        tmgPaidHolidayDto.setTphDexpireAdjust(paidHolidayDispVO.getDexpireAdjust());
+        tmgPaidHolidayDto.setTphDexpireAdjust(paidHolidayUpdateVO.getDexpireAdjust());
         //txtTPH_DEXPIRE_ADJUST_TO
-        tmgPaidHolidayDto.setTphDexpireAdjustTo(paidHolidayDispVO.getDexpireAdjustTo());
+        tmgPaidHolidayDto.setTphDexpireAdjustTo(paidHolidayUpdateVO.getDexpireAdjustTo());
         // txtTPH_CCOMMENT
-        tmgPaidHolidayDto.setTphCcomment(paidHolidayDispVO.getCcomment());
+        tmgPaidHolidayDto.setTphCcomment(paidHolidayUpdateVO.getCcomment());
 
-        tmgPaidHolidayDto.setTphCemployeeid(getDispUserCode()) ;
-        tmgPaidHolidayDto.setTphDyyyymmdd(baseDate) ;
+        tmgPaidHolidayDto.setTphCemployeeid(paidHolidayUpdateVO.getCemployeeid()) ;
+        tmgPaidHolidayDto.setTphDyyyymmdd(paidHolidayUpdateVO.getDyyyymmdd()) ;
         tmgPaidHolidayDto.setTphCcompanyid(psDBBean.getCompCode());
         tmgPaidHolidayDto.setTphCcustomerid(psDBBean.getCustID());
 

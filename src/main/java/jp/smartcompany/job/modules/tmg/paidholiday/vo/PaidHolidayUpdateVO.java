@@ -12,6 +12,7 @@ import lombok.experimental.Accessors;
 @Setter
 @ToString
 public class PaidHolidayUpdateVO {
+
     /**
      * 対象者
      */
@@ -20,6 +21,10 @@ public class PaidHolidayUpdateVO {
      * 付与日
      */
     private String dyyyymmdd;
+    /**
+     * 今期付与日数(A)
+     */
+    private String ninvest;
 
     /**
      * 調整付与日数(B)
