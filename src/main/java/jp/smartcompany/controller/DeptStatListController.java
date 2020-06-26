@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceBookHolidayIn
 import jp.smartcompany.job.modules.tmg.attendanceBook.vo.AttendanceExistsVO;
 import jp.smartcompany.job.modules.tmg.deptstatlist.DeptStatListBean;
 import jp.smartcompany.job.modules.tmg.deptstatlist.vo.LinkOfMonthVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,53 +29,20 @@ public class DeptStatListController {
     private DeptStatListBean deptStatListBean;
 
     /**
-     * 勤務年月を返却します
+     * 勤務年月一覧を返却します
      *
      * @param psDBBean
      * @return
      */
-    @GetMapping("getObjWorkDate")
+    @GetMapping("workDateList")
     @ResponseBody
-    public String getObjWorkDate(@RequestAttribute("txtAction") String txtAction,
-                                 @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                 @RequestAttribute("page") String page,
-                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        //初期化対象
-        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
-        return deptStatListBean.getObjWorkDate();
-    }
+    public List<DispMonthlyVO> getWorkDateList(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+                                               @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-    /**
-     * 勤怠トリガーテーブルへのインサート処理を実行します。
-     *
-     * @return
-     */
-    @GetMapping("executeInsertTmgTrigger")
-    @ResponseBody
-    public void executeInsertTmgTrigger(@RequestAttribute("txtAction") String txtAction,
-                                        @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                        @RequestAttribute("page") String page,
-                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
-        deptStatListBean.executeInsertTmgTrigger(psDBBean);
-    }
-
-    /**
-     * 前月と翌月リンクを取得
-     *
-     * @return
-     */
-    @GetMapping("buildSQLSelectLinkOfPreMonth")
-    @ResponseBody
-    public LinkOfMonthVO buildSQLSelectLinkOfMonth(@RequestAttribute("txtAction") String txtAction,
-                                                   @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                                   @RequestAttribute("page") String page,
-                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        //初期化対象
-        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
-        LinkOfMonthVO linkOfMonthVO = deptStatListBean.buildSQLSelectLinkOfMonth();
-        return linkOfMonthVO;
+        deptStatListBean.execute(psDBBean);
+        deptStatListBean.executeInsertTmgTrigger(txtDYYYYMM,psDBBean);
+        return deptStatListBean.getWorkDateList();
     }
 
     /**
@@ -86,11 +54,11 @@ public class DeptStatListController {
     @ResponseBody
     public Map executeDispStatList(@RequestAttribute("txtAction") String txtAction,
                                    @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                   @RequestAttribute("page") String page,
+                                   @RequestAttribute("page") int page,
                                    @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
-        Map resultMap = deptStatListBean.executeDispStatList(psDBBean);
+        deptStatListBean.execute(psDBBean);
+        Map resultMap = deptStatListBean.executeDispStatList(txtDYYYYMM,page,psDBBean);
         return resultMap;
     }
 
@@ -101,14 +69,65 @@ public class DeptStatListController {
      */
     @GetMapping("executeDownloadDownload")
     @ResponseBody
-    public void executeDownloadDownload(@RequestAttribute("txtAction") String txtAction,
-                                        @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
-                                        @RequestAttribute("page") String page,
+    public void executeDownloadDownload(@RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
                                         @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         //初期化対象
-        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
-        deptStatListBean.executeDownloadDownload(psDBBean);
-
+        deptStatListBean.execute(psDBBean);
+        deptStatListBean.executeDownloadDownload(txtDYYYYMM,psDBBean);
     }
+
+    //
+//    /**
+//     * 勤務年月を返却します
+//     *
+//     * @param psDBBean
+//     * @return
+//     */
+//    @GetMapping("getObjWorkDate")
+//    @ResponseBody
+//    public String getObjWorkDate(@RequestAttribute("txtAction") String txtAction,
+//                                 @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+//                                 @RequestAttribute("page") String page,
+//                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+//        //初期化対象
+//        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
+//        return deptStatListBean.getObjWorkDate();
+//    }
+
+//
+//    /**
+//     * 勤怠トリガーテーブルへのインサート処理を実行します。
+//     *
+//     * @return
+//     */
+//    @GetMapping("executeInsertTmgTrigger")
+//    @ResponseBody
+//    public void executeInsertTmgTrigger(@RequestAttribute("txtAction") String txtAction,
+//                                        @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+//                                        @RequestAttribute("page") String page,
+//                                        @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+//        //初期化対象
+//        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
+//        deptStatListBean.executeInsertTmgTrigger(psDBBean);
+//    }
+
+//
+//
+//    /**
+//     * 前月と翌月リンクを取得
+//     *
+//     * @return
+//     */
+//    @GetMapping("buildSQLSelectLinkOfPreMonth")
+//    @ResponseBody
+//    public LinkOfMonthVO buildSQLSelectLinkOfMonth(@RequestAttribute("txtAction") String txtAction,
+//                                                   @RequestAttribute("txtDYYYYMM") String txtDYYYYMM,
+//                                                   @RequestAttribute("page") String page,
+//                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+//        //初期化対象
+//        deptStatListBean.execute(txtAction, txtDYYYYMM, page, psDBBean);
+//        LinkOfMonthVO linkOfMonthVO = deptStatListBean.buildSQLSelectLinkOfMonth();
+//        return linkOfMonthVO;
+//    }
 
 }
