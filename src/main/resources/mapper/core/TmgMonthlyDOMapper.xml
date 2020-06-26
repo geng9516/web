@@ -244,25 +244,19 @@
     </select>
     <select id="buildSQLSelectEmployyes" resultType="java.util.Map">
         SELECT
-            o.*
-        FROM (
-                SELECT
-                    ROW_NUMBER() OVER (ORDER BY e.SEQ) AS SEQ,
-                    e.EMPNAME AS EMPNAME
-                    <foreach collection="dispItemsDtoList" item="item" index="index" open="," separator="," close="">
-                        ${item.mgdCsql}
-                    </foreach>
-                FROM
-                    (${empsql}) e,
-                    TMG_MONTHLY m
-                WHERE
-                    m.TMO_CEMPLOYEEID = e.EMPID
-                AND m.TMO_DYYYYMM   = TRUNC( TO_DATE(#{baseDate}),'MM')
-                AND m.TMO_CCOMPANYID  = e.COMP
-                AND m.TMO_CCUSTOMERID = e.CUST
-            ) o
+            e.EMPNAME AS EMPNAME
+            <foreach collection="dispItemsDtoList" item="item" index="index" open="," separator="," close="">
+                ${item.mgdCsql}
+            </foreach>
+        FROM
+            (${empsql}) e,
+            TMG_MONTHLY m
         WHERE
-            o.SEQ between #{startSeq} and  #{endSeq}
+            m.TMO_CEMPLOYEEID = e.EMPID
+        AND m.TMO_DYYYYMM   = TRUNC( TO_DATE(#{baseDate}),'MM')
+        AND m.TMO_CCOMPANYID  = e.COMP
+        AND m.TMO_CCUSTOMERID = e.CUST
+
     </select>
     <select id="selectYearDate" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo">
         SELECT
