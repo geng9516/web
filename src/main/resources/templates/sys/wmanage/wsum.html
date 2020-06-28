@@ -6,7 +6,7 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
-<main class="content permstatlist-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content deptstatlist-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -54,45 +54,49 @@
         </div>
     </div>
     <div class="content_body">
-        <div class="table-top">
-            <Row :gutter="16">
-                <Col span="13" class="tr">
-                <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(false)">選択状態をクリア</i-button>
-                <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(true)">承認対象者を全選択</i-button>
-                </Col>
-            </Row>
+        <div class="titlenorm mb10 mt10" style="font-size:15px">
+            <Icon type="logo-buffer"></Icon>
+            {{ `統計情報 ${Utils.formatDate(this.query.txtTDA_DYYYYMM, 'yyyy年mm月')}` }}
         </div>
-        <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData"
+        <div >
+            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData"
+                     :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+                <template slot-scope="{ row }" slot="EMPNAME">
+                    <span>{{ row.EMPNAME }}</span>
+                </template>
+                <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                    <span>　{{ row[item] }}　</span>
+                </template>
+            </i-table>
+        </div>
+        <div class="titlenorm mb10 mt10" style="font-size:15px">
+            <Icon type="logo-buffer"></Icon>
+            個人別情報
+        </div>
+        <div >
+          <i-table class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
                  :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
-            <template slot-scope="{ row }" slot="name">
-                    <span @click="toWorkPage"
-                          class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
+            <template slot-scope="{ row }" slot="EMPNAME">
+                    <span>{{ row.EMPNAME }}</span>
             </template>
-            <template slot-scope="{ row }" slot="statusName">
-                <span>{{ row.statusName }}</span>
+            <template v-for="item of slotList2" slot-scope="{ row }" :slot="item">
+                <span>　{{ row[item] }}　</span>
             </template>
-
-            <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-                <span @click="showDay" v-if="row[item] === '未'" class="confirm-sytle ing">未</span>
-                <span @click="showDay" v-if="row[item] === 'エ'" class="confirm-sytle undo">エ</span>
-                <span @click="showDay" v-if="row[item] === '待'" class="confirm-sytle ing">待</span>
-                <span @click="showDay" v-if="row[item] === '済'" class="confirm-sytle">済</span>
-                <span @click="showDay" v-if="row[item] === '確'" class="confirm-sytle">確</span>
-            </template>
-        </i-table>
+          </i-table>
+        </div>
     </div>
 </main>
 
 <div th:replace="layout/script::common_script"></div>
 <script type="text/babel" th:inline="javascript">
-    const PERM_STATLIST = new Vue({
-        el: '.permstatlist-warp',
+    const DEPT_STATLIST = new Vue({
+        el: '.deptstatlist-warp',
         data() {
             return {
-                curDate: new Date(),
                 tableHead: [],
                 tableData: [],
-                slotList: Utils.getNumArray(1, 31).map(e => `disppermStatusName${e}`),
+                slotList: Utils.getNumArray(1, 40).map(e => `COL${e}`),
+                slotList2: Utils.getNumArray(1, 40).map(e => `COL${e}`),
                 dailyShow: true,
                 isShow: false,
                 loading: false,
@@ -115,12 +119,8 @@
                     txtTDA_DYYYYMM: '2020/03/01',
                     page: '1',
                     txtDYYYYMMDD: '',
-                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
-                    // txtCEMPLOYEEID: '',
-                    // sectionid: '',
-                    // txtExecuteEmpId: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -134,16 +134,14 @@
                 drawApproval: false,
 
                 title: '',
+                fullName: '',
                 tableHead2: [],
                 tableData2: [],
-                empIds: [],
-                empIds2: [],
                 isSearchHistory: false
             }
         },
         async mounted() {
             this.getOrgTree()
-            // this.getTableHead()
         },
         computed: {
             tableHeadFixed() {
@@ -153,56 +151,12 @@
             columns() {
                 let result = [
                     {
-                        title: '氏名',
-                        slot: 'name',
+                        title: ' ',
+                        slot: 'EMPNAME',
                         minWidth: 100,
                         align: 'right'
-                    },
-                    {
-                        title: '月次\n承認',
-                        slot: 'statusName',
-                        minWidth: 36,
-                        align: 'center'
                     }
                 ]
-                const that = this
-                this.tableHead.forEach((e, i) => {
-                    result = result.concat({
-                        // title: e,
-                        // className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
-                        minWidth: 25,
-                        renderHeader: (h, params) => {
-                            return h(
-                                'span',
-                                {
-                                    style: {
-                                        cursor: 'pointer',
-                                    },
-                                    domProps: {
-                                        className: 'table-head',
-                                        innerHTML: e.name,
-                                    },
-                                    on: {
-                                        click(){
-                                            that.handleClickHead(e.day)
-                                        },
-                                    },
-                                }
-                            )
-                        },
-                        slot: `disppermStatusName${i + 1}`,
-                        align: 'center'
-                    })
-                })
-                result = result.concat({
-                    type: 'selection',
-                    width: 60,
-                    align: 'center'
-                })
-                return result
-            },
-            columns2() {
-                let result = []
                 const that = this
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
@@ -216,19 +170,57 @@
                                     },
                                     domProps: {
                                         className: 'table-head',
-                                        innerHTML: e.mgdCheader,
-                                    }
+                                        innerHTML: e.title,
+                                    },
+                                    on: {
+                                        click(){
+                                            that.handleClickHead(e.day)
+                                        },
+                                    },
                                 }
                             )
                         },
-                        slot: `COLUMNID${i + 1}`,
+                        slot: `COL${i + 1}`,
                         align: 'center'
                     })
                 })
-                result = result.concat({
-                    type: 'selection',
-                    width: 60,
-                    align: 'center'
+                return result
+            },
+            columns2() {
+                let result = [
+                    {
+                        title: this.fullName,
+                        slot: 'EMPNAME',
+                        minWidth: 100,
+                        align: 'right'
+                    }
+                ]
+                const that = this
+                this.tableHead2.forEach((e, i) => {
+                    result = result.concat({
+                        minWidth: 25,
+                        renderHeader: (h, params) => {
+                            return h(
+                                'span',
+                                {
+                                    style: {
+                                        cursor: 'pointer',
+                                    },
+                                    domProps: {
+                                        className: 'table-head',
+                                        innerHTML: e.title,
+                                    },
+                                    on: {
+                                        click(){
+                                            that.handleClickHead(e.day)
+                                        },
+                                    },
+                                }
+                            )
+                        },
+                        slot: `COL${i + 1}`,
+                        align: 'center'
+                    })
                 })
                 return result
             }
@@ -262,16 +254,20 @@
                     this.selectDisabled = false
                 }
             },
-            // async getTableHead() {
-            //     this.query.txtAction = 'ACT_Disp_RList'
-            //
-            //     const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
-            //     this.tableHead = data
-            // },
-            async getTableData() {
+             async getTableData() {
                 const { data } = await this.http.get('sys/deptStatList/executeDispStatList', this.query)
-                this.tableData = data.tmgMonthlyInfoVOList
-                this.approval = data.approval
+
+                this.fullName = "氏名"
+                console.log("getTableData")
+                console.log(data.dispItemsList.slice(0,1))
+                console.log(this.fullName)
+                this.tableHead2 = data.dispItemsList.slice(1)
+                this.tableData2 = data.employyesMap
+
+                 var arr1 = [];
+                 var obj1 = data.sectionMap
+                 arr1.push(obj1);
+                 this.tableData = arr1
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -383,13 +379,13 @@
             },
              async getReadTmgDaily() {
 
-                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
-
-                //日別詳細画面のボタンを制御
-                this.drawApproval = data.approval
-
-                this.tableHead2 = data.itemVOList
-                this.tableData2 = data.tmgDailyMapList
+                // const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+                //
+                // //日別詳細画面のボタンを制御
+                // this.drawApproval = data.approval
+                //
+                // this.tableHead2 = data.itemVOList
+                // this.tableData2 = data.tmgDailyMapList
             },
             toWorkPage() {
                 // this.$router.push('/sys/confirmer/applyWork')
@@ -397,6 +393,7 @@
             handleStartMonth(e) {
 
                 this.query.txtTDA_DYYYYMM = this.dateFormat(e)
+                this.query.txtDYYYYMM = this.dateFormat(e)
                 // this.getTableHead()
                 this.getTableData()
 
