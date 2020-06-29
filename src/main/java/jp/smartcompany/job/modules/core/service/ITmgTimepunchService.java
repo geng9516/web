@@ -3,8 +3,11 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTimepunchDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * [勤怠]打刻
@@ -76,5 +79,50 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      * @return
      */
     String selectBaseTimesWithPattern(String custId, String compCode, String employeeId);
+
+    /**
+     * 出勤日数と時間数を取得
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @return
+     */
+    List<DutyDaysAndHoursDTO> selectDutyDaysAndHoursSQL(String custId, String compCode, String language);
+
+    /**
+     * 出勤日数と時間数を取得
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param targetDate
+     * @param dutyDaysAndHoursDTOList
+     * @return
+     */
+    HashMap<String, Object> selectDutyDaysAndHours(String custId, String compCode, String employeeId, String targetDate, List<DutyDaysAndHoursDTO> dutyDaysAndHoursDTOList);
+
+    /**
+     * 超過勤務時間
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    String selectOverTime(String custId, String compCode, String employeeId, String startDate, String endDate);
+
+    /**
+     * 予定データ取得
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param targetDate
+     * @return
+     */
+    ScheduleInfoDTO selectScheduleInfo(String custId, String compCode, String employeeId, String targetDate);
+
 
 }
