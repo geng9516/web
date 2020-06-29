@@ -160,4 +160,19 @@ public class SiteManageController {
                 .addAttribute("menuId",menuId);
         return "sys/manage/tmgnotification";
     }
+
+    /**
+     * 跳转到权限设定
+     * @param moduleIndex
+     * @param menuId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("perms")
+    public String toPerms(@RequestParam("moduleIndex") Integer moduleIndex,
+                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex)
+                .addAttribute("menuId",menuId);
+        return "sys/manage/perms";
+    }
 }
