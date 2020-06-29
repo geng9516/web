@@ -20,7 +20,7 @@
             <span class="label">年月</span>
             <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
                       placeholder="選択ください">
-                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val":value="item.val">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val" :value="item.val">
                 </i-option>
             </i-select>
             <span style="display:flex;width: calc(15% + 200px);">
@@ -59,14 +59,9 @@
             {{ `統計情報 ${Utils.formatDate(this.query.txtTDA_DYYYYMM, 'yyyy年mm月')}` }}
         </div>
         <div >
-            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData"
-                     :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
-                <template slot-scope="{ row }" slot="EMPNAME">
-                    <span>{{ row.EMPNAME }}</span>
-                </template>
-                <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-                    <span>　{{ row[item] }}　</span>
-                </template>
+            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+                <template slot-scope="{ row }" slot="EMPNAME"><span>{{ row.EMPNAME }}</span></template>
+                <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
             </i-table>
         </div>
         <div class="titlenorm mb10 mt10" style="font-size:15px">
@@ -154,7 +149,7 @@
                         title: ' ',
                         slot: 'EMPNAME',
                         minWidth: 100,
-                        align: 'right'
+                        align: 'center'
                     }
                 ]
                 const that = this
@@ -181,7 +176,7 @@
                             )
                         },
                         slot: `COL${i + 1}`,
-                        align: 'center'
+                        align: 'left'
                     })
                 })
                 return result
@@ -192,7 +187,7 @@
                         title: this.fullName,
                         slot: 'EMPNAME',
                         minWidth: 100,
-                        align: 'right'
+                        align: 'center'
                     }
                 ]
                 const that = this
@@ -219,7 +214,7 @@
                             )
                         },
                         slot: `COL${i + 1}`,
-                        align: 'center'
+                        align: 'left'
                     })
                 })
                 return result
@@ -241,9 +236,6 @@
                     result = result + "01"
                     this.query.txtTDA_DYYYYMM = result
 
-                    this.thisMonth = result
-                    // this.preNextMonth(data[0].val)
-
                     //年月リストを取得する時に、活性化にする
                     this.selectDisabled = true
                 }
@@ -257,17 +249,14 @@
              async getTableData() {
                 const { data } = await this.http.get('sys/deptStatList/executeDispStatList', this.query)
 
-                this.fullName = "氏名"
+                this.fullName = data.dispItemsList.slice(0,1)[0].title
                 console.log("getTableData")
                 console.log(data.dispItemsList.slice(0,1))
                 console.log(this.fullName)
                 this.tableHead2 = data.dispItemsList.slice(1)
                 this.tableData2 = data.employyesMap
 
-                 var arr1 = [];
-                 var obj1 = data.sectionMap
-                 arr1.push(obj1);
-                 this.tableData = arr1
+                 this.tableData = [data.sectionMap]
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -373,29 +362,12 @@
                 this.deptDrawShow = false
                 // this.getData(true)
             },
-            showName(e) {
-                const result = e.match(/^[\s\S]+(?=\()/g)
-                return (result && result[0]) || e
-            },
-             async getReadTmgDaily() {
-
-                // const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
-                //
-                // //日別詳細画面のボタンを制御
-                // this.drawApproval = data.approval
-                //
-                // this.tableHead2 = data.itemVOList
-                // this.tableData2 = data.tmgDailyMapList
-            },
-            toWorkPage() {
-                // this.$router.push('/sys/confirmer/applyWork')
-            },
-            handleStartMonth(e) {
+            async handleStartMonth(e) {
 
                 this.query.txtTDA_DYYYYMM = this.dateFormat(e)
                 this.query.txtDYYYYMM = this.dateFormat(e)
                 // this.getTableHead()
-                this.getTableData()
+                await this.getTableData()
 
                 console.log("handleStartMonth")
                 console.log(e)
