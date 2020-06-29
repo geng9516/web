@@ -56,7 +56,7 @@
     <div class="content_body">
         <div class="titlenorm mb10 mt10" style="font-size:15px">
             <Icon type="logo-buffer"></Icon>
-            {{ `統計情報 ${Utils.formatDate(this.query.txtTDA_DYYYYMM, 'yyyy年mm月')}` }}
+            統計情報
         </div>
         <div >
             <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
@@ -247,12 +247,14 @@
 
                 this.fullName = data.dispItemsList.slice(0,1)[0].title
                 console.log("getTableData")
-                console.log(data.dispItemsList.slice(0,1))
-                console.log(this.fullName)
                 this.tableHead2 = data.dispItemsList.slice(1)
                 this.tableData2 = data.employyesMap
 
-                 this.tableData = [data.sectionMap]
+                if (data.sectionMap.CNT === 0){
+                     this.tableData = []
+                 } else {
+                     this.tableData = [data.sectionMap]
+                 }
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -359,17 +361,12 @@
                 // this.getData(true)
             },
             async handleStartMonth(e) {
-
-                this.query.txtTDA_DYYYYMM = this.dateFormat(e)
-                this.query.txtDYYYYMM = this.dateFormat(e)
-                // this.getTableHead()
-                await this.getTableData()
-
                 console.log("handleStartMonth")
-                console.log(e)
-                console.log(this.query.txtTDA_DYYYYMM)
-
-                // this.preNextMonth(e)
+                if(e){
+                    this.query.txtTDA_DYYYYMM = this.dateFormat(e)
+                    this.query.txtDYYYYMM = this.dateFormat(e)
+                    await this.getTableData()
+                }
             },
              dateFormat(e) {
                 //YYYY年MM月からYYYY/MM/01へ変換する
