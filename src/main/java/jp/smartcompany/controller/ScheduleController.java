@@ -95,14 +95,40 @@ public class ScheduleController {
      */
     @GetMapping("executeEditMonthlyUSchedule")
     @ResponseBody
+    public HashMap<String, Object> executeEditMonthlyUSchedule_test(@RequestParam("txtBaseDate") String txtBaseDate,
+                                                                    @RequestParam("txtEndDate") String txtEndDate,
+                                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
+       // tmgScheduleBean.executeEditMonthlyUSchedule();
+        return null;
+    }
+
+
+    /**
+     * 予定作成更新処理を行います
+     * <p>
+     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=46402406&txtBaseDate=&txtEndDate=
+     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
+     *
+     * @param txtBaseDate
+     * @param txtEndDate
+     * @param content
+     * @param psDBBean
+     * @return
+     */
+    @PostMapping("executeEditMonthlyUSchedule")
+    @ResponseBody
     public HashMap<String, Object> executeEditMonthlyUSchedule(@RequestParam("txtBaseDate") String txtBaseDate,
                                                                @RequestParam("txtEndDate") String txtEndDate,
+                                                               @RequestParam("content") String content,
                                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-        tmgScheduleBean.executeEditMonthlyUSchedule();
+        tmgScheduleBean.executeEditMonthlyUSchedule(content);
         return null;
     }
+
 
     /**
      * 週勤務パターンを取得する

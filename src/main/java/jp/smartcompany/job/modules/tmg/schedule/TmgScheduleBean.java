@@ -1153,15 +1153,33 @@ public class TmgScheduleBean {
 
     }
 
+    /**
+     * 予定作成更新処理を行います。
+     */
+    public void executeEditMonthlyUSchedule(String content) {
+
+        if (JSONUtil.isJsonObj(content)) {
+            MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
+            if (null != monthlyUScheduleEditParaDTO) {
+                this.executeEditMonthlyUSchedule(monthlyUScheduleEditParaDTO);
+            } else {
+                logger.error("JSON対象がオブジェクトに変更することが失敗しました");
+            }
+        } else {
+            logger.error("更新内容は標準的なjsonではない");
+        }
+
+    }
+
 
     /**
      * 予定作成更新処理を行います。
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void executeEditMonthlyUSchedule() {
+    public void executeEditMonthlyUSchedule(MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO) {
 
         //画面から
-        MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = this.loadMonthlyUScheduleEditParaDTOData();
+        //  MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = this.loadMonthlyUScheduleEditParaDTOData();
 
         if (null == monthlyUScheduleEditParaDTO) {
             logger.warn("更新データが空です");
