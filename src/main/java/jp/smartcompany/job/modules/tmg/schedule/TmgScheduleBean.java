@@ -857,7 +857,7 @@ public class TmgScheduleBean {
         } else {
             paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
         }
-        String npaidRestDaysHour = "0日0時間0分";
+        String npaidRestDaysHour = "0日0時0分";
         if (null != npaidRestDTO) {
             //年次休暇残
             npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0" : npaidRestDTO.getTmo_npaid_rest_days() + "日";
@@ -874,7 +874,7 @@ public class TmgScheduleBean {
                     min = hoursMins_int % 60;
                 }
             }
-            npaidRestDaysHour += hour + "時間";
+            npaidRestDaysHour += hour + "時";
             npaidRestDaysHour += min + "分";
         }
 

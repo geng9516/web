@@ -5,12 +5,16 @@ import jp.smartcompany.job.modules.core.mapper.TmgTimepunchMapper;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * [勤怠]打刻
+ *
  * @author X02461
  */
 @Repository
@@ -76,5 +80,46 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         params.put("custId", custId);
         params.put("employeeId", employeeId);
         return baseMapper.selectBaseTimesWithPattern(params);
+    }
+
+    @Override
+    public List<DutyDaysAndHoursDTO> selectDutyDaysAndHoursSQL(String custId, String compCode, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("language", language);
+        return baseMapper.selectDutyDaysAndHoursSQL(params);
+    }
+
+    @Override
+    public HashMap<String, Object> selectDutyDaysAndHours(String custId, String compCode, String employeeId, String targetDate, List<DutyDaysAndHoursDTO> dutyDaysAndHoursDTOList) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("employeeId", employeeId);
+        params.put("targetDate", targetDate);
+        params.put("list", dutyDaysAndHoursDTOList);
+        return baseMapper.selectDutyDaysAndHours(params);
+    }
+
+    @Override
+    public String selectOverTime(String custId, String compCode, String employeeId, String startDate, String endDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("employeeId", employeeId);
+        params.put("startDate", startDate);
+        params.put("endDate", endDate);
+        return baseMapper.selectOverTime(params);
+    }
+
+    @Override
+    public ScheduleInfoDTO selectScheduleInfo(String custId, String compCode, String employeeId, String targetDate) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        params.put("employeeId", employeeId);
+        params.put("targetDate", targetDate);
+        return baseMapper.selectScheduleInfo(params);
     }
 }
