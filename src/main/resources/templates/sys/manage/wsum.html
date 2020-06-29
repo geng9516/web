@@ -161,28 +161,11 @@
                     }
                 ]
                 const that = this
+                const turnLine = Vue.filter('turnLine')
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
+                        title: turnLine(e.title),
                         minWidth: 25,
-                        renderHeader: (h, params) => {
-                            return h(
-                                'span',
-                                {
-                                    style: {
-                                        cursor: 'pointer',
-                                    },
-                                    domProps: {
-                                        className: 'table-head',
-                                        innerHTML: e.title,
-                                    },
-                                    on: {
-                                        click(){
-                                            that.handleClickHead()
-                                        },
-                                    },
-                                }
-                            )
-                        },
                         slot: `COL${i + 1}`,
                         align: 'center'
                     })
@@ -199,28 +182,11 @@
                     }
                 ]
                 const that = this
+                const turnLine = Vue.filter('turnLine')
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
+                        title: turnLine(e.title),
                         minWidth: 25,
-                        renderHeader: (h, params) => {
-                            return h(
-                                'span',
-                                {
-                                    style: {
-                                        cursor: 'pointer',
-                                    },
-                                    domProps: {
-                                        className: 'table-head',
-                                        innerHTML: e.title,
-                                    },
-                                    on: {
-                                        click(){
-                                            that.handleClickHead()
-                                        },
-                                    },
-                                }
-                            )
-                        },
                         slot: `COL${i + 1}`,
                         align: 'center'
                     })
