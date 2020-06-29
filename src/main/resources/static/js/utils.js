@@ -92,21 +92,21 @@ const Utils = {
    */
   convertTreeData(treeData = []) {
     return treeData.map(e => {
-        const children = e.child || e.children
-        if (children) {
-            return {
-                ...e.data,
-                title: e.data.label,
-                // 前两层级默认展开方便查看
-                expand: e.data.level < 2 || !e.data.level,
-                children: this.convertTreeData(children)
-            }
-        } else {
-            return {
-                ...e.data,
-                title: e.data.label
-            }
+      const children = e.child || e.children
+      if (children) {
+        return {
+          ...e.data,
+          title: e.data.label,
+          // 前两层级默认展开方便查看
+          expand: e.data.level < 2 || !e.data.level,
+          children: this.convertTreeData(children)
         }
+      } else {
+        return {
+          ...e.data,
+          title: e.data.label
+        }
+      }
     })
   },
   /**
@@ -149,11 +149,24 @@ const Utils = {
   getUrlParam(sUrl, sKey) {
     let result, Oparam = {};
     sUrl.replace(/[\?&]?(\w+)=(\w+)/g, function ($0, $1, $2) {
-        Oparam[$1] === void 0 ? Oparam[$1] = $2 : Oparam[$1] = [].concat(Oparam[$1], $2);
+      Oparam[$1] === void 0 ? Oparam[$1] = $2 : Oparam[$1] = [].concat(Oparam[$1], $2);
     });
     sKey === void 0 || sKey === '' ? result = Oparam : result = Oparam[sKey] || '';
     return result;
-},
+  },
+  /**
+   * 向下找到所有的子组件
+   * @param  context 当前的组件，也就是传入 this
+   * @param  componentName 要找的组件的 name
+   * @returns 返回的是一个数组，包含了所有找到的组件实例
+   */
+  findChildrens(context, componentName) {
+    return context.$children.reduce((components, child) => {
+      if (child.$options.name === componentName) components.push(child)
+      const foundChilds = allChildrens(child, componentName)
+      return components.concat(foundChilds)
+    }, [])
+  }
 }
 // 为了简便写法，不和Utils放一起了
 /**
@@ -206,12 +219,12 @@ const Throttle = (fn, t) => {
 iview.lang('ja-JP');
 
 window.requestAnimFrame =
-    window.requestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.oRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||
-    function(callback) {
-        window.setTimeout(callback, 1000 / 30);
-    }
+  window.requestAnimationFrame ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame ||
+  window.oRequestAnimationFrame ||
+  window.msRequestAnimationFrame ||
+  function (callback) {
+    window.setTimeout(callback, 1000 / 30);
+  }
 window.cancelAnimationFrame = window.cancelAnimationFrame || window.mozCancelAnimationFrame;
