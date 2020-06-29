@@ -64,7 +64,7 @@
         </span>
         <!-- 共通組織図画面 end-->
         <span class="label">社員</span>
-        <i-select v-model="referListObject.txtTmgReferListTreeViewPermTargetEmp" @on-change="getTableData">
+        <i-select v-model="opts.serchEmpId" @on-change="getTableData">
           <i-option value="全て" label="全て"></i-option>
           <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
         </i-select>
@@ -210,8 +210,8 @@
             ntfTypeId: '',
             statusFlg: 0,
             year: 2020,
-            page: 1,
-            limit: 20
+            serchEmpId:'全て',
+            page: 1
           },
           empList:[],
           selectedDeptViewType: 3, //組織ツリー用
@@ -251,8 +251,8 @@
             if (this.opts.statusFlg === 0) {
               OPTS.statusFlg = ''
             }
-            if(OPTS.txtTmgReferListTreeViewPermTargetEmp = '全て') {
-              OPTS.txtTmgReferListTreeViewPermTargetEmp = ''
+            if(OPTS.serchEmpId = '全て') {
+              OPTS.serchEmpId = ''
             }
             const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
             this.tableData = data.list
