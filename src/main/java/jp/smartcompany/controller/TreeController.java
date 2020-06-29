@@ -52,12 +52,22 @@ public class TreeController {
         }
         if(type == TmgReferList.TREEVIEW_TYPE_LIST_SEC){
             log.info("---TREEVIEW_TYPE_LIST_SEC---");
-            String jsonOrgStr = referList.getJSONArrayForOrgTree();
-            if (StrUtil.isNotBlank(jsonOrgStr)) {
-                JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
-                globalResponse.put("orgList",jsonOrg);
-            } else {
-                globalResponse.put("orgList",jsonOrgStr);
+            if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                String jsonOrgStr = referList.getJSONArrayForSectionList();
+                if (StrUtil.isNotBlank(jsonOrgStr)) {
+                    JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
+                    globalResponse.put("sectionList", jsonOrg);
+                } else {
+                    globalResponse.put("sectionList", jsonOrgStr);
+                }
+            } else{
+                String jsonOrgStr = referList.getJSONArrayForOrgTree();
+                if (StrUtil.isNotBlank(jsonOrgStr)) {
+                    JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
+                    globalResponse.put("orgList", jsonOrg);
+                } else {
+                    globalResponse.put("orgList", jsonOrgStr);
+                }
             }
         } else if (type==TmgReferList.TREEVIEW_TYPE_EMP) {
             log.info("---TREEVIEW_TYPE_EMP---");

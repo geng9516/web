@@ -164,6 +164,56 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   }
 
   /**
+   * サイトデータ設定処理<br>
+   * サイトID、サイト名称、サイト一覧をDtoに設定する
+   *
+   * @param psSystemId システムコード
+   * @param psLanguage 言語区分
+   * @return String
+   */
+//  public String getSiteList(String psSystemId, String psLanguage) {
+//    // サイト一覧取得
+//    List < GroupAppManagerAppDto > lSiteList = this.groupAppManagerAppDao.select(psSystemId,
+//            psLanguage, TYPE_SITE, null);
+//
+//    // 画面からサイトID取得
+//    String sSiteId = this.groupAppManagerMainDto.getSiteId();
+//
+//    // サイト名称取得
+//    String sSiteName = null;
+//
+//    // サイトが選択されている場合
+//    if (sSiteId != null) {
+//      for (int i = 0; i < lSiteList.size(); i++) {
+//        GroupAppManagerAppDto groupAppManagerAppDto = lSiteList.get(i);
+//
+//        // サイトIDが一致したサイト名称を取得
+//        if (sSiteId.equals(groupAppManagerAppDto.getMtrCsiteid())) {
+//          sSiteName = groupAppManagerAppDto.getMtrCobjname();
+//
+//          // 後処理
+//          groupAppManagerAppDto = null;
+//          break;
+//        }
+//
+//        // 後処理
+//        groupAppManagerAppDto = null;
+//      }
+//    }
+//
+//    // Dtoにデータ設定
+//    this.groupAppManagerMainDto.setSiteId(sSiteId);
+//    this.groupAppManagerMainDto.setSiteName(sSiteName);
+//    this.groupAppManagerMainDto.setSiteList(lSiteList);
+//
+//    // 後処理
+//    lSiteList = null;
+//    sSiteName = null;
+//
+//    return sSiteId;
+//  }
+
+  /**
    * 表示用のイレモノを生成する
    *
    * @param plPermission 権限一覧
