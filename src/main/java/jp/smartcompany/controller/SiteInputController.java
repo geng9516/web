@@ -51,8 +51,8 @@ public class SiteInputController {
                                  @RequestParam("menuId") Long menuId, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
-        TmgResultsDto dto = this.ssss();
-        tgResultsBean.actDispRmonthly(modelMap);
+//        TmgResultsDto dto = this.ssss();
+////        tgResultsBean.actDispRmonthly(psDBBean);
         return "sys/input/addwork";
     }
 
