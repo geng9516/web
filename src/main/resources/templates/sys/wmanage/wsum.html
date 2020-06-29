@@ -71,12 +71,8 @@
         <div >
           <i-table class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
                  :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
-            <template slot-scope="{ row }" slot="EMPNAME">
-                    <span>{{ row.EMPNAME }}</span>
-            </template>
-            <template v-for="item of slotList2" slot-scope="{ row }" :slot="item">
-                <span>　{{ row[item] }}　</span>
-            </template>
+            <template slot-scope="{ row }" slot="EMPNAME"><span>{{row.EMPNAME}}</span></template>
+            <template v-for="item of slotList2" slot-scope="{ row }" :slot="item"><span>{{row[item]}}</span></template>
           </i-table>
         </div>
     </div>
@@ -111,7 +107,7 @@
                 query: {
                     txtAction: 'ACT_Disp_RList',
                     txtDYYYYMM: '2020/04/01',
-                    txtTDA_DYYYYMM: '2020/03/01',
+                    txtTDA_DYYYYMM: '',
                     page: '1',
                     txtDYYYYMMDD: '',
                     txtTmgReferListTreeViewRecordDate: '',
@@ -176,7 +172,7 @@
                             )
                         },
                         slot: `COL${i + 1}`,
-                        align: 'left'
+                        align: 'center'
                     })
                 })
                 return result
@@ -214,7 +210,7 @@
                             )
                         },
                         slot: `COL${i + 1}`,
-                        align: 'left'
+                        align: 'center'
                     })
                 })
                 return result
