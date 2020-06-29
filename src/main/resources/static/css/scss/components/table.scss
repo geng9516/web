@@ -195,6 +195,13 @@
   width: 60%;
   padding-left: 10px;
 }
+.table-head-fixed {
+  .ivu-table-header {
+    position: fixed;
+    top: 0;
+    z-index: 1;
+  }
+}
 .with-split {
   width: 40%;
   display: inline-block;
