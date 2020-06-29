@@ -27,7 +27,6 @@
         <result column="timerange" property="timerange"></result>
     </resultMap>
 
-
     <!-- 打刻時に打刻データ(未反映)情報に登録する -->
     <insert id="insertTmgTimePunch" parameterType="java.util.HashMap">
         insert into tmg_timepunch
@@ -138,6 +137,5 @@
                and d.tda_ccustomerid =  #{custId}
                and d.tda_cemployeeid = #{employeeId}
     </select>
-
 
 </mapper>
