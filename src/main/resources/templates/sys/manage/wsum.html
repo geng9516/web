@@ -135,7 +135,7 @@
                 drawApproval: false,
 
                 title: '',
-                fullName: '',
+                fullName: ' ',
                 tableHead2: [],
                 tableData2: [],
                 isSearchHistory: false,
@@ -177,7 +177,7 @@
                                     },
                                     on: {
                                         click(){
-                                            that.handleClickHead(e.day)
+                                            that.handleClickHead()
                                         },
                                     },
                                 }
@@ -215,7 +215,7 @@
                                     },
                                     on: {
                                         click(){
-                                            that.handleClickHead(e.day)
+                                            that.handleClickHead()
                                         },
                                     },
                                 }
@@ -403,6 +403,8 @@
                 console.log("handleDeptViewTypeChange")
                 console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
                 this.$Notice.success({ title: '所属図更新完了' })
+            },
+            async handleClickHead() {
             },
         }
     })
