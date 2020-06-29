@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg.schedule;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
@@ -288,6 +289,14 @@ public class TmgScheduleBean {
      */
     private final String Cs_MGD_ITEMS_SCHEDULECHECK = "TMG_ITEMS|ScheduleCheck";
 
+    private final String dutyKey = "TMG_ITEMS|PlanDuty";
+
+    private final String restKey = "TMG_ITEMS|PlanRest";
+
+    private final String planTypeKey = "CID";
+
+    private final String planJSONKey = "JSON";
+
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
      *
@@ -345,7 +354,7 @@ public class TmgScheduleBean {
         _loginCustCode = "";
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         _targetUserCode = psDBBean.getTargetUser() == null ? psDBBean.getUserCode() : psDBBean.getTargetUser();
-     //   _targetUserCode = "29042924";
+        //   _targetUserCode = "29042924";
         _loginCustCode = psDBBean.getUserCode();
         //WEBから基準時間を渡せれば
         if (null != txtBaseDate && !"".equals(txtBaseDate)) {
@@ -1050,13 +1059,28 @@ public class TmgScheduleBean {
         List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip();
         // 勤務パターン
         List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
-        // Arrayにデータフォーマッを変える
+        // データフォマードを変更する
         for (int i = 0; i < workPatternList.size(); i++) {
             HashMap<String, Object> hashMap = workPatternList.get(i);
-            if (null != hashMap.get("JSON") && !"".equals(hashMap.get("JSON"))) {
-                String json = hashMap.get("JSON").toString();
-                hashMap.put("JSON", JSONUtil.parseArray(json));
+            List<JSONObject> dutyArray = new ArrayList<JSONObject>();
+            List<JSONObject> restArray = new ArrayList<JSONObject>();
+            Map plan = new HashMap();
+            if (null != hashMap.get(planJSONKey) && !"".equals(hashMap.get(planJSONKey))) {
+                String json = hashMap.get(planJSONKey).toString();
+                JSONArray jsonArray = JSONUtil.parseArray(json);
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONObject o = (JSONObject) jsonArray.get(j);
+                    if (o.get(planTypeKey).equals(dutyKey)) {
+                        dutyArray.add(o);
+                    }
+                    if (o.get(planTypeKey).equals(restKey)) {
+                        restArray.add(o);
+                    }
+                }
             }
+            plan.put("dutyArray", dutyArray);
+            plan.put("restArray", restArray);
+            hashMap.put(planJSONKey, plan);
         }
         HashMap<String, Object> results = new HashMap<String, Object>();
         results.put("kubunnList", kubunnList);
