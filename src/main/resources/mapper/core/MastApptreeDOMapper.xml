@@ -60,4 +60,58 @@
         AND MGP_DENDDATE >= trunc(sysdate)
     </select>
 
+    <select id="selectSiteOrAppListByType" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO">
+        -- アプリケーション（サイト）一覧取得SQL
+-- psTypeが3はアプリケーション一覧
+-- psTypeが1はサイト一覧
+        SELECT
+            <if test="psType == '1'">
+                MTR_CSITEID,
+            </if>
+            <if test="psType=='3'">
+                MTR_CAPPID,
+            </if>
+            MTR_COBJNAME,
+            MIN(MTR_NSEQ) MTR_NSEQ
+        FROM (
+          SELECT
+            <if test="psType == '1'">
+              MTR_CSITEID,
+            </if>
+            <if test="psType=='3'">
+              MTR_CAPPID,
+            </if>
+              PSMASTER.FUNC_GET_OBJ_NAME (
+                     MTR_CSITEID,
+                     MTR_CAPPID,
+                     NULL,
+                     NULL,
+                     NULL,
+                     '${psLanguage}'
+              ) MTR_COBJNAME,
+              MTR_NSEQ
+          FROM MAST_APPTREE
+          WHERE MTR_CSYSTEMID = #{systemId}
+              <if test="psType == '1'">
+                AND	MTR_CTYPE IN ('0','${psType}')	-- トップページを含める
+              </if>
+              <if test="psType == '3'">
+                AND	MTR_CTYPE = #{psType}
+              </if>
+              <if test="psSiteId!=null">
+                AND	MTR_CSITEID = #{psSiteId}
+              </if>
+        )
+        GROUP BY
+        <if test="psType == '1'">
+            MTR_CSITEID,
+        </if>
+        <if test="psType == '3'">
+            MTR_CAPPID,
+        </if>
+            MTR_COBJNAME
+        ORDER BY
+            MTR_NSEQ
+    </select>
+
 </mapper>

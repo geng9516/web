@@ -30,10 +30,23 @@ public class OvertimeInstructController {
      *
      */
     @GetMapping("monthlyResult")
-    public List<ResultMonthlyVo> getMgdNtfTypeDispAppList(@RequestParam("baseMonth")String baseMonth
+    public List<ResultMonthlyVo> actionExecuteDispResult(@RequestParam(value = "action",required=false)String action,
+                                                         @RequestParam("baseMonth")String baseMonth
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
-        return overtimeInstructBean.actionExecuteDispResult(baseMonth,psDBBean);
+        return overtimeInstructBean.actionExecuteDispResult(action,baseMonth,psDBBean);
+    }
+
+
+    /**
+     * 超過勤務命令一覧画面表示
+     *
+     */
+    @GetMapping("monthlyResultOti")
+    public List<MonthlyInfoOtVo> actionExecuteDisp(@RequestParam("baseMonth")String baseMonth
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        return overtimeInstructBean.actionExecuteDisp(baseMonth,psDBBean);
     }
 
 

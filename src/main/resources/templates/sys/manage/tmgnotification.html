@@ -25,7 +25,7 @@
       <div class="searchwrap">
         <span class="label">年</span>
         <date-picker type="year" format="yyyy" class="mr15" :value="new Date()" @on-change="handleDatePicker">
-      </date-picker>
+        </date-picker>
         <!-- 共通組織図画面 start-->
         <span style="display:flex;width: calc(15% + 200px);">
           <span class="label">所属</span>
@@ -63,6 +63,11 @@
           </Drawer>
         </span>
         <!-- 共通組織図画面 end-->
+        <span class="label">社員</span>
+        <i-select v-model="referListObject.txtTmgReferListTreeViewPermTargetEmp" @on-change="getTableData">
+          <i-option value="全て" label="全て"></i-option>
+          <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
+        </i-select>
       </div>
     </div>
     <div class="content_body">
@@ -77,18 +82,25 @@
               <Radio :label="2" class="custom-radio">取下</Radio>
             </radio-group>
             <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
-              :page-size="pageValue.curSize"  @on-change="pageChange"
-               ref="Page" />
+              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
           </i-col>
         </Row>
       </div>
-      <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading">
+      <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
+        :data="tableData" :loading="loading">
         <template slot-scope="{ row }" slot="dateList">
           <span>{{handleApplyDayShow(row.tntfDbegin, row.tntfDend) }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="otherOne">
-          <span v-if="row.otherOne" class="confirm-sytle ing">代</span>
+          <span v-if="row.tntfCemployeeid !== row.tntfCalteremployeeid" class="confirm-sytle ing">代</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover">
+        <Tooltip placement="bottom" class="width100" transfer>
+            <span style="white-space: normal;" slot="content">{{ row.ntfapprover.join(', ') }}</span>
+            <span class="ivu-table-cell-tooltip-content">{{ row.ntfapprover.join(', ') }}</span>
+        </Tooltip>
         </template>
 
         <template slot-scope="{ row }" slot="more">
@@ -104,6 +116,9 @@
         </template>
       </i-table>
     </div>
+    <span class="toTopBtn" @click="toTop" v-show="isScroll">
+      <Icon size="24" type="md-arrow-round-up" />
+    </span>
   </main>
   <div th:replace="layout/script::common_script"></div>
   <script type="text/babel" th:inline="javascript">
@@ -142,7 +157,7 @@
             },
             {
               title: '次の承認者',
-              key: 'nextAdmin',
+              slot: 'nextAdmin',
               align: 'center',
               minWidth: 150
             },
@@ -157,16 +172,14 @@
               key: 'tntfDnotification',
               align: 'center',
               minWidth: 50,
-              maxWidth: 160,
-              tooltip: true
+              maxWidth: 160
             },
             {
               title: '最終更新日',
               key: 'tntfDmodifieddate',
               align: 'center',
               minWidth: 50,
-              maxWidth: 160,
-              tooltip: true
+              maxWidth: 160
             },
             {
               title: '状態',
@@ -194,12 +207,13 @@
             curSize: 50
           },
           opts: {
-            ntfTypeId:'',
+            ntfTypeId: '',
             statusFlg: 0,
             year: 2020,
             page: 1,
             limit: 20
           },
+          empList:[],
           selectedDeptViewType: 3, //組織ツリー用
           empDeptLoading: false,  // 組織ツリーloading用
           deptDrawShow: false,    //組織ツリー用
@@ -216,24 +230,33 @@
             psApp: Utils.getUrlParam(location.href, 'psApp'),
             type: 21
           },
+          contentScrollTop: 0,
+          isScroll: false,
         }
       },
       async mounted() {
         this.getOrgTree()
       },
       computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 230) return true
+          else return false
+        },
       },
       methods: {
         getTableData: Debounce(async function (isInit) {
           try {
             this.loading = true
-            let OPTS = {...this.opts, ...this.referListObject}
-            if(this.opts.statusFlg === 0) {
+            let OPTS = { ...this.opts, ...this.referListObject }
+            if (this.opts.statusFlg === 0) {
               OPTS.statusFlg = ''
+            }
+            if(OPTS.txtTmgReferListTreeViewPermTargetEmp = '全て') {
+              OPTS.txtTmgReferListTreeViewPermTargetEmp = ''
             }
             const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
             this.tableData = data.list
-            this.pageValue.amount = data.count
+            this.pageValue.amount = data.totalCount
             if (!isInit) this.$Message.success('再表示完了')
             this.amount = data.totalCount || 2
           } catch (error) {
@@ -277,20 +300,41 @@
           this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
           this.loginEmployee = e[0].empid
           if (this.selectedDeptViewType === 3) {
-              this.deptName = e[0].label
+            this.deptName = e[0].label
           }
           if (this.selectedDeptViewType === 2) {
-              this.deptName = e[0].secnic
+            this.deptName = e[0].secnic
           }
           this.getTableData()
+          this.getEmplist()
+        },
+        async getEmplist() {
+          const { data } = await this.http.get('sys/vapply/EmployeeList',this.referListObject)
+          this.empList = data
+
         },
         handleDatePicker(e) {
           this.opts.year = +e
           // this.getTableData()
         },
         handleApplyDayShow(begin, end) {
-          if(begin === end) return begin
+          if (begin === end) return begin
           else return `${begin} ～ ${end}`
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.scrollTop
+          if (e.target.scrollTop > 200) {
+            this.isScroll = true
+          } else {
+            this.isScroll = false
+          }
+        }, 50),
+        toTop() {
+          const animateMachine = requestAnimationFrame(this.toTop)
+          this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+          if (this.$refs.layout.scrollTop === 0) {
+            cancelAnimationFrame(animateMachine)
+          }
         },
         confirm() { },
         beforeDeny() { },

@@ -58,26 +58,48 @@
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                     </Drawer>
-                </span>
+            </span>
             <!-- 共通組織図画面 end-->
         </div>
     </div>
+
+
     <div class="content_body">
-        <template>
-            <div>
-                <div class="table-top">
-                    <Row :gutter="16">
-                        <i-col span="8" class="tr" offset="15">
-                        <i-select v-model="overWorkViewType" @on-change="handleTypeChange">
-                            <i-option :value="1">超過勤務状況[命令時間]</i-option>
-                            <i-option :value="2">超過勤務状況[実績時間]</i-option>
-                            <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
-                        </i-select>
-                        </i-col>
-                    </Row>
-                </div>
-            </div>
-        </template>
+        <div class="table-top tr">
+            <Row :gutter="16">
+                <i-col span="8" class="tr" offset="16">
+                    <i-select v-model="overWorkViewType" @on-change="handleTypeChange">
+                        <i-option :value="1">超過勤務状況[命令時間]</i-option>
+                        <i-option :value="2">超過勤務状況[実績時間]</i-option>
+                        <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
+                    </i-select>
+                </i-col>
+            </Row>
+        </div>
+        <i-table class="long-table"  :columns="columns" :data="tableData"
+                 :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <template slot-scope="{ row }" slot="name">
+                <span>{{ row.empname }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="overtime">
+                <span>{{ row.overtime }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="overtimeyear">
+                <span>{{ row.overTimeYear }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="overtimeover45">
+                <span>{{ row.overTimeOver45 }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="restworkcount">
+                <span>{{ row.workInHolidayCount }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="avgtime">
+                <span>{{ row.avgOverTime }}</span>
+            </template>
+            <template v-for="(item, i) of slotList" slot-scope="{ row }" :slot="item">
+                <span>{{ row[item] }}</span>
+            </template>
+        </i-table>
     </div>
 </main>
 <div th:replace="layout/script::common_script"></div>
@@ -86,6 +108,8 @@
         el: '.overtimeinstruchinfo-warp',
         data() {
             return {
+                slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
+                loading: false,
                 tableHead: [],   //表头
                 tableData: [],   //表数据
                 overWorkViewType: 2,
@@ -105,21 +129,121 @@
                     type: 21
                 },
                 query: {
+                    action:'',
                     baseMonth: '2020/04/01',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     //目标sec
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     //基准日
                     txtTmgReferListTreeViewRecordDate: '',
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 21
                 },
             }
         },
         async mounted() {
-            this.getData()
             this.getOrgTree()
             this.getTableHead()
         },
         computed: {
+            columns() {
+                let result = []
+                if (this.overWorkViewType === 1) {
+                    result = [
+                        {
+                            title: '氏名',
+                            slot: 'name',
+                            minWidth: 100,
+                            align: 'right'
+                        },
+                        {
+                            title: '合計',
+                            slot: 'overtime',
+                            minWidth: 36,
+                            align: 'center'
+                        }
+                    ]
+                } else {
+                    result = [
+                        {
+                            title: '氏名',
+                            slot: 'name',
+                            minWidth: 100,
+                            align: 'right'
+                        },
+                        {
+                            title: '超過勤務',
+                            //slot: 'overtime',
+                            minWidth: 75,
+                            align: 'center',
+                            children: [
+                                {
+                                    title: '合計\n' + '(月)',
+                                    slot: 'overtime',
+                                    minWidth: 25,
+                                    align: 'center'
+                                },
+                                {
+                                    title: '合計\n' + '(年)',
+                                    slot: 'overtimeyear',
+                                    minWidth: 25,
+                                    align: 'center'
+
+                                },
+                                {
+                                    title: '45超\n' + '(年)',
+                                    slot: 'overtimeover45',
+                                    minWidth: 25,
+                                    align: 'center'
+                                }
+                            ]
+                        },
+                        {
+                            title: '休日\n' + '出勤\n' + '回数\n' + '(月)',
+                            slot: 'restworkcount',
+                            minWidth: 25,
+                            align: 'center'
+                        },
+                        {
+                            title: '平均\n' + '超勤\n' + '時間\n' + '(月)',
+                            slot: 'avgtime',
+                            minWidth: 25,
+                            align: 'center'
+                        }
+                    ]
+                }
+                const that = this
+                this.tableHead.forEach((e, i) => {
+
+                    result = result.concat({
+                        // title: e,
+                        className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                        minWidth: 15,
+                        renderHeader: (h, params) => {
+                            return h(
+                                'span',
+                                {
+                                    style: {
+                                        cursor: 'pointer',
+                                    },
+                                    domProps: {
+                                        //className: 'table-head',
+                                        innerHTML: e.tableTop,
+                                    },
+                                    on: {
+                                        click(){
+                                             that.handleClickHead(e.day)
+                                        },
+                                    },
+                                }
+                            )
+                        },
+                        slot: `tmiCinfo${i + 1}`,
+                        align: 'center'
+                    })
+                })
+                return result
+            },
         },
         methods: {
             showAverageDraw() {
@@ -131,18 +255,6 @@
                 await this.getOrgTree()
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
-            getData: Debounce(async function () {
-                try {
-                    this.loading = true
-                    // const { data } = await this.api.mock('applyConfirm')
-                    this.tableData = data
-                    this.amount = data.totalCount || 2
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
-                }
-            }),
             async getOrgTree() {
                 this.empDeptLoading = true
                 try {
@@ -159,8 +271,10 @@
             },
             handleDatePicker() {},
             async handleClickLeaf(e) {
+                if(!e[0]) return
                 this.deptDrawShow = false
                 this.defaultDeptId = e[0].secid
+                this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 await this.getTableHead()
@@ -171,20 +285,69 @@
                 this.$Notice.success({ title: '所属図更新完了' })
             },
             handleTypeChange() {
-                this.$emit('changeTableData')
+                //this.$emit('changeTableData')
+                this.getTableData()
             },
 
             async getTableHead() {
-                const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
-                this.tableHead = data
-                console.log(this.tableHead)
+                this.loading=true
+                try{
+                    const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
+                    this.tableHead = data
+                    console.log(this.tableHead)
+                }catch (error) {
+                    return
+                }finally {
+                    this.loading=false
+                }
             },
-
             async getTableData() {
-                const { data } = await this.http.get('sys/overtimeinstruct/monthlyResult', this.query)
-                this.tableData = data
-                console.log(this.tableData)
+                //this.loading=true
+                let url = 'sys/overtimeinstruct/monthlyResult'
+                try{
+                    if (this.overWorkViewType === 3) {
+                        this.query.action="ACT_DISP_RMONTHLY_RESULT_OT100"
+                    }
+                    if (this.overWorkViewType === 1) {
+                        url = 'sys/overtimeinstruct/monthlyResultOti'
+                    }
+                    if (this.overWorkViewType === 2) {
+                        this.query.action="ACT_DISP_RMONTHLY"
+                    }
+                    const { data } = await this.http.get(url, this.query)
+                    this.tableData = data
+                    console.log(this.tableData)
+                }catch (error) {
+                    return
+                }finally {
+                    this.loading=false
+                }
             },
+            async handleClickHead(e) {
+                console.log(e)
+                this.query.txtDYYYYMMDD = e
+
+                this.getReadTmgDaily()
+
+            },
+            async getReadTmgDaily() {
+
+                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+
+                //日別詳細画面のボタンを制御
+                this.drawApproval = data.approval
+
+                this.tableHead2 = data.itemVOList
+                this.tableData2 = data.tmgDailyMapList
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
         }
     })
 </script>
