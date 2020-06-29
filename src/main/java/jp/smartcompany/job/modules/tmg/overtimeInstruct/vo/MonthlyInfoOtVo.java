@@ -16,15 +16,15 @@ public class MonthlyInfoOtVo {
 
     private String empid;
     private String empname;
-    private String tmiCinfo01;
-    private String tmiCinfo02;
-    private String tmiCinfo03;
-    private String tmiCinfo04;
-    private String tmiCinfo05;
-    private String tmiCinfo06;
-    private String tmiCinfo07;
-    private String tmiCinfo08;
-    private String tmiCinfo09;
+    private String tmiCinfo1;
+    private String tmiCinfo2;
+    private String tmiCinfo3;
+    private String tmiCinfo4;
+    private String tmiCinfo5;
+    private String tmiCinfo6;
+    private String tmiCinfo7;
+    private String tmiCinfo8;
+    private String tmiCinfo9;
     private String tmiCinfo10;
     private String tmiCinfo11;
     private String tmiCinfo12;

@@ -13,7 +13,7 @@ import lombok.ToString;
 @ToString
 public class EmployeeListVo {
     //0 職員番号
-    private  String TntfCemployeeid;
+    private  String empid;
     //1 職員氏名
-    private String TntfCemployeeidName;
+    private String empname;
 }

@@ -426,8 +426,8 @@
 
     <select id="selectemployeeList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeListVo">
         SELECT
-            e.EMPID TNTF_CEMPLOYEEID,
-            TMG_F_GET_ME_NAME(e.EMPID,'${date}',0,'${custId}','${compId}') TNTF_CEMPLOYEEID_NAME
+            e.EMPID EMPID,
+            TMG_F_GET_ME_NAME(e.EMPID,'${date}',0,'${custId}','${compId}') EMPNAME
         FROM
             (${sql}) e
         ORDER BY

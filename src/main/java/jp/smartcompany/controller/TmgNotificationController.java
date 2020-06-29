@@ -140,9 +140,9 @@ public class TmgNotificationController {
      *
      * @return　エラー
      */
-    @GetMapping("ReferList")
-    public int getReferliSt() throws Exception {
-        return TmgReferList.TREEVIEW_TYPE_LIST;
+    @GetMapping("EmployeeList")
+    public List<EmployeeListVo> getEmployeeList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgNotificationBean.getEmployeeList(psDBBean);
     }
 
 
