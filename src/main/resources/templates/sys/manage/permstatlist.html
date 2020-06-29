@@ -608,16 +608,13 @@
                 this.$refs.selection2.selectAll(status)
             },
             handleStartMonth(e) {
-
-                this.query.txtDYYYYMM = this.dateFormat(e)
-                this.getTableHead()
-                this.getTableData()
-
                 console.log("handleStartMonth")
-                console.log(e)
-                console.log(this.query.txtDYYYYMM)
-
-                this.preNextMonth(e)
+                if(e){
+                    this.query.txtDYYYYMM = this.dateFormat(e)
+                    this.getTableHead()
+                    this.getTableData()
+                    this.preNextMonth(e)
+                }
             },
             async bulkApproval(e) {
                 this.query.txtAction = 'ACT_MONTHLY_PERMIT'
