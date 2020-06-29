@@ -127,7 +127,7 @@
                     TNTF_COWNCOMMENT
                 From
                     TMG_NOTIFICATION
-                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp == null '>
+                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp == null and paramNotificationList.searchEmp == ""'>
                      ,( ${paramNotificationList.employeeListSql} ) e
                 </if>
                 WHERE
