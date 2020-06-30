@@ -6,7 +6,7 @@
 
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
-  <main class="content restapplyconfirm-warp" @scroll.passive="handleScroll" ref="layout">
+  <main class="content restapplyconfirmw-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
       <div class="header">
         <div class="title1">
@@ -46,13 +46,6 @@
                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
-              <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-              <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                  <i-option :value="2">グループごとに</i-option>
-                  <i-option :value="3">部署ごとに</i-option>
-                </i-select>
-              </div>
             </Row>
             ​
             <div style="position: relative;">
@@ -63,11 +56,11 @@
           </Drawer>
         </span>
         <!-- 共通組織図画面 end-->
-        <span class="label">社員</span>
+        <!-- <span class="label">社員</span>
         <i-select v-model="opts.serchEmpId" @on-change="getTableData(false, true)" transfer>
           <i-option value="全て" label="全て"></i-option>
           <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
-        </i-select>
+        </i-select> -->
       </div>
     </div>
     <div class="content_body">
@@ -120,8 +113,8 @@
   </main>
   <div th:replace="layout/script::common_script"></div>
   <script type="text/babel" th:inline="javascript">
-    const REST_APPLY_CONFIRM = new Vue({
-      el: '.restapplyconfirm-warp',
+    const REST_APPLY_CONFIRM_W = new Vue({
+      el: '.restapplyconfirmw-warp',
       data() {
         return {
           columns: [
@@ -214,7 +207,6 @@
           curYear: new Date(),
           empList: [],
           statusList: [],
-          selectedDeptViewType: 3, //組織ツリー用
           empDeptLoading: false,  // 組織ツリーloading用
           deptDrawShow: false,    //組織ツリー用
           treeData: [],            //組織ツリー用
@@ -274,14 +266,9 @@
         async getOrgTree() {
           this.empDeptLoading = true
           try {
-            const { groupList, sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+            const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
             // 先将数据转为标准格式，再转为可用数据
-            if (this.selectedDeptViewType === 3) {
-              this.treeData = Utils.convertTreeData(sectionList)
-            }
-            if (this.selectedDeptViewType === 2) {
-              this.treeData = Utils.convertTreeData(groupList)
-            }
+            this.treeData = Utils.convertTreeData(orgList)
             this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
           } catch (error) {
             return
@@ -300,20 +287,10 @@
           await this.getOrgTree()
           this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
         },
-        async handleDeptViewTypeChange() {
-          await this.getOrgTree()
-          this.$Notice.success({ title: '所属図更新完了' })
-        },
         async handleClickLeaf(e) {
           this.deptDrawShow = false
           this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
-          this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
-          if (this.selectedDeptViewType === 3) {
-            this.deptName = e[0].label
-          }
-          if (this.selectedDeptViewType === 2) {
-            this.deptName = e[0].secnic
-          }
+          this.deptName = e[0].secnic
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
           this.getTableData(false, true)
