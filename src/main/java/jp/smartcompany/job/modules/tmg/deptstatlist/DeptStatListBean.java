@@ -196,7 +196,7 @@ public class DeptStatListBean {
         for (Map mapRow : mapList) {
 
             for (int col = 0; col < headerList.size(); col++) {
-                csvData.append(StringUtils.defaultString((String) mapRow.get(headerList.get(col).getTempColumnid()))).append(',');
+                csvData.append(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid())))).append(',');
             }
             csvData.deleteCharAt(csvData.lastIndexOf(","));
             csvData.append(LINE_SEPARATOR);
