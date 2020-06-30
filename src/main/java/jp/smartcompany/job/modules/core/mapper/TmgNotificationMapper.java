@@ -51,11 +51,7 @@ public interface TmgNotificationMapper extends BaseMapper<TmgNotificationDO> {
                              @Param("compId") String compId,
                              @Param("ntfNo") String ntfNo);
 
-        /**
-         * 一覧の対象件数を取得するSQLを返す
-         */
 
-        int selectNotificationCount(@Param("paramNotificationList") ParamNotificationListDto params);
 
         /**
          * 遡り期限を取得するSQLを返す

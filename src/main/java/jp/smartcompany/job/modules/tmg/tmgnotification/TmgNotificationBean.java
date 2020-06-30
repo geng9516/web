@@ -1164,7 +1164,7 @@ public class TmgNotificationBean {
         //String sectionNAme=iHistDesignationService.selectSectionNAme(param.getCustId(),param.getCompId(),param.getTodayD(),referList.getTargetSec());
         //modelMap.addAttribute("sectionNAme", sectionNAme);
         // TODO 5 件数
-        int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
+        //int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
         //modelMap.addAttribute("selectNotificationCount", selectNotificationCount);
         // 6 遡り期限
         String selectBackLimit = iTmgNotificationService.selectBackLimit(param.getCustId(), param.getCompId(), param.getTargetUser());

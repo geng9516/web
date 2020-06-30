@@ -127,7 +127,7 @@
                     TNTF_COWNCOMMENT
                 From
                     TMG_NOTIFICATION
-                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp == null and paramNotificationList.searchEmp == ""'>
+                <if test='paramNotificationList.siteId != "TMG_INP"  and paramNotificationList.searchEmp =="" '>
                      ,( ${paramNotificationList.employeeListSql} ) e
                 </if>
                 WHERE
@@ -152,11 +152,11 @@
                     </when>
                     <otherwise>
                         --申請期間検索機能が使用可能な場合
-                        <if test='paramNotificationList.ntfTermEnd != null  '>
+                        <if test='paramNotificationList.ntfTermEnd != null and paramNotificationList.ntfTermEnd != "" '>
                         --申請期間検索・終了日の指定がある場合
                             AND TNTF_DBEGIN <![CDATA[<=]]> '${paramNotificationList.ntfTermEnd}'
                         </if>
-                        <if test='paramNotificationList.ntfTermBegin != null '>
+                        <if test='paramNotificationList.ntfTermBegin != null and paramNotificationList.ntfTermBegin != "" '>
                         --申請期間検索・開始日の指定がある場合
                             AND NVL(TNTF_DDAIKYU, TNTF_DEND) >= '${paramNotificationList.ntfTermBegin}'
                         </if>
@@ -171,7 +171,7 @@
                     </when>
                     <otherwise>
                         <choose>
-                        <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !=null '>
+                        <when  test='paramNotificationList.searchEmp != null  and paramNotificationList.searchEmp !="" '>
                             --氏名選択
                             AND TNTF_CEMPLOYEEID  = '${paramNotificationList.searchEmp}'
                         </when>
@@ -314,7 +314,7 @@
                     TNTF_COWNCOMMENT
                 From
                     TMG_NOTIFICATION
-                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp ==null '>
+                <if test='paramNotificationList.siteId != "TMG_INP" and paramNotificationList.searchEmp =="" '>
                     ,( ${paramNotificationList.employeeListSql} ) e
                 </if>
                 WHERE
@@ -339,11 +339,11 @@
                     </when>
                     <otherwise>
                         --申請期間検索機能が使用可能な場合
-                        <if test='paramNotificationList.ntfTermEnd != null  '>
+                        <if test='paramNotificationList.ntfTermEnd != null  and paramNotificationList.ntfTermEnd !=""  '>
                             --申請期間検索・終了日の指定がある場合
                             AND TNTF_DBEGIN <![CDATA[<=]]> '${paramNotificationList.ntfTermEnd}'
                         </if>
-                        <if test='paramNotificationList.ntfTermBegin != null '>
+                        <if test='paramNotificationList.ntfTermBegin != null and paramNotificationList.ntfTermBegin !="" '>
                             --申請期間検索・開始日の指定がある場合
                             AND NVL(TNTF_DDAIKYU, TNTF_DEND) >= '${paramNotificationList.ntfTermBegin}'
                         </if>
@@ -358,7 +358,7 @@
                     </when>
                     <otherwise>
                         <choose>
-                            <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !=null '>
+                            <when test='paramNotificationList.searchEmp != null and paramNotificationList.searchEmp !="" '>
                                 --氏名選択
                                 AND TNTF_CEMPLOYEEID  = '${paramNotificationList.searchEmp}'
                             </when>
@@ -371,14 +371,14 @@
                 </choose>
 
                 --検索条件・申請内容
-                <if test='paramNotificationList.type != null and paramNotificationList.type !="" '>
+                <if test='paramNotificationList.type != null  and paramNotificationList.type !=""  '>
                     AND TNTF_CTYPE = '${paramNotificationList.type}'
                 </if>
 
                 --検索条件・状態
                 <choose>
 
-                    <when test='paramNotificationList.status != null and paramNotificationList.status !=""'>
+                    <when test='paramNotificationList.status != null and paramNotificationList.status !="" '>
                         AND TNTF_CSTATUSFLG = '${paramNotificationList.status}'
                         --検索条件・状態・取下か差戻
                         <if test='paramNotificationList.status == "TMG_NTFSTATUS|0" or paramNotificationList.status == "TMG_NTFSTATUS|3"'>
@@ -611,112 +611,6 @@
             C.TNTF_CCUSTOMERID = #{custId}
             AND C.TNTF_CCOMPANYID = #{compId}
             AND C.TNTF_CNTFNO = #{ntfNo};
-    </select>
-
-
-
-    <select id="selectNotificationCount" resultType="int">
-        SELECT
-            COUNT(*)
-        FROM
-            TMG_NOTIFICATION
-        <if test='paramNotificationList.searchEmp ="" '>
-            ,( ${paramNotificationList.employeeListSql} ) e
-        </if>
-
-        WHERE
-            TNTF_CCUSTOMERID='${paramNotificationList.custId}'
-        AND TNTF_CCOMPANYID='${paramNotificationList.compId}'
-
-        <choose>
-            <when test='paramNotificationList.siteId =="TMG_INP" or paramNotificationList.isNtfTermUseCond==1 '>
-                --検索対象期間
-                --入力サイト、または申請期間検索機能が使用できない場合、表示対象年ごとの検索を行う。
-                --申請期間検索機能が使用できる場合、申請期間検索条件の期間で検索を行う。
-                AND (
-                (
-                TMG_F_GET_THE_YEARZONE(${paramNotificationList.year},0,'${paramNotificationList.today}',TNTF_CCUSTOMERID,TNTF_CCOMPANYID) <![CDATA[<=]]> TNTF_DBEGIN
-                AND TMG_F_GET_THE_YEARZONE(${paramNotificationList.year},1,'${paramNotificationList.today}',TNTF_CCUSTOMERID,TNTF_CCOMPANYID) >= TNTF_DBEGIN
-                )
-                OR (
-                TMG_F_GET_THE_YEARZONE(${paramNotificationList.year},0,'${paramNotificationList.today}',TNTF_CCUSTOMERID,TNTF_CCOMPANYID) <![CDATA[<=]]> NVL(TNTF_DDAIKYU,TNTF_DEND)
-                AND TMG_F_GET_THE_YEARZONE(${paramNotificationList.year},1,'${paramNotificationList.today}',TNTF_CCUSTOMERID,TNTF_CCOMPANYID)  >=  NVL(TNTF_DDAIKYU,TNTF_DEND)
-                )
-                )
-            </when>
-            <otherwise>
-                --申請期間検索機能が使用可能な場合
-                <if test='paramNotificationList.ntfTermEnd != null  '>
-                    --申請期間検索・終了日の指定がある場合
-                    AND TNTF_DBEGIN <![CDATA[<=]]> '${paramNotificationList.ntfTermEnd}'
-                </if>
-                <if test='paramNotificationList.ntfTermBegin != null '>
-                    --申請期間検索・開始日の指定がある場合
-                    AND NVL(TNTF_DDAIKYU, TNTF_DEND) >= '${paramNotificationList.ntfTermBegin}'
-                </if>
-            </otherwise>
-        </choose>
-
-        <choose>
-            <when  test='paramNotificationList.searchEmp != null and paramNotificationList.ntfTermEnd !="" '>
-                --氏名選択
-                AND TNTF_CEMPLOYEEID  = '${paramNotificationList.searchEmp}'
-            </when>
-            <otherwise>
-                --全て
-                AND TNTF_CEMPLOYEEID  = e.EMPID
-            </otherwise>
-        </choose>
-
-        --検索条件・申請内容
-        <if test='paramNotificationList.type != null and paramNotificationList.type !="" '>
-            AND TNTF_CTYPE = '${paramNotificationList.type}'
-        </if>
-
-
-
-         <if test='paramNotificationList.status != null and paramNotificationList.status !=""'>
-            AND TNTF_CSTATUSFLG='${paramNotificationList.status}'
-                --検索条件・状態・取下か差戻
-                <if test='paramNotificationList.status == "TMG_NTFSTATUS|0" or paramNotificationList.status == "TMG_NTFSTATUS|3"'>
-                    AND TNTF_CALTEREMPLOYEEID = '${paramNotificationList.userCode}'
-                </if>
-         </if>
-
-        <if test='paramNotificationList.evaluator =="ONLY" '>
-            AND (SELECT TMG_F_GET_NEXT_NTFAPPROVER(TNTF_CNTFNO, TRUNC(SYSDATE), ',', 0, TNTF_CCUSTOMERID, TNTF_CCOMPANYID,'${paramNotificationList.lang}' ) FROM DUAL) like '%#{paramNotificationList.userCode}%'
-        </if>
-        /*
-        *  管理対象判定条件指定
-        *  ・入力サイトの場合：本人を判定。
-        *  ・承認・管理サイトの場合（職員選択）：選択職員を判定
-        *  ・承認・管理サイトの場合（全て指定）：疑似テーブルの職員全員を判定
-        */
-        <choose>
-
-            <when test='paramNotificationList.siteId == "TMG_INP"' >
-                --本人職員の対象開始日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG('${paramNotificationList.targetUser}',TRUNC(TNTF_DBEGIN), LAST_DAY(TNTF_DBEGIN),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-                --本人職員の対象終了日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG('${paramNotificationList.targetUser}',TRUNC(TNTF_DEND), LAST_DAY(TNTF_DEND),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-            </when>
-
-            <when test='paramNotificationList.searchEmp !=null and paramNotificationList.searchEmp !="" '>
-                --選択された職員の対象開始日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG('${paramNotificationList.searchEmp}',TRUNC(TNTF_DBEGIN), LAST_DAY(TNTF_DBEGIN),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-                --選択された職員の対象終了日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG('${paramNotificationList.searchEmp}',TRUNC(TNTF_DEND), LAST_DAY(TNTF_DEND),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-            </when>
-
-            <otherwise>
-                --対象職員全員の対象開始日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(e.EMPID,TRUNC(TNTF_DBEGIN), LAST_DAY(TNTF_DBEGIN),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-                --対象職員全員の対象終了日の月について管理対象であるか判定
-                AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(e.EMPID,TRUNC(TNTF_DEND), LAST_DAY(TNTF_DEND),'${paramNotificationList.custId}','${paramNotificationList.compId}')
-            </otherwise>
-        </choose>
-
-        ;
     </select>
 
 
