@@ -94,12 +94,105 @@
                 <span>{{ row.workInHolidayCount }}</span>
             </template>
             <template slot-scope="{ row }" slot="avgtime">
-                <span>{{ row.avgOverTime }}</span>
+                <span @click="showAverageDraw">{{ row.avgOverTime }}
+                </span>
             </template>
             <template v-for="(item, i) of slotList" slot-scope="{ row }" :slot="item">
                 <span>{{ row[item] }}</span>
             </template>
         </i-table>
+
+
+
+
+
+        <Drawer :title="title" width="1200" v-model="showDayApply" draggable>
+            <Row :gutter="16" class="mb5">
+                <i-col span="13" offset="11" class="tr">
+                <i-button type="primary" size="large" class="tr">命令/確認</i-button>
+                </i-col>
+            </Row>
+            <Row class="mb15">
+                <i-col span="4" class="label">所属</i-col>
+                <i-col span="6">
+                <span class="input-like-span">{{ deptName }}</span>
+                </i-col>
+            </Row>
+
+            <div class="titlenorm mb10">
+                <Icon type="logo-buffer"></Icon>
+                一括適用
+            </div>
+            <i-table :columns="columnsAction" :data="columnsActionData">
+                <template slot-scope="{ row }" slot="startTime">
+                    <i-input />
+                </template>
+
+                <template slot-scope="{ row }" slot="endTime">
+                    <i-input />
+                </template>
+
+                <template slot-scope="{ row }" slot="content">
+                    <i-input type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" />
+                </template>
+
+                <template slot-scope="{ row }" slot="restTime">
+                    <Row :gutter="10">
+                        <i-col span="12">
+                        <i-input />
+                        </i-col>
+                        <i-col span="12">
+                        <i-input />
+                        </i-col>
+                    </Row>
+                </template>
+
+                <template slot-scope="{ row }" slot="option">
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectAll2(false)">
+                        クリア
+                    </i-button>
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectAll2(true)">
+                        全選択
+                    </i-button>
+                </template>
+            </i-table>
+
+            <!-- 超过勤务命令的操作table -->
+            <div class="titlenorm mb10">
+                <Icon type="logo-buffer"></Icon>
+                超過勤務命令
+            </div>
+            <i-table border :columns="columns3" :data="tableData3" ref="selection2">
+
+            </i-table>
+        </Drawer>
+
+
+        <Drawer title="平均超勤時間(月) 詳細" width="800" v-model="showAverage" draggable>
+            <Row>
+                <i-col span="6" class="label">所属</i-col>
+                <i-col span="9">
+                <span class="input-like-span">国創庁</span>
+                </i-col>
+            </Row>
+
+            <Row>
+                <i-col span="6" class="label">氏名</i-col>
+                <i-col span="9">
+                <span class="input-like-span">佐藤 雅彦</span>
+                </i-col>
+            </Row>
+
+            <Row>
+                <i-col span="6" class="label">種別</i-col>
+                <i-col span="9">
+                <span class="input-like-span">健栄研_職員 第３種</span>
+                </i-col>
+            </Row>
+
+            <i-table border class="mt20" :columns="columns2" :data="tableData2" :span-method="handleSpan"></i-table>
+        </Drawer>
+
     </div>
 </main>
 <div th:replace="layout/script::common_script"></div>
@@ -108,10 +201,16 @@
         el: '.overtimeinstruchinfo-warp',
         data() {
             return {
+                showAverage: false,
+                showDayApply: false,
+                title:'日別編集画面',
                 slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
                 loading: false,
                 tableHead: [],   //表头
-                tableData: [],   //表数据
+                tableData: [],   //一览表数据
+                tableData2:[],   //月平均表数据
+                columnsActionData: [],   //一括日别编辑表数据
+                tableData3: [],   //日别编辑表数据
                 overWorkViewType: 2,
                 treeData: [],            //組織ツリー用
                 curDate: new Date(),
@@ -139,6 +238,176 @@
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 21
                 },
+                columns2: [
+                    {
+                        title: ' ',
+                        key: 'name',
+                        align: 'right'
+                    },
+                    {
+                        title: '2019/03',
+                        key: 'm1',
+                        align: 'center'
+                    },
+                    {
+                        title: '2019/04',
+                        key: 'm2',
+                        align: 'center'
+                    },
+                    {
+                        title: '2019/05',
+                        key: 'm3',
+                        align: 'center'
+                    },
+                    {
+                        title: '2019/06',
+                        key: 'm4',
+                        align: 'center'
+                    },
+                    {
+                        title: '2019/07',
+                        key: 'm5',
+                        align: 'center'
+                    },
+                    {
+                        title: '2019/08',
+                        key: 'm6',
+                        align: 'center'
+                    },
+                    {
+                        title: '平均値',
+                        key: 'average',
+                        align: 'center'
+                    }
+                ],
+                columns3: [
+                    {
+                        title: '氏名',
+                        slot: 'name',
+                        minWidth: 100,
+                        align: 'right'
+                    },
+                    {
+                        title: '区分',
+                        minWidth: 36,
+                        key: 'wordkDivision',
+                        align: 'center'
+                    },
+                    {
+                        title: '予定',
+                        align: 'center',
+                        children: [
+                            {
+                                title: '始業',
+                                align: 'center',
+                                width: 55,
+                                key: 'workStartFinal'
+                            },
+                            {
+                                title: '終業',
+                                width: 55,
+                                key: 'workEndFinal',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '打刻',
+                        align: 'center',
+                        className: 'checkin',
+                        children: [
+                            {
+                                title: '始業',
+                                width: 55,
+                                key: 'workStartReal',
+                                className: 'checkin',
+                                align: 'center'
+                            },
+                            {
+                                title: '終業',
+                                width: 55,
+                                key: 'workEndReal',
+                                className: 'checkin',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '超勤',
+                        children: [
+                            {
+                                title: '開始\n時間',
+                                slot: 'startTime',
+                                minWidth: 55,
+                                align: 'center'
+                            },
+                            {
+                                title: '終了\n時間',
+                                slot: 'endTime',
+                                minWidth: 55,
+                                align: 'center'
+                            },
+                            {
+                                title: '用務内容',
+                                minWidth: 200,
+                                slot: 'content',
+                                align: 'center'
+                            },
+                            {
+                                title: '承認',
+                                key: 'workApplyStatus',
+                                width: 30,
+                                align: 'center'
+                            }
+                        ],
+                        align: 'center'
+                    },
+                    {
+                        title: '休憩',
+                        minWidth: 200,
+                        slot: 'restTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '備考',
+                        minWidth: 70,
+                        key: 'remark',
+                        align: 'center'
+                    },
+                    {
+                        type: 'selection',
+                        width: 60,
+                        align: 'center'
+                    }
+                ],
+                columnsAction: [
+                    {
+                        title: '開始時間',
+                        slot: 'startTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '終了時間',
+                        slot: 'endTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '用務内容',
+                        minWidth: 200,
+                        slot: 'content',
+                        align: 'center'
+                    },
+                    {
+                        title: '休憩',
+                        slot: 'restTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '一括適用/クリア',
+                        slot: 'option',
+                        align: 'center'
+                    }
+                ],
             }
         },
         async mounted() {
@@ -208,7 +477,12 @@
                             title: '平均\n' + '超勤\n' + '時間\n' + '(月)',
                             slot: 'avgtime',
                             minWidth: 25,
-                            align: 'center'
+                            align: 'center',
+                            on: {
+                                click(){
+                                    that.handleClickAvg()
+                                },
+                            },
                         }
                     ]
                 }
@@ -244,6 +518,7 @@
                 })
                 return result
             },
+
         },
         methods: {
             showAverageDraw() {
@@ -323,22 +598,8 @@
                     this.loading=false
                 }
             },
-            async handleClickHead(e) {
-                console.log(e)
-                this.query.txtDYYYYMMDD = e
-
-                this.getReadTmgDaily()
-
-            },
-            async getReadTmgDaily() {
-
-                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
-
-                //日別詳細画面のボタンを制御
-                this.drawApproval = data.approval
-
-                this.tableHead2 = data.itemVOList
-                this.tableData2 = data.tmgDailyMapList
+            async     handleClickHead() {
+                this.showDayApply = true
             },
             handleScroll: Throttle(function (e) {
                 this.contentScrollTop = e.target.scrollTop
@@ -348,6 +609,61 @@
                     this.isScroll = false
                 }
             }, 50),
+            handleSelectAll2(status) {
+                this.$refs.selection2.selectAll(status)
+            },
+            showAverageDraw() {
+                this.showAverage = true
+            },
+            handleSpan({ rowIndex, columnIndex }) {
+                // 合并2个月
+                // rowIndex 竖着算 columnIndex 横着算 从0开始
+                // 返回[竖列着占几行， 横行着占几行]
+                if (rowIndex === 3 && columnIndex === 5) {
+                    return [1, 2]
+                } else if (rowIndex === 3 && columnIndex === 6) {
+                    return [0, 0]
+                }
+
+                if (rowIndex === 4 && columnIndex === 4) {
+                    return [1, 3]
+                } else if ((rowIndex === 4 && columnIndex === 6) || (rowIndex === 4 && columnIndex === 5)) {
+                    return [0, 0]
+                }
+
+                if (rowIndex === 5 && columnIndex === 3) {
+                    return [1, 4]
+                } else if (
+                    (rowIndex === 5 && columnIndex === 6) ||
+                    (rowIndex === 5 && columnIndex === 5) ||
+                    (rowIndex === 5 && columnIndex === 4)
+                ) {
+                    return [0, 0]
+                }
+
+                if (rowIndex === 6 && columnIndex === 2) {
+                    return [1, 5]
+                } else if (
+                    (rowIndex === 6 && columnIndex === 6) ||
+                    (rowIndex === 6 && columnIndex === 5) ||
+                    (rowIndex === 6 && columnIndex === 4) ||
+                    (rowIndex === 6 && columnIndex === 3)
+                ) {
+                    return [0, 0]
+                }
+
+                if (rowIndex === 7 && columnIndex === 1) {
+                    return [1, 6]
+                } else if (
+                    (rowIndex === 7 && columnIndex === 6) ||
+                    (rowIndex === 7 && columnIndex === 5) ||
+                    (rowIndex === 7 && columnIndex === 4) ||
+                    (rowIndex === 7 && columnIndex === 3) ||
+                    (rowIndex === 7 && columnIndex === 2)
+                ) {
+                    return [0, 0]
+                }
+            },
         }
     })
 </script>
