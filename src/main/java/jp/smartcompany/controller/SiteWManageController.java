@@ -128,8 +128,7 @@ public class SiteWManageController {
             ModelMap modelMap
             ) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
-        // 先同样作为管理site的树来看待
-        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                 true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex",moduleIndex)

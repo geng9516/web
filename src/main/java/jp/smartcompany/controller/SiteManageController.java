@@ -36,7 +36,7 @@ public class SiteManageController {
             @RequestParam("moduleIndex") Integer moduleIndex,
             @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
-        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId)

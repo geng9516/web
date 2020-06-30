@@ -2,45 +2,47 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head
-    th:replace="layout/header::common_header(title='出勤簿',cssPaths='/pages/content.min.css,' + '/pages/workYearSchedule.min.css')">
+        th:replace="layout/header::common_header(title='出勤簿',cssPaths='/pages/content.min.css,' + '/pages/workYearSchedule.min.css')">
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <main class="content workyearschedule-warp">
-        <div class="content_head">
-            <div class="header">
-                <div class="title1">
-                    <h1>
-                        <Icon type="i-emeer colored"></Icon>
-                        {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
-                    </h1>
-                </div>
-                <div class="btnbox">
-                    <!-- 出勤簿一个按钮都没有，需要占位 -->
-                    <div style="height:40px;margin:2px"></div>
-                </div>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{  fromYYYYMM ? `出勤簿（${fromYYYYMM}～ ${toYYYYMM}）` : '出勤簿' }}
+                </h1>
             </div>
-            <div class="searchwrap">
-                <span class="label">表示開始月</span>
-                <i-select v-model="query.month" class="mr30" @on-change="handleStartMonth($event)">
-                    <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
-                    </i-option>
-                </i-select>
-                <span style="display:flex;width: calc(15% + 200px);">
+            <div class="btnbox">
+                <!-- 出勤簿一个按钮都没有，需要占位 -->
+                <div style="height:40px;margin:2px"></div>
+            </div>
+        </div>
+        <div class="searchwrap">
+            <span class="label">表示開始月</span>
+            <i-select v-model="query.month" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)">
+                <i-option v-for="(item, index) of monthSelect" :key="index" :label="item" :value="index + 1">
+                </i-option>
+            </i-select>
+            <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                        style="width: calc(100% - 120px);border-radius:0">
+                              style="width: calc(100% - 120px);border-radius:0">
                         {{ showName(deptName) }}
                     </i-button>
+
+                <!-- 共通組織図画面 start-->
                     <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                        v-model="deptDrawShow">
+                            v-model="deptDrawShow">
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
-                            empty-text="所属データなし"></Tree>
+                              empty-text="所属データなし"></Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             社員
@@ -50,477 +52,503 @@
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                     </Drawer>
+                <!-- 共通組織図画面 end-->
                 </span>
-                <span class="label">氏名</span>
-                <span class="input-like-span width15">{{ kanjiName }}</span>
-            </div>
+            <span class="label">氏名</span>
+            <span class="input-like-span width15">{{ kanjiName }}</span>
         </div>
-        <div class="content_body">
-            <div class="table-top">
-                <Row :gutter="16">
-                    <i-col span="11">
-                        <i-button type="text" @click="preYear" :disabled="!showPre">
-                            <Icon type="ios-arrow-back"></Icon>
-                            前年
-                        </i-button>
-                        <i-button type="text" @click="nextYear" :disabled="showPre">今年</i-button>
-                    </i-col>
-                    <i-col span="13" class="tr">
-                        <i-button type="primary" class="mr5" ghost icon="md-add-circle">印刷</i-button>
-                    </i-col>
-                </Row>
-            </div>
-            <Row :gutter="10" class="mt5 mb15 tc">
-                <i-col span="4">
-                    <div class="label spec">年次休暇付与日数</div>
-                    <div class="month-sum">{{ endueDaysHours }}</div>
+    </div>
+    <div class="content_body">
+        <div class="table-top">
+            <Row :gutter="16">
+                <!-- 共通年選択 start-->
+                <i-col span="11">
+                    <i-button type="text" @click="preYear" :disabled="preDisabled || !selectDisabled" class="icon-left">
+                        <Icon type="ios-arrow-back" size="large"></Icon>
+                    </i-button>
+                    <i-button type="text" @click="currentYear" :disabled="showPre" class="icon-center">今年</i-button>
+                    <i-button type="text" @click="nextYear" :disabled="nextDisabled || !selectDisabled" class="icon-right">
+                        <Icon type="ios-arrow-forward" size="large"></Icon>
+                    </i-button>
                 </i-col>
-                <i-col span="4">
-                    <div class>
-                        <div class="label spec">年次休暇付与日</div>
-                        <div class="month-sum">{{ endueDate }}</div>
-                    </div>
-                </i-col>
-                <i-col span="8" class="no-border-radius">
-                    <div class="work-changed-day">摘要</div>
-                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
+                <!-- 共通年選択 end-->
+
+                <i-col span="13" class="tr">
+                    <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
                 </i-col>
             </Row>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns"
-                :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading">
-
-                <template slot-scope="{ row }" slot="intDay">
-                    <span>{{ row.intDay | turnLine }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="one">
-                    <span :class="dayRed(row.one)"
-                        v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.one | turnLine }}</span>
-                    <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.one.split(TURN_LINE_STR)[0] }}
         </div>
-        <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">{{ row.one.split(TURN_LINE_STR)[1] }}
+
+        <Row :gutter="10" class="mt5 mb15 tc">
+            <i-col span="4">
+                <div class="label spec">年次休暇付与日数</div>
+                <div class="month-sum">{{ endueDaysHours }}</div>
+            </i-col>
+            <i-col span="4">
+                <div class>
+                    <div class="label spec">年次休暇付与日</div>
+                    <div class="month-sum">{{ endueDate }}</div>
+                </div>
+            </i-col>
+            <i-col span="8" class="no-border-radius">
+                <div class="work-changed-day">摘要
+                    <Poptip
+                            v-if="remarksDisabled"
+                            v-model="commentBtnShow"
+                            class="comment-btn tl"
+                            placement="right"
+                            title="入力内容を登録します。よろしいですか？">
+                        <i-button type="primary" ghost size="small" icon="md-create" style="border-radius: 23px" :loading="commentBtnLoading"><span style="margin-left: -4px;">登録</span></i-button>
+                        <div class="tr" slot="content">
+                            <i-button class="mr10" type="text" size="small" @click="cancelComment">いいえ</i-button>
+                            <i-button type="primary" ghost size="small" @click="updateComment" style="border-radius: 23px">はい</i-button>
+                        </div>
+                    </Poptip>
+                </div>
+                <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="query.comment" />
+            </i-col>
+        </Row>
+        <div class="titlenorm mb10 mt10" style="font-size:15px">
+            <Icon type="logo-buffer"></Icon>
+            月出勤情報統計
         </div>
-        </template>
+        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
+                 :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
+            <template slot-scope="{ row }" slot="intDay">
+                <div style="position: relative;">
+                    <span :class="row._index === 0 ? '' : 'mr15 sum-title-divi'">{{ row.intDay.split('日')[0].trim() }}</span>
+                    <div style="position: absolute;top: -13px;left: 72px;" v-if="row._index !== 0">日</div>
+                    <div class="divi-hour-line-small" style="position: absolute;top: 15px;left: 72px;" v-if="row._index !== 0">時</div>
+                </div>
+            </template>
 
-        <template slot-scope="{ row }" slot="two" style>
-            <span :class="dayRed(row.two)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.two | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.two.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.two.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="three">
-            <span :class="dayRed(row.three)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.three | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.three.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.three.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="four">
-            <span :class="dayRed(row.four)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.four | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.four.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.four.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="five">
-            <span :class="dayRed(row.five)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.five | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.five.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.five.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="six">
-            <span :class="dayRed(row.six)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.six | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.six.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.six.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="seven">
-            <span :class="dayRed(row.seven)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.seven | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.seven.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.seven.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="eight">
-            <span :class="dayRed(row.eight)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eight | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eight.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.eight.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="nine">
-            <span :class="dayRed(row.nine)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.nine | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.nine.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.nine.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="ten">
-            <span :class="dayRed(row.ten)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.ten | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.ten.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.ten.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="eleven">
-            <span :class="dayRed(row.eleven)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.eleven | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.eleven.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.eleven.split(TURN_LINE_STR)[1] }}</div>
-        </template>
-
-        <template slot-scope="{ row }" slot="twelve">
-            <span :class="dayRed(row.twelve)"
-                v-if="row.intDay.indexOf(TURN_LINE_STR) <= -1">{{ row.twelve | turnLine }}</span>
-            <span v-if="row.intDay.indexOf(TURN_LINE_STR) > -1">{{ row.twelve.split(TURN_LINE_STR)[0] }}</div>
-                <div v-if="row.intDay.indexOf(TURN_LINE_STR) > -1" class="divi-hour-line">
-                    {{ row.twelve.split(TURN_LINE_STR)[1] }}</div>
-        </template>
+            <!-- 循环slotList -->
+            <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                <span :class="dayRed(row[item])" v-if="!row.needTurnLine">{{ row[item] | turnLine }}</span>
+                <div class="mb-2" v-if="row.needTurnLine">{{ row[item].split(TURN_LINE_STR)[0] }}</div>
+                <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row[item].split(TURN_LINE_STR)[1] }}</div>
+            </template>
         </i-table>
+
+        <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData.length > 0">
+            <Icon type="logo-buffer"></Icon>
+            月出勤情報明細
         </div>
-    </main>
-    <div th:replace="layout/script::common_script"></div>
-    <script type="text/babel" th:inline="javascript">
-        const WORK_YEAR_SCHEDULE = new Vue({
-            el: '.workyearschedule-warp',
-            data() {
-                return {
-                    monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),
-                    defaultDate: {},
-                    queryDate: {},
-                    queryHolidayInfo: {},
-                    tableHead: [],
-                    loading: false,
-                    tableData: [],
-                    monthSum: {},
-                    dailyShow: true,
-                    rawData: [],
-                    selectedData: {
-                        obj: {},
-                        date: ''
-                    },
-                    isShow: false,
-                    showPre: true,
-                    index: 0,
-                    comment: '',
-                    contentScrollTop: 0,
-                    kanjiName: '',
-                    loginEmployee: [[${ session.psSession.loginEmployee }]],
-                    sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],
-                    query: {
-                        employeeId: [[${ session.psSession.loginEmployee }]],
-                        year: '',
-                        month: 0
-                    },
-                    endueDate: '',
-                    endueDaysHours: '',
-                    tmyComment: '',
-                    fromYYYYMM: '',
-                    contentScrollTop: 0,
-                    isScroll: false,
-                    toYYYYMM: '',
-                    titleStartMonth: '',
-                    data: [],
-                    loading: false,
-                    emplistLoading: false,
-                    referListObject: {
-                        [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
-                        [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
-                        [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                        [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
-                        psSite: Utils.getUrlParam(location.href, 'psSite')
-                    },
-                    deptDrawShow: false,
-                    treeData: [],
-                    empTreeData: [],
-                    defaultDeptId: '',
-                    deptName: '選んでください'
-                }
-            },
-            async mounted() {
+        <i-table :show-header="false" no-data-text=" " border :columns="columns"
+                 :row-class-name="rowClass" :disabled-hover="true" :data="tableData" :loading="loading" v-show="tableData.length > 0">
+            <template slot-scope="{ row }" slot="intDay">
+                <span>{{ row.intDay }}</span>
+            </template>
 
-                console.log([[${ session }]])
-                this.getData(true)
-                this.getOrgTree()
+            <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+                <span :class="dayRed(row[item])">{{ row[item] | turnLine }}</span>
+            </template>
+        </i-table>
+    </div>
+    <span class="toTopBtn" @click="toTop" v-show="isScroll">
+            <Icon size="24" type="md-arrow-round-up" />
+        </span>
+</main>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const WORK_YEAR_SCHEDULE = new Vue({
+        el: '.workyearschedule-warp',
+        data() {
+            return {
+                monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
+                slotList: ['one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'],
+                commentBtnLoading: false,　 //摘要更新loading制御
+                commentBtnShow:false,　　　 //摘要登録表示制御
+                defaultDate: {},            //表示開始月のデフォルト月
+                queryDate: {},              //選択した開始月
+                queryHolidayInfo: {},       //年次休暇付与日数 年次休暇付与日
+                tableHead: [],              //月出勤情報統計と月出勤情報明細のテーブルヘッダー
+                loading: false,             //ローディングアクション-->
+                tableData: [],              //月出勤情報統計と月出勤情報明細のテーブルデータ
+                showPre: true,
+                selectDisabled: false,      //所属の職員を選択していない場合、表示月選択できるかどうかを制御する
+                remarksDisabled: false,     //摘要更新可能制御する
+                index: 0,
+                comment: '',
+                contentScrollTop: 0,
+                kanjiName: '',　         　 //選択した職員の氏名
+                loginEmployee: '',          //選択した職員の職員番号
+                sectionName: '',　          //選択した職員の所属
+                query: {
+                    employeeId: '',        //組織ツリーで選択した職員番号
+                    year: '',              //年度情報
+                    month: 0,              //表示開始月
+                    modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
+                    comment: this.tmyComment,                                  //摘要
+                    psSite: Utils.getUrlParam(location.href, 'psSite')
 
-            },
-            computed: {
-                tableHeadFixed() {
-                    if (this.contentScrollTop > 300) return true
-                    else return false
                 },
-                columns() {
-                    return [
-                        {
-                            title: ' ',
-                            slot: 'intDay',
-                            width: 100,
-                            align: 'right'
-                        },
-                        {
-                            title: this.tableHead[0],
-                            minWidth: 70,
-                            slot: 'one',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[1],
-                            minWidth: 70,
-                            slot: 'two',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[2],
-                            slot: 'three',
-                            minWidth: 70,
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[3],
-                            minWidth: 70,
-                            slot: 'four',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[4],
-                            minWidth: 70,
-                            key: 'minusTime',
-                            slot: 'five',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[5],
-                            minWidth: 70,
-                            slot: 'six',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[6],
-                            minWidth: 70,
-                            slot: 'seven',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[7],
-                            minWidth: 70,
-                            slot: 'eight',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[8],
-                            minWidth: 70,
-                            slot: 'nine',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[9],
-                            minWidth: 70,
-                            slot: 'ten',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[10],
-                            minWidth: 70,
-                            slot: 'eleven',
-                            align: 'center'
-                        },
-                        {
-                            title: this.tableHead[11],
-                            minWidth: 70,
-                            slot: 'twelve',
-                            align: 'center'
+                endueDate: '',            //年次休暇付与日
+                endueDaysHours: '',       //年次休暇付与日数
+                tmyComment: '',           //摘要
+                fromYYYYMM: '',       　  //出勤簿の表示開始年月
+                toYYYYMM: '',             //出勤簿の表示終了年月
+                contentScrollTop: 0,
+                isScroll: false,
+                titleStartMonth: '',    //デフォルト開始月
+                data: [],
+                emplistLoading: false,  //職員番号ローディング用動画
+                referListObject: {       //組織ツリー共通
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href,'psApp'),
+                    type: 11
+                },
+                deptDrawShow: false,    //組織ツリー用
+                treeData: [],           //組織ツリー用
+                empTreeData: [],        //組織ツリー用
+                defaultDeptId: '',      //選択した部門コード
+                deptName: '選んでください',   //所属名称
+                tableDataSum:[],        //月出勤情報統計
+                existsAttendanceBook: {},　 //年度選択制御
+                preDisabled: true,   //年度選択制御
+                nextDisabled: true  //年度選択制御
+            }
+        },
+        async mounted() {
+
+            console.log([[${ session }]])
+            // this.getData(true)
+            this.getOrgTree()
+
+        },
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 300) return true
+                else return false
+            },
+            columns() {
+                return [
+                    {
+                        title: ' ',
+                        slot: 'intDay',
+                        width: 100,
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[0] || '04月',
+                        minWidth: 70,
+                        slot: 'one',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[1] || '05月 ',
+                        minWidth: 70,
+                        slot: 'two',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[2] || '06月 ',
+                        slot: 'three',
+                        minWidth: 70,
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[3] || '07月 ',
+                        minWidth: 70,
+                        slot: 'four',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[4] || '08月 ',
+                        minWidth: 70,
+                        key: 'minusTime',
+                        slot: 'five',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[5] || '09月 ',
+                        minWidth: 70,
+                        slot: 'six',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[6] || '10月',
+                        minWidth: 70,
+                        slot: 'seven',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[7] || '11月',
+                        minWidth: 70,
+                        slot: 'eight',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[8] || '12月',
+                        minWidth: 70,
+                        slot: 'nine',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[9] || '01月',
+                        minWidth: 70,
+                        slot: 'ten',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[10] || '02月',
+                        minWidth: 70,
+                        slot: 'eleven',
+                        align: 'center'
+                    },
+                    {
+                        title: this.tableHead[11] || '03月',
+                        minWidth: 70,
+                        slot: 'twelve',
+                        align: 'center'
+                    }
+                ]
+            }
+        },
+        methods: {
+            async getData(isInit) {
+                if (isInit) await this.getdefaultDate()
+                else await this.getqueryDate()
+                await this.getExistsAttendanceBook()
+                await this.getqueryHolidayInfo()
+                await this.getTableData()
+            },
+            async getdefaultDate() {
+                this.loading = true
+                const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
+                this.defaultDate = data
+                this.query.month = +this.defaultDate.mgd_ndefault_month
+                this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
+                this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
+                this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
+
+            },
+            async getqueryDate() {
+                this.loading = true
+                const { data } = await this.http.get(`sys/attendanceBook/queryDate`, this.query)
+                this.queryDate = data
+                this.query.month = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
+
+                this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
+                this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
+                this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
+            },
+            async getExistsAttendanceBook() {
+                const { data } = await this.http.get(`sys/attendanceBook/selectExistsAttendanceBook`, this.query)
+                this.existsAttendanceBook  = data
+
+                if (!this.existsAttendanceBook.lastYear) this.preDisabled = true
+                else this.preDisabled = false
+
+                if (!this.existsAttendanceBook.nextYear) this.nextDisabled = true
+                else this.nextDisabled = false
+            },
+            async getqueryHolidayInfo() {
+                const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
+                this.queryHolidayInfo = data
+                // 年次休暇付与日数
+                this.endueDate = this.queryHolidayInfo.endueDate
+
+                // 年次休暇付与日
+                this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
+
+                // 摘要
+                this.query.comment = this.queryHolidayInfo.tmy_comment
+
+            },
+            async getTableData() {
+                const turnLine = Vue.filter('turnLine');
+                try {
+                    const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
+                    // 第一条是表头, 且需要去除空值intDay
+                    // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
+                    // 拆成两份表格
+                    this.tableDataSum = data.slice(1,7).map((e, i)=>{
+                        return {
+                            ...e,
+                            intDay: turnLine(e.intDay),
+                            needTurnLine:  e.intDay.indexOf(TURN_LINE_STR) > -1 ? true : false,
+                            cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 || i === 0 ? {intDay: 'sub-title'} : {}
                         }
-                    ]
+                    })
+                    this.tableData = data.slice(7)
+                    console.log(this.tableData)
+                    this.tableHead = Object.values(data[0]).filter(e => e)
+                    this.getDeptName(this.treeData)
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
                 }
             },
-            methods: {
-                async getData(isInit) {
-                    if (isInit) await this.getdefaultDate()
-                    else await this.getqueryDate()
-                    await this.getqueryHolidayInfo()
-                    await this.getTableData()
-                },
-                async getdefaultDate() {
-                    this.loading = true
-                    const { data } = await this.http.get(`sys/attendanceBook/defaultDate`, { employeeId: this.loginEmployee })
-                    this.defaultDate = data
-                    this.query.month = +this.defaultDate.mgd_ndefault_month
-                    this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
-                    this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
-                    this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
+            async getOrgTree() {
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    this.treeData = Utils.convertTreeData(orgList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                }
+            },
+            async getEmpList() {
+                try {
+                    this.emplistLoading = true
+                    const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(empList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            handleStartMonth: Debounce(async function (e) {
+                this.titleStartMonth = e
+                this.getData()
+            }),
+            rowClass(row) {
+                // 表格变色
+                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
+                    return ''
+                }
+                return 'sat'
+            },
+            dayRed(e) {
+                if (!e) {
+                    return
+                }
+                if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
+                    return 'rest-cell week-rest'
+                }
+                if (e.indexOf('休') > -1) {
+                    return 'rest-cell year-rest'
+                }
+                return 'rest-cell'
+            },
 
-                },
-                async getqueryDate() {
-                    this.loading = true
-                    const { data } = await this.http.get(`sys/attendanceBook/queryDate`, this.query)
-                    this.queryDate = data
-                    this.query.month = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
-
-                    this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
-                    this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
-                    this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
-                },
-                async getqueryHolidayInfo() {
-                    const { data } = await this.http.get(`sys/attendanceBook/queryHolidayInfo`, this.query)
-                    this.queryHolidayInfo = data
-                    // 年次休暇付与日数
-                    this.endueDate = this.queryHolidayInfo.endueDate
-
-                    // 年次休暇付与日
-                    this.endueDaysHours = this.queryHolidayInfo.endueDaysHours
-
-                    // 摘要
-                    this.tmyComment = this.queryHolidayInfo.tmy_comment
-
-                },
-                async getTableData() {
-                    try {
-                        const { data } = await this.http.get(`sys/attendanceBook/attendanceBookList`, this.query)
-                        // 第一条是表头, 且需要去除空值intDay
-                        // 统计部分着色判断是不是统计，根据是不是转成数字是不是其本身判断
-                        this.tableData = data.slice(1).map(e => {
-                            return {
-                                ...e,
-                                cellClassName: e.intDay.indexOf(TURN_LINE_STR) > -1 ? { intDay: "sub-title" } : {}
-                            }
-                        })
-                        console.log(this.tableData)
-                        this.tableHead = Object.values(data[0]).filter(e => e)
-                        this.getDeptName(this.treeData)
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.loading = false
+            handleScroll: Throttle(function(e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
+            toTop() {
+                const animateMachine = requestAnimationFrame(this.toTop)
+                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                if (this.$refs.layout.scrollTop === 0) {
+                    cancelAnimationFrame(animateMachine)
+                }
+            },
+            async　preYear() {
+                this.showPre = false
+                this.query.year = Utils.formatDate(this.existsAttendanceBook.lastYear, 'yyyy')
+                this.getData()
+            },
+            async　nextYear() {
+                this.showPre = true
+                this.query.year = Utils.formatDate(this.existsAttendanceBook.nextYear, 'yyyy')
+                this.getData()
+            },
+            async　currentYear() {
+                this.showPre = true
+                this.query.year = Utils.formatDate(this.existsAttendanceBook.currentYear, 'yyyy')
+                this.getData()
+            },
+            convertTreeData(treeData = []) {
+                return treeData.map(e => {
+                    const children = e.child || e.children
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            // 前两层级默认展开方便查看
+                            expand: e.data.level < 2 || !e.data.level,
+                            children: this.convertTreeData(children)
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            title: e.data.label
+                        }
                     }
-                },
-                async getOrgTree() {
-                    try {
-                        const { data } = await this.http.get('sys/tree/admin/orglist', this.referListObject)
-                        // 先将数据转为标准格式，再转为可用数据
-                        this.treeData = Utils.convertTreeData(Utils.convertToData(data))
-                        this.getDeptName(this.treeData)
-                        console.log("getOrgTree")
-                        console.log(this.getDeptName)
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.loading = false
-                    }
-                },
-                async getEmpList() {
-                    try {
-                        this.emplistLoading = true
-                        const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
-                        this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
-                        console.log("getEmpList")
-                        console.log(this.empTreeData)
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.emplistLoading = false
-                    }
-                },
-                handleStartMonth: Debounce(async function (e) {
-                    this.titleStartMonth = e
-                    this.getData()
-                }),
-                rowClass(row) {
-                    // 表格变色
-                    if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                        return ''
-                    }
-                    return 'sat'
-                },
-                dayRed(e) {
-                    if (!e) {
-                        return
-                    }
-                    if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
-                        return 'rest-cell week-rest'
-                    }
-                    if (e.indexOf('休') > -1) {
-                        return 'rest-cell year-rest'
-                    }
-                    return 'rest-cell'
-                },
-                async　preYear() {
-                    this.showPre = false
-                    this.query.year = +this.query.year - 1
-                    this.getData()
-                },
-                async　nextYear() {
-                    this.showPre = true
-                    this.query.year = +this.query.year + 1
-                    this.getData()
-                },
-                convertTreeData(treeData = []) {
-                    return treeData.map(e => {
+                })
+            },
+            showDay() {
+                //todo: 跳到详情页
+                location.href = "./VacationTablePanel/vacationtablepanel.html";
+            },
+            handleSelector() { },
+            getDeptName(data) {
+                // 根据id遍历找出deptName
+                data.forEach(e => {
+                    if (e.secid === this.defaultDeptId) {
+                        this.deptName = e.label
+                    } else {
                         const children = e.child || e.children
                         if (children) {
-                            return {
-                                ...e.data,
-                                title: e.data.label,
-                                // 前两层级默认展开方便查看
-                                expand: e.data.level < 2 || !e.data.level,
-                                children: this.convertTreeData(children)
-                            }
-                        } else {
-                            return {
-                                ...e.data,
-                                title: e.data.label
-                            }
+                            this.getDeptName(children)
                         }
-                    })
-                },
-                showDay() {
-                    //todo: 跳到详情页
-                    location.href = "./VacationTablePanel/vacationtablepanel.html";
-                },
-                handleSelector() { },
-                getDeptName(data) {
-                    // 根据id遍历找出deptName
-                    data.forEach(e => {
-                        if (e.secid === this.defaultDeptId) {
-                            this.deptName = e.label
-                        } else {
-                            const children = e.child || e.children
-                            if (children) {
-                                this.getDeptName(children)
-                            }
+                    }
+                })
+            },
+            async handleClickLeaf(e) {
+                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                this.referListObject[section] = e[0].secid
+                this.defaultDeptId = e[0].secid
+                // this.getTableData()
+                this.getEmpList()
+            },
+            // todo: 点完员工树干什么
+            handleClickEmpLeaf(e) {
+                this.deptDrawShow = false
+
+                this.loginEmployee = e[0].empid
+                this.sectionName = e[0].secnic
+                this.query.employeeId = e[0].empid
+                this.kanjiName = e[0].empname
+                this.selectDisabled = true
+                this.remarksDisabled = true
+                this.getData(true)
+            },
+            showName(e) {
+                const result = e.match(/^[\s\S]+(?=\()/g)
+                return (result && result[0]) || e
+            },
+            // 摘要更新
+            async updateComment() {
+                // 首先将浮层关闭，然后按钮进入loading状态，请求完成后提示完了并且loading结束
+                this.commentBtnShow = false
+                this.commentBtnLoading = true
+
+                if(this.query.comment != null){
+                    if (this.query.comment.length > 400) {
+                        alert('摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。');
+                        this.commentBtnLoading = false
+                        return
+                    } else {
+                        const { data } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
+                        if(data){
+                            this.$Message.success('登録完了')
+                            this.commentBtnLoading = false
                         }
-                    })
-                },
-                async handleClickLeaf(e) {
-                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                    this.referListObject[section] = e[0].secid
-                    this.defaultDeptId = e[0].secid
-                    this.getTableData()
-                    this.getEmpList()
-                },
-                // todo: 点完员工树干什么
-                handleClickEmpLeaf() {
-                    this.deptDrawShow = false
-                },
-                showName(e) {
-                    const result = e.match(/^[\s\S]+(?=\()/g)
-                    return (result && result[0]) || e
+                    }
                 }
+            },
+            cancelComment() {
+                this.commentBtnShow = false
             }
-        })
-    </script>
+        }
+    })
+</script>
 </body>
 
 </html>
