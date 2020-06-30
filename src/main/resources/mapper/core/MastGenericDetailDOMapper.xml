@@ -485,7 +485,7 @@
         SELECT
             MGD_CHEADER,
             MGD_CSQL,
-            MGD_CCOLUMNKEY
+            'COL'||MGD_NSEQ AS MGD_CCOLUMNKEY
         FROM
             TMG_V_MGD_DISPMONTHLYITEMS
         WHERE

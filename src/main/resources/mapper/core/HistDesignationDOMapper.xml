@@ -447,7 +447,7 @@
 
         SELECT
         <foreach collection="headerList" item="header" index="index" open="" close="" separator=",">
-            ${header.tempColumnid}
+            ${header.mgdCsql}
         </foreach>
         FROM
             HIST_DESIGNATION HD,
