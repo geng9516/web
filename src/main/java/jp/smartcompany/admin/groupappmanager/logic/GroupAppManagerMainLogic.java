@@ -1,8 +1,11 @@
 package jp.smartcompany.admin.groupappmanager.logic;
 
+import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 起動権限設定 メインLogicインターフェース
@@ -17,5 +20,12 @@ public interface GroupAppManagerMainLogic {
             String customerId,String companyId,
             Boolean isAll
     );
+
+    List<GroupAppManagerGroupDTO> getGroupList(String customerId, String systemId, String language,
+                                                      Date searchDate, String companyId, boolean isAll);
+
+    List<MastApptreeDO> getSiteList(String psSystemId, String psLanguage);
+
+    List<MastApptreeDO> getAppList(String psSystemId, String psLanguage, String psSiteId);
 
 }

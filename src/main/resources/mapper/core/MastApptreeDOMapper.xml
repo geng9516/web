@@ -103,15 +103,14 @@
               </if>
         )
         GROUP BY
-        <if test="psType == '1'">
-            MTR_CSITEID,
-        </if>
-        <if test="psType == '3'">
-            MTR_CAPPID,
-        </if>
+            <if test="psType == '1'">
+                MTR_CSITEID,
+            </if>
+            <if test="psType == '3'">
+                MTR_CAPPID,
+            </if>
             MTR_COBJNAME
-        ORDER BY
-            MTR_NSEQ
+            ORDER BY MTR_NSEQ
     </select>
 
 </mapper>

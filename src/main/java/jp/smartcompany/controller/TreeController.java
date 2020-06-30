@@ -53,12 +53,12 @@ public class TreeController {
         if(type == TmgReferList.TREEVIEW_TYPE_LIST_SEC){
             log.info("---TREEVIEW_TYPE_LIST_SEC---");
             if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
-                String jsonOrgStr = referList.getJSONArrayForSectionList();
-                if (StrUtil.isNotBlank(jsonOrgStr)) {
-                    JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
+                String jsonSectionStr = referList.getJSONArrayForSectionList();
+                if (StrUtil.isNotBlank(jsonSectionStr)) {
+                    JSONArray jsonOrg = JSONUtil.parseArray(jsonSectionStr);
                     globalResponse.put("sectionList", jsonOrg);
                 } else {
-                    globalResponse.put("sectionList", jsonOrgStr);
+                    globalResponse.put("sectionList", jsonSectionStr);
                 }
             } else{
                 String jsonOrgStr = referList.getJSONArrayForOrgTree();
@@ -71,26 +71,43 @@ public class TreeController {
             }
         } else if (type==TmgReferList.TREEVIEW_TYPE_EMP) {
             log.info("---TREEVIEW_TYPE_EMP---");
-            String memberListStr = referList.getJSONArrayForMemberList();
-            if (StrUtil.isNotBlank(memberListStr)) {
-                JSONArray memberList = JSONUtil.parseArray(memberListStr);
-                globalResponse.put("memberList",memberList);
-            } else {
-                globalResponse.put("memberList",memberListStr);
-            }
-            String sectionMemberListStr = referList.getJSONArrayForMemberListGroupBySection();
-            if (StrUtil.isNotBlank(sectionMemberListStr)) {
-                JSONArray sectionMemberList =  JSONUtil.parseArray(sectionMemberListStr);
-                globalResponse.put("sectionMemberList",sectionMemberList);
-            } else {
-                globalResponse.put("sectionMemberList",sectionMemberListStr);
-            }
-            String groupMemberListStr = referList.getJSONArrayForMemberListGroupByGroup();
-            if (StrUtil.isNotBlank(groupMemberListStr)) {
-                JSONArray groupMemberList = JSONUtil.parseArray(groupMemberListStr);
-                globalResponse.put("groupMemberList",groupMemberList);
-            } else {
-                globalResponse.put("groupMemberList",groupMemberListStr);
+            if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                String memberListStr = referList.getJSONArrayForMemberList();
+                if (StrUtil.isNotBlank(memberListStr)) {
+                    JSONArray memberList = JSONUtil.parseArray(memberListStr);
+                    globalResponse.put("memberList", memberList);
+                } else {
+                    globalResponse.put("memberList", memberListStr);
+                }
+                String sectionMemberListStr = referList.getJSONArrayForMemberListGroupBySection();
+                if (StrUtil.isNotBlank(sectionMemberListStr)) {
+                    JSONArray sectionMemberList = JSONUtil.parseArray(sectionMemberListStr);
+                    globalResponse.put("sectionMemberList", sectionMemberList);
+                } else {
+                    globalResponse.put("sectionMemberList", sectionMemberListStr);
+                }
+                String groupMemberListStr = referList.getJSONArrayForMemberListGroupByGroup();
+                if (StrUtil.isNotBlank(groupMemberListStr)) {
+                    JSONArray groupMemberList = JSONUtil.parseArray(groupMemberListStr);
+                    globalResponse.put("groupMemberList", groupMemberList);
+                } else {
+                    globalResponse.put("groupMemberList", groupMemberListStr);
+                }
+            } else if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                String jsonOrgStr = referList.getJSONArrayForOrgTree();
+                if (StrUtil.isNotBlank(jsonOrgStr)) {
+                    JSONArray jsonOrg = JSONUtil.parseArray(jsonOrgStr);
+                    globalResponse.put("orgList", jsonOrg);
+                } else {
+                    globalResponse.put("orgList", jsonOrgStr);
+                }
+                String empListStr = referList.getJSONArrayForEmpList();
+                if (StrUtil.isNotBlank(empListStr)){
+                    JSONArray empList = JSONUtil.parseArray(empListStr);
+                    globalResponse.put("empList",empList);
+                } else {
+                    globalResponse.put("empList",empListStr);
+                }
             }
         } else if (type==TmgReferList.TREEVIEW_TYPE_LIST) {
             System.out.println("---TREEVIEW_TYPE_LIST---");

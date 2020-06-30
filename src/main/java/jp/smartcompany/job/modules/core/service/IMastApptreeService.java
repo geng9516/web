@@ -20,4 +20,9 @@ public interface IMastApptreeService extends IService<MastApptreeDO> {
 
         List<AppAuthJudgmentEntity> selectGroupPermission(String systemCode,String groupCode);
 
+        List<MastApptreeDO> selectSiteOrAppListByType(String psSystemId,
+                                                      String psLanguage,
+                                                      String psType,
+                                                      String psSiteId);
+
 }

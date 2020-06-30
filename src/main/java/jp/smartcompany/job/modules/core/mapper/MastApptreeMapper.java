@@ -25,4 +25,10 @@ public interface MastApptreeMapper extends BaseMapper<MastApptreeDO> {
   List<AppAuthJudgmentEntity> selectGroupPermission(@Param("systemCode") String systemCode,
                                                     @Param("groupCode") String groupCode);
 
+  List<MastApptreeDO> selectSiteOrAppListByType(@Param("psSystemId") String psSystemId,
+                                                @Param("psLanguage") String psLanguage,
+                                                @Param("psType") String psType,
+                                                @Param("psSiteId") String psSiteId);
+
+
 }

@@ -11,10 +11,13 @@ import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
+import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -49,6 +52,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private final PsSearchCompanyUtil psSearchCompanyUtil;
   private final IMastGroupService iMastGroupService;
   private final IMastGroupapppermissionService iMastGroupapppermissionService;
+  private final IMastApptreeService iMastApptreeService;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -142,6 +146,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
      * @param companyId
      * @return
      */
+  @Override
   public List<GroupAppManagerGroupDTO> getGroupList(String customerId, String systemId, String language,
                            Date searchDate, String companyId,boolean isAll) {
     // 法人検索対象範囲取得
@@ -171,47 +176,27 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
    * @param psLanguage 言語区分
    * @return String
    */
-//  public String getSiteList(String psSystemId, String psLanguage) {
-//    // サイト一覧取得
-//    List < GroupAppManagerAppDto > lSiteList = this.groupAppManagerAppDao.select(psSystemId,
-//            psLanguage, TYPE_SITE, null);
-//
-//    // 画面からサイトID取得
-//    String sSiteId = this.groupAppManagerMainDto.getSiteId();
-//
-//    // サイト名称取得
-//    String sSiteName = null;
-//
-//    // サイトが選択されている場合
-//    if (sSiteId != null) {
-//      for (int i = 0; i < lSiteList.size(); i++) {
-//        GroupAppManagerAppDto groupAppManagerAppDto = lSiteList.get(i);
-//
-//        // サイトIDが一致したサイト名称を取得
-//        if (sSiteId.equals(groupAppManagerAppDto.getMtrCsiteid())) {
-//          sSiteName = groupAppManagerAppDto.getMtrCobjname();
-//
-//          // 後処理
-//          groupAppManagerAppDto = null;
-//          break;
-//        }
-//
-//        // 後処理
-//        groupAppManagerAppDto = null;
-//      }
-//    }
-//
-//    // Dtoにデータ設定
-//    this.groupAppManagerMainDto.setSiteId(sSiteId);
-//    this.groupAppManagerMainDto.setSiteName(sSiteName);
-//    this.groupAppManagerMainDto.setSiteList(lSiteList);
-//
-//    // 後処理
-//    lSiteList = null;
-//    sSiteName = null;
-//
-//    return sSiteId;
-//  }
+  @Override
+  public List<MastApptreeDO> getSiteList(String psSystemId, String psLanguage) {
+    // サイト一覧取得
+    return iMastApptreeService.selectSiteOrAppListByType(psSystemId,
+            psLanguage, TYPE_SITE, null);
+  }
+
+  /**
+   * アプリケーションデータ設定処理<br>
+   * アプリケーションID、アプリケーション名称、アプリケーション一覧をDtoに設定する
+   *
+   * @param psSystemId システムコード
+   * @param psLanguage 言語区分
+   * @param psSiteId サイトID
+   * @return String
+   */
+  @Override
+  public List<MastApptreeDO> getAppList(String psSystemId, String psLanguage, String psSiteId) {
+    // アプリケーション一覧取得
+    return iMastApptreeService.selectSiteOrAppListByType(psSystemId, psLanguage, TYPE_SITE, psSiteId);
+  }
 
   /**
    * 表示用のイレモノを生成する
