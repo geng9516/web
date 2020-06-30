@@ -166,7 +166,7 @@ public class OvertimeInstructBean {
      *
      * 実績時間画面表示アクション、または実績時間（法定内を含む）画面表示アクションのどちらかのアクションコードを想定
      */
-    public List<ResultMonthlyVo> actionExecuteDispResult(String baseMonth,PsDBBean psDBBean) throws Exception {
+    public List<ResultMonthlyVo> actionExecuteDispResult(String action,String baseMonth,PsDBBean psDBBean) throws Exception {
         //汎用参照コンポーネント。
         referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
                 true, true, false, false, true
@@ -178,9 +178,9 @@ public class OvertimeInstructBean {
          */
         String sDBContentId         = ""; // コンテンツID
 
-        if (ACT_DISP_RMONTHLY_RESULT.equals(param.getAction())) {
+        if (ACT_DISP_RMONTHLY_RESULT.equals(action)) {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTR;
-        } else if(ACT_DISP_RMONTHLY_RESULT_OT100.equals(param.getAction())) {
+        } else if(ACT_DISP_RMONTHLY_RESULT_OT100.equals(action)) {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTRA;
         } else {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTR;
@@ -220,37 +220,37 @@ public class OvertimeInstructBean {
                     rVo.setWorkInHolidayCount(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo03(),CATEGORY_HOL_CNT));
                     //平均超勤時間（月）
                     rVo.setAvgOverTime(formatTime(getTypeOfStyleByLimit(yearlyInfoVo.getTmiCinfo04(),CATEGORY_OVERWORK_AVG_MONTH)));
-                    rVo.setInfo01(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo01(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo02(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo02(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo03(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo03(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo04(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo04(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo05(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo05(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo06(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo06(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo07(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo07(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo08(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo08(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo09(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo09(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo10(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo10(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo11(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo11(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo12(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo12(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo13(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo13(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo14(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo14(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo15(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo15(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo16(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo16(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo17(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo17(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo18(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo18(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo19(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo19(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo20(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo20(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo21(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo21(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo22(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo22(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo23(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo23(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo24(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo24(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo25(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo25(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo26(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo26(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo27(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo27(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo28(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo28(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo29(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo29(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo30(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo30(),CATEGORY_OVER_WORK)));
-                    rVo.setInfo31(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo31(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo1(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo1(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo2(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo2(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo3(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo3(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo4(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo4(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo5(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo5(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo6(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo6(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo7(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo7(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo8(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo8(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo9(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo9(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo10(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo10(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo11(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo11(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo12(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo12(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo13(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo13(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo14(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo14(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo15(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo15(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo16(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo16(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo17(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo17(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo18(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo18(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo19(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo19(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo20(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo20(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo21(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo21(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo22(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo22(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo23(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo23(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo24(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo24(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo25(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo25(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo26(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo26(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo27(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo27(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo28(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo28(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo29(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo29(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo30(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo30(),CATEGORY_OVER_WORK)));
+                    rVo.setTmiCinfo31(formatTime(getTypeOfStyleByLimit(monthlyInfoOtVo.getTmiCinfo31(),CATEGORY_OVER_WORK)));
                     dealwitchMonthlyList.add(rVo);
                 }
             }
@@ -278,7 +278,7 @@ public class OvertimeInstructBean {
         int i = 1;
         for(OneMonthDetailVo vo:oneMonthDetailVoList){
             vo.setTcaCholflg(String.valueOf(map.get("tcaCholflg" + nDayFormat.format(i))));
-            vo.setTableTop(vo.getSeq()+"/n"+vo.getDayOfWeek());
+            vo.setTableTop(vo.getSeq()+"\n"+vo.getDayOfWeek());
             vo.setToday(psDBBean.getSysDate().equals(vo.getDay()));
             i++;
         }
@@ -291,26 +291,14 @@ public class OvertimeInstructBean {
 
 
     // 月別情報一覧画面.超過勤務命令月別一覧画面
-    public void actionExecuteDisp(PsDBBean psDBBean) {
-        //paramSetting();
-        /*param.setCompId("01");
-        param.setCustId("01");
-        param.setBaseDateYYYY("2020");
-        param.setTargetGroup("");
-        param.setTargetSec("");*/
-        // 0 対象勤務年月の1ヶ月間の日付・曜日を取得
-        List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(param.getBaseDate());
-        // 1 カレンダーテーブルより休日フラグを取得
-        CalenderVo calenderVoList = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
-                psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), param.getBaseDateYYYY(), param.getBaseDate());
-        // 2 表示対象社員の超過勤務命令時間を取得
-        //buildSQLForSelectTMG_MONTHLY_INFO_OTI
+    public List<MonthlyInfoOtVo> actionExecuteDisp(String baseMonth,PsDBBean psDBBean) throws Exception {
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
+
         List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
-                null, param.getBaseDate(), psDBBean.getLanguage(), param.getEmployeeListSql());
-        // 3 前月リンクを取得
-        String beforeBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 1);
-        // 4 翌月リンクを取得
-        String AfterBaseDate = iTmgMonthlyInfoService.selectAftBefBaseDate(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate(), param.getEmployeeListSql(), 0);
+                "TMG_CONTENTID|OTI", baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
 
         List<MonthlyInfoOtVo> dealwitchMonthlyList=new ArrayList<MonthlyInfoOtVo>();
         for(MonthlyInfoOtVo monthlyInfoOtVo:monthlyInfoOtVoList){
@@ -326,7 +314,7 @@ public class OvertimeInstructBean {
             }
             dealwitchMonthlyList.add(BeanUtil.toBean(monthlyMap,MonthlyInfoOtVo.class));
         }
-
+        return dealwitchMonthlyList;
     }
 
     //超過勤務実績月別平均画面
@@ -337,31 +325,29 @@ public class OvertimeInstructBean {
     }
 
     // 日別情報編集画面
-    public void actionExecuteEdit(PsDBBean psDBBean){
+    public void actionExecuteEdit(String baseDate,PsDBBean psDBBean){
         //paramSetting();
         // 編集画面表示項目マスタ制御設定取得
-        List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),param.getLang());
+        List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,psDBBean.getLanguage());
         // 0 日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得
-        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getBaseDate(),param.getBaseDateMM(),
-                psDBBean.getLanguage(),param.getEmployeeListSql(), DispOverTimeItemsDtos);
+        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),baseDate,baseDate.substring(0,7)+"/01",
+                psDBBean.getLanguage(),referList.buildSQLForSelectEmployees(), DispOverTimeItemsDtos);
         // 1 予定出社時間・予定退社時間の基準値を取得
-        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), param.getBaseDate());
+        CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(),baseDate);
         //2 日別詳細情報より超過勤務命令開始・終了時間を取得
         List<DailyDetailOverHoursVo> dailyDetailOverHoursVoList = iTmgDailyService.selectDailyDetailOverHours(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec()
-                ,param.getBaseDate(),psDBBean.getLanguage(),param.getEmployeeListSql());
+                ,baseDate,psDBBean.getLanguage(),referList.buildSQLForSelectEmployees());
         // 3 基準日時点の超勤限度時間取得
-        List<LimitOfBaseDate> limitOfBaseDateList = iTmgGroupAttributeService.selectLimitOfBaseDate(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getBaseDate());
+        List<LimitOfBaseDate> limitOfBaseDateList = iTmgGroupAttributeService.selectLimitOfBaseDate(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),baseDate);
         // 4 標準の勤務パターンを取得
-        int workTime=iTmgPatternService.selectStandardWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate());
+        int workTime=iTmgPatternService.selectStandardWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate);
         // 5 日別詳細情報より勤務予定時間外の休憩開始・終了時間を取得
-        List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),param.getEmployeeListSql());
+        List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,referList.buildSQLForSelectEmployees());
     }
 
     // 日別情報更新処理
-    public void actioneExecuteUpdate(PsDBBean psDBBean){
+    public void actioneExecuteUpdate(List<UpdateDto> updateDtoList,PsDBBean psDBBean){
         //paramSetting();
-
-        List<UpdateDto> updateDtoList=new ArrayList<UpdateDto>();
 
         for (UpdateDto updateDto: updateDtoList) {
             // 日次詳細CHECKデータ（超過勤務）　クリア
@@ -515,10 +501,14 @@ public class OvertimeInstructBean {
             return "";
         }
         if(time.indexOf(".") < 0){
-            return time+"<br />"+".00";
+            if(time.indexOf("@")>-1){
+                String[] s=time.split("@");
+                return s[0]+"\n"+".00"+"@"+s[1];
+            }
+            return time+"\n"+".00";
         }
         return time.subSequence(0, time.indexOf("."))
-                + "<br />" + time.substring(time.indexOf(".")) ;
+                + "\n" + time.substring(time.indexOf(".")) ;
     }
 
 

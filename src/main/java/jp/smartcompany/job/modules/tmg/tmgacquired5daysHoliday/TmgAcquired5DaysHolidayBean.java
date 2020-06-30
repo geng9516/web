@@ -32,10 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgAcquired5DaysHolidayBean {
 
-//    /**
-//     * PsDBBean
-//     */
-//    private PsDBBean psDBBean;
     /**
      * IMastGenericDetailService
      */

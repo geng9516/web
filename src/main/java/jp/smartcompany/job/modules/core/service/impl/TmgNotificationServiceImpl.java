@@ -88,14 +88,6 @@ import java.util.Map;
                 return baseMapper.selectNtfName(custId,compId,ntfNo);
         }
 
-        /**
-         * 一覧の対象件数を取得するSQLを返す
-         */
-        @Override
-        public int selectNotificationCount(ParamNotificationListDto params){
-                return  baseMapper.selectNotificationCount(params);
-        }
-
 
         /**
          * 遡り期限を取得する

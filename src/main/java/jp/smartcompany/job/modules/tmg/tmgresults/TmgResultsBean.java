@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.tmgresults;
 
+import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
@@ -34,10 +35,6 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgResultsBean {
 
-    /**
-     * PsDBBean
-     */
-    private PsDBBean psDBBean;
 
     /**
      * IMastGenericDetailService
@@ -242,17 +239,21 @@ public class TmgResultsBean {
     }
 
 
+
+
+
+
     /**
      * 入力サイト・承認サイト・管理サイト
      * 月別一覧画面
      * ACT_DISP_RMONTHLY
      */
-    public void actDispRmonthly(ModelMap modelMap) {
+    public void actDispRmonthly(String action,PsDBBean psDBBean) {
 
-        this.execute(modelMap);
+        this.execute(psDBBean);
         if (psDBBean.getTargetUser() != null && psDBBean.getTargetUser().length() != 0) {
 
-            showMonthly(modelMap);
+            showMonthly(action,psDBBean);
         }
     }
 
@@ -261,10 +262,10 @@ public class TmgResultsBean {
      * 日別登録画面
      * ACT_EDITINP_RDAILY
      */
-    public void actEditinpRdaily(ModelMap modelMap) {
+    public void actEditinpRdaily(String action,PsDBBean psDBBean) {
 
-        this.execute(modelMap);
-        this.showInp(modelMap);
+        this.execute(psDBBean);
+        this.showInp(action,psDBBean);
     }
 
     /**
@@ -272,10 +273,10 @@ public class TmgResultsBean {
      * 日別登録画面
      * ACT_EDITINP_UDAILY
      */
-    public void actEditinpUdaily(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        this.updateDaily(dto);
-        this.showMonthly(modelMap);
+    public void actEditinpUdaily(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        this.updateDaily(dto,psDBBean);
+        this.showMonthly(action,psDBBean);
     }
 
     /**
@@ -283,10 +284,10 @@ public class TmgResultsBean {
      * 日別登録画面
      * ACT_EDITINP_UCOMMENT
      */
-    public void actEditinpUcomment(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        updateInp(dto);
-        showMonthly(modelMap);
+    public void actEditinpUcomment(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        updateInp(dto,psDBBean);
+        showMonthly(action,psDBBean);
     }
 
     /**
@@ -296,10 +297,10 @@ public class TmgResultsBean {
      * <p>
      * 承認
      */
-    public void actEditpermUpermit(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        updateDaily(dto);
-        showMonthly(modelMap);
+    public void actEditpermUpermit(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        updateDaily(dto,psDBBean);
+        showMonthly(action,psDBBean);
     }
 
     /**
@@ -307,10 +308,10 @@ public class TmgResultsBean {
      * 日別登録・承認画面
      * ACT_REMANDS
      */
-    public void actRemands(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        updateRemandsStatus(dto);
-        showMonthly(modelMap);
+    public void actRemands(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        updateRemandsStatus(dto,psDBBean);
+        showMonthly(action,psDBBean);
     }
 
     /**
@@ -318,9 +319,9 @@ public class TmgResultsBean {
      * 日別承認画面
      * ACT_EDITPERM_RDAILY
      */
-    public void actEditpermRdaily(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        showPerm(modelMap);
+    public void actEditpermRdaily(String  action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        showPerm(action,psDBBean);
     }
 
     /**
@@ -330,10 +331,10 @@ public class TmgResultsBean {
      * <p>
      * 月次承認[承認]
      */
-    public void actFixed(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        updateMonth();
-        showMonthly(modelMap);
+    public void actFixed(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        updateMonth(psDBBean);
+        showMonthly(action,psDBBean);
     }
 
     /**
@@ -343,22 +344,25 @@ public class TmgResultsBean {
      * <p>
      * 月次承認[承認解除]
      */
-    public void actRescission(ModelMap modelMap, TmgResultsDto dto) {
-        this.execute(modelMap);
-        updateMonth();
-        showMonthly(modelMap);
+    public void actRescission(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+        this.execute(psDBBean);
+        updateMonth(psDBBean);
+        showMonthly(action,psDBBean);
     }
 
     /**
      * 月別一覧画面を表示するメソッド
      */
-    private void showMonthly(ModelMap modelMap) {
+    private void showMonthly(String action, PsDBBean psDBBean) {
 
 //        TODO
         setMonth("2019/10/01");
 
+        // 打刻反映処理
+        execReflectionTimePunch(action,psDBBean);
+
         // 月次情報表示項目を取得しセット
-        List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems();
+        List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems(psDBBean);
 
         List<String> monthlyItems = new ArrayList<String>();
         List<Map> monthlyTilteMapList = new ArrayList<Map>();
@@ -370,28 +374,8 @@ public class TmgResultsBean {
             monthlyTilteMap.put("key", dispMonthlyItem.getMgdCcolumnkey());
             monthlyTilteMapList.add(monthlyTilteMap);
         }
-        modelMap.addAttribute("monthlyTilteMapList", monthlyTilteMapList);
+//        modelMap.addAttribute("monthlyTilteMapList", monthlyTilteMapList);
 
-        // 日次情報表示項目を取得しセット
-        List<ItemVO> dispDailyItems = this.setDispDailyItems();
-
-        List<Map> dailyTittleMapList = this.setMapList(dispDailyItems);
-        modelMap.addAttribute("dailyTittleMapList", dailyTittleMapList);
-
-        List<String> dailyItems = new ArrayList<String>();
-        for (ItemVO dispDailyItem : dispDailyItems) {
-            dailyItems.add(dispDailyItem.getMgdCsql() + " AS " + dispDailyItem.getMgdCcolumnid());
-        }
-
-        // 月45時間を越える超勤の申請理由起動時処理
-        // TODO 標準版ではないので、削除待ち
-        // execOverHours45();
-
-        // 打刻反映処理
-        execReflectionTimePunch();
-
-        // 勤務状況確認、健康状態確認の使用可否設定を行います。 TODO 削除待ち
-        // setEditableWorkHealthChk();
 
         // 検索
         // 0 今日 TODO 削除待ち
@@ -405,7 +389,27 @@ public class TmgResultsBean {
                 getMonth(),
                 monthlyItems
         );
-        modelMap.addAttribute("monthlyMap", monthlyMap);
+//        modelMap.addAttribute("monthlyMap", monthlyMap);
+
+        // 月45時間を越える超勤の申請理由起動時処理
+        // TODO 標準版ではないので、削除待ち
+        // execOverHours45();
+
+
+        // 勤務状況確認、健康状態確認の使用可否設定を行います。 TODO 削除待ち
+        // setEditableWorkHealthChk();
+
+
+        // 日次情報表示項目を取得しセット
+        List<ItemVO> dispDailyItems = this.setDispDailyItems(psDBBean);
+
+        List<Map> dailyTittleMapList = this.setMapList(dispDailyItems);
+//        modelMap.addAttribute("dailyTittleMapList", dailyTittleMapList);
+
+        List<String> dailyItems = new ArrayList<String>();
+        for (ItemVO dispDailyItem : dispDailyItems) {
+            dailyItems.add(dispDailyItem.getMgdCsql() + " AS " + dispDailyItem.getMgdCcolumnid());
+        }
 
         // 2 日別
         List<HashMap> dailyMapList = iTmgDailyService.buildSQLForSelectDaily(
@@ -440,7 +444,7 @@ public class TmgResultsBean {
             dalyMap.put("TMG_HOLFLG", calendarMap.get("TCA_CHOLFLG" + StrUtil.fillBefore(String.valueOf(i), '0', 2)));
             i++;
         }
-        modelMap.addAttribute("dailyMapList", dailyMapList);
+//        modelMap.addAttribute("dailyMapList", dailyMapList);
 
         // 4 前月・翌月
         MonthlyLinkVO monthlyLinkVO = iTmgMonthlyService.buildSQLForSelectMonthlyLink(psDBBean.getCustID(),
@@ -448,7 +452,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getMonth()
         );
-        modelMap.addAttribute("monthlyLinkVO", monthlyLinkVO);
+//        modelMap.addAttribute("monthlyLinkVO", monthlyLinkVO);
 
 
         // TODO 画面未使用（削除待ち）
@@ -462,7 +466,7 @@ public class TmgResultsBean {
                 , getMonth()
                 , TYPE_ITEM_WORK_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
-        modelMap.addAttribute("workStatus", workStatus);
+//        modelMap.addAttribute("workStatus", workStatus);
 
         //  7 健康状態
         List<TmgEmployeeAttributeVO> healthStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(psDBBean.getCustID()
@@ -472,7 +476,7 @@ public class TmgResultsBean {
                 , getMonth()
                 , TYPE_ITEM_HEALTH_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
-        modelMap.addAttribute("healthStatus", healthStatus);
+//        modelMap.addAttribute("healthStatus", healthStatus);
 
         //  8 月45時間を越える超勤の申請理由
         // TODO　標準版ではないので、削除待ち
@@ -524,7 +528,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getToday()
         );
-        modelMap.addAttribute("dispMonthlyVOList", dispMonthlyVOList);
+//        modelMap.addAttribute("dispMonthlyVOList", dispMonthlyVOList);
 
         // 勤怠承認・管理サイトは社員情報も
         if (!SITE_TI.equals(psDBBean.getSiteId())) {
@@ -551,14 +555,14 @@ public class TmgResultsBean {
                     TmgUtil.Cs_MGD_DATASTATUS_5
             );
 
-            modelMap.addAttribute("countNotApprovalDay", countNotApprovalDay);
+//            modelMap.addAttribute("countNotApprovalDay", countNotApprovalDay);
         }
     }
 
-    private void showInp(ModelMap modelMap) {
+    private void showInp(String action,PsDBBean psDBBean) {
 
         // 打刻反映処理
-        execReflectionTimePunch();
+        execReflectionTimePunch(action,psDBBean);
 
         // 日別
         DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
@@ -570,7 +574,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 psDBBean.getLanguage()
         );
-        modelMap.addAttribute("dailyEditVO", dailyEditVO);
+//        modelMap.addAttribute("dailyEditVO", dailyEditVO);
 
         // 詳細:欠勤離籍以外
         List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
@@ -582,15 +586,15 @@ public class TmgResultsBean {
                 0,
                 true
         );
-        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
+//        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
 
         // 予定出社・退社時間の基準値
         CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
-        modelMap.addAttribute("companyVO", companyVO);
+//        modelMap.addAttribute("companyVO", companyVO);
 
         // 出勤日判定用
         List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
+//        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
 
         // 非勤務ドロップダウン用
         List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -602,7 +606,7 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_NONDUTY);
-        modelMap.addAttribute("categoryNonduty", categoryNonduty);
+//        modelMap.addAttribute("categoryNonduty", categoryNonduty);
 
         // 超過勤務ドロップダウン用
         List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -614,7 +618,7 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_OVERHOURS);
-        modelMap.addAttribute("categoryOverhours", categoryOverhours);
+//        modelMap.addAttribute("categoryOverhours", categoryOverhours);
 
         // 詳細：非勤務
         List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
@@ -626,7 +630,7 @@ public class TmgResultsBean {
                 psDBBean.getLanguage()
         );
 
-        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
+//        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
 
         // 詳細：超過勤務
         List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
@@ -639,7 +643,7 @@ public class TmgResultsBean {
                 this.isShowOvertimeNotification()
         );
 
-        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
+//        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
 
         // 出張区分ドロップダウン用
         List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
@@ -648,7 +652,7 @@ public class TmgResultsBean {
                 getDay(),
                 GROUPID_TMG_BUSINESS_TRIP
         );
-        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
+//        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
 
         // 裁量労働-勤務状況の状態を取得
         // 勤務状況
@@ -660,7 +664,7 @@ public class TmgResultsBean {
                 , getMonth()
                 , TYPE_ITEM_WORK_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
-        modelMap.addAttribute("workStatus", workStatus);
+//        modelMap.addAttribute("workStatus", workStatus);
 
         // 就業区分マスタ
         List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
@@ -670,7 +674,7 @@ public class TmgResultsBean {
                 getDay(),
                 psDBBean.getLanguage()
         );
-        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
+//        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
 
         // 日次超勤限度時間取得
         String targetSec = (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()))
@@ -683,7 +687,7 @@ public class TmgResultsBean {
                 targetSec,
                 getDay()
         );
-        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
+//        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
 
 
         // 超過勤務対象有無取得,
@@ -693,7 +697,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay()
         );
-        modelMap.addAttribute("targetForOverTime", targetForOverTime);
+//        modelMap.addAttribute("targetForOverTime", targetForOverTime);
 
         // 休憩予定取得
         List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
@@ -705,7 +709,7 @@ public class TmgResultsBean {
                 3,
                 true
         );
-        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
+//        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
 
         // コメント欄の最大値取得
         String tmgVMgdMaxLengthCheck = iMastGenericDetailService.buildSQLForSelectTmgVMgdMaxLengthCheck(
@@ -714,31 +718,31 @@ public class TmgResultsBean {
                 psDBBean.getLanguage(),
                 getDay(),
                 TmgUtil.Cs_MGD_TMG_MAX_LENGTH_CHECK_TMG_MAX_LENGTH_CHECK);
-        modelMap.addAttribute("tmgVMgdMaxLengthCheck", tmgVMgdMaxLengthCheck);
+//        modelMap.addAttribute("tmgVMgdMaxLengthCheck", tmgVMgdMaxLengthCheck);
 
         // 裁量労働-勤務状況の値を格納
         boolean isDiscretionWorkFixForDB = false;
         if (workStatus.size() > 0) {
             isDiscretionWorkFixForDB = workStatus.get(0).getTesCattribute().equals("TMG_ONOFF|1");
         }
-        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
+//        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
     }
 
     /**
      *
      */
-    private void updateDaily(TmgResultsDto dto) {
+    private void updateDaily(TmgResultsDto dto,PsDBBean psDBBean) {
         // 日付関連取得
-        this.getDate();
+        this.getDate(psDBBean);
 
         // 表示対象者 TODO
         //psDBBean.setTargetUser(psDBBean.getReqParam("txtCEMPLOYEEID"));
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck();
+        this.buildSQLForDeleteDetailCheck(psDBBean);
 
         // 日別
         DailyCheckDto dailyCheckDto = new DailyCheckDto();
@@ -840,7 +844,7 @@ public class TmgResultsBean {
         }
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーメッセージ追加
         iTmgErrmsgService.buildSQLForInsertNoErrMsg(
@@ -869,19 +873,19 @@ public class TmgResultsBean {
         );
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck();
+        this.buildSQLForDeleteDetailCheck(psDBBean);
     }
 
-    private void updateInp(TmgResultsDto dto) {
+    private void updateInp(TmgResultsDto dto,PsDBBean psDBBean) {
 
         String action = psDBBean.getReqParam("txtAction");
         if (action == null || action.length() == 0) {
@@ -889,10 +893,10 @@ public class TmgResultsBean {
         }
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // 日別
         DailyCheckDto dailyCheckDto = new DailyCheckDto();
@@ -926,10 +930,10 @@ public class TmgResultsBean {
         );
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
     }
 
     /**
@@ -937,7 +941,7 @@ public class TmgResultsBean {
      *
      * @return なし
      */
-    private void updateRemandsStatus(TmgResultsDto dto) {
+    private void updateRemandsStatus(TmgResultsDto dto,PsDBBean psDBBean) {
 
         String action = psDBBean.getReqParam("txtAction");
         if (StrUtil.isEmpty(action)) {
@@ -945,10 +949,10 @@ public class TmgResultsBean {
             action = ACT_DISP_RMONTHLY;
         }
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // 日別
         DailyCheckDto dailyCheckDto = new DailyCheckDto();
@@ -981,20 +985,20 @@ public class TmgResultsBean {
                 action
         );
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // エラーチェック削除
         //buildSQLForDeleteDailyCheck
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
     }
 
     /**
      * 日別承認画面を表示するメソッド
      */
-    private void showPerm(ModelMap modelMap) {
+    private void showPerm(String action, PsDBBean psDBBean) {
 
         // 打刻反映処理
-        execReflectionTimePunch();
+        execReflectionTimePunch(action,psDBBean);
 
         // 日別
         DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
@@ -1006,7 +1010,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 psDBBean.getLanguage()
         );
-        modelMap.addAttribute("dailyEditVO", dailyEditVO);
+//        modelMap.addAttribute("dailyEditVO", dailyEditVO);
         // 詳細:欠勤離籍以外
         List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
                 psDBBean.getCustID(),
@@ -1017,7 +1021,7 @@ public class TmgResultsBean {
                 0,
                 false
         );
-        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
+//        modelMap.addAttribute("dailyDetail0List", dailyDetail0List);
         // 社員情報
         //vQuery.add(buildSQLForSelectEmployee());
         // 就業区分マスタ
@@ -1028,15 +1032,15 @@ public class TmgResultsBean {
                 getDay(),
                 psDBBean.getLanguage()
         );
-        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
+//        modelMap.addAttribute("genericDetailVOList", genericDetailVOList);
 
         // 予定出社・退社時間の基準値
         CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(), getDay());
-        modelMap.addAttribute("companyVO", companyVO);
+//        modelMap.addAttribute("companyVO", companyVO);
 
         // 出勤日判定用
         List<MgdCsparechar4VO> MgdCsparechar4VOList = iMastGenericDetailService.buildSQLSelectGetMgdCsparechar4(psDBBean.getCustID(), psDBBean.getCompCode());
-        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
+//        modelMap.addAttribute("MgdCsparechar4VOList", MgdCsparechar4VOList);
 
         // 非勤務ドロップダウン用
         List<MgdAttributeVO> categoryNonduty = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -1048,7 +1052,7 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_NONDUTY);
-        modelMap.addAttribute("categoryNonduty", categoryNonduty);
+//        modelMap.addAttribute("categoryNonduty", categoryNonduty);
 
         // 超過勤務ドロップダウン用
         List<MgdAttributeVO> categoryOverhours = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -1060,7 +1064,7 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_OVERHOURS);
-        modelMap.addAttribute("categoryOverhours", categoryOverhours);
+//        modelMap.addAttribute("categoryOverhours", categoryOverhours);
 
         // 詳細：非勤務
         List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
@@ -1072,7 +1076,7 @@ public class TmgResultsBean {
                 psDBBean.getLanguage()
         );
 
-        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
+//        modelMap.addAttribute("detailNonDutyVOList", detailNonDutyVOList);
 
         // 詳細：超過勤務
         List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
@@ -1084,7 +1088,7 @@ public class TmgResultsBean {
                 psDBBean.getLanguage(),
                 this.isShowOvertimeNotification()
         );
-        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
+//        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
 
         // 出張区分ドロップダウン用
         List<GenericDetailVO> mgdDescriptions = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
@@ -1093,7 +1097,7 @@ public class TmgResultsBean {
                 getDay(),
                 GROUPID_TMG_BUSINESS_TRIP
         );
-        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
+//        modelMap.addAttribute("mgdDescriptions", mgdDescriptions);
 
         // 日次超勤限度時間取得
 
@@ -1107,7 +1111,7 @@ public class TmgResultsBean {
                 targetSec,
                 getDay()
         );
-        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
+//        modelMap.addAttribute("limitOfBasedateVO", limitOfBasedateVO);
 
         // 超過勤務対象有無取得,
         String targetForOverTime = iTmgEmployeeAttributeService.buildSQLForSelectTargetForOverTime(
@@ -1116,7 +1120,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay()
         );
-        modelMap.addAttribute("targetForOverTime", targetForOverTime);
+//        modelMap.addAttribute("targetForOverTime", targetForOverTime);
 
         // 休憩予定取得
         List<DailyDetailVO> dailyDetail3List = iTmgDailyDetailService.buildSQLForSelectDetail(
@@ -1128,14 +1132,14 @@ public class TmgResultsBean {
                 3,
                 true
         );
-        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
+//        modelMap.addAttribute("dailyDetail3List", dailyDetail3List);
 
     }
 
     /**
      * 月次(承認・解除)処理を行うメソッド
      */
-    private void updateMonth() {
+    private void updateMonth(PsDBBean psDBBean) {
 
         // 月次承認
         // 初期化
@@ -1162,10 +1166,10 @@ public class TmgResultsBean {
     /**
      * 月次承認時エラーチェックAjax
      */
-    public void getAjaxCheckForMonthlyApproval() {
+    public void getAjaxCheckForMonthlyApproval(PsDBBean psDBBean) {
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーメッセージ追加
         iTmgErrmsgService.buildSQLForInsertErrMsgForMonthlyApproval(
@@ -1184,7 +1188,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser());
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
     }
 
     /**
@@ -1192,19 +1196,19 @@ public class TmgResultsBean {
      *
      * @return Vector  SQL
      */
-    public void getSQLVecForAjax(TmgResultsDto dto) {
+    public void getSQLVecForAjax(TmgResultsDto dto,PsDBBean psDBBean) {
 
         // 日付関連取得
-        getDate();
+        getDate(psDBBean);
 
         // 表示対象者
         psDBBean.setTargetUser(psDBBean.getReqParam("txtCEMPLOYEEID"));
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck();
+        this.buildSQLForDeleteDetailCheck(psDBBean);
 
         // 日別
         DailyCheckDto dailyCheckDto = new DailyCheckDto();
@@ -1297,7 +1301,7 @@ public class TmgResultsBean {
         }
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーメッセージ追加
         iTmgErrmsgService.buildSQLForInsertErrMsg(
@@ -1316,22 +1320,22 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser());
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg();
+        this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck();
+        this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck();
+        this.buildSQLForDeleteDetailCheck(psDBBean);
     }
 
 
     /**
      * 月次一覧、また日次登録（承認）画面表示時の打刻反映処理
      */
-    private void execReflectionTimePunch() {
+    public void execReflectionTimePunch(String action, PsDBBean psDBBean) {
 
-        String action = psDBBean.getReqParam("txtAction");
+//        String action = psDBBean.getReqParam("txtAction");
 
         // メニューから初期の月次一覧画面表示時はアクションが未設定なので、月次一覧画面表示アクションを設定する。
         if (StrUtil.isEmpty(action)) {
@@ -1388,7 +1392,7 @@ public class TmgResultsBean {
                 action, stDate, endDate);
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action);
+        this.buildSQLForDeleteTrigger(action,psDBBean);
 
         // TODO 未実装
 //        TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEAN_DESC), session, BEAN_DESC);
@@ -1397,7 +1401,7 @@ public class TmgResultsBean {
     /**
      * 日付関連情報を取得するメソッド
      */
-    private void getDate() {
+    private void getDate(PsDBBean psDBBean) {
 
         TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
 
@@ -1509,7 +1513,7 @@ public class TmgResultsBean {
     /**
      * TMG_DISPMONTHLYITEMSマスタより取得した月次情報のヘッダー・SQLをリストに格納する
      */
-    public List<ItemVO> setDispMonthlyItems() {
+    public List<ItemVO> setDispMonthlyItems(PsDBBean psDBBean) {
 
         return iMastGenericDetailService.buildSQLForSelectTmgDispMonthlyItems(psDBBean.getCustID(), psDBBean.getCompCode(),
                 psDBBean.getLanguage(), getDay());
@@ -1518,7 +1522,7 @@ public class TmgResultsBean {
     /**
      * TMG_DISPDAILYITEMSマスタより取得した日次情報のヘッダー・SQL・表示幅をmapに格納する
      */
-    public List<ItemVO> setDispDailyItems() {
+    public List<ItemVO> setDispDailyItems(PsDBBean psDBBean) {
 
         return iMastGenericDetailService.buildSQLForSelectTmgDispDailyItems(psDBBean.getCustID(), psDBBean.getCompCode(),
                 psDBBean.getLanguage(), getDay());
@@ -1544,7 +1548,7 @@ public class TmgResultsBean {
      *
      * @param psStatus 分岐
      */
-    private void overHours45(String psStatus) {
+    private void overHours45(String psStatus,PsDBBean psDBBean) {
 
         // システム日付の月より表示する月が小さいか ※月末を過ぎたかどうか
         if (psDBBean.getSysDate().compareTo(getMonth()) < 0) {
@@ -1566,7 +1570,7 @@ public class TmgResultsBean {
         }
 
         // 表示する月の超勤時間が45時間を超えているか
-        if (this.monthSumOverWork() <= OVER_WORK_45) {
+        if (this.monthSumOverWork(psDBBean) <= OVER_WORK_45) {
             return;
         } else if (TmgUtil.Cs_MGD_ONOFF_1.equals(attribute)) { // 申請 却下・未申請
 
@@ -1615,7 +1619,7 @@ public class TmgResultsBean {
      *
      * @return 合計超勤時間
      */
-    private double monthSumOverWork() {
+    private double monthSumOverWork(PsDBBean psDBBean) {
 
         // 当メソッド内の処理をTMG_F_GET_SUM_OVERTIMEを使用する様に一新
 
@@ -1657,7 +1661,7 @@ public class TmgResultsBean {
     /**
      * 起動時にボタン・テキストエリア項目を表示か非表示かを判定
      */
-    private void overHours45ViewCheck() {
+    private void overHours45ViewCheck(PsDBBean psDBBean) {
 
         List<TmgEmployeeAttributeVO> vec = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(psDBBean.getCustID()
                 , psDBBean.getCompCode()
@@ -1743,7 +1747,7 @@ public class TmgResultsBean {
     /**
      * 勤務状況確認欄、健康状態確認欄の使用可否設定を行います。
      */
-    private void setEditableWorkHealthChk() {
+    private void setEditableWorkHealthChk(PsDBBean psDBBean) {
 
         // 表示対象職員の顧客コード
         String custId = psDBBean.getTargetCust();
@@ -1868,13 +1872,13 @@ public class TmgResultsBean {
     /**
      * メイン処理
      */
-    public void execute(ModelMap modelMap) {
+    public void execute(PsDBBean psDBBean) {
 
         // 日付関連取得
-        getDate();
+        getDate(psDBBean);
 
         // 組織ツリー情報での再構築
-        this.setOrganizationTreeInf(modelMap);
+        this.setOrganizationTreeInf(psDBBean);
 
         // URL(psTargetUser部分)を書換えられた場合の対策
 
@@ -1915,7 +1919,7 @@ public class TmgResultsBean {
                     String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
 
                     // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    setReferList(sPrevMonth, TmgReferList.TREEVIEW_TYPE_EMP,modelMap);
+                    setReferList(sPrevMonth, TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
 
                     // 参照権限の設定:
                     // 初期表示時の対象年月の時点の参照権限が無い場合に、
@@ -1935,7 +1939,7 @@ public class TmgResultsBean {
                         setAuthorityMonth(CB_CAN_REFER);
                     } else {
                         // 対象年月を元に戻します
-                        setReferList(getMonth(), TmgReferList.TREEVIEW_TYPE_EMP,modelMap);
+                        setReferList(getMonth(), TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
 
                         setAuthorityMonth(CB_CANT_REFER);
                     }
@@ -2001,14 +2005,14 @@ public class TmgResultsBean {
      * @return  なし
      * @throws
      */
-    private void setOrganizationTreeInf(ModelMap modelMap){
+    private void setOrganizationTreeInf(PsDBBean psDBBean){
 
         try {
             // 表示対象者
             if( !SITE_TI.equals(psDBBean.getSiteId()) ) {
 
                 // 勤怠承認・管理サイト
-                setReferList(TmgReferList.TREEVIEW_TYPE_EMP, modelMap);   // 汎用参照リスト
+                setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);   // 汎用参照リスト
                 psDBBean.setTargetUser(referList.getTargetEmployee());
                 // 当日・当月日付の情報を再格納する
                 if (referList.getRecordDate() != null){
@@ -2081,11 +2085,11 @@ public class TmgResultsBean {
      * @return  なし
      * @throws
      */
-    private void setReferList(int iTree, ModelMap modelMap){
+    private void setReferList(int iTree, PsDBBean psDBBean){
 
         try{
             referList = new TmgReferList(psDBBean, BEAN_DESC, getThisMonth(), iTree, true, true, false, false, true);
-            referList.putReferList(modelMap);
+
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -2096,11 +2100,11 @@ public class TmgResultsBean {
      * @return  なし
      * @throws
      */
-    private void setReferList(String sDate, int iTree,ModelMap modelMap){
+    private void setReferList(String sDate, int iTree,PsDBBean psDBBean){
 
         try{
             referList = new TmgReferList(psDBBean, BEAN_DESC, sDate, iTree, true, true, false, false, true);
-            referList.putReferList(modelMap);
+
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -2110,7 +2114,7 @@ public class TmgResultsBean {
     /**
      * エラーチェック削除
      */
-    private void buildSQLForDeleteDailyCheck(){
+    private void buildSQLForDeleteDailyCheck(PsDBBean psDBBean){
         iTmgDailyCheckService.getBaseMapper().delete(SysUtil.<TmgDailyCheckDO>query().eq("TDA_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TDA_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TDA_CMODIFIERUSERID", psDBBean.getUserCode()));
@@ -2119,7 +2123,7 @@ public class TmgResultsBean {
     /**
      * エラーチェック削除
      */
-    private void buildSQLForDeleteDetailCheck(){
+    private void buildSQLForDeleteDetailCheck(PsDBBean psDBBean){
         iTmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query().eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TDAD_CMODIFIERUSERID", psDBBean.getUserCode()));
@@ -2128,7 +2132,7 @@ public class TmgResultsBean {
     /**
      * エラーメッセージ削除
      */
-    private void buildSQLForDeleteErrMsg(){
+    private void buildSQLForDeleteErrMsg(PsDBBean psDBBean){
         iTmgErrmsgService.getBaseMapper().delete(SysUtil.<TmgErrmsgDO>query().eq("TER_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TER_CCOMPANYID", psDBBean.getCompCode()).eq("TER_CMODIFIERUSERID", psDBBean.getUserCode()));
     }
@@ -2136,11 +2140,125 @@ public class TmgResultsBean {
     /**
      * トリガー削除
      */
-    private void buildSQLForDeleteTrigger(String action){
+    private void buildSQLForDeleteTrigger(String action,PsDBBean psDBBean){
         iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", BEAN_DESC + "_" + action));
+    }
+//////////////////////////////////////////////////////////////////////////////////////////
+
+
+    ///入力サイト
+    ///入力サイト
+    //入力サイト初期化
+    public TodayThisMonthVO getToday(PsDBBean psDBBean){
+
+        // 対象月リスト一覧取得
+        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
+
+        // 今日の日付
+        return todayThisMonthVO;
+    }
+
+    //入力サイト初期化
+    public List<DispMonthlyVO> tmgInpInit(PsDBBean psDBBean){
+
+        // 対象月リスト一覧取得
+        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
+
+        // 今日の日付
+        setToday(todayThisMonthVO.getToday());
+        setThisMonth(todayThisMonthVO.getThisMonth());
+
+        // 12 表示月遷移リスト情報取得
+        List<DispMonthlyVO> dispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispMonthlyList(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                getToday()
+        );
+        return dispMonthlyVOList;
+    }
+
+    //月次情報
+    public  Map<String, Object> monthlyMapInit(PsDBBean psDBBean){
+
+        Map<String, Object> monthlyMap = MapUtil.newHashMap();
+        // 月次情報表示項目を取得しセット
+        List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems(psDBBean);
+
+        List<String> monthlyItems = new ArrayList<String>();
+        List<Map> monthlyTilteMapList = new ArrayList<Map>();
+        for (ItemVO dispMonthlyItem : dispMonthlyItems) {
+
+            monthlyItems.add(dispMonthlyItem.getMgdCsql() + " AS " + dispMonthlyItem.getMgdCcolumnkey());
+            Map monthlyTilteMap = new HashMap();
+            monthlyTilteMap.put("title", dispMonthlyItem.getMgdCheader());
+            monthlyTilteMap.put("key", dispMonthlyItem.getMgdCcolumnkey());
+            monthlyTilteMapList.add(monthlyTilteMap);
+        }
+
+        monthlyMap.put("monthlyTilteMapList", monthlyTilteMapList);
+
+        // 1 月別
+        HashMap monthlyDateMap = iTmgMonthlyService.buildSQLForSelectMonthly(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getMonth(),
+                monthlyItems
+        );
+        monthlyMap.put("monthlyDateMap", monthlyDateMap);
+
+        return monthlyMap;
+
+    }
+
+    // 日次情報
+    public Map getDailyData(PsDBBean psDBBean){
+
+        Map<String, Object> monthlyMap = MapUtil.newHashMap();
+
+        // 日次情報表示項目を取得しセット
+        List<ItemVO> dispDailyItems = this.setDispDailyItems(psDBBean);
+
+        List<Map> dailyTittleMapList = this.setMapList(dispDailyItems);
+        monthlyMap.put("dailyTittleMapList", dailyTittleMapList);
+
+        List<String> dailyItems = new ArrayList<String>();
+        for (ItemVO dispDailyItem : dispDailyItems) {
+            dailyItems.add(dispDailyItem.getMgdCsql() + " AS " + dispDailyItem.getMgdCcolumnid());
+        }
+
+        // 2 日別
+        List<HashMap> dailyMapList = iTmgDailyService.buildSQLForSelectDaily(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                getMonth(),
+                TmgUtil.Cs_MGD_MANAGEFLG_0,
+                dailyItems
+        );
+
+        // 3 休日
+        String targetUser =psDBBean.getTargetUser();
+        String sectionid= "";
+        String groupid = "";
+
+        String year = getMonth().substring(0, 4);
+        Map calendarMap = iTmgMonthlyService.buildSQLForSelectCalendar(psDBBean.getCustID(),
+                psDBBean.getCompCode(), targetUser, sectionid, groupid, year, getMonth());
+
+        int i = 1;
+        for (Map dalyMap : dailyMapList) {
+            dalyMap.put("TMG_HOLFLG", calendarMap.get("TCA_CHOLFLG" + StrUtil.fillBefore(String.valueOf(i), '0', 2)));
+            i++;
+        }
+
+        monthlyMap.put("dailyMapList", dailyMapList);
+        return monthlyMap;
     }
 
 }

@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 
+import java.sql.Struct;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -456,7 +457,7 @@ public class TmgNotificationBean {
         //アクション
         //param.setAction(psDBBean.getReqParam("txtAction"));
 
-        getParam(0,Integer.valueOf(year),param,psDBBean);
+        //getParam(0,Integer.valueOf(year),param,psDBBean);
 
         // 検索条件・申請内
         param.setType(ntfTypeId);
@@ -548,8 +549,11 @@ public class TmgNotificationBean {
 
         }
         NotificationDispVo notificationDispVo= new NotificationDispVo();
+        notificationDispVo.setPageSize(50);
+        notificationDispVo.setTotalCount(iTmgNotificationService.selectNotificationListCount(param));
+        notificationDispVo.setTotalPage(notificationDispVo.getTotalCount()/50+1);
+        notificationDispVo.setCurrPage(page);
         notificationDispVo.setList(dispVo);
-        notificationDispVo.setCount(iTmgNotificationService.selectNotificationListCount(param));
         return notificationDispVo;
     }
 
@@ -682,6 +686,26 @@ public class TmgNotificationBean {
     }
 
 
+
+
+    public List<EmployeeListVo> getEmployeeList(PsDBBean psDBBean) throws Exception {
+        //初始基准日取得
+        String startDate = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)), TmgUtil.getSysdate()).getStartDate();
+        //referlist 新规
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
+                    false, false, false, false);;
+        }else{
+            referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                    false, false, false, false);
+        }
+
+        String basedate=referList.getRecordDate();
+        if(StrUtil.hasEmpty(basedate)){
+            basedate=TmgUtil.getSysdate();
+        }
+       return  iHistDesignationService.selectemployeeList(psDBBean.getCustID(),psDBBean.getCompCode(),basedate,referList.buildSQLForSelectEmployees());
+    }
     /**
      * 年次休暇残日数及び時間
      * @param psDBBean
@@ -1140,7 +1164,7 @@ public class TmgNotificationBean {
         //String sectionNAme=iHistDesignationService.selectSectionNAme(param.getCustId(),param.getCompId(),param.getTodayD(),referList.getTargetSec());
         //modelMap.addAttribute("sectionNAme", sectionNAme);
         // TODO 5 件数
-        int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
+        //int selectNotificationCount=iTmgNotificationService.selectNotificationCount(param);;
         //modelMap.addAttribute("selectNotificationCount", selectNotificationCount);
         // 6 遡り期限
         String selectBackLimit = iTmgNotificationService.selectBackLimit(param.getCustId(), param.getCompId(), param.getTargetUser());
@@ -1256,7 +1280,7 @@ public class TmgNotificationBean {
         // 検索
         List<EmployeeListVo> EmployeeListVos = iHistDesignationService.selectemployeeList(param.getCustId(), param.getCompId(), param.getToday(), param.getEmployeeListSql());
         for (EmployeeListVo vo : EmployeeListVos) {
-            if (param.getSearchEmp().equals(vo.getTntfCemployeeid())) {
+            if (param.getSearchEmp().equals(vo.getEmpid())) {
                 return;
             }
         }

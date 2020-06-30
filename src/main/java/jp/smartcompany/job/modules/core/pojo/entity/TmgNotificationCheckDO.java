@@ -120,7 +120,7 @@ private static final long serialVersionUID=1L;
         /**
          * 対象期間：解除日
          */
-    @TableField("tntf_dcancel")
+    @TableField("tntf_dcancel" )
         private Date tntfDcancel;
 
         /**

@@ -56,12 +56,6 @@ public interface ITmgNotificationService extends IService<TmgNotificationDO> {
          */
         String selectNtfName(String custId,String compId,String ntfNo);
 
-        /**
-         * 一覧の対象件数を取得するSQLを返す
-         * buildSQLForSelectNotificationCount
-         */
-        int selectNotificationCount(ParamNotificationListDto params);
-
 
         /**
          * 遡り期限を取得する
