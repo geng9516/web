@@ -64,11 +64,11 @@
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
             </i-table>
         </div>
-        <div class="titlenorm mb10 mt10" style="font-size:15px">
+        <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData2.length > 0">
             <Icon type="logo-buffer"></Icon>
             個人別情報
         </div>
-        <div >
+        <div v-show="tableData2.length > 0">
           <i-table class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
                  :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
             <template slot-scope="{ row }" slot="EMPNAME"><span>{{row.EMPNAME}}</span></template>
