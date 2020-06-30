@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.deptstatlist;
 
+import cn.hutool.core.collection.CollUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
@@ -9,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO;
 import jp.smartcompany.job.modules.tmg.util.CommonUI;
+import jp.smartcompany.job.modules.tmg.util.CusomCsvUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DeptStatListBean {
 
+    private final CusomCsvUtil csvUtil;
     /**
      * IMastGenericDetailService
      */
@@ -180,31 +183,58 @@ public class DeptStatListBean {
         List<Map> mapList = iHistDesignationService.buildSQLForSelectCSVOutputImage(txtDYYYYMM, headerList, referList.buildSQLForSelectEmployees());
 
         // ファイル名セット(フォーマット：yyyymm_部署名.csv)
-        psDBBean.setDownloadFileName(new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_"
-                + referList.getTargetSecName() + ".csv");
+        String downloadFileName = new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_.csv";
+//                + referList.getTargetSecName();
+        // ファイル名セット(フォーマット：yyyymm_部署名.csv)
+//        psDBBean.setDownloadFileName(new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_"
+//                + referList.getTargetSecName() + ".csv");
 
-
-        StringBuffer csvData = new StringBuffer();
-        // ヘッダ行
+        List<List<Object>> rowData = CollUtil.newArrayList();
+        List<Object> rowTilte = CollUtil.newArrayList();
         for (ItemVO header : headerList) {
-            csvData.append(StringUtils.defaultString(header.getMgdCheader())).append(',');
+            rowTilte.add(StringUtils.defaultString(header.getMgdCheader()));
         }
-        csvData.deleteCharAt(csvData.lastIndexOf(","));
-        csvData.append(LINE_SEPARATOR);
+        rowData.add(rowTilte);
 
         // 明細行
         for (Map mapRow : mapList) {
+            List<Object> rowDate = CollUtil.newArrayList();
 
             for (int col = 0; col < headerList.size(); col++) {
-                csvData.append(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid())))).append(',');
+                rowDate.add(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid()))));
             }
-            csvData.deleteCharAt(csvData.lastIndexOf(","));
-            csvData.append(LINE_SEPARATOR);
+
+            rowData.add(rowDate);
+
         }
 
-        psDBBean.setDownloadStream(csvData.toString().getBytes());
-        psDBBean.setDownloadContentType(DOWNLOAD_CONTENT_TYPE);
-        psDBBean.setDownload(true);
+        csvUtil.writeCsv(downloadFileName,rowData);
+
+
+
+
+//
+//        StringBuffer csvData = new StringBuffer();
+//        // ヘッダ行
+//        for (ItemVO header : headerList) {
+//            csvData.append(StringUtils.defaultString(header.getMgdCheader())).append(',');
+//        }
+//        csvData.deleteCharAt(csvData.lastIndexOf(","));
+//        csvData.append(LINE_SEPARATOR);
+//
+//        // 明細行
+//        for (Map mapRow : mapList) {
+//
+//            for (int col = 0; col < headerList.size(); col++) {
+//                csvData.append(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid())))).append(',');
+//            }
+//            csvData.deleteCharAt(csvData.lastIndexOf(","));
+//            csvData.append(LINE_SEPARATOR);
+//        }
+//
+//        psDBBean.setDownloadStream(csvData.toString().getBytes());
+//        psDBBean.setDownloadContentType(DOWNLOAD_CONTENT_TYPE);
+//        psDBBean.setDownload(true);
     }
 
     /**

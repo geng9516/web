@@ -2261,4 +2261,20 @@ public class TmgResultsBean {
         return monthlyMap;
     }
 
+    //////////////////////////////////////////////////////////////////////////////////////////
+    //登録
+
+    // 出張区分
+    public List<GenericDetailVO> EditInp(PsDBBean psDBBean){
+        // 就業区分マスタ
+        List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
+                psDBBean.getCustID(),
+                psDBBean.getTargetComp(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage()
+        );
+        return genericDetailVOList;
+    }
+
 }

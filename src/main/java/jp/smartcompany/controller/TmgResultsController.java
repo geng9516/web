@@ -59,7 +59,7 @@ public class TmgResultsController {
     }
 
     /**
-     * 勤務年月一覧を返却します
+     * 月次実績を返却します
      *
      * @param psDBBean
      * @return
@@ -81,7 +81,7 @@ public class TmgResultsController {
     }
 
     /**
-     * 勤務年月一覧を返却します
+     * 日次実績を返却します
      *
      * @param psDBBean
      * @return
