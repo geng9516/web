@@ -24,7 +24,7 @@
       </div>
       <div class="searchwrap">
         <span class="label">年</span>
-        <date-picker type="year" format="yyyy" class="mr15" :value="new Date()" @on-change="handleDatePicker">
+        <date-picker type="year" format="yyyy" class="mr15" :value="curYear" @on-change="handleDatePicker">
         </date-picker>
         <!-- 共通組織図画面 start-->
         <span style="display:flex;width: calc(15% + 200px);">
@@ -64,7 +64,7 @@
         </span>
         <!-- 共通組織図画面 end-->
         <span class="label">社員</span>
-        <i-select v-model="opts.serchEmpId" @on-change="getTableData">
+        <i-select v-model="opts.serchEmpId" @on-change="getTableData(false, true)" transfer>
           <i-option value="全て" label="全て"></i-option>
           <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
         </i-select>
@@ -73,14 +73,12 @@
     <div class="content_body">
       <div class="table-top">
         <Row :gutter="16">
-
           <i-col span="13" offset="11" class="tr">
-            <radio-group class="mr15">
-              <Radio :label="6" class="custom-radio">全て</Radio>
-              <Radio :label="0" class="custom-radio">待ち</Radio>
-              <Radio :label="1" class="custom-radio">済み</Radio>
-              <Radio :label="2" class="custom-radio">取下</Radio>
-            </radio-group>
+            <i-select  v-model="opts.statusFlg" class="mr15 width25" @on-change="getTableData()" style="display: inline-block" transfer>
+              <i-option label="全て" :value="0"></i-option>
+              <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
+              </i-option>
+            </i-select >
             <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
               :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
           </i-col>
@@ -97,10 +95,10 @@
         </template>
 
         <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover">
-        <Tooltip placement="bottom" class="width100" transfer>
+          <Tooltip placement="bottom" class="width100" transfer>
             <span style="white-space: normal;" slot="content">{{ row.ntfapprover.join(', ') }}</span>
             <span class="ivu-table-cell-tooltip-content">{{ row.ntfapprover.join(', ') }}</span>
-        </Tooltip>
+          </Tooltip>
         </template>
 
         <template slot-scope="{ row }" slot="more">
@@ -210,10 +208,12 @@
             ntfTypeId: '',
             statusFlg: 0,
             year: 2020,
-            serchEmpId:'全て',
+            serchEmpId: '全て',
             page: 1
           },
-          empList:[],
+          curYear: new Date(),
+          empList: [],
+          statusList: [],
           selectedDeptViewType: 3, //組織ツリー用
           empDeptLoading: false,  // 組織ツリーloading用
           deptDrawShow: false,    //組織ツリー用
@@ -236,6 +236,7 @@
       },
       async mounted() {
         this.getOrgTree()
+        this.getStatusList()
       },
       computed: {
         tableHeadFixed() {
@@ -244,15 +245,20 @@
         },
       },
       methods: {
-        getTableData: Debounce(async function (isInit) {
+        getTableData: Debounce(async function (isInit, resetPage) {
           try {
             this.loading = true
             let OPTS = { ...this.opts, ...this.referListObject }
             if (this.opts.statusFlg === 0) {
               OPTS.statusFlg = ''
             }
-            if(OPTS.serchEmpId === '全て') {
+            if (OPTS.serchEmpId === '全て') {
               OPTS.serchEmpId = ''
+            }
+            // 点击非换页请求时需要将页数重置为1
+            if (resetPage) {
+              OPTS.page = 1
+              this.pageValue.curPage = 1
             }
             const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
             this.tableData = data.list
@@ -284,6 +290,10 @@
             this.empDeptLoading = false
           }
         },
+        async getStatusList() {
+          const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
+          this.statusList = data
+        },
         async handleDeptDateChange(e) {
           this.referListObject.txtTmgReferListTreeViewRecordDate = e
           this.isSearchHistory = true
@@ -305,17 +315,19 @@
           if (this.selectedDeptViewType === 2) {
             this.deptName = e[0].secnic
           }
-          this.getTableData()
+          // 点击部署时需要将员工重置为全部
+          this.opts.serchEmpId = '全て'
+          this.getTableData(false, true)
           this.getEmplist()
         },
         async getEmplist() {
-          const { data } = await this.http.get('sys/vapply/EmployeeList',this.referListObject)
+          const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
           this.empList = data
 
         },
         handleDatePicker(e) {
           this.opts.year = +e
-          // this.getTableData()
+          this.getTableData(false, true)
         },
         handleApplyDayShow(begin, end) {
           if (begin === end) return begin
@@ -341,7 +353,7 @@
         pageChange(e) {
           this.opts.page = e
           this.pageValue.curPage = e
-          this.getData()
+          this.getTableData()
         },
         preMonth() {
         },
