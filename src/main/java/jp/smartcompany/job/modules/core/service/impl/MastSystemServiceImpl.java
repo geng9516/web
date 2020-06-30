@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
 import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
@@ -38,6 +39,14 @@ public class MastSystemServiceImpl extends ServiceImpl<MastSystemMapper, MastSys
         @Override
         public List<AppSearchRangeInfoDTO> selectSearchRangeInfo() {
             return baseMapper.selectSearchRangeInfo();
+        }
+
+        @Override
+        public List<MastSystemDO> selectSystemList(String language) {
+            if (StrUtil.isBlank(language)){
+                language = "ja";
+            }
+            return baseMapper.selectSystemList(language);
         }
 
 }

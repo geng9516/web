@@ -3,6 +3,8 @@ package jp.smartcompany.admin.groupappmanager.logic;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 
 import java.util.Date;
 import java.util.List;
@@ -27,5 +29,9 @@ public interface GroupAppManagerMainLogic {
     List<MastApptreeDO> getSiteList(String psSystemId, String psLanguage);
 
     List<MastApptreeDO> getAppList(String psSystemId, String psLanguage, String psSiteId);
+
+    List<MastSystemDO> getSystemList(String language);
+
+    List<MastCompanyDO> getCompanyList(String custId,Date searchDate);
 
 }

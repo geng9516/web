@@ -22,4 +22,7 @@ public interface IMastCompanyService extends IService<MastCompanyDO> {
         List<HistDesignationDO> selectTargetCompany(String existsSql, Date searchDate);
 
         List<HistDesignationDO> selectAllCompany(String custId, Date searchDate);
+
+        List<MastCompanyDO> selectCompanyList(String customerId,String language,Date date,
+                                              List<String> companyList);
 }

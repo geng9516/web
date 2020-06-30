@@ -50,4 +50,24 @@
 		HGP_CAPPID
 	</select>
 
+	<select id="selectSystemList" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO">
+		SELECT
+			MS_CSYSTEMID_PK,PSMASTER.FUNC_GET_SYSTEM_NAME(
+				MS_CSYSTEMID_PK,
+				TRUNC(SYSDATE),
+			    '${value}'
+			) MS_CSYSTEMNAME
+		FROM
+			MAST_SYSTEM
+		WHERE
+			MS_CLANGUAGE = 'ja'
+		  AND (
+				MS_CDELFLAG = '0'
+				OR  (
+					MS_CDELFLAG = '1' AND MS_DDELDATE >= TRUNC(SYSDATE)
+				)
+		  )
+		ORDER BY MS_CSYSTEMID_PK
+	</select>
+
 </mapper>

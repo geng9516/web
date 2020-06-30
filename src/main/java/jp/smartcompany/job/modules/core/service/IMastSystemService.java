@@ -28,4 +28,6 @@ public interface IMastSystemService extends IService<MastSystemDO> {
 
         List<AppSearchRangeInfoDTO> selectSearchRangeInfo();
 
+        List<MastSystemDO> selectSystemList(String language);
+
 }

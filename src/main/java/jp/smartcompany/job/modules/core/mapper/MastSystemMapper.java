@@ -22,4 +22,7 @@ public interface MastSystemMapper extends BaseMapper<MastSystemDO> {
         List<TableCombinationTypeDTO> selectTableInfo();
 
         List<AppSearchRangeInfoDTO> selectSearchRangeInfo();
+
+        List<MastSystemDO> selectSystemList(String language);
+
 }

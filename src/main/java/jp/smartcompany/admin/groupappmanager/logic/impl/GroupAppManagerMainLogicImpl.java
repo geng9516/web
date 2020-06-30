@@ -12,12 +12,11 @@ import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
-import jp.smartcompany.job.modules.core.service.IMastApptreeService;
-import jp.smartcompany.job.modules.core.service.IMastGroupService;
-import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
+import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
+import jp.smartcompany.job.modules.core.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.servlet.error.BasicErrorController;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -53,6 +52,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private final IMastGroupService iMastGroupService;
   private final IMastGroupapppermissionService iMastGroupapppermissionService;
   private final IMastApptreeService iMastApptreeService;
+  private final IMastSystemService iMastSystemService;
+  private final IMastCompanyService iMastCompanyService;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -196,6 +197,27 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   public List<MastApptreeDO> getAppList(String psSystemId, String psLanguage, String psSiteId) {
     // アプリケーション一覧取得
     return iMastApptreeService.selectSiteOrAppListByType(psSystemId, psLanguage, TYPE_SITE, psSiteId);
+  }
+
+  /**
+   * システムデータ設定処理<br>
+   * システムコード、システム名称、システム一覧をDtoに設定する
+   *
+   * @param language 言語区分
+   * @return String
+   */
+  @Override
+  public List<MastSystemDO> getSystemList(String language) {
+    return iMastSystemService.selectSystemList(language);
+  }
+
+  @Override
+  public List<MastCompanyDO> getCompanyList(String custId,Date searchDate) {
+     List<String> searchCompanyList = psSearchCompanyUtil.getCompList(searchDate);
+    // 法人一覧取得
+    List<MastCompanyDO> lCompanyList = iMastCompanyService.selectCompanyList(
+            custId, "ja", searchDate, searchCompanyList);
+    return lCompanyList;
   }
 
   /**

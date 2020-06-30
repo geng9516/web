@@ -1,6 +1,8 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.SysDateUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
@@ -40,5 +42,24 @@ public class MastCompanyServiceImpl extends ServiceImpl<MastCompanyMapper, MastC
                         custId = "01";
                 }
                 return baseMapper.selectAllCompany(custId, SysUtil.transDateToString(searchDate));
+        }
+
+        @Override
+        public List<MastCompanyDO> selectCompanyList(String customerId,String language,Date date,
+                                                     List<String> companyList) {
+               if (StrUtil.isBlank(language)){
+                       language="ja";
+               }
+               if (StrUtil.isBlank(customerId)){
+                       customerId = "01";
+               }
+               if (date ==null){
+                       date = SysDateUtil.of(1900,1,1);
+               }
+               String strDate = SysUtil.transDateToString(date);
+               if (CollUtil.isEmpty(companyList)){
+                       companyList = CollUtil.newArrayList("01");
+               }
+               return baseMapper.selectCompanyList(customerId,language,strDate, companyList);
         }
 }

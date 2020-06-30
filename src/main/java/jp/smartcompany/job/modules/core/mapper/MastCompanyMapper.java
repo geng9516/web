@@ -27,4 +27,9 @@ public interface MastCompanyMapper extends BaseMapper<MastCompanyDO> {
 
        List<HistDesignationDO> selectAllCompany(@Param("custId") String custId,
                                                    @Param("searchDate") String searchDate);
+
+       List<MastCompanyDO> selectCompanyList(@Param("custId") String customerId,
+                                             @Param("language") String language,
+                                             @Param("date") String date,
+                                             @Param("companies") List<String> companyList);
 }

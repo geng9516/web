@@ -68,11 +68,11 @@
             MAC_CCUSTOMERID_CK_FK = #{custId}
             AND MAC_CLANGUAGE = 'ja'
             <if test="searchDate==null">
-                AND MAC_DSTART <![CDATA[ <= ]]> SYSDATE
+                AND MAC_DSTART <![CDATA[<=]]> SYSDATE
                 AND MAC_DEND >= SYSDATE
             </if>
             <if test="searchDate!=null">
-                AND MAC_DSTART <![CDATA[ <= ]]> #{searchDate}
+                AND MAC_DSTART <![CDATA[<=]]> #{searchDate}
                 AND MAC_DEND >= #{searchDate}
             </if>
             AND (MAC_CDELFLAG = '0'
@@ -85,5 +85,30 @@
                 </if>
             )
             ORDER BY MAC_NSEQ
+    </select>
+
+    <select id="selectCompanyList" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO">
+        -- 法人一覧取得SQL
+        SELECT DISTINCT
+            MAC_CCOMPANYID_CK,
+            PSMASTER.FUNC_GET_COMP_NAME(
+            MAC_CCUSTOMERID_CK_FK,
+            MAC_CCOMPANYID_CK,
+            MAC_DSTART,
+              '${language}'
+            ) MAC_CCOMPANYNAME
+        FROM MAST_COMPANY
+        WHERE MAC_CCUSTOMERID_CK_FK = #{custId}
+        AND	MAC_CLANGUAGE = 'ja'
+        AND	MAC_DSTART <![CDATA[<=]]> #{date}
+        AND	MAC_DEND >= #{date}
+        AND	MAC_CDELFLAG <![CDATA[<>]]> '1'
+        <if test="companies!=null and companies.size()>0">
+            AND MAC_CCOMPANYID_CK IN
+            <foreach collection="companies" separator="," item="companyId" open="(" close=")">
+                #{companyId}
+            </foreach>
+        </if>
+        ORDER BY MAC_CCOMPANYID_CK
     </select>
 </mapper>
