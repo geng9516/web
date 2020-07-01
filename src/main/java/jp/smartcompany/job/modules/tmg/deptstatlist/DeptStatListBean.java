@@ -183,11 +183,8 @@ public class DeptStatListBean {
         List<Map> mapList = iHistDesignationService.buildSQLForSelectCSVOutputImage(txtDYYYYMM, headerList, referList.buildSQLForSelectEmployees());
 
         // ファイル名セット(フォーマット：yyyymm_部署名.csv)
-        String downloadFileName = new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_.csv";
-//                + referList.getTargetSecName();
-        // ファイル名セット(フォーマット：yyyymm_部署名.csv)
-//        psDBBean.setDownloadFileName(new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_"
-//                + referList.getTargetSecName() + ".csv");
+        String downloadFileName = new SimpleDateFormat("yyyymm").format(new SimpleDateFormat("yyyy/mm/dd").parse(txtDYYYYMM)) + "_"
+                + referList.getTargetSecName() + ".csv";
 
         List<List<Object>> rowData = CollUtil.newArrayList();
         List<Object> rowTilte = CollUtil.newArrayList();
@@ -210,31 +207,6 @@ public class DeptStatListBean {
 
         csvUtil.writeCsv(downloadFileName,rowData);
 
-
-
-
-//
-//        StringBuffer csvData = new StringBuffer();
-//        // ヘッダ行
-//        for (ItemVO header : headerList) {
-//            csvData.append(StringUtils.defaultString(header.getMgdCheader())).append(',');
-//        }
-//        csvData.deleteCharAt(csvData.lastIndexOf(","));
-//        csvData.append(LINE_SEPARATOR);
-//
-//        // 明細行
-//        for (Map mapRow : mapList) {
-//
-//            for (int col = 0; col < headerList.size(); col++) {
-//                csvData.append(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid())))).append(',');
-//            }
-//            csvData.deleteCharAt(csvData.lastIndexOf(","));
-//            csvData.append(LINE_SEPARATOR);
-//        }
-//
-//        psDBBean.setDownloadStream(csvData.toString().getBytes());
-//        psDBBean.setDownloadContentType(DOWNLOAD_CONTENT_TYPE);
-//        psDBBean.setDownload(true);
     }
 
     /**
