@@ -2146,6 +2146,129 @@ public class TmgResultsBean {
                 .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", BEAN_DESC + "_" + action));
     }
+
+    public static final String ACT_EDITPERM_EDIT       = "ACT_EDITPERM_EDIT";      // 日別承認画面_確定済みデータの編集
+
+    public boolean isFuture(){
+        if(isFuture == null){
+            try{
+//                isFuture =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_IS_FUTURE)) == 1;
+            }catch(Exception e){
+                e.printStackTrace();
+                isFuture = false;
+            }
+        }
+        return isFuture;
+    }
+    private Boolean isFuture = null;
+
+    public boolean isFixedSalary(){
+        if(isFixedSalary == null){
+            try{
+//                isFixedSalary =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_SALARY)) == 1;
+            }catch(Exception e){
+                e.printStackTrace();
+                isFixedSalary = false;
+            }
+        }
+        return isFixedSalary;
+    }
+    private Boolean isFixedSalary = null;
+    public boolean isFixedMonthly(){
+        if(isFixedMonthly == null){
+            try{
+//                isFixedMonthly =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_MONTHLY)) == 1;
+            }catch(Exception e){
+                e.printStackTrace();
+                isFixedMonthly = false;
+            }
+        }
+        return isFixedMonthly;
+    }
+    private Boolean isFixedMonthly = null;
+    public String getMonthlyStatus(){
+        if(monthlyStatus == null){
+            try{
+//                monthlyStatus =  (String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_MONTHLY_STATUS);
+            }catch(Exception e){
+                e.printStackTrace();
+                monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
+            }
+        }
+        return monthlyStatus;
+    }
+    private String monthlyStatus = null;
+
+
+    public String getDailyStatus(){
+        if(dailyStatus == null){
+            try{
+//                dailyStatus =  (String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_DAILY_STATUS);
+            }catch(Exception e){
+                e.printStackTrace();
+                dailyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
+            }
+        }
+        return dailyStatus;
+    }
+    private String dailyStatus = null;
+    /**
+     * 承認権限があるかどうか
+     * @return  boolean true:権限有り/false:なし
+
+     */
+    public boolean isResult( String sEmp, String sDate ,String siteId) {
+
+        // 承認サイトのみ判定を行う
+        if( !TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) ) {
+            return true;
+        }
+
+        try {
+            return referList.hasAuthorityAtEmployee( sDate, sEmp, TmgUtil.Cs_AUTHORITY_RESULT );
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    public boolean isEditable(PsDBBean psDBBean){
+        if(isEditable == null){
+            // 未来日付はサイト関係なく常に「編集不可」
+            if(isFuture()){
+                isEditable = false;
+            }
+            // 「給与確定済」の場合も、サイト関係なく常に「編集不可」
+            else if(isFixedSalary()){
+                isEditable = false;
+            }
+            // 「勤怠締め完了済」の場合、管理サイトかつアクションが「締め完了済みデータ編集」でなければ編集不可
+            else if( isFixedMonthly() && !(TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && ACT_EDITPERM_EDIT.equals(psDBBean.getReqParam("txtAction")) ) ){
+                isEditable = false;
+            }
+            // ▼ 2010/07/20 isolsuzuki 日次または月次ステータスが確定済みの場合は無条件で編集不可能とする
+            // ※2010/07/20 宍戸様からの連絡にて一旦コメントアウト
+            //else if(TmgUtil.Cs_MGD_DATASTATUS_9.equals(getMonthlyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(getDailyStatus())){
+            //  isEditable = false;
+            //}
+            // 入力サイトのみ、月次ステータスが「承認済」、または、日次ステータスが「承認済」以上の場合、編集不可
+            else if( TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId()) &&
+                    ( TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_5.equals(getDailyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(getDailyStatus())) ){
+                isEditable = false;
+            }
+            // 勤務実績編集権限を持っていない場合、編集不可
+            else if( !isResult(psDBBean.getTargetUser(), getDay(),psDBBean.getSiteId())){
+                isEditable = false;
+            }
+            // いずれの条件も満たさなければ編集可
+            else{
+                isEditable = true;
+            }
+        }
+
+        return isEditable;
+    }
+    private Boolean isEditable = null;
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2265,7 +2388,7 @@ public class TmgResultsBean {
     //登録
 
     // 出張区分
-    public List<GenericDetailVO> EditInp(PsDBBean psDBBean){
+    public List<GenericDetailVO> getWorkingId(PsDBBean psDBBean) {
         // 就業区分マスタ
         List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
                 psDBBean.getCustID(),

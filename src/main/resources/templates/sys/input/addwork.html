@@ -94,7 +94,10 @@
                 <Row >
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <span >出勤</span>
+                        <i-select v-model="workingId" class="mr30" @on-change="" placeholder="選択ください">
+                            <i-option v-for="(item, index) of workingIdList" :key="index" 　:value="item.mgdCgenericdetaildesc">
+                            </i-option>
+                        </i-select>
 <!--                        <span >{{ dailyData.workStart | toTime }}</span>-->
 <!--                    <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change=""-->
 <!--                              placeholder="選択ください">-->
@@ -110,9 +113,8 @@
                 <Row class="mb5">
                     <i-col span="8" class="label tc">出張</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change=""
-                                  placeholder="選択ください">
-                            <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val"　:value="item.val">
+                        <i-select v-model="workingId" class="mr30" @on-change=""  placeholder="選択ください">
+                            <i-option v-for="(item, index) of workingIdList" :key="index" :label="item.mgdCgenericdetaildesc"　:value="item.mgdCgenericdetaildesc">
                             </i-option>
                         </i-select>
                     </i-col>
@@ -239,6 +241,8 @@
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp')
                     },
+                    workingId:'',
+                    workingIdList:[],
 
                     isShow: false,
                     title: {
@@ -569,15 +573,21 @@
 
                 },
                 ////////////////////////////////////////
-                showDay: Debounce(function (e) {
+                 showDay(e) {
                     this.isShow = true
-                    this.title = e[0].TDA_DYYYYMMDD + '(' +e[0].TDA_DYYYYMMDD_DY  +')'
+                    this.title = e[0].TDA_DYYYYMMDD + '(' + e[0].TDA_DYYYYMMDD_DY + ')'
 
-                    console.log(e)
-                    // console.log(e[0])
-                    // console.log(e[0].TDA_DYYYYMMDD + '(' +e[0].TDA_DYYYYMMDD_DY  +')')
+                    this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
 
-                }),
+
+                    const {data} = this.http.get('sys/tmgResults/getWorkingId', this.query)
+
+                     console.log(data)
+                    this.workingIdList = data
+                    console.log(this.workingIdList)
+
+
+                },
 
 /////////////////////////////////////////////////////////////////
                 //登録画面

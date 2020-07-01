@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.TodayThisMonthVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -99,6 +100,24 @@ public class TmgResultsController {
         tmgResultsBean.setDay(txtDYYYYMMDD);
 
         return  tmgResultsBean.getDailyData(psDBBean);
+    }
+
+
+    /**
+     * 出張区分を返却します
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("getWorkingId")
+    @ResponseBody
+    public List<GenericDetailVO> getWorkingId(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                              @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) throws Exception {
+
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+        tmgResultsBean.setDay(txtDYYYYMMDD);
+        //初期化対象
+        return tmgResultsBean.getWorkingId(psDBBean);
     }
 
 }
