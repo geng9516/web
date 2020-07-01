@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -42,12 +41,14 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(GlobalException.class)
     public GlobalResponse systemException(GlobalException e) {
+        printStackTrace(e);
         return GlobalResponse.error(e.getCode(), e.getMessage());
     }
 
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
-    public GlobalResponse methodNotSupportedException(HttpServletRequest req) {
+    public GlobalResponse methodNotSupportedException(HttpServletRequest req,HttpRequestMethodNotSupportedException e) {
+        printStackTrace(e);
         String msg = StrUtil.format(ErrorMessage.METHOD_NOT_ALLOWED_ERROR.msg(), req.getMethod());
         return GlobalResponse.error(ErrorMessage.METHOD_NOT_ALLOWED_ERROR.code(), msg);
     }
@@ -57,14 +58,16 @@ public class ExceptionAdvice {
             MethodArgumentTypeMismatchException.class
     })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public GlobalResponse paramEmptyOrTypeException() {
+    public GlobalResponse paramEmptyOrTypeException(Exception e) {
+        printStackTrace(e);
         return GlobalResponse.error(ErrorMessage.BAD_REQUEST_ERROR);
     }
 
     @ExceptionHandler({
             HttpMessageNotReadableException.class
     })
-    public GlobalResponse httpMessageNotReadableException() {
+    public GlobalResponse httpMessageNotReadableException(HttpMessageNotReadableException e) {
+        printStackTrace(e);
         return GlobalResponse.error(ErrorMessage.BAD_REQUEST_ERROR);
     }
 
@@ -95,36 +98,25 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
-    public GlobalResponse httpMediaTypeNotSupportedException() {
+    public GlobalResponse httpMediaTypeNotSupportedException(HttpMediaTypeNotSupportedException e) {
         return GlobalResponse.error(ErrorMessage.CONTENT_TYPE_SUPPORTED_ERROR);
     }
 
     @ExceptionHandler(ArrayIndexOutOfBoundsException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ModelAndView arrayIndexOutOfBoundsException() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("500");
-        mv.addObject("error",GlobalResponse.error(ErrorMessage.OUT_OF_BOUNDARY));
-        return mv;
+    public GlobalResponse arrayIndexOutOfBoundsException(ArrayIndexOutOfBoundsException e) {
+        printStackTrace(e);
+        return GlobalResponse.error(ErrorMessage.OUT_OF_BOUNDARY);
     }
 
     @ExceptionHandler(NullPointerException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ModelAndView nullPointerException(NullPointerException e) {
-        ModelAndView mv = new ModelAndView();
-        e.printStackTrace();
-        mv.setViewName("500");
-        mv.addObject("error",GlobalResponse.error("NPC異常"));
-        return mv;
+    public GlobalResponse nullPointerException(NullPointerException e) {
+        printStackTrace(e);
+        return GlobalResponse.error("NPC異常");
     }
 
-    @ExceptionHandler(NoHandlerFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public String noHandlerFoundException() {
-        return "404";
-    }
-
-    @ExceptionHandler({Exception.class})
+    @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ModelAndView handleException(Exception e) {
         boolean isTestEnv = StrUtil.equals(Constant.Env.DEV, env) || StrUtil.equals(Constant.Env.TEST, env);
@@ -159,6 +151,12 @@ public class ExceptionAdvice {
         }
         r.put(Constant.CODE, HttpStatus.BAD_REQUEST.value());
         return r;
+    }
+
+    private void printStackTrace(Exception e) {
+        if (!StrUtil.equals(env, "prod")){
+            e.printStackTrace();
+        }
     }
 
 }

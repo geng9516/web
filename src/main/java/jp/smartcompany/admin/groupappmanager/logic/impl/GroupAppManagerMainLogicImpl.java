@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,12 +49,16 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   /** 法人選択区分 共通 */
   private static final String COMPANY_SEL_ALL = "all";
 
+  /** requestScopeに権限一覧を登録する際の名前 */
+  private static final String REQ_SCOPE_NAME = "permissionTableDtoList";
+
   private final PsSearchCompanyUtil psSearchCompanyUtil;
   private final IMastGroupService iMastGroupService;
   private final IMastGroupapppermissionService iMastGroupapppermissionService;
   private final IMastApptreeService iMastApptreeService;
   private final IMastSystemService iMastSystemService;
   private final IMastCompanyService iMastCompanyService;
+  private final HttpSession httpSession;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -133,6 +138,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       }
     }
     layout.setTableBody(lTable);
+    // 権限一覧をrequestScopeに登録
+    httpSession.setAttribute(REQ_SCOPE_NAME,lTable);
     getSearchDate(layout,systemId, date,  groupId);
     return layout;
   }
@@ -215,9 +222,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   public List<MastCompanyDO> getCompanyList(String custId,Date searchDate) {
      List<String> searchCompanyList = psSearchCompanyUtil.getCompList(searchDate);
     // 法人一覧取得
-    List<MastCompanyDO> lCompanyList = iMastCompanyService.selectCompanyList(
+    return iMastCompanyService.selectCompanyList(
             custId, "ja", searchDate, searchCompanyList);
-    return lCompanyList;
   }
 
   /**
