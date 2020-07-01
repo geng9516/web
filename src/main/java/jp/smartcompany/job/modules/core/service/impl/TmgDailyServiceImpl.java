@@ -250,14 +250,12 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
      *
      s* @param  custId       顧客コード
      * @param  compId       法人コード
-     * @param  sectionId    組織ＩＤ
      * @param  baseDate  対象年月日（ＤＢ検索用にエスケープ済(')）
-     * @param  slanguage    言語区分
      * @return SQL文
      */
     @Override
-    public List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String sectionId, String baseDate, String slanguage, String empListSql){
-        return baseMapper.selectDailyDetailOverHours( custId,  compId,  sectionId,  baseDate, slanguage,empListSql);
+    public List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId,  String baseDate,  String empListSql){
+        return baseMapper.selectDailyDetailOverHours( custId,  compId,  baseDate,empListSql);
     }
 
 

@@ -845,7 +845,7 @@ public class TmgEmpList {
      */
     public String buildSQLForSelectEmpListFromDual() throws Exception{
 
-        // 社員番号でdistinctをかけてから、SQLを構築する
+        // 社員番号でdistinctをかけてから、SQLを構築するcreateSearchEmpList
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
         List distinctDataArray = JSONArrayGenerator.distinctDataArray(dataArray, distinctKeyArray

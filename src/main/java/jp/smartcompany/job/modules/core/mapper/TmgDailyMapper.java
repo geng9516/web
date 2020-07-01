@@ -104,11 +104,10 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
      * 一括承認データを更新する
      */
     int buildSQLForUpdateTmgDaily(Map<String, Object> map);
+
     List<DailyDetailOverHoursVo> selectDailyDetailOverHours(@Param("custId")String custId,
                                                             @Param("compId")String compId,
-                                                            @Param("sectionId")String sectionId,
                                                             @Param("baseDate")String baseDate,
-                                                            @Param("slanguage")String slanguage,
                                                             @Param("empListSql")String empListSql);
 
     /**

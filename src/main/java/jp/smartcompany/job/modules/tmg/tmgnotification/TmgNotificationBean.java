@@ -440,11 +440,9 @@ public class TmgNotificationBean {
         param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
         //referlist 新规
         if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
-            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true,
-                    false, false, false, false);;
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true);
         }else{
-            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
-                    false, false, false, false);
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true);
         }
 
         //基准日取得 入力site为系统日期

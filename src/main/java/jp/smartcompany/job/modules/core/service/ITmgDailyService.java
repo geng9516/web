@@ -151,12 +151,10 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      *
      * @param  custId       顧客コード
      * @param  compId       法人コード
-     * @param  sectionId    組織ＩＤ
      * @param  baseDate  対象年月日（ＤＢ検索用にエスケープ済(')）
-     * @param  slanguage    言語区分
      * @return SQL文
      */
-    List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String sectionId, String baseDate, String slanguage , String empListSql);
+    List<DailyDetailOverHoursVo> selectDailyDetailOverHours(String custId, String compId, String baseDate , String empListSql);
 
 
     /**

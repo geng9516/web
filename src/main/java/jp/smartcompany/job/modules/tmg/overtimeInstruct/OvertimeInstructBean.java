@@ -23,6 +23,7 @@ import org.springframework.ui.ModelMap;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -260,6 +261,9 @@ public class OvertimeInstructBean {
 
 
     public List<OneMonthDetailVo>  getTableTop(String baseMonth,PsDBBean psDBBean) throws Exception {
+        if(StrUtil.hasEmpty(baseMonth)){
+            return null;
+        }
         //汎用参照コンポーネント。
         referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
                 true, true, false, false, true
@@ -318,31 +322,141 @@ public class OvertimeInstructBean {
     }
 
     //超過勤務実績月別平均画面
-    public void actionexecuteDisp6MonthsAvg(PsDBBean psDBBean){
+    public AvgMonthlyVo actionexecuteDisp6MonthsAvg(String empid,String baseDate,PsDBBean psDBBean){
+        AvgMonthlyVo vo=new AvgMonthlyVo();
         //paramSetting();
-        List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(psDBBean.getCustID(),psDBBean.getCompCode(),param.getTargetUser()
-        ,param.getBaseDate(),"-5");
+        List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(psDBBean.getCustID(),psDBBean.getCompCode(),empid
+        ,baseDate,"-5");
+
+        //平均超勤時間
+        String monthOverTimesAvg = "";
+
+        // 月超勤時間の時間と分
+        String[] monthOverTimes = null;
+
+        // 超勤時間纏めの分
+        int monthOverTimesSumInt = 0;
+
+        // 月平均超勤時間の時間
+        int monthOverTimesAvgTInt = 0;
+        // 月平均超勤時間の分
+        int monthOverTimesAvgMInt = 0;
+
+        //遡り1か月の平均時間(2か月)～遡り5か月(6か月)の平均時間を取得する
+        for(int i = 0,j = 5 ; i < monthlyInfoOverSumVoList.size(); i++,j--) {
+
+            // 月超勤時間の時間と分の配列を作成する
+            monthOverTimes = monthlyInfoOverSumVoList.get(j).getTotalOvertime().split("\\.");
+
+            // 超勤時間纏めの分を計算する
+            monthOverTimesSumInt = monthOverTimesSumInt
+                    + Integer.valueOf(monthOverTimes[0]) * 60
+                    + Integer.valueOf(monthOverTimes[1]);
+
+            // 月平均超勤時間の時間
+            monthOverTimesAvgTInt = monthOverTimesSumInt / (i + 1) / 60;
+            // 月平均超勤時間の分
+            monthOverTimesAvgMInt = monthOverTimesSumInt / (i + 1) % 60;
+
+            // 平均超勤時間を設定する
+            if (monthOverTimesAvgMInt >= 10) {
+                monthOverTimesAvg = monthOverTimesAvgTInt + "."
+                        + monthOverTimesAvgMInt;
+            } else {
+                monthOverTimesAvg = monthOverTimesAvgTInt + ".0"
+                        + monthOverTimesAvgMInt;
+            }
+
+            //2か月以上で平均値を表示する
+            if(i > 0){
+                //平均値表示対象
+                vo.getAvgTimes().add(monthOverTimesAvg);
+            }
+        }
+        if(monthlyInfoOverSumVoList.size()==6){
+            List<Map<String,String>> vos=new ArrayList<>();
+            Map<String,String> weekdaysOvertime = new HashMap<>();
+            Map<String,String> sundaysOvertime = new HashMap<>();
+            Map<String,String> totalOvertime = new HashMap<>();
+            List<String> tableHeader = new ArrayList<>();
+            weekdaysOvertime.put("name","時間外労働");
+            sundaysOvertime.put("name","休日労働");
+            totalOvertime.put("name","合計");
+            int i=1;
+            for(MonthlyInfoOverSumVo sumVo:monthlyInfoOverSumVoList) {
+                weekdaysOvertime.put("m"+i,sumVo.getWeekdaysOvertime());
+                sundaysOvertime.put("m"+i,sumVo.getSundaysOvertime());
+                totalOvertime.put("m"+i,sumVo.getTotalOvertime());
+                tableHeader.add(sumVo.getMonthId());
+                i++;
+            }
+            weekdaysOvertime.put("average", "-");
+            sundaysOvertime.put("average","-");
+            totalOvertime.put("average","-");
+            vos.add(weekdaysOvertime);
+            vos.add(sundaysOvertime);
+            vos.add(totalOvertime);
+            vo.setDate(vos);
+            vo.setTableHeader(tableHeader);
+        }else{
+            return null;
+        }
+        return vo;
     }
 
     // 日別情報編集画面
-    public void actionExecuteEdit(String baseDate,PsDBBean psDBBean){
-        //paramSetting();
+    public List<DailyOverTimeVo> actionExecuteEdit(String baseDate,PsDBBean psDBBean) throws Exception {
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseDate.substring(0,7)+"/01", TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
         // 編集画面表示項目マスタ制御設定取得
         List<DispOverTimeItemsDto> DispOverTimeItemsDtos = iMastGenericDetailService.selectDispOverTimeItems(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,psDBBean.getLanguage());
         // 0 日別情報より予定出社・退社時間、超過勤務命令開始・終了時間を取得
-        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),baseDate,baseDate.substring(0,7)+"/01",
+        List<DailyVo> dailyVoList =iTmgDailyService.selectDaily(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),baseDate.substring(0,7)+"/01",baseDate,
                 psDBBean.getLanguage(),referList.buildSQLForSelectEmployees(), DispOverTimeItemsDtos);
+
         // 1 予定出社時間・予定退社時間の基準値を取得
         CompanyVO companyVO = iTmgCompanyService.buildSQLSelectCompany(psDBBean.getCustID(), psDBBean.getCompCode(),baseDate);
+
         //2 日別詳細情報より超過勤務命令開始・終了時間を取得
-        List<DailyDetailOverHoursVo> dailyDetailOverHoursVoList = iTmgDailyService.selectDailyDetailOverHours(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec()
-                ,baseDate,psDBBean.getLanguage(),referList.buildSQLForSelectEmployees());
+        List<DailyDetailOverHoursVo> dailyDetailOverHoursVoList = iTmgDailyService.selectDailyDetailOverHours(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,referList.buildSQLForSelectEmployees());
         // 3 基準日時点の超勤限度時間取得
         List<LimitOfBaseDate> limitOfBaseDateList = iTmgGroupAttributeService.selectLimitOfBaseDate(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),baseDate);
+
         // 4 標準の勤務パターンを取得
         int workTime=iTmgPatternService.selectStandardWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate);
+
         // 5 日別詳細情報より勤務予定時間外の休憩開始・終了時間を取得
         List<ResultRest40tVo> resultRest40TVoList =iTmgDailyDetailService.selectResultRest40t(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,referList.buildSQLForSelectEmployees());
+
+
+
+        List<DailyOverTimeVo> dailyOverTimeVos=new ArrayList<>();
+
+        for(DailyVo dailyVo:dailyVoList){
+            DailyOverTimeVo vo=new DailyOverTimeVo();
+            vo.setEmpId(dailyVo.getTdaCemployeeid());
+            vo.setEmpName(dailyVo.getTdaCemployeeidName());
+            vo.setWorkingId(dailyVo.getTdaCworkingidR());
+            vo.setOpenN(dailyVo.getTdaNopenN());
+            vo.setCloseN(dailyVo.getTdaNcloseN());
+            vo.setOpenTp(dailyVo.getTdaNopenTp());
+            vo.setCloseTp(dailyVo.getTdaNcloseTp());
+            for(DailyDetailOverHoursVo overtime:dailyDetailOverHoursVoList){
+                if(vo.getEmpId().equals(overtime.getTdaCemployeeid())){
+                    vo.getOverTimeList().add(overtime);
+                }
+            }
+            for(ResultRest40tVo restTime:resultRest40TVoList){
+                if(vo.getEmpId().equals(restTime.getTdaCemployeeid())){
+                    vo.getRestTimeList().add(restTime);
+                }
+            }
+            vo.setMessage(dailyVo.getTdaCmessage());
+            dailyOverTimeVos.add(vo);
+        }
+        return dailyOverTimeVos;
     }
 
     // 日別情報更新処理

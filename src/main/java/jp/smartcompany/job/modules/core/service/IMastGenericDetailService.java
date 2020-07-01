@@ -204,16 +204,6 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<GenericDetailVO> buildSQLForSelectgetMgdDescriptions(String custID, String compCode, String day, String groupId);
 
-    /**
-     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
-     *
-     * @param customerId    顧客コード
-     * @param companyId     法人コード
-     * @param yyyymmdd      基準日
-     * @param language 　言語
-     * @return String パターン
-     */
-    List<TmgDispItemsDto> selectDispMonthlyItems(String customerId, String companyId, Date yyyymmdd, String language);
 
     /**
     * 勤怠/名称マスタ]就業登録/承認・日次情報表示項目

@@ -321,23 +321,6 @@
     </select>
 
 
-    <select id="selectDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">
-        SELECT
-        MGD_CHEADER,
-        MGD_CSQL,
-        MGD_CCOLUMNKEY
-        FROM
-        TMG_V_MGD_DISPMONTHLYITEMS
-        WHERE
-        MGD_CCUSTOMERID          =   #{customerId}
-        AND     MGD_CCOMPANYID_CK_FK     =   #{companyId}
-        AND     MGD_DSTART_CK            <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
-        AND     MGD_DEND                 >=  #{yyyymmdd,jdbcType=DATE}
-        AND     MGD_CLANGUAGE_CK         =   #{language}
-        ORDER BY
-            MGD_NSEQ
-        ;
-    </select>
     <select id="selectLedgerSheetList" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo">
         SELECT
             MGD_LEDGER_SHEET_ID,
