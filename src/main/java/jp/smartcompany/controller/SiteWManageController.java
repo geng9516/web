@@ -223,4 +223,18 @@ public class SiteWManageController {
         return "sys/wmanage/wsum";
     }
 
+    /**
+     * 跳转到休暇承認界面
+     * @param moduleIndex
+     * @param menuId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("tmgnotification")
+    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex,
+                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex)
+                .addAttribute("menuId",menuId);
+        return "sys/wmanage/tmgnotification";
+    }
 }
