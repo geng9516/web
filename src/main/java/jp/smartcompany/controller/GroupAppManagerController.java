@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
+import jp.smartcompany.admin.groupappmanager.form.GroupAppManagerUpdatePermsForm;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +37,8 @@ public class GroupAppManagerController {
                                          @RequestParam(value="groupId",required = false) String groupId,
                                          @RequestParam(value="isAll",required = false,defaultValue = "false") Boolean isAll,
                                          @RequestParam(value="siteId",required = false) String psSiteId,
-                                         @RequestParam(value="appId",required = false) String psAppId
+                                         @RequestParam(value="appId",required = false) String psAppId,
+                                         HttpSession session
                                      ) {
     if (date == null){
       date = DateUtil.date();
@@ -49,7 +52,8 @@ public class GroupAppManagerController {
             psDBBean.getLanguage(),
             psDBBean.getCustID(),
             psDBBean.getCompCode(),
-            isAll
+            isAll,
+            session
     );
   }
 
@@ -103,6 +107,12 @@ public class GroupAppManagerController {
           @RequestAttribute("BeanName") PsDBBean psDBBean,
           @RequestParam(value="searchDate",required = false) Date searchDate){
      return groupAppManagerMainLogic.getCompanyList(psDBBean.getCustID(),searchDate);
+  }
+
+  @PostMapping("update")
+  public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) {
+      groupAppManagerMainLogic.executeUpdate(session,updatePermForm);
+      return "";
   }
 
 }

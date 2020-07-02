@@ -1,11 +1,14 @@
 package jp.smartcompany.admin.groupappmanager.logic;
 
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
+import jp.smartcompany.admin.groupappmanager.form.GroupAppManagerUpdatePermsForm;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 
+import javax.servlet.http.HttpSession;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -20,7 +23,8 @@ public interface GroupAppManagerMainLogic {
             String groupId, String psSite,
             String psApp, String psLanguage,
             String customerId,String companyId,
-            Boolean isAll
+            Boolean isAll,
+            HttpSession httpSession
     );
 
     List<GroupAppManagerGroupDTO> getGroupList(String customerId, String systemId, String language,
@@ -34,4 +38,5 @@ public interface GroupAppManagerMainLogic {
 
     List<MastCompanyDO> getCompanyList(String custId,Date searchDate);
 
+    String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePermList) throws ParseException;
 }

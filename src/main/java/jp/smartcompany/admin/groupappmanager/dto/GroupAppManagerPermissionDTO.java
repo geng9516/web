@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.sql.Timestamp;
+import java.util.Date;
+
 /**
  * @author Xiao Wenpeng
  */
@@ -14,6 +17,8 @@ import lombok.ToString;
 @EqualsAndHashCode(of={"mgpCsite","mgpCsubapp"})
 public class GroupAppManagerPermissionDTO {
 
+    private String mgpCpermission;
+    private String mgpCreject;
     private Long mtrId;
     private String mgpCcompanyid;
     private String mgpCsystemid;
@@ -36,5 +41,6 @@ public class GroupAppManagerPermissionDTO {
     private String mtrIcon;
     /** セルの背景色 */
     private String bgColor;
-
+    private Date mgpDstartdate; //MGP_DSTARTDATE
+    private Date mgpDenddate; //MGP_DENDDATE
 }

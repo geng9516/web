@@ -7,8 +7,11 @@ import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionTableDTO;
+import jp.smartcompany.admin.groupappmanager.form.GroupAppManagerUpdatePermsForm;
+import jp.smartcompany.admin.groupappmanager.form.PermChangeItem;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
@@ -18,8 +21,11 @@ import jp.smartcompany.job.modules.core.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
+import java.sql.Timestamp;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,6 +55,12 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   /** 法人選択区分 共通 */
   private static final String COMPANY_SEL_ALL = "all";
 
+  /** ON値 */
+  private static final String ON = "1";
+
+  /** OFF値 */
+  private static final String OFF = "0";
+
   /** requestScopeに権限一覧を登録する際の名前 */
   private static final String REQ_SCOPE_NAME = "permissionTableDtoList";
 
@@ -58,7 +70,6 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private final IMastApptreeService iMastApptreeService;
   private final IMastSystemService iMastSystemService;
   private final IMastCompanyService iMastCompanyService;
-  private final HttpSession httpSession;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -66,7 +77,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
           String groupId, String psSite,
           String psApp, String psLanguage,
           String customerId,String companyId,
-          Boolean isAll
+          Boolean isAll,
+          HttpSession httpSession
   ) {
     GroupAppManagerTableLayout layout = new GroupAppManagerTableLayout();
     List<GroupAppManagerGroupDTO> groupList = getGroupList(customerId, systemId, psLanguage,
@@ -128,9 +140,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
           permission.setPermission(dto.getPermission());
           // 権限に対応したセルの背景色を設定
           if ("1".equals(dto.getPermission())) {
-            permission.setBgColor(GroupAppManagerMainLogicImpl.BGCOLOR_YES);
+            permission.setBgColor(BGCOLOR_YES);
           } else if ("2".equals(dto.getPermission())) {
-            permission.setBgColor(GroupAppManagerMainLogicImpl.BGCOLOR_NO);
+            permission.setBgColor(BGCOLOR_NO);
           }
           nIndex++;
         }
@@ -224,6 +236,49 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     // 法人一覧取得
     return iMastCompanyService.selectCompanyList(
             custId, "ja", searchDate, searchCompanyList);
+  }
+
+  @Override
+  @Transactional
+  public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException {
+    // 画面表示のためのイレモノを取得
+    List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>)session.getAttribute(REQ_SCOPE_NAME);
+    if (CollUtil.isEmpty(lTable)) {
+      throw new GlobalException("権限データが存在しない");
+    }
+    Date dEnd = SysUtil.transStringToDate("2222/12/31");
+    Date dStart=updatePerm.getChangeDate();
+    Date yesterday = DateUtil.offsetDay(dStart,-1);
+    for (PermChangeItem item : updatePerm.getPermList()) {
+      GroupAppManagerPermissionDTO permission = lTable.get(item.getRowIndex()).getList().get(item.getColIndex());
+      String perm = item.getPermission();
+      if (StrUtil.equals("1",perm)) {
+        // ○の場合
+        permission.setMgpCpermission(ON);
+        permission.setMgpCreject(OFF);
+      } else if (StrUtil.equals("2",perm)) {
+        // ×の場合
+        permission.setMgpCpermission(ON);
+        permission.setMgpCreject(ON);
+      }else {
+        // 設定なしの場合
+        permission.setMgpCpermission(OFF);
+        permission.setMgpCreject(OFF);
+      }
+      permission.setMgpDstartdate(dStart);
+      permission.setMgpDenddate(dEnd);
+
+      // 今回改定日以降のレコードを削除
+//      iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
+//              dStart, permission.getMgpCgroupid(), permission.getMgpCobjectid());
+      // 現在有効なレコード取得
+//      List < GroupAppManagerPermissionDto > lEffective = this.groupAppManagerPermissionDao
+//              .select(record.getMgpCsystemid(), dChangeDate, record
+//                      .getMgpCgroupid(), record.getMgpCobjectid());
+
+
+    }
+    return "";
   }
 
   /**
