@@ -19,7 +19,6 @@
           <span style="flex:1"></span>
           <i-button type="primary" ghost size="large" icon="md-nutrition">代理申請</i-button>
           <i-button type="primary" size="large" icon="md-done-all" @click="confirm">承認</i-button>
-          <i-button type="error" size="large" icon="md-hand" @click="beforeDeny">否認</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -47,7 +46,7 @@
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
             </Row>
-            ​
+
             <div style="position: relative;">
               <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                 empty-text="所属データなし"></Tree>
@@ -67,11 +66,12 @@
       <div class="table-top">
         <Row :gutter="16">
           <i-col span="13" offset="11" class="tr">
-            <i-select  v-model="opts.statusFlg" class="mr15 width25" @on-change="getTableData()" style="display: inline-block" transfer>
+            <i-select v-model="opts.statusFlg" class="mr15 width25" @on-change="getTableData()"
+              style="display: inline-block" transfer>
               <i-option label="全て" :value="0"></i-option>
               <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
               </i-option>
-            </i-select >
+            </i-select>
             <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
               :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
           </i-col>
@@ -95,7 +95,8 @@
         </template>
 
         <template slot-scope="{ row }" slot="more">
-          <i-button type="success" ghost size="small" style="width:100%">詳細</i-button>
+          <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)">詳細
+          </i-button>
         </template>
 
         <template slot-scope="{ row }" slot="status">
@@ -106,6 +107,28 @@
           <span v-if="row.tntfCstatusflg.indexOf('9') > -1" class="confirm-sytle undo">エ</span>
         </template>
       </i-table>
+      <!-- 详细以及承认申请的panel start -->
+      <Drawer class="tc" title="休暇・休業承認" placement="right" width="700" :closable="false"
+        :mask-closable="!isSearchHistory" v-model="detailDrawShow">
+        <!-- <div class="titlenorm mb5">
+          <Icon type="logo-buffer"></Icon>
+          所属
+        </div>
+        <Row class="tl mb5">
+          <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+          <i-col span="7" class="no-border-radius">
+            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+              format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+          </i-col>
+        </Row>
+
+        <div style="position: relative;">
+          <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+            empty-text="所属データなし"></Tree>
+          <Spin size="large" fix v-if="empDeptLoading"></Spin>
+        </div> -->
+      </Drawer>
+      <!-- 详细以及承认申请的panel end -->
     </div>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
       <Icon size="24" type="md-arrow-round-up" />
@@ -207,17 +230,20 @@
           curYear: new Date(),
           empList: [],
           statusList: [],
+          detailDrawShow: false,
+          restInfoLoading: false,
           empDeptLoading: false,  // 組織ツリーloading用
           deptDrawShow: false,    //組織ツリー用
           treeData: [],            //組織ツリー用
           isSearchHistory: false,
           empTreeData: [],        //組織ツリー用
+          restInfoList:false,
           deptName: '選んでください',   //選択した職員の所属
           referListObject: {       //組織ツリー共通
             txtTmgReferListTreeViewRecordDate: '',
-            txtTmgReferListTreeViewPermTargetSection: '',
-            txtTmgReferListTreeViewPermTargetGroup: '',
-            txtTmgReferListTreeViewPermTargetEmp: '',
+            txtTmgReferListTreeViewAdminTargetSection: '',
+            txtTmgReferListTreeViewAdminTargetGroup: '',
+            txtTmgReferListTreeViewAdminTargetEmp: '',
             psSite: Utils.getUrlParam(location.href, 'psSite'),
             psApp: Utils.getUrlParam(location.href, 'psApp'),
             type: 21
@@ -288,8 +314,9 @@
           this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
         },
         async handleClickLeaf(e) {
+          if (!e[0]) return
           this.deptDrawShow = false
-          this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+          this.referListObject.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
           this.deptName = e[0].secnic
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
@@ -299,7 +326,29 @@
         async getEmplist() {
           const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
           this.empList = data
-
+        },
+        async showDetails(row) {
+          this.getDetails(row.tntfCntfNo)
+          this.getRestInfo(row.tntfCemployeeid)
+          this.detailDrawShow = true
+        },
+        async getDetails(id) {
+          const { data } = await this.http.get('sys/vapply/NotificationDetail', { ntfNo: id })
+          console.log(data)
+        },
+        // 左边的年休残
+        async getRestInfo(id) {
+          this.restInfoLoading = true
+          let OPTS = { ...this.referListObject }
+          OPTS.txtTmgReferListTreeViewAdminTargetEmp = id
+          try {
+            const { data } = await this.http.get('sys/vapply/RestYearList', OPTS)
+            this.restInfoList = data
+          } catch (error) {
+            return
+          } finally {
+            this.restInfoLoading = false
+          }
         },
         handleDatePicker(e) {
           this.opts.year = +e
@@ -325,7 +374,6 @@
           }
         },
         confirm() { },
-        beforeDeny() { },
         pageChange(e) {
           this.opts.page = e
           this.pageValue.curPage = e

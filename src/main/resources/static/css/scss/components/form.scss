@@ -32,8 +32,6 @@
       font-size: 13px;
       position: relative;
       white-space: nowrap;
-      background-color: var(--form-label);
-      color: var(--white);
     }
     .ivu-form-item-content {
       line-height: inherit;
@@ -80,6 +78,12 @@
   .ivu-form-item-error .ivu-input:focus {
     border-color: rgb(87, 163, 243);
     box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
+  }
+}
+.ivu-form.classical {
+  .ivu-form-item-label {
+    background-color: var(--form-label);
+    color: var(--white);
   }
 }
 //环境设定的标题样式
