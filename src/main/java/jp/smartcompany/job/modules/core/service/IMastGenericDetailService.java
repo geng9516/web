@@ -509,4 +509,10 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      */
     List<LedgerSheetVo> selectLedgerSheetList(String custID, String compCode, String language);
 
+
+    /**
+     * 职种名获取
+     * @return
+     */
+    String selectWorkerTypeName(String custId,String compId,String empid, String baseDate);
 }

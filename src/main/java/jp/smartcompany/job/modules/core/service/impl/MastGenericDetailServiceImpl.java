@@ -918,4 +918,13 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         return baseMapper.selectLedgerSheetList( custID, compCode, language);
     }
 
+
+    /**
+     * 职种名获取
+     * @return
+     */
+    @Override
+    public String selectWorkerTypeName(String custId,String compId,String empid, String baseDate){
+        return baseMapper.selectWorkerTypeName( custId, compId, empid, baseDate);
+    }
 }

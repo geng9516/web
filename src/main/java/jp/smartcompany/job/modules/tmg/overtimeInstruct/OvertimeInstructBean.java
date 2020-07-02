@@ -327,7 +327,7 @@ public class OvertimeInstructBean {
         //paramSetting();
         List<MonthlyInfoOverSumVo> monthlyInfoOverSumVoList=iTmgDailyService.selectMonthlyOverSum(psDBBean.getCustID(),psDBBean.getCompCode(),empid
         ,baseDate,"-5");
-
+        vo.setWorkTypeName(iMastGenericDetailService.selectWorkerTypeName(psDBBean.getCustID(),psDBBean.getCompCode(),empid,baseDate));
         //平均超勤時間
         String monthOverTimesAvg = "";
 
@@ -396,7 +396,7 @@ public class OvertimeInstructBean {
             vos.add(weekdaysOvertime);
             vos.add(sundaysOvertime);
             vos.add(totalOvertime);
-            vo.setDate(vos);
+            vo.setTableData(vos);
             vo.setTableHeader(tableHeader);
         }else{
             return null;

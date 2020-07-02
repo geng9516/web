@@ -345,5 +345,9 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                               @Param("compCode")String compCode,
                                               @Param("language")String language);
 
+    String selectWorkerTypeName(@Param("custId")String custId,
+                                @Param("compId")String compId,
+                                @Param("empid")String empid,
+                                @Param("baseDate")String baseDate);
 }
 

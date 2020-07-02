@@ -555,7 +555,7 @@ public class TmgNotificationBean {
         return notificationDispVo;
     }
 
-    //再申請用　list
+    //再申請/详细用　list
     public NotificationDetailVo getNotificationDetail(String ntfNo ,PsDBBean psDBBean){
         ParamNotificationListDto param=new ParamNotificationListDto();
         //基本信息
@@ -684,8 +684,12 @@ public class TmgNotificationBean {
     }
 
 
-
-
+    /**
+     * 职员列表
+     * @param psDBBean
+     * @return
+     * @throws Exception
+     */
     public List<EmployeeListVo> getEmployeeList(PsDBBean psDBBean) throws Exception {
         //初始基准日取得
         String startDate = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)), TmgUtil.getSysdate()).getStartDate();

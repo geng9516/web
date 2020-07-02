@@ -992,4 +992,14 @@
         ORDER BY
         MGD_EXCLUDECOND_TYPE
     </select>
+    <select id="selectWorkerTypeName" resultType="java.lang.String">
+        SELECT
+            tmg_f_get_mgd(TEM_CWORKTYPEID, '${baseDate}', TEM_CCUSTOMERID, TEM_CCOMPANYID, 'ja') from TMG_EMPLOYEES
+        WHERE
+            TEM_CCUSTOMERID = #{custId}
+        AND TEM_CCOMPANYID = #{compId}
+        AND TEM_CEMPLOYEEID = #{empid}
+        AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+        AND TEM_DENDDATE >= #{baseDate}
+    </select>
 </mapper>
