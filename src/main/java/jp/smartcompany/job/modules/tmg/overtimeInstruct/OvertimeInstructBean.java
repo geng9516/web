@@ -666,7 +666,7 @@ public class OvertimeInstructBean {
         if(StrUtil.hasEmpty(sValue)){
             return "";
         }
-         //月超勤回数
+         //勤務時間(日)
         if(CATEGORY_OVER_WORK.equals(sCategory)) {
 
             if(overTimeLimitDtos.getOtDaily01() != null && sValue != null){
@@ -725,7 +725,7 @@ public class OvertimeInstructBean {
             if (getTypeOfStyleByLevelLimit(sValue, overTimeLimitDtos.getOtYearly05(), null) != 0) {
                 return sValue+"@"+STYLE_CLASS_WARNING_LVL5;
             }
-             //月超勤回数
+             //45超(年)
         } else if(CATEGORY_COUNT.equals(sCategory)) {
 
             if(overTimeLimitDtos.getOtMonthlycount() != null){
