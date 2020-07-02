@@ -133,4 +133,16 @@
         select * from MAST_GROUPAPPPERMISSION
     </select>
 
+    <delete id="deleteAfter" parameterType="map">
+        -- 今回改定日以降のレコード削除
+        DELETE FROM
+            MAST_GROUPAPPPERMISSION
+        WHERE
+            MGP_CSYSTEMID = #{systemId}
+            AND MGP_DSTARTDATE >= #{date}
+            AND MGP_CGROUPID = #{groupId}
+            <if test="objectId!=null">
+              AND MGP_COBJECTID = #{objectId}
+            </if>
+    </delete>
 </mapper>

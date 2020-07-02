@@ -47,4 +47,9 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
                                                 @Param("groupId") String groupId);
 
         Page<MastGroupapppermissionDO> selectPermissionListPage(IPage<MastGroupapppermissionDO> page);
+
+        int deleteAfter(@Param("systemId") String systemId,
+                        @Param("date") String date,
+                        @Param("groupId") String groupId,
+                        @Param("objectId") String objectId);
 }

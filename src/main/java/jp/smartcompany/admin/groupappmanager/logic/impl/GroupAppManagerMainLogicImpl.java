@@ -269,8 +269,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       permission.setMgpDenddate(dEnd);
 
       // 今回改定日以降のレコードを削除
-//      iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
-//              dStart, permission.getMgpCgroupid(), permission.getMgpCobjectid());
+      iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
+              SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
       // 現在有効なレコード取得
 //      List < GroupAppManagerPermissionDto > lEffective = this.groupAppManagerPermissionDao
 //              .select(record.getMgpCsystemid(), dChangeDate, record
