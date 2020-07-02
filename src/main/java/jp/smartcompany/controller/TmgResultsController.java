@@ -4,6 +4,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.TodayThisMonthVO;
@@ -104,20 +105,39 @@ public class TmgResultsController {
 
 
     /**
-     * 出張区分を返却します
+     * 画面ドロップダウンを返却します
      *
      * @param psDBBean
      * @return
      */
-    @GetMapping("getWorkingId")
+    @GetMapping("genericDetailVOList")
     @ResponseBody
-    public List<GenericDetailVO> getWorkingId(@RequestAttribute("BeanName") PsDBBean psDBBean,
+    public Map genericDetailVOList(@RequestAttribute("BeanName") PsDBBean psDBBean,
                                               @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) throws Exception {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化対象
-        return tmgResultsBean.getWorkingId(psDBBean);
+        return tmgResultsBean.genericDetailVOList(psDBBean);
+    }
+
+    /**
+     * 日別を返却します
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("dailyEdit")
+    @ResponseBody
+    public Map dailyEdit(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                 @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
+                                 @RequestParam("today") String today) throws Exception {
+
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+        tmgResultsBean.setDay(txtDYYYYMMDD);
+        tmgResultsBean.setToday(today);
+        //初期化対象
+        return tmgResultsBean.dailyEdit(psDBBean);
     }
 
 }

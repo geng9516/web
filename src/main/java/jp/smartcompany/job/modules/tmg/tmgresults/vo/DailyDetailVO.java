@@ -27,7 +27,7 @@ public class DailyDetailVO {
     /**
      * 開始時刻
      */
-    private String tdadBopen;
+    private String tdadNopen;
     /**
      * 終了時刻
      */

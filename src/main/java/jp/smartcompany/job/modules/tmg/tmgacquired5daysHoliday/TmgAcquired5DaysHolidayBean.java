@@ -176,7 +176,7 @@ public class TmgAcquired5DaysHolidayBean {
      *
      * @throws Exception
      */
-    private void update(PsDBBean psDBBean) {
+    public void update(PsDBBean psDBBean) {
 
         iTmgPaiduseinfoFixService.getBaseMapper().delete(SysUtil.<TmgPaiduseinfoFixDO>query()
                 .eq("TPF_CCUSTOMERID", psDBBean.getCustID())

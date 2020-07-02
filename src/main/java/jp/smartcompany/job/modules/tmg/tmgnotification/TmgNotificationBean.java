@@ -567,7 +567,16 @@ public class TmgNotificationBean {
         param.setToday(TmgUtil.getSysdate());
         param.setTodayD(DateUtil.parse(param.getToday()));
         //详细数据取得
-        return iTmgNotificationService.selectNotificationDetail(param);
+
+        NotificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
+        // 4 申請区分略称を取得
+        notificationDetailVo.setNtfName(iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(), param.getNtfNo()));
+        // 5 添付ファイル
+        notificationDetailVo.setTmgNtfAttachedfileDoList(iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(), param.getCompId(), param.getNtfNo()));
+        // 7 申請ログ
+        notificationDetailVo.setTmgNtfactionlogDOList(iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo()));
+
+        return notificationDetailVo;
     }
 
 
@@ -649,11 +658,6 @@ public class TmgNotificationBean {
      * @return
      */
     public List<TypeGroupVo> getMgdNtfTypeDispAppList(PsDBBean psDBBean){
-
-
-
-
-
         List<MgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(psDBBean.getCustID(),
                 psDBBean.getCompCode(), DateTime.now(), psDBBean.getLanguage());
         List<TypeGroupVo> typeGroupVoList=new ArrayList<TypeGroupVo>();

@@ -52,7 +52,7 @@
 
             </div>
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" @on-row-click="showDay(arguments)" border :columns="columns"
-                :row-class-name="rowClass" :disabled-hover="true" :data="data" :loading="loading">
+                :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading" no-data-text="データが頑張って駆けつけています。">
                 <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
                     <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DD }}</span>
                 </template>
@@ -85,7 +85,7 @@
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <Row class="mb15 tr">
                     <i-col span="6" offset="15"><i-button type="primary" ghost class="mr15">コメントのみ登録</i-button></i-col>
-                    <i-col span="3"><i-button type="primary" ghost class="mr15">登録</i-button></i-col>
+                    <i-col span="3"><i-button type="primary" ghost >登録</i-button></i-col>
                 </Row>
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
@@ -94,44 +94,24 @@
                 <Row >
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="workingId" class="mr30" @on-change="" placeholder="選択ください">
-                            <i-option v-for="(item, index) of workingIdList" :key="index" 　:value="item.mgdCgenericdetaildesc">
+                        <i-select v-model="workingId" class="mr30" @on-change="" >
+                            <i-option v-for="(item, index) of workingIdList" :key="index" :label="item.mgdCgenericdetaildesc"　:value="item.mgdCmastercode">
                             </i-option>
                         </i-select>
-<!--                        <span >{{ dailyData.workStart | toTime }}</span>-->
-<!--                    <i-select v-model="model1" :disabled="!selectDisabled" class="mr30" @on-change=""-->
-<!--                              placeholder="選択ください">-->
-<!--                        <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val"　:value="item.val">-->
-<!--                        </i-option>-->
-<!--                    </i-select>-->
-    <!--                <Select>-->
-    <!--                    <Option :value="1">出勤</Option>-->
-    <!--                    <Option :value="2">退勤</Option>-->
-    <!--                </Select>-->
                     </i-col>
                 </Row>
                 <Row class="mb5">
                     <i-col span="8" class="label tc">出張</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="workingId" class="mr30" @on-change=""  placeholder="選択ください">
-                            <i-option v-for="(item, index) of workingIdList" :key="index" :label="item.mgdCgenericdetaildesc"　:value="item.mgdCgenericdetaildesc">
+                        <i-select v-model="businessTrip" class="mr30" @on-change="" >
+                            <i-option v-for="(item, index) of businessTripList" :key="index" :label="item.mgdCgenericdetaildesc"　:value="item.mgdCmastercode">
                             </i-option>
                         </i-select>
                     </i-col>
-<!--                    <Col span="8" class="label">出張</Col>-->
-<!--                    <Col span="8" class="no-border-radius">-->
-<!--                    <Select>-->
-<!--                        <Option :value="1">なし</Option>-->
-<!--                        <Option :value="2">出張(国内)</Option>-->
-<!--                        <Option :value="3">出張(海外)</Option>-->
-<!--                        <Option :value="4">研修</Option>-->
-<!--                        <Option :value="5">外出</Option>-->
-<!--                    </Select>-->
-<!--                    </Col>-->
+
                 </Row>
-                <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" class="mb20">
+                <i-table :columns="columnsWork" :data="workData">
                     <template slot-scope="{ row }" slot="workStart">
-<!--                        <i-input v-model="$options.filters.toTime(row.workStart)" v-if="row.isInput" />-->
                         <i-input v-model="row.workStart" v-if="row.isInput"  text-align="center;"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
@@ -141,23 +121,40 @@
                     </template>
                 </i-table>
 
+                <Row >
+                    <i-col span="8" class="label tc">本人コメント</i-col>
+                    <i-col span="16"  >
+                        <i-input  v-model="dailyEdit.tdaCowncommentR" text-align="center;"></i-input>
+                        <span v-else>{{ row.workEnd | toTime }}</span>
+                    </i-col>
+                </Row>
+                <Row class="mb5">
+                    <i-col span="8" class="label tc">承認者コメント</i-col>
+                    <i-col  span="16" >
+                        <i-input  v-model="dailyEdit.tdaCbosscommentR" text-align="center;"></i-input>
+                        <span v-else>{{ row.workEnd | toTime }}</span>
+                    </i-col>
+                </Row>
+
+
+
                 <!-- 非勤務 -->
                 <div class="titlenorm mb10">
-                    <i-ccon type="logo-buffer"></i-ccon>
+                    <Icon type="logo-buffer"></Icon>
                     非勤務
                 </div>
-                <Row class="mb15">
-                    <i-col span="5" offset="16">
-                    <i-select v-model="notWorkType">
-                        <Option :value="1">休憩</Option>
-                        <Option :value="2">中断</Option>
-                    </i-select>
-                    </i-col>
-                    <i-col span="3"><i-button type="primary" ghost @click="addNotWork">追加</i-button></i-col>
+                <Row class="mb15 tr">
+                   <i-col span="6" offset="15">
+                        <i-select v-model="categoryNonduty" class="mr30" @on-change="" >
+                            <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"　:value="item.itemCode">
+                            </i-option>
+                        </i-select>
+                   </i-col>
+                    <i-col span="3" ><i-button type="primary" ghost @click="addNotWork">追加</i-button></i-col>
                 </Row>
                 <i-table :columns="columnsNotWork" :data="notWorkData" class="mb20" no-data-text="追加ボタンを押してください。">
                     <template slot-scope="{ row }" slot="workStart">
-                        <i-input :value="$options.filters.toTime(row.workStart)" v-if="row.isInput" ></template>
+                        <i-input :value="$options.filters.toTime(row.workStart)" v-if="row.isInput" ></i-input></template>
                         <span v-else>{{ row.workStart }}</span>
                     </template>
 
@@ -177,12 +174,21 @@
 
                 <!-- 超過勤務 -->
                 <div class="titlenorm mb10">
-                    <i-icon type="logo-buffer"></i-icon>
+                    <Icon type="logo-buffer"></Icon>
                     超過勤務
+
                 </div>
-                <Row class="mb15">
-                    <i-col span="3" offset="17"><i-button type="primary" ghost @click="addOverWork">追加</i-button></i-col>
-                    <i-col span="4"><i-button type="primary" ghost>時刻補完</i-button></i-col>
+                <Row class="mb15 tr">
+
+                    <i-col span="6" offset="11">
+                        <i-select v-model="categoryOverhours" class="mr30" @on-change="" >
+                            <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"　:value="item.itemCode">
+                            </i-option>
+                        </i-select>
+                    </i-col>
+
+                    <i-col span="3" ><i-button type="primary" ghost @click="addOverWork">追加</i-button></i-col>
+                    <i-col span="4"  ><i-button type="primary" ghost>時刻補完</i-button></i-col>
                 </Row>
 
                 <i-table :columns="columnsOverWork" :data="overWorkData" class="mb20" no-data-text="追加ボタンを押してください。">
@@ -206,7 +212,7 @@
                 </i-table>
 
                 <div class="titlenorm mb10">
-                    <i-icon type="logo-buffer"></i-icon>
+                    <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
             </div>
@@ -224,7 +230,7 @@
                 return {
                     contentScrollTop: 0,
                     isScroll: false,
-                    today:'',
+
                     selectDisabled: false,   　//年月選択可否制御
                     dispMonthlyList: [],       //年月リスト
                     model1: '',
@@ -232,17 +238,58 @@
                     monthlyTilteMapList:[],
                     monthlyMap:[],
                     columns:[] ,
+                    dailyDataList:[],
                     data:[] ,
                     loading: false,
                     query: {
                         txtAction: 'ACT_Disp_RList',
                         txtDYYYYMM: '2020/04/01',
                         txtDYYYYMMDD: '',
+                        today:'',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp')
                     },
                     workingId:'',
                     workingIdList:[],
+                    businessTrip:'',
+                    businessTripList:[],
+                    categoryNonduty:'',
+                    categoryNondutyList:[],
+                    categoryOverhours:'',
+                    categoryOverhoursList:[],
+                    dailyEdit: {
+                        noOvertimeDaysMsg: '',
+                        ntime: '',
+                        tdaCbosscommentR: '',
+                        tdaCbusinesstripidR: '',
+                        tdaCbusinesstripidRName: '',
+                        tdaCcommentO: '',
+                        tdaCerrcode: '',
+                        tdaCmodifieruseridR: '',
+                        tdaCowncommentR: '',
+                        tdaCstatusflg: '',
+                        tdaCworkingidR: '',
+                        tdaCworkingidRBame: '',
+                        tdaDmodifieddateR: '',
+                        tdaDyyyymmdd: '',
+                        tdaDyyyymmddDy: '',
+                        tdaNcloseN: '',
+                        tdaNcloseO: '',
+                        tdaNcloseP: '',
+                        tdaNclosePAtRest45: '',
+                        tdaNcloseR: '',
+                        tdaNcloseRHidden: '',
+                        tdaNcloseTp: '',
+                        tdaNopenN: '',
+                        tdaNopenO: '',
+                        tdaNopenP: '',
+                        tdaNopenR: '',
+                        tdaNopenRHidden: '',
+                        tdaNopenTp: '',
+                        tdaNrest45P: '',
+                        tdaNrestcloseR: '',
+                        tdaNrestopenR: ''
+                    },
 
                     isShow: false,
                     title: {
@@ -313,49 +360,6 @@
                             align: 'center'
                         }
                     ],
-                    workData: [
-                        {
-                            workTime: '予定時間',
-                            workStart: 430,
-                            workEnd: 1750,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        },
-                        {
-                            workTime: '打刻',
-                            workStart: 425,
-                            workEnd: 1760,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        },
-                        {
-                            workTime: '就業時間',
-                            workStart: 430,
-                            workEnd: 1750,
-                            isInput: true,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        },
-                        {
-                            workTime: '本人コメント	',
-                            isInput: true,
-                            comment: '',
-                            cellClassName: {
-                                workTime: 'like-title'
-                            }
-                        },
-                        {
-                            workTime: '承認者コメント	',
-                            isInput: true,
-                            comment: '',
-                            cellClassName: {
-                                workTime: 'like-title'
-                            }
-                        }
-                    ],
                     columnsNotWork: [
                         {
                             title: '内容',
@@ -401,14 +405,10 @@
                     dailyData:{
 
                     },
+                    workData2:[],
 
 
 
-                    isConfirm: false,
-
-
-                    // monthlyTilteMapList:[[${monthlyTilteMapList }]],
-                    // monthlyMap:[[${monthlyMap }]],
 
                     monthSum: {},
                     dailyShow: true,
@@ -435,7 +435,52 @@
                 tableHeadFixed() {
                     if (this.contentScrollTop > 310) return true
                     else return false
-                }
+                },
+                workData() {
+
+                    let result = [
+                        {
+                            workTime: '予定時間',
+                            workStart: this.dailyEdit.tdaNopenP,
+                            workEnd: this.dailyEdit.tdaNcloseP,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        },
+                        {
+                            workTime: '打刻',
+                            workStart: this.dailyEdit.tdaNopenTp,
+                            workEnd: this.dailyEdit.tdaNcloseTp,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        },
+                        {
+                            workTime: '就業時間',
+                            workStart: this.dailyEdit.tdaNopenR,
+                            workEnd: this.dailyEdit.tdaNcloseR,
+                            isInput: true,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        }
+                    ]
+                    this.workData2.forEach(e => {
+                        result = result.concat(
+                            {
+                                workTime: e.tdadCnotworkName,
+                                workStart: e.tdadNopen,
+                                workEnd: e.tdadNopen,
+                                cellClassName: {
+                                    workTime: 'sub-title'
+                                }
+                            }
+                        )
+                    })
+
+
+                    return result
+                },
             },
             methods: {
 
@@ -481,7 +526,7 @@
                     this.loading = false
                     const { data } = await this.http.get('sys/tmgResults/workDateList', this.query)
 
-                    this.today=data.today.today
+                    this.query.today=data.today.today
                     this.dispMonthlyList = data.monthLy
                     console.log(this.dispMonthlyList)
 
@@ -507,7 +552,7 @@
                 async handleStartMonth(e) {
                     this.query.txtAction = 'ACT_DISP_RMONTHLY'
                     this.query.txtDYYYYMM = this.dateFormat(e)
-                    this.query.txtDYYYYMMDD = this.today
+                    this.query.txtDYYYYMMDD = this.query.today
                     this.loading　= true
                     // 就業実績 --月次実績
                     await this.getMonthlyData()
@@ -519,7 +564,7 @@
                 async monthAndDaily() {
                     this.query.txtAction = 'ACT_DISP_RMONTHLY'
                     this.query.txtDYYYYMM =  this.dateFormat(this.model1)
-                    this.query.txtDYYYYMMDD = this.today
+                    this.query.txtDYYYYMMDD = this.query.today
                     this.loading　= true
                     // 就業実績 --月次実績
                     await this.getMonthlyTitleData()
@@ -557,7 +602,7 @@
                         }
                     })
 
-                    this.data = data.dailyMapList
+                    this.dailyDataList = data.dailyMapList
 
                 },
                 async getMonthlyData() {
@@ -568,23 +613,52 @@
                 async getDailyData() {
 
                     const { data } = await this.http.get('sys/tmgResults/getDailyData', this.query)
-                    this.data = data.dailyMapList
+                    this.dailyDataList = data.dailyMapList
 
 
                 },
                 ////////////////////////////////////////
-                 showDay(e) {
+                async showDay(e) {
                     this.isShow = true
+                    console.log(e)
                     this.title = e[0].TDA_DYYYYMMDD + '(' + e[0].TDA_DYYYYMMDD_DY + ')'
-
                     this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
+                    await this.genericDetailVOList()
+                    this.dailyEditDate()
 
 
-                    const {data} = this.http.get('sys/tmgResults/getWorkingId', this.query)
+                },
 
-                     console.log(data)
-                    this.workingIdList = data
-                    console.log(this.workingIdList)
+                async genericDetailVOList(){
+
+                    const {data} = await this.http.get('sys/tmgResults/genericDetailVOList', this.query)
+
+                    this.workingIdList = data.workIdList
+                    // this.workingId = this.workingIdList[0].mgdCmastercode
+                    this.businessTripList = data.businessTripList
+                    // this.businessTrip = this.businessTripList[0].mgdCmastercode
+                    this.categoryNondutyList = data.categoryNondutyList
+                    this.categoryNonduty = this.categoryNondutyList[0].itemCode
+                    this.categoryOverhoursList = data.categoryOverhoursList
+                    this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+
+                },
+                async dailyEditDate(){
+
+                    const {data} = await this.http.get('sys/tmgResults/dailyEdit', this.query)
+                    // console.log(data)
+                    this.dailyEdit = data.dailyEditVO
+                    this.workData2 = data.dailyDetail0List
+                    if(this.dailyEdit.tdaNopenTp ===null){
+                        this.dailyEdit.tdaNopenTp ='---'
+                    }
+                    if(this.dailyEdit.tdaNcloseTp ===null){
+                        this.dailyEdit.tdaNcloseTp ='---'
+                    }
+
+                    this.workingId = this.dailyEdit.tdaCworkingidR
+                    this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
+                    this.title = this.dailyEdit.tdaDyyyymmddDy
 
 
                 },

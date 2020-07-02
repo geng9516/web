@@ -2388,16 +2388,87 @@ public class TmgResultsBean {
     //登録
 
     // 出張区分
-    public List<GenericDetailVO> getWorkingId(PsDBBean psDBBean) {
+    public Map genericDetailVOList(PsDBBean psDBBean) {
+
+        Map<String, Object> selectMap = MapUtil.newHashMap();
+
         // 就業区分マスタ
-        List<GenericDetailVO> genericDetailVOList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
+        List<GenericDetailVO> workIdList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
                 psDBBean.getCustID(),
                 psDBBean.getTargetComp(),
                 psDBBean.getTargetUser(),
                 getDay(),
                 psDBBean.getLanguage()
         );
-        return genericDetailVOList;
+        selectMap.put("workIdList", workIdList);
+
+        // 出張区分ドロップダウン用
+        List<GenericDetailVO> businessTripList = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                getDay(),
+                GROUPID_TMG_BUSINESS_TRIP
+        );
+        selectMap.put("businessTripList", businessTripList);
+
+        // 非勤務ドロップダウン用
+        List<MgdAttributeVO> categoryNondutyList = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                psDBBean.getSiteId(),
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_NONDUTY);
+        selectMap.put("categoryNondutyList", categoryNondutyList);
+
+        // 超過勤務ドロップダウン用
+        List<MgdAttributeVO> categoryOverhoursList = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getLanguage(),
+                psDBBean.getSiteId(),
+                getDay(),
+                ATTRIBUTE_ENABLE_ONLY,
+                CATEGORY_OVERHOURS);
+         selectMap.put("categoryOverhoursList", categoryOverhoursList);
+
+        return selectMap;
     }
+
+    //就業実績取得
+    public Map dailyEdit(PsDBBean psDBBean) {
+
+
+        Map<String, Object> dailyMap = MapUtil.newHashMap();
+        // 日別
+        DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                getToday(),
+                psDBBean.getSiteId(),
+                psDBBean.getLanguage()
+        );
+        dailyMap.put("dailyEditVO",dailyEditVO);
+
+        // 詳細:欠勤離籍以外
+        List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getLanguage(),
+                0,
+                true
+        );
+        dailyMap.put("dailyDetail0List",dailyDetail0List);
+        return dailyMap;
+
+    }
+
 
 }
