@@ -87,11 +87,11 @@
     }
   },
   methods: {
-    async loging() {
+    loging: Debounce(async function () {
       // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
       await this.http.postForm('/login',this.login)
       location.href="/login";
-    }
+    })
   }
 })
 </script>
