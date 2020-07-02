@@ -915,10 +915,9 @@ public class TmgEmpList {
     }
 
     public boolean existsEmp(String empid){
-
         for(Iterator i = dataArray.iterator(); i.hasNext();){
             List data = (List)i.next();
-            if(empid.equals(data.get(DEFAULT_KEY_EMPID))){
+            if(empid.equals(data.get(DEFAULT_KEY_EMPID)+"")){
                 return true;
             }
         }

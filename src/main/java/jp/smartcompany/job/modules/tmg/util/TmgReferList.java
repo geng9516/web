@@ -691,8 +691,8 @@ public class TmgReferList {
         if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
-            if(!empList.existsEmp(targetEmp_admin)){
-                if(empList.getDataArray().size() > 0){
+            if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
+                if(CollUtil.isNotEmpty(empList.getDataArray())){
                     targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
                 }else{
                     targetEmp_admin = null;
