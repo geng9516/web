@@ -141,7 +141,7 @@
         <div class="person-info">{{ detailsData.temCworktypeid }}</div>
       </i-col>
     </Row>
-        <div style="position: relative;min-height: 120px;">
+        <div style="position: relative;min-height: 100px;">
           <div v-for="(item, i) of restInfoList" :key="i">
               <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
               <Row class="ft13 mb5 mt10">
@@ -169,6 +169,10 @@
           </div>
           <Spin size="large" fix v-if="restInfoLoading"></Spin>
       </div>
+            <div class="tr mb10">
+                <i-button type="error" class="mr15" ghost @click="denyByPerson">差戻し</i-button>
+                <i-button type="primary" ghost @click="confirmByPerson">承認</i-button>
+            </div>
                   <div class="titlenorm mb10" style="font-size:15px" v-show="tableData.length > 0">
                 <Icon type="logo-buffer"></Icon>
                 申請明細
@@ -334,21 +338,28 @@
           detailsData:{},
           updateHistorycolumns:[
             {
-              title: '申請者',
+              title: '更新者',
               key: 'empname',
+              align: 'right',
             },           {
-              title: 'ntfactionname',
+              title: '操作',
               key: 'ntfactionname',
               align: 'center',
             },           {
-              title: 'statusname',
+              title: '状態',
               key: 'statusname',
               align: 'center',
             },{
-              title: 'tnalDmodifieddate',
-              key: 'statusname',
+              title: '更新日時',
+              key: 'tnalDmodifieddate',
+                            width: 180,
               align: 'center',
-            },],
+            },{
+              title: '更新時コメント',
+              key: 'tnalCupdateccomment',
+              align: 'center',
+                            tooltip: true
+            }],
           detailDrawShow: false,
           restInfoList:[],
           restTypeListForReview:[],
@@ -564,6 +575,94 @@
           }
         },
         confirm() { },
+        confirmByPerson() {
+          let query = {...this.referListObject}
+          query.action = "ACT_EditPerm_UPermit"
+          query.typeNew = this.detailsData.tntfCtypeCode
+          query.ntfNo = this.detailsData.tntfCntfno
+          query.finalApprovalLevel = this.detailsData.finalApprovelLevel
+
+          // 时间部分
+          query.tntfDbegin = this.detailsData.tntfDbegin
+          query.tntfDend = this.detailsData.tntfDend
+          // comment  
+          query.owncomment = this.detailsData.tntfCowncomment
+
+          // 起算日
+          query.txtPeriod = this.detailsData.tntfDperiodDate
+
+          // 加算日
+          query.txtAddDate = this.detailsData.tntfNuapperAddition
+
+          // 時間帯
+          query.timezoneOpen = this.detailsData.tntfNtimeOpenHhmi
+          query.timezoneClose = this.detailsData.tntfNtimeCloseHhmi
+
+          // 始业终业
+          query.timeOpen = this.detailsData.tntfNtimeOpen
+          query.timeClose = this.detailsData.tntfNtimeClose
+
+          // 曜日
+          query.noreserved = this.detailsData.tntfNnoreserved
+          query.mon = this.detailsData.tntfNmon
+          query.tue = this.detailsData.tntfNtue
+          query.wed = this.detailsData.tntfNwed
+          query.thu = this.detailsData.tntfNthu
+          query.fri = this.detailsData.tntfNfri
+          query.sat = this.detailsData.tntfNsat
+          query.sun = this.detailsData.tntfNsun
+ 
+          // 氏名
+          query.txtName = this.detailsData.tntfCemployeeidName
+
+          // 続柄
+          query.txtRelation = this.detailsData.tntfCrelation
+
+          // 対象の人数
+          query.txtTargetNumber = this.detailsData.tntfNnumberOfTarget
+
+          // 生年月日
+          query.txtBirthday = this.detailsData.tntfDdateofbirth
+
+          // 伤病
+          query.txtSickName = this.detailsData.tntfCsickName
+
+                        this.$Modal.confirm({
+                            title: 'この申請を最終決裁します。よろしいですか？',
+                            width: 490,
+                            okText: 'OK',
+                            cancelText: 'キャンセル',
+                            onOk: async () => {
+                            await this.http.uploadFiles('sys/vapply/MakeApply',{
+                            params:JSON.stringify(query),
+                            psSite: this.referListObject.psSite
+                          })
+
+                                this.detailDrawShow = false
+                                this.getTableData(false, true)
+
+                            }
+                        })
+        },
+        denyByPerson() {
+          let query = {...this.referListObject}
+          query.action = "ACT_EditPerm_UReject"
+          query.restTypeId = this.detailsData.tntfCntfno
+                        this.$Modal.confirm({
+                            title: 'この申請を差戻します。よろしいですか？',
+                            width: 490,
+                            okText: 'OK',
+                            cancelText: 'キャンセル',
+                            onOk: async () => {
+                            await this.http.uploadFiles('sys/vapply/MakeApply',{
+                            params:JSON.stringify(query),
+                            psSite: this.referListObject.psSite
+                          })
+                            this.detailDrawShow = false
+                            this.getTableData(false, true)
+                            }
+                        })
+        },
         beforeDeny() { },
         pageChange(e) {
           this.opts.page = e
