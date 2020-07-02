@@ -104,7 +104,6 @@ public class ScheduleController {
         return null;
     }
 
-
     /**
      * 予定作成更新処理を行います
      * <p>
@@ -128,7 +127,6 @@ public class ScheduleController {
         tmgScheduleBean.executeEditMonthlyUSchedule(content);
         return null;
     }
-
 
     /**
      * 週勤務パターンを取得する
