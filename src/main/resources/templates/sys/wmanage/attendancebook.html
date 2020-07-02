@@ -31,7 +31,7 @@
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
                               style="width: calc(100% - 120px);border-radius:0">
-                        {{ showName(deptName) }}
+                        {{ deptName }}
                     </i-button>
 
                 <!-- 共通組織図画面 start-->
@@ -204,7 +204,8 @@
                     month: 0,              //表示開始月
                     modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
                     comment: this.tmyComment,                                  //摘要
-                    psSite: Utils.getUrlParam(location.href, 'psSite')
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href,'psApp'),
 
                 },
                 endueDate: '',            //年次休暇付与日
@@ -233,7 +234,6 @@
                 deptDrawShow: false,    //組織ツリー用
                 treeData: [],           //組織ツリー用
                 empTreeData: [],        //組織ツリー用
-                defaultDeptId: '',      //選択した部門コード
                 deptName: '選んでください',   //所属名称
                 tableDataSum:[],        //月出勤情報統計
                 existsAttendanceBook: {},　 //年度選択制御
@@ -247,8 +247,6 @@
         },
         async mounted() {
 
-            console.log([[${ session }]])
-            // this.getData(true)
             this.getOrgTree()
             this.getSearchCondition()
 
@@ -409,9 +407,7 @@
                         }
                     })
                     this.tableData = data.slice(7)
-                    console.log(this.tableData)
                     this.tableHead = Object.values(data[0]).filter(e => e)
-                    this.getDeptName(this.treeData)
                 } catch (error) {
                     return
                 } finally {
@@ -440,6 +436,11 @@
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据
                     this.treeData = Utils.convertTreeData(orgList)
+
+                    // //初期画面で検索の際に、ルート部門が選択されているとして、社員一覧を初期化
+                    // const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    // this.referListObject[section] = this.treeData[0].secid
+
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                 } catch (error) {
                     return
@@ -448,7 +449,6 @@
                 }
             },
             async getEmpList() {
-                console.log("test_getEmpList")
                 try {
                     this.emplistLoading = true
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
@@ -544,28 +544,21 @@
                 location.href = "./VacationTablePanel/vacationtablepanel.html";
             },
             handleSelector() { },
-            getDeptName(data) {
-                // 根据id遍历找出deptName
-                data.forEach(e => {
-                    if (e.secid === this.defaultDeptId) {
-                        this.deptName = e.label
-                    } else {
-                        const children = e.child || e.children
-                        if (children) {
-                            this.getDeptName(children)
-                        }
-                    }
-                })
-            },
             async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
-                this.defaultDeptId = e[0].secid
-
+                this.deptName = e[0].secnic
                 this.getEmpList()
             },
-            // todo: 点完员工树干什么
             handleClickEmpLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
                 this.deptDrawShow = false
 
                 this.loginEmployee = e[0].empid
