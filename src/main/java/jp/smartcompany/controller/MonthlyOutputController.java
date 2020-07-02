@@ -30,6 +30,6 @@ public class MonthlyOutputController {
                                                          @RequestParam("baseMonth")String baseMonth
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList =new TmgReferList();
-         monthlyOutputBean.actionExecuteDispRMonthlyOutput(action,psDBBean,referList);
+         //monthlyOutputBean.actionExecuteDispRMonthlyOutput(action,psDBBean,referList);
     }
 }
