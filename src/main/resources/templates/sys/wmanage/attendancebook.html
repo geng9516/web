@@ -451,8 +451,10 @@
             async getEmpList() {
                 try {
                     this.emplistLoading = true
+                    //初期化及び前回データをクリアする
+                    this.empTreeData = []
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(empList)
+                    this.empTreeData = Utils.convertTreeData(empList[0].child)
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                 } catch (error) {
                     return
