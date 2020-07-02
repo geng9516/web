@@ -36,7 +36,7 @@ public class PatternSettingController {
      *
      * @param groupId
      */
-    @PostMapping("selectTmgPattern")
+    @GetMapping("selectTmgPattern")
     public List<TmgPatternDTO> selectTmgPattern(@RequestParam("groupId") String groupId,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象

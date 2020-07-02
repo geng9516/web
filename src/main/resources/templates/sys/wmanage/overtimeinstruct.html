@@ -88,7 +88,7 @@
                     <span>{{ row.workInHolidayCount }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="avgtime">
-                    <span @click="showAverageDraw(row.empid)">{{ row.avgOverTime }}
+                    <span @click="showAverageDraw(row)">{{ row.avgOverTime }}
                     </span>
                 </template>
                 <template v-for="(item, i) of slotList" slot-scope="{ row }" :slot="item">
@@ -154,6 +154,28 @@
                     超過勤務命令
                 </div>
                 <i-table border :columns="columns3" :data="tableData3" ref="selection2">
+                    <template slot-scope="{ row }" slot="name">
+                        <span>{{ row.empName }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="wordkDivision">
+                        <span>{{ row.workingId }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="workStartFinal">
+                        <span>{{ row.openN }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="workEndFinal">
+                        <span>{{ row.closeN }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="workStartReal">
+                        <span>{{ row.openTp }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="workEndReal">
+                        <span>{{ row.closeTp }}</span>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="remark">
+                        <span>{{ row.message }}</span>
+                    </template>
 
                 </i-table>
             </Drawer>
@@ -163,26 +185,25 @@
                 <Row>
                     <i-col span="6" class="label">所属</i-col>
                     <i-col span="9">
-                        <span class="input-like-span">国創庁</span>
+                        <span class="input-like-span">{{ deptName }}</span>
                     </i-col>
                 </Row>
 
                 <Row>
                     <i-col span="6" class="label">氏名</i-col>
                     <i-col span="9">
-                        <span class="input-like-span">佐藤 雅彦</span>
+                        <span class="input-like-span">{{ empName }}</span>
                     </i-col>
                 </Row>
 
                 <Row>
                     <i-col span="6" class="label">種別</i-col>
                     <i-col span="9">
-                        <span class="input-like-span">健栄研_職員 第３種</span>
+                        <span class="input-like-span">{{ empWorkerTypeName }}</span>
                     </i-col>
                 </Row>
 
                 <i-table border class="mt20" :columns="columns2" :data="tableData2" :span-method="handleSpan">
-
 
                 </i-table>
             </Drawer>
@@ -210,6 +231,8 @@
                     treeData: [],            //組織ツリー用
                     curDate: new Date(),
                     deptName: '選んでください',  //選択した職員の所属
+                    empName:'', //選択した職員名前
+                    empWorkerTypeName:'', //選択した職員種別
                     isSearchHistory: false,
                     deptDrawShow: false,    //組織ツリー用
                     empDeptLoading: false,  // 組織ツリーloading用
@@ -245,7 +268,7 @@
                         {
                             title: '区分',
                             minWidth: 36,
-                            key: 'wordkDivision',
+                            slot: 'wordkDivision',
                             align: 'center'
                         },
                         {
@@ -256,12 +279,12 @@
                                     title: '始業',
                                     align: 'center',
                                     width: 55,
-                                    key: 'workStartFinal'
+                                    slot: 'workStartFinal'
                                 },
                                 {
                                     title: '終業',
                                     width: 55,
-                                    key: 'workEndFinal',
+                                    slot: 'workEndFinal',
                                     align: 'center'
                                 }
                             ]
@@ -274,14 +297,14 @@
                                 {
                                     title: '始業',
                                     width: 55,
-                                    key: 'workStartReal',
+                                    slot: 'workStartReal',
                                     className: 'checkin',
                                     align: 'center'
                                 },
                                 {
                                     title: '終業',
                                     width: 55,
-                                    key: 'workEndReal',
+                                    slot: 'workEndReal',
                                     className: 'checkin',
                                     align: 'center'
                                 }
@@ -310,7 +333,7 @@
                                 },
                                 {
                                     title: '承認',
-                                    key: 'workApplyStatus',
+                                    slot: 'workApplyStatus',
                                     width: 30,
                                     align: 'center'
                                 }
@@ -326,7 +349,7 @@
                         {
                             title: '備考',
                             minWidth: 70,
-                            key: 'remark',
+                            slot: 'remark',
                             align: 'center'
                         },
                         {
@@ -367,7 +390,7 @@
             },
             async mounted() {
                 this.getOrgTree()
-                 this.getTableHead()
+                this.getTableHead()
             },
             computed: {
                 columns() {
@@ -513,7 +536,8 @@
             },
             methods: {
                     showAverageDraw(e) {
-                        this.getAvgTableData(e)
+                        this.getAvgTableData(e.empid)
+                        this.empName=e.empname
                         this.showAverage = true
 
                     },
@@ -577,6 +601,7 @@
                         this.query.baseDay=e
                         try {
                             const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
+                            this.tableData3=data
                             console.log(data)
                         } catch (error) {
                             return
@@ -612,7 +637,8 @@
                         try {
                             const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
                             this.tableHead2 = data.tableHeader
-                            this.tableData2 = data.date
+                            this.tableData2 = data.tableData
+                            this.empWorkerTypeName = data.workTypeName
                             console.log(this.tableData2)
                         } catch (error) {
                             return

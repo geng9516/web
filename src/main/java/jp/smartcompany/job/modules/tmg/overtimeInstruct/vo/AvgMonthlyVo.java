@@ -13,8 +13,9 @@ import java.util.Map;
 @ToString
 public class AvgMonthlyVo {
 
+    private String workTypeName;
     private List<String> AvgTimes = new ArrayList<String>();
     private List<String> tableHeader;
-    private List<Map<String,String>> date;
+    private List<Map<String,String>> tableData;
 
 }
