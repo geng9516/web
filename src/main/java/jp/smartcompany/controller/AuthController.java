@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.cache.impl.LRUCache;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.enums.SuccessMessage;
 import jp.smartcompany.job.modules.core.CoreBean;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.servlet.view.RedirectView;
 
 /**
  * @author Xiao Wenpeng
@@ -23,6 +23,7 @@ import org.springframework.web.servlet.view.RedirectView;
 public class AuthController {
 
     private final AuthBusiness authBusiness;
+    private final LRUCache<Object,Object> scCache;
 
     /**
      * 跳转到登录页
@@ -54,6 +55,7 @@ public class AuthController {
     @ResponseBody
     public Boolean logout() {
         authBusiness.logout();
+        scCache.clear();
         return true;
     }
 

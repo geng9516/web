@@ -53,7 +53,6 @@ public class PsSession implements Serializable {
     /** ログインユーザのビヘイビア判定結果 */
     private Map< String, String > loginBehaviors;
     // ログインユーザのアプリケーション起動権限判定結果 ※本番
-    @Deprecated
     private TopPageInfo loginAppPermission;
     /** ビヘイビアを適用する(V3互換用) */
     private boolean useBehaviorForV3Compatible;

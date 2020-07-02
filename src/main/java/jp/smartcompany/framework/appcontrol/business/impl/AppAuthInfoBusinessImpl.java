@@ -1,5 +1,6 @@
 package jp.smartcompany.framework.appcontrol.business.impl;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
@@ -8,8 +9,11 @@ import jp.smartcompany.framework.appcontrol.AppInfo;
 import jp.smartcompany.framework.appcontrol.SiteInfo;
 import jp.smartcompany.framework.appcontrol.TopPageInfo;
 import jp.smartcompany.framework.appcontrol.business.AppAuthInfoBusiness;
+import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,16 +24,19 @@ import java.util.*;
  * @author Xiao Wenpeng
  */
 @Service
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
 
     private static final String SITE_HTML = "/Site.html";
     private static final String PHOTO_SERVLET = "/PhotoServlet";
     //2007/08/24 V3アプリケーション起動かを判断する(URLに含まれていればV3App起動）
     private static final String V3APP_HTML = "iFrame.html";
+    private final AppAuthJudgmentBusiness appAuthJudgmentBusiness;
     /** Session保持情報格納クラス **/
     private PsSession gPsSession;
     /** HttpServletRequestクラス **/
     private HttpServletRequest gRequest;
+    private final LRUCache<Object,Object> scCache;
 
 
     /**
@@ -393,12 +400,18 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
      *
      * @return lSite サイト情報リスト
      */
-    public List < SiteInfo > getSiteList() {
+    public List<SiteInfo> getSiteList() {
         setRequest(ContextUtil.getHttpRequest());
-        gPsSession = (PsSession) gRequest.getAttribute(Constant.PS_SESSION);
-        List < SiteInfo > lSite = new ArrayList < SiteInfo >();
-
-        TopPageInfo topPageInfo = this.gPsSession.getLoginAppPermission();
+        gPsSession = (PsSession) gRequest.getSession().getAttribute(Constant.PS_SESSION);
+        List<SiteInfo> lSite = CollUtil.newArrayList();
+        TopPageInfo topPageInfo;
+        Object o = scCache.get(gPsSession.getLoginEmployee()+":loginAppPermissions");
+        if (o==null){
+            topPageInfo = appAuthJudgmentBusiness.getAppAuthJudgmentInfo();
+            scCache.put(gPsSession.getLoginEmployee()+":loginAppPermissions",topPageInfo);
+        }else {
+            topPageInfo = (TopPageInfo)o;
+        }
         if(topPageInfo == null) {
             // #1794,1878
 //            throw new SessionVariableInvalidException("","");
