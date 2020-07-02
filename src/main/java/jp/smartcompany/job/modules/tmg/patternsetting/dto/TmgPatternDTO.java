@@ -1,8 +1,11 @@
 package jp.smartcompany.job.modules.tmg.patternsetting.dto;
 
+import cn.hutool.json.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.util.List;
 
 /**
  * @author 陳毅力
@@ -25,6 +28,10 @@ public class TmgPatternDTO {
     private String tpa_cpatternname;
     private String tpa_cdefaultflg;
     private String timerange;
+    private String dutyTime;
+    private List<JSONObject> planDuty;
+
+    private List<JSONObject> planRest;
     /**
      * 日付切替時刻
      */

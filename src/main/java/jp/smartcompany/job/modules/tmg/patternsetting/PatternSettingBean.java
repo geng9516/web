@@ -2,6 +2,9 @@ package jp.smartcompany.job.modules.tmg.patternsetting;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.json.JSONArray;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.framework.util.CSVTokenizer;
 import jp.smartcompany.job.modules.core.service.IPatternSettingService;
@@ -45,6 +48,11 @@ public class PatternSettingBean {
     private TmgReferList referList;
     private final IPatternSettingService iPatternSettingService;
     private final String beanDesc = "PatternSetting";
+    private final String planTypeKey = "CID";
+    private final String restKey = "TMG_ITEMS|PlanRest";
+    private final String dutyKey = "TMG_ITEMS|PlanDuty";
+    private final String dutyOpenKey = "NOPEN";
+    private final String dutyCloseKey = "NCLOSE";
 
 
     /**
@@ -72,15 +80,39 @@ public class PatternSettingBean {
     /**
      * TMG_PATTERNより利用可能な勤務パターンを取得する
      *
-     * @param groupId
      * @return
      */
     public List<TmgPatternDTO> selectTmgPattern(String groupId) {
         if (null == groupId || "".equals(groupId)) {
-            logger.warn("GROUPIDが空です");
-            return null;
+            groupId = referList.getTargetGroup();
         }
-        return iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId);
+        List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId);
+        List<JSONObject> dutyArray = null;
+        List<JSONObject> restArray = null;
+
+        for (int i = 0; i < tmgPatternDTOS.size(); i++) {
+            TmgPatternDTO tmgPatternDTO = tmgPatternDTOS.get(i);
+            dutyArray = new ArrayList<JSONObject>();
+            restArray = new ArrayList<JSONObject>();
+            JSONArray jsonArray = JSONUtil.parseArray(tmgPatternDTO.getTimerange());
+
+            for (int j = 0; j < jsonArray.size(); j++) {
+                JSONObject o = (JSONObject) jsonArray.get(j);
+                if (o.get(planTypeKey).equals(dutyKey)) {
+                    dutyArray.add(o);
+
+                }
+                if (o.get(planTypeKey).equals(restKey)) {
+                    restArray.add(o);
+                }
+            }
+            tmgPatternDTO.setPlanDuty(dutyArray);
+            tmgPatternDTO.setPlanRest(restArray);
+            //データリセット
+            tmgPatternDTOS.set(i, tmgPatternDTO);
+        }
+        return tmgPatternDTOS;
+
     }
 
     /**
