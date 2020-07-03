@@ -33,11 +33,11 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("list")
     @ResponseBody
-    public List<Acquired5DaysListVO> list(@RequestAttribute("BeanName") PsDBBean psDBBean,String year) throws Exception {
+    public List<Acquired5DaysListVO> list(@RequestAttribute("BeanName") PsDBBean psDBBean, String year) throws Exception {
 
-        tmgAcquired5DaysHolidayBean.execute(psDBBean);
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, year);
 
-        return tmgAcquired5DaysHolidayBean.selectList(null,psDBBean);
+        return tmgAcquired5DaysHolidayBean.selectList(null, psDBBean);
     }
 
     /**
@@ -45,11 +45,11 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("edit")
     @ResponseBody
-    public List<Acquired5DaysListVO> edit(@RequestAttribute("BeanName") PsDBBean psDBBean,String year, String userCode) throws Exception {
+    public List<Acquired5DaysListVO> edit(@RequestAttribute("BeanName") PsDBBean psDBBean, String year, String userCode) throws Exception {
 
-        tmgAcquired5DaysHolidayBean.execute(psDBBean);
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, year);
 
-        return tmgAcquired5DaysHolidayBean.selectList(userCode,psDBBean);
+        return tmgAcquired5DaysHolidayBean.selectList(userCode, psDBBean);
     }
 
     /**
@@ -57,9 +57,9 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("showDisp")
     @ResponseBody
-    public List<PaidHolidayVO> showDisp(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtUserCode, String kijunbi, String pdSearchStart, String pdSearchEnd) throws Exception {
-        tmgAcquired5DaysHolidayBean.execute(psDBBean);
-        return tmgAcquired5DaysHolidayBean.showDisp(txtUserCode,kijunbi,pdSearchStart,pdSearchEnd,psDBBean);
+    public List<PaidHolidayVO> showDisp(@RequestAttribute("BeanName") PsDBBean psDBBean, String year, String txtUserCode, String kijunbi, String pdSearchStart, String pdSearchEnd) throws Exception {
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, year);
+        return tmgAcquired5DaysHolidayBean.showDisp(txtUserCode, kijunbi, pdSearchStart, pdSearchEnd, psDBBean);
     }
 
     /**
@@ -67,9 +67,9 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("update")
     @ResponseBody
-    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtUserCode, String txtDate) throws Exception {
-        tmgAcquired5DaysHolidayBean.execute(psDBBean);
-         tmgAcquired5DaysHolidayBean.update(psDBBean);
+    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, String year, String txtUserCode, String txtDate) throws Exception {
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, year);
+        tmgAcquired5DaysHolidayBean.update(psDBBean);
     }
 
 

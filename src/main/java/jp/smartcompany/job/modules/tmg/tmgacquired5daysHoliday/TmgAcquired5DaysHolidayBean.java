@@ -255,14 +255,14 @@ public class TmgAcquired5DaysHolidayBean {
      *               psTargetEmpId 申請者の職員番号
      * @return なし
      */
-    private void setTargetUser(String psSite, String psUserCode, PsDBBean psDBBean) {
+    private void setTargetUser(String psSite, String psUserCode, PsDBBean psDBBean, String txtYear) {
 
         // 汎用参照リスト
         setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);
 
         psDBBean.setTargetUser(referList.getTargetEmployee());
         // 組織ツリー情報でパラメータの再構築を行う
-        getParam(1, psDBBean);
+        getParam(1, psDBBean, txtYear);
 
     }
 
@@ -301,10 +301,10 @@ public class TmgAcquired5DaysHolidayBean {
     /**
      * メインメソッド
      */
-    public void execute(PsDBBean psDBBean) throws Exception {
+    public void execute(PsDBBean psDBBean, String txtYear) throws Exception {
 
         // パラメータ
-        getParam(0, psDBBean);
+        getParam(0, psDBBean, txtYear);
 
         // 表示対象日付をセット
         try {
@@ -318,7 +318,7 @@ public class TmgAcquired5DaysHolidayBean {
         }
 
         // 表示対象者の職員番号格納処理
-        setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode(), psDBBean);
+        setTargetUser(psDBBean.getSiteId(), psDBBean.getUserCode(), psDBBean, txtYear);
 
         // 組織ツリーの基準日の設定ここから
         String sBaseDate = getReferList().getRecordDate();
@@ -364,7 +364,8 @@ public class TmgAcquired5DaysHolidayBean {
                 }
             }
         }
-
+        // 一覧画面 → ツリータイプ：組織単位
+        setReferList(TmgReferList.TREEVIEW_TYPE_LIST_SEC, psDBBean);
 
     }
 
@@ -496,7 +497,7 @@ public class TmgAcquired5DaysHolidayBean {
      * @param piPBranchingProcess 0:初期処理、1:組織ツリー情報使用処理
      * @return なし
      */
-    private void getParam(int piPBranchingProcess, PsDBBean psDBBean) {
+    private void getParam(int piPBranchingProcess, PsDBBean psDBBean, String txtYear) {
 
         // 初期処理
         if (piPBranchingProcess == INITIAL_TREATMENT) {
@@ -505,7 +506,7 @@ public class TmgAcquired5DaysHolidayBean {
             setThisYear(year);
             // 年度
             try {
-                setYear(Integer.parseInt(psDBBean.getReqParam("year")));
+                setYear(Integer.parseInt(txtYear));
             } catch (Exception e) {
                 // 取得出来なかったらDBより取得
                 setYear(getThisYear());

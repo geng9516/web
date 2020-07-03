@@ -1483,7 +1483,7 @@ public class TmgResultsBean {
         }
         title = new HashMap();
         title.put(CommonUI.TITLE, "備考");
-        title.put(CommonUI.KEY, "TDA_CCOMMENT_P");
+        title.put(CommonUI.KEY, "CCOMMENT");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
         title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_70);
         titles.add(title);
@@ -2232,7 +2232,8 @@ public class TmgResultsBean {
     }
 
 
-    public boolean isEditable(PsDBBean psDBBean){
+    public boolean isEditable(PsDBBean psDBBean,String action){
+
         if(isEditable == null){
             // 未来日付はサイト関係なく常に「編集不可」
             if(isFuture()){
@@ -2243,14 +2244,10 @@ public class TmgResultsBean {
                 isEditable = false;
             }
             // 「勤怠締め完了済」の場合、管理サイトかつアクションが「締め完了済みデータ編集」でなければ編集不可
-            else if( isFixedMonthly() && !(TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && ACT_EDITPERM_EDIT.equals(psDBBean.getReqParam("txtAction")) ) ){
+            else if( isFixedMonthly() && !(TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && ACT_EDITPERM_EDIT.equals(action) ) ){
                 isEditable = false;
             }
-            // ▼ 2010/07/20 isolsuzuki 日次または月次ステータスが確定済みの場合は無条件で編集不可能とする
-            // ※2010/07/20 宍戸様からの連絡にて一旦コメントアウト
-            //else if(TmgUtil.Cs_MGD_DATASTATUS_9.equals(getMonthlyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(getDailyStatus())){
-            //  isEditable = false;
-            //}
+
             // 入力サイトのみ、月次ステータスが「承認済」、または、日次ステータスが「承認済」以上の場合、編集不可
             else if( TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId()) &&
                     ( TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_5.equals(getDailyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(getDailyStatus())) ){
@@ -2305,7 +2302,7 @@ public class TmgResultsBean {
     }
 
     //月次情報
-    public  Map<String, Object> monthlyMapInit(PsDBBean psDBBean){
+    public  Map<String, Object> getTitleData(PsDBBean psDBBean){
 
         Map<String, Object> monthlyMap = MapUtil.newHashMap();
         // 月次情報表示項目を取得しセット
@@ -2333,15 +2330,6 @@ public class TmgResultsBean {
                 monthlyItems
         );
         monthlyMap.put("monthlyDateMap", monthlyDateMap);
-
-        return monthlyMap;
-
-    }
-
-    // 日次情報
-    public Map getDailyData(PsDBBean psDBBean){
-
-        Map<String, Object> monthlyMap = MapUtil.newHashMap();
 
         // 日次情報表示項目を取得しセット
         List<ItemVO> dispDailyItems = this.setDispDailyItems(psDBBean);
@@ -2388,9 +2376,9 @@ public class TmgResultsBean {
     //登録
 
     // 出張区分
-    public Map genericDetailVOList(PsDBBean psDBBean) {
+    public Map dailyDetail(PsDBBean psDBBean) {
 
-        Map<String, Object> selectMap = MapUtil.newHashMap();
+        Map<String, Object> dailyMap = MapUtil.newHashMap();
 
         // 就業区分マスタ
         List<GenericDetailVO> workIdList = iMastGenericDetailService.buildSQLForSelectGenericDetail(
@@ -2400,7 +2388,7 @@ public class TmgResultsBean {
                 getDay(),
                 psDBBean.getLanguage()
         );
-        selectMap.put("workIdList", workIdList);
+        dailyMap.put("workIdList", workIdList);
 
         // 出張区分ドロップダウン用
         List<GenericDetailVO> businessTripList = iMastGenericDetailService.buildSQLForSelectgetMgdDescriptions(
@@ -2409,7 +2397,7 @@ public class TmgResultsBean {
                 getDay(),
                 GROUPID_TMG_BUSINESS_TRIP
         );
-        selectMap.put("businessTripList", businessTripList);
+        dailyMap.put("businessTripList", businessTripList);
 
         // 非勤務ドロップダウン用
         List<MgdAttributeVO> categoryNondutyList = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -2421,7 +2409,7 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_NONDUTY);
-        selectMap.put("categoryNondutyList", categoryNondutyList);
+        dailyMap.put("categoryNondutyList", categoryNondutyList);
 
         // 超過勤務ドロップダウン用
         List<MgdAttributeVO> categoryOverhoursList = iMastGenericDetailService.buildSQLForSelectgetMgdAttribute(
@@ -2433,16 +2421,8 @@ public class TmgResultsBean {
                 getDay(),
                 ATTRIBUTE_ENABLE_ONLY,
                 CATEGORY_OVERHOURS);
-         selectMap.put("categoryOverhoursList", categoryOverhoursList);
+        dailyMap.put("categoryOverhoursList", categoryOverhoursList);
 
-        return selectMap;
-    }
-
-    //就業実績取得
-    public Map dailyEdit(PsDBBean psDBBean) {
-
-
-        Map<String, Object> dailyMap = MapUtil.newHashMap();
         // 日別
         DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
                 psDBBean.getCustID(),
@@ -2466,8 +2446,45 @@ public class TmgResultsBean {
                 true
         );
         dailyMap.put("dailyDetail0List",dailyDetail0List);
-        return dailyMap;
 
+        // 詳細：非勤務
+        List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getSiteId(),
+                this.getDay(),
+                psDBBean.getLanguage()
+        );
+
+        dailyMap.put("detailNonDutyVOList", detailNonDutyVOList);
+
+        // 詳細：超過勤務
+        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                psDBBean.getSiteId(),
+                this.getDay(),
+                psDBBean.getLanguage(),
+                this.isShowOvertimeNotification()
+        );
+
+       dailyMap.put("detailOverhoursVOList", detailOverhoursVOList);
+
+        // 裁量労働-勤務状況の状態を取得
+        // 勤務状況
+        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
+                psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , getToday()
+                , psDBBean.getTargetUser()
+                , getMonth()
+                , TYPE_ITEM_WORK_STATUS
+                , TYPE_ITEM_OVERHOURS_REASON);
+         dailyMap.put("workStatus", workStatus);
+
+       return dailyMap;
     }
 
 
