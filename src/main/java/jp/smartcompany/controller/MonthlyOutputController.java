@@ -3,6 +3,9 @@ package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.MonthlyOutputBean;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotAppSectionListVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalListVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoYearListVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.ResultMonthlyVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -26,10 +29,35 @@ public class MonthlyOutputController {
      *
      */
     @GetMapping("monthlyOutputDisp")
-    public void actionExecuteDispResult(@RequestParam(value = "action",required=false)String action,
-                                                         @RequestParam("baseMonth")String baseMonth
+    public List<TmgMoYearListVo> actionExecuteDispResult(@RequestParam("year")String year
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList =new TmgReferList();
-         //monthlyOutputBean.actionExecuteDispRMonthlyOutput(action,psDBBean,referList);
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",year,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteDispRMonthlyOutput(year,psDBBean,referList);
     }
+
+
+    /**
+     * 未承認者一覧画面表示処理
+     *
+     */
+    @GetMapping("notApprovalList")
+    public NotApprovalListVo actionExecuteDispResult(@RequestParam("baseDate")String baseDate,
+                                                     @RequestParam("sPage")String sPage
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteNotAppListRNotAppList( baseDate, sPage, psDBBean, referList);
+    }
+
+    /**
+     * 締め未完了部局一覧画面表示処理
+     *
+     */
+    @GetMapping("notApprovalList")
+    public NotAppSectionListVo actionExecuteNotAppListRNotAppSectionList(@RequestParam("baseDate")String baseDate,
+                                                       @RequestParam("sPage")String sPage
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteNotAppListRNotAppSectionList( baseDate, sPage, psDBBean, referList);
+    }
+
 }

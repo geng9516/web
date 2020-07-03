@@ -445,6 +445,7 @@ public class OvertimeInstructBean {
             vo.setCloseTp(dailyVo.getTdaNcloseTp());
             for(DailyDetailOverHoursVo overtime:dailyDetailOverHoursVoList){
                 if(vo.getEmpId().equals(overtime.getTdaCemployeeid())){
+                    overtime.setTdadCnotworkid(iMastGenericDetailService.selectMasterCode(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,overtime.getTdadCnotworkid()));
                     vo.getOverTimeList().add(overtime);
                 }
             }

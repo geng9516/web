@@ -822,7 +822,8 @@
                     #{compID}
                 ),
                 'YYYY/MM/DD'
-            ),
+            )
+            TARGET_START_DATE,
             TO_CHAR(
                 TMG_F_GET_THE_YEARZONE (
                     TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
@@ -833,6 +834,7 @@
                 ),
                 'YYYY/MM/DD'
             )
+            TARGET_END_DATE
         FROM
             DUAL
     </select>
@@ -999,6 +1001,16 @@
             TEM_CCUSTOMERID = #{custId}
         AND TEM_CCOMPANYID = #{compId}
         AND TEM_CEMPLOYEEID = #{empid}
+        AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+        AND TEM_DENDDATE >= #{baseDate}
+    </select>
+    <select id="selectMasterCode" resultType="java.lang.String">
+        SELECT
+            MGD_CGENERICDETAILDESC
+        WHERE
+            TEM_CCUSTOMERID = #{custId}
+        AND TEM_CCOMPANYID = #{compId}
+        AND MGD_CMASTERCODE = #{masterCode}
         AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
         AND TEM_DENDDATE >= #{baseDate}
     </select>

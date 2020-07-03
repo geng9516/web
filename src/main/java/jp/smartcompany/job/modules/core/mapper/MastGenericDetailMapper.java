@@ -349,5 +349,10 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                 @Param("compId")String compId,
                                 @Param("empid")String empid,
                                 @Param("baseDate")String baseDate);
+
+    String selectMasterCode(@Param("custId")String custId,
+                            @Param("compId")String compId,
+                            @Param("baseDate")String baseDate,
+                            @Param("masterCode")String masterCode);
 }
 

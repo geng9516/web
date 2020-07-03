@@ -515,4 +515,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
      * @return
      */
     String selectWorkerTypeName(String custId,String compId,String empid, String baseDate);
+
+
+    String selectMasterCode(String custId, String compId,String baseDate,String masterCode);
 }

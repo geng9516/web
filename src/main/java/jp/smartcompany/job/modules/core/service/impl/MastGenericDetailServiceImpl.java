@@ -927,4 +927,9 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     public String selectWorkerTypeName(String custId,String compId,String empid, String baseDate){
         return baseMapper.selectWorkerTypeName( custId, compId, empid, baseDate);
     }
+
+    @Override
+    public  String selectMasterCode(String custId, String compId,String baseDate,String masterCode){
+        return baseMapper.selectMasterCode( custId, compId, baseDate, masterCode);
+    }
 }
