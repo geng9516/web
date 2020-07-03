@@ -388,7 +388,7 @@ public class MonthlyOutputBean {
      * 確定処理プロセスを実行します。
      * executeChangeFix
      */
-    private GlobalResponse actionExecuteChangeFix(String baseDate, String action, PsDBBean psDBBean, TmgReferList referList) {
+    public GlobalResponse actionExecuteChangeFix(String baseDate, String action, PsDBBean psDBBean, TmgReferList referList) {
         String targetYear;
         String date;
         if(StrUtil.hasEmpty(referList.getRecordDate())){
@@ -412,8 +412,17 @@ public class MonthlyOutputBean {
         if(salaryFix == 1 || salaryFix == 3){
 
             // 更新プログラムID組み立て
-            String modifierProgID = "MonthlyOutput" + "_" + action;
+            String modifierProgID="";
 
+            if(action.equals("C")){
+                modifierProgID = "MonthlyOutput_ACT_Disp_CFixesSalary";
+            }else if(action.equals("D")){
+                modifierProgID = "MonthlyOutput_ACT_Disp_DFixesSalary";
+            }
+
+            if(StrUtil.hasEmpty(modifierProgID)){
+                return GlobalResponse.error("action is null");
+            }
             // q1.トリガー削除
             int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
                     .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
