@@ -114,7 +114,7 @@ public class TmgAcquired5DaysHolidayBean {
      * @return
      */
     public List<Acquired5DaysListVO> selectList(String userCode, PsDBBean psDBBean) {
-//        String baseDate = String.valueOf(this.getYear()) + referList.getRecordDate().substring(4);
+
         String empsql = referList.buildSQLForSelectEmployees();
 
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
@@ -229,10 +229,10 @@ public class TmgAcquired5DaysHolidayBean {
 
     public String baseDate = null;
 
-    private String getSysdate() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
-        return sdf.format(new Date());
-    }
+//    private String getSysdate() {
+//        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+//        return sdf.format(new Date());
+//    }
 
 //    public void setReferList(int pnTreeViewType, PsDBBean psDBBean) {
 //        try {
@@ -301,28 +301,33 @@ public class TmgAcquired5DaysHolidayBean {
     /**
      * メインメソッド
      */
-    public void execute(PsDBBean psDBBean, String txtYear) throws Exception {
+    public void execute(PsDBBean psDBBean, String recordDate ,String txtYear) throws Exception {
 
         // 今年度
         int year = iMastGenericDetailService.selectYear(psDBBean.getCustID(), psDBBean.getCompCode());
 
-        setThisYear(year);
+        this.setThisYear(year);
 
         // 年度
         try {
-            setYear(Integer.parseInt(txtYear));
+            this.setYear(Integer.parseInt(txtYear));
         } catch (Exception e) {
             // 取得出来なかったらDBより取得
             setYear(getThisYear());
         }
+//
+//        // 組織ツリーの基準日の設定ここから
+//        String sBaseDate = referList.getRecordDate();
 
-        // 組織ツリーの基準日の設定ここから
-        String sBaseDate = getReferList().getRecordDate();
+        baseDate = String.valueOf(this.getYear()) + recordDate.substring(4);
 
-        baseDate = String.valueOf(this.getYear()) + sBaseDate.substring(4);
 
         referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
+
+
+
+
 
 //
 //        // 一覧画面 → ツリータイプ：組織単位
