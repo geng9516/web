@@ -467,7 +467,7 @@
 
                         result = result.concat({
                             // title: e,
-                            className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                            className:  e.today ? 'gold' : e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
                             minWidth: 15,
                             renderHeader: (h, params) => {
                                 return h(

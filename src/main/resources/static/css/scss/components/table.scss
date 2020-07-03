@@ -46,6 +46,13 @@
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }
+    // today
+    &.gold {
+      background-color: var(--light-gold);
+      color: var(--brown-tex);
+      border-bottom: 1px solid var(--border-grey);
+      border-right: 1px solid var(--border-grey);
+    }
   }
   td {
     // 表格边框颜色加深
