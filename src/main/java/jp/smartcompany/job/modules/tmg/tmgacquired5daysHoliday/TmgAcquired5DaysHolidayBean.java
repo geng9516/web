@@ -270,38 +270,38 @@ public class TmgAcquired5DaysHolidayBean {
         return referList;
     }
 
-    /**
-     * 参照権限：参照可能
-     */
-    private static final boolean CB_CAN_REFER = true;
-    /**
-     * 参照権限：参照不可能
-     */
-    private static final boolean CB_CANT_REFER = false;
+//    /**
+//     * 参照権限：参照可能
+//     */
+//    private static final boolean CB_CAN_REFER = true;
+//    /**
+//     * 参照権限：参照不可能
+//     */
+//    private static final boolean CB_CANT_REFER = false;
 
     /**
      * 勤怠シートの参照権限(基準日の翌月)
      */
     boolean _authorityNextYear = false;
 
-    /**
-     * 勤怠シートの参照権限(基準日の翌年)設定メソッド
-     */
-    public void setAuthorityNextYear(boolean bValue) {
-        _authorityNextYear = bValue;
-    }
-
-    /**
-     * 勤怠シートの参照権限(基準日の翌年)取得メソッド
-     */
-    public boolean getAuthorityNextYear() {
-        return _authorityNextYear;
-    }
+//    /**
+//     * 勤怠シートの参照権限(基準日の翌年)設定メソッド
+//     */
+//    public void setAuthorityNextYear(boolean bValue) {
+//        _authorityNextYear = bValue;
+//    }
+//
+//    /**
+//     * 勤怠シートの参照権限(基準日の翌年)取得メソッド
+//     */
+//    public boolean getAuthorityNextYear() {
+//        return _authorityNextYear;
+//    }
 
     /**
      * メインメソッド
      */
-    public void execute(PsDBBean psDBBean, String recordDate ,String txtYear) throws Exception {
+    public void execute(PsDBBean psDBBean, String recordDate, String txtYear) throws Exception {
 
         // 今年度
         int year = iMastGenericDetailService.selectYear(psDBBean.getCustID(), psDBBean.getCompCode());
@@ -326,13 +326,9 @@ public class TmgAcquired5DaysHolidayBean {
                 true, false, false, true);
 
 
-
-
-
 //
 //        // 一覧画面 → ツリータイプ：組織単位
 //        setReferList(TmgReferList.TREEVIEW_TYPE_LIST_SEC, psDBBean);
-
 
 
 //        // パラメータ
