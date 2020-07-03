@@ -84,4 +84,16 @@ public class MonthlyOutputController {
         return  monthlyOutputBean.actionExecuteDisp_DFIXESMONTHLY( baseDate, psDBBean, referList);
     }
 
+    /**
+     * 確認・確認取消処理
+     *action　C：確認　D：取消
+     */
+    @GetMapping("changeFix")
+    public GlobalResponse actionExecuteChangeFix(@RequestParam("baseDate")String baseDate,
+                                                 @RequestParam("action")String action,
+             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteChangeFix( baseDate,  action,  psDBBean,  referList);
+    }
+
 }

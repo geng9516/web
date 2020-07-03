@@ -18,7 +18,7 @@ import java.util.List;
  **/
 @RestController
 @RequestMapping("sys/overtimeinstruct")
-public class OvertimeInstructController {
+public class OvertimeInstructController extends AbstractController {
 
     @Autowired
     private OvertimeInstructBean overtimeInstructBean;
