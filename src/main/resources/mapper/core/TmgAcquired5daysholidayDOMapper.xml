@@ -40,7 +40,7 @@
             )  AS WORKERTYPE_ID, 																		<!--所属ID-->
             (
                 SELECT
-                    TMG_F_GET_MGD(E.TEM_CWORKTYPEID, #{BASDATE},  TA.TA_CCUSTOMERID, TA.TA_CCOMPANYID, 'ja')
+                    TMG_F_GET_MGD(E.TEM_CWORKTYPEID, #{basedate},  TA.TA_CCUSTOMERID, TA.TA_CCOMPANYID, 'ja')
                 FROM
                     TMG_EMPLOYEES E
                 WHERE
