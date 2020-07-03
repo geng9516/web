@@ -327,7 +327,7 @@ public class MonthlyOutputBean {
      * 勤怠月次締めプロセスを実行します。
      * executeDisp_UFIXESMONTHLY
      */
-    private void actionExecuteDispUFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
+    public GlobalResponse actionExecuteDispUFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
         // q1.トリガー削除
         int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
                 .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
@@ -345,13 +345,19 @@ public class MonthlyOutputBean {
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_UFIXESMONTHLY)
                 .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
+
+        if(insertTmgTrigger==1&&insertTmgTrigger==1){
+            return GlobalResponse.ok();
+        }else{
+            return GlobalResponse.error();
+        }
     }
 
     /**
      * 勤怠月次締め解除プロセスを実行します。
      * executeDisp_DFIXESMONTHLY
      */
-    private void actionExecuteDisp_DFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList){
+    public GlobalResponse actionExecuteDisp_DFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList){
         // q1.トリガー削除
         int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
                 .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
@@ -369,6 +375,12 @@ public class MonthlyOutputBean {
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_DFIXESMONTHLY)
                 .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
+
+        if(insertTmgTrigger==1&&insertTmgTrigger==1){
+            return GlobalResponse.ok();
+        }else{
+            return GlobalResponse.error();
+        }
     }
 
 

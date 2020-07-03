@@ -1,6 +1,7 @@
 package jp.smartcompany.controller;
 
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.MonthlyOutputBean;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotAppSectionListVo;
@@ -52,12 +53,35 @@ public class MonthlyOutputController {
      * 締め未完了部局一覧画面表示処理
      *
      */
-    @GetMapping("notApprovalList")
+    @GetMapping("notAppSectionList")
     public NotAppSectionListVo actionExecuteNotAppListRNotAppSectionList(@RequestParam("baseDate")String baseDate,
                                                        @RequestParam("sPage")String sPage
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
         return  monthlyOutputBean.actionExecuteNotAppListRNotAppSectionList( baseDate, sPage, psDBBean, referList);
+    }
+
+
+    /**
+     * 締め処理
+     *
+     */
+    @GetMapping("approval")
+    public GlobalResponse actionExecuteDispUFIXESMONTHLY(@RequestParam("baseDate")String baseDate
+                    , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteDispUFIXESMONTHLY( baseDate, psDBBean, referList);
+    }
+
+    /**
+     * 締め取消処理
+     *
+     */
+    @GetMapping("approvalCancel")
+    public GlobalResponse actionExecuteDisp_DFIXESMONTHLY(@RequestParam("baseDate")String baseDate
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteDisp_DFIXESMONTHLY( baseDate, psDBBean, referList);
     }
 
 }
