@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupappmanager.logic.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,6 +17,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.service.*;
 import lombok.RequiredArgsConstructor;
@@ -239,46 +241,72 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   }
 
   @Override
-  @Transactional
+  @Transactional(rollbackFor = GlobalException.class)
   public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException {
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>)session.getAttribute(REQ_SCOPE_NAME);
     if (CollUtil.isEmpty(lTable)) {
       throw new GlobalException("権限データが存在しない");
     }
-    Date dEnd = SysUtil.transStringToDate("2222/12/31");
     Date dStart=updatePerm.getChangeDate();
     Date yesterday = DateUtil.offsetDay(dStart,-1);
-    for (PermChangeItem item : updatePerm.getPermList()) {
-      GroupAppManagerPermissionDTO permission = lTable.get(item.getRowIndex()).getList().get(item.getColIndex());
-      String perm = item.getPermission();
-      if (StrUtil.equals("1",perm)) {
-        // ○の場合
-        permission.setMgpCpermission(ON);
-        permission.setMgpCreject(OFF);
-      } else if (StrUtil.equals("2",perm)) {
-        // ×の場合
-        permission.setMgpCpermission(ON);
-        permission.setMgpCreject(ON);
-      }else {
-        // 設定なしの場合
-        permission.setMgpCpermission(OFF);
-        permission.setMgpCreject(OFF);
-      }
-      permission.setMgpDstartdate(dStart);
-      permission.setMgpDenddate(dEnd);
+    Date dEnd = SysUtil.transStringToDate("2222/12/31");
 
-      // 今回改定日以降のレコードを削除
-      iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
-              SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
-      // 現在有効なレコード取得
-//      List < GroupAppManagerPermissionDto > lEffective = this.groupAppManagerPermissionDao
-//              .select(record.getMgpCsystemid(), dChangeDate, record
-//                      .getMgpCgroupid(), record.getMgpCobjectid());
-
-
+    // 更改原先table中的权限
+    for (int i = 0; i < updatePerm.getPermList().size(); i++) {
+      PermChangeItem permChangeItem = updatePerm.getPermList().get(i);
+      int rowIndex = permChangeItem.getRowIndex();
+      int colIndex = permChangeItem.getColIndex();
+      String permission = permChangeItem.getPermission();
+      lTable.get(rowIndex).getList().get(colIndex).setPermission(permission);
     }
-    return "";
+
+    for (GroupAppManagerPermissionTableDTO groupAppManagerPermissionTableDTO : lTable) {
+      List<GroupAppManagerPermissionDTO> lRecord = groupAppManagerPermissionTableDTO.getList();
+      for (GroupAppManagerPermissionDTO permission : lRecord) {
+        String perm = permission.getPermission();
+        if (StrUtil.equals("1", perm)) {
+          // ○の場合
+          permission.setMgpCpermission(ON);
+          permission.setMgpCreject(OFF);
+        } else if (StrUtil.equals("2", perm)) {
+          // ×の場合
+          permission.setMgpCpermission(ON);
+          permission.setMgpCreject(ON);
+        } else {
+          // 設定なしの場合
+          permission.setMgpCpermission(OFF);
+          permission.setMgpCreject(OFF);
+        }
+        permission.setMgpDstartdate(dStart);
+        permission.setMgpDenddate(dEnd);
+
+        // 今回改定日以降のレコードを削除
+        iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
+                SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
+        // 現在有効なレコード取得
+        List<MastGroupapppermissionDO> lEffective = iMastGroupapppermissionService.selectValidPermissions(
+                permission.getMgpCsystemid(),
+                SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
+        if (CollUtil.isNotEmpty(lEffective)) {
+          // 削除後、同じデータを終了日付のみ変更して登録する
+          for (MastGroupapppermissionDO mastGroupapppermissionDO : lEffective) {
+            iMastGroupapppermissionService.removeById(mastGroupapppermissionDO);
+            mastGroupapppermissionDO.setMgpDenddate(yesterday);
+            iMastGroupapppermissionService.save(mastGroupapppermissionDO);
+          }
+        }
+        // 画面から編集されたレコードを登録する
+        MastGroupapppermissionDO permissionDO = new MastGroupapppermissionDO();
+        BeanUtil.copyProperties(permission, permissionDO);
+        iMastGroupapppermissionService.save(permissionDO);
+        // 他システム上の同じObjectIdを持つレコードを削除
+        iMastGroupapppermissionService.deleteOtherSysObj(permission.getMgpCsystemid(),
+                permission.getMgpCobjectid());
+      }
+    }
+    session.removeAttribute(REQ_SCOPE_NAME);
+    return "権限の変更が成功しました";
   }
 
   /**
