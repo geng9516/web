@@ -1,0 +1,55 @@
+.normal {
+    background: var(--light-blue);
+    color: var(--primary);
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+.level1 {
+    background: var(--light-pink);
+    color: var(--red);
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .level2 {
+    background: rgb(253, 201, 197);
+    color: var(--red);
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .level3 {
+    background: rgb(255, 124, 114);
+    color: white;
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .level4 {
+    background: rgb(171, 14, 1);
+    color: white;
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .level5 {
+    background: rgb(88, 9, 2);
+    color: white;
+    height: 47px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .ave-worktime {
+    text-decoration: underline;
+    color: var(--primary);
+    &:hover {
+      cursor: pointer;
+    }
+  }

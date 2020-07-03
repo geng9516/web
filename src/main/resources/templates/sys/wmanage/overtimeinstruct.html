@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css')">
+<head th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css,' + '/pages/overtimeinstruct.min.css')">
 </head>
 
 <body>
@@ -70,34 +70,36 @@
                     </i-col>
                 </Row>
             </div>
-            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :loading="loading"
-                no-data-text="教職員が存在している所属を選択して下さい。">
+            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
+                :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
-                    <span>{{ row.empname }}</span>
+                    <span @click="toWorkPage"
+                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="overtime">
-                    <span>{{ row.overtime }}</span>
+                <template slot-scope="{ row }" slot="overtime" v-if="row.overtime">
+                    <span :class="showRed(row.overtime)">{{ row.overtime.split('@')[0] }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="overtimeyear">
-                    <span>{{ row.overTimeYear }}</span>
+                <template slot-scope="{ row }" slot="overtimeyear" v-if="row.overTimeYear">
+                    <span :class="showRed(row.overTimeYear)">{{ row.overTimeYear.split('@')[0] }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="overtimeover45">
-                    <span>{{ row.overTimeOver45 }}</span>
+                <template slot-scope="{ row }" slot="overtimeover45" v-if="row.overTimeOver45">
+                    <span :class="showRed(row.overTimeOver45)">{{ row.overTimeOver45.split('@')[0] }}</span>
                 </template>
-                <template slot-scope="{ row }" slot="restworkcount">
-                    <span>{{ row.workInHolidayCount }}</span>
+                <template slot-scope="{ row }" slot="restworkcount" v-if="row.workInHolidayCount">
+                    <span :class="showRed(row.workInHolidayCount)">{{ row.workInHolidayCount.split('@')[0]}}</span>
                 </template>
-                <template slot-scope="{ row }" slot="avgtime">
-                    <span @click="showAverageDraw(row)">{{ row.avgOverTime }}
+                <template slot-scope="{ row }" slot="avgtime" v-if="row.avgOverTime">
+                    <span :class="showRed(row.avgOverTime,'average')"
+                        @click="showAverageDraw(row)">{{ row.avgOverTime.split('@')[0] }}
                     </span>
                 </template>
                 <template v-for="(item, i) of slotList" slot-scope="{ row }" :slot="item">
-                    <span>{{ row[item] }}</span>
+                    <span :class="showRed(row[item], 'day')" v-if="row[item]">{{ row[item].split('@')[0] }}</span>
                 </template>
             </i-table>
 
 
-            <Drawer :title="title" width="1200" v-model="showDayApply" draggable>
+            <Drawer :title="title" class="tc" width="1200" v-model="showDayApply" draggable>
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
                         <i-button type="primary" size="large" class="tr">命令/確認</i-button>
@@ -153,22 +155,28 @@
                     <Icon type="logo-buffer"></Icon>
                     超過勤務命令
                 </div>
-                <i-table border :columns="columns3" :data="tableData3" ref="selection2">
+                <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
-                        <span>{{ row.empName }}</span>
+                        <!-- <span @click="toWorkPage"
+                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span> -->
                     </template>
+
                     <template slot-scope="{ row }" slot="wordkDivision">
-                        <span>{{ row.workingId }}</span>
+                        <!-- <span :class="showRed(row.workingId, row)">{{ row.workingId }}</span> -->
                     </template>
+
                     <template slot-scope="{ row }" slot="workStartFinal">
                         <span>{{ row.openN }}</span>
                     </template>
+
                     <template slot-scope="{ row }" slot="workEndFinal">
                         <span>{{ row.closeN }}</span>
                     </template>
+
                     <template slot-scope="{ row }" slot="workStartReal">
                         <span>{{ row.openTp }}</span>
                     </template>
+
                     <template slot-scope="{ row }" slot="workEndReal">
                         <span>{{ row.closeTp }}</span>
                     </template>
@@ -181,30 +189,23 @@
             </Drawer>
 
 
-            <Drawer title="平均超勤時間(月) 詳細" width="800" v-model="showAverage" draggable>
-                <Row>
-                    <i-col span="6" class="label">所属</i-col>
-                    <i-col span="9">
-                        <span class="input-like-span">{{ deptName }}</span>
+            <Drawer title="平均超勤時間(月) 詳細" class="tc" width="800" v-model="showAverage" draggable>
+                <Row :gutter="10">
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">所属</div>
+                        <div class="person-info">{{ deptName}}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">氏名</div>
+                        <div class="person-info">{{ empName }}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">種別</div>
+                        <div class="person-info">{{ empWorkerTypeName }}</div>
                     </i-col>
                 </Row>
-
-                <Row>
-                    <i-col span="6" class="label">氏名</i-col>
-                    <i-col span="9">
-                        <span class="input-like-span">{{ empName }}</span>
-                    </i-col>
-                </Row>
-
-                <Row>
-                    <i-col span="6" class="label">種別</i-col>
-                    <i-col span="9">
-                        <span class="input-like-span">{{ empWorkerTypeName }}</span>
-                    </i-col>
-                </Row>
-
-                <i-table border class="mt20" :columns="columns2" :data="tableData2" :span-method="handleSpan">
-
+                <i-table border class="mt20" :columns="monthAverageColumns" :data="monthAverageTable"
+                    :span-method="handleSpan" :loading="averageTableLoading">
                 </i-table>
             </Drawer>
 
@@ -218,21 +219,23 @@
                 return {
                     showAverage: false,
                     showDayApply: false,
+                    dailyTableLoading: false,
                     title: '日別編集画面',
                     slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
                     loading: false,
+                    averageTableLoading: false,
                     tableHead: [],   //表头
-                    tableHead2: [],   //月平均表头
+                    monthAverageTableHead: [],   //月平均表头
                     tableData: [],   //一览表数据
-                    tableData2: [],   //月平均表数据
-                    columnsActionData: [],   //一括日别编辑表数据
+                    monthAverageTable: [],   //月平均表数据
+                    columnsActionData: [{}],   //一括日别编辑表数据
                     tableData3: [],   //日别编辑表数据
                     overWorkViewType: 2,
                     treeData: [],            //組織ツリー用
                     curDate: new Date(),
                     deptName: '選んでください',  //選択した職員の所属
-                    empName:'', //選択した職員名前
-                    empWorkerTypeName:'', //選択した職員種別
+                    empName: '', //選択した職員名前
+                    empWorkerTypeName: '', //選択した職員種別
                     isSearchHistory: false,
                     deptDrawShow: false,    //組織ツリー用
                     empDeptLoading: false,  // 組織ツリーloading用
@@ -425,20 +428,20 @@
                                 align: 'center',
                                 children: [
                                     {
-                                        title: '合計\n' + '(月)',
+                                        title: '合計\n(月)',
                                         slot: 'overtime',
                                         minWidth: 25,
                                         align: 'center'
                                     },
                                     {
-                                        title: '合計\n' + '(年)',
+                                        title: '合計\n(年)',
                                         slot: 'overtimeyear',
                                         minWidth: 25,
                                         align: 'center'
 
                                     },
                                     {
-                                        title: '45超\n' + '(年)',
+                                        title: '45超\n(年)',
                                         slot: 'overtimeover45',
                                         minWidth: 25,
                                         align: 'center'
@@ -446,13 +449,13 @@
                                 ]
                             },
                             {
-                                title: '休日\n' + '出勤\n' + '回数\n' + '(月)',
+                                title: '休日\n出勤\n回数\n(月)',
                                 slot: 'restworkcount',
                                 minWidth: 25,
                                 align: 'center'
                             },
                             {
-                                title: '平均\n' + '超勤\n' + '時間\n' + '(月)',
+                                title: '平均\n超勤\n時間\n(月)',
                                 slot: 'avgtime',
                                 minWidth: 25,
                                 align: 'center',
@@ -492,7 +495,7 @@
                     return result
                 },
 
-                columns2() {
+                monthAverageColumns() {
                     let result = [
                         {
                             title: ' ',
@@ -500,217 +503,247 @@
                             align: 'right',
                             minWidth: 30,
                         }
-                        ]
+                    ]
 
-                        const that = this
-                        this.tableHead2.forEach((e, i) => {
+                    this.monthAverageTableHead.forEach((e, i) => {
 
-                            result = result.concat({
-                                // title: e,
-                                minWidth: 15,
-                                renderHeader: (h, params) => {
-                                    return h(
-                                        'span',
-                                        {
-                                            style: {
-                                                cursor: 'pointer',
-                                            },
-                                            domProps: {
-                                                //className: 'table-head',
-                                                innerHTML: e,
-                                            },
-                                        }
-                                    )
-                                },
-                                key: `m${i + 1}`,
-                                align: 'center'
-                            })
-                        })
                         result = result.concat({
+                            title: e,
+                            minWidth: 15,
+                            key: `m${i + 1}`,
+                            align: 'center'
+                        })
+                    })
+                    result = result.concat({
                         title: '平均値',
                         key: 'average',
                         align: 'center'
-                        })
-                        return result
+                    })
+                    return result
                 }
             },
             methods: {
-                    showAverageDraw(e) {
-                        this.getAvgTableData(e.empid)
-                        this.empName=e.empname
-                        this.showAverage = true
+                toWorkPage() {
 
-                    },
-                    async handleDeptDateChange(e) {
-                        this.referListObject.txtTmgReferListTreeViewRecordDate = e
-                        this.isSearchHistory = true
-                        await this.getOrgTree()
-                        this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
-                    },
-                    async getOrgTree() {
-                        this.empDeptLoading = true
-                        try {
-                            const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-                            // 转为可用数据
-                            this.treeData = Utils.convertTreeData(orgList)
-                            this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                        } catch (error) {
-                            return
-                        } finally {
-                            this.loading = false
-                            this.empDeptLoading = false
-                        }
-                    },
-                    handleDatePicker() {
+                },
+                showAverageDraw(e) {
+                    this.getAvgTableData(e.empid)
+                    this.empName = e.empname
+                    this.showAverage = true
 
-                    },
-                    async handleClickLeaf(e) {
-                        if (!e[0]) return
-                        this.deptDrawShow = false
-                        this.deptName = e[0].secnic
-                        this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                        await this.getTableHead()
-                        await this.getTableData()
-                    },
-                    async handleDeptViewTypeChange() {
-                        await this.getOrgTree()
-                        this.$Notice.success({ title: '所属図更新完了' })
-                    },
-                    handleTypeChange() {
-                        //this.$emit('changeTableData')
+                },
+                async handleDeptDateChange(e) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    this.isSearchHistory = true
+                    await this.getOrgTree()
+                    this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                },
+                async getOrgTree() {
+                    this.empDeptLoading = true
+                    try {
+                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                        // 转为可用数据
+                        this.treeData = Utils.convertTreeData(orgList)
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                        this.empDeptLoading = false
+                    }
+                },
+                handleDatePicker() {
+                    if (this.deptName !== '選んでください') {
+                        this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
                         this.getTableData()
-                    },
+                    }
+                    this.$Notice.warning({ title: '所属を選択して下さい' })
+                },
+                handleClickLeaf(e) {
+                    if (!e[0]) return
+                    this.deptDrawShow = false
+                    this.deptName = e[0].secnic
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.getTableHead()
+                    this.getTableData()
+                },
+                async handleDeptViewTypeChange() {
+                    await this.getOrgTree()
+                    this.$Notice.success({ title: '所属図更新完了' })
+                },
+                handleTypeChange() {
+                    if (this.deptName !== '選んでください') {
+                        this.getTableData()
+                    }
+                },
 
-                    async getTableHead() {
-                        this.loading = true
-                        this.query.baseMonth=Utils.formatDate(this.curDate,'yyyy/MM').concat('/01')
-                        try {
-                            const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
-                            this.tableHead = data
-                            console.log(this.tableHead)
-                        } catch (error) {
-                            return
-                        } finally {
-                            this.loading = false
+                async getTableHead() {
+                    this.loading = true
+                    this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
+                        this.tableHead = data
+                        console.log(this.tableHead)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async getTableDataDaily(e) {
+                    this.dailyTableLoading = true
+                    this.query.baseDay = e
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
+                        this.tableData3 = data
+                        console.log(data)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.dailyTableLoading = false
+                    }
+                },
+                async getTableData() {
+                    this.loading = true
+                    let url = 'sys/overtimeinstruct/monthlyResult'
+                    try {
+                        if (this.overWorkViewType === 3) {
+                            this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
                         }
-                    },
-                    async getTableDataDaily(e) {
-                        this.loading = true
-                        this.query.baseDay=e
-                        try {
-                            const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
-                            this.tableData3=data
-                            console.log(data)
-                        } catch (error) {
-                            return
-                        } finally {
-                            this.loading = false
+                        if (this.overWorkViewType === 1) {
+                            url = 'sys/overtimeinstruct/monthlyResultOti'
                         }
-                    },
-                    async getTableData() {
-                        //this.loading=true
-                        let url = 'sys/overtimeinstruct/monthlyResult'
-                        try {
-                            if (this.overWorkViewType === 3) {
-                                this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
-                            }
-                            if (this.overWorkViewType === 1) {
-                                url = 'sys/overtimeinstruct/monthlyResultOti'
-                            }
-                            if (this.overWorkViewType === 2) {
-                                this.query.action = "ACT_DISP_RMONTHLY"
-                            }
-                            const { data } = await this.http.get(url, this.query)
-                            this.tableData = data
-                            console.log(this.tableData)
-                        } catch (error) {
-                            return
-                        } finally {
-                            this.loading = false
+                        if (this.overWorkViewType === 2) {
+                            this.query.action = "ACT_DISP_RMONTHLY"
                         }
-                    },
-                    async getAvgTableData(e) {
-                        //this.loading=true
-                        this.query.empId = e
-                        try {
-                            const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
-                            this.tableHead2 = data.tableHeader
-                            this.tableData2 = data.tableData
-                            this.empWorkerTypeName = data.workTypeName
-                            console.log(this.tableData2)
-                        } catch (error) {
-                            return
-                        } finally {
-                            this.loading = false
-                        }
-                    },
-                    async handleClickHead(e) {
-                        this.getTableDataDaily(e)
-                        this.showDayApply = true
+                        const { data } = await this.http.get(url, this.query)
+                        this.tableData = data
+                        console.log(this.tableData)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async getAvgTableData(e) {
+                    this.averageTableLoading = true
+                    this.query.empId = e
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
+                        this.monthAverageTableHead = data.tableHeader
+                        this.monthAverageTable = data.tableData.concat([
+                            { name: "2か月平均", average: data.avgTimes[0], m5: "2か月平均", cellClassName: { m5: "rest-title" } },
+                            { name: "3か月平均", average: data.avgTimes[1], m4: "3か月平均", cellClassName: { m4: "rest-title" } },
+                            { name: "4か月平均", average: data.avgTimes[2], m3: "4か月平均", cellClassName: { m3: "rest-title" } },
+                            { name: "5か月平均", average: data.avgTimes[3], m2: "5か月平均", cellClassName: { m2: "rest-title" } },
+                            { name: "6か月平均", average: data.avgTimes[4], m1: "6か月平均", cellClassName: { m1: "rest-title" } }
+                        ])
+                        this.empWorkerTypeName = data.workTypeName
+                        console.log(this.monthAverageTable)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.averageTableLoading = false
+                    }
+                },
+                async handleClickHead(e) {
+                    this.getTableDataDaily(e)
+                    this.showDayApply = true
 
-                    },
-                    handleScroll: Throttle(function (e) {
-                        this.contentScrollTop = e.target.scrollTop
-                        if (e.target.scrollTop > 200) {
-                            this.isScroll = true
-                        } else {
-                            this.isScroll = false
-                        }
-                    }, 50),
-                    handleSelectAll2(status) {
-                        this.$refs.selection2.selectAll(status)
-                    },
-                    handleSpan({ rowIndex, columnIndex }) {
-                        // 合并2个月
-                        // rowIndex 竖着算 columnIndex 横着算 从0开始
-                        // 返回[竖列着占几行， 横行着占几行]
-                        if (rowIndex === 3 && columnIndex === 5) {
-                            return [1, 2]
-                        } else if (rowIndex === 3 && columnIndex === 6) {
-                            return [0, 0]
-                        }
+                },
+                showRed(e, type) {
+                    if (!e) return
+                    let result = e.split('@') && e.split('@')[1]
+                    if(type === 'day') {
+                        if (result === 'chokinDailyLvl1') return 'level2'
+                        else return 'normal'
+                    }
+                    if(type === 'average') {
+                        if (result === 'chokinAvgWarningLvl1') return 'level3'
+                        else return
+                    }
+                    if (!result) return
+                    if (result === 'chokinWarningLvl5') {
+                        return 'level5'
+                    }
+                    if (result === 'chokinWarningLvl4') {
+                        return 'level4'
+                    }
+                    if (result === 'chokinWarningLvl3') {
+                        return 'level3'
+                    }
+                    if (result === 'chokinWarningLvl2') {
+                        return 'level2'
+                    }
+                    if (result === 'chokinWarningLvl1') {
+                        return 'level1'
+                    }
+                    if (result === 'chokin_meirei') {
+                        return 'normal'
+                    }
+                },
+                handleScroll: Throttle(function (e) {
+                    this.contentScrollTop = e.target.scrollTop
+                    if (e.target.scrollTop > 200) {
+                        this.isScroll = true
+                    } else {
+                        this.isScroll = false
+                    }
+                }, 50),
+                handleSelectAll2(status) {
+                    this.$refs.selection2.selectAll(status)
+                },
+                handleSpan({ rowIndex, columnIndex }) {
+                    // 合并2个月
+                    // rowIndex 竖着算 columnIndex 横着算 从0开始
+                    // 返回[竖列着占几行， 横行着占几行]
+                    if (rowIndex === 3 && columnIndex === 5) {
+                        return [1, 2]
+                    } else if (rowIndex === 3 && columnIndex === 6) {
+                        return [0, 0]
+                    }
 
-                        if (rowIndex === 4 && columnIndex === 4) {
-                            return [1, 3]
-                        } else if ((rowIndex === 4 && columnIndex === 6) || (rowIndex === 4 && columnIndex === 5)) {
-                            return [0, 0]
-                        }
+                    if (rowIndex === 4 && columnIndex === 4) {
+                        return [1, 3]
+                    } else if ((rowIndex === 4 && columnIndex === 6) || (rowIndex === 4 && columnIndex === 5)) {
+                        return [0, 0]
+                    }
 
-                        if (rowIndex === 5 && columnIndex === 3) {
-                            return [1, 4]
-                        } else if (
-                            (rowIndex === 5 && columnIndex === 6) ||
-                            (rowIndex === 5 && columnIndex === 5) ||
-                            (rowIndex === 5 && columnIndex === 4)
-                        ) {
-                            return [0, 0]
-                        }
+                    if (rowIndex === 5 && columnIndex === 3) {
+                        return [1, 4]
+                    } else if (
+                        (rowIndex === 5 && columnIndex === 6) ||
+                        (rowIndex === 5 && columnIndex === 5) ||
+                        (rowIndex === 5 && columnIndex === 4)
+                    ) {
+                        return [0, 0]
+                    }
 
-                        if (rowIndex === 6 && columnIndex === 2) {
-                            return [1, 5]
-                        } else if (
-                            (rowIndex === 6 && columnIndex === 6) ||
-                            (rowIndex === 6 && columnIndex === 5) ||
-                            (rowIndex === 6 && columnIndex === 4) ||
-                            (rowIndex === 6 && columnIndex === 3)
-                        ) {
-                            return [0, 0]
-                        }
+                    if (rowIndex === 6 && columnIndex === 2) {
+                        return [1, 5]
+                    } else if (
+                        (rowIndex === 6 && columnIndex === 6) ||
+                        (rowIndex === 6 && columnIndex === 5) ||
+                        (rowIndex === 6 && columnIndex === 4) ||
+                        (rowIndex === 6 && columnIndex === 3)
+                    ) {
+                        return [0, 0]
+                    }
 
-                        if (rowIndex === 7 && columnIndex === 1) {
-                            return [1, 6]
-                        } else if (
-                            (rowIndex === 7 && columnIndex === 6) ||
-                            (rowIndex === 7 && columnIndex === 5) ||
-                            (rowIndex === 7 && columnIndex === 4) ||
-                            (rowIndex === 7 && columnIndex === 3) ||
-                            (rowIndex === 7 && columnIndex === 2)
-                        ) {
-                            return [0, 0]
-                        }
-                    },
-                }
+                    if (rowIndex === 7 && columnIndex === 1) {
+                        return [1, 6]
+                    } else if (
+                        (rowIndex === 7 && columnIndex === 6) ||
+                        (rowIndex === 7 && columnIndex === 5) ||
+                        (rowIndex === 7 && columnIndex === 4) ||
+                        (rowIndex === 7 && columnIndex === 3) ||
+                        (rowIndex === 7 && columnIndex === 2)
+                    ) {
+                        return [0, 0]
+                    }
+                },
+            }
         })
     </script>
 </body>
