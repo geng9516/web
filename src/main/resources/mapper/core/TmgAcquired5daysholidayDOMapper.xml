@@ -102,7 +102,7 @@
         <if test="userCode != NULL">
             AND TA.TA_CEMPLOYEEID = #{userCode}
         </if>
-        ORDER BY TA.TA_CEMPLOYEEID,  TA.TA_DPAID_HOLIDA
+        ORDER BY TA.TA_CEMPLOYEEID,  TA.TA_DPAID_HOLIDAY
     </select>
     <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">
         CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(
