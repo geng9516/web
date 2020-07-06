@@ -28,6 +28,7 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
     private final AppAuthInfoBusiness appAuthInfoBusiness;
 
     // 有効なグループリスト情報取得
+    @Override
     public List<GroupManagerGroupListDTO> getValidGroupList(PsDBBean psDBBean,Date searchDate, String systemId){
         if (StrUtil.isBlank(systemId)){
             systemId = appAuthInfoBusiness.getSystemCode(psDBBean.getSiteId(), psDBBean.getAppId());

@@ -33,7 +33,7 @@ public class GroupAppManagerController {
   private final GroupAppManagerMainLogic groupAppManagerMainLogic;
 
   // http://localhost:6879/sys/groupappmanager?isAll=true&psSite=Admin&psSecurityDate=2020/06/29&date=2020/06/29&siteId=TMG_PERM
-  @GetMapping
+  @PostMapping
   public GroupAppManagerTableLayout list(
                                          @RequestAttribute("BeanName") PsDBBean psDBBean,
                                          @RequestParam Map<String,Object> params,
@@ -68,7 +68,7 @@ public class GroupAppManagerController {
     );
   }
 
-  @GetMapping("groups")
+  @PostMapping("groups")
   public List<GroupAppManagerGroupDTO> getGroupList(
           @RequestAttribute("BeanName") PsDBBean psDBBean,
           @RequestParam Map<String,Object> params
