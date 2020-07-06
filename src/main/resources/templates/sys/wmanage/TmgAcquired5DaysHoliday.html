@@ -342,6 +342,10 @@
                     txtCallBeanAction: 'ACT_DISP_MONTHLY',
                     page: '1',
                     year: '2020',
+                    txtUserCode: '',
+                    kijunbi: '',
+                    pdSearchStart: '',
+                    pdSearchEnd: '',
                     recordDate: '',
                     txtDYYYYMMDD: '',
                     txtTmgReferListTreeViewRecordDate: '',
@@ -390,6 +394,11 @@
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e.cemployeeName
                 this.privateInfo.workType = e.workertypeNm
+
+                this.query.txtUserCode = e.taCemployeeid
+                this.query.kijunbi = e.taKijyunbi
+                this.query.pdSearchStart = e.tpDntfSurveyStart
+                this.query.pdSearchEnd = e.tpDntfSurveyEnd
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
                 console.log(data)
