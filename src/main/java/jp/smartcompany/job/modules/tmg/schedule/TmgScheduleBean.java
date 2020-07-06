@@ -1168,7 +1168,6 @@ public class TmgScheduleBean {
         } else {
             logger.error("更新内容は標準的なjsonではない");
         }
-
     }
 
 

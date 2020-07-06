@@ -198,6 +198,21 @@
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 41
                     },
+                    query:{
+                        year:'2020/01/01',
+                        baseDate:'',
+                        sPage:'1',
+                        action:'',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        //目标sec
+                        txtTmgReferListTreeViewAdminTargetSection: '',
+                        //基准日
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 41,
+                        sRetroFlg:'', //遡及フラグ
+                        dlTypeId:'',  //DL種別コード
+                    }
                 }
             },
             async mounted() {
@@ -245,11 +260,11 @@
                     this.referListObject[section] = e[0].secid
                     this.loginEmployee = e[0].empid
                     this.deptName = e[0].secnic
-                    this.query.employeeId = e[0].empid
-                    this.kanjiName = e[0].empname
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.selectDisabled = true
                     this.remarksDisabled = true
-                    this.getTableData()
+                    this.getDisp()
                 },
                 handleDatePicker() { },
                 pageChange(e) {
@@ -280,7 +295,19 @@
                     this.pageValue.curSize = e
                     this.utils.setStorage('SO_userSettings', { pageSize: e })
                     this.getData()
-                }
+                },
+
+                async getDisp() {
+
+                    try {
+                        const { data } = await this.http.get('sys/sumdate/monthlyOutputDisp', this.query)
+                       console.log(data)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
             }
         })
     </script>

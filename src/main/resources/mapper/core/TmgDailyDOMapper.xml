@@ -507,13 +507,13 @@
             AND TDAD_CNOTWORKID = 'TMG_ITEMS|PlanRest'
         ) AS CNT_PLANREST,
 
-        <foreach collection="list" item="itemsSql" index="index" open="" separator="," close="">
+        <foreach collection="itemsSql" item="itemsSql" index="index" open="" separator="," close="">
             ${itemsSql.mgdCsql} AS ${itemsSql.mgdCcolumnid}
         </foreach>
 
         FROM
             TMG_DAILY d,
-        (${sql}) e
+        (${empListSql}) e
         WHERE
             d.TDA_CCUSTOMERID = #{custId}
         AND d.TDA_CCOMPANYID = #{compId}
@@ -526,6 +526,8 @@
         ORDER BY
             e.seq
     </select>
+
+
     <select id="buildSQLForSelectTmgDaily" resultType="java.util.HashMap">
         SELECT
             d.TDA_CEMPLOYEEID,  																										<!-- 0 職員番号-->
@@ -587,7 +589,7 @@
 		AND TDA_CSTATUSFLG   = 'TMG_DATASTATUS|3'
     </select>
 
-    <select id="selectDailyDetailOverHours" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo">
+    <select id="selectDailyDetailOverHours" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursVo" statementType="STATEMENT">
         SELECT
             e.EMPID AS TDA_CEMPLOYEEID,
             TDA_DYYYYMM TDAD_DYYYYMM,
@@ -602,11 +604,11 @@
             (${empListSql}) e
         WHERE
             TDA_CEMPLOYEEID = e.EMPID
-        AND TDA_DYYYYMMDD = to_date(#{baseDate}, 'yyyy/mm/dd' )
-        AND TDA_CCOMPANYID = #{compId}
-        AND TDA_CCUSTOMERID = #{custId}
-        AND TDA_DSTARTDATE <![CDATA[<=]]> to_date( #{baseDate}, 'yyyy/mm/dd' )
-        AND TDA_DENDDATE >= to_date( #{baseDate}, 'yyyy/mm/dd' )
+        AND TDA_DYYYYMMDD = to_date('${baseDate}', 'yyyy/mm/dd' )
+        AND TDA_CCOMPANYID = '${compId}'
+        AND TDA_CCUSTOMERID = '${custId}'
+        AND TDA_DSTARTDATE <![CDATA[<=]]> to_date('${baseDate}', 'yyyy/mm/dd' )
+        AND TDA_DENDDATE >= to_date( '${baseDate}', 'yyyy/mm/dd' )
         AND TDA_NOPEN_O IS NOT NULL
         AND TDA_NCLOSE_O IS NOT NULL
 
@@ -620,19 +622,17 @@
             TMG_F_CONV_MIN2HHMI ( TDAD_NOPEN, 0 ) TDAD_NOPEN,
             TMG_F_CONV_MIN2HHMI ( TDAD_NCLOSE, 0 ) TDAD_NCLOSE,
             TDAD_CSPARECHAR1,
-            NVL( TDAD_CSPARECHAR2, 'TMG_OVERHOUR_STATUS|6' )　TDAD_CSPARECHAR2
+            NVL(TDAD_CSPARECHAR2,'TMG_OVERHOUR_STATUS|6') TDAD_CSPARECHAR2
         FROM
             TMG_DAILY_DETAIL,
             (${empListSql}) e
         WHERE
             TDAD_CEMPLOYEEID = e.EMPID
-        AND TDAD_DYYYYMMDD = to_date(#{baseDate}, 'yyyy/mm/dd' )
-        AND TDAD_CCOMPANYID = #{compId}
-        AND TDAD_CCUSTOMERID = #{custId}
+        AND TDAD_DYYYYMMDD = to_date('${baseDate}', 'yyyy/mm/dd' )
+        AND TDAD_CCOMPANYID = '${compId}'
+        AND TDAD_CCUSTOMERID = '${custId}'
         AND TDAD_CNOTWORKID = 'TMG_ITEMS|Overhours'
-        ORDER BY
-            TDA_CEMPLOYEEID,
-            TDAD_NOPEN
+
         ;
     </select>
     <select id="buildSQLForSelectPaidHoliday"

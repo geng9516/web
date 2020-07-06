@@ -513,7 +513,8 @@ public class TmgReferList {
 //            createTreeViewListWard();
         // 勤怠管理サイト } else
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
-                createTreeViewSiteAdmin();
+//               原： createTreeViewSiteAdmin();
+            createTreeViewSiteAdmin(baseDate);
                 // 勤怠承認サイト
         }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             createTreeViewSitePerm(baseDate);
@@ -653,7 +654,7 @@ public class TmgReferList {
      * init()での勤怠管理サイト用の処理
      * @return なし
      */
-    private void createTreeViewSiteAdmin() throws Exception {
+    private void createTreeViewSiteAdmin(String baseDate) throws Exception {
 
         // 対象社員の社員コードをリクエストパラメータから取得
         targetEmp_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_EMP);
@@ -683,7 +684,6 @@ public class TmgReferList {
             createDivTree();
         }
         else {
-            log.info("【init方法后的createOrgTree方法开始执行】");
             createOrgTree();
         }
 
@@ -691,13 +691,17 @@ public class TmgReferList {
         if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
-            if(targetEmp_admin == null || !empList.existsEmp(targetEmp_admin)){
-                if(empList.getDataArray().size() > 0){
+            if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
+                if(CollUtil.isNotEmpty(empList.getDataArray())){
                     targetEmp_admin = (String)((List)empList.getDataArray().get(0)).get(TmgEmpList.DEFAULT_KEY_EMPID);
                 }else{
                     targetEmp_admin = null;
                 }
             }
+        } else {
+            // todo 暂时设置最顶级sectionId为默认查询id
+            targetSec_admin = "000000";
+            createEmpList(targetSec_admin, targetDate, getHidSelectTab());
         }
 
         // 改めてセッションに登録する
@@ -714,6 +718,10 @@ public class TmgReferList {
     private void createTreeViewSitePerm(String psDaseDate) throws Exception {
         // まずは初期化
         createGroupList();
+        createTreeViewNoTargetSection(psDaseDate);
+    }
+
+    private void createTreeViewNoTargetSection(String psDaseDate) throws Exception {
         createMemberList(targetDate, getHidSelectTab());
         // 対象組織の組織コードをリクエストパラメータから取得
         targetSec_perm    = psDBBean.getReqParam(TREEVIEW_KEY_PERM_TARGET_SECTION);
@@ -817,12 +825,11 @@ public class TmgReferList {
             // 検索対象範囲の適用
             orgTree = new TmgOrgTree(psDBBean,beanDesc);
             // 検索対象範囲条件を取得（暂时不需要）
-//            String sExists = orgTree.getOrgTreeSearchRange(psDBBean.requestHash, session);
+            String sExists = orgTree.getOrgTreeSearchRange(psDBBean);
             // セッションに組織ツリーのデータが格納されていれば、セッションのデータを使用する
             List obj = (List)psDBBean.getSession().getAttribute(SESSION_KEY_ORGTREE_RESULT);
             String sCondition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_ORGTREE_CONDITION);
-            // if(obj != null && sCondition != null && sCondition.equalsIgnoreCase(sExists) && sessionSameCheck()) {
-            if(obj != null && sCondition != null && sessionSameCheck()) {
+            if(obj != null && sCondition != null && sCondition.equalsIgnoreCase(sExists) && sessionSameCheck()) {
                 orgTree.setDataArray(obj);
             }
             // そうでなければ、新たに組織ツリーを作成する(SYSDATE時点のツリーを作成する)
@@ -832,7 +839,7 @@ public class TmgReferList {
                     log.debug("【调用TmgOrgTress的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
                     orgTree.createOrgTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
                     psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
-//                    session.setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
+                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -989,9 +996,7 @@ public class TmgReferList {
 
         List dataArray = null;
         String condition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_CONDITION);
-        // TmgSearchRangeUtil tmgSearchRangeUtil = new TmgSearchRangeUtil();
         // セッションに登録されているデータと、検索条件(対象部署＆結合条件)が同じ場合、そちらのデータを取りに行く
-//        if (condition != null) {
         if(condition != null && condition.equalsIgnoreCase(
                 tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean))){
             dataArray = (List)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_RESULT);
@@ -1080,26 +1085,6 @@ public class TmgReferList {
 
         return false;
 
-    }
-
-    /**
-     *
-     * @param targetDate
-     * @throws Exception
-     */
-    private void createWardEmpList(String targetWard, String targetDate, int piHidSelectTab) throws Exception{
-        //TODO: 病棟用リストの職員一覧取得
-        empList = new TmgEmpList(psDBBean, beanDesc);
-        SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
-        String base = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
-        empList.createWardEmpList(
-                "'"+psDBBean.getCustID()+"'",
-                "'"+psDBBean.getCompCode()+"'",
-                "'"+targetWard+"'",
-                base,
-                "'"+psDBBean.getLanguage()+"'",
-                true // 本務のみとする
-        );
     }
 
     /**

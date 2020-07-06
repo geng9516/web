@@ -151,7 +151,7 @@ public class TreeController {
     public GlobalResponse searchTreeConditions() {
         Map<String,String> searchTypes = MapUtil.newHashMap();
         searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_KANANAME,TmgUtil.getPropertyValue("TTV_PERM_MSG_KANA_NAME"));
-        searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_KANJINAME,TmgUtil.getPropertyValue("TTV_PERM_MSG_KANA_NAME"));
+        searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_KANJINAME,TmgUtil.getPropertyValue("TTV_PERM_MSG_KANJI_NAME"));
         searchTypes.put(TmgUtil.Cs_TREE_VIEW_ITEMS_EMPLOYEEID,TmgUtil.getPropertyValue("TTV_PERM_MSG_EMPLOYEEID"));
         Map<String,String> searchConditions = MapUtil.newHashMap();
         searchConditions.put(TmgUtil.Cs_TREE_VIEW_CONDITION_BROADMATCH,TmgUtil.getPropertyValue("TTV_PERM_MSG_MATCH_BROAD"));

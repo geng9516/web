@@ -102,6 +102,24 @@ public class TmgOrgTree {
     }
 
     /**
+     * 検索対象範囲条件の取得
+     * @param psDBBean
+     * @return
+     */
+    public String getOrgTreeSearchRange(PsDBBean psDBBean) {
+        // 検索対象範囲の適用
+        String sExists;
+        try {
+            sExists = tmgSearchRangeUtil.getExistsQuery(psDBBean, ContextUtil.getHttpRequest().getSession(),
+                    "d.HD_CCOMPANYID_CK", "d.HD_CEMPLOYEEID_CK");
+        }
+        catch(Exception e) {
+            sExists = "";
+        }
+        return sExists;
+    }
+
+    /**
      * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
      * @param pSession
      * @return

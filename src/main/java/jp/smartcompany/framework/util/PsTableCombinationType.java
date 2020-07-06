@@ -6,6 +6,7 @@ import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import jp.smartcompany.boot.util.SysUtil;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Timestamp;
@@ -14,6 +15,7 @@ import java.sql.Timestamp;
  * PsTableCombinationType -> PsTableCombinationTypeLogic
  * @author Xiao Wenpeng
  */
+@Component
 public class PsTableCombinationType {
 
 

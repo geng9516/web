@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+  <head th:replace="layout/header::common_header(title=500,cssPaths='/pages/errorPage.min.css')"></head>
+  <body>
+    <main class="error-page">
+      <section class="error-wrap">
+        <figure class="error-img" th:style="${'background-image: url('+
+          #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() +
+        '/static/svg/403.svg)'}"></figure>
+        <section class="error-content">
+          <h1 class="mb20">403</h1>
+          <p class="p mb15">現在、このページへのアクセスは禁止されています。</p>
+          <button class="action" @click="goHomepage">ホームページへ</button>
+        </section>
+      </section>
+    </main>
+    <div th:replace="layout/script::common_script"></div>
+    <script>
+        var page505 = new Vue({
+            el: '.error-page',
+            methods: {
+                goHomepage() {
+                  top.location.href="/";
+                }
+            }
+        })
+    </script>
+  </body>
+</html>

@@ -197,30 +197,6 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
      * @return String パターン
      */
     @Override
-    public List<TmgDispItemsDto> selectDispMonthlyItems(String customerId, String companyId, Date yyyymmdd, String language) {
-        Map<String, Object> map = MapUtil.newHashMap(3);
-        map.put("customerId", customerId);
-        map.put("companyId", companyId);
-        map.put("yyyymmdd", yyyymmdd);
-        map.put("language", language);
-        //
-        List<TmgDispItemsDto> tmgDispMonthlyItemsDtoList = baseMapper.selectDispMonthlyItems(map);
-
-
-        return tmgDispMonthlyItemsDtoList;
-    }
-
-
-    /**
-     * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
-     *
-     * @param customerId 顧客コード
-     * @param companyId  法人コード
-     * @param yyyymmdd   基準日
-     * @param language   　言語
-     * @return String パターン
-     */
-    @Override
     public List<TmgDispItemsDto> selectDispDailyItems(String customerId, String companyId, Date yyyymmdd, String language) {
         Map<String, Object> map = MapUtil.newHashMap(3);
         map.put("customerId", customerId);
@@ -942,4 +918,18 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
         return baseMapper.selectLedgerSheetList( custID, compCode, language);
     }
 
+
+    /**
+     * 职种名获取
+     * @return
+     */
+    @Override
+    public String selectWorkerTypeName(String custId,String compId,String empid, String baseDate){
+        return baseMapper.selectWorkerTypeName( custId, compId, empid, baseDate);
+    }
+
+    @Override
+    public  String selectMasterCode(String custId, String compId,String baseDate,String masterCode){
+        return baseMapper.selectMasterCode( custId, compId, baseDate, masterCode);
+    }
 }

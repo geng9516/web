@@ -32,16 +32,17 @@ public class PatternSettingController {
      * 【表示】TMG_PATTERNより利用可能な勤務パターンを取得する
      * tpa_csectionid = tpa_cgroupid.substr(0,indexOf(tpa_cgroupid,'|'))の場合、編集できます
      * パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
-     * http://localhost:6879/sys/patternSetting/selectTmgPattern?groupId=100000000000
+     * http://localhost:6879/sys/patternSetting/selectTmgPattern?sectionId=100000000000
      *
-     * @param groupId
+     * @param sectionId
      */
-    @PostMapping("selectTmgPattern")
+    @GetMapping("selectTmgPattern")
     public List<TmgPatternDTO> selectTmgPattern(@RequestParam("groupId") String groupId,
+                                                @RequestParam("sectionId") String sectionId,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        return patternSettingBean.selectTmgPattern(groupId);
+        return patternSettingBean.selectTmgPattern(sectionId,groupId);
 
     }
 
@@ -52,7 +53,7 @@ public class PatternSettingController {
      * @param groupId
      * @param sectionId
      */
-    @PostMapping("selectTmgPatternOwn")
+    @GetMapping("selectTmgPatternOwn")
     public List<TmgPatternDTO> selectTmgPatternOwn(@RequestParam("groupId") String groupId,
                                                    @RequestParam("sectionId") String sectionId,
                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {

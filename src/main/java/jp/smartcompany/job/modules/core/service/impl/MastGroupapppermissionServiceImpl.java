@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupapppermissionMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -43,6 +44,22 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
         @Override
         public Page<MastGroupapppermissionDO> pagePermissionList(IPage<MastGroupapppermissionDO> page) {
                return baseMapper.selectPermissionListPage(page);
+        }
+
+        @Override
+        public int deleteAfter(String systemId,String date,String groupId, String objectId) {
+             return baseMapper.deleteAfter(systemId,date,groupId,objectId);
+        }
+
+        @Override
+        public List<MastGroupapppermissionDO> selectValidPermissions(
+                String systemId, String date, String groupId, String objectId) {
+                return baseMapper.selectValidPermissions(systemId,date,groupId,objectId);
+        }
+
+        @Override
+        public int deleteOtherSysObj(String systemId,String objectId) {
+                return baseMapper.deleteOtherSysObj(systemId,objectId);
         }
 
 }

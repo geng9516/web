@@ -321,23 +321,6 @@
     </select>
 
 
-    <select id="selectDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgDispItemsDto">
-        SELECT
-        MGD_CHEADER,
-        MGD_CSQL,
-        MGD_CCOLUMNKEY
-        FROM
-        TMG_V_MGD_DISPMONTHLYITEMS
-        WHERE
-        MGD_CCUSTOMERID          =   #{customerId}
-        AND     MGD_CCOMPANYID_CK_FK     =   #{companyId}
-        AND     MGD_DSTART_CK            <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
-        AND     MGD_DEND                 >=  #{yyyymmdd,jdbcType=DATE}
-        AND     MGD_CLANGUAGE_CK         =   #{language}
-        ORDER BY
-            MGD_NSEQ
-        ;
-    </select>
     <select id="selectLedgerSheetList" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo">
         SELECT
             MGD_LEDGER_SHEET_ID,
@@ -839,7 +822,8 @@
                     #{compID}
                 ),
                 'YYYY/MM/DD'
-            ),
+            )
+            TARGET_START_DATE,
             TO_CHAR(
                 TMG_F_GET_THE_YEARZONE (
                     TMG_F_GET_THE_YEAR ( TRUNC( TO_DATE( #{baseDate}, 'YYYY/MM/DD' ) ), #{custID}, #{compID} ),
@@ -850,6 +834,7 @@
                 ),
                 'YYYY/MM/DD'
             )
+            TARGET_END_DATE
         FROM
             DUAL
     </select>
@@ -1008,5 +993,25 @@
         AND MGD_EXCLUDECOND_EDIT_FLG  = 'TMG_ONOFF|1'
         ORDER BY
         MGD_EXCLUDECOND_TYPE
+    </select>
+    <select id="selectWorkerTypeName" resultType="java.lang.String">
+        SELECT
+            tmg_f_get_mgd(TEM_CWORKTYPEID, '${baseDate}', TEM_CCUSTOMERID, TEM_CCOMPANYID, 'ja') from TMG_EMPLOYEES
+        WHERE
+            TEM_CCUSTOMERID = #{custId}
+        AND TEM_CCOMPANYID = #{compId}
+        AND TEM_CEMPLOYEEID = #{empid}
+        AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+        AND TEM_DENDDATE >= #{baseDate}
+    </select>
+    <select id="selectMasterCode" resultType="java.lang.String">
+        SELECT
+            MGD_CGENERICDETAILDESC
+        WHERE
+            TEM_CCUSTOMERID = #{custId}
+        AND TEM_CCOMPANYID = #{compId}
+        AND MGD_CMASTERCODE = #{masterCode}
+        AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+        AND TEM_DENDDATE >= #{baseDate}
     </select>
 </mapper>

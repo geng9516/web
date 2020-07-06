@@ -65,20 +65,20 @@
 -- psTypeが3はアプリケーション一覧
 -- psTypeが1はサイト一覧
         SELECT
-            <if test="psType == '1'">
+            <if test='type == "1"'>
                 MTR_CSITEID,
             </if>
-            <if test="psType=='3'">
+            <if test='type=="3"'>
                 MTR_CAPPID,
             </if>
             MTR_COBJNAME,
             MIN(MTR_NSEQ) MTR_NSEQ
         FROM (
           SELECT
-            <if test="psType == '1'">
+            <if test='type == "1"'>
               MTR_CSITEID,
             </if>
-            <if test="psType=='3'">
+            <if test='type=="3"'>
               MTR_CAPPID,
             </if>
               PSMASTER.FUNC_GET_OBJ_NAME (
@@ -87,30 +87,28 @@
                      NULL,
                      NULL,
                      NULL,
-                     '${psLanguage}'
+                     '${language}'
               ) MTR_COBJNAME,
               MTR_NSEQ
           FROM MAST_APPTREE
           WHERE MTR_CSYSTEMID = #{systemId}
-              <if test="psType == '1'">
-                AND	MTR_CTYPE IN ('0','${psType}')	-- トップページを含める
+              <if test='type == "1"'>
+                AND	MTR_CTYPE IN ('0','${type}')	-- トップページを含める
               </if>
-              <if test="psType == '3'">
-                AND	MTR_CTYPE = #{psType}
+              <if test='type == "3"'>
+                AND	MTR_CTYPE = #{type}
               </if>
-              <if test="psSiteId!=null">
-                AND	MTR_CSITEID = #{psSiteId}
+              <if test="siteId!=null">
+                AND	MTR_CSITEID = #{siteId}
               </if>
-        )
-        GROUP BY
-            <if test="psType == '1'">
+        ) GROUP BY
+            <if test='type == "1"'>
                 MTR_CSITEID,
             </if>
-            <if test="psType == '3'">
+            <if test='type == "3"'>
                 MTR_CAPPID,
             </if>
-            MTR_COBJNAME
-            ORDER BY MTR_NSEQ
+            MTR_COBJNAME ORDER BY MTR_NSEQ
     </select>
 
 </mapper>

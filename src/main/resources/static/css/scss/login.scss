@@ -3,13 +3,13 @@ body {
 }
 .login {
   max-width: 1920px;
-  min-width: 1280px;
   height: 100vh;
   margin: 0 auto;
   .hero-warp{
     height: 90vh;
+    min-width: 600px;
+    min-height: 470px;
     background-repeat: no-repeat;
-    background-size: 95%;
     margin-left: 60px;
     @media (max-width: 1500px) {
       position: relative;
@@ -29,6 +29,10 @@ body {
     @media (max-width: 1500px) {
       position: relative;
       right: 60px;
+    }
+    @media (max-height: 700px) {
+      transform: scale(0.6);
+      top: -30px;
     }
     .title {
       background: var(--primary-background);

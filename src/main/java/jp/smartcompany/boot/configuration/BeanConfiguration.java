@@ -19,7 +19,7 @@ public class BeanConfiguration {
 
     @Bean
     public LRUCache<Object,Object> scCache() {
-        return CacheUtil.newLRUCache(500);
+        return CacheUtil.newLRUCache(4000);
     }
 
 }

@@ -40,7 +40,7 @@
             )  AS WORKERTYPE_ID, 																		<!--所属ID-->
             (
                 SELECT
-                    TMG_F_GET_MGD(E.TEM_CWORKTYPEID, #{BASDATE},  TA.TA_CCUSTOMERID, TA.TA_CCOMPANYID, 'ja')
+                    TMG_F_GET_MGD(E.TEM_CWORKTYPEID, #{basedate},  TA.TA_CCUSTOMERID, TA.TA_CCOMPANYID, 'ja')
                 FROM
                     TMG_EMPLOYEES E
                 WHERE
@@ -102,7 +102,7 @@
         <if test="userCode != NULL">
             AND TA.TA_CEMPLOYEEID = #{userCode}
         </if>
-        ORDER BY TA.TA_CEMPLOYEEID,  TA.TA_DPAID_HOLIDA
+        ORDER BY TA.TA_CEMPLOYEEID,  TA.TA_DPAID_HOLIDAY
     </select>
     <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">
         CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(

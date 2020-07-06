@@ -133,4 +133,57 @@
         select * from MAST_GROUPAPPPERMISSION
     </select>
 
+    <delete id="deleteAfter" parameterType="map">
+        -- 今回改定日以降のレコード削除
+        DELETE FROM
+            MAST_GROUPAPPPERMISSION
+        WHERE
+            MGP_CSYSTEMID = #{systemId}
+            AND MGP_DSTARTDATE >= #{date}
+            AND MGP_CGROUPID = #{groupId}
+            <if test="objectId!=null">
+              AND MGP_COBJECTID = #{objectId}
+            </if>
+    </delete>
+
+    <select id="selectValidPermissions" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO" parameterType="map">
+        -- 現在有効な権限情報取得
+        SELECT
+            MGP_ID,
+            MGP_CCOMPANYID,
+            MGP_CSYSTEMID,
+            MGP_CGROUPID,
+            MGP_COBJECTID,
+            MGP_CSITE,
+            MGP_CAPP,
+            MGP_CSUBAPP,
+            MGP_CBUTTON,
+            MGP_CSCREEN,
+            MGP_CPERMISSION,
+            MGP_CREJECT,
+            MGP_DSTARTDATE,
+            MGP_DENDDATE,
+            VERSIONNO
+        FROM
+            MAST_GROUPAPPPERMISSION
+        WHERE
+            MGP_CSYSTEMID = #{systemId}
+            AND	MGP_DSTARTDATE <![CDATA[<=]]> #{date}
+            AND	MGP_DENDDATE >= #{date}
+            AND	MGP_CGROUPID = #{groupId}
+            <if test="objectId!=null">
+                AND	MGP_COBJECTID = #{objectId}
+            </if>
+        ORDER BY MGP_COBJECTID,MGP_DSTARTDATE
+    </select>
+
+    <delete id="deleteOtherSysObj" parameterType="map">
+        -- 他システム上の同じオブジェクトを削除する
+        delete from
+        mast_groupapppermission
+        where
+        mgp_csystemid <![CDATA[<>]]> #{systemId}
+        and	mgp_cobjectid = #{objectId}
+    </delete>
+
 </mapper>

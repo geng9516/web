@@ -256,8 +256,6 @@
             },
             async mounted() {
 
-                console.log([[${ session }]])
-                // this.getData(true)
                 this.getOrgTree()
                 this.getSearchCondition()
 
@@ -418,7 +416,6 @@
                             }
                         })
                         this.tableData = data.slice(7)
-                        console.log(this.tableData)
                         this.tableHead = Object.values(data[0]).filter(e => e)
                     } catch (error) {
                         return
@@ -535,6 +532,11 @@
                 },
                 handleSelector() { },
                 async handleClickLeaf(e) {
+                    //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                    //よって、二回目クリックすると、何もしない
+                    if(!e[0]) return
+                    if(e[0].children) return
+
                     this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                     this.referListObject[section] = e[0].secid

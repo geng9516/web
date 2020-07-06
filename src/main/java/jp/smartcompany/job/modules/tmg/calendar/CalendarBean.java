@@ -50,16 +50,22 @@ public class CalendarBean {
      *   自所属(又は自グループ)の情報が存在しない場合は上位階層に登録している<br>
      *   情報を参照します。
      */
-    public CalendarVo getCalendar(String year,PsDBBean psDBBean, TmgReferList referList){
+    public CalendarVo getCalendar(String year, PsDBBean psDBBean, TmgReferList referList){
         CalendarVo calendarVo=new CalendarVo();
         MastOrganisationDO MoDo=selectOrganization(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec());
         if(MoDo==null){
             return null;
         }
         List<CalendarDispVo> calendarDispVoList=new ArrayList<CalendarDispVo>();
+        String groupId;
+        if(StrUtil.hasEmpty(referList.getTargetGroup())){
+            groupId="null";
+        }else{
+            groupId="'"+referList.getTargetGroup()+"'";
+        }
         if(!StrUtil.hasEmpty(MoDo.getMoCsectionidCk())){
             calendarDispVoList=iTmgCalendarSectionService.selectCalenderDisp(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),
-                    referList.getTargetGroup(),getYear(year),"","0");
+                    groupId,getYear(year),"","0");
         }else{
             calendarDispVoList=iTmgCalendarService.selectCalenderDisp(psDBBean.getCustID(),psDBBean.getCompCode(),getYear(year));
         }
@@ -78,7 +84,7 @@ public class CalendarBean {
                     }
                     // 部署カレンダー検索
                     calendarDispVoList=iTmgCalendarSectionService.selectCalenderDisp(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),
-                            referList.getTargetGroup(),getYear(year),MoDo.getMoCsectionidCk(),"1");
+                            groupId,getYear(year),MoDo.getMoCsectionidCk(),"1");
                     if (!calendarDispVoList.isEmpty()){
                         break;
                     } else {

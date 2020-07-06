@@ -9,15 +9,15 @@ import lombok.ToString;
 @ToString
 public class CalendarDispVo {
     private String tcaDyyyymm;
-    private String tcaCholflg01;
-    private String tcaCholflg02;
-    private String tcaCholflg03;
-    private String tcaCholflg04;
-    private String tcaCholflg05;
-    private String tcaCholflg06;
-    private String tcaCholflg07;
-    private String tcaCholflg08;
-    private String tcaCholflg09;
+    private String tcaCholflg1;
+    private String tcaCholflg2;
+    private String tcaCholflg3;
+    private String tcaCholflg4;
+    private String tcaCholflg5;
+    private String tcaCholflg6;
+    private String tcaCholflg7;
+    private String tcaCholflg8;
+    private String tcaCholflg9;
     private String tcaCholflg10;
     private String tcaCholflg11;
     private String tcaCholflg12;

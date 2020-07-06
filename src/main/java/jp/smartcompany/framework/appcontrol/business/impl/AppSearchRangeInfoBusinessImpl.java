@@ -3,7 +3,9 @@ package jp.smartcompany.framework.appcontrol.business.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.appcontrol.business.AppAuthInfoBusiness;
@@ -55,7 +57,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
     /** リクエスト **/
     private HttpServletRequest gRequest;
     /** テーブル結合式情報ロジック */
-    private PsTableCombinationType psTableCombinationType;
+    private final PsTableCombinationType psTableCombinationType;
 
     /** アプリケーション起動権限情報取得Logicクラスオブジェクト */
     private final AppAuthInfoBusiness gAppAuthInfoLogic;
@@ -260,6 +262,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      */
     public void setRequest(HttpServletRequest pRequest) {
         gRequest = pRequest;
+        gPsSession = (PsSession) pRequest.getSession().getAttribute(Constant.PS_SESSION);
         // setPsSecurityDateがDIされないので、リクエストから設定
         setPsSecurityDate(gRequest.getParameter("psSecurityDate"));
     }
@@ -286,7 +289,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      */
     @Override
     public void create(String psApplicationURL, String psMode) {
-
+         setRequest(ContextUtil.getHttpRequest());
         /* サイトID取得 */
         String sSiteId = this.gPsSite;
 
@@ -307,18 +310,18 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
         /* ドメインコード取得 */
         String sDomainCode = "";
         /* システムコード取得 */
-        String sSystemCode = "";
+        String sSystemCode = "01";
 
         if (sApplicationId == null) {
             // アプリケーションIDが取得できなかった場合は、サイト情報より取得
             sDomainCode = this.gAppAuthInfoLogic.getSiteInfo(sSiteId).getDomainId();
             /* システムコード取得 */
-            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId);
+//            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId);
         } else {
             // アプリケーションIDが取得できた場合は、アプリケーション情報より取得
             sDomainCode = this.gAppAuthInfoLogic.getAppInfo(sSiteId, sApplicationId).getDomainId();
             /* システムコード取得 */
-            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId, sApplicationId);
+//            sSystemCode = this.gAppAuthInfoLogic.getSystemCode(sSiteId, sApplicationId);
         }
         // PsSessionパラメータチェック
         if (this.checkSession()) {
@@ -345,7 +348,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      */
     @Override
     public void create(String psApplicationURL, String psDomainCode, String psMode) {
-
+        setRequest(ContextUtil.getHttpRequest());
         /* サイトID取得 */
         String sSiteId = this.gPsSite;
 

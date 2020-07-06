@@ -5,7 +5,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.mapper.MastApptreeMapper;
 import jp.smartcompany.job.modules.core.service.IMastApptreeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -32,10 +31,10 @@ public class MastApptreeServiceImpl extends ServiceImpl<MastApptreeMapper, MastA
         }
 
         @Override
-        public List<MastApptreeDO> selectSiteOrAppListByType(@Param("psSystemId") String psSystemId,
-                                                             @Param("psLanguage") String psLanguage,
-                                                             @Param("psType") String psType,
-                                                             @Param("psSiteId") String psSiteId) {
+        public List<MastApptreeDO> selectSiteOrAppListByType(String psSystemId,
+                                                             String psLanguage,
+                                                             String psType,
+                                                             String psSiteId) {
                 return baseMapper.selectSiteOrAppListByType(psSystemId,psLanguage,psType,psSiteId);
         }
 }

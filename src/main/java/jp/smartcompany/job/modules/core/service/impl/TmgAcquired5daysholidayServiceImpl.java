@@ -34,7 +34,7 @@ public class TmgAcquired5daysholidayServiceImpl extends ServiceImpl<TmgAcquired5
     @Override
     public List<Acquired5DaysListVO> buildSQLforList(String baseDate, String empsql, String userCode) {
             Map<String, Object> map = MapUtil.newHashMap(3);
-            map.put("baseDate", baseDate);
+            map.put("basedate", baseDate);
             map.put("empsql", empsql);
             map.put("userCode", userCode);
 

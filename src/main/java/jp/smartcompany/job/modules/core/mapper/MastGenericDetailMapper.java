@@ -100,11 +100,6 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
         /**
          * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
          */
-        List<TmgDispItemsDto> selectDispMonthlyItems(Map<String, Object> map);
-
-        /**
-         * 勤怠/名称マスタ]就業登録/承認・月次情報表示項目
-         */
         List<TmgDispItemsDto> selectDispDailyItems(Map<String, Object> map);
 
 
@@ -350,5 +345,14 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                               @Param("compCode")String compCode,
                                               @Param("language")String language);
 
+    String selectWorkerTypeName(@Param("custId")String custId,
+                                @Param("compId")String compId,
+                                @Param("empid")String empid,
+                                @Param("baseDate")String baseDate);
+
+    String selectMasterCode(@Param("custId")String custId,
+                            @Param("compId")String compId,
+                            @Param("baseDate")String baseDate,
+                            @Param("masterCode")String masterCode);
 }
 

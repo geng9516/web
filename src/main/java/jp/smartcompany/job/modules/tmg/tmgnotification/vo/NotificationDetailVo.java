@@ -1,11 +1,14 @@
 package jp.smartcompany.job.modules.tmg.tmgnotification.vo;
 
 
+import jp.smartcompany.job.modules.core.pojo.entity.TmgNtfAttachedfileDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author Wang Ziyue
@@ -123,4 +126,11 @@ public class NotificationDetailVo {
     private String approvelLevelName;
     // 53 役職
     private String postid;
+
+    //  申請区分略称を取得
+    private String ntfName;
+    //  添付ファイル
+    private List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = new ArrayList<TmgNtfAttachedfileDO>();
+    //  申請ログ
+    private List<NtfActionLogVo> tmgNtfactionlogDOList = new ArrayList<NtfActionLogVo>();
 }

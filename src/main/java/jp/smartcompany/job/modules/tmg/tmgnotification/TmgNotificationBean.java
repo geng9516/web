@@ -440,11 +440,9 @@ public class TmgNotificationBean {
         param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
         //referlist 新规
         if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
-            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true,
-                    false, false, false, false);;
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true);
         }else{
-            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true,
-                    false, false, false, false);
+            referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true);
         }
 
         //基准日取得 入力site为系统日期
@@ -526,7 +524,7 @@ public class TmgNotificationBean {
                     nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
                 }
             }
-            if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())){
+            if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())&&param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
                 param.setNtfNo(nlVo.getTntfCntfNo());
                 //详细数据取得
                 NotificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
@@ -557,7 +555,7 @@ public class TmgNotificationBean {
         return notificationDispVo;
     }
 
-    //再申請用　list
+    //再申請/详细用　list
     public NotificationDetailVo getNotificationDetail(String ntfNo ,PsDBBean psDBBean){
         ParamNotificationListDto param=new ParamNotificationListDto();
         //基本信息
@@ -569,7 +567,16 @@ public class TmgNotificationBean {
         param.setToday(TmgUtil.getSysdate());
         param.setTodayD(DateUtil.parse(param.getToday()));
         //详细数据取得
-        return iTmgNotificationService.selectNotificationDetail(param);
+
+        NotificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
+        // 4 申請区分略称を取得
+        notificationDetailVo.setNtfName(iTmgNotificationService.selectNtfName(param.getCustId(), param.getCompId(), param.getNtfNo()));
+        // 5 添付ファイル
+        notificationDetailVo.setTmgNtfAttachedfileDoList(iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(), param.getCompId(), param.getNtfNo()));
+        // 7 申請ログ
+        notificationDetailVo.setTmgNtfactionlogDOList(iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo()));
+
+        return notificationDetailVo;
     }
 
 
@@ -651,11 +658,6 @@ public class TmgNotificationBean {
      * @return
      */
     public List<TypeGroupVo> getMgdNtfTypeDispAppList(PsDBBean psDBBean){
-
-
-
-
-
         List<MgdNtfTypeDispAppVo> mgdNtfTypeDispAppVoList = iMastGenericDetailService.selectMasterTmgNtfTypeDispAppList(psDBBean.getCustID(),
                 psDBBean.getCompCode(), DateTime.now(), psDBBean.getLanguage());
         List<TypeGroupVo> typeGroupVoList=new ArrayList<TypeGroupVo>();
@@ -686,8 +688,12 @@ public class TmgNotificationBean {
     }
 
 
-
-
+    /**
+     * 职员列表
+     * @param psDBBean
+     * @return
+     * @throws Exception
+     */
     public List<EmployeeListVo> getEmployeeList(PsDBBean psDBBean) throws Exception {
         //初始基准日取得
         String startDate = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)), TmgUtil.getSysdate()).getStartDate();

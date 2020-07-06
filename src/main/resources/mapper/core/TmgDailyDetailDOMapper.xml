@@ -33,8 +33,8 @@
                 TDAD_CCOMPANYID,
                 #{language}
             ) TDAD_CNOTWORK_NAME,     									<!-- 非勤務区分名称-->
-            TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) AS TDAD_NOPEN,           <!-- 開始時刻-->
-            TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) AS TDAD_NCLOSE,         <!-- 終了時刻-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NOPEN, 0) AS TDAD_NOPEN_HHMI,           <!-- 開始時刻-->
+            TMG_F_CONV_MIN2HHMI(TDAD_NCLOSE, 0) AS TDAD_NCLOSE_HHMI,         <!-- 終了時刻-->
             TDAD_NDELETEFLG,                              				<!-- 削除フラグ-->
             to_multi_byte(ROWID) AS ROW_ID                            	<!-- 行ID-->
         FROM

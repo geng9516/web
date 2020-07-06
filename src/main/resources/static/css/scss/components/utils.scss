@@ -6,7 +6,7 @@
 .iframe-wrap {
   background-color: var(--white);
   padding: 51px 0 0 50px;
-  height: calc(100vh - 6px);
+  height: calc(100vh - 7px);
   width: calc(100vw);
   border: none;
 }
@@ -218,7 +218,7 @@
   display: inline-block;
   background-color: var(--white);
   padding-left: 8px;
-  height: 32px;
+  min-height: 32px;
   line-height: 30px;
   width: 100%;
   position: relative;

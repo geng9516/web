@@ -13,6 +13,13 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ResultRest40tVo {
-
+    private String tdaCemployeeid;
+    private String tdadDyyyymm;
+    private String  tdadDyyyymmdd;
+    private String tdadCnotworkid;
+    private String tdadNopen;
+    private String tdadNclose;
+    private String tdadNopenTime;
+    private String  tdadNcloseTime;
 
 }

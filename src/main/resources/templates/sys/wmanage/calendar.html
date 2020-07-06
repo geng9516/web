@@ -141,6 +141,7 @@
                     </i-col>
                 </Row>
             </div>
+        </div>
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
@@ -178,6 +179,16 @@
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 21
+                    },
+                    query: {
+                        year:'',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        //目标sec
+                        txtTmgReferListTreeViewAdminTargetSection: '',
+                        //基准日
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 21,
                     },
                 }
             },
@@ -287,11 +298,17 @@
 
                 },
                 async handleClickLeaf(e) {
+                    if (!e[0]) return
                     this.deptDrawShow = false
-                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                    this.referListObject[section] = e[0].secid
                     this.deptName = e[0].secnic
-                    this.getTableData()
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.getCalender()
+                },
+                async getCalender() {
+                    this.query.year=Utils.formatDate(this.curDate,'yyyy')
+                    const data = await this.http.get('sys/calendar/getCalendar', this.query)
+                    console.log(data)
                 },
             }
         })

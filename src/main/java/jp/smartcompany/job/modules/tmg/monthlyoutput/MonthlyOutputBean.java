@@ -4,6 +4,7 @@ package jp.smartcompany.job.modules.tmg.monthlyoutput;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyOutputLogSecDO;
@@ -38,22 +39,15 @@ public class MonthlyOutputBean {
 
 
     /** 汎用参照リスト */
-    private TmgReferList _referList = null;
-
-    private PsDBBean psDBBean;
-
-    private IMastOrganisationService iMastOrganisationService;
-    private IMastGenericDetailService iMastGenericDetailService;
-    private ITmgWorkMonthlyoutputlistService iTmgWorkMonthlyoutputlistService;
-    private ITmgWorkMoYearlistService iTmgWorkMoYearlistService;
-    private ITmgTriggerService iTmgTriggerService;
-    private ITmgUpdsKintaiService iTmgUpdsKintaiService;
-    private ITmgMonthlyOutputLogService iTmgMonthlyOutputLogService;
-    private ITmgMonthlyOutputLogSecService iTmgMonthlyOutputLogSecService;
-    private ITmgAlertmsgService iTmgAlertmsgService;
-
-
-    MonthlyOutPutDto param=new MonthlyOutPutDto();
+    private final IMastOrganisationService iMastOrganisationService;
+    private final IMastGenericDetailService iMastGenericDetailService;
+    private final ITmgWorkMonthlyoutputlistService iTmgWorkMonthlyoutputlistService;
+    private final ITmgWorkMoYearlistService iTmgWorkMoYearlistService;
+    private final ITmgTriggerService iTmgTriggerService;
+    private final ITmgUpdsKintaiService iTmgUpdsKintaiService;
+    private final ITmgMonthlyOutputLogService iTmgMonthlyOutputLogService;
+    private final ITmgMonthlyOutputLogSecService iTmgMonthlyOutputLogSecService;
+    private final ITmgAlertmsgService iTmgAlertmsgService;
 
 
     /** 表示中のページ */
@@ -103,25 +97,39 @@ public class MonthlyOutputBean {
      * <li>対象年-1年の12月～対象年の11月までの月単位での ダウンロードデータ集計検索</li>
      * executeDisp_RMonthlyOutput
      */
-    public void actionExecuteDispRMonthlyOutput(ModelMap modelMap){
-        // 組織を選択、かつ選択組織の表示権限を有していない場合は何もしない。
-        if(!StrUtil.hasEmpty(getSectionId()) && hasAuthOfSect(getSectionId())){
-            TargetDateLimit targetDateLimit=iMastGenericDetailService.selectTargetFiscalYear(param.getCustId(),param.getCompId(),param.getTargetDate());
-
-            if(!StrUtil.hasEmpty(targetDateLimit.getTargetStartDate())&& !StrUtil.hasEmpty(targetDateLimit.getTargetStartDate())){}
-            TargetFiscalYearDto targetFiscalYear=iMastOrganisationService.selectTargetFiscalYear(param.getCustId(),param.getCompId()
-                        ,param.getTargetSection(),param.getLang(),param.getTargetDate(),targetDateLimit.getTargetStartDate(),targetDateLimit.getTargetEndDate(),getBaseDate());
-
-
-            if(!StrUtil.hasEmpty(targetFiscalYear.getTargetYearDate())){
-                createWorkMonthlyOutPutListData(param.getCustId(), param.getCompId(), targetFiscalYear.getTargetYearDate());
-            }
-
-            List<TmgMoYearListVo> tmgMoYearListVoList = iTmgWorkMoYearlistService.selectMoYearList(param.getCustId(),param.getCompId(),
-                    param.getTargetSection(),param.getTargetDate(),param.getLang(), getBaseDate());
-
-            modelMap.addAttribute("tmgMoYearListVoList", tmgMoYearListVoList);
+    public List<TmgMoYearListVo> actionExecuteDispRMonthlyOutput(String year,PsDBBean psDBBean,TmgReferList referList){
+        String targetYear;
+        String baseDate;
+        if(StrUtil.hasEmpty(referList.getRecordDate())){
+            baseDate=TmgUtil.getSysdate();
+        }else{
+            baseDate=referList.getRecordDate();
         }
+        if(StrUtil.hasEmpty(year)){
+            targetYear=baseDate;
+        }else{
+            targetYear=year;
+        }
+        // 組織を選択、かつ選択組織の表示権限を有していない場合は何もしない。
+        if(!StrUtil.hasEmpty(getSectionId("",referList)) && hasAuthOfSect(getSectionId("",referList),psDBBean,referList)){
+            TargetDateLimit targetDateLimit=iMastGenericDetailService.selectTargetFiscalYear(psDBBean.getCustID(), psDBBean.getCompCode(),targetYear);
+
+            if(!StrUtil.hasEmpty(targetDateLimit.getTargetStartDate())&& !StrUtil.hasEmpty(targetDateLimit.getTargetStartDate())) {
+                TargetFiscalYearDto targetFiscalYear = iMastOrganisationService.selectTargetFiscalYear(psDBBean.getCustID(), psDBBean.getCompCode()
+                        , referList.getTargetSec(), psDBBean.getLanguage(), targetYear, targetDateLimit.getTargetStartDate(), targetDateLimit.getTargetEndDate(), baseDate);
+
+
+                if (!StrUtil.hasEmpty(targetFiscalYear.getTargetYearDate())) {
+                    createWorkMonthlyOutPutListData(psDBBean.getCustID(), psDBBean.getCompCode(), targetFiscalYear.getTargetYearDate(), psDBBean);
+                }
+
+                List<TmgMoYearListVo> tmgMoYearListVoList = iTmgWorkMoYearlistService.selectMoYearList(psDBBean.getCustID(), psDBBean.getCompCode(),
+                        referList.getTargetSec(), targetYear, psDBBean.getLanguage(), baseDate);
+
+                return tmgMoYearListVoList;
+            }
+        }
+        return null;
     }
 
     /**
@@ -130,22 +138,27 @@ public class MonthlyOutputBean {
      * リクエストパラメータから検索値を取得し、以下のSQLクエリを取得し実行します。
      *executeNotAppList_RNotAppList
      */
-    private void actionExecuteNotAppListRNotAppList(ModelMap modelMap) {
-        String sPage = psDBBean.getReqParam("txtSelectedPage");
+    public NotApprovalListVo actionExecuteNotAppListRNotAppList(String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) {
         if (sPage == null || sPage.length() == 0) {
-            _currentPage = 1; // default select Page
-        } else {
-            _currentPage = Integer.parseInt(sPage);
+            sPage = "1";
         }
         int pageInfo[] = getPageOfSearchNumber(sPage);
 
-        List<NotApprovalVo> notApprovalVoList= iMastOrganisationService.selectNotApproval(param.getCustId(),param.getTargetComp(),
-                param.getTargetSection(),param.getTargetDate(),param.getLang(),pageInfo[0],pageInfo[1]);
+        List<NotApprovalVo> notApprovalVoList= iMastOrganisationService.selectNotApproval(psDBBean.getCustID(),psDBBean.getCompCode(),
+                referList.getTargetSec(),baseDate,psDBBean.getLanguage(),pageInfo[0],pageInfo[1]);
 
+        NotApprovalListVo vo = new NotApprovalListVo();
         if(notApprovalVoList.size() > 0){
-            _notAppCount = Integer.parseInt(notApprovalVoList.get(0).getNotApprovalCount());
-        }
 
+            vo.setTotalCount(Integer.valueOf(notApprovalVoList.get(0).getNotApprovalCount()));
+            vo.setCurrPage(Integer.valueOf(sPage));
+            vo.setPageSize(notApprovalVoList.size());
+            vo.setTotalPage(Integer.valueOf(vo.getTotalCount())/50+1);
+            vo.setList(notApprovalVoList);
+        }else{
+            return null;
+        }
+        return vo;
     }
 
     /**
@@ -153,30 +166,38 @@ public class MonthlyOutputBean {
      * リクエストパラメータから検索値を取得し、以下のSQLクエリを取得し実行します。
      *executeNotAppList_RNotAppSectionList
      */
-    private void actionExecuteNotAppListRNotAppSectionList(ModelMap modelMap) {
-        String sPage = psDBBean.getReqParam("txtSelectedPage");
+    public NotAppSectionListVo actionExecuteNotAppListRNotAppSectionList(String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) {
         if (sPage == null || sPage.length() == 0) {
-            _currentPage = 1; // default select Page
-        } else {
-            _currentPage = Integer.parseInt(sPage);
+            sPage = "1";
         }
         int pageInfo[] = getPageOfSearchNumber(sPage);
 
-        List<NotFixedDeptListVo> notFixedDeptListVoList = iMastOrganisationService.selectNotFixedDeptList(param.getCustId(),param.getTargetComp(),
-                param.getTargetSection(),param.getTargetDate(),param.getLang(),pageInfo[0],pageInfo[1]);
+        List<NotFixedDeptListVo> notFixedDeptListVoList = iMastOrganisationService.selectNotFixedDeptList(psDBBean.getCustID(),psDBBean.getCompCode(),
+                referList.getTargetSec(),baseDate,psDBBean.getLanguage(),pageInfo[0],pageInfo[1]);
+
+        NotAppSectionListVo vo = new NotAppSectionListVo();
 
         if (notFixedDeptListVoList.size() > 0) {
-            _notAppSecCount = Integer.parseInt(notFixedDeptListVoList.get(0).getNotMonthlyfixCount());
+            vo.setTotalCount(Integer.parseInt(notFixedDeptListVoList.get(0).getNotMonthlyfixCount()));
+            vo.setCurrPage(Integer.valueOf(sPage));
+            vo.setPageSize(notFixedDeptListVoList.size());
+            vo.setTotalPage(Integer.valueOf(vo.getTotalCount())/50+1);
+            vo.setList(notFixedDeptListVoList);
+        }else{
+            return null;
         }
-
+        return vo;
     }
+
     /**
      * 月次集計データ作成画面表示処理プロセスを実行します。 以下は処理プロセスです。
      * executeDisp_RCalc
      */
-    private void actionExecuteDispRCalc(ModelMap modelMap) {
-        List<MastGenericDetailDO> mgdDtoList=iMastGenericDetailService.selectTmgSectionAdmin(param.getCustId(),param.getCompId(),param.getTargetSection()
-                                                                                    ,param.getLang(),getBaseDate());
+    private List<MastGenericDetailDO> actionExecuteDispRCalc(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
+        List<MastGenericDetailDO> mgdDtoList=iMastGenericDetailService.selectTmgSectionAdmin(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec()
+                ,psDBBean.getLanguage(),baseDate);
+
+        return   mgdDtoList;
     }
 
     /**
@@ -185,9 +206,11 @@ public class MonthlyOutputBean {
      * <li>CSVファイル名を生成するSQL文を取得します。</li>
      * <li>SQLを実行します。</li>
      * <li>親クラスにダウンロードファイル情報を設定します。</li>
+     * sRetroFlg  遡及フラグ
+     * dlTypeId   DL種別コード
      * executeDownload_CDownload
      */
-    private void actionexecuteDownloadCDownload(ModelMap modelMap){
+    private void actionexecuteDownloadCDownload(String baseDate,String sRetroFlg,String dlTypeId,PsDBBean psDBBean,TmgReferList referList){
         // ダブルクオートで囲む場合
         if (StringUtils.isNotBlank(psDBBean.getReqParam(CB_USE_DOUBLE_QUOT))) {
             CSV_CONCAT1 = ",\"";
@@ -201,32 +224,32 @@ public class MonthlyOutputBean {
         List<TmgMoTableFunctionVo> tmgMoTableFunctionVoList = new ArrayList<TmgMoTableFunctionVo>();
         List<String>   tmgMoRetroLayout = new ArrayList<String>();
         // 遡及の場合
-        if ("on".equals( psDBBean.getReqParam("sRetroFlg"))) {
+        if ("on".equals( sRetroFlg)) {
             // ファンクション名取得
-            tmgMoTableFunctionVoList=iMastGenericDetailService.selectTmgMoTableFunction(param.getCustId(),param.getCompId(),param.getLang()
-                    ,param.getTargetDate(),TmgUtil.Cs_MGD_TMG_MOTABLEFUNCTION_2);
+            tmgMoTableFunctionVoList=iMastGenericDetailService.selectTmgMoTableFunction(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getLanguage()
+                    ,baseDate,TmgUtil.Cs_MGD_TMG_MOTABLEFUNCTION_2);
             // カラム名リスト取得
-            tmgMoRetroLayout=iMastGenericDetailService.selectTmgMoRetroLayout(param.getCustId(),param.getCompId(),param.getLang()
-                    ,param.getTargetDate(),psDBBean.getReqParam("dlTypeId"));
+            tmgMoRetroLayout=iMastGenericDetailService.selectTmgMoRetroLayout(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getLanguage()
+                    ,baseDate,dlTypeId);
         // 月例の場合
         } else {
             // ファンクション名取得
-            tmgMoTableFunctionVoList=iMastGenericDetailService.selectTmgMoTableFunction(param.getCustId(),param.getCompId(),param.getLang()
-                    ,param.getTargetDate(),TmgUtil.Cs_MGD_TMG_MOTABLEFUNCTION_1);
+            tmgMoTableFunctionVoList=iMastGenericDetailService.selectTmgMoTableFunction(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getLanguage()
+                    ,baseDate,TmgUtil.Cs_MGD_TMG_MOTABLEFUNCTION_1);
 
             // カラム名リスト取得
-            tmgMoRetroLayout=iMastGenericDetailService.selectTmgMoRetroLayout(param.getCustId(),param.getCompId(),param.getLang()
-                    ,param.getTargetDate(),psDBBean.getReqParam("dlTypeId"));
+            tmgMoRetroLayout=iMastGenericDetailService.selectTmgMoRetroLayout(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getLanguage()
+                    ,baseDate,dlTypeId);
         }
 
 
         // CSVデータ取得用SQL構築
         Map<String,Object> moUpds = iTmgUpdsKintaiService.selectMoUpds(tmgMoRetroLayout,tmgMoTableFunctionVoList.get(0).getMgdCfunctionid()
-        ,param.getTargetSection(),psDBBean.getReqParam("dlTypeId"),param.getTargetDate(),param.getCompId(),param.getCompId(),param.getLang());
+        ,referList.getTargetSec(),dlTypeId,baseDate, psDBBean.getCompCode(), psDBBean.getCompCode(),psDBBean.getLanguage());
 
 
         // CSVファイル名
-        String TmgMoCsvFileName = iMastGenericDetailService.selectTmgMoCsvFileName(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate(),psDBBean.getReqParam("dlTypeId"));
+        String TmgMoCsvFileName = iMastGenericDetailService.selectTmgMoCsvFileName(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate,dlTypeId);
 
 
     }
@@ -235,10 +258,10 @@ public class MonthlyOutputBean {
      * CSVダウンロード画面表示処理プロセスを実行します。 リクエストパラメータから検索対象年月を取得し、このクラスオブジェクトに保持します。
      * executeDisp_RDownloadView
      */
-    private void actionExecuteDispRDownloadView(ModelMap modelMap){
+    private void actionExecuteDispRDownloadView(String baseDate,PsDBBean psDBBean,TmgReferList referList){
 
-        List<MoDLTypeVo> moDLTypeVoList = iMastGenericDetailService.selectTmgMoDLType(param.getCustId(),param.getCompId()
-                                                                                            ,param.getLang(),getBaseDate());
+        List<MoDLTypeVo> moDLTypeVoList = iMastGenericDetailService.selectTmgMoDLType(psDBBean.getCustID(), psDBBean.getCompCode()
+                                                                                            ,psDBBean.getLanguage(),baseDate);
     }
 
     /**
@@ -262,7 +285,7 @@ public class MonthlyOutputBean {
      * </p>
      *
      */
-    private synchronized void actionExecuteCALCCCALC(ModelMap modelMap) {
+    private synchronized void actionExecuteCALCCCALC(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
         String seq =null;
         try {
             seq= iTmgMonthlyOutputLogService.selectSeq();
@@ -271,28 +294,26 @@ public class MonthlyOutputBean {
             return; // ジョブ番号取得失敗したときの対応
         }
         // q0.ログ挿入
-        int insertMonthlyOutputLogSec=insertMonthlyOutputLogSec(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate(),
-                param.getTargetSection(),seq);
+        int insertMonthlyOutputLogSec=insertMonthlyOutputLogSec(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate,
+                referList.getTargetSec(),seq);
 
         // q1.トリガー削除
         int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_CCALC)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
         // q2.トリガー挿入
-        int insertTmgTrigger = insertTmgTrigger(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate()
-        ,MOD_ID_CCALC,param.getTargetSection(),seq);
+        int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
+        ,MOD_ID_CCALC,referList.getTargetSec(),seq);
 
         // q3.トリガー削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_CCALC)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
-
-
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
         if (insertMonthlyOutputLogSec <= 0||insertTmgTrigger<=0||deleteTmgTriggerAft<=0) {
             _flgFixedCalc = STAT_CALC_FIXED_FAILER; // failer
@@ -306,48 +327,60 @@ public class MonthlyOutputBean {
      * 勤怠月次締めプロセスを実行します。
      * executeDisp_UFIXESMONTHLY
      */
-    private void actionExecuteDispUFIXESMONTHLY(ModelMap modelMap) {
+    public GlobalResponse actionExecuteDispUFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
         // q1.トリガー削除
         int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_UFIXESMONTHLY)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
         // q2.トリガー挿入
-        int insertTmgTrigger = insertTmgTrigger(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate()
-                ,MOD_ID_UFIXESMONTHLY,param.getTargetSection()," NULL ");
+        int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
+                ,MOD_ID_UFIXESMONTHLY,referList.getTargetSec()," NULL ");
 
         // q3.トリガー削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_UFIXESMONTHLY)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
+
+        if(insertTmgTrigger==1&&insertTmgTrigger==1){
+            return GlobalResponse.ok();
+        }else{
+            return GlobalResponse.error();
+        }
     }
 
     /**
      * 勤怠月次締め解除プロセスを実行します。
      * executeDisp_DFIXESMONTHLY
      */
-    private void actionExecuteDisp_DFIXESMONTHLY(ModelMap modelMap){
+    public GlobalResponse actionExecuteDisp_DFIXESMONTHLY(String baseDate,PsDBBean psDBBean,TmgReferList referList){
         // q1.トリガー削除
         int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_DFIXESMONTHLY)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
         // q2.トリガー挿入
-        int insertTmgTrigger = insertTmgTrigger(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate()
-                ,MOD_ID_DFIXESMONTHLY,param.getTargetSection()," NULL ");
+        int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
+                ,MOD_ID_DFIXESMONTHLY,referList.getTargetSec()," NULL ");
 
         // q3.トリガー削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID",MOD_ID_DFIXESMONTHLY)
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId()));
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
+
+        if(insertTmgTrigger==1&&insertTmgTrigger==1){
+            return GlobalResponse.ok();
+        }else{
+            return GlobalResponse.error();
+        }
     }
 
 
@@ -355,74 +388,91 @@ public class MonthlyOutputBean {
      * 確定処理プロセスを実行します。
      * executeChangeFix
      */
-    private void actionExecuteChangeFix(ModelMap modelMap) {
-
+    public GlobalResponse actionExecuteChangeFix(String baseDate, String action, PsDBBean psDBBean, TmgReferList referList) {
+        String targetYear;
+        String date;
+        if(StrUtil.hasEmpty(referList.getRecordDate())){
+            date=TmgUtil.getSysdate();
+        }else{
+            date=referList.getRecordDate();
+        }
+        if(StrUtil.hasEmpty(date)){
+            targetYear=baseDate;
+        }else{
+            targetYear=baseDate;
+        }
         // 確定可能かどうかをチェックする
-        int  salaryFix = iTmgWorkMoYearlistService.selectMoYearListColumn(param.getCustId(),param.getCompId(),
-                param.getTargetSection(),param.getTargetDate(),
-                ""
-                //TODO
-                //getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_SYSTEM_INTRODUCTION_DATE).replace('-', '/')
-                ,param.getLang(), getBaseDate());
+        int  salaryFix = iTmgWorkMoYearlistService.selectMoYearListColumn(psDBBean.getCustID(), psDBBean.getCompCode(),
+                referList.getTargetSec(),baseDate,
+                psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_SYSTEM_INTRODUCTION_DATE).replace('-', '/')
+                ,psDBBean.getLanguage(), targetYear);
 
 
         // SALARY_FIX="1"なら確定可能、"3"なら確定解除可能
         if(salaryFix == 1 || salaryFix == 3){
 
             // 更新プログラムID組み立て
-            String modifierProgID = "MonthlyOutput" + "_" + param.getAction();
+            String modifierProgID="";
 
+            if(action.equals("C")){
+                modifierProgID = "MonthlyOutput_ACT_Disp_CFixesSalary";
+            }else if(action.equals("D")){
+                modifierProgID = "MonthlyOutput_ACT_Disp_DFixesSalary";
+            }
+
+            if(StrUtil.hasEmpty(modifierProgID)){
+                return GlobalResponse.error("action is null");
+            }
             // q1.トリガー削除
             int deleteTmgTriggerbef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                    .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                    .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                     .eq("TTR_CMODIFIERPROGRAMID",modifierProgID)
-                    .eq("TTR_CCUSTOMERID",param.getCustId())
-                    .eq("TTR_CCOMPANYID",param.getCompId()));
+                    .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                    .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
             // q2.トリガー挿入
-            int insertTmgTrigger = insertTmgTrigger(param.getCustId(),param.getCompId(),param.getUserCode(),param.getTargetDate()
-                    ,modifierProgID,param.getTargetSection()," NULL ");
+            int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
+                    ,modifierProgID,referList.getTargetSec()," NULL ");
 
             // q3.トリガー削除
             int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                    .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                    .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                     .eq("TTR_CMODIFIERPROGRAMID",modifierProgID)
-                    .eq("TTR_CCUSTOMERID",param.getCustId())
-                    .eq("TTR_CCOMPANYID",param.getCompId()));
+                    .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                    .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
 
         }
             // SALARY_FIX="2"の場合、集計処理が必要なのでアラートを仕込んでおく（画面再表示時にアラートを出す）
         else if(salaryFix == 2){
             //集計処理を行ってから確定をしてください。
-            modelMap.addAttribute("ERROR", "ERROR_NOT_CALC_SALARY");
+            GlobalResponse.error("ERROR_NOT_CALC_SALARY");
         }
             // SALARY_FIX="0"は、そもそもこの処理をコールできないはずなので、想定外のエラーとしておく
         else{
             //確定処理で例外が発生しました。システム管理者へ連絡してください。。
-            modelMap.addAttribute("ERROR", "ERROR_FAIL_SALARYFIX");
+            GlobalResponse.error("ERROR_FAIL_SALARYFIX");
         }
+
+        return GlobalResponse.ok();
     }
 
 
     /**
      * 集計時の問題(アラート)ダイアログの表示プロセスを実行します。
      */
-    private void executeNotAppList_RAlertList(ModelMap modelMap) {
-        String sPage = psDBBean.getReqParam("txtSelectedPage");
+    private AlertVo executeNotAppList_RAlertList(String baseDate, String sPage, PsDBBean psDBBean, TmgReferList referList) {
         if (sPage == null || sPage.length() == 0) {
-            _currentPage = 1; // default select Page
+            sPage = "1"; // default select Page
         } else {
-            _currentPage = Integer.parseInt(sPage);
         }
         int pageInfo[] = getPageOfSearchNumber(sPage);
 
 
-        AlertVo alertVo=iTmgAlertmsgService.selectAlert(param.getCustId(),param.getCompId(),param.getTargetSection(),param.getTargetDate(),
-                param.getLang(),pageInfo[0],pageInfo[1]);
+        AlertVo alertVo=iTmgAlertmsgService.selectAlert(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec(),baseDate,
+                psDBBean.getLanguage(),pageInfo[0],pageInfo[1]);
 
-        //確定処理で例外が発生しました。システム管理者へ連絡してください。。
-        modelMap.addAttribute("ERRORCOUNT", alertVo.getAlertCount());
+        return alertVo;
     }
 
     /**
@@ -517,7 +567,7 @@ public class MonthlyOutputBean {
      * @param sCompId    法人ＩＤ
      * @param targetYear 表示対象年度
      */
-    private void createWorkMonthlyOutPutListData(String sCsustId, String sCompId, String targetYear) {
+    private void createWorkMonthlyOutPutListData(String sCsustId, String sCompId, String targetYear,PsDBBean psDBBean) {
 
         // 処理対象年を取得
         String targetYYYY = targetYear.substring(0, 4);
@@ -531,20 +581,20 @@ public class MonthlyOutputBean {
             try {
                 // トリガー削除
                 int deleteTmgTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                                                            .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                                                            .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                                                             .eq("TTR_CMODIFIERPROGRAMID", MOD_ID_DISPRMONTHLYOUTPUT)
-                                                            .eq("TTR_CCUSTOMERID", param.getCustId())
-                                                            .eq("TTR_CCOMPANYID", param.getCompId()));
+                                                            .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                                                            .eq("TTR_CCOMPANYID",  psDBBean.getCompCode()));
 
                 // トリガー登録
-                int insertTmgTrigger = insertTmgTrigger(param.getCustId(),param.getCompId(),param.getUserCode(),targetYYYY,MOD_ID_DISPRMONTHLYOUTPUT);
+                int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),targetYYYY,MOD_ID_DISPRMONTHLYOUTPUT);
 
                 // トリガー削除
                 int deleteTmgTriggerAfr = iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                                            .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                                            .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                                             .eq("TTR_CMODIFIERPROGRAMID", MOD_ID_DISPRMONTHLYOUTPUT)
-                                            .eq("TTR_CCUSTOMERID", param.getCustId())
-                                            .eq("TTR_CCOMPANYID", param.getCompId()));
+                                            .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                                            .eq("TTR_CCOMPANYID",  psDBBean.getCompCode()));
 
 
             } catch (Exception e) {
@@ -619,17 +669,17 @@ public class MonthlyOutputBean {
      * リクエスト中の組織変更で意図しない組織が処理対象とならない様、処理実行時に表示されている組織を優先する
      * @return 組織コード
      */
-    public String getSectionId() {
-        if(_referList != null){
+    public String getSectionId(String action,TmgReferList referList) {
+        if(referList != null){
             // 初期表示や組織変更の場合、選択された組織を返す
-            if ("".equals(StringUtils.defaultString(param.getAction()))
-                    || "".equals(StringUtils.defaultString(param.getTargetSection()))) {
-                return _referList.getTargetSec();
+            if ("".equals(StringUtils.defaultString(action))
+                    || "".equals(StringUtils.defaultString(referList.getTargetSec()))) {
+                return referList.getTargetSec();
                 // それ以外は表示中組織を返す
             } else {
-                return (StringUtils.defaultString(param.getTargetSection()).equals(_referList.getTargetSec()))
-                        ? _referList.getTargetSec()
-                        : param.getTargetSection();
+                return (StringUtils.defaultString(referList.getTargetSec()).equals(referList.getTargetSec()))
+                        ? referList.getTargetSec()
+                        : referList.getTargetSec();
             }
         }else{
             return null;
@@ -642,7 +692,7 @@ public class MonthlyOutputBean {
      * @param  section:組織
      * @return 権限有無(有:true、無:false)
      */
-    public boolean hasAuthOfSect(String section) {
+    public boolean hasAuthOfSect(String section,PsDBBean psDBBean,TmgReferList referList) {
 
         //todo
         String sExists = "";//getDivTreeSearchRange(requestHash, session);
@@ -651,8 +701,8 @@ public class MonthlyOutputBean {
         }
 
         // 検索
-        int organisationCount=iMastOrganisationService.selectHasAuth(param.getCustId(),param.getTargetComp()
-        ,section,_referList.getRecordDate(),param.getLang(),sExists);
+        int organisationCount=iMastOrganisationService.selectHasAuth(psDBBean.getCustID(),psDBBean.getCompCode()
+        ,section,referList.getRecordDate(),psDBBean.getLanguage(),sExists);
 
         if(organisationCount > 0){
             return true;
@@ -660,33 +710,7 @@ public class MonthlyOutputBean {
         return false;
     }
 
-    /**
-     * 検索対象年月日を取得します。
-     *
-     * @return 検索対象年月日
-     */
-    public void getTargetDate() {
 
-        // リンククリック時だけではなく、組織ツリーの基準日を使う場合も考慮して毎回取得し直す
-        String date = psDBBean.getReqParam("txtTargetYear");
-        if (date == null || date.length() == 0) {
-            date = getBaseDate();
-        }
-        param.setTargetDate(date);
-    }
 
-    /**
-     * ツリーの基準日を取得します。
-     * @return
-     */
-    public String getBaseDate(){
 
-        if(_referList != null){
-            if (_referList.getRecordDate() != null){
-                return _referList.getRecordDate();
-            }
-        }
-        return psDBBean.getSysDate();
-
-    }
 }

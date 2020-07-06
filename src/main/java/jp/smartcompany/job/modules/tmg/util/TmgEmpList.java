@@ -845,7 +845,7 @@ public class TmgEmpList {
      */
     public String buildSQLForSelectEmpListFromDual() throws Exception{
 
-        // 社員番号でdistinctをかけてから、SQLを構築する
+        // 社員番号でdistinctをかけてから、SQLを構築するcreateSearchEmpList
         int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
 
         List distinctDataArray = JSONArrayGenerator.distinctDataArray(dataArray, distinctKeyArray
@@ -917,7 +917,7 @@ public class TmgEmpList {
     public boolean existsEmp(String empid){
         for(Iterator i = dataArray.iterator(); i.hasNext();){
             List data = (List)i.next();
-            if(empid.equals((String)data.get(DEFAULT_KEY_EMPID))){
+            if(empid.equals(data.get(DEFAULT_KEY_EMPID)+"")){
                 return true;
             }
         }

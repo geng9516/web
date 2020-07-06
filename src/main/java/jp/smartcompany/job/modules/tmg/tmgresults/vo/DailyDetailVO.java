@@ -27,11 +27,11 @@ public class DailyDetailVO {
     /**
      * 開始時刻
      */
-    private String tdadBopen;
+    private String tdadNopenHhmi;
     /**
      * 終了時刻
      */
-    private String tdadNclose;
+    private String tdadNcloseHhmi;
     /**
      * 削除フラグ
      */
