@@ -79,9 +79,14 @@ public class GroupAppManagerController {
       }
       String systemId = (String)params.get("systemId");
       String searchDateStr = (String)params.get("searchDate");
+      Date date;
+      if (StrUtil.isBlank(searchDateStr)){
+          date = DateUtil.date();
+      }else {
+          date = SysUtil.transStringToDate(searchDateStr);
+      }
       String companyId = (String)params.get("companyId");
       boolean isAll =Boolean.parseBoolean(isAllStr);
-      Date searchDate = SysUtil.transStringToDate(searchDateStr);
       if (StrUtil.isBlank(systemId)){
             systemId=psDBBean.getSystemCode();
           }
@@ -91,7 +96,7 @@ public class GroupAppManagerController {
           return groupAppManagerMainLogic.getGroupList(psDBBean.getCustID(),
             systemId,
             psDBBean.getLanguage(),
-            searchDate, companyId, isAll);
+                  date, companyId, isAll);
   }
 
   @GetMapping("sites")

@@ -89,7 +89,7 @@
                     <span :class="showRed(row.workInHolidayCount)">{{ row.workInHolidayCount.split('@')[0]}}</span>
                 </template>
                 <template slot-scope="{ row }" slot="avgtime" v-if="row.avgOverTime">
-                    <span :class="showRed(row.avgOverTime,'average')"
+                    <span :class="['ave-worktime', showRed(row.avgOverTime, 'average')]"
                         @click="showAverageDraw(row)">{{ row.avgOverTime.split('@')[0] }}
                     </span>
                 </template>
@@ -157,12 +157,12 @@
                 </div>
                 <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
-                        <!-- <span @click="toWorkPage"
-                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span> -->
+                        <span @click="toWorkPage"
+                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span>
                     </template>
 
                     <template slot-scope="{ row }" slot="wordkDivision">
-                        <!-- <span :class="showRed(row.workingId, row)">{{ row.workingId }}</span> -->
+                        <span>{{ row.workingId }}</span>
                     </template>
 
                     <template slot-scope="{ row }" slot="workStartFinal">

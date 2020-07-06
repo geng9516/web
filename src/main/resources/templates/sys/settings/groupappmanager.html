@@ -5,275 +5,354 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <main class="content startregistersettings-warp">
-        <div class="content_head">
-            <div class="header">
-                <div class="title1">
-                    <h1>
-                        <Icon type="i-emeer colored"></Icon>
-                        {{ `起動権限設定` }}
-                    </h1>
-                </div>
-                <div class="btnbox">
-                    <span style="flex:1"></span>
-                    <i-button type="warning" icon="md-download" ghost size="large">Excel出力</i-button>
-                </div>
-            </div>
-            <div class="searchwrap">
-                <span class="label">システム名</span>
-                <i-select :value="1" class="mr15" style="width:200px">
-                    <i-option :value="1" label="SmartCompany"></i-option>
-                </i-select>
-                <span class="label">選択法人名</span>
-                <i-select v-model="selectType" class="mr15">
-                    <i-option :value="0" label="全て"></i-option>
-                    <i-option :value="1" label="国立研究開発法人 医薬基盤・健康・栄養研究所"></i-option>
-                </i-select>
-                <span class="label">選択グループ名</span>
-                <i-select v-model="groupType">
-                    <i-option :value="0" label="全グループ表示"></i-option>
-                    <i-option :value="1" label="システム管理者(医薬基盤)"></i-option>
-                    <i-option :value="2" label="システム管理者（ＳＣＩ）"></i-option>
-                    <i-option :value="3" label="承認者(医薬基盤)"></i-option>
-                    <i-option :value="4" label="代理承認者(医薬基盤)"></i-option>
-                </i-select>
-            </div>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <main class="content startregistersettings-warp">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `起動権限設定` }}
+          </h1>
         </div>
-        <div class="content_body">
-            <div class="table-top">
-                <Row :gutter="16">
-                    <i-col span="4">
-                    <i-button type="text" class="blue">
-                        <Icon type="ios-arrow-back"></Icon>
-                        <span class="ml5">2019/12/23改定分</span>
-                    </i-button>
-                    </i-col>
-                    <i-col span="20" class="tr">
-                    選択サイト名：
-                    <i-select :value="0" class="mr15" style="width:260px" transfer>
-                        <i-option :value="0" label="全サイト表示"></i-option>
-                        <i-option :value="1" label="国立研究開発法人 医薬基盤・健康・栄養研究所"></i-option>
-                    </i-select>
-                    選択アプリケーション名：
-                    <i-select :value="0" class="mr15" style="width:260px" transfer>
-                        <i-option :value="0" label="全アプリケーション"></i-option>
-                        <i-option :value="2" label="掲示板"></i-option>
-                        <i-option :value="3" label="打刻"></i-option>
-                        <i-option :value="4" label="就業登録"></i-option>
-                        <i-option :value="5" label="休暇・休業申請"></i-option>
-                        <i-option :value="6" label="出勤簿"></i-option>
-                        <i-option :value="7" label="予定確認"></i-option>
-                        <i-option :value="8" label="承認状況一覧"></i-option>
-                        <i-option :value="9" label="就業承認"></i-option>
-                    </i-select>
-                    今回改定日：
-                    <date-picker type="date" :value="new Date()" format="yyyy/MM/dd" transfer clearable editable />
-                    </i-col>
-                </Row>
-            </div>
-            <i-table row-key="id" border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading">
-                <template slot-scope="{ row }" slot="isAdmin">
-                    <span :class="row.isAdmin ? 'blue' : 'red'">{{ row.isAdmin === 1 ? '〇' : row.isAdmin === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isAdmin2">
-                    <span :class="row.isAdmin2 ? 'blue' : 'red'">{{ row.isAdmin2 === 1 ? '〇' : row.isAdmin2 === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isConfirmer">
-                    <span :class="row.isConfirmer ? 'blue' : 'red'">{{ row.isConfirmer === 1 ? '〇' : row.isConfirmer === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isAgency">
-                    <span :class="row.isAgency ? 'blue' : 'red'">{{ row.isAgency === 1 ? '〇' : row.isAgency === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isEditer">
-                    <span :class="row.isEditer ? 'blue' : 'red'">{{ row.isEditer === 1 ? '〇' : row.isEditer === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isConfirmer2">
-                    <span :class="row.isConfirmer2 ? 'blue' : 'red'">{{ row.isConfirmer2 === 1 ? '〇' : row.isConfirmer2 === 2 ? '✖' : '' }}</span>
-                  </template>
-
-                  <template slot-scope="{ row }" slot="isAdmin3">
-                    <span :class="row.isAdmin3 ? 'blue' : 'red'">{{ row.isAdmin3 === 1 ? '〇' : row.isAdmin3 === 2 ? '✖' : '' }}</span>
-                  </template>
-            </i-table>
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          <i-button type="warning" icon="md-download" ghost size="large">Excel出力</i-button>
         </div>
-    </main>
-    <div th:replace="layout/script::common_script"></div>
-    <script type="text/babel" th:inline="javascript">
-        const START_REGISTER_SETTINGS = new Vue({
-            el: '.startregistersettings-warp',
-            data() {
-                return {
-                    radioType: 0,
-                    selectType: 0,
-                    loading: false,
-                    groupType: 0,
-                    columns: [
-                        {
-                            title: 'アプリケーション名',
-                            minWidth: 200,
-                            key: 'name',
-                            tree: true
-                        },
-                        {
-                            title: 'システム管理者\n(医薬基盤)',
-                            slot: 'isAdmin',
-                            align: 'center'
-                        },
-                        {
-                            title: 'システム管理者\n（ＳＣＩ）',
-                            slot: 'isAdmin2',
-                            align: 'center'
-                        },
-                        {
-                            title: '承認者\n(医薬基盤)',
-                            slot: 'isConfirmer',
-                            align: 'center'
-                        },
-                        {
-                            title: '代理承認者\n(医薬基盤)',
-                            slot: 'isAgency',
-                            align: 'center'
-                        },
-                        {
-                            title: '入力者\n(医薬基盤)',
-                            slot: 'isEditer',
-                            align: 'center'
-                        },
-                        {
-                            title: '承認者（局長）\n(医薬基盤)',
-                            slot: 'isConfirmer2',
-                            align: 'center'
-                        },
-                        {
-                            title: '健栄研・研究所\n(医薬基盤)',
-                            slot: 'isAdmin3',
-                            align: 'center'
-                        }
-                    ],
-                    tableData:[        {
-          id: '100',
-          name: '代替ログイン',
-          isAdmin: 1,
-          isAdmin2: 1,
-          isConfirmer: 1,
-          isAgency: 1,
-          isEditer: 1,
-          isConfirmer2: 1,
-          isAdmin3: 1
-        },
-        {
-          id: '200',
-          name: 'メモ登録',
-          isConfirmer: 1,
-          isAgency: 1,
-          isEditer: 1,
-          isAdmin3: 1
-        },
-        {
-          id: '201',
-          name: 'パスワード変更',
-          isConfirmer: 1,
-          isAgency: 1,
-          isEditer: 1,
-          isAdmin3: 1
-        },
-        {
-          id: '101',
-          name: '掲示板',
-          _showChildren: true,
-          isAdmin: 1,
-          isEditer: 1,
-          children: [
+      </div>
+      <div class="searchwrap">
+        <span class="label" @on-change="handleSystemChange">システム名</span>
+        <i-select v-model="opts.systemId" class="mr15" style="width:200px">
+          <i-option v-for="(item, i) of systemList" :key="i" :value="item.msCsystemidPk">{{ item.msCsystemname }}</i-option>
+        </i-select>
+        <span class="label">選択法人名</span>
+        <i-select v-model="opts.companyId" class="mr15" @on-change="handleLegalPersonChange">
+          <i-option value="0" label="全て"></i-option>
+          <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">{{ item.macCcompanyname }}</i-option>
+        </i-select>
+        <span class="label">選択グループ名</span>
+        <i-select v-model="opts.groupId">
+          <i-option value="0" label="全グループ表示"></i-option>
+          <i-option v-for="(item, i) of groupList" :key="i" :value="item.mgCgroupidPk">{{ item.mgCgroupdescription }}</i-option>
+        </i-select>
+      </div>
+    </div>
+    <div class="content_body">
+      <div class="table-top">
+        <Row :gutter="16">
+          <i-col span="4">
+            <i-button type="text" class="blue">
+              <Icon type="ios-arrow-back"></Icon>
+              <span class="ml5">2019/12/23改定分</span>
+            </i-button>
+          </i-col>
+          <i-col span="20" class="tr">
+            選択サイト名：
+            <i-select v-model="opts.siteId" class="mr15" style="width:260px" @on-change="handSiteChange" transfer>
+              <i-option value="0" label="全サイト表示"></i-option>
+              <i-option v-for="(item, i) of siteList" :key="i" :value="item.mtrCsiteid">{{ item.mtrCobjname }}</i-option>
+            </i-select>
+            選択アプリケーション名：
+            <i-select v-model="opts.appId" class="mr15" style="width:260px" transfer>
+              <i-option value="0" label="全アプリケーション"></i-option>
+              <i-option v-for="(item, i) of appList" :key="i" :value="item.mtrCappid">{{ item.mtrCobjname }}</i-option>
+            </i-select>
+            今回改定日：
+            <date-picker type="date" v-model="curDate" format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable />
+          </i-col>
+        </Row>
+      </div>
+      <i-table row-key="id" border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading">
+        <template slot-scope="{ row }" slot="isAdmin">
+          <span
+            :class="row.isAdmin ? 'blue' : 'red'">{{ row.isAdmin === 1 ? '〇' : row.isAdmin === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isAdmin2">
+          <span
+            :class="row.isAdmin2 ? 'blue' : 'red'">{{ row.isAdmin2 === 1 ? '〇' : row.isAdmin2 === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isConfirmer">
+          <span
+            :class="row.isConfirmer ? 'blue' : 'red'">{{ row.isConfirmer === 1 ? '〇' : row.isConfirmer === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isAgency">
+          <span
+            :class="row.isAgency ? 'blue' : 'red'">{{ row.isAgency === 1 ? '〇' : row.isAgency === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isEditer">
+          <span
+            :class="row.isEditer ? 'blue' : 'red'">{{ row.isEditer === 1 ? '〇' : row.isEditer === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isConfirmer2">
+          <span
+            :class="row.isConfirmer2 ? 'blue' : 'red'">{{ row.isConfirmer2 === 1 ? '〇' : row.isConfirmer2 === 2 ? '✖' : '' }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="isAdmin3">
+          <span
+            :class="row.isAdmin3 ? 'blue' : 'red'">{{ row.isAdmin3 === 1 ? '〇' : row.isAdmin3 === 2 ? '✖' : '' }}</span>
+        </template>
+      </i-table>
+    </div>
+  </main>
+  <div th:replace="layout/script::common_script"></div>
+  <script type="text/babel" th:inline="javascript">
+    const START_REGISTER_SETTINGS = new Vue({
+      el: '.startregistersettings-warp',
+      data() {
+        return {
+          radioType: 0,
+          loading: false,
+          legalPersonList:[],
+          systemList:[],
+          siteList:[],
+          appList:[],
+          groupList:[],
+          curDate: new Date(),
+          opts:{
+            systemId:'01',
+            appId:'0',
+            siteId:'0',
+            companyId:'0',
+            date:'',
+            groupId:'0',
+            isAll:false,
+          },
+          columns: [
             {
-              id: '10100',
-              name: '一覧表示',
-              isConfirmer: 1,
-              isAgency: 1,
-              isEditer: 1,
-              isAdmin3: 1,
-              _showChildren: true,
-              children:[
-                {
-                  id: '10101',
-                  name: '新規投稿',
-                  isAdmin: 1,
-                  isAdmin2: 1,
-                  isEditer: 1,
-                },
-                {
-                  id: '10102',
-                  name: '掲示板管理者権限',
-                  isAdmin: 1,
-                  isAdmin2: 1,
-                  isConfirmer: 1
-                },
-              ]
+              title: 'アプリケーション名',
+              minWidth: 200,
+              key: 'name',
+              tree: true
             },
             {
-              id: '2010',
-              name: '閲覧画面',
-              isEditer: 1,
-              isAdmin3: 1,
-              _showChildren: true,
-              children:[
-                {
-                  id: '2020',
-                  name: '一覧へ戻る',
-                  isAdmin: 1,
-                  isAdmin2: 1,
-                  isEditer: 1,
-                }
-              ]
+              title: 'システム管理者\n(医薬基盤)',
+              slot: 'isAdmin',
+              align: 'center'
+            },
+            {
+              title: 'システム管理者\n（ＳＣＩ）',
+              slot: 'isAdmin2',
+              align: 'center'
+            },
+            {
+              title: '承認者\n(医薬基盤)',
+              slot: 'isConfirmer',
+              align: 'center'
+            },
+            {
+              title: '代理承認者\n(医薬基盤)',
+              slot: 'isAgency',
+              align: 'center'
+            },
+            {
+              title: '入力者\n(医薬基盤)',
+              slot: 'isEditer',
+              align: 'center'
+            },
+            {
+              title: '承認者（局長）\n(医薬基盤)',
+              slot: 'isConfirmer2',
+              align: 'center'
+            },
+            {
+              title: '健栄研・研究所\n(医薬基盤)',
+              slot: 'isAdmin3',
+              align: 'center'
             }
-          ]
+          ],
+          tableData: [{
+            id: '100',
+            name: '代替ログイン',
+            isAdmin: 1,
+            isAdmin2: 1,
+            isConfirmer: 1,
+            isAgency: 1,
+            isEditer: 1,
+            isConfirmer2: 1,
+            isAdmin3: 1
+          },
+          {
+            id: '200',
+            name: 'メモ登録',
+            isConfirmer: 1,
+            isAgency: 1,
+            isEditer: 1,
+            isAdmin3: 1
+          },
+          {
+            id: '201',
+            name: 'パスワード変更',
+            isConfirmer: 1,
+            isAgency: 1,
+            isEditer: 1,
+            isAdmin3: 1
+          },
+          {
+            id: '101',
+            name: '掲示板',
+            _showChildren: true,
+            isAdmin: 1,
+            isEditer: 1,
+            children: [
+              {
+                id: '10100',
+                name: '一覧表示',
+                isConfirmer: 1,
+                isAgency: 1,
+                isEditer: 1,
+                isAdmin3: 1,
+                _showChildren: true,
+                children: [
+                  {
+                    id: '10101',
+                    name: '新規投稿',
+                    isAdmin: 1,
+                    isAdmin2: 1,
+                    isEditer: 1,
+                  },
+                  {
+                    id: '10102',
+                    name: '掲示板管理者権限',
+                    isAdmin: 1,
+                    isAdmin2: 1,
+                    isConfirmer: 1
+                  },
+                ]
+              },
+              {
+                id: '2010',
+                name: '閲覧画面',
+                isEditer: 1,
+                isAdmin3: 1,
+                _showChildren: true,
+                children: [
+                  {
+                    id: '2020',
+                    name: '一覧へ戻る',
+                    isAdmin: 1,
+                    isAdmin2: 1,
+                    isEditer: 1,
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            id: '102',
+            name: '就業入力サイト',
+            isEditer: 1,
+            _showChildren: true,
+            children: [
+              {
+                id: '1020',
+                name: '打刻',
+                isEditer: 1
+              },
+              {
+                id: '1021',
+                name: '就業登録',
+                isEditer: 1
+              },
+              {
+                id: '1022',
+                name: ' 休暇・休業申請',
+                isEditer: 1
+              },
+              {
+                id: '1023',
+                name: '出勤簿',
+                isEditer: 1
+              },
+              {
+                id: '1024',
+                name: '予定確認',
+                isEditer: 1
+              }
+            ]
+          }]
+        }
+      },
+      async created() {
+        this.getSystemList()
+        this.getSiteList()
+        this.getAppList()
+        await this.getLegalPersonList()
+        this.getGroupList()
+      },
+      methods: {
+        async getLegalPersonList() {
+          const { data } = await this.http.get('sys/groupappmanager/companies')
+          this.legalPersonList = data
+          this.opts.companyId = data[0].macCcompanyidCk
+
         },
-        {
-          id: '102',
-          name: '就業入力サイト',
-          isEditer: 1,
-          _showChildren: true,
-          children: [
-            {
-              id: '1020',
-              name: '打刻',
-              isEditer: 1
-            },
-            {
-              id: '1021',
-              name: '就業登録',
-              isEditer: 1
-            },
-            {
-              id: '1022',
-              name: ' 休暇・休業申請',
-              isEditer: 1
-            },
-            {
-              id: '1023',
-              name: '出勤簿',
-              isEditer: 1
-            },
-            {
-              id: '1024',
-              name: '予定確認',
-              isEditer: 1
-            }
-          ]
-        }]
-                }
-            },
-            async mounted() {
-            },
-            methods: {
-            }
-        })
-    </script>
+        async getSystemList() {
+          const { data } = await this.http.get('sys/groupappmanager/systems')
+          this.systemList = data
+        },
+        async getSiteList() {
+          // 选择系统时，site要跟着变
+          const { data } = await this.http.get('sys/groupappmanager/sites', this.opts)
+          this.siteList = data
+        },
+        async getAppList() {
+          // 选择サイト时，アプリケーション要跟着变,且每次切换都将app重置
+          const OPTS = {...this.opts}
+          if(this.opts.siteId === '0') {
+            OPTS.siteId = null
+          }
+          const { data } = await this.http.get('sys/groupappmanager/apps', OPTS)
+          this.appList = data
+
+        },
+        async getGroupList() {
+          // 选择法人时，グループ要跟着变
+          const OPTS = {...this.opts}
+          OPTS.searchDate = this.opts.date
+
+          if(this.opts.companyId === '0') {
+            OPTS.companyId = null
+          }
+          const { data } = await this.http.postForm('sys/groupappmanager/groups', OPTS)
+          this.groupList = data
+
+        },
+        async getTableData() {
+          const { data } = await this.http.get('sys/groupappmanager/list')
+        },
+        async update() {
+          const { data } = await this.http.post('sys/groupappmanager/update')
+        },
+        handleSystemChange() {
+          this.getSiteList()
+        },
+        handleLegalPersonChange(e) {
+          if(e === '0') {
+            // 法人全部的时候，需要将isAll设为true, 还要将法人id置空
+            this.opts.isAll = true
+          } else {
+            this.opts.isAll = false
+          }
+          this.getGroupList()
+        },
+        handSiteChange() {
+          // 选择site名时，要把app的重置为第一项
+          this.getAppList()
+
+          this.opts.appId = '0'
+        },
+        handleDatePicker(e) {
+          this.opts.date = e
+        }
+      }
+    })
+  </script>
 </body>
 
 </html>

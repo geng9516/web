@@ -23,6 +23,7 @@ import java.util.List;
 public class PsSearchCompanyUtil {
 
     private final IMastCompanyService iMastCompanyService;
+//    private final PsBuildTargetSql psBuildTargetSql;
 
     /**
      * システム情報取得-検索対象範囲設定情報取得機能を用い<br>
