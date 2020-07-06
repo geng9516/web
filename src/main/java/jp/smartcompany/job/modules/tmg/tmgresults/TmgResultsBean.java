@@ -640,7 +640,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage(),
-                this.isShowOvertimeNotification()
+                this.isShowOvertimeNotification(psDBBean)
         );
 
 //        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
@@ -1086,7 +1086,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage(),
-                this.isShowOvertimeNotification()
+                this.isShowOvertimeNotification(psDBBean)
         );
 //        modelMap.addAttribute("detailOverhoursVOList", detailOverhoursVOList);
 
@@ -1497,11 +1497,11 @@ public class TmgResultsBean {
      *
      * @return boolean(true : 使用する 、 false : 使用しない)
      */
-    public boolean isShowOvertimeNotification() {
+    public boolean isShowOvertimeNotification(PsDBBean psDBBean) {
 
         // TODO psDBBean.getSystemProperty 未実装
-        //psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_SHOW_OVERTIMENOTIFICATION);
-        String overtimeNotification = "yes";
+
+        String overtimeNotification = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_SHOW_OVERTIMENOTIFICATION);
 
         if (Cs_YES.equalsIgnoreCase(overtimeNotification)) {
             return true;
@@ -2149,69 +2149,8 @@ public class TmgResultsBean {
 
     public static final String ACT_EDITPERM_EDIT       = "ACT_EDITPERM_EDIT";      // 日別承認画面_確定済みデータの編集
 
-    public boolean isFuture(){
-        if(isFuture == null){
-            try{
-//                isFuture =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_IS_FUTURE)) == 1;
-            }catch(Exception e){
-                e.printStackTrace();
-                isFuture = false;
-            }
-        }
-        return isFuture;
-    }
-    private Boolean isFuture = null;
-
-    public boolean isFixedSalary(){
-        if(isFixedSalary == null){
-            try{
-//                isFixedSalary =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_SALARY)) == 1;
-            }catch(Exception e){
-                e.printStackTrace();
-                isFixedSalary = false;
-            }
-        }
-        return isFixedSalary;
-    }
-    private Boolean isFixedSalary = null;
-    public boolean isFixedMonthly(){
-        if(isFixedMonthly == null){
-            try{
-//                isFixedMonthly =  Integer.parseInt((String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_MONTHLY)) == 1;
-            }catch(Exception e){
-                e.printStackTrace();
-                isFixedMonthly = false;
-            }
-        }
-        return isFixedMonthly;
-    }
-    private Boolean isFixedMonthly = null;
-    public String getMonthlyStatus(){
-        if(monthlyStatus == null){
-            try{
-//                monthlyStatus =  (String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_MONTHLY_STATUS);
-            }catch(Exception e){
-                e.printStackTrace();
-                monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
-            }
-        }
-        return monthlyStatus;
-    }
-    private String monthlyStatus = null;
 
 
-    public String getDailyStatus(){
-        if(dailyStatus == null){
-            try{
-//                dailyStatus =  (String)getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_DAILY_STATUS);
-            }catch(Exception e){
-                e.printStackTrace();
-                dailyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
-            }
-        }
-        return dailyStatus;
-    }
-    private String dailyStatus = null;
     /**
      * 承認権限があるかどうか
      * @return  boolean true:権限有り/false:なし
@@ -2232,40 +2171,70 @@ public class TmgResultsBean {
     }
 
 
+    // ボタン表示制御
     public boolean isEditable(PsDBBean psDBBean,String action){
 
-        if(isEditable == null){
-            // 未来日付はサイト関係なく常に「編集不可」
-            if(isFuture()){
-                isEditable = false;
-            }
-            // 「給与確定済」の場合も、サイト関係なく常に「編集不可」
-            else if(isFixedSalary()){
-                isEditable = false;
-            }
-            // 「勤怠締め完了済」の場合、管理サイトかつアクションが「締め完了済みデータ編集」でなければ編集不可
-            else if( isFixedMonthly() && !(TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && ACT_EDITPERM_EDIT.equals(action) ) ){
-                isEditable = false;
-            }
+        boolean isEditable = false;
 
-            // 入力サイトのみ、月次ステータスが「承認済」、または、日次ステータスが「承認済」以上の場合、編集不可
-            else if( TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId()) &&
-                    ( TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_5.equals(getDailyStatus()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(getDailyStatus())) ){
-                isEditable = false;
-            }
-            // 勤務実績編集権限を持っていない場合、編集不可
-            else if( !isResult(psDBBean.getTargetUser(), getDay(),psDBBean.getSiteId())){
-                isEditable = false;
-            }
-            // いずれの条件も満たさなければ編集可
-            else{
-                isEditable = true;
-            }
+        TmgStatus tmgStatus = iTmgDailyService.buildSQLForSelectTmgStatus(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                this.getDay());
+
+
+        // 未来日付はサイト関係なく常に「編集不可」
+        if ("1".equals(tmgStatus.getIsFuture())) {
+            isEditable = false;
+        }
+        // 「給与確定済」の場合も、サイト関係なく常に「編集不可」
+        else if ("1".equals(tmgStatus.getFixedSalary())) {
+            isEditable = false;
+        }
+        // 「勤怠締め完了済」の場合、管理サイトかつアクションが「締め完了済みデータ編集」でなければ編集不可
+        else if ("1".equals(tmgStatus.getFixedMonthly()) && !(TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && ACT_EDITPERM_EDIT.equals(action))) {
+            isEditable = false;
+        }
+
+        // 入力サイトのみ、月次ステータスが「承認済」、または、日次ステータスが「承認済」以上の場合、編集不可
+        else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId()) &&
+                (TmgUtil.Cs_MGD_DATASTATUS_5.equals(tmgStatus.getTmoCstatusflg()) || TmgUtil.Cs_MGD_DATASTATUS_5.equals(tmgStatus.getTdaCstatusflg()) || TmgUtil.Cs_MGD_DATASTATUS_9.equals(tmgStatus.getTdaCstatusflg()))) {
+            isEditable = false;
+        }
+        // 勤務実績編集権限を持っていない場合、編集不可
+        else if (!isResult(psDBBean.getTargetUser(), getDay(), psDBBean.getSiteId())) {
+            isEditable = false;
+        }
+        // いずれの条件も満たさなければ編集可
+        else {
+            isEditable = true;
         }
 
         return isEditable;
     }
-    private Boolean isEditable = null;
+
+
+    /**
+     * システムプロパティ：就業入力サイトでの就業実績編集機能を使用するか判定し制御します
+     */
+    private final String SYSPROP_TMG_EDITABLE_RESULTS4INP = "TMG_EDITABLE_RESULTS4INP";
+
+    /**
+     * システムプロパティから値を取得後、就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
+     *
+     * @return boolean(true : 使用する 、 false : 使用しない)
+     */
+    public boolean isEdiTableResult4Inp(PsDBBean psDBBean) {
+
+        boolean ediTableResult4Inp = false;
+        String strEdiTableResult4Inp = psDBBean.getSystemProperty(SYSPROP_TMG_EDITABLE_RESULTS4INP);
+
+        if (Cs_YES.equals(strEdiTableResult4Inp)) {
+            ediTableResult4Inp = true;
+        }
+        return ediTableResult4Inp;
+
+    }
+
 //////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -2376,7 +2345,7 @@ public class TmgResultsBean {
     //登録
 
     // 出張区分
-    public Map dailyDetail(PsDBBean psDBBean) {
+    public Map dailyDetail(PsDBBean psDBBean,String action) {
 
         Map<String, Object> dailyMap = MapUtil.newHashMap();
 
@@ -2467,7 +2436,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 this.getDay(),
                 psDBBean.getLanguage(),
-                this.isShowOvertimeNotification()
+                this.isShowOvertimeNotification(psDBBean)
         );
 
        dailyMap.put("detailOverhoursVOList", detailOverhoursVOList);
@@ -2483,6 +2452,13 @@ public class TmgResultsBean {
                 , TYPE_ITEM_WORK_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
          dailyMap.put("workStatus", workStatus);
+
+         boolean isEditable = this.isEditable(psDBBean,action);
+        dailyMap.put("isEditable", isEditable);
+
+        boolean isEdiTableResult4Inp = isEdiTableResult4Inp(psDBBean);
+
+        dailyMap.put("isEdiTableResult4Inp", isEdiTableResult4Inp);
 
        return dailyMap;
     }

@@ -113,12 +113,13 @@ public class TmgResultsController {
     @GetMapping("dailyDetail")
     @ResponseBody
     public Map dailyDetail(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                                              @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) throws Exception {
+                           @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
+                           @RequestParam("txtAction") String action) throws Exception {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化対象
-        return tmgResultsBean.dailyDetail(psDBBean);
+        return tmgResultsBean.dailyDetail(psDBBean, action);
     }
 //
 //    /**

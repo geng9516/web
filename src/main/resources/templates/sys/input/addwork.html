@@ -78,10 +78,10 @@
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
             <Row class="mb15 tr">
                 <i-col span="6" offset="15">
-                    <i-button type="primary" ghost class="mr15">コメントのみ登録</i-button>
+                    <i-button type="primary" ghost class="mr15" v-if="bFixed">コメントのみ登録</i-button>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost>登録</i-button>
+                    <i-button type="primary" ghost  v-if="bFixed">登録</i-button>
                 </i-col>
             </Row>
             <div class="titlenorm mb10">
@@ -92,11 +92,12 @@
                 <Row>
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="workingId" class="mr30" @on-change="">
+                        <i-select v-model="workingId" class="mr30" @on-change="" v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
                             <i-option v-for="(item, index) of workingIdList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
                         </i-select>
+                        <p v-else>{{dailyEdit.tdaCworkingidRName}}</p>
                     </i-col>
                 </Row>
                 <Row>
@@ -412,6 +413,9 @@
                 workDataLoading: false,
                 columnsNotWorkLoading: false,
                 columnsOverWorkLoading: false,
+                bHoliday:false,
+                bFixed:false,
+                isEdiTableResult4Inp:false,
 
 
                 index: 0,
@@ -595,6 +599,7 @@
                 this.detailOverhoursVOList = []
                 this.title = e[0].TDA_DYYYYMMDD + '(' + e[0].TDA_DYYYYMMDD_DY + ')'
                 this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
+                this.bFixed =false
 
                 // 業登録画面表示
                 this.isShow = true
@@ -647,6 +652,15 @@
                 this.detailNonDutyVOList = data.detailNonDutyVOList
                 // 超過勤務
                 this.detailOverhoursVOList = data.detailOverhoursVOList
+
+                // 登録ボタンとコメントのみ登録ボタンの表示制御
+                this.bFixed = data.isEditable
+                if (data.workIdList.length < 2) {
+                    this.bHoliday = true
+                }
+
+                this.isEdiTableResult4Inp = data.isEdiTableResult4Inp
+
             },
 
 
