@@ -1,13 +1,16 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -51,6 +54,32 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
                 strSearchDate = "2007/08/13";
             }
             return baseMapper.selectAppManagerGroup(customerId, systemId, language, strSearchDate, companyId,companyIds);
+        }
+
+        @Override
+        public List<GroupManagerGroupListDTO> selectValidGroup(
+                String customerCode,
+                String systemId,
+                String language,
+                String searchDate,
+                List<String> companyList
+        ) {
+            if (StrUtil.isBlank(customerCode)){
+                customerCode = "01";
+            }
+            if (StrUtil.isBlank(systemId)){
+                systemId = "01";
+            }
+            if (StrUtil.isBlank(language)){
+                language = "ja";
+            }
+            if (CollUtil.isEmpty(companyList)){
+                companyList = CollUtil.newArrayList("01","02");
+            }
+            if (StrUtil.isBlank(searchDate)){
+                searchDate = "2007/07/07";
+            }
+           return baseMapper.selectValidGroup(customerCode,systemId,language,searchDate,companyList);
         }
 
 }
