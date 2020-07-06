@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
