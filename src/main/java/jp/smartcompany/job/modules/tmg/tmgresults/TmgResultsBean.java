@@ -95,6 +95,16 @@ public class TmgResultsBean {
      * ITmgTriggerService
      */
     private final ITmgTriggerService iTmgTriggerService;
+
+    /**
+     * ITmgMastWorker4discretionaryService
+     */
+    private final ITmgMastWorker4discretionaryService iTmgMastWorker4discretionaryService;
+    /**
+     * ITmgDailyActionlogService
+     */
+    private final ITmgDailyActionlogService iTmgDailyActionlogService;
+
     /**
      * TmgReferList
      */
@@ -2181,7 +2191,6 @@ public class TmgResultsBean {
                 psDBBean.getUserCode(),
                 this.getDay());
 
-
         // 未来日付はサイト関係なく常に「編集不可」
         if ("1".equals(tmgStatus.getIsFuture())) {
             isEditable = false;
@@ -2232,6 +2241,64 @@ public class TmgResultsBean {
             ediTableResult4Inp = true;
         }
         return ediTableResult4Inp;
+
+    }
+
+
+    /** システムプロパティ：「裁量労働制の場合、当日の勤務予定欄の表示可否の制御を行う」かどうかの制御を行う（yes:可、no:非）  */
+    private final String SYSPROP_TMG_SHOW_COMMON_DISCRETIONARY_LABOR = "TMG_SHOW_COMMON_DISCRETIONARY_LABOR";
+
+    /**
+     * システムプロパティから値を取得後、就業登録・日次登録画面と就業承認・日次登録画面で、裁量労働制の場合、超過勤務申請欄の表示可否を制御する値を返却します
+     *
+     * @return boolean(true:使用する、false:使用しない)
+     */
+    public boolean isDiscretionaryLabor(PsDBBean psDBBean){
+
+        boolean gbDiscretionaryLabor = false;
+
+        String bWorkPlantime4Discretion = psDBBean.getSystemProperty(SYSPROP_TMG_SHOW_COMMON_DISCRETIONARY_LABOR);
+
+        if (bWorkPlantime4Discretion != null && Cs_YES.equalsIgnoreCase(bWorkPlantime4Discretion)) {
+            gbDiscretionaryLabor = true;
+        }
+
+        return gbDiscretionaryLabor;
+    }
+
+
+    /**
+     * 裁量労働対象者か判断する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeCode
+     * @param baseDate
+     * @return
+     */
+    public boolean isDiscretion(String custId, String compCode, String employeeCode, String baseDate) {
+
+        return iTmgMastWorker4discretionaryService.buildSQLForSelectDiscretion(custId, compCode, employeeCode, baseDate);
+
+    }
+
+
+    /**
+     * 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
+     *
+     * @return boolean(true:表示する、false:表示しない)
+     */
+    public boolean isCommonDiscretionaryLabor(PsDBBean psDBBean) {
+
+        // 「裁量労働制の場合、当日の勤務予定欄の表示可否の制御を行う」設定がオフの場合、勤務予定は通常通りの表示
+        if (!isDiscretionaryLabor(psDBBean)) {
+            return true;
+            // 裁量労働制の場合、表示しない（基準日時点の裁量労働判定）
+        } else if(isDiscretion(psDBBean.getCustID() , psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay())) {
+            return false;
+        }else{
+            return true;
+        }
 
     }
 
@@ -2446,19 +2513,35 @@ public class TmgResultsBean {
         List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
                 psDBBean.getCustID()
                 , psDBBean.getCompCode()
-                , getToday()
+                ,this.getDay()
                 , psDBBean.getTargetUser()
                 , getMonth()
                 , TYPE_ITEM_WORK_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
          dailyMap.put("workStatus", workStatus);
 
+         // 画面編集制御
          boolean isEditable = this.isEditable(psDBBean,action);
         dailyMap.put("isEditable", isEditable);
 
+        // 就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
         boolean isEdiTableResult4Inp = isEdiTableResult4Inp(psDBBean);
-
         dailyMap.put("isEdiTableResult4Inp", isEdiTableResult4Inp);
+
+        // 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
+        boolean  isCommonDiscretionaryLabor = isCommonDiscretionaryLabor(psDBBean);
+        dailyMap.put("isCommonDiscretionaryLabor", isCommonDiscretionaryLabor);
+
+        List<DailyLogVO> dailyLogVOList = iTmgDailyActionlogService.buildSQLForSelectTmgSelectDailyActionLog(psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , psDBBean.getTargetUser()
+                , this.getDay()
+                , psDBBean.getLanguage());
+
+        dailyMap.put("columnsDailyLog", dailyLogVOList);
+
+
+
 
        return dailyMap;
     }
