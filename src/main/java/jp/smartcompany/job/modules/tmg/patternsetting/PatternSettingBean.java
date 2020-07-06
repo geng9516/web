@@ -80,18 +80,33 @@ public class PatternSettingBean {
     /**
      * TMG_PATTERNより利用可能な勤務パターンを取得する
      *
+     * @param sectionId
+     * @param groupId
      * @return
      */
-    public List<TmgPatternDTO> selectTmgPattern(String groupId) {
-        if (null == groupId || "".equals(groupId)) {
-            groupId = referList.getTargetGroup();
+    public List<TmgPatternDTO> selectTmgPattern(String sectionId, String groupId) {
+        if (null == sectionId || "".equals(sectionId)) {
+            sectionId = referList.getTargetSec();
         }
-        List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), groupId);
+
+        List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), sectionId, groupId);
         List<JSONObject> dutyArray = null;
         List<JSONObject> restArray = null;
 
+        if ("null".equals(groupId)) {
+            logger.warn("GROUPIDが空です");
+            groupId = null;
+        }
         for (int i = 0; i < tmgPatternDTOS.size(); i++) {
             TmgPatternDTO tmgPatternDTO = tmgPatternDTOS.get(i);
+            //勤務パターンの編集や削除バターンを有効にするかどうか　チェックする
+            boolean flag = (PatternSettingUtil.isEmpty(groupId) && tmgPatternDTO.getTpa_csectionid().equals(sectionId) && tmgPatternDTO.getTpa_cgroupid().equals(sectionId + "|000000"))
+                    || (!PatternSettingUtil.isEmpty(groupId) && tmgPatternDTO.getTpa_csectionid().equals(sectionId) && tmgPatternDTO.getTpa_cgroupid().equals(groupId));
+            if (flag) {
+                tmgPatternDTO.setEdit(true);
+            } else {
+                tmgPatternDTO.setEdit(false);
+            }
             dutyArray = new ArrayList<JSONObject>();
             restArray = new ArrayList<JSONObject>();
             JSONArray jsonArray = JSONUtil.parseArray(tmgPatternDTO.getTimerange());
@@ -122,15 +137,49 @@ public class PatternSettingBean {
      * @return
      */
     public List<TmgPatternDTO> selectTmgPatternOwn(String groupId, String sectionId) {
+
         if (null == groupId || "".equals(groupId)) {
             logger.warn("GROUPIDが空です");
-            return null;
+            //return null;
         }
         if (null == sectionId || "".equals(sectionId)) {
             logger.warn("SECTIONIDが空です");
-            return null;
+            //return null;
         }
-        return iPatternSettingService.selectTmgPatternOwn(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId);
+        List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPatternOwn(psDBBean.getCustID(), psDBBean.getCompCode(), groupId, sectionId);
+        List<JSONObject> dutyArray = null;
+        List<JSONObject> restArray = null;
+
+        for (int i = 0; i < tmgPatternDTOS.size(); i++) {
+            TmgPatternDTO tmgPatternDTO = tmgPatternDTOS.get(i);
+            //勤務パターンの編集や削除バターンを有効にするかどうか　チェックする
+            if ((PatternSettingUtil.isEmpty(groupId) && tmgPatternDTO.getTpa_csectionid().equals(sectionId) && tmgPatternDTO.getTpa_cgroupid().equals(sectionId + "|000000"))
+                    || (!PatternSettingUtil.isEmpty(groupId) && tmgPatternDTO.getTpa_csectionid().equals(sectionId) && tmgPatternDTO.getTpa_cgroupid().equals(groupId))
+            ) {
+                tmgPatternDTO.setEdit(true);
+            }
+
+            dutyArray = new ArrayList<JSONObject>();
+            restArray = new ArrayList<JSONObject>();
+            JSONArray jsonArray = JSONUtil.parseArray(tmgPatternDTO.getTimerange());
+
+            for (int j = 0; j < jsonArray.size(); j++) {
+                JSONObject o = (JSONObject) jsonArray.get(j);
+                if (o.get(planTypeKey).equals(dutyKey)) {
+                    dutyArray.add(o);
+                }
+                if (o.get(planTypeKey).equals(restKey)) {
+                    restArray.add(o);
+                }
+            }
+            tmgPatternDTO.setPlanDuty(dutyArray);
+            tmgPatternDTO.setPlanRest(restArray);
+            //データリセット
+            tmgPatternDTOS.set(i, tmgPatternDTO);
+        }
+        return tmgPatternDTOS;
+
+
     }
 
     /**

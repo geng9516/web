@@ -19,9 +19,10 @@ import java.util.List;
 public class PatternSettingServiceImpl extends ServiceImpl<PatternSettingMapper, Object> implements IPatternSettingService {
 
     @Override
-    public List<TmgPatternDTO> selectTmgPattern(String custId, String compCode, String groupId) {
+    public List<TmgPatternDTO> selectTmgPattern(String custId, String compCode, String sectionId,String groupId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("groupId", groupId);
+        params.put("sectionId", sectionId);
         params.put("compCode", compCode);
         params.put("custId", custId);
         return baseMapper.selectTmgPattern(params);

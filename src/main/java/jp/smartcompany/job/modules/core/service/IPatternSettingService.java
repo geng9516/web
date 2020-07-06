@@ -19,10 +19,10 @@ public interface IPatternSettingService extends IService<Object> {
      *
      * @param custId
      * @param compCode
-     * @param groupId
+     * @param sectionId
      * @return
      */
-    List<TmgPatternDTO> selectTmgPattern(String custId, String compCode, String groupId);
+    List<TmgPatternDTO> selectTmgPattern(String custId, String compCode, String sectionId,String groupId);
 
     /**
      * TMG_PATTERNより利用可能な勤務パターンを取得する(自組織分)

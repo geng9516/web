@@ -29,6 +29,7 @@ public class TmgPatternDTO {
     private String tpa_cdefaultflg;
     private String timerange;
     private String dutyTime;
+    private boolean isEdit;
     private List<JSONObject> planDuty;
 
     private List<JSONObject> planRest;

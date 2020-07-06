@@ -6,7 +6,7 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
-<main class="content permstatlist-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content patternSetting-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -17,7 +17,7 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" @click="" size="large" :disabled="!approval" :loading="bulkApprovalLoading">+ 新規</i-button>
+                <i-button type="primary" @click="handleBtn(null)" size="large" :loading="bulkApprovalLoading">+ 新規</i-button>
                 <Upload action="/">
                     <i-button type="warning" ghost size="large" icon="ios-cloud-upload-outline">CSVファイル取込</i-button>
                 </Upload>
@@ -58,51 +58,129 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table :columns="columns" :data="tmgPatternList" border>
-
+        <i-table :columns="columns" :data="tmgPatternList" border :loading="tableLoading">
             <!-- 勤務時間 -->
             <template slot-scope="{ row }" slot="dutyTime">
                 <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
             </template>
             <!-- 休憩時間 -->
             <template v-for="(item,i) of planRest" slot-scope="{row}" :slot="item">
-                <span>{{row.planRest[i].NOPEN|handleTime}}～{{row.planRest[i].NCLOSE|handleTime}}</span>
+                <span v-if="row.planRest[i] != undefined ">{{row.planRest[i].NOPEN|handleTime}}～{{row.planRest[i].NCLOSE|handleTime}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="action">
                 <div>
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="handleBtn(row)">
-                        編集
-                    </i-button>
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="handleBtn(row)">
-                        削除
-                    </i-button>
+                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!editPatternShow" v-if="row.edit===false">編集</i-button>
+                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="handleBtn(row)" :disabled="editPatternShow" v-else>編集</i-button>
+
+                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!deletePatternShow" v-if="row.edit===false">削除</i-button>
+                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="handleBtn(row)" :disabled="deletePatternShow" v-else>削除</i-button>
                 </div>
             </template>
+
         </i-table>
 
     </div>
+    <!-- 勤務パターンSTART -->
+    <template>
+      <span>
+        <Modal v-model="isShow" title="勤務パターン追加" footer-hide :mask-closable="false" @on-cancel="cancel" draggable>
+          <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
+            <form-item label="所属">
+              <i-button class="input-like-span mr30 cursor grey width100 border-radius:0">
+                  {{ deptName }}
+              </i-button>
+            </form-item>
+
+            <form-item label="コード">
+              <i-input v-model="rawData.tpa_cpatternid"></i-input>
+            </form-item>
+
+            <form-item label="名称">
+              <i-input v-model="rawData.tpa_cpatternname"></i-input>
+            </form-item>
+
+            <form-item label="勤務時間">
+                <time-picker format="HH:mm" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.dutyTime"></time-picker>
+            </form-item>
+
+            <form-item label="休憩時間1">
+                <time-picker format="HH:mm" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest1"></time-picker>
+            </form-item>
+
+            <form-item label="休憩時間2">
+                <time-picker format="HH:mm" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest2"></time-picker>
+            </form-item>
+
+            <form-item label="休憩時間3">
+                <time-picker format="HH:mm" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest3"></time-picker>
+            </form-item>
+
+            <form-item label="休憩時間4">
+                <time-picker format="HH:mm" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest4"></time-picker>
+            </form-item>
+
+            <form-item label="日付切替時刻">
+                <time-picker format="HH:mm" :steps="[1, 5]" class="width100" v-model="rawData.tpa_ndate_change_time"></time-picker>
+            </form-item>
+
+            <form-item label="翌日勤務パターン">
+              <i-select v-model="ykjtPatternModel" placeholder="選択ください" filterable transfer>
+                  <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
+              </i-select>
+            </form-item>
+          </i-form>
+          <div class="my-footer">
+            <i-button type="text" @click="cancel">キャンセル</i-button>
+            <i-button type="success" size="large" @click="add()">登録</i-button>
+          </div>
+        </Modal>
+      </span>
+    </template>
+    <!-- 勤務パターン追加END -->
+
 </main>
 
 <div th:replace="layout/script::common_script"></div>
 <script type="text/babel" th:inline="javascript">
     const PERM_STATLIST = new Vue({
-        el: '.permstatlist-warp',
+        el: '.patternSetting-warp',
         data() {
             return {
-                planRest:['one','two','three','four'],
+                planRest: ['one', 'two', 'three', 'four'],
+                isAdd: Boolean,
+                localValue: {
+                    name: '',
+                    group: '1',
+                    date: '2019年11月01日(金)'
+                },
+                ruleValidate: {
+                    name: [
+                        {
+                            required: true,
+                            message: '入力してください',
+                            trigger: 'blur'
+                        }
+                    ]
+                },
                 curDate: new Date(),
-                tableHead: [],
-                tableData: [],
-                slotList: Utils.getNumArray(1, 31).map(e => `disppermStatusName${e}`),
-                slotList2: Utils.getNumArray(1, 13).map(e => `COLUMNID${e}`),
-                dailyShow: true,
-                rawData: [],
+                rawData: {
+                    tpa_cpatternid: '',
+                    tpa_cpatternname: '',
+                    dutyTime: [],
+                    planRest1: [],
+                    planRest2: [],
+                    planRest3: [],
+                    planRest4: [],
+                    tpa_ndate_change_time: '',
+                    tpa_cnextptn: ''
+                },
+                //翌日勤務パターン
+                ykjtPatternList: [],
+                ykjtPatternModel: '',
                 isShow: false,
-                showPre: true,
                 loading: false,
-                showDayApply: false,
-                emplistLoading: false,
+                tableLoading: false,
                 referListObject: {
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -123,8 +201,8 @@
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     txtCEMPLOYEEID: '',
-                    sectionid: '',
-                    groupId: [[${ session.psSession.loginDesignation[0].section }]],
+                    groupId: 'null',
+                    sectionId: [[${ session.psSession.loginDesignation[0].section }]],
                     txtExecuteEmpId: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -149,11 +227,8 @@
                 bulkApprovalLoading2: false,
                 isSearchHistory: false,
 
-                thisMonth: '',
-                preMonth: '',
-                nextMonth: '',
-                preMonthShow: false,
-                nextMonthShow: false,
+                editPatternShow: false,
+                deletePatternShow: false,
                 curDate: new Date(),
                 columns: [
                     {
@@ -207,10 +282,6 @@
                         width: 150,
                         align: 'center'
                     }
-                ],
-                tableData: [
-                    // {name: '全学標準', time: '8:30 ～ 17:15', restTime1: '12:00 ～ 13:00', restTime2: ''},
-                    // {name: '契約標準', time: '8:30 ～ 17:00', restTime1: '12:15 ～ 13:00', restTime2: ''}
                 ]
             }
         },
@@ -279,9 +350,9 @@
         methods: {
             // 勤務パターンリスト
             async getTmgPatternList() {
-                // console.log([[${ session }]])
+                //console.log([[${ session }]])
                 this.query.txtAction = 'ACTION_DISP_DISP'
-                this.loading = false
+                this.tableLoading = true
                 const {data} = await this.http.get('sys/patternSetting/selectTmgPattern', this.query)
                 this.tmgPatternList = data
 
@@ -294,6 +365,7 @@
                     this.model1 = ''
                     this.selectDisabled = false
                 }
+                this.tableLoading = false
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -369,25 +441,101 @@
             handleDatePicker() {
 
             },
+
             //所属変更する
             async handleClickLeaf(e) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
+                if (!e[0]) return
 
-                console.log(e)
+                //console.log(e)
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACTION_DISP_DISP'
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                this.query.groupId = e[0].secid
+                this.query.sectionId = e[0].secid
+                // this.query.groupId = e[0].groupId
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
                 //リストの取得
                 await this.getTmgPatternList()
 
+            },
 
+            // 編集画面を開く
+            async handleBtn(row) {
+                this.tableLoading = true
+                this.rawData = row
+                this.rawData.tpa_cpatternname = row.tpa_cpatternname
+                this.rawData.tpa_cpatternid = row.tpa_cpatternid
+
+                //時間フォーマットを変える
+                const handleTime = Vue.filter('handleTime');
+                const duty_start = handleTime(row.planDuty[0].NOPEN)
+                const duty_end = handleTime(row.planDuty[0].NCLOSE)
+                this.rawData.dutyTime = [duty_start, duty_end]
+
+                if (row.planRest[0] != undefined) {
+                    const rest_start = handleTime(row.planRest[0].NOPEN)
+                    const rest_end = handleTime(row.planRest[0].NCLOSE)
+                    this.rawData.planRest1 = [rest_start, rest_end]
+                }
+                if (row.planRest[1] != undefined) {
+                    const rest_start = handleTime(row.planRest[0].NOPEN)
+                    const rest_end = handleTime(row.planRest[0].NCLOSE)
+                    this.rawData.planRest2 = [rest_start, rest_end]
+                }
+                if (row.planRest[2] != undefined) {
+                    const rest_start = handleTime(row.planRest[0].NOPEN)
+                    const rest_end = handleTime(row.planRest[0].NCLOSE)
+                    this.rawData.planRest3 = [rest_start, rest_end]
+                }
+                if (row.planRest[3] != undefined) {
+                    const rest_start = handleTime(row.planRest[0].NOPEN)
+                    const rest_end = handleTime(row.planRest[0].NCLOSE)
+                    this.rawData.planRest4 = [rest_start, rest_end]
+                }
+
+                this.rawData.tpa_ndate_change_time = row.tpa_ndate_change_time
+                this.rawData.tpa_cnextptn = row.tpa_cnextptn
+                await this.getYkjtTmgPatternList()
+
+                //初期化データ
+                if (row.tpa_cnextptn == '' || row.tpa_cnextptn == undefined || row.tpa_cnextptn == null) {
+                    this.ykjtPatternModel = ''
+                }else{
+                    this.ykjtPatternModel = row.tpa_cnextptn
+                }
+                this.tableLoading = false
+                this.isShow = true
+
+            },
+
+            //編集画面を閉じる
+            cancel() {
+                this.$refs.localValue.resetFields()
+                this.isShow = false
+            },
+
+            //勤務パターン更新登録
+            add() {
+                this.$refs.localValue.validate(valid => {
+                    if (valid) {
+                        this.$emit('add')
+                        this.isShow = false
+                    }
+                })
+            },
+
+            //翌日勤務パターンリスト
+            async getYkjtTmgPatternList() {
+                this.query.txtAction = 'ACTION_DISP_DISP'
+                this.query.sectionId = '000000'
+                const {data} = await this.http.get('sys/patternSetting/selectTmgPattern', this.query)
+                this.ykjtPatternList = data
+                this.ykjtPatternModel = 'ykjtPatternModel'
             }
+
         }
     })
 </script>
