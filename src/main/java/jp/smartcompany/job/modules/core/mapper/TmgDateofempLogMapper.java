@@ -6,6 +6,8 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgDateOfEmpLogVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * <p>
  * [勤怠]勤務開始日編集ログ Mapper 接口
@@ -18,8 +20,8 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface TmgDateofempLogMapper extends BaseMapper<TmgDateofempLogDO> {
 
-    TmgDateOfEmpLogVo selectTmgDateofempLog(@Param("custId") String custId,
-                                            @Param("compId")String compId,
-                                            @Param("empId")String empId,
-                                            @Param("baseDate")String baseDate);
+    List<TmgDateOfEmpLogVo> selectTmgDateofempLog(@Param("custId") String custId,
+                                                  @Param("compId")String compId,
+                                                  @Param("empId")String empId,
+                                                  @Param("baseDate")String baseDate);
 }

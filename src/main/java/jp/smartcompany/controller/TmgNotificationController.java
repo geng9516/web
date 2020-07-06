@@ -1,6 +1,7 @@
 package jp.smartcompany.controller;
 
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -116,7 +117,13 @@ public class TmgNotificationController {
             @RequestParam(value ="deleteFiles",required=false) String deleteFiles,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
-        String[] deleteFileslist =JSONUtil.parse(deleteFiles).toBean(String[].class);
+        String[] deleteFileslist= null;
+        if(!StrUtil.hasEmpty(deleteFiles)){
+            deleteFileslist =JSONUtil.parse(deleteFiles).toBean(String[].class);
+        }
+        if (uploadFiles.length<1){
+            uploadFiles=null;
+        }
         return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFileslist);
     }
 

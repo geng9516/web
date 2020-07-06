@@ -9,7 +9,13 @@ import lombok.ToString;
 @ToString
 public class EmployMentWithMEVo {
 
+    /**
+     * 発令日
+     */
     private String dstart;
 
+    /**
+     * 勤務開始日
+     */
     private String ddateofemployement;
 }

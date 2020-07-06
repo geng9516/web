@@ -18,7 +18,7 @@ public class TmgEmpVo {
     private String tmgItemsExcludeOvertime;
     private String tphaNavgworktime;
     private String tphaNworkingdaysWeek;
-    private String tmgItems_workplaceCode;
-    private String tmgItems_workplaceName;
+    private String tmgItemsWorkplaceCode;
+    private String tmgItemsWorkplaceName;
     private String begindate;
 }

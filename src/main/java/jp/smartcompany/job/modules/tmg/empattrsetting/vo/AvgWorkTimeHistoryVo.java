@@ -8,12 +8,21 @@ import lombok.ToString;
 @Setter
 @ToString
 public class AvgWorkTimeHistoryVo {
+    /**
+     * 开始时间
+     */
     private String tphaDstartdate;
-
+    /**
+     * 结束时间
+     */
     private String tphaDenddate;
-
+    /**
+     * 周勤务时间
+     */
     private String tphaNavgworktime;
-
+    /**
+     * 周勤务日数
+     */
     private String tphaNworkingdaysWeek;
 
 }

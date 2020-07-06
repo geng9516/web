@@ -35,7 +35,6 @@ public class EmpAttrSettingBean {
 
 
 
-    private TmgReferList referList=null;
     private ITmgPaidHolidayAttributeService iTmgPaidHolidayAttributeService;
     private IMastGenericDetailService iMastGenericDetailService;
     private IHistDesignationService iHistDesignationService;
@@ -43,7 +42,7 @@ public class EmpAttrSettingBean {
     private ITmgEmployeeAttributeService iTmgEmployeeAttributeService;
     private IMastEmployeesService IMastEmployeesService;
     private ITmgDateofempLogService iTmgDateofempLogService;
-    private PsDBBean psDBBean;
+
     EmpAttrSettingDto param = new EmpAttrSettingDto();
 
 
@@ -71,15 +70,21 @@ public class EmpAttrSettingBean {
      * @throws Exception
      * screenDisp
      */
-    private void actionScreenDisp() throws Exception {
+    public EmpDispVo actionScreenDisp(String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) throws Exception {
+
+        int pageInfo[] = getPageOfSearchNumber(sPage);
+
+        param.setBaseDate(baseDate);
+        param.setLang(psDBBean.getLanguage());
+        param.setEmpListsql(referList.buildSQLForSelectEmployees());
 
         if(StrUtil.hasEmpty(param.getTargetSectionId())){
             // 組織が選択されていない場合、何も検索せずに画面を表示する
-            return;
+            return null;
         }
 
         // 一覧画面：一覧：SELECT
-        List<TmgEmpVo> tmgEmpVoList= iTmgPaidHolidayAttributeService.selectTmgEmp(param,1,50);
+        List<TmgEmpVo> tmgEmpVoList= iTmgPaidHolidayAttributeService.selectTmgEmp(param,pageInfo[0],pageInfo[1]);
 
         // 一覧画面：件数：SELECT
         int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
@@ -87,28 +92,50 @@ public class EmpAttrSettingBean {
         // 一覧画面：一括編集用項目の制御情報：SELECT
         List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
 
+        EmpDispVo empDispVo= new EmpDispVo();
+        empDispVo.setTotalCount(tmgEmpListCount);
+        empDispVo.setList(tmgEmpVoList);
+        empDispVo.setCurrPage(Integer.valueOf(sPage));
+        empDispVo.setPageSize(50);
+        empDispVo.setTotalPage(tmgEmpListCount/50+1);
+        return empDispVo;
     }
+
+
     /**
-     * 機能：管理対象者一括編集_表示処理
-     *
-     * @throws Exception
-     * screenDispEditManageFlag
+     * 表头获取
+     * @param baseDate
+     * @param psDBBean
+     * @return
      */
-    private void actionScreenDispEditManageFlag() throws Exception {
-
-        // 一覧画面：一覧：SELECT
-        List<TmgEmpVo> tmgEmpVoList= iTmgPaidHolidayAttributeService.selectTmgEmp(param,1,50);
-
-        // 一覧画面：件数：SELECT
-        int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
-
+    public List<EmpAttsetDispVo> getTableHeader(String baseDate,PsDBBean psDBBean){
         // 一覧画面：一括編集用項目の制御情報：SELECT
-        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
-
-        List<MastGenericDetailDO> mgdDoList = iMastGenericDetailService.selectWorkPlace(param.getCustId(),param.getCompId(),param.getLang(),
-                "TMG_WORKPLACE" ,param.getBaseDate());
-
+        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,psDBBean.getLanguage());
+        return empAttsetDispVoList;
     }
+
+//    /**
+//     * 機能：管理対象者一括編集_表示処理
+//     *
+//     * @throws Exception
+//     * screenDispEditManageFlag
+//     */
+//    private void actionScreenDispEditManageFlag(String sPage,PsDBBean psDBBean,TmgReferList referList) throws Exception {
+//
+//        int pageInfo[] = getPageOfSearchNumber(sPage);
+//        // 一覧画面：一覧：SELECT
+//        List<TmgEmpVo> tmgEmpVoList= iTmgPaidHolidayAttributeService.selectTmgEmp(param,pageInfo[0],pageInfo[1]);
+//
+//        // 一覧画面：件数：SELECT
+//        int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
+//
+//        // 一覧画面：一括編集用項目の制御情報：SELECT
+//        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
+//
+//        List<MastGenericDetailDO> mgdDoList = iMastGenericDetailService.selectWorkPlace(param.getCustId(),param.getCompId(),param.getLang(),
+//                "TMG_WORKPLACE" ,param.getBaseDate());
+//
+//    }
 
 
     /**
@@ -116,12 +143,11 @@ public class EmpAttrSettingBean {
      *
      *screenDispEditAvgWorktime
      */
-    private void actionScreenDispEditAvgWorktime() throws Exception {
-
+    public EditDispVo actionScreenDispEditAvgWorktime(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
         // 平均勤務時間編集：社員情報：SELECT
-        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
-                param.getLang(),param.getTargetSectionId());
+//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
+//                param.getLang(),param.getTargetSectionId());
 
         // 平均勤務時間編集：平均勤務時間：SELECT
         AvgWorkTimeVo avgWorkTimeVo=iTmgPaidHolidayAttributeService.selectAvgWorkTime60(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getBaseDate());
@@ -136,6 +162,17 @@ public class EmpAttrSettingBean {
         MgdTimeLimitVo mgdTimeLimitVo=iMastGenericDetailService.selectMgdTimeLimit();
 
 
+        EditDispVo editDispVo = new EditDispVo();
+        editDispVo.setLimitTime(String.valueOf(mgdTimeLimitVo.getAllminutes()));
+        editDispVo.setHistoryList(avgWorkTimeHistoryVo);
+
+        if(!StrUtil.hasEmpty(avgWorkTimeVo.getAvgWorkTime1())){
+            editDispVo.setNowAvgWorkTime(avgWorkTimeVo);
+        }else{
+            editDispVo.setNowAvgWorkTime(avgWorkTimeVoDefault);
+        }
+
+        return editDispVo;
     }
 
 
@@ -146,16 +183,13 @@ public class EmpAttrSettingBean {
      */
     private void actionModifyAvgWorktime() throws Exception {
 
-
         // 開始日が基準日以降のレコード削除(delete)
-
         // TMG_PAID_HOLIDAY_ATTRIBUTE削除用クエリを返す
         int deleteTmgPaidHolidayAttribute=iTmgPaidHolidayAttributeService.getBaseMapper().delete(SysUtil.<TmgPaidHolidayAttributeDO>query()
                 .eq("TPHA_CCUSTOMERID",param.getCustId())
                 .eq("TPHA_CCOMPANYID",param.getCompId())
                 .eq("TPHA_CEMPLOYEEID",param.getTargetUser())
                 .ge("TPHA_DSTARTDATE",param.getBaseDate()));
-
 
         // 基準日時点で適用されているデータの終了日を基準日-1で更新(update)
         int updPaidHolidayAttribute=updPaidHolidayAttribute();
@@ -219,14 +253,14 @@ public class EmpAttrSettingBean {
      * 機能：管理対象者一括編集_更新処理
      *modifyManageFlag
      */
-    private void actionModifyManageFlag() throws Exception {
+    private void actionModifyManageFlag(PsDBBean psDBBean) throws Exception {
         // 管理対象者分の更新用クエリ取得
         List<UpdateCheckInfoDto> updateCheckInfoDtoManageList = new ArrayList<UpdateCheckInfoDto>();
-        updateManageFlgEmployee(updateCheckInfoDtoManageList);
+        updateManageFlgEmployee(updateCheckInfoDtoManageList,psDBBean);
 
         // 超過勤務対象者分の更新用クエリ取得
         List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList = new ArrayList<UpdateCheckInfoDto>();
-        updateOverTimesEmployee(updateCheckInfoDtoOverTimesList);
+        updateOverTimesEmployee(updateCheckInfoDtoOverTimesList,psDBBean);
 
         // 勤務先グループの更新用クエリ取得
         List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList = new ArrayList<UpdateGroupInfoDto>();
@@ -239,21 +273,26 @@ public class EmpAttrSettingBean {
      * screenDispEditBeginDate
      * @throws Exception
      */
-    private void actionScreenDispEditBeginDate() throws Exception {
+    public BeginDateEditDispVo actionScreenDispEditBeginDate(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
 
         // 平均勤務時間編集：社員情報：SELECT
-        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
-                param.getLang(),param.getTargetSectionId());
+//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
+//                param.getLang(),param.getTargetSectionId());
 
         // 勤務開始日設定状況：SELECT
-        EmploymentWithMgdVo employmentWithMgdVo = iMastGenericDetailService.selectDateOfEmploymentWithMGD(param.getCustId(),param.getCompId()
-        ,param.getLang(),param.getTargetUser(),TmgUtil.Cs_MG_TMG_DATEOFEMPLOYMENT);
+        List<EmploymentWithMgdVo> employmentWithMgdVo = iMastGenericDetailService.selectDateOfEmploymentWithMGD(psDBBean.getCustID(),psDBBean.getCompCode()
+        ,psDBBean.getLanguage(),empId,TmgUtil.Cs_MG_TMG_DATEOFEMPLOYMENT);
         // 発令上の勤務開始日取得：SELECT
-        EmployMentWithMEVo employMentWithMEVo=IMastEmployeesService.selectDateofemploymentWithME(param.getCustId(),param.getCompId(),param.getTargetUser());
+        EmployMentWithMEVo employMentWithMEVo=IMastEmployeesService.selectDateofemploymentWithME(psDBBean.getCustID(),psDBBean.getCompCode(),empId);
         // 勤務開始日更新履歴取得：SELECT
-        TmgDateOfEmpLogVo tmgDateOfEmpLogVo=iTmgDateofempLogService.selectTmgDateofempLog(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getBaseDate());
+        List<TmgDateOfEmpLogVo> tmgDateOfEmpLogVo=iTmgDateofempLogService.selectTmgDateofempLog(psDBBean.getCustID(),psDBBean.getCompCode(),empId,baseDate);
 
+        BeginDateEditDispVo beginDate = new BeginDateEditDispVo();
+        beginDate.setList(employmentWithMgdVo);
+        beginDate.setBeginDate(employMentWithMEVo);
+        beginDate.setHistoryList(tmgDateOfEmpLogVo);
+        return beginDate;
 
     }
 
@@ -503,7 +542,7 @@ public class EmpAttrSettingBean {
      * 追加しない場合はそのままVectorオブジェクトを返却します。
      *buildSQLForUpdateOverTimesEmployee
      */
-    private void updateOverTimesEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList){
+    private void updateOverTimesEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList,PsDBBean psDBBean){
         String attribute=null;
 
         //管理対象者分のSQL
@@ -513,7 +552,7 @@ public class EmpAttrSettingBean {
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
                 attribute=getAttribute(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
-                if("".equals(getEditTaisho())){
+                if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
                             .eq("TPHA_CCUSTOMERID",param.getCustId())
                             .eq("TPHA_CCOMPANYID",param.getCompId())
@@ -534,7 +573,7 @@ public class EmpAttrSettingBean {
      * 管理対象者分のSQL
      * buildSQLForUpdateManageFlgEmployee
      */
-    private void updateManageFlgEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoManageList){
+    private void updateManageFlgEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoManageList,PsDBBean psDBBean){
         String attribute=null;
 
         //管理対象者分のSQL
@@ -544,7 +583,7 @@ public class EmpAttrSettingBean {
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
                 attribute=getAttribute(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
-                if("".equals(getEditTaisho())){
+                if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
                             .eq("TPHA_CCUSTOMERID",param.getCustId())
                             .eq("TPHA_CCOMPANYID",param.getCompId())
@@ -646,7 +685,7 @@ public class EmpAttrSettingBean {
      *  管理対象者一括チェックの編集可否を取得します
      * @return String	 管理対象者一括チェックの編集可否
      */
-    public String getEditTaisho() {
+    public String getEditTaisho(PsDBBean psDBBean) {
 
         String sEditTaisho = "disabled";
         String sPropnameTaisho = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_EDITMANAGEFLG);
@@ -743,5 +782,30 @@ public class EmpAttrSettingBean {
         return iTmgPaidHolidayAttributeService.getBaseMapper().update(tmgPaidHolidayAttributeDO, queryWrapper);
 
 
+    }
+
+
+    /**
+     * ページ情報からページング処理を実行し開始件～終了件を int型配列[0=開始件, 1=終了件]に格納し返します。
+     *
+     * @param sPage ページ情報
+     */
+    public int[] getPageOfSearchNumber(String sPage) {
+        int iPage = 1;
+        if (sPage != null) {
+            iPage = Integer.parseInt(sPage);
+        }
+
+        int[] pageInfo = new int[2];
+
+        if (iPage > 1) {
+            pageInfo[0] = (iPage - 1) * 50 + 1;
+            pageInfo[1] = iPage * 50;
+        } else {
+            pageInfo[0] = 1;
+            pageInfo[1] = 50;
+        }
+
+        return pageInfo;
     }
 }

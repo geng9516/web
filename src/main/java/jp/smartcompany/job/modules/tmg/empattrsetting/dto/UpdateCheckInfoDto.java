@@ -11,9 +11,9 @@ import lombok.ToString;
 public class UpdateCheckInfoDto {
 
     private  String employeeId;
-
+    //初始化时状态
     private boolean initCheckType;
-
+    //更改完状态
     private boolean updaeCheckType;
 
 }

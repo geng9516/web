@@ -929,7 +929,7 @@ public class TmgNotificationBean {
 
         param.setTodayD(DateUtil.parse(param.getToday()));
         //再申請の場合、元番号を使用する
-        if(!param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
+        if(param.getAction().equals(ACT_ALTERAPPLY_CAPPLY) && param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)){
             // 3 シーケンス採番
             String seq = iTmgNotificationService.selectNotificationSeq();
             param.setSeq(seq);
@@ -953,6 +953,9 @@ public class TmgNotificationBean {
             //ファイル保存SQL
             insertNtfAttachdFile(param, uploadFiles,path);
         }
+
+
+        //ntfAction
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
             param.setTargetUser(param.getSearchEmp());
@@ -964,17 +967,28 @@ public class TmgNotificationBean {
         }else if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)){
             //再申請
                 param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_2);
+        }else if(param.getAction().equals(ACT_EDITPERM_UPERMIT)){
+            //承認
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_6);
+        }else if(param.getAction().equals(ACT_EDITPERM_UREJECT)){
+            //差戻し
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_5);
+        }else if(param.getAction().equals(ACT_EDITAPPLY_UDEL)){
+            //全取消
+            param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_7);
         }
+
+
         // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
         int deleteErrMsg = deleteErrMsg(param);
         int deleteNotificationCheck = deleteNotificationnCheck(param);
 
-        if (param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
-            // 再申請の場合は、再申請用  申请番号非空
+        if (!param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || !param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
+            // 取消　再申請　承認　申請の場合は、申请番号非空
             if(!StrUtil.hasEmpty(param.getNtfNo())){
                 int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
             }else{
-                return  GlobalResponse.error();
+                return  GlobalResponse.error("申請番号がありません。");
             }
         }
 
@@ -1721,7 +1735,7 @@ public class TmgNotificationBean {
             tncDo.setTntfDcancelend(null);
         }
         // 承認・管理からの再申請に対応する為
-        if (!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))) {
+        if (!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || !param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))) {
             // 承認か解除であれば、承認者コメント、取消コメントのカラムをINSERTに指定する
             tncDo.setTntfCboss(null);
             tncDo.setTntfCbosscomment(null);
@@ -2050,7 +2064,7 @@ public class TmgNotificationBean {
         tncDo.setTntfCmodifieruserid(param.getUserCode());
         tncDo.setTntfDmodifieddate(DateTime.now());
 
-        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) {    // 解除
+        if (param.getAction().equals(ACT_EDITCANCEL_UCANCEL)) {    // 差戻し
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_EDITCANCEL_UCANCEL);
         } else {    // 承認
             tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_EDITPERM_UPERMIT);
@@ -2064,7 +2078,8 @@ public class TmgNotificationBean {
             tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
         } else {
             // レベル判定
-            if (Boolean.valueOf(param.getFinalApprovalLevel())) {
+            if (hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),param.getTargetUser(),
+                    param.getApprovalLevel(),param.getSiteId())) {
                 tncDo.setTntfCstatusflg(STATUS_PERM);
             } else {
                 tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
@@ -2510,6 +2525,36 @@ public class TmgNotificationBean {
         } else {
             return false;
         }
+    }
+
+    /**
+     * 一覧表示用決裁レベルチェックメソッド
+     * @param  psStartDate     開始日,
+     * @param  psEndDate       終了日,
+     * @param  psEmpId         職員番号,
+     * @param  psApprovalLevel 決裁レベル
+     * @return boolean         表示可能:true、表示不可能:false
+     * @exception
+     */
+    public boolean hasCheckApprovelLevel(String psStartDate, String psEndDate, String psEmpId, String psApprovalLevel, String siteId){
+
+        // 決裁レベルが未設定の場合は表示
+        if (psApprovalLevel == null){
+            return true;
+        }
+
+        // 管理サイトの場合、無条件に決裁権限があるものとする
+        if(siteId.equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
+            return true;
+        }
+
+        // 職員の決裁レベルが、申請の決裁レベル以上の場合、決裁権限を有すると判定する
+        if (Integer.valueOf(psApprovalLevel).intValue() <= referList.getApprovalLevel(psStartDate, psEndDate, psEmpId)){
+            return true;  // 決裁権限がある
+        } else {
+            return false; // 決裁権限が無い
+        }
+
     }
 
 

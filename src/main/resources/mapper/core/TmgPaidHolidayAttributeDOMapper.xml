@@ -35,7 +35,7 @@
             TMG_PAID_HOLIDAY_ATTRIBUTE B,
         (
             SELECT
-                ROWNUM AS　SORTED_ROW,
+                ROWNUM AS SORTED_ROW,
                 A.*
             FROM
             (
@@ -66,7 +66,7 @@
                     FROM
                         MAST_EMPLOYEES B,
                         (
-                        　　${param.empListsql}
+                         ${param.empListsql}
                         ) A
                     WHERE
 
@@ -126,7 +126,7 @@
         AND B.TPHA_CEMPLOYEEID ( + ) = A.ME_CEMPLOYEEID_CK
         AND B.TPHA_DSTARTDATE ( + ) <![CDATA[>=]]> TO_DATE( #{param.baseDate}, 'yyyy/MM/dd' )
         AND B.TPHA_DENDDATE ( + ) >= TO_DATE( #{param.baseDate}, 'yyyy/MM/dd' )
-        AND A.SORTED_ROW BETWEEN #{numStrat}　AND #{numEnd}
+        AND A.SORTED_ROW BETWEEN #{numStrat} AND #{numEnd}
         ORDER BY
             A.SORTED_ROW
         ;

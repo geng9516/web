@@ -927,7 +927,7 @@
         SELECT
             TO_CHAR( MGD_DSTART_CK, 'yyyy/mm/dd' ) AS DSTART,
             DECODE( TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ), '2222/12/31', '', TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) ) AS DEND,
-            TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) AS DEND,
+            TO_CHAR( MGD_DEND, 'yyyy/mm/dd' ) AS DENDBACK,
             TO_CHAR( MGD_DSPAREDATE1, 'yyyy/mm/dd' ) AS BEGINDATE
         FROM
             MAST_GENERIC_DETAIL
