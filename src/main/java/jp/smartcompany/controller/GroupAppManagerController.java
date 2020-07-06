@@ -113,7 +113,7 @@ public class GroupAppManagerController {
   @PostMapping("update")
   public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException {
       groupAppManagerMainLogic.executeUpdate(session,updatePermForm);
-      return "";
+      return "変更成功";
   }
 
 }
