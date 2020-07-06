@@ -93,7 +93,7 @@ public class ScheduleController {
      * @param psDBBean
      * @return
      */
-    @GetMapping("executeEditMonthlyUSchedule")
+    @GetMapping("executeEditMonthlyUScheduleTest")
     @ResponseBody
     public HashMap<String, Object> executeEditMonthlyUSchedule_test(@RequestParam("txtBaseDate") String txtBaseDate,
                                                                     @RequestParam("txtEndDate") String txtEndDate,
