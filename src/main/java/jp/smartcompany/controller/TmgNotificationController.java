@@ -105,7 +105,7 @@ public class TmgNotificationController {
 
 
     /**
-     * 新規申請/再申請/代理申請/取消/承认/差し戻す
+     * 新規申請/再申請/代理申請/取消/承认
      *
      * @return　エラー null 为正常申请
      */
@@ -127,6 +127,21 @@ public class TmgNotificationController {
         return tmgNotificationBean.actionMakeApply(psDBBean,paramNotificationListDto,uploadFiles,deleteFileslist);
     }
 
+
+    /**
+     * 差戻し
+     *
+     * @return　エラー null 为正常申请
+     */
+    @PostMapping("ApplyReject")
+    @ResponseBody
+    public GlobalResponse actionUpdateReject(
+            @RequestParam("params") String params,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        ParamNotificationListDto paramNotificationListDto =JSONUtil.parse(params).toBean(ParamNotificationListDto.class);
+
+        return tmgNotificationBean.actionUpdateReject(psDBBean,paramNotificationListDto);
+    }
 
 
     /**

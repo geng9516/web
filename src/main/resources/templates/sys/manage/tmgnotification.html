@@ -613,7 +613,7 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
-              await this.http.uploadFiles('sys/vapply/MakeApply', {
+              await this.http.uploadFiles('sys/vapply/ApplyReject', {
                 params: JSON.stringify(query),
                 psSite: this.referListObject.psSite
               })
