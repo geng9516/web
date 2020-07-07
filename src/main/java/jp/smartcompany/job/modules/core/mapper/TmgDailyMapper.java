@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursV
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgStatus;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -114,4 +115,12 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
      * [勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
      */
     List<PaidHolidayVO> buildSQLForSelectPaidHoliday(Map<String, Object> map);
+
+    /**
+     *対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     */
+    TmgStatus buildSQLForSelectTmgStatus(@Param("custID")String custID,
+                                         @Param("compCode")String compCode,
+                                         @Param("userCode")String userCode,
+                                         @Param("day")String day);
 }

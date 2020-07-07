@@ -454,7 +454,7 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
     String selectWeekDaysCom(String custId,String compId,String baseDate,int daysOfWeeks,int allMinutes);
 
 
-    EmploymentWithMgdVo selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId);
+    List<EmploymentWithMgdVo> selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId);
 
 
     /**

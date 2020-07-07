@@ -49,10 +49,10 @@
         WHERE
             MTR_CSYSTEMID = #{systemId}
             AND	MTR_CTYPE <![CDATA[ <> ]]> '0'
-            <if test="siteId!=null">
+            <if test='siteId!=null and siteId!=""'>
                 AND	MTR_CSITEID = #{siteId}
             </if>
-            <if test="appId!=null">
+            <if test='appId!=null and appId!=""'>
                 AND (
                     MTR_COBJECTID IN (
                         SELECT DISTINCT
@@ -83,7 +83,7 @@
            WHERE
              BEF.MGP_CSYSTEMID = '${systemId}'
              AND BEF.MGP_DSTARTDATE <![CDATA[<]]> BASE.MGP_DSTARTDATE
-             <if test="groupId!=null">
+             <if test='groupId!=null and groupId!=""'>
                AND BEF.MGP_CGROUPID = #{groupId}
              </if>
           ) BEFOREDATE, -- 前の改定日(SYSDATE以降)
@@ -93,7 +93,7 @@
          WHERE
            AFT.MGP_CSYSTEMID = #{systemId}
            AND AFT.MGP_DSTARTDATE > BASE.MGP_DSTARTDATE
-           <if test="groupId!=null">
+           <if test='groupId!=null and groupId!=""'>
              AND AFT.MGP_CGROUPID = #{groupId}
            </if>
          ) AFTERDATE, -- 次の改定日
@@ -104,7 +104,7 @@
          WHERE
            LAT.MGP_CSYSTEMID = #{systemId}
            AND LAT.MGP_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
-            <if test="groupId!=null">
+            <if test='groupId!=null and groupId!=""'>
                 AND LAT.MGP_CGROUPID = #{groupId}
             </if>
         ) LATESTDATE -- システム日付時点で有効な改定日
@@ -123,7 +123,7 @@
                     AND	MGP_DSTARTDATE <![CDATA[<=]]> TRUNC(SYSDATE)
                 </otherwise>
             </choose>
-           <if test="groupId!=null">
+           <if test='groupId!=null and groupId!=""'>
              AND MGP_CGROUPID = #{groupId}
            </if>
         ) BASE

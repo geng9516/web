@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursV
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgStatus;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -159,6 +160,7 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
 
     /**
      *[勤怠]年次休暇情報より、年次休暇付与状況一覧を取得する
+     *
      * @param custID 顧客コード
      * @param compCode 法人コード
      * @param dispUserCode 対象者
@@ -167,4 +169,15 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @return
      */
     List<PaidHolidayVO> buildSQLForSelectPaidHoliday(String custID, String compCode, String dispUserCode, String searchStart, String searchEnd);
+
+    /**
+     * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     *
+     * @param custID  顧客コード
+     * @param compCode 法人コード
+     * @param userCode 対象者
+     * @param day 対象者
+     * @return
+     */
+    TmgStatus buildSQLForSelectTmgStatus(String custID, String compCode, String userCode, String day);
 }

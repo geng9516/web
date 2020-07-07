@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -217,7 +216,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   @Override
   public List<MastApptreeDO> getAppList(String psSystemId, String psLanguage, String psSiteId) {
     // アプリケーション一覧取得
-    return iMastApptreeService.selectSiteOrAppListByType(psSystemId, psLanguage, TYPE_SITE, psSiteId);
+    return iMastApptreeService.selectSiteOrAppListByType(psSystemId, psLanguage, TYPE_APP, psSiteId);
   }
 
   /**

@@ -13,4 +13,14 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgMastWorker4discretionaryService extends IService<TmgMastWorker4discretionaryDO> {
 
-        }
+    /**
+     * 裁量労働対象者かどうかを判定
+     *
+     * @param custId       顧客コード
+     * @param compCode     法人コード
+     * @param employeeCode 社員番号
+     * @param baseDate     日付
+     * @return
+     */
+    boolean buildSQLForSelectDiscretion(String custId, String compCode, String employeeCode, String baseDate);
+}

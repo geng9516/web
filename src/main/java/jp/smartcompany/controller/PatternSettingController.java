@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.patternsetting.PatternSettingBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.RestTimeLimitDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternAppliesDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
+import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternMergeDTO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.ModifiCSVVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.PeriodDateVO;
 import jp.smartcompany.job.modules.tmg.patternsetting.vo.TmgPatternVO;
@@ -111,7 +112,7 @@ public class PatternSettingController {
     }
 
     /**
-     * 【編集】編集パターン情報
+     * 【編集】削除パターン
      * <p>パラメータの中で特殊文字があるから、 get request できない　　（post，form だけ）
      * <p>http://localhost:6879/sys/patternSetting/deletePattern?groupId=100000000000|000000&sectionId=100000000000&patternId=23238989
      *
@@ -138,11 +139,11 @@ public class PatternSettingController {
      * @param psDBBean
      * @return
      */
-    @PostMapping("modifiEditAndNew")
-    public void modifiEditAndNew(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    @PostMapping(value = "modifiEditAndNew",produces = "application/json;charset=UTF-8")
+    public void modifiEditAndNew(@RequestBody TmgPatternMergeDTO tmgPatternMergeDTO, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        patternSettingBean.modifiEditAndNew();
+        patternSettingBean.modifiEditAndNew(tmgPatternMergeDTO);
     }
 
     /**

@@ -8,6 +8,8 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgDateOfEmpLogVo;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * [勤怠]勤務開始日編集ログ 服务实现类
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Repository;
          * 勤務開始日更新履歴取得用SQL取得メソッド
          */
         @Override
-        public TmgDateOfEmpLogVo selectTmgDateofempLog(String custId, String compId, String empId, String baseDate){
+        public List<TmgDateOfEmpLogVo> selectTmgDateofempLog(String custId, String compId, String empId, String baseDate){
                 return baseMapper.selectTmgDateofempLog(custId,compId,empId,baseDate);
         }
         }

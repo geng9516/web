@@ -186,6 +186,8 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
     public List <AppInfo> getDlgAppList() {
         // 返却用
         List <AppInfo> appInfoList = new ArrayList < AppInfo >();
+        setRequest(ContextUtil.getHttpRequest());
+        gPsSession = (PsSession) gRequest.getSession().getAttribute(Constant.PS_SESSION);
         TopPageInfo topPageInfo = gPsSession.getLoginAppPermission();
         if (topPageInfo == null) {
             return appInfoList;

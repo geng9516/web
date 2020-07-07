@@ -841,7 +841,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
 
 
     @Override
-    public EmploymentWithMgdVo selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId){
+    public List<EmploymentWithMgdVo> selectDateOfEmploymentWithMGD(String custId, String compId, String lang, String empId, String groupId){
         return baseMapper.selectDateOfEmploymentWithMGD( custId,  compId,  lang, empId,  groupId);
     }
 

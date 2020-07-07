@@ -39,7 +39,7 @@ public class DailyEditVO {
     /**
      * [実績]就業区分名称
      */
-    private String tdaCworkingidRBame;
+    private String tdaCworkingidRName;
     /**
      * [申請反映]始業時刻
      */

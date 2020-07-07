@@ -6,6 +6,7 @@ import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.form.GroupAppManagerUpdatePermsForm;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpSession;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  *  システム管理menu-起動権限設定Controller
@@ -34,17 +36,25 @@ public class GroupAppManagerController {
   @PostMapping
   public GroupAppManagerTableLayout list(
                                          @RequestAttribute("BeanName") PsDBBean psDBBean,
-                                         @RequestParam(value="date",required = false) Date date,
-                                         @RequestParam(value="groupId",required = false) String groupId,
-                                         @RequestParam(value="isAll",required = false,defaultValue = "false") Boolean isAll,
-                                         @RequestParam(value="siteId",required = false) String psSiteId,
-                                         @RequestParam(value="appId",required = false) String psAppId,
+                                         @RequestParam Map<String,Object> params,
                                          HttpSession session
-                                     ) {
-    if (date == null){
+                                     ) throws ParseException {
+    String dateStr = (String)params.get("date");
+    Date date;
+    if (StrUtil.isBlank(dateStr)){
       date = DateUtil.date();
+    }else {
+        date = SysUtil.transStringToDate(dateStr);
     }
-    return groupAppManagerMainLogic.listPermsTable(
+    String groupId = (String)params.get("groupId");
+    String isAllStr = (String)params.get("isALl");
+    if (StrUtil.isBlank(isAllStr)) {
+        isAllStr = "false";
+    }
+    boolean isAll = Boolean.parseBoolean(isAllStr);
+    String psSiteId = (String)params.get("siteId");
+    String psAppId = (String)params.get("appId");
+      GroupAppManagerTableLayout layout= groupAppManagerMainLogic.listPermsTable(
             psDBBean.getSystemCode(),
             date,
             groupId,
@@ -56,16 +66,29 @@ public class GroupAppManagerController {
             isAll,
             session
     );
+    return layout;
   }
 
   @PostMapping("groups")
   public List<GroupAppManagerGroupDTO> getGroupList(
           @RequestAttribute("BeanName") PsDBBean psDBBean,
-          @RequestParam(value="systemId",required = false) String systemId,
-          @RequestParam(value="searchDate",required = false) Date searchDate,
-          @RequestParam(value="companyId",required = false) String companyId,
-          @RequestParam(value="isAll",required = false,defaultValue = "false") Boolean isAll) {
-          if (StrUtil.isBlank(systemId)){
+          @RequestParam Map<String,Object> params
+  ) throws ParseException {
+      String isAllStr = (String)params.get("isAll");
+      if (StrUtil.isBlank(isAllStr)){
+          isAllStr = "false";
+      }
+      String systemId = (String)params.get("systemId");
+      String searchDateStr = (String)params.get("searchDate");
+      Date date;
+      if (StrUtil.isBlank(searchDateStr)){
+          date = DateUtil.date();
+      }else {
+          date = SysUtil.transStringToDate(searchDateStr);
+      }
+      String companyId = (String)params.get("companyId");
+      boolean isAll =Boolean.parseBoolean(isAllStr);
+      if (StrUtil.isBlank(systemId)){
             systemId=psDBBean.getSystemCode();
           }
           if (StrUtil.isBlank(companyId)){
@@ -74,7 +97,7 @@ public class GroupAppManagerController {
           return groupAppManagerMainLogic.getGroupList(psDBBean.getCustID(),
             systemId,
             psDBBean.getLanguage(),
-            searchDate, companyId, isAll);
+                  date, companyId, isAll);
   }
 
   @GetMapping("sites")
@@ -113,7 +136,7 @@ public class GroupAppManagerController {
   @PostMapping("update")
   public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException {
       groupAppManagerMainLogic.executeUpdate(session,updatePermForm);
-      return "";
+      return "変更成功";
   }
 
 }

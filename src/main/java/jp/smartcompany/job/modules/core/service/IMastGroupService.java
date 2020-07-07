@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -39,4 +40,11 @@ public interface IMastGroupService extends IService<MastGroupDO> {
         List<GroupAppManagerGroupDTO> selectAppManagerGroup(String customerId, String systemId, String language,
         Date searchDate, String companyId,List<String> companyIds);
 
+        List<GroupManagerGroupListDTO> selectValidGroup(
+                String customerCode,
+                String systemId,
+                String language,
+                String searchDate,
+                List<String> companyList
+        );
 }

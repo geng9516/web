@@ -139,4 +139,41 @@
             </foreach>
           </if>
     </select>
+
+    <select id="selectValidGroup" parameterType="map" resultType="jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO">
+        SELECT
+            MG_DSTARTDATE,
+            MG_DENDDATE,
+            MG_CGROUPID_PK,
+            MG_CCOMPANYID,
+            PSMASTER.FUNC_GET_GROUP_DESC(
+              MG_CSYSTEMID_CK_FK
+              ,MG_CGROUPID_PK
+              ,'${searchDate}'
+              ,'${language}') AS MG_CGROUPDESCRIPTION,
+        PSMASTER.FUNC_GET_COMP_NAME(
+           MG_CCUSTOMERID
+           ,MG_CCOMPANYID
+           ,'${searchDate}'
+           ,'${language}')
+           AS COMPANYNAME,
+           MG_ID,
+           VERSIONNO
+        FROM
+            MAST_GROUP
+        WHERE
+           MG_CCUSTOMERID = #{customerCode}
+           AND MG_CSYSTEMID_CK_FK = #{systemId}
+           AND MG_CLANGUAGE	= 'ja'
+            <if test="companyList!=null and companyList.size>0">
+                AND MG_CCOMPANYID IN
+                <foreach collection="companyList" item="companyId" open="(" separator="," close=")">
+                    #{companyId}
+                </foreach>
+            </if>
+            AND MG_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+            AND MG_DENDDATE	>= #{searchDate}
+        ORDER BY
+            MG_NWEIGHTAGE, MG_CGROUPID_PK
+    </select>
 </mapper>

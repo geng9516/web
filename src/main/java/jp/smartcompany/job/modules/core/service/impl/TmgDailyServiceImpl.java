@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyDetailOverHoursV
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.MonthlyInfoOverSumVo;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgStatus;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyDetailVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
@@ -274,11 +275,26 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
         Map<String, Object> map = MapUtil.newHashMap(5);
         map.put("custID", custID);
         map.put("compCode", compCode);
-        map.put("dispUserCode", dispUserCode);
+        map.put("userCode", dispUserCode);
         map.put("searchStart", searchStart);
         map.put("searchEnd", searchEnd);
 
         return baseMapper.buildSQLForSelectPaidHoliday(map);
+    }
+
+
+    /**
+     * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     *
+     * @param custID   顧客コード
+     * @param compCode 法人コード
+     * @param userCode 対象者
+     * @param day      対象者
+     * @return
+     */
+    @Override
+    public TmgStatus buildSQLForSelectTmgStatus(String custID, String compCode, String userCode, String day) {
+        return baseMapper.buildSQLForSelectTmgStatus(custID, compCode, userCode, day);
     }
 
 }

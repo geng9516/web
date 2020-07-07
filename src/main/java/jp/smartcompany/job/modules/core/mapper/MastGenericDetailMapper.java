@@ -295,7 +295,7 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                              @Param("daysOfWeeks")int daysOfWeeks,
                              @Param("allMinutes")int allMinutes);
 
-    EmploymentWithMgdVo selectDateOfEmploymentWithMGD(@Param("custId")String custId,
+    List<EmploymentWithMgdVo> selectDateOfEmploymentWithMGD(@Param("custId")String custId,
                                                       @Param("compId")String compId,
                                                       @Param("lang")String lang,
                                                       @Param("empId")String empId,

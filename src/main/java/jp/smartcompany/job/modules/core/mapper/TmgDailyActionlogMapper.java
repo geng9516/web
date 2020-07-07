@@ -2,7 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyActionlogDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyLogVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +20,9 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgDailyActionlogMapper extends BaseMapper<TmgDailyActionlogDO> {
 
-        }
+    List<DailyLogVO> buildSQLForSelectTmgSelectDailyActionLog(@Param("custID") String custID,
+                                                              @Param("compCode") String compCode,
+                                                              @Param("targetUser") String targetUser,
+                                                              @Param("day") String day,
+                                                              @Param("language") String language);
+}

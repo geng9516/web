@@ -71,7 +71,7 @@
             TDA_DENDDATE,
             #{userCode} ,
             sysdate,
-            'TmgResults _' || #{action} ,
+            'TmgResults_' || #{action} ,
             TDA_NYYYY,
             TDA_DYYYYMM,
             TDA_DYYYYMMDD,
