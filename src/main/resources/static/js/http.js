@@ -26,13 +26,13 @@ axios.interceptors.response.use(
 const postForm = (url, params) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { headers } = await axios({
+      const { data } = await axios({
         method: 'post',
         url,
         data: Stringify(params, { arrayFormat: 'indices' }),
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
       })
-      resolve(headers)
+      resolve(data)
     } catch (e) {
       reject(e)
     }

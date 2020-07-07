@@ -5,13 +5,13 @@ import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.empattrsetting.dto.EmpAttrSettingDto;
-import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateCheckInfoDto;
-import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateGroupInfoDto;
+import jp.smartcompany.job.modules.tmg.empattrsetting.dto.*;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.*;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -19,6 +19,7 @@ import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,8 +43,6 @@ public class EmpAttrSettingBean {
     private ITmgEmployeeAttributeService iTmgEmployeeAttributeService;
     private IMastEmployeesService IMastEmployeesService;
     private ITmgDateofempLogService iTmgDateofempLogService;
-
-    EmpAttrSettingDto param = new EmpAttrSettingDto();
 
 
     /** 項目区分：管理対象者[TMG_ITEMS|MANAGEFLG] */
@@ -73,7 +72,7 @@ public class EmpAttrSettingBean {
     public EmpDispVo actionScreenDisp(String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) throws Exception {
 
         int pageInfo[] = getPageOfSearchNumber(sPage);
-
+        EmpAttrSettingDto param = new EmpAttrSettingDto();
         param.setBaseDate(baseDate);
         param.setLang(psDBBean.getLanguage());
         param.setEmpListsql(referList.buildSQLForSelectEmployees());
@@ -90,7 +89,7 @@ public class EmpAttrSettingBean {
         int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
 
         // 一覧画面：一括編集用項目の制御情報：SELECT
-        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
+        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),psDBBean.getLanguage());
 
         EmpDispVo empDispVo= new EmpDispVo();
         empDispVo.setTotalCount(tmgEmpListCount);
@@ -130,9 +129,9 @@ public class EmpAttrSettingBean {
 //        int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
 //
 //        // 一覧画面：一括編集用項目の制御情報：SELECT
-//        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(param.getCustId(),param.getCompId(),param.getBaseDate(),param.getLang());
+//        List<EmpAttsetDispVo> empAttsetDispVoList=iMastGenericDetailService.selectEmpAttsetDisp(psDBBean.getCustID(),psDBBean.getCompCode(),param.getBaseDate(),psDBBean.getLanguage());
 //
-//        List<MastGenericDetailDO> mgdDoList = iMastGenericDetailService.selectWorkPlace(param.getCustId(),param.getCompId(),param.getLang(),
+//        List<MastGenericDetailDO> mgdDoList = iMastGenericDetailService.selectWorkPlace(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),
 //                "TMG_WORKPLACE" ,param.getBaseDate());
 //
 //    }
@@ -146,17 +145,17 @@ public class EmpAttrSettingBean {
     public EditDispVo actionScreenDispEditAvgWorktime(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
         // 平均勤務時間編集：社員情報：SELECT
-//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
-//                param.getLang(),param.getTargetSectionId());
+//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),
+//                psDBBean.getLanguage(),param.getTargetSectionId());
 
         // 平均勤務時間編集：平均勤務時間：SELECT
-        AvgWorkTimeVo avgWorkTimeVo=iTmgPaidHolidayAttributeService.selectAvgWorkTime60(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getBaseDate());
+        AvgWorkTimeVo avgWorkTimeVo=iTmgPaidHolidayAttributeService.selectAvgWorkTime60(psDBBean.getCustID(),psDBBean.getCompCode(),empId,baseDate);
 
         // 平均勤務時間編集：デフォルト平均勤務時間：SELECT
-        AvgWorkTimeVo avgWorkTimeVoDefault=iTmgPaidHolidayAttributeService.selectDefaultAvgWorkTime(param.getCustId(),param.getCompId(),param.getTargetUser(),param.getBaseDate());
+        AvgWorkTimeVo avgWorkTimeVoDefault=iTmgPaidHolidayAttributeService.selectDefaultAvgWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),empId,baseDate);
 
         // 平均勤務時間編集：平均勤務時間設定状況：SELECT
-        AvgWorkTimeHistoryVo avgWorkTimeHistoryVo=iTmgPaidHolidayAttributeService.selectAvgWorkTimeHistory(param.getCustId(),param.getCompId(),param.getTargetUser());
+        AvgWorkTimeHistoryVo avgWorkTimeHistoryVo=iTmgPaidHolidayAttributeService.selectAvgWorkTimeHistory(psDBBean.getCustID(),psDBBean.getCompCode(),empId);
 
         // 平均勤務時間編集：平均勤務時間上限：SELECT
         MgdTimeLimitVo mgdTimeLimitVo=iMastGenericDetailService.selectMgdTimeLimit();
@@ -181,40 +180,46 @@ public class EmpAttrSettingBean {
      *
      * modifyAvgWorktime
      */
-    private void actionModifyAvgWorktime() throws Exception {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionModifyAvgWorktime(String empId,String baseDate, AvgTimeForUpdateDto params, PsDBBean psDBBean) throws Exception {
 
         // 開始日が基準日以降のレコード削除(delete)
         // TMG_PAID_HOLIDAY_ATTRIBUTE削除用クエリを返す
         int deleteTmgPaidHolidayAttribute=iTmgPaidHolidayAttributeService.getBaseMapper().delete(SysUtil.<TmgPaidHolidayAttributeDO>query()
-                .eq("TPHA_CCUSTOMERID",param.getCustId())
-                .eq("TPHA_CCOMPANYID",param.getCompId())
-                .eq("TPHA_CEMPLOYEEID",param.getTargetUser())
-                .ge("TPHA_DSTARTDATE",param.getBaseDate()));
+                .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TPHA_CEMPLOYEEID",empId)
+                .ge("TPHA_DSTARTDATE",baseDate));
 
         // 基準日時点で適用されているデータの終了日を基準日-1で更新(update)
-        int updPaidHolidayAttribute=updPaidHolidayAttribute();
+        int updPaidHolidayAttribute=updPaidHolidayAttribute(empId,baseDate,psDBBean);
 
         // 画面入力された値を登録(insert)
-        int insertPaidHolidayAttribute=insertPaidHolidayAttribute();
+        int insertPaidHolidayAttribute=insertPaidHolidayAttribute(empId,baseDate,params,psDBBean);
 
         // トリガーテーブルにデータ削除
         int deleteTmgTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", "EmpAttrSetting")
-                .eq("TTR_CEMPLOYEEID", param.getTargetUser())
-                .eq("TTR_CCUSTOMERID", param.getCustId())
-                .eq("TTR_CCOMPANYID", param.getCompId()));
+                .eq("TTR_CEMPLOYEEID", empId)
+                .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
         // トリガーテーブルにデータ登録
-        int insertTmgTrigger=insertTmgTrigger(param.getBaseDate());
+        int insertTmgTrigger=insertTmgTrigger(empId,baseDate,psDBBean);
         // トリガーテーブルのデータ削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", "EmpAttrSetting")
-                .eq("TTR_CEMPLOYEEID", param.getTargetUser())
-                .eq("TTR_CCUSTOMERID", param.getCustId())
-                .eq("TTR_CCOMPANYID", param.getCompId()));
+                .eq("TTR_CEMPLOYEEID", empId)
+                .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
+        if(updPaidHolidayAttribute==1&&insertPaidHolidayAttribute==1&&insertTmgTrigger==1){
+            return  GlobalResponse.ok();
+        }else{
+            return  GlobalResponse.error();
+        }
     }
 
 
@@ -223,29 +228,35 @@ public class EmpAttrSettingBean {
      * deleteAvgWorktime
      * @throws Exception
      */
-    private void actionDeleteAvgWorktime() throws Exception {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionDeleteAvgWorktime(String empId,String baseDate,PsDBBean psDBBean) throws Exception {
 
         // 開始日が基準日以降のレコード削除(delete)
         // TMG_PAID_HOLIDAY_ATTRIBUTE削除用クエリを返す
         int deleteTmgPaidHolidayAttribute=iTmgPaidHolidayAttributeService.getBaseMapper().delete(SysUtil.<TmgPaidHolidayAttributeDO>query()
-                .eq("TPHA_CCUSTOMERID",param.getCustId())
-                .eq("TPHA_CCOMPANYID",param.getCompId())
-                .eq("TPHA_CEMPLOYEEID",param.getTargetUser())
-                .ge("TPHA_DSTARTDATE",param.getBaseDate()));
+                .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TPHA_CEMPLOYEEID",empId)
+                .ge("TPHA_DSTARTDATE",baseDate));
 
         // 基準日時点で適用されているデータの終了日を基準日-1で更新(update)
-        int updPaidHolidayAttribute=updPaidHolidayAttribute();
+        int updPaidHolidayAttribute=updPaidHolidayAttribute(empId,baseDate,psDBBean);
 
         // トリガーテーブルにデータ登録
-        int insertTmgTrigger=insertTmgTrigger(param.getBaseDate());
+        int insertTmgTrigger=insertTmgTrigger(empId,baseDate,psDBBean);
         // トリガーテーブルのデータ削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", "EmpAttrSetting")
-                .eq("TTR_CEMPLOYEEID", param.getTargetUser())
-                .eq("TTR_CCUSTOMERID", param.getCustId())
-                .eq("TTR_CCOMPANYID", param.getCompId()));
+                .eq("TTR_CEMPLOYEEID", empId)
+                .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
+        if(updPaidHolidayAttribute==1&&insertTmgTrigger==1){
+            return  GlobalResponse.ok();
+        }else{
+            return  GlobalResponse.error();
+        }
     }
 
 
@@ -253,18 +264,24 @@ public class EmpAttrSettingBean {
      * 機能：管理対象者一括編集_更新処理
      *modifyManageFlag
      */
-    private void actionModifyManageFlag(PsDBBean psDBBean) throws Exception {
-        // 管理対象者分の更新用クエリ取得
-        List<UpdateCheckInfoDto> updateCheckInfoDtoManageList = new ArrayList<UpdateCheckInfoDto>();
-        updateManageFlgEmployee(updateCheckInfoDtoManageList,psDBBean);
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionModifyManageFlag(String baseDate,PsDBBean psDBBean) throws Exception {
+        try {
+            // 管理対象者分の更新用クエリ取得
+            List<UpdateCheckInfoDto> updateCheckInfoDtoManageList = new ArrayList<UpdateCheckInfoDto>();
+            updateManageFlgEmployee(baseDate, updateCheckInfoDtoManageList, psDBBean);
 
-        // 超過勤務対象者分の更新用クエリ取得
-        List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList = new ArrayList<UpdateCheckInfoDto>();
-        updateOverTimesEmployee(updateCheckInfoDtoOverTimesList,psDBBean);
+            // 超過勤務対象者分の更新用クエリ取得
+            List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList = new ArrayList<UpdateCheckInfoDto>();
+            updateOverTimesEmployee(baseDate, updateCheckInfoDtoOverTimesList, psDBBean);
 
-        // 勤務先グループの更新用クエリ取得
-        List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList = new ArrayList<UpdateGroupInfoDto>();
-        updateWorkPlace(updateGroupInfoDtoWorkPlaceList);
+            // 勤務先グループの更新用クエリ取得
+            List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList = new ArrayList<UpdateGroupInfoDto>();
+            updateWorkPlace(baseDate, updateGroupInfoDtoWorkPlaceList, psDBBean);
+        }catch (GlobalException e){
+            return GlobalResponse.error(e.getMessage());
+        }
+        return  GlobalResponse.ok();
     }
 
     /**
@@ -277,8 +294,8 @@ public class EmpAttrSettingBean {
 
 
         // 平均勤務時間編集：社員情報：SELECT
-//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(param.getCustId(),param.getCompId(),param.getTargetUser(),
-//                param.getLang(),param.getTargetSectionId());
+//        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),
+//                psDBBean.getLanguage(),param.getTargetSectionId());
 
         // 勤務開始日設定状況：SELECT
         List<EmploymentWithMgdVo> employmentWithMgdVo = iMastGenericDetailService.selectDateOfEmploymentWithMGD(psDBBean.getCustID(),psDBBean.getCompCode()
@@ -301,34 +318,40 @@ public class EmpAttrSettingBean {
      * 機能：勤務開始日設定状況_新規登録処理
      *insertBeginDate
      */
-    private void actionInsertBeginDate() throws Exception {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionInsertBeginDate(String empId,String baseDate, PsDBBean psDBBean, BeginDateForUpdateDto params) throws Exception {
 
         // 勤務開始日を名称マスタに保存
-        int insertMgd=iMastGenericDetailService.insertMgdKinmuStart(param.getCustId(),param.getCompId(),param.getTargetUser()
-                                        ,param.getUserCode(),param.getBaseDate(),null,null,null);
+        int insertMgd=iMastGenericDetailService.insertMgdKinmuStart(psDBBean.getCustID(),psDBBean.getCompCode(),empId
+                                        ,psDBBean.getUserCode(),baseDate,params.getPsStartDate(),params.getPsEndDate(),params.getPsBeginDate());
 
         // 登録内容をログテーブルに保存
-        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
+        int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
         // トリガーテーブルにデータ登録
-        int insertTrigger = insertTrigger(param.getPsStartDate());
+        int insertTrigger = insertTrigger(empId,params.getPsStartDate(),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
+        if(insertMgd==1&&insertTmgDateofempLog==1&&insertTrigger==1){
+            return  GlobalResponse.ok();
+        }else{
+            return  GlobalResponse.error();
+        }
     }
 
 
@@ -337,34 +360,39 @@ public class EmpAttrSettingBean {
      *updateBeginDate
      * @throws Exception
      */
-    private void actionUpdateBeginDate() throws Exception{
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionUpdateBeginDate(String empId,PsDBBean psDBBean,BeginDateForUpdateDto params) throws Exception{
 
         // 名称マスタを更新
-        int updateMgd = updateMgd();
+        int updateMgd = updateMgd(empId,psDBBean,params);
 
         // 登録内容をログテーブルに保存
-        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
+        int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
         // トリガーテーブルにデータ登録
-        int insertTrigger = insertTrigger(param.getPsMaxOldStartDate());
+        int insertTrigger = insertTrigger(empId,params.getPsMaxOldStartDate(),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
-
+        if(updateMgd==1&&insertTmgDateofempLog==1&&insertTrigger==1){
+            return  GlobalResponse.ok();
+        }else{
+            return  GlobalResponse.error();
+        }
 
     }
 
@@ -372,75 +400,81 @@ public class EmpAttrSettingBean {
      * 機能：勤務開始日設定状況_削除処理
      *deleteBeginDate
      */
-    private void actionDeleteBeginDate() throws Exception {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actionDeleteBeginDate(String empId,PsDBBean psDBBean,BeginDateForUpdateDto params) throws Exception {
 
         // 名称マスタから削除
         int deleteMgd=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("MGD_CCUSTOMERID",param.getCustId())
-                .eq("MGD_CCOMPANYID_CK_FK",param.getCompId())
+                .eq("MGD_CCUSTOMERID",psDBBean.getCustID())
+                .eq("MGD_CCOMPANYID_CK_FK",psDBBean.getCompCode())
                 .eq("MGD_CGENERICGROUPID","TMG_DATEOFEMPLOYMENT")
-                .eq("MGD_CGENERICDETAILID_CK",param.getTargetUser())
-                .eq("MGD_CLANGUAGE_CK",param.getLang())
-                .eq("MGD_DSTART_CK",param.getPsOldStartDate()));
+                .eq("MGD_CGENERICDETAILID_CK",empId)
+                .eq("MGD_CLANGUAGE_CK",psDBBean.getLanguage())
+                .eq("MGD_DSTART_CK",params.getPsOldStartDate()));
 
         // 登録内容をログテーブルに保存
-        int insertTmgDateofempLog =insertTmgDateofempLog(getModifiedMessage());
+        int insertTmgDateofempLog =insertTmgDateofempLog(empId,getModifiedMessage(params),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerBef=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
         // トリガーテーブルにデータ登録
-        int insertTrigger = insertTrigger(param.getPsOldStartDate());
+        int insertTrigger = insertTrigger(empId,params.getPsOldStartDate(),psDBBean);
 
         // トリガーテーブルのデータ削除
         int deleteTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                .eq("TTR_CCUSTOMERID",param.getCustId())
-                .eq("TTR_CCOMPANYID",param.getCompId())
-                .eq("TTR_CEMPLOYEEID",param.getTargetUser())
-                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
+                .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
+                .eq("TTR_CCOMPANYID",psDBBean.getCompCode())
+                .eq("TTR_CEMPLOYEEID",empId)
+                .eq("TTR_CMODIFIERUSERID",psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID","EmpAttrSetting"));
 
+        if(deleteMgd==1&&insertTmgDateofempLog==1&&insertTrigger==1){
+            return  GlobalResponse.ok();
+        }else{
+            return  GlobalResponse.error();
+        }
     }
 
     /**
      * 名称マスタを更新
      */
-    private int updateMgd() {
+    private int updateMgd(String empId,PsDBBean psDBBean,BeginDateForUpdateDto params) {
         QueryWrapper<MastGenericDetailDO> queryWrapper= new QueryWrapper<MastGenericDetailDO>();
-        queryWrapper.eq("MGD_CCUSTOMERID",param.getCustId());
-        queryWrapper.eq("MGD_CCOMPANYID_CK_FK",param.getCompId());
+        queryWrapper.eq("MGD_CCUSTOMERID",psDBBean.getCustID());
+        queryWrapper.eq("MGD_CCOMPANYID_CK_FK",psDBBean.getCompCode());
         queryWrapper.eq("MGD_CGENERICGROUPID",TmgUtil.Cs_MG_TMG_DATEOFEMPLOYMENT);
-        queryWrapper.eq("MGD_CGENERICDETAILID_CK",param.getTargetUser());
-        queryWrapper.eq("MGD_CLANGUAGE_CK",param.getLang());
-        queryWrapper.eq("MGD_DSTART_CK",param.getPsOldStartDate());
+        queryWrapper.eq("MGD_CGENERICDETAILID_CK",empId);
+        queryWrapper.eq("MGD_CLANGUAGE_CK",psDBBean.getLanguage());
+        queryWrapper.eq("MGD_DSTART_CK",params.getPsOldStartDate());
 
         long versionNo=iMastGenericDetailService.getBaseMapper().selectOne(queryWrapper).getVersionno();
 
         MastGenericDetailDO mgdDo = new MastGenericDetailDO();
-        mgdDo.setMgdDstartCk(DateUtil.parse(param.getPsStartDate()));
-        mgdDo.setMgdDend(DateUtil.parse(param.getPsEndDate()));
-        mgdDo.setMgdCmodifieruserid(param.getUserCode());
+        mgdDo.setMgdDstartCk(DateUtil.parse(params.getPsStartDate()));
+        mgdDo.setMgdDend(DateUtil.parse(params.getPsEndDate()));
+        mgdDo.setMgdCmodifieruserid(psDBBean.getUserCode());
         mgdDo.setMgdDmodifieddate(DateTime.now());
-        mgdDo.setMgdDsparedate1(DateUtil.parse(param.getPsBeginDate()));
+        mgdDo.setMgdDsparedate1(DateUtil.parse(params.getPsBeginDate()));
         mgdDo.setVersionno(versionNo+1);
 
         return iMastGenericDetailService.getBaseMapper().update(mgdDo,queryWrapper);
     }
 
 
-    private int insertTrigger(String paramDate) {
+    private int insertTrigger(String empId,String paramDate,PsDBBean psDBBean) {
         TmgTriggerDO ttDo=new TmgTriggerDO();
-        ttDo.setTtrCcustomerid(param.getCustId());
-        ttDo.setTtrCcompanyid(param.getCompId());
-        ttDo.setTtrCemployeeid(param.getTargetUser());
+        ttDo.setTtrCcustomerid(psDBBean.getCustID());
+        ttDo.setTtrCcompanyid(psDBBean.getCompCode());
+        ttDo.setTtrCemployeeid(empId);
         ttDo.setTtrDstartdate(TmgUtil.minDate);
         ttDo.setTtrDenddate(TmgUtil.maxDate);
-        ttDo.setTtrCmodifieruserid(param.getUserCode());
+        ttDo.setTtrCmodifieruserid(psDBBean.getUserCode());
         ttDo.setTtrDmodifieddate(DateTime.now());
         ttDo.setTtrCmodifierprogramid("EmpAttrSetting");
         ttDo.setTtrCprogramid("EmpAttrSetting");
@@ -448,14 +482,14 @@ public class EmpAttrSettingBean {
         return iTmgTriggerService.getBaseMapper().insert(ttDo);
     }
 
-    private int insertTmgDateofempLog(String message) {
+    private int insertTmgDateofempLog(String empId,String message, PsDBBean psDBBean) {
         TmgDateofempLogDO tddo = new TmgDateofempLogDO();
-        tddo.setTdlgCcustomerid(param.getCustId());
-        tddo.setTdlgCcompanyid(param.getCompId());
-        tddo.setTdlgCemployeeid(param.getTargetUser());
+        tddo.setTdlgCcustomerid(psDBBean.getCustID());
+        tddo.setTdlgCcompanyid(psDBBean.getCompCode());
+        tddo.setTdlgCemployeeid(empId);
         tddo.setTdlgDstartdate(TmgUtil.minDate);
         tddo.setTdlgDenddate(TmgUtil.maxDate);
-        tddo.setTdlgCmodifieruserid(param.getUserCode());
+        tddo.setTdlgCmodifieruserid(psDBBean.getUserCode());
         tddo.setTdlgDmodifieddate(DateTime.now());
         tddo.setTdlgCmodifierprogramid("EmpAttrSetting");
         tddo.setTdlgCmodifieddetail(message);
@@ -470,7 +504,7 @@ public class EmpAttrSettingBean {
      *
      * @return
      */
-    public String getModifiedMessage(){
+    public String getModifiedMessage(BeginDateForUpdateDto params){
 
         String sMessage = new String();
         String WRD_BD_ADD             = "追加";
@@ -484,21 +518,21 @@ public class EmpAttrSettingBean {
         String SPACE                  = " ";
 
         // 新規登録時・・・新規 [適用開始日 - 適用終了日:勤務開始日]
-        if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_C)) {
-            sMessage =  WRD_BD_ADD + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        if (params.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_C)) {
+            sMessage =  WRD_BD_ADD + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
         }
         // 更新時・・・更新 [(旧)適用開始日 - (旧)適用終了日:(旧)勤務開始日] → [適用開始日 - 適用終了日:勤務開始日]
-        else if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_U)) {
-            sMessage =  WRD_BD_UPDATE + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS + SPACE +
-                    WRD_BD_RIGHT_ARROW + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        else if (params.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_U)) {
+            sMessage =  WRD_BD_UPDATE + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS + SPACE +
+                    WRD_BD_RIGHT_ARROW + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
         }
         // 削除時・・・削除 [適用開始日 - 適用終了日:勤務開始日]
-        else if (param.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_D)) {
-            sMessage =  WRD_BD_DELETE + SPACE + WRD_BD_BEFORE_BRACKETS + param.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    param.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + param.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+        else if (params.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_D)) {
+            sMessage =  WRD_BD_DELETE + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
+                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
         }
 
         return sMessage;
@@ -510,7 +544,7 @@ public class EmpAttrSettingBean {
      * 追加しない場合はそのままVectorオブジェクトを返却します。
      *buildSQLForUpdateWorkPlace
      */
-    private void updateWorkPlace(List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList){
+    private void updateWorkPlace(String baseDate,List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList,PsDBBean psDBBean){
         String attribute=null;
 
         //管理対象者分のSQL
@@ -520,17 +554,17 @@ public class EmpAttrSettingBean {
 
 
                 int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                        .eq("TPHA_CCUSTOMERID",param.getCustId())
-                        .eq("TPHA_CCOMPANYID",param.getCompId())
+                        .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
+                        .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
                         .eq("TPHA_CEMPLOYEEID",ugiDto.getEmployeeId())
                         .likeRight("TES_CTYPE",TYPE_ITEM_WORKPLACE)
-                        .ge("TPHA_DSTARTDATE",param.getBaseDate()));
+                        .ge("TPHA_DSTARTDATE",baseDate));
 
-                int updateTmgEmployeeAttribute=updateTmgEmployeeAttributeGroup(ugiDto.getEmployeeId(),TYPE_ITEM_WORKPLACE);
+                int updateTmgEmployeeAttribute=updateTmgEmployeeAttributeGroup(ugiDto.getEmployeeId(),baseDate,TYPE_ITEM_WORKPLACE,psDBBean);
 
                 // 値が入っている場合のみInsertする
                 if (!ugiDto.getUpdaeGroup().equals("") && ugiDto.getUpdaeGroup() != null) {
-                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(ugiDto.getEmployeeId(),TYPE_ITEM_WORKPLACE,attribute);
+                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(ugiDto.getEmployeeId(),baseDate,TYPE_ITEM_WORKPLACE,attribute,psDBBean);
                 }
             }
         }
@@ -542,7 +576,7 @@ public class EmpAttrSettingBean {
      * 追加しない場合はそのままVectorオブジェクトを返却します。
      *buildSQLForUpdateOverTimesEmployee
      */
-    private void updateOverTimesEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList,PsDBBean psDBBean){
+    private void updateOverTimesEmployee(String baseDate,List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList,PsDBBean psDBBean){
         String attribute=null;
 
         //管理対象者分のSQL
@@ -554,15 +588,15 @@ public class EmpAttrSettingBean {
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",param.getCustId())
-                            .eq("TPHA_CCOMPANYID",param.getCompId())
+                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
                             .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_EXCLUDE_OVERTIME)
-                            .ge("TPHA_DSTARTDATE",param.getBaseDate()));
+                            .ge("TPHA_DSTARTDATE",baseDate));
 
-                    int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),TYPE_ITEM_EXCLUDE_OVERTIME);
+                    int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_EXCLUDE_OVERTIME,psDBBean);
 
-                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(uciDto.getEmployeeId(),TYPE_ITEM_EXCLUDE_OVERTIME,attribute);
+                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_EXCLUDE_OVERTIME,attribute,psDBBean);
                 }
             }
         }
@@ -573,7 +607,7 @@ public class EmpAttrSettingBean {
      * 管理対象者分のSQL
      * buildSQLForUpdateManageFlgEmployee
      */
-    private void updateManageFlgEmployee(List<UpdateCheckInfoDto> updateCheckInfoDtoManageList,PsDBBean psDBBean){
+    private void updateManageFlgEmployee(String baseDate,List<UpdateCheckInfoDto> updateCheckInfoDtoManageList,PsDBBean psDBBean){
         String attribute=null;
 
         //管理対象者分のSQL
@@ -585,15 +619,15 @@ public class EmpAttrSettingBean {
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",param.getCustId())
-                            .eq("TPHA_CCOMPANYID",param.getCompId())
+                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
                             .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_MANAGEFLG)
-                            .ge("TPHA_DSTARTDATE",param.getBaseDate()));
+                            .ge("TPHA_DSTARTDATE",baseDate));
 
-                    int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),TYPE_ITEM_MANAGEFLG);
+                    int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_MANAGEFLG,psDBBean);
 
-                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(uciDto.getEmployeeId(),TYPE_ITEM_MANAGEFLG,attribute);
+                    int insertTmgEmployeeAttribute=insertTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_MANAGEFLG,attribute,psDBBean);
                 }
             }
         }
@@ -612,32 +646,32 @@ public class EmpAttrSettingBean {
      *
      * 個人属性の指定タイプレコードの内、基準日時点で有効なレコードの終了日を基準日の前日で更新
      */
-    private int updateTmgEmployeeAttribute(String empId,String psType){
+    private int updateTmgEmployeeAttribute(String empId,String baseDate,String psType,PsDBBean psDBBean){
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
-        teaDo.setTesCmodifieruserid(param.getUserCode());
+        teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
-        teaDo.setTesDenddate(DateUtil.parse(param.getBaseDate()));
+        teaDo.setTesDenddate(DateUtil.parse(baseDate));
 
         QueryWrapper<TmgEmployeeAttributeDO> queryWrapper = new QueryWrapper<TmgEmployeeAttributeDO>();
-        queryWrapper.eq("TES_CCUSTOMERID", param.getCustId());
-        queryWrapper.eq("TES_CCOMPANYID", param.getCompId());
+        queryWrapper.eq("TES_CCUSTOMERID", psDBBean.getCustID());
+        queryWrapper.eq("TES_CCOMPANYID", psDBBean.getCompCode());
         queryWrapper.eq("TES_CEMPLOYEEID", empId);
-        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(param.getBaseDate()));
-        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(param.getBaseDate()));
+        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(baseDate));
+        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(baseDate));
         queryWrapper.eq("TES_CTYPE", psType);
 
         return iTmgEmployeeAttributeService.getBaseMapper().update(teaDo,queryWrapper);
     }
 
-    private int insertTmgEmployeeAttribute(String empId,String psType,String Attribute){
+    private int insertTmgEmployeeAttribute(String empId,String baseDate,String psType,String Attribute,PsDBBean psDBBean){
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
-        teaDo.setTesCcustomerid(param.getCustId());
-        teaDo.setTesCcompanyid(param.getCompId());
+        teaDo.setTesCcustomerid(psDBBean.getCustID());
+        teaDo.setTesCcompanyid(psDBBean.getCompCode());
         teaDo.setTesCemployeeid(empId);
-        teaDo.setTesDstartdate(DateUtil.parse(param.getBaseDate()));
+        teaDo.setTesDstartdate(DateUtil.parse(baseDate));
         teaDo.setTesDenddate(TmgUtil.maxDate);
-        teaDo.setTesCmodifieruserid(param.getUserCode());
+        teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
         teaDo.setTesCtype(psType);
@@ -649,32 +683,32 @@ public class EmpAttrSettingBean {
      *
      * 個人属性の指定タイプレコードの内、基準日時点で有効なレコードの終了日を基準日の前日で更新
      */
-    private int updateTmgEmployeeAttributeGroup(String empId,String psType){
+    private int updateTmgEmployeeAttributeGroup(String empId,String baseDate,String psType,PsDBBean psDBBean){
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
-        teaDo.setTesCmodifieruserid(param.getUserCode());
+        teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
-        teaDo.setTesDenddate(DateUtil.parse(param.getBaseDate()));
+        teaDo.setTesDenddate(DateUtil.parse(baseDate));
 
         QueryWrapper<TmgEmployeeAttributeDO> queryWrapper = new QueryWrapper<TmgEmployeeAttributeDO>();
-        queryWrapper.eq("TES_CCUSTOMERID", param.getCustId());
-        queryWrapper.eq("TES_CCOMPANYID", param.getCompId());
+        queryWrapper.eq("TES_CCUSTOMERID", psDBBean.getCustID());
+        queryWrapper.eq("TES_CCOMPANYID", psDBBean.getCompCode());
         queryWrapper.eq("TES_CEMPLOYEEID", empId);
-        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(param.getBaseDate()));
-        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(param.getBaseDate()));
+        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(baseDate));
+        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(baseDate));
         queryWrapper.likeRight("TES_CTYPE", psType);
 
         return iTmgEmployeeAttributeService.getBaseMapper().update(teaDo,queryWrapper);
     }
 
-    private int insertTmgEmployeeAttributeGroup(String empId,String psType,String Attribute){
+    private int insertTmgEmployeeAttributeGroup(String empId,String baseDate,String psType,String Attribute,PsDBBean psDBBean){
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
-        teaDo.setTesCcustomerid(param.getCustId());
-        teaDo.setTesCcompanyid(param.getCompId());
+        teaDo.setTesCcustomerid(psDBBean.getCustID());
+        teaDo.setTesCcompanyid(psDBBean.getCompCode());
         teaDo.setTesCemployeeid(empId);
-        teaDo.setTesDstartdate(DateUtil.parse(param.getBaseDate()));
+        teaDo.setTesDstartdate(DateUtil.parse(baseDate));
         teaDo.setTesDenddate(TmgUtil.maxDate);
-        teaDo.setTesCmodifieruserid(param.getUserCode());
+        teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
         teaDo.setTesCtype(psType);
@@ -701,26 +735,26 @@ public class EmpAttrSettingBean {
      *TMG_PAID_HOLIDAY_ATTRIBUTE登録用クエリを返す
      * @return int
      */
-    private int insertPaidHolidayAttribute() {
+    private int insertPaidHolidayAttribute(String empId,String baseDate,AvgTimeForUpdateDto params,PsDBBean psDBBean) {
 
         TmgPaidHolidayAttributeDO tmgPaidHolidayAttributeDO = new TmgPaidHolidayAttributeDO();
-        tmgPaidHolidayAttributeDO.setTphaCcustomerid(param.getCustId());
-        tmgPaidHolidayAttributeDO.setTphaCcompanyid(param.getCompId());
-        tmgPaidHolidayAttributeDO.setTphaCemployeeid(param.getTargetUser());
+        tmgPaidHolidayAttributeDO.setTphaCcustomerid(psDBBean.getCustID());
+        tmgPaidHolidayAttributeDO.setTphaCcompanyid(psDBBean.getCompCode());
+        tmgPaidHolidayAttributeDO.setTphaCemployeeid(empId);
 
-        tmgPaidHolidayAttributeDO.setTphaDstartdate(DateUtil.parse(param.getBaseDate()));
+        tmgPaidHolidayAttributeDO.setTphaDstartdate(DateUtil.parse(baseDate));
         tmgPaidHolidayAttributeDO.setTphaDenddate(TmgUtil.maxDate);
 
-        tmgPaidHolidayAttributeDO.setTphaCmodifieruserid(param.getUserCode());
+        tmgPaidHolidayAttributeDO.setTphaCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayAttributeDO.setTphaDmodifieddate(DateTime.now());
         tmgPaidHolidayAttributeDO.setTphaCmodifierprogramid("EmpAttrSetting");
 
-        tmgPaidHolidayAttributeDO.setTphaNavgworktime(timeCalculator(param.getSAvgWorkingHours(),param.getSAvgWorkingMinutes()));
-        tmgPaidHolidayAttributeDO.setTphaNworkingdaysWeek(Long.valueOf(param.getSWorkingdaysWeek()));
+        tmgPaidHolidayAttributeDO.setTphaNavgworktime(timeCalculator(params.getSAvgWorkingHours(),params.getSAvgWorkingMinutes()));
+        tmgPaidHolidayAttributeDO.setTphaNworkingdaysWeek(Long.valueOf(params.getSWorkingdaysWeek()));
 
         tmgPaidHolidayAttributeDO.setTphaCworkingdaysWeek(iMastGenericDetailService.selectWeekDaysCom(
-                param.getCustId(),param.getCompId(),param.getBaseDate(),Integer.valueOf(param.getSWorkingdaysWeek()),
-                timeCalculator(param.getSAvgWorkingHours(),param.getSAvgWorkingMinutes()).intValue()
+                psDBBean.getCustID(),psDBBean.getCompCode(),baseDate,Integer.valueOf(params.getSWorkingdaysWeek()),
+                timeCalculator(params.getSAvgWorkingHours(),params.getSAvgWorkingMinutes()).intValue()
         ));
 
         return iTmgPaidHolidayAttributeService.getBaseMapper().insert(tmgPaidHolidayAttributeDO);
@@ -732,16 +766,16 @@ public class EmpAttrSettingBean {
      * トリガーテーブル(TMG_TRIGGER)登録用クエリを返す
      *
      */
-    private int insertTmgTrigger(String psParmDate) {
+    private int insertTmgTrigger(String empId,String psParmDate,PsDBBean psDBBean) {
 
         TmgTriggerDO ttDo = new TmgTriggerDO();
 
-        ttDo.setTtrCcustomerid(param.getCustId());
-        ttDo.setTtrCcompanyid(param.getCompId());
-        ttDo.setTtrCemployeeid(param.getTargetUser());
+        ttDo.setTtrCcustomerid(psDBBean.getCustID());
+        ttDo.setTtrCcompanyid(psDBBean.getCompCode());
+        ttDo.setTtrCemployeeid(empId);
         ttDo.setTtrDstartdate(TmgUtil.minDate);
         ttDo.setTtrDenddate(TmgUtil.maxDate);
-        ttDo.setTtrCmodifieruserid(param.getUserCode());
+        ttDo.setTtrCmodifieruserid(psDBBean.getUserCode());
         ttDo.setTtrDmodifieddate(DateTime.now());
         ttDo.setTtrCmodifierprogramid("EmpAttrSetting");
         ttDo.setTtrCprogramid("EmpAttrSetting");
@@ -764,20 +798,20 @@ public class EmpAttrSettingBean {
      * 基準日時点で適用されているデータの終了日を基準日-1で更新(update)
      * @return int
      */
-    private int updPaidHolidayAttribute() {
+    private int updPaidHolidayAttribute(String empId,String baseDate,PsDBBean psDBBean) {
 
         TmgPaidHolidayAttributeDO tmgPaidHolidayAttributeDO = new TmgPaidHolidayAttributeDO();
-        tmgPaidHolidayAttributeDO.setTphaDenddate(DateUtil.offsetDay(DateUtil.parse(param.getBaseDate()), -1));
-        tmgPaidHolidayAttributeDO.setTphaCmodifieruserid(param.getUserCode());
+        tmgPaidHolidayAttributeDO.setTphaDenddate(DateUtil.offsetDay(DateUtil.parse(baseDate), -1));
+        tmgPaidHolidayAttributeDO.setTphaCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayAttributeDO.setTphaDmodifieddate(DateTime.now());
         tmgPaidHolidayAttributeDO.setTphaCmodifierprogramid("EmpAttrSetting");
 
         QueryWrapper<TmgPaidHolidayAttributeDO> queryWrapper = new QueryWrapper<TmgPaidHolidayAttributeDO>();
-        queryWrapper.eq("TPHA_CCUSTOMERID", param.getCustId());
-        queryWrapper.eq("TPHA_CCOMPANYID", param.getCompId());
-        queryWrapper.eq("TPHA_CEMPLOYEEID", param.getTargetUser());
-        queryWrapper.lt("TPHA_DSTARTDATE", DateUtil.parse(param.getBaseDate()));
-        queryWrapper.ge("TPHA_DENDDATE", DateUtil.parse(param.getBaseDate()));
+        queryWrapper.eq("TPHA_CCUSTOMERID", psDBBean.getCustID());
+        queryWrapper.eq("TPHA_CCOMPANYID", psDBBean.getCompCode());
+        queryWrapper.eq("TPHA_CEMPLOYEEID", empId);
+        queryWrapper.lt("TPHA_DSTARTDATE", DateUtil.parse(baseDate));
+        queryWrapper.ge("TPHA_DENDDATE", DateUtil.parse(baseDate));
 
         return iTmgPaidHolidayAttributeService.getBaseMapper().update(tmgPaidHolidayAttributeDO, queryWrapper);
 

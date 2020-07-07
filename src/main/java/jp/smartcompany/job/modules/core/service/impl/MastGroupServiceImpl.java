@@ -10,7 +10,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -79,6 +78,8 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
             if (StrUtil.isBlank(searchDate)){
                 searchDate = "2007/07/07";
             }
+            //
+            companyList.add("*");
            return baseMapper.selectValidGroup(customerCode,systemId,language,searchDate,companyList);
         }
 

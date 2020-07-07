@@ -54,7 +54,7 @@ public class GroupAppManagerController {
     boolean isAll = Boolean.parseBoolean(isAllStr);
     String psSiteId = (String)params.get("siteId");
     String psAppId = (String)params.get("appId");
-    return groupAppManagerMainLogic.listPermsTable(
+      GroupAppManagerTableLayout layout= groupAppManagerMainLogic.listPermsTable(
             psDBBean.getSystemCode(),
             date,
             groupId,
@@ -66,6 +66,7 @@ public class GroupAppManagerController {
             isAll,
             session
     );
+    return layout;
   }
 
   @PostMapping("groups")
