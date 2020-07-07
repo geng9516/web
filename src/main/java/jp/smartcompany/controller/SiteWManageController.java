@@ -278,6 +278,35 @@ public class SiteWManageController {
     }
 
     /**
+     * 跳转到 予定作成
+     *
+     * @param moduleIndex
+     * @param menuId
+     * @return
+     */
+    @RequestMapping("tmgschedule")
+    public String toTmgSchedule(
+            @RequestParam(value = "moduleIndex") Integer moduleIndex,
+            @RequestParam(value = "menuId") Long menuId,
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            ModelMap modelMap
+    ) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        // 先同样作为管理site的树来看待
+        TmgReferList referList = new TmgReferList(psDBBean, "TmgSample", baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
+        modelMap
+                .addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_ADMIN_TARGET_EMP, TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_ADMIN_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+        return "sys/wmanage/tmgschedule";
+    }
+
+    /**
      * 跳转到 年5日有給指定
      *
      * @param moduleIndex
