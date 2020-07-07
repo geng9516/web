@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -40,6 +41,17 @@ public interface IMastGroupService extends IService<MastGroupDO> {
         List<GroupAppManagerGroupDTO> selectAppManagerGroup(String customerId, String systemId, String language,
         Date searchDate, String companyId,List<String> companyIds);
 
+
+        /**
+         * 現在、有効なグループについての情報を取得
+         * @author  isolyamada
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   searchDate    今回改定日
+         * @param   companyList  参照可能な法人一覧
+         * @return  List < GroupManagerGroupListDto >  グループリスト(有効)
+         */
         List<GroupManagerGroupListDTO> selectValidGroup(
                 String customerCode,
                 String systemId,
@@ -47,4 +59,43 @@ public interface IMastGroupService extends IService<MastGroupDO> {
                 String searchDate,
                 List<String> companyList
         );
+
+        /**
+         * 現在、無効なグループについての情報を取得
+         *
+         * @author  isolyamada
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   validGroup    有効なグループ一覧
+         * @param   validCompany  参照可能な法人一覧
+         * @return  List < GroupManagerGroupListDto >  グループリスト(無効)
+         * @exception
+         */
+        List<GroupManagerGroupListDTO> selectInvalidGroupList(
+                String customerCode,
+                String systemId,
+                String language,
+                List<String> validGroup,
+                List<String> validCompany
+        );
+
+
+        /**
+         * グループの歴日付一覧を取得
+         *
+         * @author  isolyamada
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   searchDate    今回改定日
+         * @param   companyList  参照可能な法人一覧
+         * @return  List < GroupManagerModifiedDateDto >  歴日付一覧
+         */
+        List<GroupManagerModifiedDateDTO> selectHistoryDate(
+                String customerCode,
+                String systemId,
+                List<String> companyList,
+                String searchDate
+        );
+
 }

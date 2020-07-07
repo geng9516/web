@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
@@ -83,4 +84,51 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
            return baseMapper.selectValidGroup(customerCode,systemId,language,searchDate,companyList);
         }
 
+        @Override
+        public List<GroupManagerGroupListDTO> selectInvalidGroupList(
+                String customerCode,
+                String systemId,
+                String language,
+                List<String> validGroup,
+                List<String> validCompany
+        ) {
+            if (StrUtil.isBlank(customerCode)){
+                customerCode = "01";
+            }
+            if (StrUtil.isBlank(systemId)){
+                systemId = "01";
+            }
+            if (StrUtil.isBlank(language)){
+                language = "ja";
+            }
+            if (CollUtil.isEmpty(validCompany)){
+                validCompany = CollUtil.newArrayList("01","02");
+            }
+            if (CollUtil.isEmpty(validGroup)){
+                validGroup = CollUtil.newArrayList("1","2","3","4","5","6","7");
+            }
+           return baseMapper.selectInvalidGroup(customerCode,systemId,language,validCompany,validGroup);
+        }
+
+        @Override
+        public List<GroupManagerModifiedDateDTO> selectHistoryDate(
+            String customerCode,
+            String systemId,
+            List<String> companyList,
+            String searchDate
+        ) {
+            if (StrUtil.isBlank(customerCode)){
+                customerCode = "01";
+            }
+            if (StrUtil.isBlank(systemId)){
+                systemId = "01";
+            }
+            if (CollUtil.isEmpty(companyList)){
+                companyList = CollUtil.newArrayList("01","02");
+            }
+            if (StrUtil.isBlank(searchDate)){
+                searchDate = "2007/07/07";
+            }
+            return baseMapper.selectHistoryDate(customerCode,systemId,companyList,searchDate);
+        }
 }

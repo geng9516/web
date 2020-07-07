@@ -1,14 +1,13 @@
 package jp.smartcompany.admin.groupmanager.logic;
 
-import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Map;
 
 public interface GroupManagerLogic {
 
 
-    List<GroupManagerGroupListDTO> getValidGroupList(PsDBBean psDBBean, Date searchDate, String systemId);
+    Map<String,Object> getManagerGroupList(PsDBBean psDBBean, Date searchDate, String systemId);
 
 }
