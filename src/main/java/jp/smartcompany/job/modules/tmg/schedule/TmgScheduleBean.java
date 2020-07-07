@@ -1161,6 +1161,16 @@ public class TmgScheduleBean {
         if (JSONUtil.isJsonObj(content)) {
             MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
             if (null != monthlyUScheduleEditParaDTO) {
+                List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = monthlyUScheduleEditParaDTO.getMonthlyScheduleEmpInfoDTOS();
+                for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
+                    MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO =  monthlyScheduleEmpInfoDTOS.get(i);
+                    monthlyScheduleEmpInfoDTO.setNopen(monthlyScheduleEmpInfoDTO.getNopen()==null?"":monthlyScheduleEmpInfoDTO.getNopen());
+                    monthlyScheduleEmpInfoDTO.setNclose(monthlyScheduleEmpInfoDTO.getNclose()==null?"":monthlyScheduleEmpInfoDTO.getNclose());
+                    monthlyScheduleEmpInfoDTO.setComment(monthlyScheduleEmpInfoDTO.getComment()==null?"":monthlyScheduleEmpInfoDTO.getComment());
+                    monthlyScheduleEmpInfoDTO.setBussinessTripid(monthlyScheduleEmpInfoDTO.getBussinessTripid()==null?"":monthlyScheduleEmpInfoDTO.getBussinessTripid());
+                    monthlyScheduleEmpInfoDTO.setWorkId(monthlyScheduleEmpInfoDTO.getWorkId()==null?"":monthlyScheduleEmpInfoDTO.getWorkId());
+                }
+                monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
                 this.executeEditMonthlyUSchedule(monthlyUScheduleEditParaDTO);
             } else {
                 logger.error("JSON対象がオブジェクトに変更することが失敗しました");
