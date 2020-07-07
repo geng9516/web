@@ -4,6 +4,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DailyEditVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.GenericDetailVO;
@@ -82,30 +83,10 @@ public class TmgResultsController {
        return  tmgResultsBean.getTitleData(psDBBean);
     }
 
-//    /**
-//     * 日次実績を返却します
-//     *
-//     * @param psDBBean
-//     * @return
-//     */
-//    @GetMapping("getDailyData")
-//    @ResponseBody
-//    public Map<String, Object> getDailyData(@RequestAttribute("BeanName") PsDBBean psDBBean,
-//                                              @RequestParam("txtAction") String txtAction,
-//                                              @RequestParam("txtDYYYYMM") String txtDYYYYMM,
-//                                              @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) throws Exception {
-//
-//        //初期化対象
-//        tmgResultsBean.setMonth(txtDYYYYMM);
-//        psDBBean.setTargetUser(psDBBean.getUserCode());
-//        tmgResultsBean.setDay(txtDYYYYMMDD);
-//
-//        return  tmgResultsBean.getDailyData(psDBBean);
-//    }
 
 
     /**
-     * 画面ドロップダウンを返却します
+     * 画面表示用データを返却します
      *
      * @param psDBBean
      * @return
@@ -121,43 +102,39 @@ public class TmgResultsController {
         //初期化対象
         return tmgResultsBean.dailyDetail(psDBBean, action);
     }
-//
-//    /**
-//     * 日別を返却します
-//     *
-//     * @param psDBBean
-//     * @return
-//     */
-//    @GetMapping("dailyEdit")
-//    @ResponseBody
-//    public Map dailyEdit(@RequestAttribute("BeanName") PsDBBean psDBBean,
-//                                 @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-//                                 @RequestParam("today") String today) throws Exception {
-//
-//        psDBBean.setTargetUser(psDBBean.getUserCode());
-//        tmgResultsBean.setDay(txtDYYYYMMDD);
-//        tmgResultsBean.setToday(today);
-//        //初期化対象
-//        return tmgResultsBean.dailyEdit(psDBBean);
-//    }
-//
-//    /**
-//     * 日別を返却します
-//     *
-//     * @param psDBBean
-//     * @return
-//     */
-//    @GetMapping("nonDutyOverhours")
-//    @ResponseBody
-//    public Map nonDutyOverhours(@RequestAttribute("BeanName") PsDBBean psDBBean,
-//                         @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-//                         @RequestParam("today") String today) throws Exception {
-//
-//        psDBBean.setTargetUser(psDBBean.getUserCode());
-//        tmgResultsBean.setDay(txtDYYYYMMDD);
-//        tmgResultsBean.setToday(today);
-//        //初期化対象
-//        return tmgResultsBean.nonDutyOverhours(psDBBean);
-//    }
+
+    /**
+     * 画面ドロップダウンを返却します
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("updateInp")
+    @ResponseBody
+    public void updateInp(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                          @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
+                          @RequestParam("txtAction") String action,
+                          @RequestParam("holiday") String holiday,
+                          @RequestParam("workingId") String workingId,
+                          @RequestParam("selMgdCbusinessTrip") String selMgdCbusinessTrip,
+                          @RequestParam("txtTdaNopenR") String txtTdaNopenR,
+                          @RequestParam("txtTdaNcloseR") String txtTdaNcloseR,
+                          @RequestParam("tdaCowncommentR") String tdaCowncommentR) throws Exception {
+
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+        tmgResultsBean.setDay(txtDYYYYMMDD);
+
+        TmgResultsDto tmgResultsDto = new TmgResultsDto();
+        tmgResultsDto.setHoliday(holiday);
+        tmgResultsDto.setSelTDA_CWORKINGID_R(workingId);
+        tmgResultsDto.setSelMGD_CBUSINESS_TRIP(selMgdCbusinessTrip);
+        tmgResultsDto.setTxtTDA_NOPEN_R(txtTdaNopenR);
+        tmgResultsDto.setTxtTDA_NCLOSE_R(txtTdaNcloseR);
+        tmgResultsDto.setTxtTDA_COWNCOMMENT_R(tdaCowncommentR);
+
+        //初期化対象
+        tmgResultsBean.updateInp(tmgResultsDto,psDBBean, action);
+    }
+
 
 }

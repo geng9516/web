@@ -78,10 +78,10 @@
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
             <Row class="mb15 tr">
                 <i-col span="6" offset="15">
-                    <i-button type="primary" ghost class="mr15" v-if="!bFixed">コメントのみ登録</i-button>
+                    <i-button type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">コメントのみ登録</i-button>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost  v-if="!bFixed">登録</i-button>
+                    <i-button type="primary" ghost v-if="!bFixed">登録</i-button>
                 </i-col>
             </Row>
             <div class="titlenorm mb10">
@@ -92,7 +92,8 @@
                 <Row>
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="workingId" class="mr30" @on-change="" v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
+                        <i-select v-model="workingId" class="mr30" @on-change=""
+                                  v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
                             <i-option v-for="(item, index) of workingIdList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
@@ -103,7 +104,7 @@
                 <Row>
                     <i-col span="8" class="label tc">出張</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="businessTrip" class="mr30" @on-change=""  v-if="(!bHoliday && !bFixed)">
+                        <i-select v-model="businessTrip" class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
                             <i-option v-for="(item, index) of businessTripList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
@@ -146,9 +147,9 @@
                 <Icon type="logo-buffer"></Icon>
                 非勤務
             </div>
-            <Row class="mb15 tr"  v-if=" !bHoliday && !bFixed ">
+            <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                 <i-col span="6" offset="15">
-                    <i-select v-model="categoryNonduty" class="mr30" @on-change="">
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="categoryNondutyChange()">
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
@@ -176,7 +177,7 @@
                     <span v-else>{{ row.tdadCsparechar1 | toTime }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadNdeleteflg"  v-if="!bFixed">
+                <template slot-scope="{ row }" slot="tdadNdeleteflg" v-if="!bFixed">
                     <i-button type="error" ghost size="small" class="width100" @click="delNotWork(row)">削除</i-button>
                 </template>
             </i-table>
@@ -217,7 +218,8 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="tdadCsparechar1">
-                    <i-input v-model="row.tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }" v-if="!bFixed"></i-input>
+                    <i-input v-model="row.tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }"
+                             v-if="!bFixed"></i-input>
                     <span v-else>{{ row.tdadCsparechar1}}</span>
                 </template>
 
@@ -260,10 +262,34 @@
                 data: [],
                 loading: false,
                 query: {
-                    txtAction: 'ACT_Disp_RList',
+                    txtAction: 'ACT_DISP_RMONTHLY',
                     txtDYYYYMM: '2020/04/01',
                     txtDYYYYMMDD: '',
                     today: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                actEditinpUcommentQuery: {
+                    txtAction: 'ACT_EDITINP_UCOMMENT',
+                    holiday: false,
+                    txtTdaNopenR: '',
+                    txtTdaNcloseR: '',
+                    workingId: '',
+                    selMgdCbusinessTrip: '',
+                    txtDYYYYMMDD: '',
+                    tdaCowncommentR: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                actEditinpUcommentQuery: {
+                    txtAction: 'ACT_EDITINP_UCOMMENT',
+                    holiday: false,
+                    txtTdaNopenR: '',
+                    txtTdaNcloseR: '',
+                    workingId: '',
+                    selMgdCbusinessTrip: '',
+                    txtDYYYYMMDD: '',
+                    tdaCowncommentR: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -434,7 +460,7 @@
                     {
                         title: '操作',
                         key: 'cactionnm',
-                        width: '100',
+                        width: '130',
                         align: 'center'
                     },
                     {
@@ -442,19 +468,19 @@
                         key: 'cchangelogstr'
                     }
                 ],
-                dailyLog:[],
+                dailyLog: [],
                 notWorkType: 1,
                 dailyData: {},
                 workData0: [],
                 workDataLoading: false,
                 columnsNotWorkLoading: false,
                 columnsOverWorkLoading: false,
-                bHoliday:false,
-                bFixed:false,
-                isEdiTableResult4Inp:false,
-                isCommonDiscretionaryLabor:false,
+                bHoliday: false,
+                bFixed: false,
+                isEdiTableResult4Inp: false,
+                isCommonDiscretionaryLabor: false,
 
-
+                txtDYYYYMMDD: '',
                 index: 0,
                 isConfirm: false,
                 comment: ''
@@ -604,6 +630,7 @@
             },
             // 就業実績のタイトルとデータを取得
             async getTitleData() {
+                this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
                 this.dailyDataList = []
                 const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
@@ -636,7 +663,9 @@
                 this.detailOverhoursVOList = []
                 this.title = e[0].TDA_DYYYYMMDD + '(' + e[0].TDA_DYYYYMMDD_DY + ')'
                 this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
-                this.bFixed =false
+                this.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
+                this.query.txtAction = 'ACT_EDITINP_RDAILY'
+                this.bFixed = false
                 this.bHoliday = false
 
                 // 業登録画面表示
@@ -708,16 +737,13 @@
                 this.detailOverhoursVOList = data.detailOverhoursVOList
                 //
                 const turnLine = Vue.filter('turnLine');
-                this.dailyLog =  data.columnsDailyLog.map(e => {
+                this.dailyLog = data.columnsDailyLog.map(e => {
                     return {
                         ...e,
                         cchangelogstr: turnLine(e.cchangelogstr)
 
                     }
                 })
-                  // this.dailyLog = data.columnsDailyLog
-
-
 
             },
 
@@ -749,9 +775,19 @@
                         tdadCsparechar1: '',
                         tdadCnotworkid: this.categoryNonduty
                     })
-                } else {
+                } else if (this.categoryNonduty === 'TMG_ITEMS|Interruption') {
                     this.detailNonDutyVOList.push({
                         itemName: '中断',
+                        tdadNopen: '',
+                        tdadNclose: '',
+                        tdadSeq: Date.now(),
+                        isInput: true,
+                        tdadCsparechar1: '',
+                        tdadCnotworkid: this.categoryNonduty
+                    })
+                } else {
+                    this.detailNonDutyVOList.push({
+                        itemName: '欠勤',
                         tdadNopen: '',
                         tdadNclose: '',
                         tdadSeq: Date.now(),
@@ -767,6 +803,46 @@
             delOverWork(row) {
                 this.detailOverhoursVOList = this.detailOverhoursVOList.filter(e => e.tdadSeq !== row.tdadSeq)
             },
+            //コメントのみ登録
+            updateInp: Debounce(function () {
+                this.actEditinpUcommentQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
+                this.actEditinpUcommentQuery.holiday = this.bHoliday
+                this.actEditinpUcommentQuery.workingId = this.workingId
+                this.actEditinpUcommentQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.actEditinpUcommentQuery.selMgdCbusinessTrip = this.businessTrip
+                //TODO 就業時間の取得方法再確認必要です
+                this.actEditinpUcommentQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                this.actEditinpUcommentQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                this.actEditinpUcommentQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+
+                console.log(this.detailNonDutyVOList)
+                console.log(this.detailOverhoursVOList)
+
+                this.http.get('sys/tmgResults/updateInp', this.actEditinpUcommentQuery)
+                this.isShow = false
+
+            }),
+            //登録
+            updateDaily: Debounce(function () {
+                this.actEditinpUcommentQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
+                this.actEditinpUcommentQuery.holiday = this.bHoliday
+                this.actEditinpUcommentQuery.workingId = this.workingId
+                this.actEditinpUcommentQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.actEditinpUcommentQuery.selMgdCbusinessTrip = this.businessTrip
+                //TODO 就業時間の取得方法再確認必要です
+                this.actEditinpUcommentQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                this.actEditinpUcommentQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                this.actEditinpUcommentQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+
+                this.http.get('sys/tmgResults/updateInp', this.actEditinpUcommentQuery)
+                this.isShow = false
+
+            }),
+            categoryNondutyChange(){
+                console.log(this.categoryNonduty)
+
+            },
+
 
             // handleSpan({rowIndex, columnIndex}) {
             //     if (rowIndex === 3 && columnIndex === 1) {
