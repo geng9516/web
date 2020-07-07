@@ -284,6 +284,7 @@
         this.getAppList()
         await this.getLegalPersonList()
         this.getGroupList()
+        this.getTableData()
       },
       methods: {
         async getLegalPersonList() {
@@ -324,7 +325,14 @@
 
         },
         async getTableData() {
-          const { data } = await this.http.get('sys/groupappmanager/list')
+          const OPTS = {...this.opts}
+          Object.keys(OPTS).forEach(key => {
+            if(OPTS[key] === '0') {
+              OPTS[key] = null
+            }
+          })
+          console.log(OPTS)
+          const { data } = await this.http.postForm('sys/groupappmanager', OPTS)
         },
         async update() {
           const { data } = await this.http.post('sys/groupappmanager/update')
