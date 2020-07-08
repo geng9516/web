@@ -360,7 +360,7 @@ public class TmgScheduleBean {
             _targetUserCode = psDBBean.getTargetUser();
         }
 
-        _targetUserCode = psDBBean.getTargetUser() == null ?  referList.getTargetEmployee() : psDBBean.getTargetUser();
+        //_targetUserCode = psDBBean.getTargetUser() == null ?  referList.getTargetEmployee() : psDBBean.getTargetUser();
         //_targetUserCode = "C1000015";
         _loginCustCode = psDBBean.getUserCode();
         //WEBから基準時間を渡せれば
