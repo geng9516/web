@@ -12,6 +12,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.appcontrol.business.AppAuthInfoBusiness;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
@@ -45,6 +46,11 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
         PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
         // 获取当前系统正在被使用的grouplist
         List<GroupManagerGroupListDTO> validGroupList= iMastGroupService.selectValidGroup(session.getLoginCustomer(),systemId,session.getLanguage(),searchDateStr,companyList);
+        validGroupList.forEach(item->{
+            if (StrUtil.equals(item.getMgCcompanyid(), PsConst.CODE_ALL_COMPANIES)){
+                item.setGsCompanyName("全社区分");
+            }
+        });
         // 获取当前系统未被使用的groupList
         List<GroupManagerGroupListDTO> inValidGroup =
                 iMastGroupService.selectInvalidGroupList(

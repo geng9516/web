@@ -20,6 +20,7 @@ public class GroupManagerController {
 
     private final GroupManagerLogic groupManagerLogic;
 
+    // グループ定義:閲覧画面リスト
     @GetMapping("groups")
     public Map<String,Object> getValidGroupList(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
