@@ -149,14 +149,14 @@
             <div class="ivu-poptip-body">
               <div class="ivu-poptip-body-content">
                 <div class="ivu-poptip-body-content-inner">
-                  <i-button type="primary" style="display:block" @click="cellClickAction('0')" size="small" class="mb5"
-                    ghost long>設定なし</i-button>
-                  <i-button type="success" @click="cellClickAction('1')" style="display:block" size="small" class="mb5"
+                  <i-button style="display:block" @click="cellClickAction('0')" size="small" class="mb5"
+                    long>設定なし</i-button>
+                  <i-button type="primary" @click="cellClickAction('1')" style="display:block" size="small" class="mb5"
                     ghost long>〇 許可</i-button>
                   <i-button type="error" @click="cellClickAction('2')" style="display:block" size="small" class="mb5"
                     ghost long>✖ 拒否</i-button>
-                  <i-button type="primary" @click="cellClickAction('4')" style="display:block" size="small" class="mb5"
-                    ghost long>キャンセル</i-button>
+                  <i-button @click="cellClickAction('4')" style="display:block" size="small" class="mb5"
+                    long>キャンセル</i-button>
                 </div>
               </div>
             </div>
@@ -340,7 +340,6 @@
           if(this.opts.date) {
             OPTS.changeDate = this.opts.date
           }
-          // console.log(OPTS.permList)
           const { data } = await this.http.post('sys/groupappmanager/update',OPTS)
           this.isEditing = false
           this.getTableData()
@@ -354,13 +353,16 @@
           this.needChange = ''
           console.log(row)
           console.log(column)
-          this.clickedCell = row
+          this.clickedCell = row._index
           // 点到了右箭头按钮，需要将整行变了
           if (column.slot === 'action') {
             this.needChange = 'row'
           } else {
-            // 复原所选项为此格
-            this.clickedCell = row[column.slot]
+            // 还原为储存单击格的位置信息
+            this.clickedCell = {
+              where: row._index,
+              which: column.slot
+            }
           }
           this.changeCellStyle(event)
         },
@@ -386,15 +388,15 @@
         cellClickAction(e) {
           if (e !== '4') {
             if (!this.needChange) {
-              this.clickedCell.permission = e
-              this.updateValue = this.updateValue.concat(this.clickedCell)
+              this.$refs.table.data[this.clickedCell.where][this.clickedCell.which].permission = e
+              this.updateValue = this.updateValue.concat(this.$refs.table.data[this.clickedCell.where][this.clickedCell.which])
             }
             // 点到了右箭头按钮，需要将整行变了
             if (this.needChange === 'row') {
-              Object.keys(this.clickedCell).forEach(key=>{
-                if (this.clickedCell[key] instanceof Object) {
-                  this.clickedCell[key].permission = e
-                  this.updateValue = this.updateValue.concat(this.clickedCell[key])
+              Object.keys(this.$refs.table.data[this.clickedCell]).forEach(key=>{
+                if (this.$refs.table.data[this.clickedCell][key] instanceof Object) {
+                  this.$refs.table.data[this.clickedCell][key].permission = e
+                  this.updateValue = this.updateValue.concat(this.$refs.table.data[this.clickedCell][key])
                 }
               })
             }
