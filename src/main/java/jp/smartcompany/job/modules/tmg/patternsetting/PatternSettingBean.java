@@ -331,6 +331,8 @@ public class PatternSettingBean {
     private void insertPatternCsv(PatternSettingParam pstParam) {
         if (null != pstParam) {
             TmgPatternInsertDTO tmgPatternInsertDTO = new TmgPatternInsertDTO();
+            tmgPatternInsertDTO.setCustId(pstParam.getCustomerId());
+            tmgPatternInsertDTO.setCompCode(pstParam.getCompanyId());
             tmgPatternInsertDTO.setGroupId(pstParam.getGroupId());
             tmgPatternInsertDTO.setSectionId(pstParam.getSectionId());
             tmgPatternInsertDTO.setModifierprogramid(PatternSettingConst.modifierProgramId);
@@ -339,6 +341,9 @@ public class PatternSettingBean {
             tmgPatternInsertDTO.setDefaultFlag(pstParam.getDefaultFlg());
             tmgPatternInsertDTO.setChangeTime(pstParam.getDateChangeTime());
             tmgPatternInsertDTO.setNextptn(pstParam.getNextPatternId());
+            tmgPatternInsertDTO.setMinDate(PatternSettingConst.SQL_MIN_DATE);
+            tmgPatternInsertDTO.setMaxDate(PatternSettingConst.SQL_MAX_DATE);
+            tmgPatternInsertDTO.setEmployeeId(pstParam.getModifierUserId());
             if (StringUtils.isBlank(pstParam.getNextPatternId())) {
                 tmgPatternInsertDTO.setC2caldays(TmgUtil.Cs_MGD_ONOFF_0);
             } else {
@@ -364,7 +369,7 @@ public class PatternSettingBean {
      * @param rest
      * @return
      */
-    private TmgPatternRestDTO insertTmgPatternRestPluralCsv(PatternSettingParam pstParam, Map rest) {
+    private void insertTmgPatternRestPluralCsv(PatternSettingParam pstParam, Map rest) {
         if (null != pstParam) {
             TmgPatternRestDTO tmgPatternRestDTO = new TmgPatternRestDTO();
             tmgPatternRestDTO.setCustId(psDBBean.getCustID());
@@ -378,11 +383,10 @@ public class PatternSettingBean {
             tmgPatternRestDTO.setPatternId(pstParam.getPatternId());
             tmgPatternRestDTO.setRestOpen(rest.get(PatternSettingConst.OPEN) == null ? "" : rest.get(PatternSettingConst.OPEN).toString());
             tmgPatternRestDTO.setRestClose(rest.get(PatternSettingConst.CLOSE) == null ? "" : rest.get(PatternSettingConst.CLOSE).toString());
-            return tmgPatternRestDTO;
+            iPatternSettingService.insertTmgPatternRestPlural(tmgPatternRestDTO);
         } else {
             logger.error("勤務パターンCSV対象が空です");
         }
-        return null;
 
     }
 
@@ -543,13 +547,20 @@ public class PatternSettingBean {
         patternSettingParam.setCustomerId(psDBBean.getCustID());
         patternSettingParam.setCompanyId(psDBBean.getCompCode());
         patternSettingParam.setSectionId(referList.getTargetSec());
-        patternSettingParam.setSectionName(referList.getTargetSecName());
-        patternSettingParam.setGroupId(referList.getTargetGroup());
-        patternSettingParam.setGroupName(referList.getTargetGroupName());
+       /* if (null != referList.getTargetSecName() && !"".equals(referList.getTargetSecName())) {
+            patternSettingParam.setSectionName(referList.getTargetSecName());
+        }*/
+        if (null != referList.getTargetGroup() && !"".equals(referList.getTargetGroup())) {
+            patternSettingParam.setGroupId(referList.getTargetGroup());
+        }
+        /*if (null != referList.getTargetGroupName() && !"".equals(referList.getTargetGroupName())) {
+            patternSettingParam.setGroupName(referList.getTargetGroupName());
+        }*/
         patternSettingParam.setPatternId(null);
         patternSettingParam.setModifiedDate(DateUtil.format(new Date(), "yyyy/MM/dd"));
         patternSettingParam.setModifierUserId(psDBBean.getTargetUser());
         patternSettingParam.setModifierProgramId("PatternSetting_" + PatternSettingConst.uploadProgramId);
+
         if (PatternSettingUtil.isEmpty(patternSettingParam.getGroupId())) {
             patternSettingParam.setGroupId(patternSettingParam.getSectionId() + "|000000");
         }
@@ -774,7 +785,7 @@ public class PatternSettingBean {
                             // バイト数
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CUSTOMERID_BYTE));
                         }
-
+                        logger.warn("-------------->customerid:" + sColumn);
                         // 項目をセット
                         pstParam.setCustomerId(sColumn);
 
@@ -792,7 +803,7 @@ public class PatternSettingBean {
                             // バイト数
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_COMPANYID_BYTE));
                         }
-
+                        logger.warn("-------------->companyid:" + sColumn);
                         // 項目をセット
                         pstParam.setCompanyId(sColumn);
 

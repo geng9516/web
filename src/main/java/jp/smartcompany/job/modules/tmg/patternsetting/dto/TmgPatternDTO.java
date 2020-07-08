@@ -45,6 +45,10 @@ public class TmgPatternDTO {
      * 翌日勤務パターン
      */
     private String tpa_cnextptn;
+    /**
+     * 翌日勤務パターン名前
+     */
+    private String cnextptname;
 
 
 }

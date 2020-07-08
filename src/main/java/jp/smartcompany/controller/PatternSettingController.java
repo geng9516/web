@@ -43,7 +43,7 @@ public class PatternSettingController {
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
-        return patternSettingBean.selectTmgPattern(sectionId,groupId);
+        return patternSettingBean.selectTmgPattern(sectionId, groupId);
 
     }
 
@@ -103,8 +103,8 @@ public class PatternSettingController {
      * @return
      */
     @PostMapping("selectEditPatternInfo")
-    public TmgPatternVO selectEditPatternInfo(@RequestParam("groupId") String groupId,
-                                              @RequestParam("patternId") String patternId,
+    public TmgPatternVO selectEditPatternInfo(@RequestParam(value = "groupId", required = false) String groupId,
+                                              @RequestParam(value = "patternId",required = true) String patternId,
                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
@@ -122,7 +122,7 @@ public class PatternSettingController {
      * @return
      */
     @PostMapping("deletePattern")
-    public void deletePattern(@RequestParam("groupId") String groupId,
+    public void deletePattern(@RequestParam(value = "groupId",required = false) String groupId,
                               @RequestParam("sectionId") String sectionId,
                               @RequestParam("patternId") String patternId,
                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -139,7 +139,7 @@ public class PatternSettingController {
      * @param psDBBean
      * @return
      */
-    @PostMapping(value = "modifiEditAndNew",produces = "application/json;charset=UTF-8")
+    @PostMapping(value = "modifiEditAndNew", produces = "application/json;charset=UTF-8")
     public void modifiEditAndNew(@RequestBody TmgPatternMergeDTO tmgPatternMergeDTO, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
@@ -166,11 +166,11 @@ public class PatternSettingController {
     }
 
     /**
-     * 勤務パターン CSV取り込み
+     * * 勤務パターン CSV取り込み
      * http://localhost:6879/sys/patternSetting/modifiCSVDwnload
-     *
      * @param file
      * @param psDBBean
+     * @return
      */
     @PostMapping("modifiCSVDwnload")
     @ResponseBody
