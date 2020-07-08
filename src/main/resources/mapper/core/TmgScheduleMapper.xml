@@ -142,6 +142,12 @@
         <parameter property="twp_cholflg7"></parameter>
     </parameterMap>
 
+    <resultMap id="selectWeekPtnMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType">
+        <result column="mgd_work" property="mgd_work" />
+        <result column="mgd_workname" property="mgd_workname" />
+    </resultMap>
+
+
     <!-- 年次休暇残 -->
     <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
         select tmo_npaid_rest_days,tmo_npaid_rest_hours as tmo_npaid_rest_hours,nvl(tmo_nmonth_chk_flg, 0) as tmo_nmonth_chk_flg
@@ -322,13 +328,13 @@
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
         and twp_cemployeeid = #{employeeId}
-        <if test="isAfter == true">
+       <!-- <if test="isAfter == true">
             and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
         </if>
         <if test="isAfter == false">
             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
-        </if>
+        </if>-->
         order by twp_denddate
     </select>
 
@@ -1287,5 +1293,21 @@
         and a.tes_ctype = #{type}
     </update>
 
+    <!-- 週勤務パターン画面に勤務区分リスト -->
+    <select id="selectWeekPtn" parameterType="java.util.HashMap" resultMap="selectWeekPtnMap">
+        select mgd_work,mgd_workname
+        from tmg_v_mgd_work4weekptn
+        where mgd_ccustomerid = #{custId}
+        and mgd_ccompanyid_ck_fk = #{compCode}
+        and mgd_dstart_ck <![CDATA[<=]]> sysdate
+        and mgd_dend <![CDATA[>=]]> sysdate
+        and mgd_clanguage_ck = #{language}
+        order by mgd_disporder
+    </select>
+
+    <!-- 週勤務パターンを削除する -->
+    <delete id="deleteWeekPtn" parameterType="java.util.HashMap">
+        delete from tmg_week_pattern p  where p.twp_ccustomerid =#{custId} and p.twp_ccompanyid = #{compCode} and p.twp_nid = #{twp_nid}
+    </delete>
 
 </mapper>

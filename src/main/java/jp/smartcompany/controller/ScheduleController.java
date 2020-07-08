@@ -7,6 +7,7 @@ import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ModifiedDateVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -100,7 +101,7 @@ public class ScheduleController {
                                                                     @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-       // tmgScheduleBean.executeEditMonthlyUSchedule();
+        // tmgScheduleBean.executeEditMonthlyUSchedule();
         return null;
     }
 
@@ -129,7 +130,7 @@ public class ScheduleController {
     }
 
     /**
-     * 週勤務パターンを取得する
+     * 週勤務パターン詳しい情報を取得する
      * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=40010001&twp_nid=641&txtBaseDate=&txtEndDate=
      * http://localhost:6879/sys/schedule/selectWeekPatternInfo?employeeId=C1000015&twp_nid=641&txtBaseDate=&txtEndDate=
      *
@@ -252,6 +253,41 @@ public class ScheduleController {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
         return tmgScheduleBean.updateSchedulePermStatus();
+    }
+
+    /**
+     * 週勤務パターン画面に勤務区分リスト
+     * http://localhost:6879/sys/schedule/selectWeekPtn
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("selectWeekPtn")
+    @ResponseBody
+    public List<WeekWorkType> selectWeekPtn(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        return tmgScheduleBean.selectWeekPtn();
+    }
+
+    /**
+     * 週勤務パターン画面に週勤務パターンを削除する
+     * http://localhost:6879/sys/schedule/deleteWeekPtn?twp_nid=641&txtBaseDate=&txtEndDate=
+     *
+     * @param txtBaseDate
+     * @param txtEndDate
+     * @param twp_nid
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("deleteWeekPtn")
+    @ResponseBody
+    public List<WeekWorkType> deleteWeekPtn(@RequestParam("txtBaseDate") String txtBaseDate,
+                                            @RequestParam("txtEndDate") String txtEndDate,
+                                            @RequestParam("twp_nid") int twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        return tmgScheduleBean.selectWeekPtn();
     }
 
 }
