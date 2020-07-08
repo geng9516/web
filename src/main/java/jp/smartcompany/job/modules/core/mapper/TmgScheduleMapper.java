@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -316,5 +317,18 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      */
     void updateSchedulePermStatus(HashMap<String, Object> params);
+
+    /**
+     * 週勤務パターン画面に勤務区分リスト
+     * @param params
+     * @return
+     */
+    List<WeekWorkType> selectWeekPtn(HashMap<String, Object> params);
+
+    /**
+     * 週勤務パターンを削除する
+     * @param params
+     */
+    void deleteWeekPtn(HashMap<String, Object> params);
 
 }

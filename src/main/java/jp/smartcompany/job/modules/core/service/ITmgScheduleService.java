@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +24,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param custId
      * @return
      */
-     NpaidRestDTO selectTmgMonthly(String employeeId, String workYear, String compCode, String custId);
+    NpaidRestDTO selectTmgMonthly(String employeeId, String workYear, String compCode, String custId);
 
     /**
      * [勤怠]日別情報より予定データを取得します
@@ -471,4 +472,21 @@ public interface ITmgScheduleService extends IService<Object> {
      */
     void updateSchedulePermStatus(String custId, String compCode, String employeeId, String baseDate, String modifierprogramid, String onff, String type);
 
+    /**
+     * 週勤務パターンリスト
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @return
+     */
+    List<WeekWorkType> selectWeekPtn(String custId, String compCode, String language);
+
+    /**
+     * 週勤務パターンを削除する
+     * @param custId
+     * @param compCode
+     * @param twp_nid
+     */
+    void deleteWeekPtn(String custId, String compCode, String twp_nid);
 }

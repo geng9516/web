@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.PaidHolidayVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -353,8 +354,14 @@ public class TmgScheduleBean {
         detailPeriod = "";
         _loginCustCode = "";
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
-        _targetUserCode = psDBBean.getTargetUser() == null ? psDBBean.getUserCode() : psDBBean.getTargetUser();
-        //   _targetUserCode = "29042924";
+        if (null != psDBBean.getRequestHash().get("txtTmgReferListTreeViewPermTargetEmp")) {
+            _targetUserCode = psDBBean.getRequestHash().get("txtTmgReferListTreeViewPermTargetEmp").toString();
+        } else {
+            _targetUserCode = psDBBean.getTargetUser();
+        }
+
+        //_targetUserCode = psDBBean.getTargetUser() == null ?  referList.getTargetEmployee() : psDBBean.getTargetUser();
+        //_targetUserCode = "C1000015";
         _loginCustCode = psDBBean.getUserCode();
         //WEBから基準時間を渡せれば
         if (null != txtBaseDate && !"".equals(txtBaseDate)) {
@@ -1163,12 +1170,12 @@ public class TmgScheduleBean {
             if (null != monthlyUScheduleEditParaDTO) {
                 List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = monthlyUScheduleEditParaDTO.getMonthlyScheduleEmpInfoDTOS();
                 for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
-                    MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO =  monthlyScheduleEmpInfoDTOS.get(i);
-                    monthlyScheduleEmpInfoDTO.setNopen(monthlyScheduleEmpInfoDTO.getNopen()==null?"":monthlyScheduleEmpInfoDTO.getNopen());
-                    monthlyScheduleEmpInfoDTO.setNclose(monthlyScheduleEmpInfoDTO.getNclose()==null?"":monthlyScheduleEmpInfoDTO.getNclose());
-                    monthlyScheduleEmpInfoDTO.setComment(monthlyScheduleEmpInfoDTO.getComment()==null?"":monthlyScheduleEmpInfoDTO.getComment());
-                    monthlyScheduleEmpInfoDTO.setBussinessTripid(monthlyScheduleEmpInfoDTO.getBussinessTripid()==null?"":monthlyScheduleEmpInfoDTO.getBussinessTripid());
-                    monthlyScheduleEmpInfoDTO.setWorkId(monthlyScheduleEmpInfoDTO.getWorkId()==null?"":monthlyScheduleEmpInfoDTO.getWorkId());
+                    MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
+                    monthlyScheduleEmpInfoDTO.setNopen(monthlyScheduleEmpInfoDTO.getNopen() == null ? "" : monthlyScheduleEmpInfoDTO.getNopen());
+                    monthlyScheduleEmpInfoDTO.setNclose(monthlyScheduleEmpInfoDTO.getNclose() == null ? "" : monthlyScheduleEmpInfoDTO.getNclose());
+                    monthlyScheduleEmpInfoDTO.setComment(monthlyScheduleEmpInfoDTO.getComment() == null ? "" : monthlyScheduleEmpInfoDTO.getComment());
+                    monthlyScheduleEmpInfoDTO.setBussinessTripid(monthlyScheduleEmpInfoDTO.getBussinessTripid() == null ? "" : monthlyScheduleEmpInfoDTO.getBussinessTripid());
+                    monthlyScheduleEmpInfoDTO.setWorkId(monthlyScheduleEmpInfoDTO.getWorkId() == null ? "" : monthlyScheduleEmpInfoDTO.getWorkId());
                 }
                 monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
                 this.executeEditMonthlyUSchedule(monthlyUScheduleEditParaDTO);
@@ -1469,6 +1476,7 @@ public class TmgScheduleBean {
 
         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO1);
+
         return tmgWeekPatternCheckDTOList;
     }
 
@@ -1591,5 +1599,29 @@ public class TmgScheduleBean {
 
         return true;
     }
+
+    /**
+     * http://localhost:6879/sys/schedule/selectWeekPtn
+     * 週勤務パターン画面に勤務区分リスト
+     *
+     * @return
+     */
+    public List<WeekWorkType> selectWeekPtn() {
+
+        return iTmgScheduleService.selectWeekPtn(_targetCustCode, _targetCompCode, _loginLanguageCode);
+
+    }
+
+    /**
+     * 週勤務パターン　を削除する
+     */
+    public void deleteWeekPtn(String twp_nid) {
+        if (null != twp_nid && !"".equals(twp_nid)) {
+            iTmgScheduleService.deleteWeekPtn(_targetCustCode, _targetCompCode, twp_nid);
+        } else {
+            logger.error("週勤務パターンコードが空です");
+        }
+    }
+
 
 }

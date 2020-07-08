@@ -151,14 +151,13 @@
               ,MG_CGROUPID_PK
               ,'${searchDate}'
               ,'${language}') AS MG_CGROUPDESCRIPTION,
-        PSMASTER.FUNC_GET_COMP_NAME(
-           MG_CCUSTOMERID
-           ,MG_CCOMPANYID
-           ,'${searchDate}'
-           ,'${language}')
-           AS COMPANYNAME,
-           MG_ID,
-           VERSIONNO
+            PSMASTER.FUNC_GET_COMP_NAME(
+               MG_CCUSTOMERID
+               ,MG_CCOMPANYID
+               ,'${searchDate}'
+               ,'${language}') AS GS_COMPANYNAME,
+               MG_ID,
+               VERSIONNO
         FROM
             MAST_GROUP
         WHERE
@@ -195,7 +194,7 @@
                 ,MG_CCOMPANYID
                 ,MG_DENDDATE
                 ,'${language}')
-                AS COMPANYNAME,
+                AS GS_COMPANYNAME,
             MG_ID,
             VERSIONNO
         FROM

@@ -248,6 +248,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       throw new GlobalException("権限データが存在しない");
     }
     Date dStart=updatePerm.getChangeDate();
+    if (dStart==null){
+      dStart =DateUtil.date();
+    }
     Date yesterday = DateUtil.offsetDay(dStart,-1);
     Date dEnd = SysUtil.transStringToDate("2222/12/31");
 

@@ -54,15 +54,15 @@
 }
 
 // 可移动的对话框
-.ivu-modal-no-mask {
-  pointer-events: unset;
-}
-.ivu-modal-wrap {
-  position: fixed;
-  overflow: auto;
-  top: 0;
-  background: rgba(55,55,55,.6);
-}
+// .ivu-modal-no-mask {
+//   pointer-events: unset;
+// }
+// .ivu-modal-wrap {
+//   position: fixed;
+//   overflow: auto;
+//   top: 0;
+//   background: rgba(55,55,55,.6);
+// }
 .el-loading-mask {
   z-index: 900 !important;
 }

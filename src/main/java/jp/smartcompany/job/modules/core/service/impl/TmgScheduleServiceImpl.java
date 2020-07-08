@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.mapper.TmgScheduleMapper;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
+import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -463,5 +464,22 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         baseMapper.updateSchedulePermStatus(params);
     }
 
+    @Override
+    public List<WeekWorkType> selectWeekPtn(String custId, String compCode, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        return baseMapper.selectWeekPtn(params);
+    }
+
+    @Override
+    public void deleteWeekPtn(String custId, String compCode, String twp_nid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("twp_nid", twp_nid);
+        baseMapper.deleteWeekPtn(params);
+    }
 
 }
