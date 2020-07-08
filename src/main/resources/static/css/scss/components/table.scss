@@ -71,6 +71,11 @@
       // max-height: 100vh;
     }
   }
+  .no-padding & {
+    td, th {
+      padding: 0;
+    }
+  }
   // 长表格格子间距，如月间日间，申请承认
   .long-table & {
     td:not(.select),
