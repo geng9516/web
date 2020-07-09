@@ -54,8 +54,8 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
-                 :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)" :span-method="handleSpan">
+        <i-table class="long-table" border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
+                 :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)">
             <template slot-scope="{ row }" slot="vactionGiveDay">
                     <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
             </template>
@@ -77,39 +77,48 @@
             <div>
                 <Row :gutter="10">
                     <i-col span="8">
-                    <div class="label">所属</div>
-                    <div class="person-info">{{ privateInfo.deptName }}</div>
+                       <div class="label">所属</div>
+                       <div class="person-info">{{ privateInfo.deptName }}</div>
                     </i-col>
                     <i-col span="8">
-                    <div class="label">氏名</div>
-                    <div class="person-info">{{ privateInfo.name }}</div>
+                       <div class="label">氏名</div>
+                       <div class="person-info">{{ privateInfo.name }}</div>
                     </i-col>
                     <i-col span="8">
-                    <div class="label">種別</div>
-                    <div cla ss="person-info">{{ privateInfo.workType }}</div>
+                       <div class="label">種別</div>
+                       <div class="person-info">{{ privateInfo.workType }}</div>
                     </i-col>
                 </Row>
             </div>
             <div class="tr mt20 mb20" v-if="!isSeason">
-                <i-button type="success" ghost class="mr15 width15">登録</i-button>
+                <i-button type="success" @click="register" ghost class="mr15 width15">登録</i-button>
             </div>
 
             <div class="titlenorm mb10" v-if="!isSeason">
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30">
+            <i-table border :columns="paidColums" :data="paidData" @on-row-click="editDataPush()" :loading="loading" v-if="!isSeason" class="mb30">
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" format="yyyy/MM/dd" type="date" transfer></date-picker>
                 </template>
 
-                <template slot-scope="{ row }" slot="editTakenDay">
-                    <i-input v-model="row.editTakenDay" />
+                <template slot-scope="{ row }" slot="adjustTakenDays">
+                    <i-input v-model="row.adjustTakenDays" @blur.native.capture="blur"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="vactionGiveDay">
+                    <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="paidDays">
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
                     <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
                 </template>
+
             </i-table>
             <span v-if="isSeason">
                     <div class="titlenorm mb10 mt20">
@@ -119,11 +128,11 @@
                     <Row :gutter="10">
                         <i-col span="8">
                         <div class="label">基準日</div>
-                        <div class="person-info">2019/04/01</div>
+                        <div class="person-info">{{ privateInfo.taKijyunbi }}</div>
                         </i-col>
                         <i-col span="8">
                         <div class="label">取得日数</div>
-                        <div class="person-info">6.0日</div>
+                        <div class="person-info">{{ privateInfo.sumSyutokudays }}</div>
                         </i-col>
                     </Row>
                     <div class="titlenorm mb10 mt20">
@@ -144,19 +153,19 @@
                 columns: [
                     {
                         title: '氏名',
-                        key: 'cemployeeName',
+                        key: 'name',
                         width: 150,
-                        align: 'right'
-                    },
-                    {
-                        title: '種別',
-                        key: 'workertypeNm',
-                        minWidth: 180,
                         align: 'center'
                     },
                     {
+                        title: '種別',
+                        key: 'type',
+                        minWidth: 180,
+                        align: 'left'
+                    },
+                    {
                         title: '年次休暇\n付与日',
-                        key: 'taDyyyymmdd',
+                        slot: 'vactionGiveDay',
                         minWidth: 100,
                         maxWidth: 200,
                         align: 'center'
@@ -164,7 +173,7 @@
                     {
                         title: '付与\n日数',
                         width: '70',
-                        key: 'taFuyodays',
+                        slot: 'paidDays',
                         align: 'center'
                     },
                     {
@@ -172,28 +181,28 @@
                         children: [
                             {
                                 title: '基準日',
-                                key: 'taKijyunbi',
+                                key: 'basedDay',
                                 align: 'center'
                             },
                             {
                                 title: 'チェック期間',
-                                key: 'taKikanbi',
+                                key: 'checkPeriod',
                                 align: 'center'
                             },
                             {
                                 title: '取得日数',
-                                key: 'sumSyutokudays',
+                                key: 'takenDays',
                                 align: 'center'
                             },
                             {
                                 title: '必要日数',
-                                key: 'taMustdays',
+                                key: 'mustDays',
                                 align: 'center'
                             },
                             {
                                 title: '不足日数',
                                 className: 'checkin',
-                                key: 'taLessdays',
+                                slot: 'lackDays',
                                 align: 'center'
                             }
                         ]
@@ -205,41 +214,18 @@
                         align: 'center'
                     }
                 ],
-                data22: [
-                    {
-                        name: '大橋 史明',
-                        type: '基盤研_職員 第３種',
-                        vactionGiveDay: [{ day: '2019/10/01' }],
-                        paidDays: ['10.0'],
-                        basedDay: '2019/10/01',
-                        checkPeriod: '2020/09/30',
-                        takenDays: '5.0',
-                        mustDays: '5.0',
-                        lackDays: '0.0'
-                    },
-                    {
-                        name: '鈴木 花子',
-                        type: '教職員',
-                        vactionGiveDay: [{ day: '2019/10/01' }, { day: '2020/04/01', isReGive: true }],
-                        paidDays: ['10.0', '11.0'],
-                        basedDay: '2019/10/01',
-                        checkPeriod: '2021/03/31',
-                        takenDays: '3.5',
-                        mustDays: '5.0',
-                        lackDays: '1.5'
-                    }
-                ],
                 paidColums: [
                     {
                         title: '年次休暇\n付与日',
-                        key: 'vactionGiveDay',
-                        width: 100,
+                        slot: 'vactionGiveDay',
+                        minWidth: 100,
+                        maxWidth: 200,
                         align: 'center'
                     },
                     {
                         title: '付与\n日数',
                         width: 70,
-                        key: 'paidDays',
+                        slot: 'paidDays',
                         align: 'center'
                     },
                     {
@@ -263,7 +249,7 @@
                             },
                             {
                                 title: '取得\n日数',
-                                key: 'takenDays',
+                                key: 'editTakenDays',
                                 width: 70,
                                 align: 'center'
                             },
@@ -271,7 +257,7 @@
                                 title: '調整\n取得日数',
                                 className: 'checkin',
                                 width: 100,
-                                slot: 'editTakenDay',
+                                slot: 'adjustTakenDays',
                                 align: 'center'
                             },
                             {
@@ -290,37 +276,20 @@
                         ]
                     }
                 ],
-                paidData: [
-                    {
-                        vactionGiveDay: '2019/10/01',
-                        paidDays: '10.0',
-                        basedDay: '2019/10/01',
-                        checkPeriod: '2020/09/30',
-                        takenDays: '5.0',
-                        mustDays: '5.0',
-                        lackDays: '0.0'
-                    }
-                ],
+
+                paidData: [],
                 takenDaysColums: [
                     {
                         title: '取得日',
-                        key: 'day'
+                        key: 'tdaDyyyymmdd'
                     },
                     {
                         title: '名称',
-                        key: 'name'
+                        key: 'tdaCworkingname'
                     }
                 ],
-                takenDaysData: [
-                    {
-                        day: '2019/04/26',
-                        name: '年次有給休暇(終日)'
-                    },
-                    {
-                        day: '2019/05/07',
-                        name: '年次有給休暇(半日・前半)'
-                    }
-                ],
+                takenDaysData: [],
+
                 tableHead: [],
                 tableData: [],
                 isShow: false,
@@ -353,7 +322,22 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
+                updateAcquired5DaysVO: {
+                    recordDate: '',
+                    txtUserCode: '',
+                    txtYear: '',
+                    kijunbi: '',
+                    kijunbiEdit: '',
+                    usedDaysEdit: '0',
+                    txtUpdateflg: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
                 privateInfo: {
+                    taKijyunbi: '',
+                    sumSyutokudays: '',
                     deptName: '',
                     name: '',
                     workType: ''
@@ -364,18 +348,12 @@
                 selectDisabled: false,   　//年月選択可否制御
                 dispMonthlyList: [],       //年月リスト
                 model1: '',
-                approval: false,
-                drawApproval: false,
 
                 title: '',
-                tableHead2: [],
-                tableData2: [],
                 isSearchHistory: false,
 
                 isSeason: false,
-                isShow: false,
-                a : 0,
-                b : 0
+                isShow: false
             }
         },
         async mounted() {
@@ -391,22 +369,51 @@
 
         async handleBtn(e) {
                 console.log(e)
+                this.privateInfo.taKijyunbi = e.basedDay
+                this.privateInfo.sumSyutokudays = e.takenDays
+
                 this.privateInfo.deptName = this.deptName
-                this.privateInfo.name = e.cemployeeName
-                this.privateInfo.workType = e.workertypeNm
+                this.privateInfo.name = e.name
+                this.privateInfo.workType = e.type
 
                 this.query.txtUserCode = e.taCemployeeid
-                this.query.kijunbi = e.taKijyunbi
+                this.query.kijunbi = e.basedDay
                 this.query.pdSearchStart = e.tpDntfSurveyStart
                 this.query.pdSearchEnd = e.tpDntfSurveyEnd
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
                 console.log(data)
 
+                this.takenDaysData =data
+
                 this.isShow = true
                 this.isSeason = true
             },
-            handleRowClick() {
+            async handleRowClick(e) {
+                console.log("handleRowClick-s")
+                console.log(e[0])
+                this.query.txtUserCode = e[0].taCemployeeid
+
+                // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
+                // this.paidData = data
+
+                this.paidData = [e[0]]
+
+                this.privateInfo.deptName = this.deptName
+                this.privateInfo.name = e[0].name
+                this.privateInfo.workType = e[0].type
+
+
+                //
+                this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
+                this.updateAcquired5DaysVO.txtYear = '2020'
+                this.updateAcquired5DaysVO.kijunbi = e[0].basedDay
+                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData.editBasedDay
+                // this.updateAcquired5DaysVO.usedDaysEdit = this.paidData.tpfSyutokudaysAdjust
+                console.log("this.updateAcquired5DaysVO")
+                console.log(this.updateAcquired5DaysVO)
+
                 this.isShow = true
                 this.isSeason = false
             },
@@ -442,15 +449,100 @@
             async getTableData() {
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
 
-                this.tableData = data
-                console.log("getTableData")
-                console.log(this.tableData)
+                if(data.length>0){
+                    let b = data.map((e,i) => {
+                        const vactionGiveDay = [{
+                            day:e.taDyyyymmdd,
+                            isReGive: data[i].taCduplicateflg === '1'
+                        }]
+                        return {
+                            name:e.cemployeeName,
+                            type:e.workertypeNm,
+                            vactionGiveDay,
+                            paidDays:[e.taFuyodays],
 
-                // if (data.sectionMap.CNT === 0){
-                //     this.tableData = []
-                // } else {
-                //     this.tableData = [data.sectionMap]
-                // }
+                            basedDay:e.taKijyunbi,
+                            checkPeriod:e.taKikanbi,
+                            takenDays:e.tpSyutokudays,
+                            mustDays:e.taMustdays,
+                            lackDays:e.taLessdays,
+
+                            editBasedDay:'',    //編集画面用_修正基準日
+                            editTakenDays:'',    //編集画面用_取得日数
+                            adjustTakenDays:'', //編集画面用_調整取得日数
+
+                            cemployeeName:e.cemployeeName,
+                            sumSyutokudays:e.sumSyutokudays,
+                            taCduplicateflg:e.taCduplicateflg,
+                            taCemployeeid:e.taCemployeeid,
+                            taDyyyymmdd:e.taDyyyymmdd,
+                            taFuyodays:e.taFuyodays,
+                            taKijyunbi:e.taKijyunbi,
+                            taKikanbi:e.taKikanbi,
+                            taLessdays:e.taLessdays,
+                            taMustdays:e.taMustdays,
+                            taRowpan:e.taRowpan,
+                            tpDntfSurveyEnd:e.tpDntfSurveyEnd,
+                            tpDntfSurveyStart:e.tpDntfSurveyStart,
+                            tpSyutokudays:e.tpSyutokudays,
+                            tpfKijyunbi:e.tpfKijyunbi,
+                            tpfKikanbi:e.tpfKikanbi,
+                            tpfLessdays:e.tpfLessdays,
+                            tpfMustdays:e.tpfMustdays,
+                            tpfSyutokudays:e.tpfSyutokudays,
+                            tpfSyutokudaysAdjust:e.tpfSyutokudaysAdjust,
+                            workertypeId:e.workertypeId,
+                            workertypeNm:e.workertypeNm
+                        }
+                    })
+
+                    let a=[]
+                    for (var i=0;i < b.length;i++){
+                        if (b[i].taRowpan == 1) {
+                            a.push(b[i])
+                        } else if (b[i].taRowpan > 1) {
+                            a.push(b[i])
+
+                            let max = i + +b[i].taRowpan
+                            for (var j=i+1;j <  max;j++){
+                                a[i].vactionGiveDay.push(b[j].vactionGiveDay[0])
+                                a[i].paidDays.push(b[j].paidDays[0])
+                            }
+                            i = i + +b[i].taRowpan - 1
+                        }
+                    }
+                    //
+                    for (var i=0;i < a.length;i++){
+                        if (a[i].taKijyunbi == null){
+                            a[i].basedDay = "-"
+                            a[i].checkPeriod = "-"
+                            a[i].takenDays = "-"
+                            a[i].mustDays = "-"
+                            a[i].lackDays = "-"
+                        } else if (a[i].tpfKijyunbi == null) {
+                            a[i].basedDay = a[i].taKijyunbi
+                            a[i].checkPeriod = a[i].taKikanbi
+                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                            a[i].mustDays = a[i].taMustdays
+                            a[i].lackDays = a[i].taLessdays
+
+                            a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
+                            a[i].adjustTakenDays = a[i].tpfSyutokudaysAdjust //編集画面用‐調整取得日数
+
+                        } else if (a[i].tpfKijyunbi != null) {
+                            a[i].basedDay = a[i].tpfKijyunbi
+                            a[i].checkPeriod = a[i].tpfKikanbi
+                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                            a[i].mustDays = a[i].tpfMustdays
+                            a[i].lackDays = a[i].tpfLessdays
+
+                            a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
+                            a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
+                            a[i].adjustTakenDays = a[i].tpfSyutokudaysAdjust //編集画面用‐調整取得日数
+                        }
+                    }
+                    this.tableData = a
+                 }
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -522,7 +614,7 @@
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
 
-                console.log('e2')
+                console.log('handleClickLeaf-s')
                 console.log(e)
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_DISP_MONTHLY'
@@ -534,8 +626,9 @@
                 // //年月リストの取得
                 // await this.getWorkDateList()
                 //
-                // // await this.getTableHead()
                 await this.getTableData()
+
+                console.log('handleClickLeaf-e')
 
             },
             async handleStartMonth(e) {
@@ -553,26 +646,37 @@
                 yearMMDD = yearMMDD + "01"
                 return yearMMDD
             },
+            register(e) {
 
-            handleSpan ({ row, column, rowIndex, columnIndex }) {
-                if (row.taRowpan > 1 && rowIndex > this.b  ){
-                    this.a = rowIndex
-                    this.b = +(rowIndex + +row.taRowpan)
-                    console.log(this.a)
-                    console.log(this.b)
-                }
-                if (rowIndex===this.a && !(columnIndex ===2 || columnIndex ===3)) {
-                    return {
-                        rowspan: row.taRowpan,
-                        colspan: 1
-                    };
-                } else if(rowIndex> this.a && rowIndex < +this.b    && !(columnIndex ===2 || columnIndex ===3)){
-                    return {
-                        rowspan: 0,
-                        colspan: 0
-                    };
-                }
-            }
+                //1:登録　2:クリア
+                this.updateAcquired5DaysVO.txtUpdateflg = '1'
+
+                this.$Modal.confirm({
+                    title: '',
+                    content: '入力内容を保存します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+
+                        //登録Loading制御
+                        this.registerLoading = false
+                    },
+                    onCancel: () => {
+                        //登録Loading制御
+                        this.registerLoading = false
+
+                    }
+                })
+            },
+            editDataPush(row) {
+             console.log("editDataPush")
+             console.log(row)
+            },
+            blur(e) {
+                console.log("blur")
+                console.log(e)
+            },
         }
     })
 </script>

@@ -60,14 +60,11 @@ public class TmgAcquired5DaysHolidayController {
     }
 
     /**
-     * 年次休暇管理詳細
+     * 年5日有給指定
      */
-    @GetMapping("update")
-    @ResponseBody
-    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
+    @PostMapping(value = "update", produces = "application/json;charset=UTF-8")
+    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, @RequestBody UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
         tmgAcquired5DaysHolidayBean.execute(psDBBean, updateAcquired5DaysVO.getRecordDate(), updateAcquired5DaysVO.getTxtYear());
         tmgAcquired5DaysHolidayBean.update(psDBBean,updateAcquired5DaysVO);
     }
-
-
 }
