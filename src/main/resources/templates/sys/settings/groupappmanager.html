@@ -12,17 +12,22 @@
         <div class="title1">
           <h1>
             <Icon type="i-emeer colored"></Icon>
-            {{ `起動権限設定` }}
+            {{ `起動権限設定 ` }}
+            <span class="blue"> : {{dataDate}}</span>
           </h1>
         </div>
         <div class="btnbox">
           <span style="flex:1"></span>
-          <i-button type="primary" icon="md-create" size="large" @click="handleEdit(true)" v-if="!isEditing">編集
+          今回改定日：
+          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="mt5 ml5" size="large"
+            format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
+          </date-picker>
+          <i-button type="primary" icon="md-create" size="large" @click="isEditing = true" v-if="!isEditing"
+            :loading="loading">編集
           </i-button>
           <i-button type="success" icon="md-done-all" size="large" @click="update" :loading="editLoading"
             v-if="isEditing">登録</i-button>
-          <i-button type="primary" @click="handleEdit(false)" size="large" ghost v-if="isEditing">キャンセル</i-button>
-          <i-button type="warning" icon="md-download" ghost size="large">Excel出力</i-button>
+          <i-button type="primary" @click="()=>history.go(0)" size="large" ghost v-if="isEditing">キャンセル</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -38,7 +43,7 @@
             {{ item.macCcompanyname }}</i-option>
         </i-select>
         <span class="label">選択グループ名</span>
-        <i-select v-model="opts.groupId">
+        <i-select v-model="opts.groupId" @on-change="handleGroupChange">
           <i-option value="0" label="全グループ表示"></i-option>
           <i-option v-for="(item, i) of groupList" :key="i" :value="item.mgCgroupidPk">{{ item.mgCgroupdescription }}
           </i-option>
@@ -49,7 +54,7 @@
       <div class="table-top">
         <Row :gutter="16">
           <i-col span="4">
-            <i-button type="text" class="blue" :loading="loading">
+            <i-button type="text" class="blue" :loading="loading" @click="getPreData">
               <Icon type="ios-arrow-back"></Icon>
               <span class="ml5">{{beforeDate}} 改定分</span>
             </i-button>
@@ -62,18 +67,15 @@
               </i-option>
             </i-select>
             選択アプリケーション名：
-            <i-select v-model="opts.appId" class="mr15" style="width:260px" transfer>
+            <i-select v-model="opts.appId" class="mr15" style="width:260px" @on-change="handleAppChange" transfer>
               <i-option value="0" label="全アプリケーション"></i-option>
               <i-option v-for="(item, i) of appList" :key="i" :value="item.mtrCappid">{{ item.mtrCobjname }}</i-option>
             </i-select>
-            今回改定日：
-            <date-picker type="date" v-model="curDate" format="yyyy/MM/dd" @on-change="handleDatePicker" transfer
-              clearable editable />
           </i-col>
         </Row>
       </div>
-      <i-table border v-show="isEditing" class="no-padding" :columns="columns" :disabled-hover="true" :data="tableDataForAction" :loading="loading"
-        @on-cell-click="handleCellClickForAction">
+      <i-table border v-show="isEditing" class="mb10" :columns="columns" :disabled-hover="true"
+        :data="tableDataForAction" :loading="loading" @on-cell-click="handleCellClickForAction">
 
         <template slot-scope="{ row }" slot="objectName">
           <span></span>
@@ -87,12 +89,13 @@
         <!-- 循环slotList -->
         <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
           <i-button type="success" ghost size="small" icon="ios-arrow-down" long>
+            &nbsp;
           </i-button>
         </template>
       </i-table>
 
-      <i-table border :show-header="!isEditing" class="no-padding mt10" :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading"
-        @on-cell-click="handleCellClick" ref="table">
+      <i-table border :show-header="!isEditing" class="no-padding" :columns="columns" :disabled-hover="true"
+        :data="tableData" :loading="loading" @on-cell-click="handleCellClick" ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
         type: "1" サイト   <Icon type="md-compass" />
         type: "3" アプリケーション ml10 <Icon type="md-desktop" />
@@ -134,9 +137,8 @@
 
         <!-- 循环slotList -->
         <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-          <!-- <i-button type="success" ghost size="small" icon="ios-arrow-down" long v-show="row._index === 0 && isEditing">
-          </i-button> -->
-          <span :class="row[item].permission === '1' ? 'blue' : row[item].permission === '2' ? 'red': ''">{{ row[item].permission === '1' ? '〇' : row[item].permission === '2' ? '✖' : '　' }}</span>
+          <span
+            :class="row[item].permission === '1' ? 'blue' : row[item].permission === '2' ? 'red': ''">{{ row[item].permission === '1' ? '〇' : row[item].permission === '2' ? '✖' : '　' }}</span>
         </template>
       </i-table>
       <div class="ivu-pop-popper" :style="poptipStyle" x-placement="right-start">
@@ -149,14 +151,14 @@
             <div class="ivu-poptip-body">
               <div class="ivu-poptip-body-content">
                 <div class="ivu-poptip-body-content-inner">
-                  <i-button style="display:block" @click="cellClickAction('0')" size="small" class="mb5"
-                    long>設定なし</i-button>
+                  <i-button style="display:block" @click="cellClickAction('0')" size="small" class="mb5" long>設定なし
+                  </i-button>
                   <i-button type="primary" @click="cellClickAction('1')" style="display:block" size="small" class="mb5"
                     ghost long>〇 許可</i-button>
                   <i-button type="error" @click="cellClickAction('2')" style="display:block" size="small" class="mb5"
                     ghost long>✖ 拒否</i-button>
-                  <i-button @click="cellClickAction('4')" style="display:block" size="small" class="mb5"
-                    long>キャンセル</i-button>
+                  <i-button @click="cellClickAction('4')" style="display:block" size="small" class="mb5" long>キャンセル
+                  </i-button>
                 </div>
               </div>
             </div>
@@ -174,9 +176,10 @@
           // 预设最多20个权限
           slotList: Utils.getNumArray(1, 20).map(e => `m${e}`),
           radioType: 0,
-          loading: false,
+          loading: true,
           editLoading: false,
           isEditing: false,
+          dataDate: '現在有効な設定',
           beforeDate: '',
           needChange: '',
           legalPersonList: [],
@@ -207,7 +210,13 @@
             isAll: false,
           },
           tableData: [],
-          tableDataForAction: []
+          tableDataForAction: [],
+          limitDate: '',
+          rangeOptions: {
+            disabledDate: date => {
+              return date.valueOf() < new Date(this.limitDate).getTime()
+            }
+          }
         }
       },
       async created() {
@@ -236,20 +245,24 @@
           }
           this.tableHead.forEach((e, i) => {
             result = result.concat({
-              title: e.mgCgroupdescription || ' ',
+              title: e.title,
               slot: `m${i + 1}`,
               align: 'center'
             })
           })
           return result
-        },
+        }
 
       },
       methods: {
         async getLegalPersonList() {
-          const { data } = await this.http.get('sys/groupappmanager/companies')
+          let OPTS = {}
+          if (this.opts.date) {
+            OPTS.searchDate = this.opts.date
+          }
+          const { data } = await this.http.get('sys/groupappmanager/companies', OPTS)
           this.legalPersonList = data
-          this.opts.companyId = data[0].macCcompanyidCk
+          this.opts.companyId = data[0] && data[0].macCcompanyidCk
 
         },
         async getSystemList() {
@@ -294,7 +307,22 @@
           try {
             const { data } = await this.http.postForm('sys/groupappmanager', OPTS)
             this.beforeDate = data.beforeDate
-            this.tableHead = data.tableHeader
+            this.limitDate = data.latestDate
+            if (data.afterDate) {
+              this.dataDate = `${data.changeDate} 改定分`
+            } else {
+              this.dataDate = '現在有効な設定'
+            }
+            // 法人全部的时候需要显示公司名
+            let showFullName = false
+            if (this.opts.companyId === '0') {
+              showFullName = true
+            }
+            this.tableHead = data.tableHeader.map(e => {
+              return {
+                title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription
+              }
+            })
             this.tableData = data.tableBody.map((e, i) => {
               let result = {}
               e.list.forEach((n, j) => {
@@ -309,26 +337,7 @@
 
               return result
             })
-            this.tableDataForAction = this.tableData.slice(0,1)
-            console.log(this.tableData)
-            // [{
-            //   m0: { rowIndex: 0, colIndex: 1, permission: '0' },
-            //   m1: { rowIndex: 0, colIndex: 2, permission: '0' },
-            //   m2: { rowIndex: 0, colIndex: 3, permission: '0' },
-            //   m3: { rowIndex: 0, colIndex: 4, permission: '0' },
-            //   m4: { rowIndex: 0, colIndex: 5, permission: '0' },
-            //   type: '2',
-            //   objectName: '代替ログイン'
-            // },
-            //   {
-            //     m0: { rowIndex: 1, colIndex: 1, permission: '0' },
-            //     m1: { rowIndex: 1, colIndex: 2, permission: '0' },
-            //     m2: { rowIndex: 1, colIndex: 3, permission: '0' },
-            //     m3: { rowIndex: 1, colIndex: 4, permission: '0' },
-            //     m4: { rowIndex: 1, colIndex: 5, permission: '0' },
-            //     type: '5',
-            //     objectName: '代替ログイン'
-            //   }]
+            this.tableDataForAction = this.tableData.slice(0, 1)
           } catch (error) {
 
           } finally {
@@ -336,13 +345,14 @@
           }
         },
         async update() {
-          let OPTS = {permList:[...new Set(this.updateValue)]}
-          if(this.opts.date) {
+          let OPTS = { permList: [...new Set(this.updateValue)] }
+          if (this.opts.date) {
             OPTS.changeDate = this.opts.date
           }
-          const { data } = await this.http.post('sys/groupappmanager/update',OPTS)
+          const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
           this.isEditing = false
           this.getTableData()
+          this.updateValue = []
         },
         handleCellClick(row, column, data, event) {
           // 点到名字的第一列是也不要弹出操作浮层
@@ -351,8 +361,6 @@
           }
           // 开始复原
           this.needChange = ''
-          console.log(row)
-          console.log(column)
           this.clickedCell = row._index
           // 点到了右箭头按钮，需要将整行变了
           if (column.slot === 'action') {
@@ -393,7 +401,7 @@
             }
             // 点到了右箭头按钮，需要将整行变了
             if (this.needChange === 'row') {
-              Object.keys(this.$refs.table.data[this.clickedCell]).forEach(key=>{
+              Object.keys(this.$refs.table.data[this.clickedCell]).forEach(key => {
                 if (this.$refs.table.data[this.clickedCell][key] instanceof Object) {
                   this.$refs.table.data[this.clickedCell][key].permission = e
                   this.updateValue = this.updateValue.concat(this.$refs.table.data[this.clickedCell][key])
@@ -402,24 +410,13 @@
             }
             // 点到了下箭头，需要将整列变了,needchange为列名
             if (this.needChange.indexOf('m') > -1) {
-              this.$refs.table.data.forEach((n,i) => {
+              this.$refs.table.data.forEach((n, i) => {
                 n[this.needChange].permission = e
                 this.updateValue = this.updateValue.concat(n[this.needChange])
               })
             }
           }
           this.poptipStyle.display = 'none'
-        },
-        handleEdit(flag) {
-          this.isEditing = flag
-          // if(!this.flag) {
-          //   history.go(0)
-          // }
-          // if (flag) {
-          //   this.$refs.table.data.unshift({})
-          // } else {
-          //   this.$refs.table.data.shift({})
-          // }
         },
         handleSystemChange() {
           this.getSiteList()
@@ -434,6 +431,12 @@
           this.getGroupList()
           this.getTableData()
         },
+        handleGroupChange() {
+          this.getTableData()
+        },
+        handleAppChange() {
+          this.getTableData()
+        },
         handSiteChange() {
           // 选择site名时，要把app的重置为第一项
           this.getAppList()
@@ -441,8 +444,16 @@
           this.opts.appId = '0'
           this.getTableData()
         },
-        handleDatePicker(e) {
+        async handleDatePicker(e) {
+          if (!e) return
           this.opts.date = e
+          await this.getLegalPersonList()
+          await this.getGroupList()
+          this.getTableData()
+        },
+        getPreData() {
+          this.opts.date = this.beforeDate
+          this.getTableData()
         }
       }
     })
