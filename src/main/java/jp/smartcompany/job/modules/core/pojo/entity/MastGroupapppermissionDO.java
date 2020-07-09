@@ -29,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-                @TableId(value = "mgp_id", type = IdType.AUTO)
+                @TableId(value = "mgp_id", type = IdType.INPUT)
                 private Long mgpId;
 
         /**

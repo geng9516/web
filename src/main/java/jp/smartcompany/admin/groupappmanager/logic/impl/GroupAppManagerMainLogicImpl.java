@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpSession;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -93,22 +94,35 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       return null;
     }
     List<GroupAppManagerPermissionDTO> lPermissionList = iMastGroupapppermissionService.selectPermissionList(systemId,date,permGroupIds,psSite, psApp, psLanguage);
+    List<GroupAppManagerGroupDTO> sortGroupIds = CollUtil.newArrayList();
+    for (int i = 0;i<permGroupIds.size();i++) {
+      String sortGroupId = lPermissionList.get(i).getMgpCgroupid();
+      for (GroupAppManagerGroupDTO groupAppManagerGroupDTO : groupList) {
+        if (StrUtil.equals(groupAppManagerGroupDTO.getMgCgroupidPk(),sortGroupId)) {
+          sortGroupIds.add(groupAppManagerGroupDTO);
+          break;
+        }
+      }
+    }
+
     // 権限一覧が取得できない場合はnullを返却
     if (CollUtil.isEmpty(lPermissionList)){
       return null;
     }
-    layout.setTableHeader(groupList);
+    layout.setTableHeader(sortGroupIds);
     // 画面表示のためのイレモノを取得
-    List<GroupAppManagerPermissionTableDTO> lTable = this.getEmptyTable(lPermissionList,
-            groupList, systemId);
-    int nIndex =0;
-    for (GroupAppManagerPermissionTableDTO groupAppManagerPermissionTableDTO : lTable) {
-      List<GroupAppManagerPermissionDTO> lRecord = groupAppManagerPermissionTableDTO.getList();
-      // オブジェクトのグループごとのループ（横方向）
+    List<GroupAppManagerPermissionTableDTO> lTable = getEmptyTable(lPermissionList, sortGroupIds, systemId);
+
+    int nIndex = 0;
+    // オブジェクトでのループ（縦方向）
+    for (int i = 0; i < lTable.size(); i++) {
+      List <GroupAppManagerPermissionDTO> lRecord = lTable.get(i).getList();
       GroupAppManagerPermissionDTO oldDto = null;
+      // オブジェクトのグループごとのループ（横方向）
       for (int j = 0; j < lRecord.size(); j++) {
         GroupAppManagerPermissionDTO permission = lRecord.get(j);
-        if (nIndex >= lPermissionList.size()) {
+        // インデックスがListサイズを超えている場合
+        if (!(nIndex < lPermissionList.size())) {
           break;
         }
         GroupAppManagerPermissionDTO dto = lPermissionList.get(nIndex);
@@ -129,24 +143,30 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
             continue;
           }
         }
+
         // グループIDが違い、オブジェクトIDが同じ場合(取得した権限一覧に含まれないグループの場合)
         if (!permission.getMgpCgroupid().equals(dto.getMgpCgroupid())
                 && permission.getMgpCobjectid().equals(dto.getMgpCobjectid())) {
           continue;
         }
+
         // グループID、オブジェクトIDが同じ場合
         if (permission.getMgpCgroupid().equals(dto.getMgpCgroupid())
                 && permission.getMgpCobjectid().equals(dto.getMgpCobjectid())) {
+
           // 権限値書き換え
           permission.setPermission(dto.getPermission());
+
           // 権限に対応したセルの背景色を設定
           if ("1".equals(dto.getPermission())) {
-            permission.setBgColor(BGCOLOR_YES);
+            permission.setBgColor(GroupAppManagerMainLogicImpl.BGCOLOR_YES);
           } else if ("2".equals(dto.getPermission())) {
-            permission.setBgColor(BGCOLOR_NO);
+            permission.setBgColor(GroupAppManagerMainLogicImpl.BGCOLOR_NO);
           }
+
           nIndex++;
         }
+
         oldDto = dto;
       }
     }
@@ -325,17 +345,23 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     // 入れ物の準備
     List<GroupAppManagerPermissionTableDTO> lTable = CollUtil.newArrayList();
     String sObjIdTemp = "";
-    for (GroupAppManagerPermissionDTO dto : plPermission) {
+
+    for (int i = 0; i < plPermission.size(); i++) {
+
+      GroupAppManagerPermissionDTO dto = plPermission.get(i);
+
       // オブジェクトIDが変わったら
       if (!sObjIdTemp.equals(dto.getMgpCobjectid())) {
-        List<GroupAppManagerPermissionDTO> lRecord = CollUtil.newArrayList();
+
+        List<GroupAppManagerPermissionDTO> lRecord =CollUtil.newArrayList();
         // 表示グループ一覧でループ
-        for (GroupAppManagerGroupDTO groupDTO:groupIds) {
+        for (int j = 0; j <groupIds.size(); j++) {
+
           // １行分の権限データを設定
           GroupAppManagerPermissionDTO permissionDto = new GroupAppManagerPermissionDTO();
-          permissionDto.setMgpCcompanyid(null);
+          permissionDto.setMgpCcompanyid(null);   // 法人コードはnull固定
           permissionDto.setMgpCsystemid(psSystemId);
-          permissionDto.setMgpCgroupid(groupDTO.getMgCgroupidPk());
+          permissionDto.setMgpCgroupid(groupIds.get(j).getMgCgroupidPk());
           permissionDto.setMgpCobjectid(dto.getMgpCobjectid());
           permissionDto.setMgpCsite(dto.getMgpCsite());
           permissionDto.setMgpCapp(dto.getMgpCapp());
@@ -345,27 +371,41 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
           permissionDto.setObjectName(dto.getObjectName());
           permissionDto.setPermission("0");
           permissionDto.setType(dto.getType());
-          permissionDto.setBgColor(BGCOLOR_EMPTY);
+          permissionDto.setBgColor(GroupAppManagerMainLogicImpl.BGCOLOR_EMPTY);
           lRecord.add(permissionDto);
+          // 後処理
+          permissionDto = null;
         }
+
         // １行分のデータを設定
         GroupAppManagerPermissionTableDTO table = new GroupAppManagerPermissionTableDTO();
         table.setList(lRecord);
         // グループ未設定且つアプリケーションが登録された場合の対応
-        if (CollUtil.isNotEmpty(lRecord)) {
+        if (lRecord.size() != 0) {
           table.setObjectName(lRecord.get(0).getObjectName());
           table.setType(lRecord.get(0).getType());
         }
         // サブアプリ配下判定フラグをセット(画面/ボタンのみ)
-        if (StrUtil.equals("5",dto.getType()) || StrUtil.equals("6",dto.getType())) {
+        if ("5".equals(dto.getType()) || "6".equals(dto.getType())) {
           if (!dto.getMgpCobjectid().contains("__")) {
             table.setSubApp(true);
           }
         }
         lTable.add(table);
-        sObjIdTemp = dto.getMgpCobjectid();
+
+        sObjIdTemp = plPermission.get(i).getMgpCobjectid();
+
+        // 後処理
+        lRecord = null;
       }
+
+      // 後処理
+      dto = null;
     }
+
+    // 後処理
+    sObjIdTemp = null;
+
     return lTable;
   }
 
