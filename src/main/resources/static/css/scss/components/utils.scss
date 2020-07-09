@@ -206,7 +206,7 @@
     font-size: 15px;
   }
 }
-.ivu-table-cell {
+.ivu-table-cell, .ivu-notice-desc  {
   white-space: pre-line;
 }
 .error-info {
@@ -229,6 +229,7 @@
     border-radius: 0;
   }
 }
+
 // 树形选择器
 .tree {
   text-align: left;
