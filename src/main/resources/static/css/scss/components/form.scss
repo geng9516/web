@@ -60,30 +60,11 @@
   .ivu-select .ivu-select-selection {
     border-radius: 0 2px 2px 0;
   }
-  // 通用表单验证的星
-  .ivu-form-item-required .ivu-form-item-label:before {
-    content: "*";
-    background-color: var(--form-required-star);
-    padding: 0px 5px;
-    color: var(--white);
-    position: absolute;
-    left: 0;
-    height: 15px;
-    line-height: 15px;
-    top: 0;
-    border-radius: 2px 0 2px 0;
-  }
   // 通用表单验证的错误信息
   // .ivu-form-item-error-tip {}
   .ivu-form-item-error .ivu-input:focus {
     border-color: rgb(87, 163, 243);
     box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
-  }
-}
-.ivu-form.classical {
-  .ivu-form-item-label {
-    background-color: var(--form-label);
-    color: var(--white);
   }
 }
 //环境设定的标题样式

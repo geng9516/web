@@ -228,9 +228,11 @@
   }
 }
 .person-info {
-  height: 30px;
+  min-height: 30px;
   line-height: 30px;
   font-size: 14px;
+  padding-left: 10px;
+  text-align: left;
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
