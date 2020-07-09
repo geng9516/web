@@ -2,7 +2,9 @@ package jp.smartcompany.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
@@ -143,39 +145,15 @@ public class TmgResultsController {
      */
     @PostMapping("updateDaily")
     @ResponseBody
-//    public void updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
-//                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-//                            @RequestParam("txtAction") String action,
-//                            @RequestParam("holiday") String holiday,
-//                            @RequestParam("workingId") String workingId,
-//                            @RequestParam("selMgdCbusinessTrip") String selMgdCbusinessTrip,
-//                            @RequestParam("txtTdaNopenR") String txtTdaNopenR,
-//                            @RequestParam("txtTdaNcloseR") String txtTdaNcloseR,
-//                            @RequestParam("tdaCowncommentR") String tdaCowncommentR,
-//                            @RequestAttribute("nonDutyList") List<DetailDto> nonDutyList,
-//                            @RequestAttribute("overHoursList") List<DetailDto> overHoursList) throws Exception {
     public void updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
-//                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-//                            @RequestParam("txtAction") String action,
                             @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
 
+        psDBBean.setTargetUser(psDBBean.getUserCode());
 
-            psDBBean.setTargetUser(psDBBean.getUserCode());
-//        tmgResultsBean.setDay(txtDYYYYMMDD);
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
 
-//        TmgResultsDto tmgResultsDto = new TmgResultsDto();
-//        tmgResultsDto.setHoliday(holiday);
-//        tmgResultsDto.setSelTDA_CWORKINGID_R(workingId);
-//        tmgResultsDto.setSelMGD_CBUSINESS_TRIP(selMgdCbusinessTrip);
-//        tmgResultsDto.setTxtTDA_NOPEN_R(txtTdaNopenR);
-//        tmgResultsDto.setTxtTDA_NCLOSE_R(txtTdaNcloseR);
-//        tmgResultsDto.setTxtTDA_COWNCOMMENT_R(tdaCowncommentR);
-//        tmgResultsDto.setNonDutyList(nonDutyList);
-//        tmgResultsDto.setOverHoursList(overHoursList)  ;
-
         //初期化対象
-        tmgResultsBean.updateDaily(tmgResultsDto,psDBBean, tmgResultsDto.getTxtAction());
+        tmgResultsBean.updateDaily(tmgResultsDto, psDBBean);
     }
 
 

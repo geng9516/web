@@ -3,9 +3,7 @@ package jp.smartcompany.job.modules.tmg.tmgresults.dto;
 
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.Accessors;
 
 import java.util.List;
@@ -19,7 +17,14 @@ import java.util.List;
 @Setter
 @ToString
 @Accessors(chain = true)
+@AllArgsConstructor
+@NoArgsConstructor
 public class TmgResultsDto {
+
+    private String txtAction;
+    private String txtDYYYYMMDD;
+    private String psSite;
+    private String hasAuthority;
 
     /**
      * 出張区分
@@ -66,8 +71,5 @@ public class TmgResultsDto {
      */
     private List<DetailOverhoursVO> overHoursList;
 
-    private String txtAction;
-    private String txtDYYYYMMDD;
-    private String hasAuthority;
 
 }

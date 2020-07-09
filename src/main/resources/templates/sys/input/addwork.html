@@ -49,7 +49,7 @@
         <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
                  @on-row-click="showDay(arguments)" border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
-                 no-data-text="データを読み込み中…">
+                 no-data-text="勤怠シート未作成">
             <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
                 <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DD }}</span>
             </template>
@@ -150,7 +150,7 @@
             </div>
             <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                 <i-col span="6" offset="15">
-                    <i-select v-model="categoryNonduty" class="mr30" @on-change="categoryNondutyChange">
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="">
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
@@ -232,10 +232,10 @@
             </i-table>
 
             <div class="titlenorm mb10">
-                <Icon type="logo-buffer"></Icon>
-                更新履歴
+                <Icon type="logo-buffer" ></Icon>
+                <a  @click ="showLog"> 更新履歴</a>
             </div>
-            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
+            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20" v-if="isLogShow">
 
             </i-table>
         </div>
@@ -297,7 +297,6 @@
                     overHoursList:[],
                     hasAuthority:true,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
-                    psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
                 workingId: '',
                 workingIdList: [],
@@ -492,7 +491,10 @@
                 txtDYYYYMMDD: '',
                 index: 0,
                 isConfirm: false,
-                comment: ''
+                comment: '',
+                isLogShow: false
+
+
 
             }
         },
@@ -846,7 +848,6 @@
                 this.updateInpQuery.workingId = this.workingId
                 this.updateInpQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
                 this.updateInpQuery.selMgdCbusinessTrip = this.businessTrip
-                //TODO 就業時間の取得方法再確認必要です
                 this.updateInpQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
                 this.updateInpQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
                 this.updateInpQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
@@ -865,7 +866,6 @@
                 this.tmgResultsDto.workingId = this.workingId
                 this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
                 this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
-                //TODO 就業時間の取得方法再確認必要です
                 this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
                 this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
@@ -877,18 +877,180 @@
                     this.tmgResultsDto.hasAuthority = true
                 }
 
-
                 this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                 this.isShow = false
 
             }),
-            categoryNondutyChange(e) {
-                // let a = this.categoryNondutyList.find(n=> n.itemCode === e)
+            showLog() {
+                if(this.isLogShow){
+                    this.isLogShow = false
+                }else{
+                    this.isLogShow = true
+                }
 
             },
 
+    //         // 表示制御
+    //         changeWorkingID(chgFlg) {
+    //
+    //             let bDisable     = false;
+    //
+    //             // 休暇
+    //             if( HOLIDAY ) {
+    //                 bDisable = true;
+    //                 // 休暇以外
+    //             } else {
+    //                 let workingid = getWorkingIdValue();
+    //                 // 出勤 or 休日出勤
+    //                 if(gsMgdCsparechar4[workingid] == '0'){
+    //                     bDisable = false;
+    //                     // 欠勤
+    //                 } else {
+    //                     bDisable = true;
+    //                 }
+    //             }
+    //
+    //             // 「出勤」「休日出勤」時処理
+    //     if( !bDisable ) {
+    //
+    //         document.fm.txtTDA_NOPEN_R.disabled = false;
+    //         document.fm.txtTDA_NCLOSE_R.disabled = false;
+    //
+    //         // コンボボックスが表示されている場合（休日、確定済み以外）
+    //         if(document.fm.selMGD_CBUSINESS_TRIP){
+    //             document.fm.selMGD_CBUSINESS_TRIP.disabled = false;
+    //         }
+    //
+    //         /*
+    //          * 就業区分リストボックスを変更する際に、
+    //          * txtTDA_NOPEN_Rがhiddenタイプの場合、一旦「欠勤」に変更すると値がクリアされるので、
+    //          * そのまま登録すると、実績が空となる為、「出勤」を選択した際は退避しておいた実績時刻からデータを復帰する。
+    //          */
+    //         if (chgFlg == "0" && document.fm.txtTDA_NOPEN_R.type == "hidden" && document.fm.txtTDA_NOPEN_R.value == "") {
+    //
+    //             document.fm.txtTDA_NOPEN_R.value  = back_Open;
+    //             document.fm.txtTDA_NCLOSE_R.value = back_Close;
+    //         }
+    //
+    //         // 休憩をdisable解除
+    //         for (i = 0; i < nonDutyObj.addCount; i++) {
+    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
+    //             // 休憩の項目コードをhiddenに持っている場合
+    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() == TMG_ITEMS_RESULT_REST){
+    //                 inputElement.removeAttr("disabled");
+    //             }
+    //         }
+    //
+    //         // 休憩以外の非勤務をdisable解除
+    //         for (i = 0; i < nonDutyObj.addCount; i++) {
+    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
+    //             // 休憩の項目コードをhiddenに持っている場合
+    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
+    //                 inputElement.removeAttr("disabled");
+    //             }
+    //         }
+    //
+    //
+    //
+    //         // コンボボックス、ボタン
+    //         $("[name='selMGD_CITEMCODE_NONDUTY']").removeAttr("disabled");
+    //         $("[name='selMGD_CITEMCODE_OVERHOURS']").removeAttr("disabled");
+    //
+    //
+    //         // 出勤
+    //         if(gsMgdCsparechar4[workingid] == '0' && workingid != WORK_HOLIDAYWORK){
+    //             // 休憩以外の日勤務をdisable解除
+    //             for (i = 0; i < nonDutyObj.addCount; i++) {
+    //                 var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
+    //                 // 休憩の項目コードをhiddenに持っている場合
+    //                 if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
+    //                     inputElement.removeAttr("disabled");
+    //                 }
+    //             }
+    //         }
+    //
+    //         if(OVERTIME) {
+    //             // 超過勤務をdisable解除
+    //             for (i = 0; i < overhoursObj.addCount; i++) {
+    //                 var inputElement = $("#" + overhoursObj.addToId + " ." + overhoursObj.addFromId + i + " :input");
+    //                 inputElement.removeAttr("disabled");
+    //             }
+    //         }
+    //
+    //     } else {
+    //
+    //         document.fm.txtTDA_NOPEN_R.value = "";
+    //         document.fm.txtTDA_NOPEN_R.disabled = true;
+    //         document.fm.txtTDA_NCLOSE_R.value = "";
+    //         document.fm.txtTDA_NCLOSE_R.disabled = true;
+    //
+    //         // 裁量労働者以外の場合(裁量労働制職員は休日等であっても出張区分を登録可能)
+    //         if (!DISCRETIONWORK) {
+    //             // コンボボックスが表示されている場合（休日、確定済み以外）
+    //             if(document.fm.selMGD_CBUSINESS_TRIP){
+    //                 document.fm.selMGD_CBUSINESS_TRIP.disabled = true;
+    //             }
+    //         }
+    //
+    //         // 休憩をdisable
+    //         for (i = 0; i < nonDutyObj.addCount; i++) {
+    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
+    //             // 休憩の項目コードをhiddenに持っている場合
+    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() == TMG_ITEMS_RESULT_REST){
+    //                 inputElement.attr("disabled", "true");
+    //                 inputElement.filter("[name='txtTDAD_NOPEN']").val("");					// 開始時刻をクリア
+    //                 inputElement.filter("[name='txtTDAD_NCLOSE']").val("");					// 終了時刻をクリア
+    //                 inputElement.filter("[name='chkTDAD_BCHECK']").removeAttr("checked");	// 削除チェックボックスをクリア
+    //             }
+    //         }
+    //
+    //         // 休憩以外の日勤務をdisable
+    //         for (i = 0; i < nonDutyObj.addCount; i++) {
+    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
+    //             // 休憩の項目コードをhiddenに持っている場合
+    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
+    //                 inputElement.attr("disabled", "true");
+    //                 inputElement.filter("[name='txtTDAD_NOPEN']").val("");					// 開始時刻をクリア
+    //                 inputElement.filter("[name='txtTDAD_NCLOSE']").val("");					// 終了時刻をクリア
+    //                 inputElement.filter("[name='txtTDAD_CSPARECHAR1']").val("");			// 内容をクリア
+    //                 inputElement.filter("[name='chkTDAD_BCHECK']").removeAttr("checked");	// 削除チェックボックスをクリア
+    //             }
+    //         }
+    //
+    //
+    //         // コンボボックス、ボタン
+    //         $("[name='selMGD_CITEMCODE_NONDUTY']").attr("disabled", "true");
+    //         $("[name='selMGD_CITEMCODE_OVERHOURS']").attr("disabled", "true");
+    //
+    //
+    //         if(OVERTIME) {
+    //             // 超過勤務をdisable
+    //             for (i = 0; i < overhoursObj.addCount; i++) {
+    //                 var inputElement = $("#" + overhoursObj.addToId + " ." + overhoursObj.addFromId + i + " :input");
+    //                 inputElement.attr("disabled", "true");
+    //             }
+    //         }
+    //
+    //     }
+    //
+    //     // 反映エラーがあるときは画面表示時にエラー内容をアラート表示(onLoad時のみ)
+    //     if(chgFlg == 1 && ERROR_MSG != '&nbsp;' && ERROR_MSG != '') {
+    //
+    //         // 表示対象日にエラーが有るかチェックを行う。
+    //         execErrorCheckLogicForDisp(ERROR_MSG)
+    //     }
+    //
+    //     // 裁量労働適用者の場合、初期表示時に就業区分が"出勤"、"休日出勤"の場合は勤務時間数（裁量労働）の必須入力チェックを行う設定を行う。
+    //     if(chgFlg == 1 && DISCRETIONWORK && gsMgdCsparechar4[workingid] == '0'){
+    //
+    //         // 勤務時間数（裁量労働）の必須入力チェックを行う様にする。
+    //         IS_INPUTCHECK_ENTRYDISCRETIONWORK = true;
+    //     }
+    // },
 
-            // handleSpan({rowIndex, columnIndex}) {
+
+
+    // handleSpan({rowIndex, columnIndex}) {
             //     if (rowIndex === 3 && columnIndex === 1) {
             //         return [1, 2]
             //     } else if (rowIndex === 4 && columnIndex === 1) {

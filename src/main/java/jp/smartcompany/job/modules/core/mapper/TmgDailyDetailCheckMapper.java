@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.core.mapper;
 
-import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.DetailCheckDto;

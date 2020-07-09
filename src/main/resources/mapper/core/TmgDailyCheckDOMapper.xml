@@ -115,7 +115,7 @@
             null,
             <choose>
                 <when test="holiday == null">
-                    #{tdaCworkingidR},
+                    #{tdaCworkingidR,jdbcType=VARCHAR},
                 </when>
 
                 <otherwise>
@@ -130,18 +130,18 @@
             <choose>
                 <when test="action =='ACT_REMANDS'">
                     TDA_COWNCOMMENT_R,
-                    #{tdaCbosscommentR},
+                    #{tdaCbosscommentR,jdbcType=VARCHAR},
                     TDA_CMODIFIERUSERID_R,
                     TDA_DMODIFIEDDATE_R,
                 </when>
                 <when test="siteId =='TMG_PERM' or siteId =='TMG_ADMIN'">
                     TDA_COWNCOMMENT_R,
-                    #{tdaCbosscommentR},
+                    #{tdaCbosscommentR,jdbcType=VARCHAR},
                     #{userCode} ,
                     SYSDATE,
                 </when>
                 <otherwise>
-                    #{tdaCowncommentR},
+                    #{tdaCowncommentR,jdbcType=VARCHAR},
                     TDA_CBOSSCOMMENT_R,
                     TDA_CMODIFIERUSERID_R,
                     TDA_DMODIFIEDDATE_R,
@@ -149,7 +149,7 @@
             </choose>
             TDA_CMESSAGE,
             TDA_CBUSINESSTRIPID_P,
-            #{mgdCbusinessTrip} ,
+            #{mgdCbusinessTrip,jdbcType=VARCHAR} ,
             TDA_CPATTERNID,
             TDA_CCOMMENT_P,
             TDA_CREFNTFNO,

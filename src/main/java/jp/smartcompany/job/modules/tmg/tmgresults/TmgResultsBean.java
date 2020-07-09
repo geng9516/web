@@ -284,7 +284,7 @@ public class TmgResultsBean {
      */
     public void actEditinpUdaily(String action, TmgResultsDto dto,PsDBBean psDBBean) {
         this.execute(psDBBean);
-        this.updateDaily(dto,psDBBean,action);
+        this.updateDaily(dto,psDBBean);
         this.showMonthly(action,psDBBean);
     }
 
@@ -308,7 +308,7 @@ public class TmgResultsBean {
      */
     public void actEditpermUpermit(String action, TmgResultsDto dto,PsDBBean psDBBean) {
         this.execute(psDBBean);
-        updateDaily(dto,psDBBean,action);
+        updateDaily(dto,psDBBean);
         showMonthly(action,psDBBean);
     }
 
@@ -2389,7 +2389,7 @@ public class TmgResultsBean {
     /**
      *登録
      */
-    public  void updateDaily(TmgResultsDto dto,PsDBBean psDBBean,String txtAction) {
+    public  void updateDaily(TmgResultsDto dto,PsDBBean psDBBean) {
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
@@ -2408,11 +2408,11 @@ public class TmgResultsBean {
         dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
         dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
 
-        dailyCheckDto.setAction(txtAction);
+        dailyCheckDto.setAction(dto.getTxtAction());
 
         dailyCheckDto.setHoliday(dto.getHoliday());
         dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
-        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setSiteId(dto.getPsSite());
         dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
         dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
         iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
@@ -2424,7 +2424,7 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 psDBBean.getUserCode(),
-                txtAction
+                dto.getTxtAction()
         );
 
         // 画面非表示項目
@@ -2434,8 +2434,8 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 psDBBean.getUserCode(),
-                txtAction,
-                psDBBean.getSiteId()
+                dto.getTxtAction(),
+                dto.getPsSite()
 
         );
 
@@ -2447,7 +2447,7 @@ public class TmgResultsBean {
             nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
             nonDutyDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
             nonDutyDetailCheckDto.setUserCode(psDBBean.getUserCode());
-            nonDutyDetailCheckDto.setTxtAction(txtAction);
+            nonDutyDetailCheckDto.setTxtAction(dto.getTxtAction());
             nonDutyDetailCheckDto.setDay(this.getDay());
             nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
             nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
@@ -2457,10 +2457,11 @@ public class TmgResultsBean {
             nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTdadNclose());
             nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTdadCsparechar1());
             nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTdadNsparenum1());
+
             nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTdadCcode01());
             nonDutyDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
-            nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
+            nonDutyDetailCheckDto.setSite(dto.getPsSite());
             nonDutyDetailCheckDto.setNIdx(i);
             iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
             i++;
@@ -2474,7 +2475,7 @@ public class TmgResultsBean {
             overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
             overHoursDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
             overHoursDetailCheckDto.setUserCode(psDBBean.getUserCode());
-            overHoursDetailCheckDto.setTxtAction(txtAction);
+            overHoursDetailCheckDto.setTxtAction(dto.getTxtAction());
             overHoursDetailCheckDto.setDay(this.getDay());
             overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
             overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
@@ -2486,7 +2487,7 @@ public class TmgResultsBean {
             overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTdadNsparenum1());
             overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTdadCcode01());
             overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
-            overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
+            overHoursDetailCheckDto.setSite(dto.getPsSite());
             overHoursDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             overHoursDetailCheckDto.setNIdx(i);
             iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
@@ -2501,7 +2502,7 @@ public class TmgResultsBean {
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getUserCode(),
-                BEAN_DESC + "_" + txtAction,
+                BEAN_DESC + "_" + dto.getTxtAction(),
                 psDBBean.getLanguage());
 
         // エラーメッセージ取得
@@ -2514,11 +2515,11 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 psDBBean.getUserCode(),
-                txtAction
+                dto.getTxtAction()
         );
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(txtAction,psDBBean);
+        this.buildSQLForDeleteTrigger(dto.getTxtAction(),psDBBean);
 
         // エラーメッセージ削除
         this.buildSQLForDeleteErrMsg(psDBBean);
