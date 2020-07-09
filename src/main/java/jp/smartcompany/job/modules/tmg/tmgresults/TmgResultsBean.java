@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -738,163 +737,7 @@ public class TmgResultsBean {
 //        modelMap.addAttribute("isDiscretionWorkFixForDB", isDiscretionWorkFixForDB);
     }
 
-    /**
-     *
-     */
-    private void updateDaily(TmgResultsDto dto,PsDBBean psDBBean,String txtAction) {
-        // 日付関連取得
-        this.getDate(psDBBean);
 
-        // 表示対象者 TODO
-        //psDBBean.setTargetUser(psDBBean.getReqParam("txtCEMPLOYEEID"));
-
-        // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck(psDBBean);
-
-        // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck(psDBBean);
-
-        // 日別
-        DailyCheckDto dailyCheckDto = new DailyCheckDto();
-        dailyCheckDto.setCustID(psDBBean.getCustID());
-        dailyCheckDto.setCompCode(psDBBean.getCompCode());
-        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
-        dailyCheckDto.setDay(this.getDay());
-        dailyCheckDto.setUserCode(psDBBean.getUserCode());
-        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
-        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
-        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
-        // TODO
-        //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
-        dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
-
-        dailyCheckDto.setHoliday(dto.getHoliday());
-        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
-        dailyCheckDto.setSiteId(psDBBean.getSiteId());
-        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
-        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
-        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
-
-        // 詳細
-        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getUserCode(),
-                // TODO
-                //psDBBean.getReqParam("txtAction")
-                ACT_DISP_RMONTHLY
-        );
-
-        // 画面非表示項目
-        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckNotDisp(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getUserCode(),
-                // TODO
-                //psDBBean.getReqParam("txtAction")
-                ACT_DISP_RMONTHLY,
-                psDBBean.getSiteId()
-
-        );
-
-        int i = 1;
-        // 非勤務
-        for (DetailDto nonDuty : dto.getNonDutyList()) {
-            DetailCheckDto nonDutyDetailCheckDto = new DetailCheckDto();
-            nonDutyDetailCheckDto.setCustID(psDBBean.getCustID());
-            nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
-            nonDutyDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
-            nonDutyDetailCheckDto.setUserCode(psDBBean.getUserCode());
-            nonDutyDetailCheckDto.setTxtAction(txtAction);
-            nonDutyDetailCheckDto.setDay(this.getDay());
-            nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
-            nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
-
-            nonDutyDetailCheckDto.setItemCode(nonDuty.getTxtTDAD_CNOTWORKID());
-            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTxtTDAD_NOPEN());
-            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTxtTDAD_NCLOSE());
-            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTxtTDAD_CSPARECHAR1());
-            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTxtTDAD_NSPARENUM1());
-            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTxtTDAD_CCODE01());
-            nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
-            nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
-            nonDutyDetailCheckDto.setHasAuthority(nonDuty.getTxtHasAuthorityOverhours());
-            nonDutyDetailCheckDto.setNIdx(i);
-            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
-            i++;
-        }
-
-        i = 1;
-        // 超過勤務
-        for (DetailDto overHours : dto.getOverHoursList()) {
-            DetailCheckDto overHoursDetailCheckDto = new DetailCheckDto();
-            overHoursDetailCheckDto.setCustID(psDBBean.getCustID());
-            overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
-            overHoursDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
-            overHoursDetailCheckDto.setUserCode(psDBBean.getUserCode());
-            overHoursDetailCheckDto.setTxtAction(txtAction);
-            overHoursDetailCheckDto.setDay(this.getDay());
-            overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
-            overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
-            overHoursDetailCheckDto.setItemCode(overHours.getTxtTDAD_CNOTWORKID());
-            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTxtTDAD_NOPEN());
-            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTxtTDAD_NCLOSE());
-            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTxtTDAD_CSPARECHAR1());
-            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTxtTDAD_NSPARENUM1());
-            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTxtTDAD_CCODE01());
-            overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
-            overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
-            overHoursDetailCheckDto.setHasAuthority(overHours.getTxtHasAuthorityOverhours());
-            overHoursDetailCheckDto.setNIdx(i);
-            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
-            i++;
-        }
-
-        // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg(psDBBean);
-
-        // エラーメッセージ追加
-        iTmgErrmsgService.buildSQLForInsertNoErrMsg(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getUserCode(),
-                BEAN_DESC + "_" + txtAction,
-                psDBBean.getLanguage());
-
-        // エラーメッセージ取得
-        ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getTargetUser());
-
-//
-//        String action = psDBBean.getReqParam("txtAction");
-//        if (action == null || action.length() == 0) {
-//            action = ACT_DISP_RMONTHLY;
-//        }
-        // トリガー追加
-        iTmgTriggerService.buildSQLForInsertTrigger(
-                psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getDay(),
-                psDBBean.getUserCode(),
-                txtAction
-        );
-
-        // トリガー削除
-        this.buildSQLForDeleteTrigger(txtAction,psDBBean);
-
-        // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg(psDBBean);
-
-        // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck(psDBBean);
-
-        // エラーチェック削除
-        this.buildSQLForDeleteDetailCheck(psDBBean);
-    }
 
     /**
      * 差戻処理を行うメソッド
@@ -921,18 +764,18 @@ public class TmgResultsBean {
         dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
         dailyCheckDto.setDay(this.getDay());
         dailyCheckDto.setUserCode(psDBBean.getUserCode());
-        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
-        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
-        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMgdCbusinessTrip());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
         // TODO
         //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
         dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
 
         dailyCheckDto.setHoliday(dto.getHoliday());
-        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
         dailyCheckDto.setSiteId(psDBBean.getSiteId());
-        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
-        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
+        dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
         iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
 
         // トリガー追加
@@ -1177,15 +1020,15 @@ public class TmgResultsBean {
         dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
         dailyCheckDto.setDay(this.getDay());
         dailyCheckDto.setUserCode(psDBBean.getUserCode());
-        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
-        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
-        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMgdCbusinessTrip());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
         dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
         dailyCheckDto.setHoliday(dto.getHoliday());
-        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
         dailyCheckDto.setSiteId(psDBBean.getSiteId());
-        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
-        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
+        dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
         iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
 
         iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
@@ -1210,7 +1053,7 @@ public class TmgResultsBean {
 
         int i = 1;
         // 非勤務
-        for (DetailDto nonDuty : dto.getNonDutyList()) {
+        for (DetailNonDutyVO nonDuty : dto.getNonDutyList()) {
             DetailCheckDto nonDutyDetailCheckDto = new DetailCheckDto();
             nonDutyDetailCheckDto.setCustID(psDBBean.getCustID());
             nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
@@ -1220,15 +1063,15 @@ public class TmgResultsBean {
             nonDutyDetailCheckDto.setDay(this.getDay());
             nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
             nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
-            nonDutyDetailCheckDto.setItemCode(nonDuty.getTxtTDAD_CNOTWORKID());
-            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTxtTDAD_NOPEN());
-            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTxtTDAD_NCLOSE());
-            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTxtTDAD_CSPARECHAR1());
-            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTxtTDAD_NSPARENUM1());
-            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTxtTDAD_CCODE01());
+            nonDutyDetailCheckDto.setItemCode(nonDuty.getTdadCnotworkid());
+            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTdadNopen());
+            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTdadNclose());
+            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTdadCsparechar1());
+            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTdadNsparenum1());
+            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTdadCcode01());
             nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
             nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
-            nonDutyDetailCheckDto.setHasAuthority(nonDuty.getTxtHasAuthorityOverhours());
+            nonDutyDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             nonDutyDetailCheckDto.setNIdx(i);
             iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
             i++;
@@ -1236,7 +1079,7 @@ public class TmgResultsBean {
 
         i = 1;
         // 超過勤務
-        for (DetailDto overHours : dto.getOverHoursList()) {
+        for (DetailOverhoursVO overHours : dto.getOverHoursList()) {
             DetailCheckDto overHoursDetailCheckDto = new DetailCheckDto();
             overHoursDetailCheckDto.setCustID(psDBBean.getCustID());
             overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
@@ -1246,15 +1089,15 @@ public class TmgResultsBean {
             overHoursDetailCheckDto.setDay(this.getDay());
             overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
             overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
-            overHoursDetailCheckDto.setItemCode(overHours.getTxtTDAD_CNOTWORKID());
-            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTxtTDAD_NOPEN());
-            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTxtTDAD_NCLOSE());
-            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTxtTDAD_CSPARECHAR1());
-            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTxtTDAD_NSPARENUM1());
-            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTxtTDAD_CCODE01());
+            overHoursDetailCheckDto.setItemCode(overHours.getTdadCnotworkid());
+            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTdadNopen());
+            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTdadNclose());
+            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTdadCsparechar1());
+            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTdadNsparenum1());
+            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTdadCcode01());
             overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
             overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
-            overHoursDetailCheckDto.setHasAuthority(overHours.getTxtHasAuthorityOverhours());
+            overHoursDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             overHoursDetailCheckDto.setNIdx(i);
             iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
             i++;
@@ -2514,15 +2357,15 @@ public class TmgResultsBean {
         dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
         dailyCheckDto.setDay(this.getDay());
         dailyCheckDto.setUserCode(psDBBean.getUserCode());
-        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMGD_CBUSINESS_TRIP());
-        dailyCheckDto.setTdaNopenR(dto.getTxtTDA_NOPEN_R());
-        dailyCheckDto.setTdaNcloseR(dto.getTxtTDA_NCLOSE_R());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMgdCbusinessTrip());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
         dailyCheckDto.setAction(txtAction);
         dailyCheckDto.setHoliday(dto.getHoliday());
-        dailyCheckDto.setTdaCworkingidR(dto.getSelTDA_CWORKINGID_R());
+        dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
         dailyCheckDto.setSiteId(psDBBean.getSiteId());
-        dailyCheckDto.setTdaCowncommentR(dto.getTxtTDA_COWNCOMMENT_R());
-        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTDA_CBOSSCOMMENT_R());
+        dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
 
         iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
 
@@ -2543,6 +2386,148 @@ public class TmgResultsBean {
         this.buildSQLForDeleteDailyCheck(psDBBean);
     }
 
+    /**
+     *登録
+     */
+    public  void updateDaily(TmgResultsDto dto,PsDBBean psDBBean,String txtAction) {
 
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck(psDBBean);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck(psDBBean);
+
+        // 日別
+        DailyCheckDto dailyCheckDto = new DailyCheckDto();
+        dailyCheckDto.setCustID(psDBBean.getCustID());
+        dailyCheckDto.setCompCode(psDBBean.getCompCode());
+        dailyCheckDto.setTargetUser(psDBBean.getTargetUser());
+        dailyCheckDto.setDay(this.getDay());
+        dailyCheckDto.setUserCode(psDBBean.getUserCode());
+        dailyCheckDto.setMgdCbusinessTrip(dto.getSelMgdCbusinessTrip());
+        dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
+        dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
+
+        dailyCheckDto.setAction(txtAction);
+
+        dailyCheckDto.setHoliday(dto.getHoliday());
+        dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
+        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
+        dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
+        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+
+        // 詳細
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                txtAction
+        );
+
+        // 画面非表示項目
+        iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckNotDisp(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                txtAction,
+                psDBBean.getSiteId()
+
+        );
+
+        int i = 1;
+        // 非勤務
+        for (DetailNonDutyVO nonDuty : dto.getNonDutyList()) {
+            DetailCheckDto nonDutyDetailCheckDto = new DetailCheckDto();
+            nonDutyDetailCheckDto.setCustID(psDBBean.getCustID());
+            nonDutyDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            nonDutyDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            nonDutyDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            nonDutyDetailCheckDto.setTxtAction(txtAction);
+            nonDutyDetailCheckDto.setDay(this.getDay());
+            nonDutyDetailCheckDto.setMonth(getDay().substring(0, 7));
+            nonDutyDetailCheckDto.setYear(getDay().substring(0, 4));
+
+            nonDutyDetailCheckDto.setItemCode(nonDuty.getTdadCnotworkid());
+            nonDutyDetailCheckDto.setTxtTDAD_NOPEN(nonDuty.getTdadNopen());
+            nonDutyDetailCheckDto.setTxtTDAD_NCLOSE(nonDuty.getTdadNclose());
+            nonDutyDetailCheckDto.setTxtTDAD_CSPARECHAR1(nonDuty.getTdadCsparechar1());
+            nonDutyDetailCheckDto.setTxtTDAD_NSPARENUM1(nonDuty.getTdadNsparenum1());
+            nonDutyDetailCheckDto.setTxtTDAD_CCODE01(nonDuty.getTdadCcode01());
+            nonDutyDetailCheckDto.setHasAuthority(dto.getHasAuthority());
+            nonDutyDetailCheckDto.setCategoryCode(CATEGORY_NONDUTY);
+            nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
+            nonDutyDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
+            i++;
+        }
+
+        i = 1;
+        // 超過勤務
+        for (DetailOverhoursVO overHours : dto.getOverHoursList()) {
+            DetailCheckDto overHoursDetailCheckDto = new DetailCheckDto();
+            overHoursDetailCheckDto.setCustID(psDBBean.getCustID());
+            overHoursDetailCheckDto.setCompCode(psDBBean.getCompCode());
+            overHoursDetailCheckDto.setTargetUser(psDBBean.getTargetUser());
+            overHoursDetailCheckDto.setUserCode(psDBBean.getUserCode());
+            overHoursDetailCheckDto.setTxtAction(txtAction);
+            overHoursDetailCheckDto.setDay(this.getDay());
+            overHoursDetailCheckDto.setMonth(getDay().substring(0, 7));
+            overHoursDetailCheckDto.setYear(getDay().substring(0, 4));
+
+            overHoursDetailCheckDto.setItemCode(overHours.getTdadCnotworkid());
+            overHoursDetailCheckDto.setTxtTDAD_NOPEN(overHours.getTdadNopen());
+            overHoursDetailCheckDto.setTxtTDAD_NCLOSE(overHours.getTdadNclose());
+            overHoursDetailCheckDto.setTxtTDAD_CSPARECHAR1(overHours.getTdadCsparechar1());
+            overHoursDetailCheckDto.setTxtTDAD_NSPARENUM1(overHours.getTdadNsparenum1());
+            overHoursDetailCheckDto.setTxtTDAD_CCODE01(overHours.getTdadCcode01());
+            overHoursDetailCheckDto.setCategoryCode(CATEGORY_OVERHOURS);
+            overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
+            overHoursDetailCheckDto.setHasAuthority(dto.getHasAuthority());
+            overHoursDetailCheckDto.setNIdx(i);
+            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
+            i++;
+        }
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg(psDBBean);
+
+        // エラーメッセージ追加
+        iTmgErrmsgService.buildSQLForInsertNoErrMsg(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                BEAN_DESC + "_" + txtAction,
+                psDBBean.getLanguage());
+
+        // エラーメッセージ取得
+        ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getTargetUser());
+
+        // トリガー追加
+        iTmgTriggerService.buildSQLForInsertTrigger(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                getDay(),
+                psDBBean.getUserCode(),
+                txtAction
+        );
+
+        // トリガー削除
+        this.buildSQLForDeleteTrigger(txtAction,psDBBean);
+
+        // エラーメッセージ削除
+        this.buildSQLForDeleteErrMsg(psDBBean);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDailyCheck(psDBBean);
+
+        // エラーチェック削除
+        this.buildSQLForDeleteDetailCheck(psDBBean);
+    }
 
 }

@@ -102,21 +102,4 @@ public class SiteInputController {
         return "sys/input/oconfirm";
     }
 
-    private TmgResultsDto ssss(){
-        TmgResultsDto dto = new TmgResultsDto();
-       dto.setHoliday(null);
-       dto.setSelMGD_CBUSINESS_TRIP("TMG_BUSINESS_TRIP|00");
-        dto.setSelTDA_CWORKINGID_R("TMG_WORK|000");
-        dto.setTxtTDA_CBOSSCOMMENT_R("承認者承認済み");
-        dto.setTxtTDA_COWNCOMMENT_R("本人登録");
-        dto.setTxtTDA_NOPEN_R("8:30");
-        dto.setTxtTDA_NCLOSE_R("17:30");
-
-        List<DetailDto> nonDutyList = new ArrayList<>();
-
-        dto.setNonDutyList(nonDutyList);
-        List<DetailDto> overHoursList= new ArrayList<>();
-        dto.setOverHoursList(overHoursList);
-        return dto;
-    }
 }

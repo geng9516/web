@@ -1,6 +1,8 @@
 package jp.smartcompany.job.modules.tmg.tmgresults.dto;
 
 
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailNonDutyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -22,17 +24,17 @@ public class TmgResultsDto {
     /**
      * 出張区分
      */
-    private String selMGD_CBUSINESS_TRIP;
+    private String selMgdCbusinessTrip;
 
     /**
      * 就業時間始業
      */
-    private String txtTDA_NOPEN_R;
+    private String txtTdaNopenR;
 
     /**
      * 就業時間終業
      */
-    private String txtTDA_NCLOSE_R;
+    private String txtTdaNcloseR;
 
     /**
      * 休暇区分
@@ -42,27 +44,30 @@ public class TmgResultsDto {
     /**
      * 就業区分
      */
-    private String selTDA_CWORKINGID_R;
+    private String workingId;
 
     /**
      * 承認者コメント
      */
-    private String txtTDA_CBOSSCOMMENT_R;
+    private String txtTdaCbosscommentR;
 
     /**
      * 本人コメント
      */
-    private String txtTDA_COWNCOMMENT_R;
+    private String tdaCowncommentR;
 
     /**
      * 非勤務
      */
-    private List<DetailDto> nonDutyList;
+    private List<DetailNonDutyVO> nonDutyList;
 
     /**
      * 超過勤務
      */
-    private List<DetailDto> overHoursList;
+    private List<DetailOverhoursVO> overHoursList;
 
+    private String txtAction;
+    private String txtDYYYYMMDD;
+    private String hasAuthority;
 
 }

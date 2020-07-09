@@ -81,7 +81,7 @@
                     <i-button type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">コメントのみ登録</i-button>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost v-if="!bFixed">登録</i-button>
+                    <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily">登録</i-button>
                 </i-col>
             </Row>
             <div class="titlenorm mb10">
@@ -113,13 +113,13 @@
                     </i-col>
 
                 </Row>
-                <i-table :columns="columnsWork" :data="workData">
+                <i-table :columns="columnsWork" :data="workData" ransfer>
                     <template slot-scope="{ row }" slot="workStart">
-                        <i-input v-model="row.workStart" v-if="row.isInput" text-align="center;"></i-input>
+                        <i-input v-model="row.workStart" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="workEnd">
-                        <i-input v-model="row.workEnd" v-if="row.isInput"></i-input>
+                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
                         <span v-else>{{ row.workEnd | toTime }}</span>
                     </template>
                 </i-table>
@@ -127,15 +127,16 @@
                 <Row>
                     <i-col span="8" class="label tc">本人コメント</i-col>
                     <i-col span="16">
-                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" v-if="!bFixed"></i-input>
-                        <span v-else>{{ dailyEdit.tdaCowncommentR }}</span>
+                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" v-if="!bFixed"></i-input>
+                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" v-else readonly></i-input>
                     </i-col>
                 </Row>
                 <Row class="mb5">
                     <i-col span="8" class="label tc">承認者コメント</i-col>
                     <i-col span="16">
-                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;"></i-input>
-                        <span v-else>{{ row.workEnd | toTime }}</span>
+                        <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea" readonly ></i-input>
+                        <!--                        <span >{{ dailyEdit.tdaCbosscommentR }}</span>-->
                     </i-col>
                 </Row>
                 <Spin size="large" fix v-if="workDataLoading"></Spin>
@@ -149,7 +150,7 @@
             </div>
             <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                 <i-col span="6" offset="15">
-                    <i-select v-model="categoryNonduty" class="mr30" @on-change="categoryNondutyChange()">
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="categoryNondutyChange">
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
@@ -161,18 +162,19 @@
             </Row>
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
                      :loading="columnsNotWorkLoading">
-                <template slot-scope="{ row }" slot="tdadNopen">
-                    <i-input v-model="row.tdadNopen" v-if="row.isInput && !bFixed"></i-input>
+                <template slot-scope="{ row, index }" slot="tdadNopen">
+                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadNclose">
-                    <i-input v-model="row.tdadNclose" v-if="row.isInput && !bFixed "></i-input>
+                <template slot-scope="{ row, index }" slot="tdadNclose">
+                    <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed "></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadCsparechar1">
-                    <i-input :value="row.tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }"
+                <template slot-scope="{ row ,index}" slot="tdadCsparechar1">
+                    <i-input v-model="detailNonDutyVOList[index].tdadCsparechar1" type="textarea"
+                             :autosize="{ maxRows: 3 }"
                              v-if="row.tdadCnotworkid !== 'TMG_ITEMS|ResultRest' && !bFixed "></i-input>
                     <span v-else>{{ row.tdadCsparechar1 | toTime }}</span>
                 </template>
@@ -207,23 +209,24 @@
 
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
                      :loading="columnsOverWorkLoading">
-                <template slot-scope="{ row }" slot="tdadNopen">
-                    <i-input v-model="row.tdadNopen" v-if="row.isInput && !bFixed"></i-input>
+                <template slot-scope="{ row ,index }" slot="tdadNopen">
+                    <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed"></i-input>
                     <span v-else>{{ row.tdadNopen | toTime }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadNclose">
-                    <i-input v-model="row.tdadNclose" v-if="row.isInput &&  !bFixed"></i-input>
+                <template slot-scope="{ row ,index}" slot="tdadNclose">
+                    <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed"></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadCsparechar1">
-                    <i-input v-model="row.tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }"
+                <template slot-scope="{ row ,index}" slot="tdadCsparechar1">
+                    <i-input v-model="detailOverhoursVOList[index].tdadCsparechar1" type="textarea"
+                             :autosize="{ maxRows: 3 }"
                              v-if="!bFixed"></i-input>
                     <span v-else>{{ row.tdadCsparechar1}}</span>
                 </template>
 
-                <template slot-scope="{ row }" slot="tdadNdeleteflg" v-if="!bFixed">
+                <template slot-scope="{ row ,index}" slot="tdadNdeleteflg" v-if="!bFixed">
                     <i-button type="error" ghost size="small" class="width100" @click="delOverWork(row)">削除</i-button>
                 </template>
             </i-table>
@@ -269,7 +272,7 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
-                actEditinpUcommentQuery: {
+                updateInpQuery: {
                     txtAction: 'ACT_EDITINP_UCOMMENT',
                     holiday: false,
                     txtTdaNopenR: '',
@@ -281,8 +284,8 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
-                actEditinpUcommentQuery: {
-                    txtAction: 'ACT_EDITINP_UCOMMENT',
+                tmgResultsDto: {
+                    txtAction: 'ACT_EDITINP_UDAILY',
                     holiday: false,
                     txtTdaNopenR: '',
                     txtTdaNcloseR: '',
@@ -290,6 +293,9 @@
                     selMgdCbusinessTrip: '',
                     txtDYYYYMMDD: '',
                     tdaCowncommentR: '',
+                    nonDutyList:[],
+                    overHoursList:[],
+                    hasAuthority:true,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -479,6 +485,9 @@
                 bFixed: false,
                 isEdiTableResult4Inp: false,
                 isCommonDiscretionaryLabor: false,
+                bOpen:false,
+                bClose:false,
+                bApproved: false,
 
                 txtDYYYYMMDD: '',
                 index: 0,
@@ -491,8 +500,6 @@
             this.init()
         },
         created() {
-            console.log(this.monthlyTilteMapList)
-            console.log(this.monthlyMap)
         },
         computed: {
             tableHeadFixed() {
@@ -540,7 +547,6 @@
                         }
                     )
                 })
-
 
                 return result
             },
@@ -706,6 +712,20 @@
                 // 就業実績
                 this.dailyEdit = data.dailyEditVO
 
+
+                console.log(this.dailyEdit.tdaCstatusflg)
+                console.log(this.dailyEdit.tdaCmodifieruseridR)
+                console.log(this.dailyEdit.tdaDmodifieddateR)
+
+                if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
+                    && '' !== this.dailyEdit.tdaCmodifieruseridR
+                    && '' !== this.dailyEdit.tdaDmodifieddateR
+                ) {
+                    this.bApproved = true
+                } else {
+                    this.bApproved = false
+                }
+
                 // 登録ボタンとコメントのみ登録ボタンの表示制御
                 this.bFixed = !data.isEditable
                 if (data.workIdList.length < 2) {
@@ -714,7 +734,27 @@
 
                 //就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
                 this.isEdiTableResult4Inp = data.isEdiTableResult4Inp
+                console.log(this.isEdiTableResult4Inp)
                 this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
+
+
+                if(this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp){
+                    this.bOpen = true
+                }else{
+                    this.bOpen = false
+                }
+                if(this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp){
+                    this.bClose = true
+                }else{
+                    this.bClose = false
+                }
+
+                if(this.isEdiTableResult4Inp){
+                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNopenRHidden
+                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
+                }
+
+
 
                 if (this.dailyEdit.tdaNopenTp === null) {
                     this.dailyEdit.tdaNopenTp = '---'
@@ -724,8 +764,9 @@
                 }
                 if (!this.isCommonDiscretionaryLabor) {
                     this.dailyEdit.tdaNopenN = '---'
-                    this.dailyEdit.tdaNcloseTp = '---'
+                    this.dailyEdit.tdaNcloseN = '---'
                 }
+
 
                 this.workingId = this.dailyEdit.tdaCworkingidR
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
@@ -754,48 +795,43 @@
                 this.$emit('close')
             },
             addOverWork() {
+                let detailOverhoursVO = this.categoryOverhoursList.find(e => e.itemCode === this.categoryOverhours)
+                console.log(detailOverhoursVO)
                 this.detailOverhoursVOList.push({
-                    itemName: '超過勤務',
+                    attributeUrl: detailOverhoursVO.attributeUrl,
+                    tdadCnotworkid: detailOverhoursVO.itemCode,
+                    itemName: detailOverhoursVO.itemName,
                     tdadNopen: '',
                     tdadNclose: '',
+                    tdadNdeleteflg: '0',
                     tdadSeq: Date.now(),
-                    isInput: true,
                     tdadCsparechar1: '',
+                    tdadNsparenum1: '',
+                    tdadCcode01: '',
+                    tdadCcode01Name: '',
+                    tdadCsparechar2: '',
                     tdadCsparechar2Name: ''
+
                 })
             },
             addNotWork() {
-                if (this.categoryNonduty === 'TMG_ITEMS|ResultRest') {
-                    this.detailNonDutyVOList.push({
-                        itemName: '休憩',
-                        tdadNopen: '',
-                        tdadNclose: '',
-                        tdadSeq: Date.now(),
-                        isInput: true,
-                        tdadCsparechar1: '',
-                        tdadCnotworkid: this.categoryNonduty
-                    })
-                } else if (this.categoryNonduty === 'TMG_ITEMS|Interruption') {
-                    this.detailNonDutyVOList.push({
-                        itemName: '中断',
-                        tdadNopen: '',
-                        tdadNclose: '',
-                        tdadSeq: Date.now(),
-                        isInput: true,
-                        tdadCsparechar1: '',
-                        tdadCnotworkid: this.categoryNonduty
-                    })
-                } else {
-                    this.detailNonDutyVOList.push({
-                        itemName: '欠勤',
-                        tdadNopen: '',
-                        tdadNclose: '',
-                        tdadSeq: Date.now(),
-                        isInput: true,
-                        tdadCsparechar1: '',
-                        tdadCnotworkid: this.categoryNonduty
-                    })
-                }
+                let categoryNondutyVO = this.categoryNondutyList.find(e => e.itemCode === this.categoryNonduty)
+                console.log(categoryNondutyVO)
+
+                this.detailNonDutyVOList.push({
+                    attributeUrl: categoryNondutyVO.attributeUrl,
+                    tdadCnotworkid: categoryNondutyVO.itemCode,
+                    itemName: categoryNondutyVO.itemName,
+                    tdadNdeleteflg: "0",
+                    tdadNopen: '',
+                    tdadNclose: '',
+                    tdadSeq: Date.now(),
+                    tdadCsparechar1: '',
+                    tdadNsparenum1: null
+
+                })
+
+
             },
             delNotWork(row) {
                 this.detailNonDutyVOList = this.detailNonDutyVOList.filter(e => e.tdadSeq !== row.tdadSeq)
@@ -805,41 +841,49 @@
             },
             //コメントのみ登録
             updateInp: Debounce(function () {
-                this.actEditinpUcommentQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
-                this.actEditinpUcommentQuery.holiday = this.bHoliday
-                this.actEditinpUcommentQuery.workingId = this.workingId
-                this.actEditinpUcommentQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
-                this.actEditinpUcommentQuery.selMgdCbusinessTrip = this.businessTrip
+                this.updateInpQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
+                this.updateInpQuery.holiday = this.bHoliday
+                this.updateInpQuery.workingId = this.workingId
+                this.updateInpQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.updateInpQuery.selMgdCbusinessTrip = this.businessTrip
                 //TODO 就業時間の取得方法再確認必要です
-                this.actEditinpUcommentQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                this.actEditinpUcommentQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
-                this.actEditinpUcommentQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+                this.updateInpQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                this.updateInpQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                this.updateInpQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
 
                 console.log(this.detailNonDutyVOList)
                 console.log(this.detailOverhoursVOList)
 
-                this.http.get('sys/tmgResults/updateInp', this.actEditinpUcommentQuery)
+                this.http.get('sys/tmgResults/updateInp', this.updateInpQuery)
                 this.isShow = false
 
             }),
             //登録
             updateDaily: Debounce(function () {
-                this.actEditinpUcommentQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
-                this.actEditinpUcommentQuery.holiday = this.bHoliday
-                this.actEditinpUcommentQuery.workingId = this.workingId
-                this.actEditinpUcommentQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
-                this.actEditinpUcommentQuery.selMgdCbusinessTrip = this.businessTrip
+                this.tmgResultsDto.txtAction = 'ACT_EDITINP_UDAILY'
+                this.tmgResultsDto.holiday = this.bHoliday
+                this.tmgResultsDto.workingId = this.workingId
+                this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
                 //TODO 就業時間の取得方法再確認必要です
-                this.actEditinpUcommentQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                this.actEditinpUcommentQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
-                this.actEditinpUcommentQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+                this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+                this.tmgResultsDto.nonDutyList= this.detailNonDutyVOList
+                this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
+                if (this.bFixed || this.bHoliday) {
+                    this.tmgResultsDto.hasAuthority = false
+                } else {
+                    this.tmgResultsDto.hasAuthority = true
+                }
 
-                this.http.get('sys/tmgResults/updateInp', this.actEditinpUcommentQuery)
+
+                this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                 this.isShow = false
 
             }),
-            categoryNondutyChange(){
-                console.log(this.categoryNonduty)
+            categoryNondutyChange(e) {
+                // let a = this.categoryNondutyList.find(n=> n.itemCode === e)
 
             },
 
