@@ -6,6 +6,7 @@ import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.TmgAcquired5DaysH
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.Acquired5DaysListVO;
 import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO;
 
+import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.UpdateAcquired5DaysVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -63,9 +64,9 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("update")
     @ResponseBody
-    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year, String txtUserCode, String txtDate) throws Exception {
-        tmgAcquired5DaysHolidayBean.execute(psDBBean, recordDate, year);
-        tmgAcquired5DaysHolidayBean.update(psDBBean);
+    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, updateAcquired5DaysVO.getRecordDate(), updateAcquired5DaysVO.getTxtYear());
+        tmgAcquired5DaysHolidayBean.update(psDBBean,updateAcquired5DaysVO);
     }
 
 
