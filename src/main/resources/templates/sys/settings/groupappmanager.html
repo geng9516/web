@@ -6,7 +6,7 @@
 
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
-  <main class="content startregistersettings-warp">
+  <main class="content startregistersettings-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
       <div class="header">
         <div class="title1">
@@ -74,7 +74,7 @@
           </i-col>
         </Row>
       </div>
-      <i-table border v-show="isEditing" class="mb10" :columns="columns" :disabled-hover="true"
+      <i-table border v-show="isEditing" :class="tableHeadFixed ? 'table-head-fixed mb10' : 'mb10'" :columns="columns" :disabled-hover="true"
         :data="tableDataForAction" :loading="loading" @on-cell-click="handleCellClickForAction">
 
         <template slot-scope="{ row }" slot="objectName">
@@ -94,8 +94,9 @@
         </template>
       </i-table>
 
-      <i-table border :show-header="!isEditing" class="no-padding" :columns="columns" :disabled-hover="true"
-        :data="tableData" :loading="loading" @on-cell-click="handleCellClick" ref="table">
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :show-header="!isEditing"
+        :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
+        ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />
         type: "1" サイト   <Icon type="md-compass" />
         type: "3" アプリケーション ml10 <Icon type="md-desktop" />
@@ -166,6 +167,9 @@
         </div>
       </div>
     </div>
+    <span class="toTopBtn" @click="toTop" v-show="isScroll">
+      <Icon size="24" type="md-arrow-round-up" />
+    </span>
   </main>
   <div th:replace="layout/script::common_script"></div>
   <script type="text/babel" th:inline="javascript">
@@ -216,7 +220,9 @@
             disabledDate: date => {
               return date.valueOf() < new Date(this.limitDate).getTime()
             }
-          }
+          },
+          contentScrollTop: 0,
+          isScroll: false
         }
       },
       async created() {
@@ -228,6 +234,10 @@
         this.getTableData()
       },
       computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 220) return true
+          else return false
+        },
         columns() {
           let result = [{
             title: 'アプリケーション名',
@@ -454,6 +464,21 @@
         getPreData() {
           this.opts.date = this.beforeDate
           this.getTableData()
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.scrollTop
+          if (e.target.scrollTop > 200) {
+            this.isScroll = true
+          } else {
+            this.isScroll = false
+          }
+        }, 50),
+        toTop() {
+          const animateMachine = requestAnimationFrame(this.toTop)
+          this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+          if (this.$refs.layout.scrollTop === 0) {
+            cancelAnimationFrame(animateMachine)
+          }
         }
       }
     })
