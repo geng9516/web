@@ -576,17 +576,6 @@ public class PatternSettingBean {
         // 画面表示用
         List lPstParamList = new ArrayList();
 
-        // リクエストからCSVデータ情報を取得
-        // String sCSVData = "";
-        // 取り込めるデータが無いときは、エラー
-        /*if (sCSVData == null || sCSVData.length() == 0) {
-            // データベース更新フラグを返却
-            patternSettingParam.setInsertFlg(bSuccessList);
-            // エラーメッセージを返却
-            patternSettingParam.setMsgList(lMsgList);
-            return;
-        }*/
-
         // 取り込めるデータが無いときは、エラー
         if (file.isEmpty()) {
             // データベース更新フラグを返却
@@ -1132,6 +1121,13 @@ public class PatternSettingBean {
             bSuccessList[i] = bSuccessFlg;
         }
         // ▲▲ データベース登録 End ▲▲
+
+        // データベース更新フラグを返却
+        patternSettingParam.setInsertFlg(bSuccessList);
+
+        // エラーメッセージを返却
+        patternSettingParam.setMsgList(lMsgList);
+
         return patternSettingParam;
     }
 

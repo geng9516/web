@@ -19,12 +19,14 @@
                 <span style="flex:1"></span>
                 <i-button type="primary" @click="mergePattern(null)" size="large" :loading="bulkApprovalLoading" disabled v-if="addPatternShow===false">+ 新規</i-button>
                 <i-button type="primary" @click="mergePattern(null)" size="large" :loading="bulkApprovalLoading" v-else>+ 新規</i-button>
-                <Upload ref="upload" type="drag" action="/" :before-upload="handleBeforeUpload">
+                <!--            <Upload ref="upload" type="drag" action="/" :before-upload="handleBeforeUpload">-->
+                <Upload :before-upload="handleBeforeUpload" action="/">
                     <i-button type="warning" ghost size="large" icon="ios-cloud-upload-outline" disabled v-if="addPatternShow===false">CSVファイル取込</i-button>
                     <i-button type="warning" ghost size="large" icon="ios-cloud-upload-outline" v-else>CSVファイル取込</i-button>
                 </Upload>
-
-
+                <div v-if="file !== null">ファイル: {{ file.name }}
+                    <i-button type="text" @click="upload" :loading="loadingStatus">{{ loadingStatus ? 'アップロード中...' : 'アップロード' }}</i-button>
+                </div>
             </div>
         </div>
         <div class="searchwrap">
@@ -154,6 +156,8 @@
         el: '.patternSetting-warp',
         data() {
             return {
+                file: null,
+                loadingStatus: false,
                 planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
                 localValue: {
@@ -246,8 +250,8 @@
                 query_upload: {
                     txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
-                    txtBaseDate:'',
-                    txtEndDate:'',
+                    txtBaseDate: '',
+                    txtEndDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     txtTmgReferListTreeViewRecordDate: '',
@@ -469,24 +473,24 @@
                     const duty_end = handleTime(row.planDuty[0].NCLOSE)
                     this.rawData.dutyTime = [duty_start, duty_end]
 
-                    if (row.planRest[0] != undefined) {
+                    if (row.planRest[0] !== undefined) {
                         const rest_start = handleTime(row.planRest[0].NOPEN)
                         const rest_end = handleTime(row.planRest[0].NCLOSE)
                         this.rawData.planRest1 = [rest_start, rest_end]
                     }
-                    if (row.planRest[1] != undefined) {
+                    if (row.planRest[1] !== undefined) {
                         const rest_start = handleTime(row.planRest[1].NOPEN)
                         const rest_end = handleTime(row.planRest[1].NCLOSE)
                         this.rawData.planRest2 = [rest_start, rest_end]
                     }
-                    if (row.planRest[2] != undefined) {
+                    if (row.planRest[2] !== undefined) {
                         const rest_start = handleTime(row.planRest[2].NOPEN)
                         const rest_end = handleTime(row.planRest[2].NCLOSE)
                         this.rawData.planRest3 = [rest_start, rest_end]
                     }
-                    if (row.planRest[3] != undefined) {
+                    if (row.planRest[3] !== undefined) {
                         const rest_start = handleTime(row.planRest[3].NOPEN)
-                        const rest_end = handleTime(row.planRest[4].NCLOSE)
+                        const rest_end = handleTime(row.planRest[3].NCLOSE)
                         this.rawData.planRest4 = [rest_start, rest_end]
                     }
 
@@ -587,6 +591,7 @@
                 this.ykjtPatternList = data
                 this.ykjtPatternModel = 'ykjtPatternModel'
             },
+            //画面のトップに表示する
             toTop() {
                 const animateMachine = requestAnimationFrame(this.toTop)
                 this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
@@ -594,41 +599,74 @@
                     cancelAnimationFrame(animateMachine)
                 }
             },
+
             //　ファイルタイプをチェック
-            async handleFormatError(file) {
+            handleFormatError(file) {
                 if (file != null && file != undefined) {
                     if (file.type != 'application/vnd.ms-excel') {
                         this.$Notice.warning({title: 'アイルタイプをチェック', desc: "サポートされているファイルタイプはCSVです"})
-                        return
+                        return false
                     }
+                    return true
                 }
 
             },
             //ファイルサイズをチェックする
-            async handleMaxSize(file) {
+            handleMaxSize(file) {
                 if (file != null && file != undefined) {
-                    if (file.size > 5000000) {
-                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "ファイルサイズの最大値は500Kです"})
-                        return
+                    if (file.size > 1024000) {
+                        this.$Notice.warning({title: 'アイルタイプをチェック', desc: "ファイルサイズの最大値は1Mです"})
+                        return false
                     }
+                    return true
                 }
             },
             // 勤務パターンファイルを手動に操作
-            handleBeforeUpload(files) {
-                // console.log(files)
-                this.tableLoading = true
-                this.handleFormatError(files)
-                this.handleMaxSize(files)
-                this.query_upload.file = files
-                this.http.uploadFiles('sys/patternSetting/modifiCSVDwnload', this.query_upload)
+            handleBeforeUpload(file) {
+                if(this.handleFormatError(file) && this.handleMaxSize(file) ){
+                    this.query_upload.file = file
+                    this.file = file
+                }
+                return false
+            },
+            //アップロード
+            async upload() {
+                this.loadingStatus = true;
+                const {data} = await this.http.uploadFiles('sys/patternSetting/modifiCSVDwnload', this.query_upload)
+
+                // アップロード結果を統計する
+                var total = data.insertFlg.length
+                var success_count = 0
+                var fail_count = 0
+                for (var i = 0; i < data.insertFlg.length; i++) {
+                    if (data.insertFlg[i] == true) {
+                        success_count++
+                    } else {
+                        fail_count++
+                    }
+                }
+                //詳細情報
+                var info = ""
+                for (var i = 0; i < data.lmsgList.length; i++) {
+                    info += data.lmsgList[i] + "\n"
+                }
+
+                var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
+                if (fail_count > 0) {
+                    //情報提示
+                    this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
+                } else {
+                    this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
+                }
+
                 //リストの取得
                 this.getTmgPatternList()
-                this.tableLoading = false
-                this.$Notice.info({title: 'ファイルアップロードが成功しました', desc: ""})
-               // this.query_upload.file = null
-                return false;
-            },
+                this.loadingStatus = false;
 
+                //リセットアップロード対象
+                this.query_upload.file = null
+                this.file = null
+            }
         }
     })
 </script>
