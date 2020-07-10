@@ -210,6 +210,15 @@
 .ivu-table-cell, .ivu-notice-desc  {
   white-space: pre-line;
 }
+.ivu-drawer-mask {
+  background-color: unset;
+}
+.ivu-drawer-content {
+  box-shadow: -9px -8px 12px rgba(0,0,0,.15);
+}
+.ivu-modal-content {
+  box-shadow: 0px 4px 12px 9px rgba(0, 0, 0, 0.2);
+}
 .error-info {
   text-align: center;
   font-size: 14px;
