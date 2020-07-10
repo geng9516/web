@@ -83,9 +83,9 @@
             await this.http.postForm('/login', this.login)
             location.href = "/login";
           } catch (error) {
-          } finally {
             this.loading = false
           }
+          // 因为直接跳页, 所以不需要取消loading
         })
       }
     })
