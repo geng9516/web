@@ -355,6 +355,7 @@
           }
         },
         async update() {
+          this.loading = true
           let OPTS = { permList: [...new Set(this.updateValue)] }
           if (this.opts.date) {
             OPTS.changeDate = this.opts.date
