@@ -103,19 +103,19 @@ private static final long serialVersionUID=1L;
          * 修正取得日数
          */
     @TableField("tpf_nusedays_fix")
-        private Long tpfNusedaysFix;
+        private Double tpfNusedaysFix;
 
         /**
          * 修正必要日数
          */
     @TableField("tpf_nmustdays_fix")
-        private Long tpfNmustdaysFix;
+        private Double tpfNmustdaysFix;
 
         /**
          * 調整取得日数
          */
     @TableField("tpf_nusedays_ajdust")
-        private Long tpfNusedaysAjdust;
+        private Double tpfNusedaysAjdust;
 
         /**
          * 調整取得時間数
