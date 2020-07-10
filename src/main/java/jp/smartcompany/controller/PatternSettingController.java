@@ -104,7 +104,7 @@ public class PatternSettingController {
      */
     @PostMapping("selectEditPatternInfo")
     public TmgPatternVO selectEditPatternInfo(@RequestParam(value = "groupId", required = false) String groupId,
-                                              @RequestParam(value = "patternId",required = true) String patternId,
+                                              @RequestParam(value = "patternId", required = true) String patternId,
                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
         patternSettingBean.setExecuteParameters(null, psDBBean);
@@ -122,7 +122,7 @@ public class PatternSettingController {
      * @return
      */
     @PostMapping("deletePattern")
-    public void deletePattern(@RequestParam(value = "groupId",required = false) String groupId,
+    public void deletePattern(@RequestParam(value = "groupId", required = false) String groupId,
                               @RequestParam("sectionId") String sectionId,
                               @RequestParam("patternId") String patternId,
                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -168,6 +168,7 @@ public class PatternSettingController {
     /**
      * * 勤務パターン CSV取り込み
      * http://localhost:6879/sys/patternSetting/modifiCSVDwnload
+     *
      * @param file
      * @param psDBBean
      * @return
@@ -199,4 +200,20 @@ public class PatternSettingController {
         boolean check = DateUtil.date().isAfter(DateUtil.parse(periodDate, "yyyy/MM/dd"));
         return check;
     }
+
+    /**
+     * 編集パターン情報は存在かをチェックする
+     * http://localhost:6879/sys/patternSetting/selectEditPatternExist
+     *
+     * @return TRUE の場合、存在しました　　FALSEの場合、未存在
+     */
+    @GetMapping("selectEditPatternExist")
+    @ResponseBody
+    public boolean selectEditPatternExist(String patternId) {
+        //勤務パターンを適用可能な最少日付
+        boolean isExists = patternSettingBean.selectEditPatternExist(patternId);
+        //TRUE の場合、存在しました　　FALSEの場合、未存在
+        return isExists;
+    }
+
 }

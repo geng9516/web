@@ -248,7 +248,26 @@ public class PatternSettingBean {
     }
 
     /**
-     * 編集パターン情報
+     * 編集パターン情報は存在かをチェックする
+     *
+     * @param patternId
+     * @return
+     */
+    public boolean selectEditPatternExist(String patternId) {
+        //ルートノード
+        String groupId = "000000";
+        if (null == patternId || "".equals(patternId)) {
+            logger.warn("パターン番号が空です");
+            return false;
+        }
+        if (null != this.selectTmgPatternById(groupId, patternId)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 新規パターンが
      *
      * @param groupId
      * @param patternId
@@ -268,6 +287,7 @@ public class PatternSettingBean {
         tmgPatternVO.setPatternList(this.selectPatternSelectList(groupId, patternId));
         return tmgPatternVO;
     }
+
 
     /**
      * パターンを削除
@@ -546,7 +566,9 @@ public class PatternSettingBean {
         patternSettingParam.setBaseDate(null);
         patternSettingParam.setCustomerId(psDBBean.getCustID());
         patternSettingParam.setCompanyId(psDBBean.getCompCode());
-        patternSettingParam.setSectionId(referList.getTargetSec());
+        if (null != referList.getTargetSec() && !"".equals(referList.getTargetSec())) {
+            patternSettingParam.setSectionId(referList.getTargetSec());
+        }
        /* if (null != referList.getTargetSecName() && !"".equals(referList.getTargetSecName())) {
             patternSettingParam.setSectionName(referList.getTargetSecName());
         }*/
