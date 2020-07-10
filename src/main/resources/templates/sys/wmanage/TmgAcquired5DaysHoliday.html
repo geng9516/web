@@ -73,7 +73,7 @@
             </template>
         </i-table>
         <Modal v-model="isShow" title="年5日時季指定取得確認" width="950" @on-cancel="cancel" :mask-closable="false"
-               footer-hide draggable>
+               footer-hide>
             <div>
                 <Row :gutter="10">
                     <i-col span="8">
@@ -92,19 +92,20 @@
             </div>
             <div class="tr mt20 mb20" v-if="!isSeason">
                 <i-button type="success" @click="register" ghost class="mr15 width15">登録</i-button>
+                <i-button type="success" @click="clear" ghost class="mr15 width15">初期化</i-button>
             </div>
 
             <div class="titlenorm mb10" v-if="!isSeason">
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" @on-row-click="editDataPush()" :loading="loading" v-if="!isSeason" class="mb30">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30">
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" format="yyyy/MM/dd" type="date" transfer></date-picker>
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @blur.native.capture="blur"/>
+                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -240,6 +241,7 @@
                                 title: '修正基準日',
                                 className: 'checkin',
                                 slot: 'editBasedDay',
+                                width: 140,
                                 align: 'center'
                             },
                             {
@@ -292,7 +294,6 @@
 
                 tableHead: [],
                 tableData: [],
-                isShow: false,
                 loading: false,
                 referListObject: {
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
@@ -398,19 +399,21 @@
                 // this.paidData = data
 
                 this.paidData = [e[0]]
+                // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、基準日：taKijyunbiで設定すること。
+                this.paidData[0].basedDay = e[0].taKijyunbi
 
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e[0].name
                 this.privateInfo.workType = e[0].type
 
 
-                //
+                //事前に
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
                 this.updateAcquired5DaysVO.txtYear = '2020'
                 this.updateAcquired5DaysVO.kijunbi = e[0].basedDay
-                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData.editBasedDay
-                // this.updateAcquired5DaysVO.usedDaysEdit = this.paidData.tpfSyutokudaysAdjust
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].editBasedDay
+                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[0].tpfSyutokudaysAdjust
                 console.log("this.updateAcquired5DaysVO")
                 console.log(this.updateAcquired5DaysVO)
 
@@ -647,7 +650,6 @@
                 return yearMMDD
             },
             register(e) {
-
                 //1:登録　2:クリア
                 this.updateAcquired5DaysVO.txtUpdateflg = '1'
 
@@ -659,23 +661,49 @@
                     onOk: async () => {
                         const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
 
-                        //登録Loading制御
-                        this.registerLoading = false
+                        //年5日時季指定取得確認画面を閉じる
+                        this.isShow = false
+                        //一覧画面取得
+                        this.getTableData()
                     },
                     onCancel: () => {
-                        //登録Loading制御
-                        this.registerLoading = false
-
                     }
                 })
             },
-            editDataPush(row) {
-             console.log("editDataPush")
-             console.log(row)
+            clear(e) {
+                //1:登録　2:クリア
+                this.updateAcquired5DaysVO.txtUpdateflg = '2'
+                //修正基準日を削除
+                this.updateAcquired5DaysVO.kijunbiEdit = ''
+                //調整取得日数を削除
+                this.updateAcquired5DaysVO.usedDaysEdit = ''
+
+                this.$Modal.confirm({
+                    title: '',
+                    content: '編集内容を削除します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+
+                        //年5日時季指定取得確認画面を閉じる
+                        this.isShow = false
+                        //一覧画面取得
+                        this.getTableData()
+                    },
+                    onCancel: () => {
+                    }
+                })
             },
             blur(e) {
                 console.log("blur")
+                this.updateAcquired5DaysVO.usedDaysEdit = e.adjustTakenDays
+            },
+            handleChangeDay(e) {
+                console.log("handleChangeDay")
                 console.log(e)
+                this.updateAcquired5DaysVO.kijunbiEdit = e
+                console.log(this.updateAcquired5DaysVO.kijunbiEdit)
             },
         }
     })
