@@ -107,9 +107,9 @@
     <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">
         CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(
             #{txtUserCode},
-            #{kijunbi},
-            #{txtYear},
-            #{kijunbiEdit},
+            #{kijunbi, jdbcType=VARCHAR},
+            #{txtYear, jdbcType=VARCHAR},
+            #{kijunbiEdit,jdbcType=VARCHAR},
             #{userCode},
             #{programId},
             #{custID},
