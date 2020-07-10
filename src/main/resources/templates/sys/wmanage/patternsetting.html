@@ -26,6 +26,7 @@
                 </Upload>
                 <div v-if="file !== null">ファイル: {{ file.name }}
                     <i-button type="text" @click="upload" :loading="loadingStatus">{{ loadingStatus ? 'アップロード中...' : 'アップロード' }}</i-button>
+                    <i-button type="text" @click="uploadCancel">キャンセル</i-button>
                 </div>
             </div>
         </div>
@@ -79,8 +80,12 @@
                     <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!editPatternShow" v-if="row.edit===false">編集</i-button>
                     <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="mergePattern(row)" :disabled="editPatternShow" v-else>編集</i-button>
 
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!deletePatternShow" v-if="row.edit===false">削除</i-button>
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="deletePattern(row)" :disabled="deletePatternShow" v-else>削除</i-button>
+                    <i-button type="primary" ghost size="small" icon="ios-create" class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" 　style="margin-right: 5px"
+                              :disabled="!deletePatternShow" v-if="row.edit===false">削除
+                    </i-button>
+                    <i-button type="primary" ghost size="small" icon="ios-trash" 　class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" style="margin-right: 5px"
+                              @click="deletePattern(row)" :disabled="deletePatternShow" v-else>削除
+                    </i-button>
                 </div>
             </template>
 
@@ -829,6 +834,13 @@
                 //リセットアップロード対象
                 this.query_upload.file = null
                 this.file = null
+            },
+            //アップロードをキャンセル
+            uploadCancel() {
+                //リセットアップロード対象
+                this.query_upload.file = null
+                this.file = null
+
             },
             //データ検証アラームを表示する
             showAlert(msg) {
