@@ -27,7 +27,7 @@
           </i-button>
           <i-button type="success" icon="md-done-all" size="large" @click="update" :loading="editLoading"
             v-if="isEditing">登録</i-button>
-          <i-button type="primary" @click="()=>history.go(0)" size="large" ghost v-if="isEditing">キャンセル</i-button>
+          <i-button type="primary" @click="handleCancel" size="large" ghost v-if="isEditing">キャンセル</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -464,6 +464,13 @@
         getPreData() {
           this.opts.date = this.beforeDate
           this.getTableData()
+        },
+        handleCancel() {
+          if(this.updateValue.length > 0) {
+            history.go(0)
+          } else {
+            this.isEditing = false
+          }
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.scrollTop
