@@ -329,7 +329,7 @@
                     txtYear: '',
                     kijunbi: '',
                     kijunbiEdit: '',
-                    usedDaysEdit: '0',
+                    usedDaysEdit: '',
                     txtUpdateflg: '',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
@@ -399,21 +399,24 @@
                 // this.paidData = data
 
                 this.paidData = [e[0]]
-                // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、基準日：taKijyunbiで設定すること。
-                this.paidData[0].basedDay = e[0].taKijyunbi
+                // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
+                // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
+                if (e[0].taKijyunbi != null) {
+                    this.paidData[0].basedDay = e[0].taKijyunbi
+                }
 
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e[0].name
                 this.privateInfo.workType = e[0].type
 
-
+                const addNumDeci = Vue.filter('addNumDeci')
                 //事前に
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
                 this.updateAcquired5DaysVO.txtYear = '2020'
-                this.updateAcquired5DaysVO.kijunbi = e[0].basedDay
+                this.updateAcquired5DaysVO.kijunbi = e[0].taKijyunbi
                 this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].editBasedDay
-                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[0].tpfSyutokudaysAdjust
+                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfSyutokudaysAdjust,true)
                 console.log("this.updateAcquired5DaysVO")
                 console.log(this.updateAcquired5DaysVO)
 
@@ -514,6 +517,8 @@
                             i = i + +b[i].taRowpan - 1
                         }
                     }
+
+                    const addNumDeci = Vue.filter('addNumDeci')
                     //
                     for (var i=0;i < a.length;i++){
                         if (a[i].taKijyunbi == null && a[i].tpfKijyunbi == null){
@@ -522,7 +527,10 @@
                             a[i].takenDays = "-"
                             a[i].mustDays = "-"
                             a[i].lackDays = "-"
-                        } else if (a[i].tpfKijyunbi == null) {
+
+                            a[i].editTakenDays = "-"  //編集画面用‐取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                        } else if (a[i].taKijyunbi != null && a[i].tpfKijyunbi == null) {
                             a[i].basedDay = a[i].taKijyunbi
                             a[i].checkPeriod = a[i].taKikanbi
                             a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
@@ -530,7 +538,7 @@
                             a[i].lackDays = a[i].taLessdays
 
                             a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
-                            a[i].adjustTakenDays = a[i].tpfSyutokudaysAdjust //編集画面用‐調整取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
 
                         } else if (a[i].tpfKijyunbi != null) {
                             a[i].basedDay = a[i].tpfKijyunbi
@@ -541,7 +549,7 @@
 
                             a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
                             a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
-                            a[i].adjustTakenDays = a[i].tpfSyutokudaysAdjust //編集画面用‐調整取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
                         }
                     }
                     this.tableData = a
