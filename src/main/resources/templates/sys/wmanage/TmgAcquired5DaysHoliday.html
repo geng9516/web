@@ -69,7 +69,8 @@
             </template>
 
             <template slot-scope="{ row }" slot="season">
-                <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row)">詳細</i-button>
+                <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row)" v-if="row.detailshow">詳細</i-button>
+                <span v-else> - </span>
             </template>
         </i-table>
         <Modal v-model="isShow" title="年5日時季指定取得確認" width="950" @on-cancel="cancel" :mask-closable="false"
@@ -353,6 +354,7 @@
                 title: '',
                 isSearchHistory: false,
 
+                // detailshow: false,
                 isSeason: false,
                 isShow: false
             }
@@ -476,6 +478,7 @@
                             editBasedDay:'',    //編集画面用_修正基準日
                             editTakenDays:'',    //編集画面用_取得日数
                             adjustTakenDays:'', //編集画面用_調整取得日数
+                            detailshow:true,
 
                             cemployeeName:e.cemployeeName,
                             sumSyutokudays:e.sumSyutokudays,
@@ -530,6 +533,8 @@
 
                             a[i].editTakenDays = "-"  //編集画面用‐取得日数
                             a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+
+                            a[i].detailshow = false
                         } else if (a[i].taKijyunbi != null && a[i].tpfKijyunbi == null) {
                             a[i].basedDay = a[i].taKijyunbi
                             a[i].checkPeriod = a[i].taKikanbi
@@ -553,6 +558,8 @@
                         }
                     }
                     this.tableData = a
+                    console.log("詳細")
+                    console.log(this.tableData)
                  }
             },
             async getOrgTree(refreshDept) {
