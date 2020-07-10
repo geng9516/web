@@ -28,10 +28,10 @@ public interface IMastGroupapppermissionService extends IService<MastGroupappper
 
         Page<MastGroupapppermissionDO> pagePermissionList(IPage<MastGroupapppermissionDO> page);
 
-        int deleteAfter(String systemId,String date,String groupId, String objectId);
-
-        List<MastGroupapppermissionDO> selectValidPermissions(String systemId, String date, String groupId, String objectId);
-
-        int deleteOtherSysObj(String systemId, String objectId);
+//        int deleteAfter(String systemId,String date,String groupId, String objectId);
+//
+//        List<MastGroupapppermissionDO> selectValidPermissions(String systemId, String date, String groupId, String objectId);
+//
+//        int deleteOtherSysObj(String systemId, String objectId);
 
 }

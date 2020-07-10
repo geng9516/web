@@ -4,6 +4,10 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.Session;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerChangeDateDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
@@ -12,30 +16,39 @@ import jp.smartcompany.admin.groupappmanager.form.GroupAppManagerUpdatePermsForm
 import jp.smartcompany.admin.groupappmanager.form.PermChangeItem;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupappmanager.vo.GroupAppManagerTableLayout;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastApptreeDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.service.*;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 import java.util.stream.Collectors;
 
 /**
  * @author Xiao Wenpeng
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
@@ -72,6 +85,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private final IMastApptreeService iMastApptreeService;
   private final IMastSystemService iMastSystemService;
   private final IMastCompanyService iMastCompanyService;
+  private final DbControllerLogic dbControllerLogic;
+  private final DataSource dataSource;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -260,18 +275,22 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   }
 
   @Override
-  @Transactional(rollbackFor = GlobalException.class)
-  public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException {
+  public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException, SQLException {
+    PsSession psSession = (PsSession)ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>)session.getAttribute(REQ_SCOPE_NAME);
     if (CollUtil.isEmpty(lTable)) {
       throw new GlobalException("権限データが存在しない");
     }
+
+    // 今回改定日取得
     Date dStart=updatePerm.getChangeDate();
     if (dStart==null){
       dStart =DateUtil.date();
     }
+    // 今回改定日の前日取得
     Date yesterday = DateUtil.offsetDay(dStart,-1);
+    // 登録する終了日を取得
     Date dEnd = SysUtil.transStringToDate("2222/12/31");
 
     // 更改原先table中的权限
@@ -283,51 +302,216 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
       lTable.get(rowIndex).getList().get(colIndex).setPermission(permission);
     }
 
-    for (GroupAppManagerPermissionTableDTO groupAppManagerPermissionTableDTO : lTable) {
-      List<GroupAppManagerPermissionDTO> lRecord = groupAppManagerPermissionTableDTO.getList();
-      for (GroupAppManagerPermissionDTO permission : lRecord) {
-        String perm = permission.getPermission();
-        if (StrUtil.equals("1", perm)) {
-          // ○の場合
-          permission.setMgpCpermission(ON);
-          permission.setMgpCreject(OFF);
-        } else if (StrUtil.equals("2", perm)) {
-          // ×の場合
-          permission.setMgpCpermission(ON);
-          permission.setMgpCreject(ON);
-        } else {
-          // 設定なしの場合
-          permission.setMgpCpermission(OFF);
-          permission.setMgpCreject(OFF);
-        }
-        permission.setMgpDstartdate(dStart);
-        permission.setMgpDenddate(dEnd);
 
-        // 今回改定日以降のレコードを削除
-        iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
-                SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
-        // 現在有効なレコード取得
-        List<MastGroupapppermissionDO> lEffective = iMastGroupapppermissionService.selectValidPermissions(
-                permission.getMgpCsystemid(),
-                SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
-        if (CollUtil.isNotEmpty(lEffective)) {
-          // 削除後、同じデータを終了日付のみ変更して登録する
-          for (MastGroupapppermissionDO mastGroupapppermissionDO : lEffective) {
-            iMastGroupapppermissionService.removeById(mastGroupapppermissionDO);
-            mastGroupapppermissionDO.setMgpDenddate(yesterday);
-            iMastGroupapppermissionService.save(mastGroupapppermissionDO);
+    List<GroupAppManagerPermissionDTO> deleteAfterList = CollUtil.newArrayList();
+
+    List<Long> deleteEffectiveIds = CollUtil.newArrayList();
+    List<MastGroupapppermissionDO> insertEffectivePermList = CollUtil.newArrayList();
+
+    List<MastGroupapppermissionDO> prepareInsertList = CollUtil.newArrayList();
+
+    List<GroupAppManagerPermissionDTO> deleteOtherSysList = CollUtil.newArrayList();
+
+    Connection conn =null;
+    String strStart =SysUtil.transDateToString(dStart);
+    try {
+      conn = dataSource.getConnection();
+      conn.setAutoCommit(false);
+
+      for (GroupAppManagerPermissionTableDTO rowList : lTable) {
+        List<GroupAppManagerPermissionDTO> colList = rowList.getList();
+        for (GroupAppManagerPermissionDTO record : colList) {
+          // 画面から入力された権限(○×)に応じて、実行権限と実行許可を設定
+          String perm = record.getPermission();
+          if (StrUtil.equals("1", perm)) {
+            // ○の場合
+            record.setMgpCpermission(ON);
+            record.setMgpCreject(OFF);
+          } else if (StrUtil.equals("2", perm)) {
+            // ×の場合
+            record.setMgpCpermission(ON);
+            record.setMgpCreject(ON);
+          } else {
+            // 設定なしの場合
+            record.setMgpCpermission(OFF);
+            record.setMgpCreject(OFF);
           }
+          record.setMgpDstartdate(dStart);
+          record.setMgpDenddate(dEnd);
+          // 今回改定日以降のレコードを削除
+          deleteAfterList.add(record);
+//        iMastGroupapppermissionService.deleteAfter(permission.getMgpCsystemid(),
+//                SysUtil.transDateToString(dStart), permission.getMgpCgroupid(), permission.getMgpCobjectid());
+
+          // 現在有効なレコード取得
+          String sql = "SELECT MGP_ID, MGP_CCOMPANYID,MGP_CSYSTEMID,MGP_CGROUPID,MGP_COBJECTID,MGP_CSITE,MGP_CAPP,MGP_CSUBAPP,MGP_CBUTTON,MGP_CSCREEN,MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE,MGP_DENDDATE FROM" +
+                  " MAST_GROUPAPPPERMISSION WHERE MGP_CSYSTEMID = ? AND MGP_DSTARTDATE <= ? AND MGP_DENDDATE >= ? AND MGP_CGROUPID = ? ";
+          Vector<Object> params = new Vector<>();
+          params.add(record.getMgpCsystemid());
+          params.add(strStart);
+          params.add(strStart);
+          params.add(record.getMgpCgroupid());
+          if (StrUtil.isNotBlank(record.getMgpCobjectid())) {
+            sql += "AND MGP_COBJECTID = ? ";
+            params.add(record.getMgpCobjectid());
+          }
+          sql += "ORDER BY MGP_COBJECTID,MGP_DSTARTDATE";
+          Vector<Vector<Object>> lEffective = dbControllerLogic.executeQuery(sql, params, conn);
+
+          if (CollUtil.isNotEmpty(lEffective)) {
+            if (lEffective.size()>1) {
+              for (int i = 0; i < lEffective.size(); i++) {
+                if (i!=0){
+                  Vector<Object> fieldList = lEffective.get(i);
+                  Long id = ((BigDecimal)fieldList.get(0)).longValue();
+                  deleteEffectiveIds.add(id);
+                  MastGroupapppermissionDO mastGroupapppermissionDO = new MastGroupapppermissionDO();
+                  mastGroupapppermissionDO.setMgpId(id);
+                  mastGroupapppermissionDO.setMgpCcompanyid((String)fieldList.get(1));
+                  mastGroupapppermissionDO.setMgpCsystemid((String)fieldList.get(2));
+                  mastGroupapppermissionDO.setMgpCgroupid((String)fieldList.get(3));
+                  mastGroupapppermissionDO.setMgpCobjectid((String)fieldList.get(4));
+                  mastGroupapppermissionDO.setMgpCsite((String)fieldList.get(5));
+                  mastGroupapppermissionDO.setMgpCapp((String)fieldList.get(6));
+                  mastGroupapppermissionDO.setMgpCsubapp((String)fieldList.get(7));
+                  mastGroupapppermissionDO.setMgpCbutton((String)fieldList.get(8));
+                  mastGroupapppermissionDO.setMgpCscreen((String)fieldList.get(9));
+                  mastGroupapppermissionDO.setMgpCpermission((String)fieldList.get(10));
+                  mastGroupapppermissionDO.setMgpCreject((String)fieldList.get(11));
+                  mastGroupapppermissionDO.setMgpDstartdate((Timestamp)fieldList.get(12));
+//                  Date endDate = (Timestamp)fieldList.get(13);
+                  mastGroupapppermissionDO.setMgpDenddate(yesterday);
+                  mastGroupapppermissionDO.setMgpCmodifieruserid(psSession.getLoginUser());
+                  mastGroupapppermissionDO.setMgpDmodifieddate(DateUtil.date());
+                  mastGroupapppermissionDO.setVersionno(1L);
+                  insertEffectivePermList.add(mastGroupapppermissionDO);
+                }
+              }
+            }
+          }
+//          List<MastGroupapppermissionDO> lEffective = iMastGroupapppermissionService.selectValidPermissions(
+//                  record.getMgpCsystemid(), SysUtil.transDateToString(dStart), record.getMgpCgroupid(), record.getMgpCobjectid());
+
+//          if (CollUtil.isNotEmpty(lEffective)) {
+//            // 削除後、同じデータを終了日付のみ変更して登録する
+//            for (MastGroupapppermissionDO mastGroupapppermissionDO : lEffective) {
+//              deleteEffectiveIds.add(mastGroupapppermissionDO.getMgpId());
+////            iMastGroupapppermissionService.removeById(mastGroupapppermissionDO);
+//              mastGroupapppermissionDO.setMgpDenddate(yesterday);
+//              insertEffectivePermList.add(mastGroupapppermissionDO);
+////            iMastGroupapppermissionService.save(mastGroupapppermissionDO);
+//            }
+//          }
+          // 画面から編集されたレコードを登録する
+          MastGroupapppermissionDO permissionDO = new MastGroupapppermissionDO();
+          BeanUtil.copyProperties(record, permissionDO);
+          permissionDO.setVersionno(1L);
+          prepareInsertList.add(permissionDO);
+//        iMastGroupapppermissionService.save(permissionDO);
+//        // 他システム上の同じObjectIdを持つレコードを削除
+
+          deleteOtherSysList.add(record);
+
+//          iMastGroupapppermissionService.deleteOtherSysObj(permission.getMgpCsystemid(),
+//                  permission.getMgpCobjectid());
         }
-        // 画面から編集されたレコードを登録する
-        MastGroupapppermissionDO permissionDO = new MastGroupapppermissionDO();
-        BeanUtil.copyProperties(permission, permissionDO);
-        iMastGroupapppermissionService.save(permissionDO);
-        // 他システム上の同じObjectIdを持つレコードを削除
-        iMastGroupapppermissionService.deleteOtherSysObj(permission.getMgpCsystemid(),
-                permission.getMgpCobjectid());
       }
+      log.debug("==============================");
+      log.debug("数据准备完毕，开始权限修改");
+      // ===================================删除数据开始================================
+      // 今回改定日以降のレコードを削除
+      int deleteAfterCount = 0;
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
+      for (GroupAppManagerPermissionDTO item : deleteAfterList) {
+        String sql = "DELETE FROM MAST_GROUPAPPPERMISSION WHERE MGP_CSYSTEMID = ? AND MGP_DSTARTDATE >= ? AND MGP_CGROUPID = ? ";
+        int len = 3;
+        if (StrUtil.isNotBlank(item.getMgpCobjectid())) {
+          sql+="AND MGP_COBJECTID = ?";
+          len = len+1;
+        }
+        if (len == 3) {
+          deleteAfterCount += SqlExecutor.execute(conn, sql, item.getMgpCsystemid(), strStart,item.getMgpCgroupid());
+        } else {
+          deleteAfterCount += SqlExecutor.execute(conn, sql, item.getMgpCsystemid(), strStart,item.getMgpCgroupid(),item.getMgpCobjectid());
+        }
+      }
+      log.debug("deleteAfter影响行数："+deleteAfterCount);
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
+      int deleteEffectiveCount = 0;
+      for (Long effectiveId: deleteEffectiveIds) {
+        String sql = "DELETE FROM MAST_GROUPAPPPERMISSION WHERE MGP_ID = ?";
+        deleteEffectiveCount += SqlExecutor.execute(conn, sql, effectiveId);
+      }
+      log.debug("deleteEffective影响行数："+deleteEffectiveCount);
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
+
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
+      int insertEffectiveCount = 0;
+      for (MastGroupapppermissionDO item : insertEffectivePermList) {
+        String insertSql = "INSERT INTO MAST_GROUPAPPPERMISSION (" +
+                "MGP_ID, MGP_CCOMPANYID, MGP_CSYSTEMID, MGP_CGROUPID, MGP_COBJECTID, MGP_CSITE,MGP_CAPP, " +
+                "MGP_CSUBAPP, MGP_CBUTTON, MGP_CSCREEN, MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE, " +
+                "MGP_DENDDATE, MGP_CMODIFIERUSERID, MGP_DMODIFIEDDATE, VERSIONNO) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+         insertEffectiveCount += SqlExecutor.execute(conn,insertSql,
+                 item.getMgpId(),item.getMgpCcompanyid(),item.getMgpCsystemid(),item.getMgpCgroupid(),
+                 item.getMgpCobjectid(),item.getMgpCsite(),item.getMgpCapp(),item.getMgpCsubapp(),
+                 item.getMgpCbutton(),item.getMgpCscreen(),item.getMgpCpermission(),item.getMgpCreject(),
+                 SysUtil.transDateToString(item.getMgpDstartdate()),
+                 SysUtil.transDateToString(item.getMgpDenddate()),item.getMgpCmodifieruserid(),
+                 SysUtil.transDateToString(item.getMgpDmodifieddate()),item.getVersionno());
+      }
+      log.debug("insertEffectiveCount影响行数："+insertEffectiveCount);
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
+
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
+      int prepareInsertCount = 0;
+      for (MastGroupapppermissionDO item : prepareInsertList) {
+        String insertSql = "INSERT INTO MAST_GROUPAPPPERMISSION (" +
+                "MGP_ID,MGP_CCOMPANYID, MGP_CSYSTEMID, MGP_CGROUPID, MGP_COBJECTID, MGP_CSITE,MGP_CAPP, " +
+                "MGP_CSUBAPP, MGP_CBUTTON, MGP_CSCREEN, MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE, " +
+                "MGP_DENDDATE, MGP_CMODIFIERUSERID, MGP_DMODIFIEDDATE, VERSIONNO) " +
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+        String nextValSeq = "SELECT MAST_GROUPAPPPERMISSION_SEQ.NEXTVAL FROM DUAL ";
+        List<Entity> returnList  = SqlExecutor.query(conn,nextValSeq,new EntityListHandler());
+        Long sequenceId = returnList.get(0).getNumber("NEXTVAL").longValue();
+        prepareInsertCount += SqlExecutor.execute(conn,insertSql,
+                sequenceId,item.getMgpCcompanyid(),item.getMgpCsystemid(),item.getMgpCgroupid(),
+                item.getMgpCobjectid(),item.getMgpCsite(),item.getMgpCapp(),item.getMgpCsubapp(),
+                item.getMgpCbutton(),item.getMgpCscreen(),item.getMgpCpermission(),item.getMgpCreject(),
+                SysUtil.transDateToString(item.getMgpDstartdate()),
+                SysUtil.transDateToString(item.getMgpDenddate()),item.getMgpCmodifieruserid(),
+                SysUtil.transDateToString(item.getMgpDmodifieddate()),item.getVersionno());
+      }
+      log.debug("prepareInsertCount影响行数："+prepareInsertCount);
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
+
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Start
+      int deleteOtherSysCount = 0;
+      for (GroupAppManagerPermissionDTO item : deleteOtherSysList) {
+        String sql = "DELETE FROM MAST_GROUPAPPPERMISSION WHERE MGP_CSYSTEMID <> ? AND MGP_COBJECTID = ?";
+        deleteOtherSysCount+= SqlExecutor.execute(conn, sql, item.getMgpCsystemid(), item.getMgpCobjectid());
+      }
+      log.debug("deleteOtherSysCount影响行数："+deleteOtherSysCount );
+      // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End
+
+      conn.commit();
+    } catch (SQLException e) {
+      e.printStackTrace();
+      conn.rollback();
+      throw new GlobalException("query error");
+    } finally {
+       conn.setAutoCommit(true);
+       if (conn!=null) {
+         try {
+           conn.close();
+         }catch(SQLException e){
+            e.printStackTrace();
+         }
+       }
     }
-    session.removeAttribute(REQ_SCOPE_NAME);
+
     return "権限の変更が成功しました";
   }
 
@@ -395,16 +579,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
         sObjIdTemp = plPermission.get(i).getMgpCobjectid();
 
-        // 後処理
-        lRecord = null;
       }
 
-      // 後処理
-      dto = null;
     }
-
-    // 後処理
-    sObjIdTemp = null;
 
     return lTable;
   }
@@ -435,5 +612,6 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     }
     layout.setLatestDate(SysUtil.transDateToString(latestDate));
   }
+
 
 }

@@ -4,8 +4,12 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerPermissionDTO;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.CoreBean;
@@ -30,7 +34,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.sql.DataSource;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -50,6 +57,7 @@ public class AuthBusiness {
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
     private final LRUCache<Object,Object> lruCache;
     private final ScCacheUtil scCacheUtil;
+    private final DataSource dataSource;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
@@ -112,11 +120,106 @@ public class AuthBusiness {
         loginAuditService.save(loginAuditDO);
     }
 
-    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds) {
-        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM,null,language);
-        List<GroupAppManagerPermissionDTO> tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
-        List<GroupAppManagerPermissionDTO> tmgInpList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_INP,null,language);
-        List<GroupAppManagerPermissionDTO> adminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,"Admin",null,language);
+    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds) throws SQLException {
+
+        List<Object> commonParams = CollUtil.newArrayList();
+        String sql = "SELECT DISTINCT MGP_CGROUPID,NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP," +
+                "NVL(MGP_CBUTTON, MTR_CBUTTONID) MGP_CBUTTON,NVL(MGP_CSCREEN, MTR_CSCREENID) MGP_CSCREEN,DECODE(MGP_CPERMISSION, '1', DECODE(MGP_CREJECT, '1', '2', '1'), '0') PERMISSION," +
+                "PSMASTER.FUNC_GET_OBJ_NAME (MTR_CSITEID,MTR_CAPPID,MTR_CSUBAPPID,MTR_CSCREENID,MTR_CBUTTONID,'"+language+"') OBJECTNAME, MTR_CTYPE TYPE,MG_NWEIGHTAGE,MTR_NSEQ,MTR_CURL2,MTR_ICON,MTR_ID " +
+                "FROM " +
+                "(" +
+                    "MAST_APPTREE " +
+                    "LEFT OUTER JOIN MAST_GROUPAPPPERMISSION ON MTR_COBJECTID = MGP_COBJECTID " +
+                    "AND MTR_CSYSTEMID = MGP_CSYSTEMID "+
+                    "AND MGP_CGROUPID IN (";
+                        String groupStr = "";
+                        if (CollUtil.isNotEmpty(groupIds)) {
+                            for (String groupId : groupIds) {
+                                commonParams.add(groupId);
+                                groupStr+="?,";
+                            }
+                        }
+                        sql+=groupStr.substring(0,groupStr.length()-1);
+                    sql+=") ";
+                    sql+="AND MGP_DSTARTDATE <= ? " +
+                    "AND MGP_DENDDATE >= ?" +
+                    "LEFT JOIN MAST_GROUP ON MG_CGROUPID_PK = MGP_CGROUPID " +
+                    "AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID " +
+                    "AND MG_DSTARTDATE <= ?" +
+                    "AND MG_DENDDATE <= ?" +
+                ") " +
+                "WHERE " +
+                "MTR_CSYSTEMID = ? " +
+                "AND MTR_CTYPE <> '0' " +
+                "AND MTR_CSITEID = ? "+
+                "ORDER BY MTR_NSEQ,MG_NWEIGHTAGE,MGP_CGROUPID";
+        Connection conn = null;
+        String date = SysUtil.transDateToString(DateUtil.date());
+        commonParams.add(date);
+        commonParams.add(date);
+        commonParams.add(date);
+        commonParams.add(date);
+        commonParams.add(systemId);
+        List<GroupAppManagerPermissionDTO> tmgPermList = CollUtil.newArrayList();
+        List<GroupAppManagerPermissionDTO> tmgAdminList = CollUtil.newArrayList();
+        List<GroupAppManagerPermissionDTO> tmgInpList =CollUtil.newArrayList();
+        List<GroupAppManagerPermissionDTO> adminList = CollUtil.newArrayList();
+        try {
+            conn = dataSource.getConnection();
+            List<Object> tmgPermParams = CollUtil.newArrayList();
+            tmgPermParams.addAll(commonParams);
+            tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);
+            Object[] permParams = new String[tmgPermParams.size()];
+            for (int i = 0; i < tmgPermParams.size(); i++) {
+                permParams[i] = tmgPermParams.get(i);
+            }
+            List<Entity> tmgPermEntityList = SqlExecutor.query(conn,sql,new EntityListHandler(),permParams);
+            convertDbData(tmgPermList, tmgPermEntityList);
+
+            List<Object> tmgAdminParams = CollUtil.newArrayList();
+            tmgAdminParams.addAll(commonParams);
+            tmgAdminParams.add( TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+            Object[] adminParams = new String[tmgAdminParams.size()];
+            for (int i = 0; i < tmgAdminParams.size(); i++) {
+                adminParams[i] = tmgAdminParams.get(i);
+            }
+            List<Entity> tmgAdminEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),adminParams);
+            convertDbData(tmgAdminList, tmgAdminEntityList);
+
+
+            List<Object> tmgInpParams = CollUtil.newArrayList();
+            tmgInpParams.addAll(commonParams);
+            tmgInpParams.add( TmgUtil.Cs_SITE_ID_TMG_INP);
+            Object[] inpParams = new String[tmgInpParams.size()];
+            for (int i = 0; i < tmgInpParams.size(); i++) {
+                inpParams[i] = tmgInpParams.get(i);
+            }
+            List<Entity> tmgInpEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),inpParams);
+            convertDbData(tmgInpList,tmgInpEntityList);
+
+            List<Object> administratorParams = CollUtil.newArrayList();
+            administratorParams.addAll(commonParams);
+            administratorParams.add("Admin");
+            Object[] admParams = new String[administratorParams.size()];
+            for (int i = 0; i < administratorParams.size(); i++) {
+                admParams[i] = administratorParams.get(i);
+            }
+            List<Entity> adminEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),admParams);
+            convertDbData(adminList,adminEntityList);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new GlobalException("获取用户菜单信息失败");
+        } finally {
+            if (conn!=null) {
+                conn.close();
+            }
+        }
+
+//        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM,null,language);
+//        List<GroupAppManagerPermissionDTO> tmgAdminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(), groupIds, TmgUtil.Cs_SITE_ID_TMG_ADMIN,null,language);
+//        List<GroupAppManagerPermissionDTO> tmgInpList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_INP,null,language);
+//        List<GroupAppManagerPermissionDTO> adminList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds,"Admin",null,language);
 
         // 加载topMenu Start
         List<GroupAppManagerPermissionDTO> topMenus = CollUtil.newArrayList();
@@ -274,6 +377,30 @@ public class AuthBusiness {
             menuGroupList.add(menuGroupBO);
         }
         return menuGroupList;
+    }
+
+    private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {
+        tmgPermEntityList.forEach(entity -> {
+                GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
+                dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
+                dto.setPermission((String)entity.get("PERMISSION"));
+                dto.setMtrIcon((String)entity.get("MTR_ICON"));
+                dto.setMtrCurl2((String)entity.get("MTR_CURL2"));
+                dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
+                if (entity.get("MG_NWEIGHTAGE")!=null) {
+                    dto.setMgNweightage(((BigDecimal) entity.get("MG_NWEIGHTAGE")).longValue());
+                }
+                dto.setType((String)entity.get("TYPE"));
+                dto.setObjectName((String)entity.get("OBJECTNAME"));
+                dto.setMgpCscreen((String)entity.get("MGP_CSCREEN"));
+                dto.setMgpCbutton((String)entity.get("MGP_CBUTTON"));
+                dto.setMgpCsubapp((String)entity.get("MGP_CSUBAPP"));
+                dto.setMgpCapp((String)entity.get("MGP_CAPP"));
+                dto.setMgpCsite((String)entity.get("MGP_CSITE"));
+                dto.setMgpCobjectid((String)entity.get("MGP_COBJECTID"));
+                dto.setMgpCgroupid((String)entity.get("MGP_CGROUPID"));
+                tmgPermList.add(dto);
+        });
     }
 
     public Set<String> getAllUserPerms(String systemId, String language, List<String> groupIds) {

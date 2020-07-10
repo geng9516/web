@@ -29,7 +29,7 @@ public class MenuBO implements Serializable {
          * 菜单显示顺序
          */
 
-        private String orderNum;
+        private Long orderNum;
 
 
         private String icon;

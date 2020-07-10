@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -134,7 +135,7 @@ public class GroupAppManagerController {
   }
 
   @PostMapping("update")
-  public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException {
+  public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException, SQLException {
       groupAppManagerMainLogic.executeUpdate(session,updatePermForm);
       return "変更成功";
   }

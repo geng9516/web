@@ -28,6 +28,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final AuthBusiness authBusiness;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)  {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws SQLException {
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
@@ -387,7 +388,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     }
 
     // 加载系统菜单
-    private void loadMenus(HttpServletRequest request, String systemCode,  List<MastSystemDO> systemList) {
+    private void loadMenus(HttpServletRequest request, String systemCode,  List<MastSystemDO> systemList) throws SQLException {
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
         List<LoginGroupBO> groupList = CollUtil.newArrayList();

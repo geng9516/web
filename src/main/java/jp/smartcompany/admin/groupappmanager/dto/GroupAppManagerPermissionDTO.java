@@ -34,8 +34,8 @@ public class GroupAppManagerPermissionDTO {
     private String objectName;
     /** タイプ */
     private String type;
-    private String mtrNseq;
-    private String mgNweightage;
+    private Long mtrNseq;
+    private Long mgNweightage;
     private String mtrCurl2;
     private String mtrIcon;
     /** セルの背景色 */

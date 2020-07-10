@@ -46,20 +46,20 @@ public class MastGroupapppermissionServiceImpl extends ServiceImpl<MastGroupappp
                return baseMapper.selectPermissionListPage(page);
         }
 
-        @Override
-        public int deleteAfter(String systemId,String date,String groupId, String objectId) {
-             return baseMapper.deleteAfter(systemId,date,groupId,objectId);
-        }
-
-        @Override
-        public List<MastGroupapppermissionDO> selectValidPermissions(
-                String systemId, String date, String groupId, String objectId) {
-                return baseMapper.selectValidPermissions(systemId,date,groupId,objectId);
-        }
-
-        @Override
-        public int deleteOtherSysObj(String systemId,String objectId) {
-                return baseMapper.deleteOtherSysObj(systemId,objectId);
-        }
+//        @Override
+//        public int deleteAfter(String systemId,String date,String groupId, String objectId) {
+//             return baseMapper.deleteAfter(systemId,date,groupId,objectId);
+//        }
+//
+//        @Override
+//        public List<MastGroupapppermissionDO> selectValidPermissions(
+//                String systemId, String date, String groupId, String objectId) {
+//                return baseMapper.selectValidPermissions(systemId,date,groupId,objectId);
+//        }
+//
+//        @Override
+//        public int deleteOtherSysObj(String systemId,String objectId) {
+//                return baseMapper.deleteOtherSysObj(systemId,objectId);
+//        }
 
 }

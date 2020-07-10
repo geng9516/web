@@ -32,6 +32,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpSession;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -58,12 +61,13 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     private final PsOrgRelation psOrgRelation;
     private final BehaviorApplyLogic behaviorApplyLogic;
     private final IMastGenericDetailService iMastGenericDetailService;
+    private final DataSource dataSource;
 
     /** 更新用エラーコード */
     private static final int UPDATE_ERROR_CODE = -2;
     /** システムコード */
     private static final String SYSTEM_CODE_01 = "01";
-    /** データベースモード */
+    /** データベースモード*/
     private static final String DATABASE_MODE = "1";
     /** ドメインコード */
     private static final String DOMAIN_CODE = "01";
@@ -267,7 +271,8 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      * @throws Exception システム例外
      */
     @Override
-    public PsResult SelectMultiQuerywithPermission(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession)  {
+    public PsResult SelectMultiQuerywithPermission(Vector pvQuery, String sUserid, Vector vPostid, String sGroupid, String sBeandesc, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID, String sDomainid, String sDate, Vector vSectionid, String sTarcomp, String sTarsection, HttpSession httpSession)
+    throws SQLException{
         return this.SelectMultiQuerywithPermissionwithRangeLine(
                 pvQuery,    sUserid,     vPostid,
                 sGroupid,    sBeandesc,   sTargetuser,
@@ -300,6 +305,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Vector<Object>> vsqlResult;
         Vector<Vector<Object>> vecResult;
 
+        Connection conn = dataSource.getConnection();
         // SQLの数分処理
         for (int nSqlCnt = 0; nSqlCnt < pvSQL.size(); nSqlCnt++) {
             sSql = pvSQL.elementAt(nSqlCnt).toString();
@@ -311,7 +317,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
                 // SQL実行
                 //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult =dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                vsqlResult =dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
                 //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
                 if (vsqlResult != null && vsqlResult.size() > 1) {
 
@@ -332,6 +338,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
             // 1個のSQL分の結果セット
             vectorResult.add(vecResult);
+        }
+        if (conn!=null){
+            conn.close();
         }
         psResult.setException(vecException);
         psResult.setResult(vectorResult);
@@ -492,7 +501,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     @Override
-    public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate) throws Exception {
+    public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate)  {
         HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         // ログインユーザコード取得
@@ -846,7 +855,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      */
     protected PsResult SelectQuerywithPermissionAndQueryBatchAndTargetUser(
            Vector pvQuery, int pnRelationId,
-           String psSystemCode,String psDomainid) {
+           String psSystemCode,String psDomainid) throws SQLException {
         String sSql;
         PsResult psResult = new PsResult();
         Vector<String> vecException = new Vector<>();
@@ -855,6 +864,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Boolean> vBehav;
         Vector<Vector<Object>> vResult;
 
+        Connection conn = dataSource.getConnection();
         // SQLの数分処理
         for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
             sSql = pvQuery.elementAt(nSqlCnt).toString();
@@ -863,7 +873,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
                 // SQL実行
                 //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
                 //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
                 if (vsqlResult != null && vsqlResult.size() > 0) {
                     // ビヘイビア適用
@@ -882,6 +892,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
             // 1個のSQL分の結果セット
             vbResult.add(vResult);
+        }
+        if (conn!=null){
+            conn.close();
         }
         psResult.setException(vecException);
         psResult.setResult(vbResult);
@@ -1006,13 +1019,14 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             final String psDate,       final Vector pvSectionid,  final String psTarcomp,
             final String psTargetDept,  final Integer pnStartLine, final Integer pnEndLine,
             final HttpSession pHttpSession
-    ) {
+    ) throws SQLException {
         String sSql;
         PsResult psResult = new PsResult();
         Vector<String> vecException = new Vector<>();
         Vector<Vector<Vector<Object>>> vectorResult = new Vector<>();
         Vector<Vector<Object>> vsqlResult;
         Vector<Vector<Object>> vResult;
+        Connection conn = dataSource.getConnection();
         // SQLの数分処理
         for (int nSqlCnt = 0; nSqlCnt < pvQuery.size(); nSqlCnt++) {
             // SQL文のカラム名4個目の次に正規区分のカラム"HD_NOFFCIALORNOT"追加
@@ -1021,7 +1035,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             try {
                 // SQL実行
                 //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
-                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql));
+                vsqlResult = dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
                 //vsqlResult = this.gDBControllerLogic.executeQuery(sSql);
                 if (vsqlResult != null && vsqlResult.size() > 0) {
                     // マスキング判定(ビヘイビア適用)・結果セット
@@ -1040,6 +1054,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             }
             // 1個のSQL分の結果セット
             vectorResult.add(vResult);
+        }
+        if (conn!=null){
+            conn.close();
         }
         psResult.setException(vecException);
         psResult.setResult(vectorResult);

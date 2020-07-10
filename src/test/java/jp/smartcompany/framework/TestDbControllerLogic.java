@@ -1,5 +1,8 @@
 package jp.smartcompany.framework;
 
+import cn.hutool.db.Entity;
+import cn.hutool.db.handler.EntityListHandler;
+import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.job.NextJobApplication;
@@ -8,7 +11,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import java.util.List;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -18,15 +24,22 @@ import java.util.Vector;
 public class TestDbControllerLogic {
 
     private DbControllerLogic dbControllerLogic;
+    private DataSource dataSource;
 
     @Before
     public void before() {
+        dataSource = SpringUtil.getBean(DataSource.class);
         dbControllerLogic = SpringUtil.getBean(DbControllerLogic.class);
     }
 
     @Test
     public void testExecuteQuery() throws SQLException {
-        System.out.println(dbControllerLogic.executeQuery("select * from mast_apptree order by mtr_nseq"));
+        Connection connection = dataSource.getConnection();
+        String sql = "SELECT MGP_ID, MGP_CCOMPANYID,MGP_CSYSTEMID,MGP_CGROUPID,MGP_COBJECTID,MGP_CSITE,MGP_CAPP,MGP_CSUBAPP,MGP_CBUTTON,MGP_CSCREEN,MGP_CPERMISSION,MGP_CREJECT,MGP_DSTARTDATE,MGP_DENDDATE FROM" +
+                " MAST_GROUPAPPPERMISSION WHERE MGP_CSYSTEMID = ? AND MGP_DSTARTDATE <= ? AND MGP_DENDDATE >= ? AND MGP_CGROUPID = ? AND MGP_COBJECTID = ? ORDER BY MGP_COBJECTID,MGP_DSTARTDATE";
+        List<Entity> list = SqlExecutor.query(connection,sql,new EntityListHandler(),"01","2020/07/10","2020/07/10","11","TopPage_substitutelogin");
+        System.out.println(list);
+//        System.out.println(dbControllerLogic.executeQuery("select * from mast_apptree order by mtr_nseq"));
     }
 
     @Test

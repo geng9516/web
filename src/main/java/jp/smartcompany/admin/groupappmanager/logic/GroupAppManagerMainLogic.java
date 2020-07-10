@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -38,5 +39,5 @@ public interface GroupAppManagerMainLogic {
 
     List<MastCompanyDO> getCompanyList(String custId,Date searchDate);
 
-    String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePermList) throws ParseException;
+    String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePermList) throws ParseException, SQLException;
 }

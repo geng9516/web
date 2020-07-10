@@ -1,5 +1,6 @@
 package jp.smartcompany.framework.dbaccess;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
 
@@ -8,9 +9,9 @@ import java.util.Vector;
  */
 public interface DbControllerLogic {
 
-    Vector<Vector<Object>> executeQuery(String sSql) throws SQLException;
+    Vector<Vector<Object>> executeQuery(String sSql, Connection connection) throws SQLException;
 
-    Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam) throws SQLException;
+    Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam,Connection connection) throws SQLException;
 
     Vector<Integer> executeUpdate(Vector vecQuery) throws SQLException;
 

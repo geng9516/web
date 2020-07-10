@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.util.*;
 
 /**
+ * 不支持事务操作
  * @author Xiao Wenpeng
  */
 @Service
@@ -28,31 +29,24 @@ public class DbControllerLogicImpl implements DbControllerLogic {
     private final DataSource dataSource;
 
     @Override
-    public Vector<Vector<Object>> executeQuery(String sSql) throws SQLException {
+    public Vector<Vector<Object>> executeQuery(String sSql,Connection connection) throws SQLException {
         if (StrUtil.isBlank(sSql)) {
             throw new GlobalException("SEARCH_SQL");
         }
-        Connection connection = dataSource.getConnection();
         Object oSqlResult = dbAccessLogic.executeQuery(connection,sSql);
-        if (connection!=null){
-            connection.close();
-        }
         return convertData(oSqlResult);
     }
 
     @Override
-    public Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam) throws SQLException {
+    public Vector<Vector<Object>> executeQuery(String sSql, Vector vecParam,Connection connection) throws SQLException {
         if (StrUtil.isBlank(sSql)) {
             throw new GlobalException("SEARCH_SQL");
         }
-        Connection connection = dataSource.getConnection();
         Object oSqlResult = dbAccessLogic.executeQuery(connection,
                 sSql, vecParam);
-        if (connection!=null){
-            connection.close();
-        }
         return convertData(oSqlResult);
     }
+
 
     @Override
     public Vector<Integer> executeUpdate(Vector vecQuery) throws SQLException {
@@ -125,7 +119,7 @@ public class DbControllerLogicImpl implements DbControllerLogic {
                 vecResult.add(vColuData);
             }
         }
-        log.info("【convertData:{}】",vecResult);
+//        log.info("【convertData:{}】",vecResult);
         return vecResult;
     }
 

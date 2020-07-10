@@ -48,16 +48,17 @@ public interface MastGroupapppermissionMapper extends BaseMapper<MastGroupappper
 
         Page<MastGroupapppermissionDO> selectPermissionListPage(IPage<MastGroupapppermissionDO> page);
 
-        int deleteAfter(@Param("systemId") String systemId,
-                        @Param("date") String date,
-                        @Param("groupId") String groupId,
-                        @Param("objectId") String objectId);
-
-        List<MastGroupapppermissionDO> selectValidPermissions(@Param("systemId") String systemId,
-                                                              @Param("date") String date,
-                                                              @Param("groupId") String groupId,
-                                                              @Param("objectId") String objectId);
-
-        int deleteOtherSysObj(@Param("systemId") String systemId,@Param("objectId") String objectId);
+        // 以下三个方法废弃使用
+//        int deleteAfter(@Param("systemId") String systemId,
+//                        @Param("date") String date,
+//                        @Param("groupId") String groupId,
+//                        @Param("objectId") String objectId);
+//
+//        List<MastGroupapppermissionDO> selectValidPermissions(@Param("systemId") String systemId,
+//                                                              @Param("date") String date,
+//                                                              @Param("groupId") String groupId,
+//                                                              @Param("objectId") String objectId);
+//
+//        int deleteOtherSysObj(@Param("systemId") String systemId,@Param("objectId") String objectId);
 
 }
