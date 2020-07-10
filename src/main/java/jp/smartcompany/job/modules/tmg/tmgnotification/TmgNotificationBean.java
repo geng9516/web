@@ -993,13 +993,9 @@ public class TmgNotificationBean {
             int insertErrmsg = insertErrMsg(param);
             String selectErrMsg = selectErrCode(param);
             if(!selectErrMsg.equals("0")&&!param.getAction().equals(ACT_EDITAPPLY_UDEL) ){
-                int deleteErrMsgAfter = deleteErrMsg(param);
                 return GlobalResponse.error(selectErrMsg);
             }else{
                 int insertTrigger = insertTrigger(param);
-                int deleteTrigger = deleteTrigger(param);
-                int deleteErrMsgAfter = deleteErrMsg(param);
-                int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
                 return GlobalResponse.ok();
             }
         }catch (GlobalException e){
@@ -1784,7 +1780,7 @@ public class TmgNotificationBean {
             tncDo.setTntfDcancelend(null);
         }
         // 承認・管理からの再申請に対応する為
-        if (!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) && !param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))) {
+        if (!(param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_ADMIN) || param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_PERM))) {
             // 承認か解除であれば、承認者コメント、取消コメントのカラムをINSERTに指定する
             tncDo.setTntfCboss(null);
             tncDo.setTntfCbosscomment(null);
@@ -2050,9 +2046,10 @@ public class TmgNotificationBean {
         tncDo.setTntfDbegin(tnDo.getTntfDbegin());
         tncDo.setTntfDend(tnDo.getTntfDend());
 
-        tncDo.setTntfDcancel(param.getCancel());
-
+        //tncDo.setTntfDcancel(param.getCancel());　仅有全取消
+        tncDo.setTntfDcancel(tnDo.getTntfDbegin());
         tncDo.setTntfDcancelend(tnDo.getTntfDend());
+
         tncDo.setTntfNtimeOpen(tnDo.getTntfNtimeOpen());
         tncDo.setTntfNtimeClose(tnDo.getTntfNtimeClose());
         tncDo.setTntfNtimezoneOpen(tnDo.getTntfNtimezoneOpen());

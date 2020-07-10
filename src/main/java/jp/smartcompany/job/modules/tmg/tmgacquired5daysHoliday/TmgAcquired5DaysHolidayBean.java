@@ -166,7 +166,7 @@ public class TmgAcquired5DaysHolidayBean {
             tmgPaiduseinfoFixDO.setTpfDkikanbiFix(null);
             tmgPaiduseinfoFixDO.setTpfNusedaysFix(null);
             tmgPaiduseinfoFixDO.setTpfNmustdaysFix(null);
-            tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Long.parseLong(updateAcquired5DaysVO.getUsedDaysEdit()));
+            tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Double.parseDouble(updateAcquired5DaysVO.getUsedDaysEdit()));
             tmgPaiduseinfoFixDO.setTpfNusehoursAjdust(null);
             iTmgPaiduseinfoFixService.getBaseMapper().insert(tmgPaiduseinfoFixDO);
         }
