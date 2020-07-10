@@ -594,12 +594,13 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
+              this.detailDrawShow = false
+              this.loading = true
               await this.http.uploadFiles('sys/vapply/MakeApply', {
                 params: JSON.stringify(query),
                 psSite: this.referListObject.psSite
               })
 
-              this.detailDrawShow = false
               this.getTableData(false, true)
 
             }
@@ -615,18 +616,19 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
+              this.detailDrawShow = false
+              this.loading = true
               await this.http.uploadFiles('sys/vapply/ApplyReject', {
                 params: JSON.stringify(query),
                 psSite: this.referListObject.psSite
               })
-              this.detailDrawShow = false
               this.getTableData(false, true)
             }
           })
         },
         cancelByPerson() {
           let query = { ...this.referListObject }
-          query.action = "ACT_EditPerm_UCancel"
+          query.action = "ACT_EditApply_UDel"
           // 将详细的数据变成申请的数据
           query = this.changeData(query)
 
@@ -636,12 +638,13 @@
             okText: 'OK',
             cancelText: 'キャンセル',
             onOk: async () => {
+              this.detailDrawShow = false
+              this.loading = true
               await this.http.uploadFiles('sys/vapply/MakeApply', {
                 params: JSON.stringify(query),
                 psSite: this.referListObject.psSite
               })
 
-              this.detailDrawShow = false
               this.getTableData(false, true)
 
             }
