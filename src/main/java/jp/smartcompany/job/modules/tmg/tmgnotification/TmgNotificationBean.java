@@ -971,37 +971,45 @@ public class TmgNotificationBean {
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_7);
         }
 
+        try{
+            // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
+            int deleteErrMsg = deleteErrMsg(param);
+            int deleteNotificationCheck = deleteNotificationnCheck(param);
 
-        // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
-        int deleteErrMsg = deleteErrMsg(param);
-        int deleteNotificationCheck = deleteNotificationnCheck(param);
-
-        if (!param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || !param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
-            // 取消　再申請　承認　申請の場合は、申请番号非空
-            if(!StrUtil.hasEmpty(param.getNtfNo())){
-                int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
-            }else{
-                return  GlobalResponse.error("申請番号がありません。");
+            if (!param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || !param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
+                // 取消　再申請　承認　申請の場合は、申请番号非空
+                if(!StrUtil.hasEmpty(param.getNtfNo())){
+                    int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
+                }else{
+                    return  GlobalResponse.error("申請番号がありません。");
+                }
             }
+
+            if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
+                // 新規申請の場合は、新規申請用
+                int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
+            }
+
+            int insertErrmsg = insertErrMsg(param);
+            String selectErrMsg = selectErrCode(param);
+            if(!selectErrMsg.equals("0")&&!param.getAction().equals(ACT_EDITAPPLY_UDEL) ){
+                int deleteErrMsgAfter = deleteErrMsg(param);
+                return GlobalResponse.error(selectErrMsg);
+            }else{
+                int insertTrigger = insertTrigger(param);
+                int deleteTrigger = deleteTrigger(param);
+                int deleteErrMsgAfter = deleteErrMsg(param);
+                int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
+                return GlobalResponse.ok();
+            }
+        }catch (GlobalException e){
+            return GlobalResponse.error(e.getMessage());
+        }finally {
+            deleteTrigger(param);
+            deleteErrMsg(param);
+            deleteNotificationnCheck(param);
         }
 
-        if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
-            // 新規申請の場合は、新規申請用
-            int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
-        }
-
-        int insertErrmsg = insertErrMsg(param);
-        String selectErrMsg = selectErrCode(param);
-        if(!selectErrMsg.equals("0")){
-            int deleteErrMsgAfter = deleteErrMsg(param);
-            return GlobalResponse.error(selectErrMsg);
-        }else{
-            int insertTrigger = insertTrigger(param);
-            int deleteTrigger = deleteTrigger(param);
-            int deleteErrMsgAfter = deleteErrMsg(param);
-            int deleteNotificationCheckAfter = deleteNotificationnCheck(param);
-            return GlobalResponse.ok();
-        }
     }
 
     private void deleteNtfAttachdFile(ParamNotificationListDto param, String[] deleteFiles) {
@@ -1770,8 +1778,8 @@ public class TmgNotificationBean {
 
         // 承認か解除(部分取り消し、全取り消し)か？
         if (!(param.getAction().equals(ACT_EDITPERM_UPERMIT) ||
-                !param.getAction().equals(ACT_EDITCANCEL_UCANCEL) ||
-                !param.getAction().equals(ACT_EDITAPPLY_UDEL))) {
+                param.getAction().equals(ACT_EDITCANCEL_UCANCEL) ||
+                param.getAction().equals(ACT_EDITAPPLY_UDEL))) {
             tncDo.setTntfDcancel(null);
             tncDo.setTntfDcancelend(null);
         }
