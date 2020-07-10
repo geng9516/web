@@ -166,6 +166,7 @@ public class AuthBusiness {
         List<GroupAppManagerPermissionDTO> adminList = CollUtil.newArrayList();
         try {
             conn = dataSource.getConnection();
+            conn.setReadOnly(true);
             List<Object> tmgPermParams = CollUtil.newArrayList();
             tmgPermParams.addAll(commonParams);
             tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);
@@ -211,6 +212,7 @@ public class AuthBusiness {
             e.printStackTrace();
             throw new GlobalException("获取用户菜单信息失败");
         } finally {
+            conn.setReadOnly(false);
             if (conn!=null) {
                 conn.close();
             }
