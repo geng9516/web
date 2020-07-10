@@ -95,7 +95,7 @@ public class TmgPaidHolidayAttributeServiceImpl extends ServiceImpl<TmgPaidHolid
          * 平均勤務時間設定状況を取得するSQLを返す
          */
         @Override
-        public AvgWorkTimeHistoryVo selectAvgWorkTimeHistory(String customerId, String companyId, String employeeId){
+        public List<AvgWorkTimeHistoryVo> selectAvgWorkTimeHistory(String customerId, String companyId, String employeeId){
                 return baseMapper.selectAvgWorkTimeHistory(customerId, companyId, employeeId);
         }
 }

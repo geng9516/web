@@ -25,8 +25,6 @@ public class EmpAttrSettingDto {
 
     /**部局(組織)*/
     private String targetSectionId;
-    /**部局(組織)*/
-    private String targetUser;
     /**
      * 一覧検索用基準日を取得します
      */

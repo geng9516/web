@@ -15,4 +15,5 @@ public class AvgWorkTimeVo {
 
     private String workingdaysWeek;
 
+    private String avgWorkTime;
 }

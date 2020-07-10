@@ -25,4 +25,7 @@ public class AvgWorkTimeHistoryVo {
      */
     private String tphaNworkingdaysWeek;
 
+
+    private String  content;
+
 }

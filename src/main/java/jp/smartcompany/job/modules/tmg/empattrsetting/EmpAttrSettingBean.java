@@ -36,13 +36,13 @@ public class EmpAttrSettingBean {
 
 
 
-    private ITmgPaidHolidayAttributeService iTmgPaidHolidayAttributeService;
-    private IMastGenericDetailService iMastGenericDetailService;
-    private IHistDesignationService iHistDesignationService;
-    private ITmgTriggerService iTmgTriggerService;
-    private ITmgEmployeeAttributeService iTmgEmployeeAttributeService;
-    private IMastEmployeesService IMastEmployeesService;
-    private ITmgDateofempLogService iTmgDateofempLogService;
+    private final ITmgPaidHolidayAttributeService iTmgPaidHolidayAttributeService;
+    private final IMastGenericDetailService iMastGenericDetailService;
+    private final IHistDesignationService iHistDesignationService;
+    private final ITmgTriggerService iTmgTriggerService;
+    private final ITmgEmployeeAttributeService iTmgEmployeeAttributeService;
+    private final IMastEmployeesService IMastEmployeesService;
+    private final ITmgDateofempLogService iTmgDateofempLogService;
 
 
     /** 項目区分：管理対象者[TMG_ITEMS|MANAGEFLG] */
@@ -69,21 +69,38 @@ public class EmpAttrSettingBean {
      * @throws Exception
      * screenDisp
      */
-    public EmpDispVo actionScreenDisp(String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) throws Exception {
+    public EmpDispVo actionScreenDisp(String empId,String baseDate,String sPage,PsDBBean psDBBean,TmgReferList referList) throws Exception {
 
         int pageInfo[] = getPageOfSearchNumber(sPage);
         EmpAttrSettingDto param = new EmpAttrSettingDto();
+        param.setUserCode(psDBBean.getUserCode());
+        param.setCompId(psDBBean.getCompCode());
+        param.setCustId(psDBBean.getCustID());
+        param.setTargetSectionId(referList.getTargetSec());
         param.setBaseDate(baseDate);
         param.setLang(psDBBean.getLanguage());
         param.setEmpListsql(referList.buildSQLForSelectEmployees());
 
-        if(StrUtil.hasEmpty(param.getTargetSectionId())){
+        if(StrUtil.hasEmpty(referList.getTargetSec())){
             // 組織が選択されていない場合、何も検索せずに画面を表示する
             return null;
         }
 
         // 一覧画面：一覧：SELECT
         List<TmgEmpVo> tmgEmpVoList= iTmgPaidHolidayAttributeService.selectTmgEmp(param,pageInfo[0],pageInfo[1]);
+
+        for(TmgEmpVo vo:tmgEmpVoList){
+            if(vo.getTmgItemsExcludeOvertime().equals("0")){
+                vo.setExcludeOvertime(true);
+            }else{
+                vo.setExcludeOvertime(false);
+            }
+            if(vo.getTmgItemsManageflg().equals("TMG_MANAGEFLG|1")){
+                vo.setManageFlg(true);
+            }else{
+                vo.setManageFlg(false);
+            }
+        }
 
         // 一覧画面：件数：SELECT
         int tmgEmpListCount=iTmgPaidHolidayAttributeService.selectTmgEmpCount(param);
@@ -155,22 +172,26 @@ public class EmpAttrSettingBean {
         AvgWorkTimeVo avgWorkTimeVoDefault=iTmgPaidHolidayAttributeService.selectDefaultAvgWorkTime(psDBBean.getCustID(),psDBBean.getCompCode(),empId,baseDate);
 
         // 平均勤務時間編集：平均勤務時間設定状況：SELECT
-        AvgWorkTimeHistoryVo avgWorkTimeHistoryVo=iTmgPaidHolidayAttributeService.selectAvgWorkTimeHistory(psDBBean.getCustID(),psDBBean.getCompCode(),empId);
+        List<AvgWorkTimeHistoryVo> avgWorkTimeHistoryVos=iTmgPaidHolidayAttributeService.selectAvgWorkTimeHistory(psDBBean.getCustID(),psDBBean.getCompCode(),empId);
 
+        for(AvgWorkTimeHistoryVo vo:avgWorkTimeHistoryVos){
+            vo.setContent(Integer.valueOf(vo.getTphaNavgworktime())/60+"時 "+Integer.valueOf(vo.getTphaNavgworktime())%60+"分"+"(週"+vo.getTphaNworkingdaysWeek()+"日)");
+        }
         // 平均勤務時間編集：平均勤務時間上限：SELECT
         MgdTimeLimitVo mgdTimeLimitVo=iMastGenericDetailService.selectMgdTimeLimit();
 
 
         EditDispVo editDispVo = new EditDispVo();
         editDispVo.setLimitTime(String.valueOf(mgdTimeLimitVo.getAllminutes()));
-        editDispVo.setHistoryList(avgWorkTimeHistoryVo);
+        editDispVo.setHistoryList(avgWorkTimeHistoryVos);
 
-        if(!StrUtil.hasEmpty(avgWorkTimeVo.getAvgWorkTime1())){
+        if(avgWorkTimeVo != null){
             editDispVo.setNowAvgWorkTime(avgWorkTimeVo);
         }else{
             editDispVo.setNowAvgWorkTime(avgWorkTimeVoDefault);
         }
 
+        editDispVo.getNowAvgWorkTime().setAvgWorkTime(String.format("%02d", Integer.valueOf(editDispVo.getNowAvgWorkTime().getAvgWorkTime1()))+":"+String.format("%02d", Integer.valueOf(editDispVo.getNowAvgWorkTime().getAvgWorkTime2())));
         return editDispVo;
     }
 

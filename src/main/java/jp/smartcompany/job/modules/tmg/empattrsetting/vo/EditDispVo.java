@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString
@@ -17,7 +19,7 @@ public class EditDispVo {
     /**
      * 历史数据
      */
-    private AvgWorkTimeHistoryVo historyList;
+    private List<AvgWorkTimeHistoryVo> historyList;
 
     /**
      * 当前平均时间

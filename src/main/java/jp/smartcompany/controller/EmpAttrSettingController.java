@@ -16,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpDispVo;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,14 +39,17 @@ public class EmpAttrSettingController {
      * @return
      */
     @GetMapping("screenDisp")
-    public EmpDispVo actionScreenDisp(@RequestParam("baseDate") String baseDate,
+    public EmpDispVo actionScreenDisp(@RequestParam("empId") String empId,
+            @RequestParam("baseDate") String baseDate,
             @RequestParam(value = "page" ,required = false) String page,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList  = new TmgReferList();
+        //referlist 新规
+        TmgReferList referList= new TmgReferList(psDBBean, "EmpAttrSetting", baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
+                true, true, false, true);
         if (StrUtil.hasEmpty(page)){
             page="1";
         }
-        return empAttrSettingBean.actionScreenDisp(baseDate,page,psDBBean,referList);
+        return empAttrSettingBean.actionScreenDisp(empId,baseDate,page,psDBBean,referList);
     }
 
 

@@ -48,7 +48,7 @@ public interface TmgPaidHolidayAttributeMapper extends BaseMapper<TmgPaidHoliday
                                                @Param("employeeId")String employeeId,
                                                @Param("yyyymmdd")String yyyymmdd);
 
-        AvgWorkTimeHistoryVo selectAvgWorkTimeHistory(@Param("customerId")String customerId,
+        List<AvgWorkTimeHistoryVo> selectAvgWorkTimeHistory(@Param("customerId")String customerId,
                                                       @Param("companyId")String companyId,
                                                       @Param("employeeId")String employeeId);
 }

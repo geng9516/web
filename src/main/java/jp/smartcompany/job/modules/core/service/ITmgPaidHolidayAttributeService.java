@@ -60,5 +60,5 @@ public interface ITmgPaidHolidayAttributeService extends IService<TmgPaidHoliday
         /**
          * 平均勤務時間設定状況を取得するSQLを返す
          */
-        AvgWorkTimeHistoryVo selectAvgWorkTimeHistory(String customerId, String companyId, String employeeId);
+        List<AvgWorkTimeHistoryVo> selectAvgWorkTimeHistory(String customerId, String companyId, String employeeId);
         }

@@ -10,6 +10,8 @@ import lombok.ToString;
 @ToString
 public class EmploymentWithMgdVo {
 
+    private boolean isChecked = false;
+
     private String dstart; // 適用開始日
 
     private String dend;// 適用終了日
