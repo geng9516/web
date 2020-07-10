@@ -403,7 +403,9 @@
                 this.paidData = [e[0]]
                 // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
                 // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
-                if (e[0].taKijyunbi != null) {
+                if (e[0].taKijyunbi == null) {
+                    this.paidData[0].basedDay = '-'
+                } else {
                     this.paidData[0].basedDay = e[0].taKijyunbi
                 }
 
