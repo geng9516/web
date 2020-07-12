@@ -37,6 +37,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -166,6 +167,7 @@ public class AuthBusiness {
         List<GroupAppManagerPermissionDTO> adminList = CollUtil.newArrayList();
         try {
             conn = dataSource.getConnection();
+            PreparedStatement preparedStatement = conn.prepareStatement(sql);
             conn.setReadOnly(true);
             List<Object> tmgPermParams = CollUtil.newArrayList();
             tmgPermParams.addAll(commonParams);
@@ -174,7 +176,7 @@ public class AuthBusiness {
             for (int i = 0; i < tmgPermParams.size(); i++) {
                 permParams[i] = tmgPermParams.get(i);
             }
-            List<Entity> tmgPermEntityList = SqlExecutor.query(conn,sql,new EntityListHandler(),permParams);
+            List<Entity> tmgPermEntityList = SqlExecutor.query(preparedStatement,new EntityListHandler(),permParams);
             convertDbData(tmgPermList, tmgPermEntityList);
 
             List<Object> tmgAdminParams = CollUtil.newArrayList();
@@ -184,7 +186,7 @@ public class AuthBusiness {
             for (int i = 0; i < tmgAdminParams.size(); i++) {
                 adminParams[i] = tmgAdminParams.get(i);
             }
-            List<Entity> tmgAdminEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),adminParams);
+            List<Entity> tmgAdminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),adminParams);
             convertDbData(tmgAdminList, tmgAdminEntityList);
 
 
@@ -195,7 +197,7 @@ public class AuthBusiness {
             for (int i = 0; i < tmgInpParams.size(); i++) {
                 inpParams[i] = tmgInpParams.get(i);
             }
-            List<Entity> tmgInpEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),inpParams);
+            List<Entity> tmgInpEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),inpParams);
             convertDbData(tmgInpList,tmgInpEntityList);
 
             List<Object> administratorParams = CollUtil.newArrayList();
@@ -205,7 +207,7 @@ public class AuthBusiness {
             for (int i = 0; i < administratorParams.size(); i++) {
                 admParams[i] = administratorParams.get(i);
             }
-            List<Entity> adminEntityList=  SqlExecutor.query(conn,sql,new EntityListHandler(),admParams);
+            List<Entity> adminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),admParams);
             convertDbData(adminList,adminEntityList);
 
         } catch (SQLException e) {
