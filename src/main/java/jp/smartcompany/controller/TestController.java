@@ -27,8 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Controller
-@RequestMapping("sys/test")
+//@Controller
+//@RequestMapping("sys/test")
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TestController {

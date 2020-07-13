@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.component.dto.BaseSectionRowDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -27,4 +28,18 @@ public interface IMastGroupbasesectionService extends IService<MastGroupbasesect
          */
         List<GroupBaseSectionBO>  getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date);
 
+        /**
+         * グループ基点組織マスタ(基点組織)の定義情報を取得
+         *
+         * @param   psCustomerId    顧客コード
+         * @param   psSystemId      システムID
+         * @param   psGroupId       グループID
+         * @param   psLanguage      言語区分
+         * @param   pdSearchDate    今回改定日
+         * @param   plValidCompany  参照可能な法人一覧
+         * @return  List <QueryConditionRowDto>  基点組織定義情報リスト
+         */
+        List <BaseSectionRowDTO> selectGroupBaseSectionCompanyList(String psCustomerId,
+                                                                   String psSystemId, String psGroupId, String psLanguage, Date pdSearchDate,
+                                                                   List<String> plValidCompany);
 }

@@ -24,4 +24,29 @@
         AND MO_DEND >= to_date(#{date},'yyyy/mm/dd')
     </select>
 
+    <select id="selectGroupBaseSectionCompanyList" parameterType="map" resultType="jp.smartcompany.admin.component.dto.BaseSectionRowDTO">
+        SELECT DISTINCT
+            MGBS_CCOMPANYID,
+            PSMASTER.FUNC_GET_COMP_NAME(
+               MGBS_CCUSTOMERID,
+               MGBS_CCOMPANYID,
+               '${searchDate}',
+               '${language}')
+        AS COMPANYNAME
+        FROM MAST_GROUPBASESECTION
+        WHERE
+          MGBS_CCUSTOMERID = #{custId}
+          AND MGBS_CSYSTEMID = #{systemId}
+          <if test="companyList!=null and companyList.size()>0">
+            AND	MGBS_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="companyId" separator="," open="(" close=")">
+                #{companyId}
+            </foreach>
+          </if>
+          AND MGBS_CGROUPID = #{groupId}
+          AND MGBS_DSTARTDATE <![CDATA[ <= ]]> #{searchDate}
+          AND MGBS_DENDDATE >= #{searchDate}
+        ORDER BY MGBS_CCOMPANYID
+    </select>
+
 </mapper>

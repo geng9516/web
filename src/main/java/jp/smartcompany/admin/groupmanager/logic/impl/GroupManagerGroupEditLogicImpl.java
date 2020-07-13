@@ -1,140 +1,89 @@
 package jp.smartcompany.admin.groupmanager.logic.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
+import jp.smartcompany.admin.component.dto.BaseSectionRowDTO;
+import jp.smartcompany.admin.component.dto.BaseSectionRowListDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.util.ContextUtil;
-import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
-import jp.smartcompany.job.modules.core.service.IMastGroupService;
-import jp.smartcompany.job.modules.core.util.Designation;
+import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogic {
 
-    private final ScCacheUtil scCacheUtil;
-    private final PsSearchCompanyUtil searchCompanyUtil;
-    private final IMastGroupService iMastGroupService;
+    private final PsSearchCompanyUtil psSearchCompanyUtil;
+    private final IMastGroupbasesectionService iMastGroupbasesectionService;
 
-    /** 法人選択フラグ(全社区分) */
-    private static final String COMPANY_FLG_ALL = "all";
-    /** 法人選択フラグ(個別法人) */
-    private static final String COMPANY_FLG_ONE = "one";
-
-    public Map<String, Object> getGroupEditList(Date searchDate,String systemId,String groupId) throws ParseException {
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public void detail(Date searchDate,String systemId,String groupId) throws ParseException {
+       PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+       Date maxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
         // 法人検索対象範囲情報取得(参照可能な法人のリストを取得)
-        List<String> oCompanyValidList = searchCompanyUtil.getCompList(searchDate);
-        // 今回改定日とシステム最大日付を文字列からTimpstamp型に変換
-        Date tSearchDate = searchDate;
-        Date dSearchDate = searchDate;
-        Date tMaxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
-        PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
-        GroupManagerGroupListDTO groupManagerGroupListDTO = getGroupInfoDispInfo(psSession.getLoginCustomer(),
-                systemId, groupId, psSession.getLoginDesignation().get(0),
-                tSearchDate, tMaxDate,psSession.getLanguage(),oCompanyValidList);
-
-        return null;
+        List<String> oCompanyValidList = psSearchCompanyUtil.getCompList(searchDate);
+        /**
+         * 該当条件(基点組織選択)情報を取得
+         */
+        // 基点組織編集 - 定義情報取得(法人リスト)
+        List<BaseSectionRowDTO> oBaseSectionRowList = iMastGroupbasesectionService.
+                selectGroupBaseSectionCompanyList(psSession.getLoginCustomer(),systemId,
+                        groupId, psSession.getLanguage(), searchDate, oCompanyValidList);
+        dispBaseSectionInfo(psSession.getLoginCustomer(), searchDate, oBaseSectionRowList);
     }
 
     /**
-     * 初期処理(新規作成用)<br>
-     * 該当条件設定画面にて表示する情報を取得します。
+     * 初期処理<br>
+     * 基点組織選択画面にて表示する情報を取得します。
      *
-     * @param psCustomerId  顧客コード
-     * @param psSystemId    システムコード
-     * @param psGroupId     グループコード
-     * @param pdDesignation 異動歴情報
-     * @param ptStartDate   開始日(今回改定日)
-     * @param ptEndDate     終了日
-     * @param psLanguage    言語区分
+     * @param psCustomerId          顧客コード
+     * @param dSearchDate           今回改定日
+     * @param poDtoList             基点組織編集 - 定義情報取得(法人リスト)
      */
-    public GroupManagerGroupListDTO getGroupInfoDispInfo(String psCustomerId, String psSystemId,
-                                     String psGroupId, Designation pdDesignation, Date ptStartDate,
-                                     Date ptEndDate,  String psLanguage,List<String> companyList) {
-        GroupManagerGroupListDTO groupListDTO = new GroupManagerGroupListDTO();
-        groupListDTO.setMgCcustomerid(psCustomerId);
-        groupListDTO.setMgCsystemidCkFk(psSystemId);
-        // グループIDが渡されてこない場合は、新規登録用の処理を行う
-        if (psGroupId == null) {
-            // 優先順位(初期値は固定で"999")
-//            BigDecimal bWeightage = BigDecimal.valueOf(999);
+    private void dispBaseSectionInfo(String psCustomerId, Date dSearchDate,
+                                     List<BaseSectionRowDTO> poDtoList) {
+        // 基点組織以下・のみフラグ
+        String sBelowSingle = null;
 
-            // 優先順位(現在の最大優先順位)が指定されていた場合
-//            if (psWeightage != null) {
-//                bWeightage = BigDecimal.valueOf(Integer.valueOf(psWeightage).intValue());
+        // 法人情報配下の情報を取得する
+//        for (int i = 0; i < poDtoList.size(); i++) {
+//            BaseSectionRowDTO rowDTO = poDtoList.get(i);
+//            String sCompanyId = rowDTO.getMgbsCcompanyid();
+//            // 組織ごとの定義情報取得(法人＆組織＆役職リスト)
+//            List<BaseSectionRowListDTO> sectionList = iMastGroupbasesectionService.selectGroupBaseSectionList(
+//                    psCustomerId, sCompanyId, this.psSystemId, this.psGroupId,
+//                    super.getLanguage(), dSearchDate);
+//            rowDTO.setGlSectionList(sectionList);
+//            // 現在の保持している組織リストの件数を保持する
+//            rowDTO.setGnSelectedSectionCnt(sectionList.size());
+//            // 1件目の基点組織以下・のみフラグをセット(全件同じフラグなので)
+//            if (CollUtil.isNotEmpty(sectionList)) {
+//                sBelowSingle = sectionList.get(0).getMgbsCbeloworsingle();
 //            }
-            // 異動歴より、法人情報を取得する
-            String sCompanyId   = pdDesignation.getCompanyCode();
-            String sCompanyName = pdDesignation.getCompanyName();
-            // 表示用Dtoに初期表示値を格納
-            groupListDTO.setMgId(null);
-            groupListDTO.setMgDstartdate(ptStartDate);
-            groupListDTO.setMgDenddate(ptEndDate);
-            groupListDTO.setMgCgroupidPk("");
-            groupListDTO.setMgCgroupdescription("");
-            groupListDTO.setMgCgroupdescriptionja("");
-            groupListDTO.setMgCgroupdescriptionen("");
-            groupListDTO.setMgCgroupdescriptionch("");
-            groupListDTO.setMgCgroupdescription01("");
-            groupListDTO.setMgCgroupdescription02("");
-            groupListDTO.setMgClanguage(psLanguage);
-            groupListDTO.setMgNpartinentnumber(null);
-//            groupListDTO.setMgNweightage(bWeightage);
-            groupListDTO.setMgCtext("");
-            groupListDTO.setMgCcompanyid(sCompanyId);
-            groupListDTO.setGsCompanyName(sCompanyName);
-            groupListDTO.setGbDisabled(false);
-            // 法人選択フラグを格納(個別法人選択)
-            groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ONE);
-        }else {
-            // 指定グループ情報取得
-//            List<GroupManagerGroupListDTO> oGroupInfo =
-//                    iMastGroupService.selectGroupHistoryList(
-//                            psCustomerId, psSystemId, psLanguage,
-//                            psGroupId, ptStartDate,companyList);
-//            if (CollUtil.isNotEmpty(oGroupInfo)) {
-//                // 表示用Dtoに取得データを格納
-//                groupListDTO.setMgId(oGroupInfo.get(0).getMgId());
-//                groupListDTO.setMgCgroupidPk(oGroupInfo.get(0).getMgCgroupidPk());
-//                groupListDTO.setMgClanguage(oGroupInfo.get(0).getMgClanguage());
-//                groupListDTO.setMgDstartdate(oGroupInfo.get(0).getMgDstartdate());
-//                groupListDTO.setMgDenddate(oGroupInfo.get(0).getMgDenddate());
-//                groupListDTO.setMgCgroupdescription(oGroupInfo.get(0).getMgCgroupdescription());
-//                groupListDTO.setMgCgroupdescriptionja(oGroupInfo.get(0).getMgCgroupdescriptionja());
-//                groupListDTO.setMgCgroupdescriptionen(oGroupInfo.get(0).getMgCgroupdescriptionen());
-//                groupListDTO.setMgCgroupdescriptionch(oGroupInfo.get(0).getMgCgroupdescriptionch());
-//                groupListDTO.setMgCgroupdescription01(oGroupInfo.get(0).getMgCgroupdescription01());
-//                groupListDTO.setMgCgroupdescription02(oGroupInfo.get(0).getMgCgroupdescription02());
-//                groupListDTO.setMgCcompanyid(oGroupInfo.get(0).getMgCcompanyid());
-//                groupListDTO.setMgNpartinentnumber(oGroupInfo.get(0).getMgNpartinentnumber());
-//                groupListDTO.setMgNweightage(oGroupInfo.get(0).getMgNweightage());
-//                groupListDTO.setMgCtext(oGroupInfo.get(0).getMgCtext());
-//                groupListDTO.setGsCompanyName(oGroupInfo.get(0).getGsCompanyName());
-//                groupListDTO.setGbDisabled(true);
-//                // 法人選択情報を格納
-//                if (this.getCompanyId().equals(PsConst.CODE_ALL_COMPANIES)) {
-//                    // 全社区分選択
-//                    groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ONE);
-//                } else {
-//                    // 個別法人選択
-//                    groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ALL);
-//                }
-//            }
-        }
+//
+//        }
+//
+//        // 基点組織情報をJSONにセット
+//        String sJSONDataBS = this.psJSONUtilLogic.encodeJSON(this.baseSectionDto.getRowList());
+//        this.baseSectionDto.setJSONData(sJSONDataBS);
+//
+//        // 基点組織以下・のみフラグ nullなら以下とする
+//        if (sBelowSingle == null) { sBelowSingle = "0"; }
+//        this.gsBaseSectionBelowSingle = sBelowSingle;
 
-        return null;
     }
 
 }

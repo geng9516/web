@@ -278,7 +278,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
         if (StrUtil.isNotBlank(targetPermEmp)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
-            psDBBean.setTargetDept(targetPermEmp);
+            psDBBean.setTargetUser(targetPermEmp);
         }
         if (StrUtil.isNotBlank(targetPermGroup)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetPermGroup);

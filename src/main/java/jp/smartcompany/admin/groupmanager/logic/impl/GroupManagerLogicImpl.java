@@ -3,6 +3,7 @@ package jp.smartcompany.admin.groupmanager.logic.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerLogic;
@@ -11,6 +12,7 @@ import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.appcontrol.business.AppAuthInfoBusiness;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -18,6 +20,8 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -31,9 +35,11 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
     private final IMastGroupService iMastGroupService;
     private final PsSearchCompanyUtil psSearchCompanyUtil;
     private final AppAuthInfoBusiness appAuthInfoBusiness;
+    private final GroupAppManagerMainLogic groupAppManagerMainLogic;
 
     // 有効なグループリスト情報取得
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS)
     public Map<String,Object> getManagerGroupList(PsDBBean psDBBean, Date searchDate, String systemId){
         if (StrUtil.isBlank(systemId)){
             systemId = appAuthInfoBusiness.getSystemCode(psDBBean.getSiteId(), psDBBean.getAppId());
@@ -61,10 +67,12 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
                         companyList
                 );
         List<GroupManagerModifiedDateDTO> modifiedDateList = iMastGroupService.selectHistoryDate(session.getLoginCustomer(), systemId, companyList,searchDateStr);
+        List<MastSystemDO> systemList =  groupAppManagerMainLogic.getSystemList(psDBBean.getLanguage());
         return MapUtil.<String,Object>builder()
                 .put("validGroupList",validGroupList)
                 .put("invalidGroupList",inValidGroup)
                 .put("modifiedDateList",modifiedDateList)
+                .put("systemList",systemList)
                 .build();
     }
 

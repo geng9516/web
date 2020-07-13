@@ -2,6 +2,7 @@ package jp.smartcompany.boot.configuration;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -20,7 +21,6 @@ import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -32,17 +32,18 @@ import java.util.stream.Collectors;
  * @author Xiao Wenpeng
  */
 @Component
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class BasicAuthRealm extends AuthorizingRealm {
 
-    private final IMastAccountService iMastAccountService;
-    private final AuthBusiness authBusiness;
+    private IMastAccountService iMastAccountService;
+    private AuthBusiness authBusiness;
 
     /**
      * 身份验证（登录验证）
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken authToken) throws AuthenticationException {
+        iMastAccountService = SpringUtil.getBean(IMastAccountService.class);
+        authBusiness = SpringUtil.getBean(AuthBusiness.class);
         String username = (String) authToken.getPrincipal();
         Object credentials = authToken.getCredentials();
         if (credentials==null){
@@ -73,6 +74,7 @@ public class BasicAuthRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        authBusiness = SpringUtil.getBean(AuthBusiness.class);
         SimpleAuthorizationInfo authInfo = new SimpleAuthorizationInfo();
         LoginAccountBO loginAccountBO =(LoginAccountBO) principals.getPrimaryPrincipal();
         if (loginAccountBO!=null){

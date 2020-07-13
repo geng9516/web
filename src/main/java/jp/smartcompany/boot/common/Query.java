@@ -40,8 +40,6 @@ public class Query<T> {
         String orderField = SqlFilter.sqlInject((String)params.get(Constant.KEY_ORDER_FIELD));
         String order = (String)params.get(Constant.KEY_ORDER);
 
-        System.out.println("--");
-        System.out.println(order);
         //前端字段排序
         if(StrUtil.isNotEmpty(orderField) && StrUtil.isNotEmpty(order)){
             if(Constant.KEY_ASC.equalsIgnoreCase(order)) {

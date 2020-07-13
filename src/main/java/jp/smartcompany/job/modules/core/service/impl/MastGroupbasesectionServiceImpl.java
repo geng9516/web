@@ -1,5 +1,8 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.component.dto.BaseSectionRowDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
@@ -25,6 +28,29 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
   @Override
   public List<GroupBaseSectionBO> getBaseSectionByGroupCode(String customerId, String systemCode, String groupCode, Date date) {
        return baseMapper.getBaseSectionByGroupCode(customerId, systemCode, groupCode, SysUtil.transDateToString(date));
+  }
+
+  @Override
+  public List<BaseSectionRowDTO> selectGroupBaseSectionCompanyList(String psCustomerId,
+                                                                     String psSystemId, String psGroupId, String psLanguage, Date pdSearchDate,
+                                                                     List<String> plValidCompany) {
+      if (StrUtil.isBlank(psLanguage)){
+          psLanguage = "ja";
+      }
+      String strSearchDate;
+      if (pdSearchDate==null) {
+          strSearchDate = "2020/07/07";
+      }else {
+          strSearchDate = SysUtil.transDateToString(pdSearchDate);
+      }
+      if (CollUtil.isEmpty(plValidCompany)) {
+          plValidCompany = CollUtil.newArrayList("01","02");
+      }
+      if (StrUtil.isBlank(psGroupId)){
+          psGroupId = "1";
+      }
+      return baseMapper.selectGroupBaseSectionCompanyList(psCustomerId, psSystemId,
+              psGroupId, psLanguage, strSearchDate, plValidCompany);
   }
 
 }

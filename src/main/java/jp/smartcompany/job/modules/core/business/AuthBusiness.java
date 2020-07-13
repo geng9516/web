@@ -474,8 +474,6 @@ public class AuthBusiness {
             Date oSetDay = oPasswordEntity.getMapDpwddate();
             oSetDay.setDate(oSetDay.getDate()
                     + Integer.parseInt(psPasswordValid));
-            System.out.println(oSetDay);
-            System.out.println(now);
             // 当前时间大于密码设定日时密码过期
             if (oSetDay.before(now)) {
                 //認証エラー（パスワード期間切れ）
