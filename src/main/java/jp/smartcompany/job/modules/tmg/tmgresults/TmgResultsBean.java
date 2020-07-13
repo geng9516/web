@@ -2,6 +2,8 @@ package jp.smartcompany.job.modules.tmg.tmgresults;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
@@ -19,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
 import java.util.*;
@@ -248,33 +251,15 @@ public class TmgResultsBean {
     }
 
 
-
-
-
-
-    /**
-     * 入力サイト・承認サイト・管理サイト
-     * 月別一覧画面
-     * ACT_DISP_RMONTHLY
-     */
-    public void actDispRmonthly(String action,PsDBBean psDBBean) {
-
-        this.execute(psDBBean);
-        if (psDBBean.getTargetUser() != null && psDBBean.getTargetUser().length() != 0) {
-
-            showMonthly(action,psDBBean);
-        }
-    }
-
     /**
      * 入力サイト・承認サイト
      * 日別登録画面
      * ACT_EDITINP_RDAILY
      */
-    public void actEditinpRdaily(String action,PsDBBean psDBBean) {
+    public void actEditinpRdaily(String action, PsDBBean psDBBean) {
 
         this.execute(psDBBean);
-        this.showInp(action,psDBBean);
+        this.showInp(action, psDBBean);
     }
 
     /**
@@ -282,21 +267,10 @@ public class TmgResultsBean {
      * 日別登録画面
      * ACT_EDITINP_UDAILY
      */
-    public void actEditinpUdaily(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actEditinpUdaily(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
-        this.updateDaily(dto,psDBBean);
-        this.showMonthly(action,psDBBean);
-    }
-
-    /**
-     * 入力サイト
-     * 日別登録画面
-     * ACT_EDITINP_UCOMMENT
-     */
-    public void actEditinpUcomment(String action, TmgResultsDto dto,PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        updateInp(dto,psDBBean,action);
-        showMonthly(action,psDBBean);
+        this.updateDaily(psDBBean,dto);
+        this.showMonthly(action, psDBBean);
     }
 
     /**
@@ -306,10 +280,10 @@ public class TmgResultsBean {
      * <p>
      * 承認
      */
-    public void actEditpermUpermit(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actEditpermUpermit(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
-        updateDaily(dto,psDBBean);
-        showMonthly(action,psDBBean);
+        updateDaily(psDBBean,dto);
+        showMonthly(action, psDBBean);
     }
 
     /**
@@ -317,10 +291,10 @@ public class TmgResultsBean {
      * 日別登録・承認画面
      * ACT_REMANDS
      */
-    public void actRemands(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actRemands(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
-        updateRemandsStatus(dto,psDBBean);
-        showMonthly(action,psDBBean);
+        updateRemandsStatus(dto, psDBBean);
+        showMonthly(action, psDBBean);
     }
 
     /**
@@ -328,9 +302,9 @@ public class TmgResultsBean {
      * 日別承認画面
      * ACT_EDITPERM_RDAILY
      */
-    public void actEditpermRdaily(String  action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actEditpermRdaily(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
-        showPerm(action,psDBBean);
+        showPerm(action, psDBBean);
     }
 
     /**
@@ -340,10 +314,10 @@ public class TmgResultsBean {
      * <p>
      * 月次承認[承認]
      */
-    public void actFixed(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actFixed(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
         updateMonth(psDBBean);
-        showMonthly(action,psDBBean);
+        showMonthly(action, psDBBean);
     }
 
     /**
@@ -353,10 +327,10 @@ public class TmgResultsBean {
      * <p>
      * 月次承認[承認解除]
      */
-    public void actRescission(String action, TmgResultsDto dto,PsDBBean psDBBean) {
+    public void actRescission(String action, TmgResultsDto dto, PsDBBean psDBBean) {
         this.execute(psDBBean);
         updateMonth(psDBBean);
-        showMonthly(action,psDBBean);
+        showMonthly(action, psDBBean);
     }
 
     /**
@@ -368,7 +342,7 @@ public class TmgResultsBean {
         setMonth("2019/10/01");
 
         // 打刻反映処理
-        execReflectionTimePunch(action,psDBBean);
+        execReflectionTimePunch(action, psDBBean);
 
         // 月次情報表示項目を取得しセット
         List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems(psDBBean);
@@ -568,10 +542,10 @@ public class TmgResultsBean {
         }
     }
 
-    private void showInp(String action,PsDBBean psDBBean) {
+    private void showInp(String action, PsDBBean psDBBean) {
 
         // 打刻反映処理
-        execReflectionTimePunch(action,psDBBean);
+        execReflectionTimePunch(action, psDBBean);
 
         // 日別
         DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
@@ -738,13 +712,12 @@ public class TmgResultsBean {
     }
 
 
-
     /**
      * 差戻処理を行うメソッド
      *
      * @return なし
      */
-    private void updateRemandsStatus(TmgResultsDto dto,PsDBBean psDBBean) {
+    private void updateRemandsStatus(TmgResultsDto dto, PsDBBean psDBBean) {
 
         String action = psDBBean.getReqParam("txtAction");
         if (StrUtil.isEmpty(action)) {
@@ -752,7 +725,7 @@ public class TmgResultsBean {
             action = ACT_DISP_RMONTHLY;
         }
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action,psDBBean);
+        this.buildSQLForDeleteTrigger(action, psDBBean);
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
@@ -788,7 +761,7 @@ public class TmgResultsBean {
                 action
         );
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action,psDBBean);
+        this.buildSQLForDeleteTrigger(action, psDBBean);
 
         // エラーチェック削除
         //buildSQLForDeleteDailyCheck
@@ -801,7 +774,7 @@ public class TmgResultsBean {
     private void showPerm(String action, PsDBBean psDBBean) {
 
         // 打刻反映処理
-        execReflectionTimePunch(action,psDBBean);
+        execReflectionTimePunch(action, psDBBean);
 
         // 日別
         DailyEditVO dailyEditVO = iTmgDailyService.buildSQLForSelectDailyEdit(
@@ -999,9 +972,11 @@ public class TmgResultsBean {
      *
      * @return Vector  SQL
      */
-    public void getSQLVecForAjax(TmgResultsDto dto,PsDBBean psDBBean) {
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse getSQLVecForAjax(TmgResultsDto dto, PsDBBean psDBBean) {
 
-        // 日付関連取得
+        int result = 0;
+                // 日付関連取得
         getDate(psDBBean);
 
         // 表示対象者
@@ -1029,8 +1004,12 @@ public class TmgResultsBean {
         dailyCheckDto.setSiteId(psDBBean.getSiteId());
         dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
         dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
-        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+        result = iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
+        // 詳細
         iTmgDailyDetailCheckService.buildSQLForInsertDetailCheckEtc(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
@@ -1073,7 +1052,11 @@ public class TmgResultsBean {
             nonDutyDetailCheckDto.setSite(psDBBean.getSiteId());
             nonDutyDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             nonDutyDetailCheckDto.setNIdx(i);
-            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
+            result = iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(nonDutyDetailCheckDto);
+
+            if (result != 1) {
+                return GlobalResponse.error();
+            }
             i++;
         }
 
@@ -1099,7 +1082,11 @@ public class TmgResultsBean {
             overHoursDetailCheckDto.setSite(psDBBean.getSiteId());
             overHoursDetailCheckDto.setHasAuthority(dto.getHasAuthority());
             overHoursDetailCheckDto.setNIdx(i);
-            iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
+            result = iTmgDailyDetailCheckService.buildSQLForInsertDetailCheck(overHoursDetailCheckDto);
+
+            if (result != 1) {
+                return GlobalResponse.error();
+            }
             i++;
         }
 
@@ -1107,7 +1094,7 @@ public class TmgResultsBean {
         this.buildSQLForDeleteErrMsg(psDBBean);
 
         // エラーメッセージ追加
-        iTmgErrmsgService.buildSQLForInsertErrMsg(
+        result = iTmgErrmsgService.buildSQLForInsertErrMsg(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getUserCode(),
@@ -1116,6 +1103,9 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay()
         );
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
         // エラーメッセージ取得
         ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(),
@@ -1123,13 +1113,18 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser());
 
         // エラーメッセージ削除
-        this.buildSQLForDeleteErrMsg(psDBBean);
+        result = this.buildSQLForDeleteErrMsg(psDBBean);
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
 
         // エラーチェック削除
         this.buildSQLForDeleteDetailCheck(psDBBean);
+
+        return GlobalResponse.ok();
     }
 
 
@@ -1137,8 +1132,6 @@ public class TmgResultsBean {
      * 月次一覧、また日次登録（承認）画面表示時の打刻反映処理
      */
     public void execReflectionTimePunch(String action, PsDBBean psDBBean) {
-
-//        String action = psDBBean.getReqParam("txtAction");
 
         // メニューから初期の月次一覧画面表示時はアクションが未設定なので、月次一覧画面表示アクションを設定する。
         if (StrUtil.isEmpty(action)) {
@@ -1195,7 +1188,7 @@ public class TmgResultsBean {
                 action, stDate, endDate);
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action,psDBBean);
+        this.buildSQLForDeleteTrigger(action, psDBBean);
 
         // TODO 未実装
 //        TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEAN_DESC), session, BEAN_DESC);
@@ -1351,7 +1344,7 @@ public class TmgResultsBean {
      *
      * @param psStatus 分岐
      */
-    private void overHours45(String psStatus,PsDBBean psDBBean) {
+    private void overHours45(String psStatus, PsDBBean psDBBean) {
 
         // システム日付の月より表示する月が小さいか ※月末を過ぎたかどうか
         if (psDBBean.getSysDate().compareTo(getMonth()) < 0) {
@@ -1685,230 +1678,266 @@ public class TmgResultsBean {
 
         // URL(psTargetUser部分)を書換えられた場合の対策
 
-        if(TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
+        if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
             psDBBean.setTargetUser(psDBBean.getUserCode());
         }
         try {
 
-        // ■初期表示時：
-        //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
-        //   勤怠登録承認コンテンツの参照権限をチェックする。
-        //   参照権限がある場合は、問題なく勤怠登録承認を表示する。
-        //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
-        //   1ヶ月遡った月の参照権限があればその月の勤怠登録承認を表示し、
-        //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
-        //   メッセージを画面へ表示する。
-        // ■初期表示以外：
-        //   選択した組織、(もしくはグループ)の対象年月時点での勤怠登録承認コンテンツの参照権限をチェックする。
-        //   権限があれば問題なく勤怠登録承認を表示する。
-        //   権限が無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
-        //   メッセージを画面へ表示する。
-        //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
-        //     権限が無いのと同じ扱いとする。
-        // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
-        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
-            String sAction     = psDBBean.getReqParam("txtAction");
-            String sTargetSec  = getReferList().getTargetSec();
-            // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
-            // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
-            if((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && (sAction == null || sAction.length() == 0))
-                    || (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && !(sTargetSec == null || sTargetSec.length() == 0) && (sAction == null || sAction.length() == 0))) {
-                // 参照権限チェック(現在時点での年月)
-                if (getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) {
-                    setAuthorityMonth(CB_CAN_REFER);
+            // ■初期表示時：
+            //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
+            //   勤怠登録承認コンテンツの参照権限をチェックする。
+            //   参照権限がある場合は、問題なく勤怠登録承認を表示する。
+            //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
+            //   1ヶ月遡った月の参照権限があればその月の勤怠登録承認を表示し、
+            //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+            //   メッセージを画面へ表示する。
+            // ■初期表示以外：
+            //   選択した組織、(もしくはグループ)の対象年月時点での勤怠登録承認コンテンツの参照権限をチェックする。
+            //   権限があれば問題なく勤怠登録承認を表示する。
+            //   権限が無い場合は画面に「参照できる社員が存在しません」(文言変更有り)
+            //   メッセージを画面へ表示する。
+            //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+            //     権限が無いのと同じ扱いとする。
+            // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
+            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
+                String sAction = psDBBean.getReqParam("txtAction");
+                String sTargetSec = getReferList().getTargetSec();
+                // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
+                // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
+                if ((TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && (sAction == null || sAction.length() == 0))
+                        || (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && !(sTargetSec == null || sTargetSec.length() == 0) && (sAction == null || sAction.length() == 0))) {
+                    // 参照権限チェック(現在時点での年月)
+                    if (getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) {
+                        setAuthorityMonth(CB_CAN_REFER);
 
-                    // 参照権限が無い場合は、1ヶ月過去のシートの権限をチェックする。
-                } else {
-                    String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
+                        // 参照権限が無い場合は、1ヶ月過去のシートの権限をチェックする。
+                    } else {
+                        String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
 
-                    // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    setReferList(sPrevMonth, TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
+                        // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
+                        setReferList(sPrevMonth, TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);
 
-                    // 参照権限の設定:
-                    // 初期表示時の対象年月の時点の参照権限が無い場合に、
-                    // 1ヶ月過去の参照権限を判定し参照権限がある場合は1ヶ月過去のシートを参照する。
-                    // 権限が無い場合は、参照できない。
-                    if(getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth)) {
+                        // 参照権限の設定:
+                        // 初期表示時の対象年月の時点の参照権限が無い場合に、
+                        // 1ヶ月過去の参照権限を判定し参照権限がある場合は1ヶ月過去のシートを参照する。
+                        // 権限が無い場合は、参照できない。
+                        if (getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth)) {
 
-                        // 対象年月が現在の年月の場合、1ヶ月過去の年月を対象年月に設定します
-                        // このif文は、現在「部署A」を選択していて対象年月が変更された状態で「組織B」を選択しなおすと
-                        // 「組織B」の現在日付時点の年月と、その年月-1ヶ月時点での参照権限をチェックします。
-                        // その際に、変更後対象年月が現在年月でない場合にも現在年月-1ヶ月を設定されるのを防ぐ為
-                        // 「対象年月が現在の年月の場合」という条件を実装しています。
-                        if(getThisMonth().equals(getMonth())) {
-                            // 対象年月を1ヶ月過去に設定します
-                            setMonth(sPrevMonth);
+                            // 対象年月が現在の年月の場合、1ヶ月過去の年月を対象年月に設定します
+                            // このif文は、現在「部署A」を選択していて対象年月が変更された状態で「組織B」を選択しなおすと
+                            // 「組織B」の現在日付時点の年月と、その年月-1ヶ月時点での参照権限をチェックします。
+                            // その際に、変更後対象年月が現在年月でない場合にも現在年月-1ヶ月を設定されるのを防ぐ為
+                            // 「対象年月が現在の年月の場合」という条件を実装しています。
+                            if (getThisMonth().equals(getMonth())) {
+                                // 対象年月を1ヶ月過去に設定します
+                                setMonth(sPrevMonth);
+                            }
+                            setAuthorityMonth(CB_CAN_REFER);
+                        } else {
+                            // 対象年月を元に戻します
+                            setReferList(getMonth(), TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);
+
+                            setAuthorityMonth(CB_CANT_REFER);
                         }
+                    }
+
+                    // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+                    // 翌月の権限があればリンク「>」を画面に表示する。
+                    // 権限が無い場合は「>」を表示しない。
+                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+                    //   権限が無いのと同じ扱いとする。
+                    String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
+                    if (getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
+                        setAuthorityNextMonth(CB_CAN_REFER);
+                    } else {
+                        setAuthorityNextMonth(CB_CANT_REFER);
+                    }
+
+                    // 初期表示時以外
+                    // ※組織を選択していないときは権限チェックを行わない。
+                    // 　勤怠管理サイトで組織未選択時に権限チェックを行うとえらーで落ちてしまうので
+                    // 　それを防ぐ為に「組織を選択しているとき」という条件を実装しています。
+                } else if (!(sTargetSec == null || sTargetSec.length() == 0)) {
+                    // 参照権限の判定：設定(当月分)
+                    // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
+                    String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
+                    if ((getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) ||
+                            (getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth))) {
                         setAuthorityMonth(CB_CAN_REFER);
                     } else {
-                        // 対象年月を元に戻します
-                        setReferList(getMonth(), TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
-
                         setAuthorityMonth(CB_CANT_REFER);
                     }
-                }
 
-                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
-                // 翌月の権限があればリンク「>」を画面に表示する。
-                // 権限が無い場合は「>」を表示しない。
-                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
-                //   権限が無いのと同じ扱いとする。
-                String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
-                if(getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
-                    setAuthorityNextMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityNextMonth(CB_CANT_REFER);
-                }
+                    // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+                    // 翌月の権限があればリンク「>」を画面に表示する。
+                    // 権限が無い場合は「>」を表示しない。
+                    // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
+                    //   権限が無いのと同じ扱いとする。
+                    String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
+                    if (getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
+                        setAuthorityNextMonth(CB_CAN_REFER);
+                    } else {
+                        setAuthorityNextMonth(CB_CANT_REFER);
+                    }
 
-                // 初期表示時以外
-                // ※組織を選択していないときは権限チェックを行わない。
-                // 　勤怠管理サイトで組織未選択時に権限チェックを行うとえらーで落ちてしまうので
-                // 　それを防ぐ為に「組織を選択しているとき」という条件を実装しています。
-            } else if(!(sTargetSec == null || sTargetSec.length() == 0)) {
-                // 参照権限の判定：設定(当月分)
-                // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
-                String sPrevMonth = TmgUtil.getFirstDayOfMonth(getThisMonth(), PARAM_PREV_MONTH);
-                if((getReferList().existsAnyone(getThisMonth()) && getReferList().isThereSomeEmployees(getThisMonth())) ||
-                        (getReferList().existsAnyone(sPrevMonth) && getReferList().isThereSomeEmployees(sPrevMonth))) {
-                    setAuthorityMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityMonth(CB_CANT_REFER);
                 }
-
-                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
-                // 翌月の権限があればリンク「>」を画面に表示する。
-                // 権限が無い場合は「>」を表示しない。
-                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している社員が存在しない場合も
-                //   権限が無いのと同じ扱いとする。
-                String sNextMonth = TmgUtil.getFirstDayOfMonth(getMonth(), PARAM_NEXT_MONTH);
-                if(getReferList().existsAnyone(sNextMonth) && getReferList().isThereSomeEmployees(sNextMonth)) {
-                    setAuthorityNextMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityNextMonth(CB_CANT_REFER);
-                }
-
+                // その他のサイトの場合
+            } else {
+                setAuthorityMonth(CB_CAN_REFER);
+                setAuthorityNextMonth(CB_CAN_REFER);
             }
-            // その他のサイトの場合
-        } else {
-            setAuthorityMonth(CB_CAN_REFER);
-            setAuthorityNextMonth(CB_CAN_REFER);
-        }
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
     }
 
-    /** リクエストキー - 再表示ボタン使用判定用 */
-    private static final String TREEVIEW_KEY_REFRESH_FLG  = "txtTmgReferListTreeViewRefreshFlg";
+    /**
+     * リクエストキー - 再表示ボタン使用判定用
+     */
+    private static final String TREEVIEW_KEY_REFRESH_FLG = "txtTmgReferListTreeViewRefreshFlg";
 
     /**
      * 組織情報再構築するメソッド
+     *
      * @param
-     * @return  なし
+     * @return なし
      * @throws
      */
-    private void setOrganizationTreeInf(PsDBBean psDBBean){
+    private void setOrganizationTreeInf(PsDBBean psDBBean) {
 
         try {
             // 表示対象者
-            if( !SITE_TI.equals(psDBBean.getSiteId()) ) {
+            if (!SITE_TI.equals(psDBBean.getSiteId())) {
 
                 // 勤怠承認・管理サイト
                 setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);   // 汎用参照リスト
                 psDBBean.setTargetUser(referList.getTargetEmployee());
                 // 当日・当月日付の情報を再格納する
-                if (referList.getRecordDate() != null){
+                if (referList.getRecordDate() != null) {
                     setToday(referList.getRecordDate());
-                    setThisMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(),TmgUtil.Cs_PARAM_THIS_MONTH));
+                    setThisMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH));
                 }
                 // 組織ツリー基準日情報チェック(再表示ボタンが押されたかも判定)
                 if (referList.getRecordDate() == null ||
-                        (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) == null || "".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG)))){
+                        (psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG) == null || "".equals(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG)))) {
                     // 表示対象月
-                    if( psDBBean.getReqParam("txtDYYYYMM") == null || "".equals(psDBBean.getReqParam("txtDYYYYMM"))) {  // 初回起動時
+                    if (psDBBean.getReqParam("txtDYYYYMM") == null || "".equals(psDBBean.getReqParam("txtDYYYYMM"))) {  // 初回起動時
                         setMonth(getThisMonth());
                     } else {
                         setMonth(psDBBean.getReqParam("txtDYYYYMM"));
                     }
                 } else {
                     // 組織ツリーの基準日を使用
-                    setMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(),TmgUtil.Cs_PARAM_THIS_MONTH));
+                    setMonth(TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), TmgUtil.Cs_PARAM_THIS_MONTH));
                 }
             }
 
-        } catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         return;
 
     }
-    /** 1ヵ月後 */
-    private static final int PARAM_NEXT_MONTH =  0;
-    /** 今月 */
+
+    /**
+     * 1ヵ月後
+     */
+    private static final int PARAM_NEXT_MONTH = 0;
+    /**
+     * 今月
+     */
     private static final int PARAM_THIS_MONTH = -1;
-    /** 1ヶ月前 */
+    /**
+     * 1ヶ月前
+     */
     private static final int PARAM_PREV_MONTH = -2;
-    /** 参照権限：参照可能 */
+    /**
+     * 参照権限：参照可能
+     */
     private static final boolean CB_CAN_REFER = true;
-    /** 参照権限：参照不可能  */
+    /**
+     * 参照権限：参照不可能
+     */
     private static final boolean CB_CANT_REFER = false;
+
     /**
      * 生成したReferListを返す
+     *
      * @return _referList
      */
-    public TmgReferList getReferList(){
+    public TmgReferList getReferList() {
         return referList;
     }
-    /** 勤怠シートの参照権限(基準日の翌月) */
-    boolean _authorityNextMonth       = false;
-    /** 勤怠シートの参照権限(基準月) */
-    boolean _authorityMonth           = false;
-    /** 勤怠シートの参照権限(基準日の翌月)設定メソッド */
+
+    /**
+     * 勤怠シートの参照権限(基準日の翌月)
+     */
+    boolean _authorityNextMonth = false;
+    /**
+     * 勤怠シートの参照権限(基準月)
+     */
+    boolean _authorityMonth = false;
+
+    /**
+     * 勤怠シートの参照権限(基準日の翌月)設定メソッド
+     */
     public void setAuthorityMonth(boolean bValue) {
         _authorityMonth = bValue;
     }
-    /** 勤怠シートの参照権限(基準日の翌月)取得メソッド */
+
+    /**
+     * 勤怠シートの参照権限(基準日の翌月)取得メソッド
+     */
     public boolean getAuthorityMonth() {
         return _authorityMonth;
     }
-    /** 勤怠シートの参照権限(基準月)設定メソッド */
+
+    /**
+     * 勤怠シートの参照権限(基準月)設定メソッド
+     */
     public void setAuthorityNextMonth(boolean bValue) {
         _authorityNextMonth = bValue;
     }
-    /** 勤怠シートの参照権限(基準月)取得メソッド */
+
+    /**
+     * 勤怠シートの参照権限(基準月)取得メソッド
+     */
     public boolean getAuthorityNextMonth() {
         return _authorityNextMonth;
     }
 
     /**
      * 汎用参照リストの処理をするメソッド
-     * @param   iTree ツリータイプ
-     * @return  なし
+     *
+     * @param iTree ツリータイプ
+     * @return なし
      * @throws
      */
-    private void setReferList(int iTree, PsDBBean psDBBean){
+    private void setReferList(int iTree, PsDBBean psDBBean) {
 
-        try{
+        try {
             referList = new TmgReferList(psDBBean, BEAN_DESC, getThisMonth(), iTree, true, true, false, false, true);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
     /**
      * 汎用参照リストの処理をするメソッド
-     * @param   sDate ツリータイプ
-     * @return  なし
+     *
+     * @param sDate ツリータイプ
+     * @return なし
      * @throws
      */
-    private void setReferList(String sDate, int iTree,PsDBBean psDBBean){
+    private void setReferList(String sDate, int iTree, PsDBBean psDBBean) {
 
-        try{
+        try {
             referList = new TmgReferList(psDBBean, BEAN_DESC, sDate, iTree, true, true, false, false, true);
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -1917,57 +1946,60 @@ public class TmgResultsBean {
     /**
      * エラーチェック削除
      */
-    private void buildSQLForDeleteDailyCheck(PsDBBean psDBBean){
-        iTmgDailyCheckService.getBaseMapper().delete(SysUtil.<TmgDailyCheckDO>query().eq("TDA_CCUSTOMERID", psDBBean.getCustID())
+    private int buildSQLForDeleteDailyCheck(PsDBBean psDBBean) {
+        int result = iTmgDailyCheckService.getBaseMapper().delete(SysUtil.<TmgDailyCheckDO>query().eq("TDA_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TDA_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TDA_CMODIFIERUSERID", psDBBean.getUserCode()));
+        return result;
     }
 
     /**
      * エラーチェック削除
      */
-    private void buildSQLForDeleteDetailCheck(PsDBBean psDBBean){
-        iTmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query().eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+    private int buildSQLForDeleteDetailCheck(PsDBBean psDBBean) {
+        int result = iTmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query().eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TDAD_CMODIFIERUSERID", psDBBean.getUserCode()));
+        return result;
     }
 
     /**
      * エラーメッセージ削除
      */
-    private void buildSQLForDeleteErrMsg(PsDBBean psDBBean){
-        iTmgErrmsgService.getBaseMapper().delete(SysUtil.<TmgErrmsgDO>query().eq("TER_CCUSTOMERID", psDBBean.getCustID())
+    private int buildSQLForDeleteErrMsg(PsDBBean psDBBean) {
+        int result = iTmgErrmsgService.getBaseMapper().delete(SysUtil.<TmgErrmsgDO>query().eq("TER_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TER_CCOMPANYID", psDBBean.getCompCode()).eq("TER_CMODIFIERUSERID", psDBBean.getUserCode()));
+        return result;
     }
 
     /**
      * トリガー削除
      */
-    private void buildSQLForDeleteTrigger(String action,PsDBBean psDBBean){
-        iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+    private int buildSQLForDeleteTrigger(String action, PsDBBean psDBBean) {
+        int result = iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query().eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
                 .eq("TTR_CMODIFIERPROGRAMID", BEAN_DESC + "_" + action));
+        return result;
     }
 
-    public static final String ACT_EDITPERM_EDIT       = "ACT_EDITPERM_EDIT";      // 日別承認画面_確定済みデータの編集
-
+    public static final String ACT_EDITPERM_EDIT = "ACT_EDITPERM_EDIT";      // 日別承認画面_確定済みデータの編集
 
 
     /**
      * 承認権限があるかどうか
-     * @return  boolean true:権限有り/false:なし
-
+     *
+     * @return boolean true:権限有り/false:なし
      */
-    public boolean isResult( String sEmp, String sDate ,String siteId) {
+    public boolean isResult(String sEmp, String sDate, String siteId) {
 
         // 承認サイトのみ判定を行う
-        if( !TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) ) {
+        if (!TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId)) {
             return true;
         }
 
         try {
-            return referList.hasAuthorityAtEmployee( sDate, sEmp, TmgUtil.Cs_AUTHORITY_RESULT );
+            return referList.hasAuthorityAtEmployee(sDate, sEmp, TmgUtil.Cs_AUTHORITY_RESULT);
         } catch (Exception e) {
             return false;
         }
@@ -1975,7 +2007,7 @@ public class TmgResultsBean {
 
 
     // ボタン表示制御
-    public boolean isEditable(PsDBBean psDBBean,String action){
+    public boolean isEditable(PsDBBean psDBBean, String action) {
 
         boolean isEditable = false;
 
@@ -2038,15 +2070,17 @@ public class TmgResultsBean {
     }
 
 
-    /** システムプロパティ：「裁量労働制の場合、当日の勤務予定欄の表示可否の制御を行う」かどうかの制御を行う（yes:可、no:非）  */
+    /**
+     * システムプロパティ：「裁量労働制の場合、当日の勤務予定欄の表示可否の制御を行う」かどうかの制御を行う（yes:可、no:非）
+     */
     private final String SYSPROP_TMG_SHOW_COMMON_DISCRETIONARY_LABOR = "TMG_SHOW_COMMON_DISCRETIONARY_LABOR";
 
     /**
      * システムプロパティから値を取得後、就業登録・日次登録画面と就業承認・日次登録画面で、裁量労働制の場合、超過勤務申請欄の表示可否を制御する値を返却します
      *
-     * @return boolean(true:使用する、false:使用しない)
+     * @return boolean(true : 使用する 、 false : 使用しない)
      */
-    public boolean isDiscretionaryLabor(PsDBBean psDBBean){
+    public boolean isDiscretionaryLabor(PsDBBean psDBBean) {
 
         boolean gbDiscretionaryLabor = false;
 
@@ -2079,7 +2113,7 @@ public class TmgResultsBean {
     /**
      * 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
      *
-     * @return boolean(true:表示する、false:表示しない)
+     * @return boolean(true : 表示する 、 false : 表示しない)
      */
     public boolean isCommonDiscretionaryLabor(PsDBBean psDBBean) {
 
@@ -2087,31 +2121,23 @@ public class TmgResultsBean {
         if (!isDiscretionaryLabor(psDBBean)) {
             return true;
             // 裁量労働制の場合、表示しない（基準日時点の裁量労働判定）
-        } else if(isDiscretion(psDBBean.getCustID() , psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay())) {
+        } else if (isDiscretion(psDBBean.getCustID(), psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay())) {
             return false;
-        }else{
+        } else {
             return true;
         }
 
     }
 
-//////////////////////////////////////////////////////////////////////////////////////////
-
-
-    ///入力サイト
-    ///入力サイト
-    //入力サイト初期化
-    public TodayThisMonthVO getToday(PsDBBean psDBBean){
-
-        // 対象月リスト一覧取得
-        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
-
-        // 今日の日付
-        return todayThisMonthVO;
-    }
-
-    //入力サイト初期化
-    public List<DispMonthlyVO> tmgInpInit(PsDBBean psDBBean){
+    ////////////////////////入力サイト///////////////////////////////////////////////////////////////////
+    ///////////////////就業登録一覧画面表示開始////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 対象年月月リスト一覧取得
+     * @param psDBBean
+     * @return
+     */
+    public List<DispMonthlyVO> tmgInpInit(PsDBBean psDBBean) {
 
         // 対象月リスト一覧取得
         TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
@@ -2130,8 +2156,13 @@ public class TmgResultsBean {
         return dispMonthlyVOList;
     }
 
-    //月次情報
-    public  Map<String, Object> getTitleData(PsDBBean psDBBean){
+    /**
+     * 月次情報と日次情報を取得する
+     *
+     * @param psDBBean 　PsDBBean
+     * @return 月次情報と日次情報
+     */
+    public Map<String, Object> getTitleData(PsDBBean psDBBean) {
 
         Map<String, Object> monthlyMap = MapUtil.newHashMap();
         // 月次情報表示項目を取得しセット
@@ -2183,8 +2214,8 @@ public class TmgResultsBean {
         );
 
         // 3 休日
-        String targetUser =psDBBean.getTargetUser();
-        String sectionid= "";
+        String targetUser = psDBBean.getTargetUser();
+        String sectionid = "";
         String groupid = "";
 
         String year = getMonth().substring(0, 4);
@@ -2200,12 +2231,21 @@ public class TmgResultsBean {
         monthlyMap.put("dailyMapList", dailyMapList);
         return monthlyMap;
     }
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////就業登録一覧画面表示終了////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
-    //////////////////////////////////////////////////////////////////////////////////////////
-    //登録
-
-    // 出張区分
-    public Map dailyDetail(PsDBBean psDBBean,String action) {
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////就業登録画面開始////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
+    /**
+     * 就業登録画面初期化データ取得
+     *
+     * @param psDBBean 　PsDBBean
+     * @param action   　action
+     * @return 画面表示用データ
+     */
+    public Map dailyDetail(PsDBBean psDBBean, String action) {
 
         Map<String, Object> dailyMap = MapUtil.newHashMap();
 
@@ -2262,7 +2302,7 @@ public class TmgResultsBean {
                 psDBBean.getSiteId(),
                 psDBBean.getLanguage()
         );
-        dailyMap.put("dailyEditVO",dailyEditVO);
+        dailyMap.put("dailyEditVO", dailyEditVO);
 
         // 詳細:欠勤離籍以外
         List<DailyDetailVO> dailyDetail0List = iTmgDailyDetailService.buildSQLForSelectDetail(
@@ -2274,7 +2314,7 @@ public class TmgResultsBean {
                 0,
                 true
         );
-        dailyMap.put("dailyDetail0List",dailyDetail0List);
+        dailyMap.put("dailyDetail0List", dailyDetail0List);
 
         // 詳細：非勤務
         List<DetailNonDutyVO> detailNonDutyVOList = iTmgDailyService.buildSQLForSelectDetailNonDuty(
@@ -2299,22 +2339,22 @@ public class TmgResultsBean {
                 this.isShowOvertimeNotification(psDBBean)
         );
 
-       dailyMap.put("detailOverhoursVOList", detailOverhoursVOList);
+        dailyMap.put("detailOverhoursVOList", detailOverhoursVOList);
 
         // 裁量労働-勤務状況の状態を取得
         // 勤務状況
         List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(
                 psDBBean.getCustID()
                 , psDBBean.getCompCode()
-                ,this.getDay()
+                , this.getDay()
                 , psDBBean.getTargetUser()
                 , getMonth()
                 , TYPE_ITEM_WORK_STATUS
                 , TYPE_ITEM_OVERHOURS_REASON);
-         dailyMap.put("workStatus", workStatus);
+        dailyMap.put("workStatus", workStatus);
 
-         // 画面編集制御
-         boolean isEditable = this.isEditable(psDBBean,action);
+        // 画面編集制御
+        boolean isEditable = this.isEditable(psDBBean, action);
         dailyMap.put("isEditable", isEditable);
 
         // 就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
@@ -2322,7 +2362,7 @@ public class TmgResultsBean {
         dailyMap.put("isEdiTableResult4Inp", isEdiTableResult4Inp);
 
         // 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
-        boolean  isCommonDiscretionaryLabor = isCommonDiscretionaryLabor(psDBBean);
+        boolean isCommonDiscretionaryLabor = isCommonDiscretionaryLabor(psDBBean);
         dailyMap.put("isCommonDiscretionaryLabor", isCommonDiscretionaryLabor);
 
         List<DailyLogVO> dailyLogVOList = iTmgDailyActionlogService.buildSQLForSelectTmgSelectDailyActionLog(psDBBean.getCustID()
@@ -2333,19 +2373,24 @@ public class TmgResultsBean {
 
         dailyMap.put("columnsDailyLog", dailyLogVOList);
 
-
-
-
-       return dailyMap;
+        return dailyMap;
     }
 
+    /**
+     * 日別登録画面_本人コメント登録処理
+     *
+     * @param dto TmgResultsDto
+     * @param psDBBean PsDBBean
+     * @return GlobalResponse
+     */
+    public GlobalResponse updateInp(PsDBBean psDBBean, TmgResultsDto dto) {
 
-////////////////////////////////////////////////////////////////////////////////////////
-    //日別登録画面_本人コメント登録処理
-    public void updateInp(TmgResultsDto dto,PsDBBean psDBBean, String txtAction) {
+        int result = 0;
+
+        String txtAction= dto.getTxtAction();
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(txtAction,psDBBean);
+        this.buildSQLForDeleteTrigger(txtAction, psDBBean);
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
@@ -2367,10 +2412,13 @@ public class TmgResultsBean {
         dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
         dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
 
-        iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+        result = iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
         // トリガー追加
-        iTmgTriggerService.buildSQLForInsertTrigger(
+        result = iTmgTriggerService.buildSQLForInsertTrigger(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
@@ -2378,18 +2426,31 @@ public class TmgResultsBean {
                 psDBBean.getUserCode(),
                 txtAction
         );
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(txtAction,psDBBean);
+        result = this.buildSQLForDeleteTrigger(txtAction, psDBBean);
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
 
         // エラーチェック削除
-        this.buildSQLForDeleteDailyCheck(psDBBean);
+        result = this.buildSQLForDeleteDailyCheck(psDBBean);
+        if (result != 1) {
+            return GlobalResponse.error();
+        }
+
+        return GlobalResponse.ok();
     }
 
     /**
-     *登録
+     * 日別登録画面_登録
+     * @param psDBBean PsDBBean
+     * @param dto TmgResultsDto
      */
-    public  void updateDaily(TmgResultsDto dto,PsDBBean psDBBean) {
+    public void updateDaily(PsDBBean psDBBean,TmgResultsDto dto ) {
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
@@ -2436,7 +2497,6 @@ public class TmgResultsBean {
                 psDBBean.getUserCode(),
                 dto.getTxtAction(),
                 dto.getPsSite()
-
         );
 
         int i = 1;
@@ -2519,7 +2579,7 @@ public class TmgResultsBean {
         );
 
         // トリガー削除
-        this.buildSQLForDeleteTrigger(dto.getTxtAction(),psDBBean);
+        this.buildSQLForDeleteTrigger(dto.getTxtAction(), psDBBean);
 
         // エラーメッセージ削除
         this.buildSQLForDeleteErrMsg(psDBBean);
@@ -2530,5 +2590,9 @@ public class TmgResultsBean {
         // エラーチェック削除
         this.buildSQLForDeleteDetailCheck(psDBBean);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////
+    ///////////////////就業登録画面終了////////////////////////////////////////////////////////////////
+    /////////////////////////////////////////////////////////////////////////////////////////////////
 
 }

@@ -123,8 +123,8 @@
                 </otherwise>
             </choose>
             TDA_CWORKINGNAME_R,
-            TMG_F_CONV_HHMI2MIN(#{tdaNopenR}),
-            TMG_F_CONV_HHMI2MIN(#{tdaNcloseR}),
+            TMG_F_CONV_HHMI2MIN(#{tdaNopenR,jdbcType=VARCHAR}),
+            TMG_F_CONV_HHMI2MIN(#{tdaNcloseR,jdbcType=VARCHAR}),
             null,
             null,
             <choose>

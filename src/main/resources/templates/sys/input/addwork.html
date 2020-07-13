@@ -81,7 +81,7 @@
                     <i-button type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">コメントのみ登録</i-button>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily">登録</i-button>
+                    <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily" :loading="updateDailyLoading">登録</i-button>
                 </i-col>
             </Row>
             <div class="titlenorm mb10">
@@ -285,7 +285,7 @@
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
                 tmgResultsDto: {
-                    txtAction: 'ACT_EDITINP_UDAILY',
+                    txtAction: '',
                     holiday: false,
                     txtTdaNopenR: '',
                     txtTdaNcloseR: '',
@@ -492,7 +492,8 @@
                 index: 0,
                 isConfirm: false,
                 comment: '',
-                isLogShow: false
+                isLogShow: false,
+                updateDailyLoading:false,
 
 
 
@@ -585,19 +586,13 @@
 
                 }
             },
-            // 今日日付取得
-            async getToDay() {
-                this.query.txtAction = 'ACT_DISP_RMONTHLY'
-                const {data} = await this.http.get('sys/tmgResults/getToday', this.query)
-
-            },
             // 勤務年月一覧取得
             async getWorkDateList() {
                 this.query.txtAction = 'ACT_DISP_RMONTHLY'
                 this.loading = false
                 const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
 
-                this.query.today = data.today.today
+                this.query.today = data.today
                 this.dispMonthlyList = data.monthLy
                 console.log(this.dispMonthlyList)
 
@@ -620,24 +615,24 @@
                 this.query.txtAction = 'ACT_DISP_RMONTHLY'
                 this.query.txtDYYYYMM = e
                 this.query.txtDYYYYMMDD = this.query.today
-                this.loading = true
+
                 // 就業実績 --月次・日次実績
                 await this.getTitleData()
 
-                this.loading = false
             },
             //就業実績（月次・日次）
             async monthAndDaily() {
                 this.query.txtAction = 'ACT_DISP_RMONTHLY'
                 this.query.txtDYYYYMM = this.model1
                 this.query.txtDYYYYMMDD = this.query.today
-                this.loading = true
+
                 // 就業実績 --月次・日次実績
                 await this.getTitleData()
-                this.loading = false
+
             },
             // 就業実績のタイトルとデータを取得
             async getTitleData() {
+                this.loading = true
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
                 this.dailyDataList = []
@@ -657,6 +652,7 @@
                 })
 
                 this.dailyDataList = data.dailyMapList
+                this.loading = false
 
             },
             //一覧から日次実績をクリックする
@@ -681,7 +677,6 @@
 
                 // 業登録画面データ取得
                 await this.dailyDetail()
-
             },
 
             // 就業登録画面情報取得・設定する
@@ -756,8 +751,6 @@
                     this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
                 }
 
-
-
                 if (this.dailyEdit.tdaNopenTp === null) {
                     this.dailyEdit.tdaNopenTp = '---'
                 }
@@ -769,10 +762,9 @@
                     this.dailyEdit.tdaNcloseN = '---'
                 }
 
-
                 this.workingId = this.dailyEdit.tdaCworkingidR
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
-                // this.title = this.dailyEdit.tdaDyyyymmddDy
+                this.title = this.dailyEdit.tdaDyyyymmddDy
 
                 // 非勤務
                 this.detailNonDutyVOList = data.detailNonDutyVOList
@@ -787,9 +779,7 @@
 
                     }
                 })
-
             },
-
 
             handleClose() {
                 this.errorFlag = false
@@ -833,7 +823,6 @@
 
                 })
 
-
             },
             delNotWork(row) {
                 this.detailNonDutyVOList = this.detailNonDutyVOList.filter(e => e.tdadSeq !== row.tdadSeq)
@@ -843,24 +832,21 @@
             },
             //コメントのみ登録
             updateInp: Debounce(function () {
-                this.updateInpQuery.txtAction = 'ACT_EDITINP_UCOMMENT'
-                this.updateInpQuery.holiday = this.bHoliday
-                this.updateInpQuery.workingId = this.workingId
-                this.updateInpQuery.txtDYYYYMMDD = this.txtDYYYYMMDD
-                this.updateInpQuery.selMgdCbusinessTrip = this.businessTrip
-                this.updateInpQuery.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                this.updateInpQuery.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
-                this.updateInpQuery.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+                this.tmgResultsDto.txtAction = 'ACT_EDITINP_UCOMMENT'
+                this.tmgResultsDto.holiday = this.bHoliday
+                this.tmgResultsDto.workingId = this.workingId
+                this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
+                this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
 
-                console.log(this.detailNonDutyVOList)
-                console.log(this.detailOverhoursVOList)
-
-                this.http.get('sys/tmgResults/updateInp', this.updateInpQuery)
+                this.http.post('sys/tmgResults/updateInp', this.tmgResultsDto)
                 this.isShow = false
-
             }),
             //登録
-            updateDaily: Debounce(function () {
+            async updateDaily(){
+                this.updateDailyLoading= true
                 this.tmgResultsDto.txtAction = 'ACT_EDITINP_UDAILY'
                 this.tmgResultsDto.holiday = this.bHoliday
                 this.tmgResultsDto.workingId = this.workingId
@@ -877,10 +863,12 @@
                     this.tmgResultsDto.hasAuthority = true
                 }
 
-                this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                this.updateDailyLoading= false
                 this.isShow = false
+                this.getTitleData()
 
-            }),
+            },
             showLog() {
                 if(this.isLogShow){
                     this.isLogShow = false
@@ -1050,13 +1038,7 @@
 
 
 
-    // handleSpan({rowIndex, columnIndex}) {
-            //     if (rowIndex === 3 && columnIndex === 1) {
-            //         return [1, 2]
-            //     } else if (rowIndex === 4 && columnIndex === 1) {
-            //         return [1, 2]
-            //     }
-            // },
+
             //登録画面/////////////////////////////////////////////////////////////////
 
             handleDatePicker() {
