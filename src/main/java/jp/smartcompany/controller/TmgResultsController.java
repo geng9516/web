@@ -2,13 +2,11 @@ package jp.smartcompany.controller;
 
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.TodayThisMonthVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,21 +27,7 @@ public class TmgResultsController {
     private TmgResultsBean tmgResultsBean;
 
     /**
-     * 勤務年月一覧を返却します
-     *
-     * @param psDBBean
-     * @return
-     */
-    @GetMapping("getToday")
-    @ResponseBody
-    public TodayThisMonthVO getToday(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-
-        //初期化対象
-        return tmgResultsBean.getToday(psDBBean);
-    }
-
-    /**
-     * 勤務年月一覧を返却します
+     * 就業登録一覧画面の勤務年月取得
      *
      * @param psDBBean
      * @return
@@ -53,26 +37,29 @@ public class TmgResultsController {
     public Map getWorkDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
         //初期化対象
-        TodayThisMonthVO today = tmgResultsBean.getToday(psDBBean);
         List<DispMonthlyVO> monthLy =tmgResultsBean.tmgInpInit(psDBBean);
+
         Map<String, Object> todayMonthLy = MapUtil.newHashMap();
-        todayMonthLy.put("today",today);
+        todayMonthLy.put("today",tmgResultsBean.getToday());
         todayMonthLy.put("monthLy",monthLy);
         return todayMonthLy;
     }
 
+
     /**
-     * 月次実績を返却します
+     * 就業登録一覧画面のデータ取得
      *
-     * @param psDBBean
+     * @param psDBBean     PsDBBean
+     * @param txtDYYYYMM   対象月
+     * @param txtDYYYYMMDD 　対象日
      * @return
+     * @throws Exception
      */
     @GetMapping("getTitleData")
     @ResponseBody
     public Map<String, Object> getTitleData(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                                              @RequestParam("txtAction") String txtAction,
-                                              @RequestParam("txtDYYYYMM") String txtDYYYYMM,
-                                              @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) throws Exception {
+                                            @RequestParam("txtDYYYYMM") String txtDYYYYMM,
+                                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD) {
 
         //初期化対象
         tmgResultsBean.setMonth(txtDYYYYMM);
@@ -80,65 +67,49 @@ public class TmgResultsController {
         tmgResultsBean.setDay(txtDYYYYMMDD);
         tmgResultsBean.execReflectionTimePunch(txtDYYYYMM, psDBBean);
 
-       return  tmgResultsBean.getTitleData(psDBBean);
+        return tmgResultsBean.getTitleData(psDBBean);
     }
 
-
-
     /**
-     * 画面表示用データを返却します
-     *
-     * @param psDBBean
-     * @return
+     * 就業登録画面初期化
+     * @param psDBBean PsDBBean
+     * @param txtDYYYYMMDD 対象日
+     * @param action　Action
+     * @return 初期化データ
      */
     @GetMapping("dailyDetail")
     @ResponseBody
     public Map dailyDetail(@RequestAttribute("BeanName") PsDBBean psDBBean,
                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-                           @RequestParam("txtAction") String action) throws Exception {
+                           @RequestParam("txtAction") String action) {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
         tmgResultsBean.setDay(txtDYYYYMMDD);
-        //初期化対象
+        //初期化データ取得する
         return tmgResultsBean.dailyDetail(psDBBean, action);
     }
 
     /**
-     * 画面ドロップダウンを返却します
+     * コメントのみ登録ボタンを押下する
      *
      * @param psDBBean
      * @return
      */
-    @GetMapping("updateInp")
+    @PostMapping("updateInp")
     @ResponseBody
-    public void updateInp(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                          @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
-                          @RequestParam("txtAction") String action,
-                          @RequestParam("holiday") String holiday,
-                          @RequestParam("workingId") String workingId,
-                          @RequestParam("selMgdCbusinessTrip") String selMgdCbusinessTrip,
-                          @RequestParam("txtTdaNopenR") String txtTdaNopenR,
-                          @RequestParam("txtTdaNcloseR") String txtTdaNcloseR,
-                          @RequestParam("tdaCowncommentR") String tdaCowncommentR) throws Exception {
+    public GlobalResponse updateInp(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                    @RequestBody TmgResultsDto tmgResultsDto) {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
-        tmgResultsBean.setDay(txtDYYYYMMDD);
+        tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
 
-        TmgResultsDto tmgResultsDto = new TmgResultsDto();
-        tmgResultsDto.setHoliday(holiday);
-        tmgResultsDto.setWorkingId(workingId);
-        tmgResultsDto.setSelMgdCbusinessTrip(selMgdCbusinessTrip);
-        tmgResultsDto.setTxtTdaNopenR(txtTdaNopenR);
-        tmgResultsDto.setTxtTdaNcloseR(txtTdaNcloseR);
-        tmgResultsDto.setTdaCowncommentR(tdaCowncommentR);
-
-        //初期化対象
-        tmgResultsBean.updateInp(tmgResultsDto,psDBBean, action);
+        //メントのみ登録
+        return tmgResultsBean.updateInp(psDBBean, tmgResultsDto);
     }
 
 
     /**
-     * 画面ドロップダウンを返却します
+     * 登録ボタンを押下する
      *
      * @param psDBBean
      * @return
@@ -149,11 +120,10 @@ public class TmgResultsController {
                             @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
-
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
 
-        //初期化対象
-        tmgResultsBean.updateDaily(tmgResultsDto, psDBBean);
+        //就業実績登録
+        tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
     }
 
 
