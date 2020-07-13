@@ -16,13 +16,15 @@
                 </h1>
             </div>
         </div>
-        <div class="searchwrap">
-            <span class="label">年月</span>
-            <i-select v-model="model1" :disabled="!selectDisabled" class="mr30"
-                      @on-change="handleStartMonth($event)" placeholder="選択ください">
-                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val" :value="item.val">
-                </i-option>
-            </i-select>
+        <div class="searchwrap" >
+            <div class="titlenorm mt15" >
+                <span class="label">年度</span>
+                <date-picker type="year" :value="query.year"
+                         :disabled = "!yearShow"
+                         class="mb5" placeholder="" format="yyyy年" ref="datePicker"
+                         @on-change="handleYearChange">
+                </date-picker>
+            </div>
             <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
@@ -54,7 +56,7 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table class="long-table" border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
+        <i-table class="long-table" border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)">
             <template slot-scope="{ row }" slot="vactionGiveDay">
                     <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
@@ -100,7 +102,7 @@
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer></date-picker>
                 </template>
@@ -308,11 +310,11 @@
                 },
                 deptName: '選んでください',
                 query: {
-                    txtAction: 'ACT_DISP_MONTHLY',
-                    txtDYYYYMM: '2020/04/01',
-                    txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                    txtAction: 'ACT_DISP',
+                    txtDYYYYMM: '',
+                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
                     page: '1',
-                    year: '2020',
+                    year: '',
                     txtUserCode: '',
                     kijunbi: '',
                     pdSearchStart: '',
@@ -347,7 +349,7 @@
                 empDeptLoading: false,
                 deptDrawShow: false,
                 treeData: [],
-                selectDisabled: false,   　//年月選択可否制御
+                yearShow: false,   　//年度表示制御
                 dispMonthlyList: [],       //年月リスト
                 model1: '',
 
@@ -356,7 +358,8 @@
 
                 // detailshow: false,
                 isSeason: false,
-                isShow: false
+                isShow: false,
+                dataLoading: false
             }
         },
         async mounted() {
@@ -417,7 +420,7 @@
                 //事前に
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
-                this.updateAcquired5DaysVO.txtYear = '2020'
+                // this.updateAcquired5DaysVO.txtYear = '2020'
                 this.updateAcquired5DaysVO.kijunbi = e[0].taKijyunbi
                 this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].editBasedDay
                 this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfSyutokudaysAdjust,true)
@@ -432,33 +435,35 @@
             },
 
             async getWorkDateList() {
-                this.query.txtAction = 'ACT_DISP_MONTHLY'
+                this.query.txtAction = 'ACT_DISP'
 
                 this.loading = false
                 const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
                 this.dispMonthlyList = data
 
-                if (data.length > 0) {
-                    this.model1 = data[0].val
-
-                    // let result = this.model1.replace("年", "/")
-                    // result = result.replace("月", "/")
-                    // result = result + "01"
-                    // this.query.txtTDA_DYYYYMM = result
-
-                    //年月リストを取得する時に、活性化にする
-                    this.selectDisabled = true
-                }
-
-                //年月リスト.lengthがゼロ場合、非活性化にする
-                if (data.length === 0) {
-                    this.model1 = ''
-                    this.selectDisabled = false
-                }
+                // if (data.length > 0) {
+                //     this.model1 = data[0].val
+                //
+                //     // let result = this.model1.replace("年", "/")
+                //     // result = result.replace("月", "/")
+                //     // result = result + "01"
+                //     // this.query.txtTDA_DYYYYMM = result
+                //
+                //     //年月リストを取得する時に、活性化にする
+                //     this.selectDisabled = true
+                // }
+                //
+                // //年月リスト.lengthがゼロ場合、非活性化にする
+                // if (data.length === 0) {
+                //     this.model1 = ''
+                //     this.selectDisabled = false
+                // }
             },
             async getTableData() {
-                const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
+                this.dataLoading = true
+                this.tableData = []
 
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
                     let b = data.map((e,i) => {
                         const vactionGiveDay = [{
@@ -560,9 +565,13 @@
                         }
                     }
                     this.tableData = a
+                    this.dataLoading = false
                     console.log("詳細")
                     console.log(this.tableData)
-                 }
+                 } else if(data.length == 0){
+                    this.tableData = data
+                    this.dataLoading = false
+                }
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -583,6 +592,18 @@
                 this.isSearchHistory = true
                 await this.getOrgTree()
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+            },
+            async handleYearChange(e) {
+            console.log("handleYearChange")
+            console.log(e)
+            this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
+            this.query.year = e.replace("年", "")
+
+            console.log(this.updateAcquired5DaysVO.txtYear)
+            console.log(this.query.year)
+
+            await this.getTableData()
+
             },
             rowClass(row) {
                 // 表格变色
@@ -636,29 +657,38 @@
 
                 console.log('handleClickLeaf-s')
                 console.log(e)
+
                 this.deptDrawShow = false
-                this.query.txtAction = 'ACT_DISP_MONTHLY'
+                this.query.txtAction = 'ACT_DISP'
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
-                // //年月リストの取得
-                // await this.getWorkDateList()
-                //
+                console.log('初期-s')
+                console.log(this.query.year)
+                console.log('初期-e')
+                //初期
+                if (!this.query.year) {
+                    this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+                if (!this.updateAcquired5DaysVO.txtYear) {
+                    this.updateAcquired5DaysVO.txtYear = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+                this.yearShow = true
                 await this.getTableData()
-
                 console.log('handleClickLeaf-e')
 
             },
-            async handleStartMonth(e) {
-                console.log("handleStartMonth")
-                if (e) {
-                    this.query.txtTDA_DYYYYMM = this.dateFormat(e)
-                    this.query.txtDYYYYMM = this.dateFormat(e)
-                    await this.getTableData()
-                }
-            },
+            // async handleStartMonth(e) {
+            //     console.log("handleStartMonth")
+            //     if (e) {
+            //         this.query.txtTDA_DYYYYMM = this.dateFormat(e)
+            //         this.query.txtDYYYYMM = this.dateFormat(e)
+            //         await this.getTableData()
+            //     }
+            // },
+
             dateFormat(e) {
                 //YYYY年MM月からYYYY/MM/01へ変換する
                 let yearMMDD = e.replace("年", "/")
