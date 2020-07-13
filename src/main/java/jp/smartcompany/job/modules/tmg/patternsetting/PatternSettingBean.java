@@ -431,8 +431,8 @@ public class PatternSettingBean {
         tmgPatternInsertDTO.setPatternId(tmgPatternMergeDTO.getTpa_cpatternid());
         tmgPatternInsertDTO.setPatternName(tmgPatternMergeDTO.getTpa_cpatternname());
         tmgPatternInsertDTO.setDefaultFlag(tmgPatternMergeDTO.getFlag());
-        tmgPatternInsertDTO.setChangeTime(tmgPatternMergeDTO.getTpa_ndate_change_time());
-        tmgPatternInsertDTO.setNextptn(tmgPatternMergeDTO.getTpa_cnextptn());
+        tmgPatternInsertDTO.setChangeTime(tmgPatternMergeDTO.getTpa_ndate_change_time() == null ? "" : tmgPatternMergeDTO.getTpa_ndate_change_time());
+        tmgPatternInsertDTO.setNextptn(tmgPatternMergeDTO.getTpa_cnextptn() == null ? "" : tmgPatternMergeDTO.getTpa_cnextptn());
         tmgPatternInsertDTO.setC2caldays(tmgPatternMergeDTO.getFlag());
 
         //　勤務時間
@@ -446,40 +446,57 @@ public class PatternSettingBean {
         // 休憩時間
         List<HashMap<String, String>> restList = new ArrayList<HashMap<String, String>>();
         if (null != tmgPatternMergeDTO.getPlanRest1()) {
-            HashMap<String, String> rest1 = new HashMap<String, String>();
-            rest1.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest1()[0].toString()));
-            rest1.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest1()[1].toString()));
-            restList.add(rest1);
+            if (tmgPatternMergeDTO.getPlanRest1().length > 0) {
+                HashMap<String, String> rest1 = new HashMap<String, String>();
+                rest1.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest1()[0].toString()));
+                rest1.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest1()[1].toString()));
+                restList.add(rest1);
+            } else {
+                logger.warn("休憩時間1が空です");
+            }
         } else {
             logger.warn("休憩時間1が空です");
         }
 
         if (null != tmgPatternMergeDTO.getPlanRest2()) {
-            HashMap<String, String> rest2 = new HashMap<String, String>();
-            rest2.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest2()[0].toString()));
-            rest2.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest2()[1].toString()));
-            restList.add(rest2);
+            if (tmgPatternMergeDTO.getPlanRest2().length > 0) {
+                HashMap<String, String> rest2 = new HashMap<String, String>();
+                rest2.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest2()[0].toString()));
+                rest2.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest2()[1].toString()));
+                restList.add(rest2);
+            } else {
+                logger.warn("休憩時間2が空です");
+            }
         } else {
             logger.warn("休憩時間2が空です");
         }
 
         if (null != tmgPatternMergeDTO.getPlanRest3()) {
-            HashMap<String, String> rest3 = new HashMap<String, String>();
-            rest3.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest3()[0].toString()));
-            rest3.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest3()[1].toString()));
-            restList.add(rest3);
+            if (tmgPatternMergeDTO.getPlanRest3().length > 0) {
+                HashMap<String, String> rest3 = new HashMap<String, String>();
+                rest3.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest3()[0].toString()));
+                rest3.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest3()[1].toString()));
+                restList.add(rest3);
+            } else {
+                logger.warn("休憩時間3が空です");
+            }
         } else {
             logger.warn("休憩時間3が空です");
         }
 
         if (null != tmgPatternMergeDTO.getPlanRest4()) {
-            HashMap<String, String> rest4 = new HashMap<String, String>();
-            rest4.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest4()[0].toString()));
-            rest4.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest4()[1].toString()));
-            restList.add(rest4);
+            if (tmgPatternMergeDTO.getPlanRest4().length > 0) {
+                HashMap<String, String> rest4 = new HashMap<String, String>();
+                rest4.put(PatternSettingConst.REQUEST_KEY_RESTOPEN, (tmgPatternMergeDTO.getPlanRest4()[0].toString()));
+                rest4.put(PatternSettingConst.REQUEST_KEY_RESTCLOSE, (tmgPatternMergeDTO.getPlanRest4()[1].toString()));
+                restList.add(rest4);
+            } else {
+                logger.warn("休憩時間4が空です");
+            }
         } else {
             logger.warn("休憩時間4が空です");
         }
+
 
         tmgPatternInsertDTO.setRestList(restList);
         return tmgPatternInsertDTO;
