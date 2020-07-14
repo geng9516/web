@@ -1007,11 +1007,13 @@
     <select id="selectMasterCode" resultType="java.lang.String">
         SELECT
             MGD_CGENERICDETAILDESC
+        FROM
+            MAST_GENERIC_DETAIL
         WHERE
-            TEM_CCUSTOMERID = #{custId}
-        AND TEM_CCOMPANYID = #{compId}
+            MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
         AND MGD_CMASTERCODE = #{masterCode}
-        AND TEM_DSTARTDATE <![CDATA[<=]]> #{baseDate}
-        AND TEM_DENDDATE >= #{baseDate}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{baseDate}
+        AND MGD_DEND >= #{baseDate}
     </select>
 </mapper>
