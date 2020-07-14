@@ -1,8 +1,13 @@
 package jp.smartcompany.controller;
 
+import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.UpdateDto;
+import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.UpdateListDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.*;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.TypeGroupVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,5 +81,16 @@ public class OvertimeInstructController extends AbstractController {
     public List<DailyOverTimeVo> getEditdata(@RequestParam("baseDay")String baseDay,
                                     @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
          return overtimeInstructBean.actionExecuteEdit(baseDay,psDBBean);
+    }
+
+
+    /**
+     * 日別情報更新処理
+     */
+    @PostMapping("uploadData")
+    @ResponseBody
+    public GlobalResponse updateDaily(@RequestBody UpdateListDto updateDtoList,
+                                      @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return overtimeInstructBean.actioneExecuteUpdate(updateDtoList.getUpdateDtoList(),psDBBean);
     }
 }

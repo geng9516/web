@@ -5,6 +5,8 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgDailyDetailCheckDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
@@ -18,6 +20,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 import java.lang.reflect.Field;
@@ -52,7 +55,6 @@ public class OvertimeInstructBean {
     public final ITmgTriggerService  iTmgTriggerService;
     //public PsDBBean psDBBean;
 
-    ParamOvertimeInstructDto param = new ParamOvertimeInstructDto();
     OverTimeLimitDto overTimeLimitDtos= new OverTimeLimitDto();
     HolidayTimeLimitDto holidayTimeLimitDtos=new HolidayTimeLimitDto();
     /** 非勤務区分：超過勤務 */
@@ -100,28 +102,6 @@ public class OvertimeInstructBean {
     public static final String CATEGORY_HOL_CNT   = "4";
     /**超勤実績の月平均時間*/
     public static final String CATEGORY_OVERWORK_AVG_MONTH   = "6";
-
-    //参数设置
-//    private void paramSetting(){
-//        param=null;
-//
-//        //基本信息
-//        param.setUserCode(psDBBean.getUserCode());
-//        param.setAction(psDBBean.getReqParam("txtACTION"));
-//        param.setCustId(psDBBean.getCustID());
-//        param.setCompId(psDBBean.getCompCode());
-//        param.setSiteId(psDBBean.getSiteId());
-//        param.setLang(psDBBean.getLanguage());
-//        param.setTargetGroup(referList.getTargetGroup());
-//
-//        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
-//
-//        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
-//
-//
-//
-//
-//    }
 
 
     // 凡例画面表示
@@ -187,7 +167,7 @@ public class OvertimeInstructBean {
             sDBContentId = TmgUtil.Cs_MGD_CONTENTID_OTR;
         }
         overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
-        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),param.getTargetGroup());
+        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
         // 2 表示対象社員の今月分の一日毎の超過勤務実績時間を取得
         List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
                 sDBContentId, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
@@ -460,97 +440,127 @@ public class OvertimeInstructBean {
         return dailyOverTimeVos;
     }
 
+
     // 日別情報更新処理
-    public void actioneExecuteUpdate(List<UpdateDto> updateDtoList,PsDBBean psDBBean){
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse actioneExecuteUpdate(List<UpdateDto> updateDtoList, PsDBBean psDBBean) {
         //paramSetting();
 
-        for (UpdateDto updateDto: updateDtoList) {
-            // 日次詳細CHECKデータ（超過勤務）　クリア
-            int deleteTmgDailyDetailCheck=ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
-                    .eq("TDAD_CCUSTOMERID",param.getCustId())
-                    .eq("TDAD_CCOMPANYID", param.getCompId())
-                    .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
-                    .eq("TDAD_DYYYYMM", param.getBaseDateMM())
-                    .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
+        try {
+            for (UpdateDto updateDto : updateDtoList) {
+                // 日次詳細CHECKデータ（超過勤務）　クリア
+                int deleteTmgDailyDetailCheck = ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
+                        .eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
+                        .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
+                        .eq("TDAD_DYYYYMM", updateDto.getBaseMonth())
+                        .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
 
-            for (UpdateOverTimeDto updateTime:updateDto.getUpdateOverTimeDtoList()){
-                // 日次詳細CHECKデータ（超過勤務）　登録
-                if(!StrUtil.hasEmpty(updateTime.getSNOpen()) && !StrUtil.hasEmpty(updateTime.getSNClose()) && !StrUtil.hasEmpty(updateTime.getSCComment()) ){
-                    int insertTmgDailyDetailCheck = insertTmgDailyDetailCheck(updateTime.getSNOpen(),
-                            updateTime.getSNClose(),
-                            updateDto.getSEmpId(),
-                            param.getUserCode(),
-                            TMG_ITEM_OVERHOURS);
+                for (UpdateOverTimeDto updateTime : updateDto.getUpdateOverTimeDtoList()) {
+                    // 日次詳細CHECKデータ（超過勤務）　登録
+                    if (!StrUtil.hasEmpty(updateTime.getSNOpen()) && !StrUtil.hasEmpty(updateTime.getSNClose()) && !StrUtil.hasEmpty(updateTime.getSCComment())) {
+                        int insertTmgDailyDetailCheck = insertTmgDailyDetailCheck(updateTime.getSNOpen(),
+                                updateTime.getSNClose(),
+                                updateDto.getSEmpId(),
+                                TMG_ITEM_OVERHOURS,
+                                updateDto.getBaseDay(),
+                                updateDto.getBaseMonth(),
+                                updateTime.getSCComment(),
+                                updateTime.getSStatus(),
+                                psDBBean);
+                    }
                 }
-            }
 
-            if(isUseableEditRest4OT()) {
                 // 日次詳細CHECKデータ（休憩）　クリア
                 int deleteTmgDailyDetailCheckResult = ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
-                        .eq("TDAD_CCUSTOMERID", param.getCustId())
-                        .eq("TDAD_CCOMPANYID", param.getCompId())
+                        .eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
                         .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
-                        .eq("TDAD_DYYYYMMDD", param.getBaseDate())
+                        .eq("TDAD_DYYYYMMDD", updateDto.getBaseDay())
                         .eq("TDAD_CNOTWORKID", "TMG_ITEMS|ResultRest")
-                        .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + param.getAction()));
+                        .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + "ACT_EDIT_UOVERTIME"));
                 // 日次詳細CHECKデータ（超過勤務）　登録
                 for (UpdateRestTimeDto updateRest : updateDto.getUpdateRestTimeDtoList()) {
                     int insertTmgDailyDetailCheck = insertTmgDailyDetailCheck(updateRest.getSNRestOpen(),
                             updateRest.getSNRestClose(),
                             updateDto.getSEmpId(),
-                            param.getUserCode(),
-                            TmgUtil.Cs_MGD_ITEMS_ResultRest);
+                            TmgUtil.Cs_MGD_ITEMS_ResultRest,
+                            updateDto.getBaseDay(),
+                            updateDto.getBaseMonth(),
+                            null, null,
+                            psDBBean);
                 }
-            }
-            // 超勤命令反映処理（トリガー起動）
-            int insertTrigger=insertTrigger(updateDto.getSEmpId());
-            int deleteTrigger=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
-                                                .eq("TTR_CMODIFIERUSERID",param.getUserCode())
-                                                .eq("TTR_CMODIFIERPROGRAMID",BEANDESC + "_" +param.getAction())
-                                                .eq("TTR_CCUSTOMERID",param.getCustId())
-                                                .eq("TTR_CCOMPANYID",param.getCompId()));
-            // 超過勤務命令の編集休憩時間を登録した場合、事後処理として日次詳細CHECKデータの削除を行う。
-            if(isUseableEditRest4OT()&& updateDto.getUpdateRestTimeDtoList().size()>0){
-                // 日次詳細CHECKデータ削除
-                int deleteTmgDailyDetailCheckResultAft= ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
-                        .eq("TDAD_CCUSTOMERID", param.getCustId())
-                        .eq("TDAD_CCOMPANYID", param.getCompId())
-                        .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
-                        .eq("TDAD_DYYYYMMDD", param.getBaseDate())
-                        .eq("TDAD_CNOTWORKID", "TMG_ITEMS|ResultRest")
-                        .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + param.getAction()));
-            }
+                // 超勤命令反映処理（トリガー起動）
+                int insertTrigger = insertTrigger(updateDto.getSEmpId(), "ACT_EDIT_UOVERTIME", updateDto.getBaseDay(), psDBBean);
+                int deleteTrigger = iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+                        .eq("TTR_CMODIFIERUSERID", psDBBean.getUserCode())
+                        .eq("TTR_CMODIFIERPROGRAMID", BEANDESC + "_" + "ACT_EDIT_UOVERTIME")
+                        .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
+                // 超過勤務命令の編集休憩時間を登録した場合、事後処理として日次詳細CHECKデータの削除を行う。
+                if (updateDto.getUpdateRestTimeDtoList().size() > 0) {
+                    // 日次詳細CHECKデータ削除
+                    int deleteTmgDailyDetailCheckResultAft = ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
+                            .eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+                            .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
+                            .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
+                            .eq("TDAD_DYYYYMMDD", updateDto.getBaseDay())
+                            .eq("TDAD_CNOTWORKID", "TMG_ITEMS|ResultRest")
+                            .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + "ACT_EDIT_UOVERTIME"));
+                }
 
-            // 日次詳細CHECKデータ（超過勤務）　クリア
-            int deleteTmgDailyDetailCheckAfr=ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
-                    .eq("TDAD_CCUSTOMERID",param.getCustId())
-                    .eq("TDAD_CCOMPANYID", param.getCompId())
-                    .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
-                    .eq("TDAD_DYYYYMM", param.getBaseDateMM())
-                    .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
+                // 日次詳細CHECKデータ（超過勤務）　クリア
+                int deleteTmgDailyDetailCheckAfr = ITmgDailyDetailCheckService.getBaseMapper().delete(SysUtil.<TmgDailyDetailCheckDO>query()
+                        .eq("TDAD_CCUSTOMERID", psDBBean.getCustID())
+                        .eq("TDAD_CCOMPANYID", psDBBean.getCompCode())
+                        .eq("TDAD_CEMPLOYEEID", updateDto.getSEmpId())
+                        .eq("TDAD_DYYYYMM", updateDto.getBaseMonth())
+                        .eq("TDAD_CNOTWORKID", TMG_ITEM_OVERHOURS));
+            }
+        } catch (GlobalException e) {
+            return GlobalResponse.error(e.getMessage());
         }
+
+        return GlobalResponse.ok();
     }
+
+
+
+
+
 
     /**
      * 日別情報（超過勤務命令）を登録するSQL
      */
-    private int insertTmgDailyDetailCheck(String open,String close, String empId, String userCode,String workId){
+    private int insertTmgDailyDetailCheck(String open,String close, String empId,String workId,String baseDate,
+                                          String baseMonth,String comment,String status, PsDBBean psDBBean){
         TmgDailyDetailCheckDO tdadDo=new TmgDailyDetailCheckDO();
-        tdadDo.setTdadCcustomerid(param.getCustId());
-        tdadDo.setTdadCcompanyid(param.getCompId());
+        tdadDo.setTdadCcustomerid(psDBBean.getCustID());
+        tdadDo.setTdadCcompanyid(psDBBean.getCompCode());
         tdadDo.setTdadCemployeeid(empId);
         tdadDo.setTdadDstartdate(TmgUtil.minDate);
         tdadDo.setTdadDenddate(TmgUtil.maxDate);
-        tdadDo.setTdadCmodifieruserid(userCode);
+        tdadDo.setTdadCmodifieruserid(psDBBean.getUserCode());
         tdadDo.setTdadDmodifieddate(DateTime.now());
-        tdadDo.setTdadCmodifierprogramid("OvertimeInstruct_"+param.getAction());
-        tdadDo.setTdadNyyyy(Long.parseLong(param.getBaseDateYYYY()));
-        tdadDo.setTdadDyyyymm(DateUtil.parse(param.getBaseDateMM()));
-        tdadDo.setTdadDyyyymmdd(param.getBaseDateD());
+        tdadDo.setTdadCmodifierprogramid("OvertimeInstruct_"+"ACT_EDIT_UOVERTIME");
+        tdadDo.setTdadNyyyy(Long.parseLong(baseDate.substring(0,4)));
+        tdadDo.setTdadDyyyymm(DateUtil.parse(baseMonth));
+        tdadDo.setTdadDyyyymmdd(DateUtil.parse(baseDate));
         tdadDo.setTdadCnotworkid(workId);
         tdadDo.setTdadNopen(iMastGenericDetailService.tmgFConvHhmi2Min(open));
         tdadDo.setTdadNclose(iMastGenericDetailService.tmgFConvHhmi2Min(close));
-        tdadDo.setTdadNdeleteflg(0L);
+        //非超過勤務の場合
+        if(StrUtil.hasEmpty(comment)&&StrUtil.hasEmpty(status)){
+            tdadDo.setTdadNdeleteflg(0L);
+        }
+        tdadDo.setTdadCsparechar1(comment);
+        if(StrUtil.hasEmpty(status)){
+            /** 申請ステータス：確認済 */
+            tdadDo.setTdadCsparechar2("TMG_OVERHOUR_STATUS|6");
+        }else{
+            tdadDo.setTdadCsparechar2(status);
+        }
+
 
         return ITmgDailyDetailCheckService.getBaseMapper().insert(tdadDo);
     }
@@ -558,52 +568,52 @@ public class OvertimeInstructBean {
     /**
      * 勤怠トリガーテーブルへ挿入するSQL文を返します。
      */
-     private int insertTrigger(String empId){
+     private int insertTrigger(String empId,String action,String baseDate,PsDBBean psDBBean){
         TmgTriggerDO ttDo=new TmgTriggerDO();
-        ttDo.setTtrCcustomerid(param.getCustId());
-        ttDo.setTtrCcompanyid(param.getCompId());
+        ttDo.setTtrCcustomerid(psDBBean.getCustID());
+        ttDo.setTtrCcompanyid(psDBBean.getCompCode());
         ttDo.setTtrCemployeeid(empId);
         ttDo.setTtrDstartdate(TmgUtil.minDate);
         ttDo.setTtrDenddate(TmgUtil.maxDate);
-        ttDo.setTtrCmodifieruserid(param.getUserCode());
+        ttDo.setTtrCmodifieruserid(psDBBean.getUserCode());
         ttDo.setTtrDmodifieddate(DateTime.now());
-        ttDo.setTtrCmodifierprogramid(BEANDESC + "_" +param.getAction());
-        ttDo.setTtrCprogramid(BEANDESC + "_" +param.getAction());
-        ttDo.setTtrCparameter1(param.getAction());
-        ttDo.setTtrCparameter2(param.getBaseDate());
+        ttDo.setTtrCmodifierprogramid(BEANDESC + "_" +action);
+        ttDo.setTtrCprogramid(BEANDESC + "_" +action);
+        ttDo.setTtrCparameter1(action);
+        ttDo.setTtrCparameter2(baseDate);
         return iTmgTriggerService.getBaseMapper().insert(ttDo);
     }
 
-    /** 休憩時間編集機能の使用可否判定フラグ */
-    private Boolean bUseEditRest4OTFlg = null;
-    /**
-     * 休憩時間編集機能が使用可能か判定します。
-     * @return true：使用可能、false：使用不可能
-     */
-    public boolean isUseableEditRest4OT() {
-
-        // 最初の１度目のみ判定を行う。
-        if (bUseEditRest4OTFlg == null) {
-
-            try {
-
-                // システムプロパティの設定が'yes'の場合のみ、使用可能とする。
-                //todo
-                //String sVal = getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_EDITABLE_REST_4OVERTIMEINSTRUCT);
-                String sVal ="yes";
-                if (sVal != null && "yes".equalsIgnoreCase(sVal)) {
-                    bUseEditRest4OTFlg = true;
-                } else {
-                    bUseEditRest4OTFlg = false;
-                }
-            } catch(Exception e) {
-                // 例外が発生した場合、使用不可設定とする。
-                bUseEditRest4OTFlg = false;
-            }
-        }
-
-        return bUseEditRest4OTFlg.booleanValue();
-    }
+//    /** 休憩時間編集機能の使用可否判定フラグ */
+//    private Boolean bUseEditRest4OTFlg = null;
+//    /**
+//     * 休憩時間編集機能が使用可能か判定します。
+//     * @return true：使用可能、false：使用不可能
+//     */
+//    public boolean isUseableEditRest4OT() {
+//
+//        // 最初の１度目のみ判定を行う。
+//        if (bUseEditRest4OTFlg == null) {
+//
+//            try {
+//
+//                // システムプロパティの設定が'yes'の場合のみ、使用可能とする。
+//                //todo
+//                //String sVal = getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_EDITABLE_REST_4OVERTIMEINSTRUCT);
+//                String sVal ="yes";
+//                if (sVal != null && "yes".equalsIgnoreCase(sVal)) {
+//                    bUseEditRest4OTFlg = true;
+//                } else {
+//                    bUseEditRest4OTFlg = false;
+//                }
+//            } catch(Exception e) {
+//                // 例外が発生した場合、使用不可設定とする。
+//                bUseEditRest4OTFlg = false;
+//            }
+//        }
+//
+//        return bUseEditRest4OTFlg.booleanValue();
+//    }
 
 
     /**

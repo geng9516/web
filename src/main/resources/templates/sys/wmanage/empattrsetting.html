@@ -56,6 +56,14 @@
                 <span style="flex:1"></span>
             </div>
             <div class="content_body">
+                <div class="table-top">
+                    <Row :gutter="16">
+                        <i-col span="13" offset="11" class="tr">
+                            <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+                                  :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
+                        </i-col>
+                    </Row>
+                </div>
                 <template>
                     <div>
                         <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
@@ -114,7 +122,7 @@
                 </i-col>
                 <i-col span="8">
                     <div class="label">種別</div>
-                    <div cla ss="person-info">{{ workerTypeName }}</div>
+                    <div class="person-info">{{ workerTypeName }}</div>
                 </i-col>
             </Row>
 
@@ -123,7 +131,7 @@
 
             <div class="tr mb10">
                 <i-button type="error" ghost class="mr15">削除</i-button>
-                <i-button type="primary" ghost class="mr15" v-if="isBeginDateEdit">クリア</i-button>
+                <i-button type="primary" ghost class="mr15" v-if="isBeginDateEdit" @click.stop="clear">クリア</i-button>
                 <i-button type="success" ghost class="mr15">登録</i-button>
             </div>
 
@@ -134,7 +142,7 @@
                             <Icon type="logo-buffer"></Icon>
                             勤務開始日設定状況
                         </div>
-                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading"
+                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="forClear" key="forClear1"
                             class="mt2">
                             <template slot-scope="{ row }" slot="radio">
                                 <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
@@ -150,6 +158,25 @@
                             <template slot-scope="{ row }" slot="beginDate">
                                 <date-picker :value="row.beginDate" :disabled="row._index !== radioCheckedIndex"
                                     format="yyyy/MM/dd" type="date" transfer></date-picker>
+                            </template>
+                        </i-table>
+
+                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="!forClear" key="forClear2"
+                                 class="mt2">
+                            <template slot-scope="{ row }" slot="radio">
+                                <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
+                            </template>
+
+                            <template slot-scope="{ row }" slot="time">
+                                <date-picker :value="row.dstart" format="yyyy/MM/dd" type="date" transfer
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
+                                <date-picker :value="row.dend" format="yyyy/MM/dd" type="date" transfer
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
+                            </template>
+
+                            <template slot-scope="{ row }" slot="beginDate">
+                                <date-picker :value="row.beginDate" :disabled="row._index !== radioCheckedIndex"
+                                             format="yyyy/MM/dd" type="date" transfer></date-picker>
                             </template>
                         </i-table>
                     </i-col>
@@ -201,6 +228,12 @@
             el: '.empattrsettinginfo-warp',
             data() {
                 return {
+                    contentScrollTop: 0,
+                    pageValue: {
+                        amount: 0,
+                        curPage: 1,
+                        curSize: 50
+                    },
                     radioCheckedIndex: 0,
                     nowWorkTime: '',
                     nowWorKDays: '',
@@ -208,6 +241,7 @@
                     workerTypeName: '',
                     isBeginDateEdit: false,
                     isAvgTimeEdit: false,
+                    forClear: false,
                     msg: '※勤務開始日の変更によって年休付与日が変動する場合、設定済みの調整付与日数はクリアされます。\n' +
                         '　変更後、年次休暇管理を確認し、残日数がマイナスになっている場合は改めて調整をしてください。\n' +
                         '※注意：選択した対象区間のみ、更新処理を実行します。',
@@ -359,6 +393,7 @@
                         }
                     ],
                     workDaySettingData: [],
+                    beginDateListBackUp:[],
                     averageTimeData: [],
                     historyData: [],
                     referSettingData: []
@@ -410,9 +445,10 @@
                 },
                 async getTableData() {
                     this.loading = true
+
                     try {
                         const { data } = await this.http.get('sys/userprofile/screenDisp', this.opts)
-
+                        this.pageValue.amount = data.totalCount
                         this.tableData = data.list
 
                     } catch (error) {
@@ -441,6 +477,8 @@
                                 beginDate: ''
                             }
                         ].concat(data.list)
+
+                        this.beginDateListBackUp=Utils.deepClone(this.workDaySettingData)
                         this.historyData = data.historyList
                         console.log(this.referSettingData)
                         console.log(this.workDaySettingData)
@@ -482,6 +520,9 @@
 
                 },
                 cancel() {
+                    this.workDaySettingData= this.beginDateListBackUp
+                    this.forClear = !this.forClear
+                    this.handleRadio(0)
                     this.isShow = false
                 },
                 handleRadio(index) {
@@ -493,6 +534,20 @@
                         }
                     })
                 },
+                clear(){
+                    this.workDaySettingData= this.beginDateListBackUp
+                    this.forClear = !this.forClear
+                    this.handleRadio(0)
+                    console.log(this.workDaySettingData)
+                },
+                pageChange(e) {
+                    this.opts.page = e
+                    this.pageValue.curPage = e
+                    this.getTableData()
+                },
+                handleScroll: Throttle(function (e) {
+                    this.contentScrollTop = e.target.scrollTop
+                }, 50),
             }
         })
     </script>

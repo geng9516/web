@@ -110,6 +110,8 @@ public class MonthlyOutputBean {
         }else{
             targetYear=year;
         }
+
+        List<TmgMoYearListVo> tmgMoYearListVoList = new ArrayList<>();
         // 組織を選択、かつ選択組織の表示権限を有していない場合は何もしない。
         if(!StrUtil.hasEmpty(getSectionId("",referList)) && hasAuthOfSect(getSectionId("",referList),psDBBean,referList)){
             TargetDateLimit targetDateLimit=iMastGenericDetailService.selectTargetFiscalYear(psDBBean.getCustID(), psDBBean.getCompCode(),targetYear);
@@ -123,7 +125,7 @@ public class MonthlyOutputBean {
                     createWorkMonthlyOutPutListData(psDBBean.getCustID(), psDBBean.getCompCode(), targetFiscalYear.getTargetYearDate(), psDBBean);
                 }
 
-                List<TmgMoYearListVo> tmgMoYearListVoList = iTmgWorkMoYearlistService.selectMoYearList(psDBBean.getCustID(), psDBBean.getCompCode(),
+                tmgMoYearListVoList = iTmgWorkMoYearlistService.selectMoYearList(psDBBean.getCustID(), psDBBean.getCompCode(),
                         referList.getTargetSec(), targetYear, psDBBean.getLanguage(), baseDate);
 
                 return tmgMoYearListVoList;
@@ -440,8 +442,6 @@ public class MonthlyOutputBean {
                     .eq("TTR_CMODIFIERPROGRAMID",modifierProgID)
                     .eq("TTR_CCUSTOMERID",psDBBean.getCustID())
                     .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
-
-
         }
             // SALARY_FIX="2"の場合、集計処理が必要なのでアラートを仕込んでおく（画面再表示時にアラートを出す）
         else if(salaryFix == 2){
