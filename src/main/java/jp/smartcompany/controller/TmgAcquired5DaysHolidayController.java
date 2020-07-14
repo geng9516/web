@@ -30,11 +30,11 @@ public class TmgAcquired5DaysHolidayController {
      */
     @GetMapping("list")
     @ResponseBody
-    public List<Acquired5DaysListVO> list(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year) throws Exception {
+    public List<Acquired5DaysListVO> list(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year,String txtUserCode) throws Exception {
 
         tmgAcquired5DaysHolidayBean.execute(psDBBean, recordDate, year);
 
-        return tmgAcquired5DaysHolidayBean.selectList(null, psDBBean);
+        return tmgAcquired5DaysHolidayBean.selectList(txtUserCode, psDBBean);
     }
 
     /**
