@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css,' + '/pages/overtimeinstruct.min.css')">
+<head
+    th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css,' + '/pages/overtimeinstruct.min.css')">
 </head>
 
 <body>
@@ -99,10 +100,10 @@
             </i-table>
 
 
-            <Drawer :title="title" class="tc" width="1200" v-model="showDayApply" draggable>
+            <Drawer :title="title" class="tc" width="1300" v-model="showDayApply">
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
-                        <i-button type="primary" size="large" class="tr">命令/確認</i-button>
+                        <i-button type="primary" size="large" class="tr" @click="overTimeUpdate">命令/確認</i-button>
                     </i-col>
                 </Row>
                 <Row class="mb15">
@@ -116,26 +117,28 @@
                     <Icon type="logo-buffer"></Icon>
                     一括適用
                 </div>
+                <!-- 一括適用table start -->
                 <i-table border :columns="columnsAction" :data="columnsActionData">
                     <template slot-scope="{ row }" slot="startTime">
-                        <i-input />
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen" />
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <i-input />
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose" />
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <i-input type="textarea" :autosize="{ minRows: 2, maxRows: 5 }" />
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea"
+                            :autosize="{ minRows: 2, maxRows: 5 }" />
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime">
                         <Row :gutter="10">
                             <i-col span="12">
-                                <i-input />
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" />
                             </i-col>
                             <i-col span="12">
-                                <i-input />
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" />
                             </i-col>
                         </Row>
                     </template>
@@ -150,7 +153,9 @@
                     </template>
                 </i-table>
 
-                <!-- 超过勤务命令的操作table -->
+                <!-- 一括適用table end -->
+
+                <!-- 超过勤务命令的详细table start-->
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
                     超過勤務命令
@@ -161,35 +166,74 @@
                             class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span>
                     </template>
 
-                    <template slot-scope="{ row }" slot="wordkDivision">
-                        <span>{{ row.workingId }}</span>
+                    <template slot-scope="{ row }" slot="startTime">
+                        <div v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].overTimeList[i].tdadNopen"></i-input>
+                        </div>
                     </template>
 
-                    <template slot-scope="{ row }" slot="workStartFinal">
-                        <span>{{ row.openN }}</span>
+                    <template slot-scope="{ row }" slot="endTime">
+                        <div v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].overTimeList[i].tdadNclose"></i-input>
+                        </div>
                     </template>
 
-                    <template slot-scope="{ row }" slot="workEndFinal">
-                        <span>{{ row.closeN }}</span>
+                    <template slot-scope="{ row }" slot="content">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb2">
+                            <i-col :span="value[row._index].overTimeList.length > 1 ? 18 : 24">
+                                <i-input v-model="value[row._index].overTimeList[i].tdadCsparechar1" type="textarea"
+                                    :autosize="{ minRows: 2, maxRows: 5 }"></i-input>
+                            </i-col>
+                            <i-col span="6" v-show="value[row._index].overTimeList.length > 1">
+                                <i-button ghost type="error"
+                                    @click="handleMinusOverTime(value[row._index].overTimeList, i)">-</i-button>
+                                <span
+                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('0') > -1"
+                                    class="confirm-sytle ing">待</span>
+                                <span
+                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('5') > -1"
+                                    class="confirm-sytle">済</span>
+                                <span
+                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('6') > -1"
+                                    class="confirm-sytle">命</span>
+                            </i-col>
+                        </Row>
+                        <i-button class="mt5" size="small" ghost type="success" long
+                            @click="handleAddOverTime(value[row._index].overTimeList)"
+                            v-show="value[row._index].overTimeList.length < 4">
+                            +
+                        </i-button>
                     </template>
 
-                    <template slot-scope="{ row }" slot="workStartReal">
-                        <span>{{ row.openTp }}</span>
+                    <template slot-scope="{ row }" slot="restTime">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].restTimeList" :key="i" class="mb2">
+                            <i-col :span="value[row._index].restTimeList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].restTimeList[i].tdadNopenTime"></i-input>
+                            </i-col>
+                            <i-col :span="value[row._index].restTimeList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].restTimeList[i].tdadNcloseTime"></i-input>
+                            </i-col>
+                            <i-col span="8" v-show="value[row._index].restTimeList.length > 1">
+                                <i-button ghost type="error"
+                                    @click="handleMinusRest(value[row._index].restTimeList, i)">-</i-button>
+                            </i-col>
+                        </Row>
+                        <i-button class="mt5" size="small" ghost type="success" long
+                            @click="handleAddRest(value[row._index].restTimeList)"
+                            v-show="value[row._index].restTimeList.length < 4">
+                            +
+                        </i-button>
                     </template>
-
-                    <template slot-scope="{ row }" slot="workEndReal">
-                        <span>{{ row.closeTp }}</span>
-                    </template>
-
                     <template slot-scope="{ row }" slot="remark">
                         <span>{{ row.message }}</span>
                     </template>
 
                 </i-table>
+                <!-- 超过勤务命令的详细table end-->
             </Drawer>
 
 
-            <Drawer title="平均超勤時間(月) 詳細" class="tc" width="800" v-model="showAverage" draggable>
+            <Drawer title="平均超勤時間(月) 詳細" class="tc" width="800" v-model="showAverage">
                 <Row :gutter="10">
                     <i-col span="8">
                         <div class="label" style="padding:1px 0">所属</div>
@@ -229,6 +273,7 @@
                     tableData: [],   //一览表数据
                     monthAverageTable: [],   //月平均表数据
                     columnsActionData: [{}],   //一括日别编辑表数据
+                    value: [],//一括日别编辑表更新用数据
                     tableData3: [],   //日别编辑表数据
                     overWorkViewType: 2,
                     treeData: [],            //組織ツリー用
@@ -271,7 +316,7 @@
                         {
                             title: '区分',
                             minWidth: 36,
-                            slot: 'wordkDivision',
+                            key: 'workingId',
                             align: 'center'
                         },
                         {
@@ -282,12 +327,12 @@
                                     title: '始業',
                                     align: 'center',
                                     width: 55,
-                                    slot: 'workStartFinal'
+                                    key: 'openN'
                                 },
                                 {
                                     title: '終業',
                                     width: 55,
-                                    slot: 'workEndFinal',
+                                    key: 'closeN',
                                     align: 'center'
                                 }
                             ]
@@ -300,14 +345,14 @@
                                 {
                                     title: '始業',
                                     width: 55,
-                                    slot: 'workStartReal',
+                                    key: 'openTp',
                                     className: 'checkin',
                                     align: 'center'
                                 },
                                 {
                                     title: '終業',
                                     width: 55,
-                                    slot: 'workEndReal',
+                                    key: 'openTp',
                                     className: 'checkin',
                                     align: 'center'
                                 }
@@ -389,6 +434,10 @@
                             align: 'center'
                         }
                     ],
+                    pattern: {
+                        updateOverTimeDtoList: [{}],
+                        updateRestTimeDtoList: [{}]
+                    }
                 }
             },
             async mounted() {
@@ -467,7 +516,7 @@
 
                         result = result.concat({
                             // title: e,
-                            className:  e.today ? 'gold' : e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                            className: e.today ? 'gold' : e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
                             minWidth: 15,
                             renderHeader: (h, params) => {
                                 return h(
@@ -598,7 +647,7 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data
-                        console.log(data)
+                        this.value = Utils.deepClone(data)
                     } catch (error) {
                         return
                     } finally {
@@ -653,14 +702,26 @@
                     this.showDayApply = true
 
                 },
+                handleAddRest(e) {
+                    e.push({ tdadNopenTime: '', tdadNcloseTime: '' })
+                },
+                handleMinusRest(e, i) {
+                    e.splice(i, 1)
+                },
+                handleAddOverTime(e) {
+                    e.push({ tdadNopen: '', tdadNclose: '', tdadCsparechar1: '' })
+                },
+                handleMinusOverTime(e, i) {
+                    e.splice(i, 1)
+                },
                 showRed(e, type) {
                     if (!e) return
                     let result = e.split('@') && e.split('@')[1]
-                    if(type === 'day') {
+                    if (type === 'day') {
                         if (result === 'chokinDailyLvl1') return 'level2'
                         else return 'normal'
                     }
-                    if(type === 'average') {
+                    if (type === 'average') {
                         if (result === 'chokinAvgWarningLvl1') return 'level3'
                         else return
                     }
@@ -694,6 +755,30 @@
                 }, 50),
                 handleSelectAll2(status) {
                     this.$refs.selection2.selectAll(status)
+
+                    //一括適用
+                    const that = this
+                    this.value.forEach(item => {
+                        Object.keys(item).forEach(function (key) {
+                            if (key in that.pattern) {
+                                item[key] = that.pattern[key]
+                            }
+                        })
+                    })
+                },
+                async overTimeUpdate() {
+                    // 将没打勾的排除出去
+                    const selectedData = this.$refs.selection2.getSelection().map(e=> e.empId)
+                    const UpdateData = this.value.filter(e=> selectedData.includes(e.empId))
+                    console.log(UpdateData)
+                    if(UpdateData.length === 0){
+                    this.$Modal.error({
+                        title:'データを選択してください！',
+                        okText: 'OK'
+                    })
+                    return
+                 }
+                    await this.http.post('sys/overtimeinstruct/uploadData', {UpdateListDto:UpdateData})
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 合并2个月
