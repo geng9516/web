@@ -67,6 +67,7 @@
         <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData2.length > 0">
             <Icon type="logo-buffer"></Icon>
             個人別情報
+            <i-button type="info" @click="download">ダウンロード</i-button>
         </div>
         <div v-show="tableData2.length > 0">
           <i-table class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
@@ -340,6 +341,21 @@
                 yearMMDD = yearMMDD.replace("月","/")
                 yearMMDD = yearMMDD+"01"
                 return  yearMMDD
+            },
+            async download() {
+                await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
+
+                    .then((response) => {
+                        const bom = '\uFEFF'
+                        const url = URL.createObjectURL(new Blob([bom, response]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
+                        document.body.appendChild(link);
+                        link.click();
+                        link.revokeObjectURL();
+                    });
+
             }
         }
     })
