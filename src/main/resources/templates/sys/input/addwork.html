@@ -803,7 +803,7 @@
 
                     let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
                     Object.keys(tempErrCode).some(e => {
-                        console.log(e)
+
                         if (e === 'ERRTYPE_10') {
 
                             this.$Notice.error({desc: tempErrCode.ERRTYPE_10[0].ERRMSG})
