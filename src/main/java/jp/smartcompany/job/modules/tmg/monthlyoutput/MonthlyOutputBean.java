@@ -287,13 +287,13 @@ public class MonthlyOutputBean {
      * </p>
      *
      */
-    private synchronized void actionExecuteCALCCCALC(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
+    public synchronized GlobalResponse actionExecuteCALCCCALC(String baseDate, PsDBBean psDBBean, TmgReferList referList) {
         String seq =null;
         try {
             seq= iTmgMonthlyOutputLogService.selectSeq();
         }catch (Exception e){
             _flgFixedCalc = STAT_CALC_FIXED_FAILER; // failer
-            return; // ジョブ番号取得失敗したときの対応
+            return GlobalResponse.error(" ジョブ番号取得失敗"); // ジョブ番号取得失敗したときの対応
         }
         // q0.ログ挿入
         int insertMonthlyOutputLogSec=insertMonthlyOutputLogSec(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate,
@@ -319,9 +319,10 @@ public class MonthlyOutputBean {
 
         if (insertMonthlyOutputLogSec <= 0||insertTmgTrigger<=0||deleteTmgTriggerAft<=0) {
             _flgFixedCalc = STAT_CALC_FIXED_FAILER; // failer
-            return; // ジョブ番号取得失敗したときの対応
+            return GlobalResponse.error(); // ジョブ番号取得失敗したときの対応
         } else {
             _flgFixedCalc = STAT_CALC_FIXED_SUCCESS; // success
+            return GlobalResponse.ok(seq);
         }
     }
 
@@ -339,7 +340,7 @@ public class MonthlyOutputBean {
 
         // q2.トリガー挿入
         int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
-                ,MOD_ID_UFIXESMONTHLY,referList.getTargetSec()," NULL ");
+                ,MOD_ID_UFIXESMONTHLY,referList.getTargetSec(),null);
 
         // q3.トリガー削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
@@ -369,7 +370,7 @@ public class MonthlyOutputBean {
 
         // q2.トリガー挿入
         int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
-                ,MOD_ID_DFIXESMONTHLY,referList.getTargetSec()," NULL ");
+                ,MOD_ID_DFIXESMONTHLY,referList.getTargetSec(),null);
 
         // q3.トリガー削除
         int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
@@ -434,7 +435,7 @@ public class MonthlyOutputBean {
 
             // q2.トリガー挿入
             int insertTmgTrigger = insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate
-                    ,modifierProgID,referList.getTargetSec()," NULL ");
+                    ,modifierProgID,referList.getTargetSec(),null);
 
             // q3.トリガー削除
             int deleteTmgTriggerAft=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
@@ -446,12 +447,12 @@ public class MonthlyOutputBean {
             // SALARY_FIX="2"の場合、集計処理が必要なのでアラートを仕込んでおく（画面再表示時にアラートを出す）
         else if(salaryFix == 2){
             //集計処理を行ってから確定をしてください。
-            GlobalResponse.error("ERROR_NOT_CALC_SALARY");
+            return GlobalResponse.ok("集計処理を行ってから確定をしてください。");
         }
             // SALARY_FIX="0"は、そもそもこの処理をコールできないはずなので、想定外のエラーとしておく
         else{
             //確定処理で例外が発生しました。システム管理者へ連絡してください。。
-            GlobalResponse.error("ERROR_FAIL_SALARYFIX");
+            return GlobalResponse.ok("確定処理で例外が発生しました。システム管理者へ連絡してください。");
         }
 
         return GlobalResponse.ok();
@@ -501,7 +502,9 @@ public class MonthlyOutputBean {
         ttDo.setTtrCprogramid("MonthlyOutput");
         ttDo.setTtrDparameter1(DateUtil.parse(targetDate));
         ttDo.setTtrCparameter1(secId);
-        ttDo.setTtrNparameter1(Double.valueOf(jobNo));
+        if(!StrUtil.hasEmpty(jobNo)){
+            ttDo.setTtrNparameter1(Double.valueOf(jobNo));
+        }
         return iTmgTriggerService.getBaseMapper().insert(ttDo);
 
     }

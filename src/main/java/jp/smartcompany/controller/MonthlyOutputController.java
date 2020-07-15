@@ -66,7 +66,7 @@ public class MonthlyOutputController {
      * 締め処理
      *
      */
-    @GetMapping("approval")
+    @PostMapping("approval")
     public GlobalResponse actionExecuteDispUFIXESMONTHLY(@RequestParam("baseDate")String baseDate
                     , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
@@ -77,7 +77,7 @@ public class MonthlyOutputController {
      * 締め取消処理
      *
      */
-    @GetMapping("approvalCancel")
+    @PostMapping("approvalCancel")
     public GlobalResponse actionExecuteDisp_DFIXESMONTHLY(@RequestParam("baseDate")String baseDate
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
@@ -88,7 +88,7 @@ public class MonthlyOutputController {
      * 確認・確認取消処理
      *action　C：確認　D：取消
      */
-    @GetMapping("changeFix")
+    @PostMapping("changeFix")
     public GlobalResponse actionExecuteChangeFix(@RequestParam("baseDate")String baseDate,
                                                  @RequestParam("action")String action,
              @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
@@ -96,4 +96,15 @@ public class MonthlyOutputController {
         return  monthlyOutputBean.actionExecuteChangeFix( baseDate,  action,  psDBBean,  referList);
     }
 
+
+    /**
+     * 集計処理
+     *
+     */
+    @PostMapping("totalStart")
+    public GlobalResponse actionExecuteCALCCCALC(@RequestParam("baseDate")String baseDate
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteCALCCCALC( baseDate, psDBBean, referList);
+    }
 }

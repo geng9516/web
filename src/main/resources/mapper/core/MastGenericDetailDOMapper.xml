@@ -851,7 +851,7 @@
         AND MGD_CLANGUAGE_CK = #{lang}
         AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
         AND MGD_DEND >= #{date}
-        ORDER　BY
+        ORDER BY
             MGD_NSEQ;
     </select>
 

@@ -64,57 +64,105 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="monthlyFix">
-                    <i-button v-if="row.monthlyFixEmp === 1" type="primary" ghost size="small" long>
+                    <i-button v-if="row.monthlyFixEmp === 1" type="primary" ghost size="small" @click="monthlyFix(row.yyyymm)" long>
                         締め処理
                     </i-button>
-                    <i-button v-if="row.monthlyFixEmp === 2 && row.salaryFix === 1" type="primary" ghost size="small" long>
+                    <i-button v-if="row.monthlyFixEmp === 2 && row.salaryFix === 1" type="primary" ghost size="small"  @click="monthlyDelFix(row.yyyymm)" long>
                         締め解除
                     </i-button>
                     <p v-if="row.monthlyFixEmp === 2 && row.salaryFix === 3 ">完了</p>
                 </template>
 
                 <template slot-scope="{ row }" slot="total">
-                    <i-button v-if="row.totalStatus === 1" type="primary" ghost size="small" long>集計処理</i-button>
+                    <i-button v-if="row.totalStatus === 1" type="primary" ghost size="small" @click="total(row.yyyymm)"　long>集計処理</i-button>
                     <p class="mt2" v-if="row.totalTime">{{ row.totalTime.replace(' ','\n') }}</p>
-                    <i-button  v-if="row.totalAlert === 1" type="error" ghost size="small" long>***集計時の問題***</i-button>
+                    <i-button  v-if="row.totalAlert === 1" type="error" ghost size="small" @click="totalError(row.yyyymm)"　long>***集計時の問題***</i-button>
                     <p class="mt2" v-if="row.totalStatus === 2">集計中</p>
                 </template>
 
                 <template slot-scope="{ row }" slot="download">
-                    <i-button v-if="row.worksKintai === 1" class="mb5" type="primary"  ghost size="small" long>月例ダウンロード</i-button>
-                    <i-button v-if="row.worksRetro === 1" type="primary" ghost size="small" long>遡及ダウンロード</i-button>
+                    <i-button v-if="row.worksKintai === 1" class="mb5" type="primary"  ghost size="small" @click="download(row.yyyymm)" long>月例ダウンロード</i-button>
+                    <i-button v-if="row.worksRetro === 1" type="primary" ghost size="small" @click="download(row.yyyymm)" long>遡及ダウンロード</i-button>
                 </template>
 
                 <template slot-scope="{ row }" slot="notFix">
-                    <i-button v-if="row.monthlyFixDept === 1" type="primary" ghost size="small" long>締め未完了部局</i-button>
+                    <i-button v-if="row.monthlyFixDept === 1" type="primary" ghost size="small" @click="notAprSec(row.yyyymm)" long>締め未完了部局</i-button>
                 </template>
 
                 <template slot-scope="{ row }" slot="salaryFix">
-                    <i-button v-if="row.salaryFix === 1" type="primary" ghost size="small" long>確定</i-button>
-                    <i-button v-if="row.salaryFix === 2" type="error" ghost size="small" long>確定</i-button>
-                    <i-button v-if="row.salaryFix === 3" type="primary" ghost size="small" long>確定解除</i-button>
+                    <i-button v-if="row.salaryFix === 1" type="primary" ghost size="small" @click="changeFix(row.yyyymm)" long>確定</i-button>
+                    <i-button v-if="row.salaryFix === 2" type="error" ghost size="small" @click="alterFix(row.yyyymm)" long>確定</i-button>
+                    <i-button v-if="row.salaryFix === 3" type="primary" ghost size="small" @click="delFix(row.yyyymm)" long>確定解除</i-button>
                 </template>
             </i-table>
         </div>
 
 
-        <Drawer :title="title" width="1200" v-model="notAprEmp" draggable>
-            <i-table border :columns="notAprEmpCol" :data="notAprEmpData">
+        <Drawer title="未承認者状況" width="37" v-model="notAprEmp">
+            <Alert class="primary-info lb tl">月次承認が行われていない職員が存在します。
+                月次締めを実行するには、全職員の月次承認を行ってください</Alert>
+            <div class="table-top">
+                <Row :gutter="16">
+                    <i-col span="13" offset="11" class="tr">
+                        <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
+                            :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" />
+                    </i-col>
+                </Row>
+            </div>
+            <div class="titlenorm">
+                <Icon type="logo-buffer"></Icon>
+                {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}未承認者状況
+            </div>
+            <i-table border :columns="notAprEmpCol" :data="notAprEmpData" :loading="loadingEmp">
             </i-table>
         </Drawer>
 
-        <Drawer :title="title" width="1200" v-model="notAppSec" draggable>
-            <i-table border :columns="notAprSecCol" :data="notAprSecData">
+        <Drawer title="締め未完了部局" width="37" v-model="notAppSec">
+            <Alert class="primary-info lb tl">月次締めが行われていない部局が存在します。</Alert>
+            <div class="table-top">
+                <Row>
+                    <i-col span="24" class="tr">
+                        <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
+                              :page-size="pageValueSec.curSize"   ref="Page" />
+                    </i-col>
+                </Row>
+            </div>
+            <div class="titlenorm">
+                <Icon type="logo-buffer"></Icon>
+                {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}締め未完了部局
+            </div>
+            <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC">
             </i-table>
         </Drawer>
 
-        <Drawer :title="title" width="1200" v-model="downloadLink" draggable>
+        <Modal title="データダウンロード" width="605" v-model="downloadLink">
             <Alert class="primary-info lb tl">下記の就業種別名称を押下すると、
                 集計結果CSVファイルをダウンロードします。</Alert>
-            <i-check>ダブルクオート（"）で値を囲む</i-check>
-            <i-button type="primary" ghost size="small" long>定員内</i-button>
-            <i-button type="primary" ghost size="small" long>非常勤</i-button>
-        </Drawer>
+            <div class="titlenorm">
+                <Icon type="logo-buffer"></Icon>
+                月次集計データダウンロード：{{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}
+            </div>
+            <div class="tr">
+            <checkbox type="primary" ghost size="small">ダブルクオート（"）で値を囲む</checkbox><br/>
+            <i-button type="primary" class="mt2"  >定員内</i-button>
+            <i-button type="primary" class="mt2"  >非常勤</i-button>
+            </div>
+            <div slot="footer"></div>
+        </Modal>
+
+        <Modal title="集計処理" width="605" v-model="totalLink" @on-visible-change="handleModalClose">
+            <div class="titlenorm">
+                <Icon type="logo-buffer"></Icon>
+                月次集計データ作成：{{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}
+            </div>
+            <div class="tr">
+                <i-button type="primary" class="mt2" @click="totalStart"　:disabled="totalDisabled">実行</i-button>
+            </div>
+            <Alert class="primary-info lb tl">{{ message }}</Alert>
+            <i-table border :columns="totalCol" :data="totalData">
+            </i-table>
+            <div slot="footer"></div>
+        </Modal>
     </main>
     <div th:replace="layout/script::common_script"></div>
     <script type="text/babel" th:inline="javascript">
@@ -122,6 +170,14 @@
             el: '.monthsuminfo-warp',
             data() {
                 return {
+                    totalDisabled:true,
+                    totalUpdated:false,
+                    message:'',
+                    loadingEmp:false,
+                    loadingSEC:false,
+                    totalLink:false, //集計処理
+                    downloadLink:false, //データダウンロード
+                    notAppSec:false, //締め未完了部局一覧
                     notAprEmp:false, //未承認者一覧
                     preDisabled: true,   //年度選択制御
                     nextDisabled: true,  //年度選択制御
@@ -166,18 +222,32 @@
                     ],
                     loading: false,
                     tableData: [],
-                    pageValue: {
+                    pageValueEmp: {
+                        amount: 0,
+                        curPage: 1,
+                        list: [20, 30, 50, 100],
+                        curSize: 20
+                    },
+                    pageValueSec: {
                         amount: 0,
                         curPage: 1,
                         list: [20, 30, 50, 100],
                         curSize: 20
                     },
                     opts: {
-                        month: 0,
+                        baseDate: 0,
                         status: 0,
-                        page: null,
-                        keyword: null,
-                        limit: 20
+                        action:'', //確認用　　C：確認　D：取消
+                        sPage:'',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        //目标sec
+                        txtTmgReferListTreeViewAdminTargetSection: '',
+                        //基准日
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 41,
+                        sRetroFlg:'', //遡及フラグ
+                        dlTypeId:'',  //DL種別コード
                     },
                     empDeptLoading: false,  // 組織ツリーloading用
                     deptDrawShow: false,    //組織ツリー用
@@ -203,21 +273,56 @@
                         txtTmgReferListTreeViewRecordDate: '',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 41,
-                        action:'',
-                        baseMonth:'',
-                        sRetroFlg:'', //遡及フラグ
-                        dlTypeId:'',  //DL種別コード
                     },
+                    notAprEmpCol:[
+                        {
+                            title: '所属',
+                            key: 'sectionNick',
+                            align: 'left'
+                        },
+                        {
+                            title: '氏名',
+                            key: 'empName',
+                            align: 'left'
+                        },
+                        {
+                            title: '職員番号',
+                            key: 'tmoCemployeeid',
+                            align: 'left'
+                        },
+                    ],
+                    notAprEmpData:[],
+                    totalCol:[
+                        {
+                        title: '氏名',
+                        key: 'yyyymm',
+                        align: 'center'
+                        },
+                        {
+                            title: 'メールアドレス',
+                            key: 'yyyymm',
+                            align: 'center'
+                        },
+                    ],
+                    totalData:[],
+                    notAprSecCol:[
+                        {
+                            title: '所属',
+                            key: 'sectionNick',
+                            align: 'left'
+                        },
+                    ],
+                    notAprSecData:[],
                 }
             },
             async mounted() {
-                this.getData()
                 this.getOrgTree()
             },
             computed: {
             },
             methods: {
                 getData: Debounce(async function () {
+                    this.totalUpdated=false
                     this.optsDisp.year=Utils.formatDate(this.curDate,'yyyy').concat('/01/01')
                     try {
                         this.loading = true
@@ -257,25 +362,184 @@
                     this.deptName = e[0].secnic
                     this.optsDisp.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                     this.optsDisp.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                    this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                    this.opts.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
                     this.selectDisabled = true
                     this.remarksDisabled = true
                     this.getData()
                 },
-                handleChange(e) {
+                async notApprovalList(e) {
+                    if(e!=null){
+                        this.opts.baseDate = e.concat('/01')
+                    }
+                    try {
+                        this.notAprEmp = true
+                        this.loadingEmp = true
+                        const {data} = await this.http.get('sys/sumdate/notApprovalList', this.opts)
+                        this.notAprEmpData = data.list
+                        this.pageValueEmp.amount = data.totalCount
+                        this.pageValueEmp.curPage = data.currPage
+                        this.pageValueEmp.curSize = data.pageSize
+
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    } finally {
+                        this.loadingEmp = false
+                    }
+                },
+                pageChangeEmp(e) {
+                    this.opts.sPage = e
+                    this.pageValueEmp.curPage = e
+                    this.notApprovalList()
+                },
+                monthlyFix(e){
+                    this.opts.baseDate = e.concat('/01')
                     this.$Modal.confirm({
                         title: '注意',
-                        content: '',
-                        onOk: () => {
-                            if (e.end === 1) {
-                                e.end = 2
-                            } else {
-                                e.end = 1
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の就業締め処理を実行します。\nよろしいですか？',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                await this.http.postForm('sys/sumdate/approval', this.opts)
+                                this.getData()
+                            } catch (error) {
+                                console.log(error)
+                                return
+                            } finally {
+                                this.loading = false
                             }
                         }
                     })
                 },
-                notApprovalList(e) {
-                    this.optsDisp.baseMonth=e
+                monthlyDelFix(e){
+                    this.opts.baseDate = e.concat('/01')
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の月次締め解除処理を実行します。\nよろしいですか？',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                await this.http.postForm('sys/sumdate/approvalCancel', this.opts)
+                                this.getData()
+                            } catch (error) {
+                                console.log(error)
+                                return
+                            } finally {
+                                this.loading = false
+                            }
+                        }
+                    })
+                },
+                changeFix(e){
+                    this.opts.baseDate = e.concat('/01')
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の就業確認処理を実行します。\nよろしいですか？',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                this.opts.action='C'
+                                await this.http.postForm('sys/sumdate/changeFix', this.opts)
+                                this.getData()
+                            } catch (error) {
+                                console.log(error)
+                                return
+                            } finally {
+                                this.loading = false
+                            }
+                        }
+                    })
+                },
+                async alterFix(e) {
+                    this.opts.baseDate = e.concat('/01')
+                    const { msg } =await this.http.postForm('sys/sumdate/changeFix', this.opts)
+                    this.$Modal.error({
+                        title: '注意',
+                        content: msg
+                    })
+                },
+                delFix(e){
+                    this.opts.baseDate = e.concat('/01')
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の就業確認解除処理を実行します。\nよろしいですか？',
+                        onOk: async () => {
+                            try {
+                                this.loading = true
+                                this.opts.action='D'
+                                await this.http.postForm('sys/sumdate/changeFix', this.opts)
+                                this.getData()
+                            } catch (error) {
+                                console.log(error)
+                                return
+                            } finally {
+                                this.loading = false
+                            }
+                        }
+                    })
+                },
+                total(e) {
+                    this.opts.baseDate = e.concat('/01')
+                    this.message='月次集計処理完了後、以下の職員に完了通知メールが配信されます。'
+                    this.totalDisabled=false
+                    this.totalLink=true
+                },
+                totalStart(){
+                    this.$Modal.confirm({
+                        title: '注意',
+                        content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の就業集計処理を実行します。\nよろしいですか？',
+                        onOk: async () => {
+                            try {
+                                const { msg } = await this.http.postForm('sys/sumdate/totalStart', this.opts)
+                                this.message='処理番号'+msg+'で月次集計処理を受け付けました。\n月次集計処理完了後、完了通知メールが配信されます。'
+                                this.totalDisabled=true
+                                this.totalUpdated=true
+                            } catch (error) {
+                                console.log(error)
+                                return
+                            } finally {
+                                this.loading = false
+                            }
+                        }
+                    })
+                },
+                handleModalClose(e) {
+                    if(!e) {
+                        if(this.totalUpdated){
+                            this.getData()
+                        }
+                        console.log('guanle')
+                    }
+                },
+                totalError(e) {
+                    this.opts.baseDate = e.concat('/01')
+                    this.downloadLink=true;
+                },
+                download(e) {
+                    this.opts.baseDate = e.concat('/01')
+                    this.downloadLink=true;
+                },
+                async notAprSec(e) {
+                    if (e != null) {
+                        this.opts.baseDate = e.concat('/01')
+                    }
+                    try {
+                        this.notAppSec = true
+                        this.loadingSEC = true
+                        const {data} = await this.http.get('sys/sumdate/notAppSectionList', this.opts)
+                        this.notAprSecData = data.list
+                        this.pageValueSec.amount = data.totalCount
+                        this.pageValueSec.curPage = data.currPage
+                        this.pageValueSec.curSize = data.pageSize
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    } finally {
+                        this.loadingSEC = false
+                    }
                 },
             }
         })
