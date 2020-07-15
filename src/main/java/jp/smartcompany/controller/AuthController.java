@@ -5,6 +5,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.enums.SuccessMessage;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.boot.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
@@ -52,9 +53,12 @@ public class AuthController {
      * @return
      */
     @PostMapping("stamping")
-    public GlobalResponse stamping() {
-//        authBusiness.basicStamping()
-        return null;
+    public LoginAccountBO stamping(@RequestParam LoginDTO loginDTO) {
+        LoginAccountBO loginAccountBo = null ;
+        if(null!=loginDTO){
+            loginAccountBo = authBusiness.basicStamping(loginDTO.getUsername(),loginDTO.getPassword());
+        }
+        return loginAccountBo;
     }
 
     /**
