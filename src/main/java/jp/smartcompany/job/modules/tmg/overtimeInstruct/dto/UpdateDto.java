@@ -15,8 +15,6 @@ import java.util.List;
 @ToString
 public class UpdateDto {
 
-
-    private String sUpdateFlg;
     private String sEmpId;
 
     private String baseDay;

@@ -154,7 +154,7 @@ public class MonthlyOutputBean {
 
             vo.setTotalCount(Integer.valueOf(notApprovalVoList.get(0).getNotApprovalCount()));
             vo.setCurrPage(Integer.valueOf(sPage));
-            vo.setPageSize(notApprovalVoList.size());
+            vo.setPageSize(50);
             vo.setTotalPage(Integer.valueOf(vo.getTotalCount())/50+1);
             vo.setList(notApprovalVoList);
         }else{
@@ -182,7 +182,7 @@ public class MonthlyOutputBean {
         if (notFixedDeptListVoList.size() > 0) {
             vo.setTotalCount(Integer.parseInt(notFixedDeptListVoList.get(0).getNotMonthlyfixCount()));
             vo.setCurrPage(Integer.valueOf(sPage));
-            vo.setPageSize(notFixedDeptListVoList.size());
+            vo.setPageSize(50);
             vo.setTotalPage(Integer.valueOf(vo.getTotalCount())/50+1);
             vo.setList(notFixedDeptListVoList);
         }else{

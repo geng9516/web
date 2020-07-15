@@ -552,16 +552,15 @@ public class OvertimeInstructBean {
         //非超過勤務の場合
         if(StrUtil.hasEmpty(comment)&&StrUtil.hasEmpty(status)){
             tdadDo.setTdadNdeleteflg(0L);
-        }
-        tdadDo.setTdadCsparechar1(comment);
-        if(StrUtil.hasEmpty(status)){
-            /** 申請ステータス：確認済 */
-            tdadDo.setTdadCsparechar2("TMG_OVERHOUR_STATUS|6");
         }else{
-            tdadDo.setTdadCsparechar2(status);
+            tdadDo.setTdadCsparechar1(comment);
+            if(StrUtil.hasEmpty(status)){
+                /** 申請ステータス：確認済 */
+                tdadDo.setTdadCsparechar2("TMG_OVERHOUR_STATUS|6");
+            }else{
+                tdadDo.setTdadCsparechar2(status);
+            }
         }
-
-
         return ITmgDailyDetailCheckService.getBaseMapper().insert(tdadDo);
     }
 
@@ -580,7 +579,7 @@ public class OvertimeInstructBean {
         ttDo.setTtrCmodifierprogramid(BEANDESC + "_" +action);
         ttDo.setTtrCprogramid(BEANDESC + "_" +action);
         ttDo.setTtrCparameter1(action);
-        ttDo.setTtrCparameter2(baseDate);
+        ttDo.setTtrDparameter1(DateUtil.parse(baseDate));
         return iTmgTriggerService.getBaseMapper().insert(ttDo);
     }
 

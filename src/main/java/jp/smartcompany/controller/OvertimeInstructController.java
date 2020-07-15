@@ -89,8 +89,9 @@ public class OvertimeInstructController extends AbstractController {
      */
     @PostMapping("uploadData")
     @ResponseBody
-    public GlobalResponse updateDaily(@RequestBody UpdateListDto updateDtoList,
+    public GlobalResponse updateDaily(@RequestBody String updateDtoList,
                                       @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        return overtimeInstructBean.actioneExecuteUpdate(updateDtoList.getUpdateDtoList(),psDBBean);
+        UpdateListDto dtos =JSONUtil.parse(updateDtoList).toBean(UpdateListDto.class);
+        return overtimeInstructBean.actioneExecuteUpdate(dtos.getUpdateDtoList(),psDBBean);
     }
 }

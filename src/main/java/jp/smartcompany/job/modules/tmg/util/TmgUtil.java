@@ -1956,7 +1956,7 @@ public class TmgUtil {
 
 
     /** 最小日付 */
-    public static final Date maxDate = DateUtil.parse("2020-12-31");
+    public static final Date maxDate = DateUtil.parse("2222-12-31");
 
     /** 日付形式1 */
     public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
