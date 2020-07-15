@@ -348,6 +348,7 @@
                     pdSearchEnd: '',
                     recordDate: '',
                     txtDYYYYMMDD: '',
+                    hidSelectTab:'0',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -496,10 +497,7 @@
                 this.tableData = []
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
-                console.log("getTableData:"+ data.length)
-
                 if(data.length>0){
-                    console.log("test1")
                     let b = data.map((e,i) => {
                         const vactionGiveDay = [{
                             day:e.taDyyyymmdd,
@@ -546,8 +544,6 @@
                             workertypeNm:e.workertypeNm
                         }
                     })
-                    console.log("getTableData_b:"+ b.length)
-                    console.log(b)
                     let a=[]
                     for (var i=0;i < b.length;i++){
                         if (b[i].taRowpan == 1) {
@@ -563,8 +559,6 @@
                             i = i + +b[i].taRowpan - 1
                         }
                     }
-                    console.log("getTableData_a:"+ a.length)
-                    console.log(a)
                     const addNumDeci = Vue.filter('addNumDeci')
                     //
                     for (var i=0;i < a.length;i++){
@@ -603,8 +597,6 @@
                     }
                     this.tableData = a
                     this.dataLoading = false
-                    console.log("詳細")
-                    console.log(this.tableData)
                  } else if(data.length == 0){
                     this.tableData = data
                     this.dataLoading = false
@@ -645,8 +637,6 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-                console.log("handleClickEmpLeaf_e")
-                console.log(e)
 
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_DISP'
@@ -669,13 +659,9 @@
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
             async handleYearChange(e) {
-            console.log("handleYearChange")
-            console.log(e)
+
             this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
             this.query.year = e.replace("年", "")
-
-            console.log(this.updateAcquired5DaysVO.txtYear)
-            console.log(this.query.year)
 
             await this.getTableData()
 
@@ -730,8 +716,8 @@
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
 
-                console.log('handleClickLeaf-s')
-                console.log(e)
+                //ツリーを選択するの場合、0で設定する
+                this.query.hidSelectTab='0'
 
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_DISP'
@@ -742,9 +728,6 @@
                 //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
                 this.query.txtUserCode = null
 
-                console.log('初期-s')
-                console.log(this.query.year)
-                console.log('初期-e')
                 //初期
                 if (!this.query.year) {
                     this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
@@ -754,18 +737,8 @@
                 }
                 this.yearShow = true
                 await this.getTableData()
-                console.log('handleClickLeaf-e')
 
             },
-            // async handleStartMonth(e) {
-            //     console.log("handleStartMonth")
-            //     if (e) {
-            //         this.query.txtTDA_DYYYYMM = this.dateFormat(e)
-            //         this.query.txtDYYYYMM = this.dateFormat(e)
-            //         await this.getTableData()
-            //     }
-            // },
-
             dateFormat(e) {
                 //YYYY年MM月からYYYY/MM/01へ変換する
                 let yearMMDD = e.replace("年", "/")
@@ -820,14 +793,10 @@
                 })
             },
             blur(e) {
-                console.log("blur")
                 this.updateAcquired5DaysVO.usedDaysEdit = e.adjustTakenDays
             },
             handleChangeDay(e) {
-                console.log("handleChangeDay")
-                console.log(e)
                 this.updateAcquired5DaysVO.kijunbiEdit = e
-                console.log(this.updateAcquired5DaysVO.kijunbiEdit)
             },
         }
     })
