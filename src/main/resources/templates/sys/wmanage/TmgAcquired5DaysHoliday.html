@@ -32,13 +32,13 @@
                         {{ deptName }}
                     </i-button>
                 <!-- 共通組織図画面 start-->
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                            v-model="deptDrawShow">
+                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" v-model="deptDrawShow">
+                  <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                   <tab-pane label="ツリー" name="organisationTree">
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
-
                        <Row class="tl mb5">
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
@@ -46,6 +46,10 @@
                                          placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし">
+                        </Tree>
+                   </tab-pane>
+                   <tab-pane label="検索" name="organisationSearch">
                         <Row class="tl mb2" :gutter="8">
                             <i-col span="15">
                                 <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">
@@ -61,9 +65,6 @@
                                 <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" @click="searchOrgTree">検索</i-button>
                             </i-col>
                         </Row>
-
-                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
-                              empty-text="所属データなし"></Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             社員
@@ -72,10 +73,11 @@
                             <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
-                    </Drawer>
+                   </tab-pane>
+                  </Tabs>
+                </Drawer>
                 <!-- 共通組織図画面 end-->
                 </span>
-
             <span style="flex:1"></span>
         </div>
     </div>
@@ -391,6 +393,7 @@
                 searchConditionsList: [],//組織ツリー用
                 empTreeData: [],        //組織ツリー用
                 emplistLoading: false,  //職員一覧ローディング用動画
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
                 dataLoading: false
             }
         },
@@ -421,8 +424,6 @@
                 this.query.pdSearchEnd = e.tpDntfSurveyEnd
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
-                console.log(data)
-
                 this.takenDaysData =data
 
                 this.isShow = true
@@ -465,32 +466,6 @@
             },
             cancel() {
                 this.isShow = false
-            },
-
-            async getWorkDateList() {
-                this.query.txtAction = 'ACT_DISP'
-
-                this.loading = false
-                const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
-                this.dispMonthlyList = data
-
-                // if (data.length > 0) {
-                //     this.model1 = data[0].val
-                //
-                //     // let result = this.model1.replace("年", "/")
-                //     // result = result.replace("月", "/")
-                //     // result = result + "01"
-                //     // this.query.txtTDA_DYYYYMM = result
-                //
-                //     //年月リストを取得する時に、活性化にする
-                //     this.selectDisabled = true
-                // }
-                //
-                // //年月リスト.lengthがゼロ場合、非活性化にする
-                // if (data.length === 0) {
-                //     this.model1 = ''
-                //     this.selectDisabled = false
-                // }
             },
             async getTableData() {
                 this.dataLoading = true
@@ -650,7 +625,6 @@
                 }
 
                 this.getTableData()
-
             },
             async handleDeptDateChange(e) {
                 this.referListObject.txtTmgReferListTreeViewRecordDate = e
@@ -659,19 +633,9 @@
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
             async handleYearChange(e) {
-
-            this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
-            this.query.year = e.replace("年", "")
-
-            await this.getTableData()
-
-            },
-            rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
+              this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
+              this.query.year = e.replace("年", "")
+              await this.getTableData()
             },
             handleScroll: Throttle(function (e) {
                 this.contentScrollTop = e.target.scrollTop
@@ -716,11 +680,8 @@
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
 
-                //職員一覧を初期化する
-                this.empTreeData=[]
-
                 //ツリーを選択するの場合、0で設定する
-                this.query.hidSelectTab='0'
+                // this.query.hidSelectTab='0'
 
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_DISP'
@@ -800,6 +761,17 @@
             },
             handleChangeDay(e) {
                 this.updateAcquired5DaysVO.kijunbiEdit = e
+            },
+            currentTabChanged(name) {
+                console.log("tabPaneClick")
+                console.log(name)
+
+                if (name=="organisationTree") {
+                    this.query.hidSelectTab='0'
+                } else if (name=="organisationTree") {
+                    this.query.hidSelectTab='1'
+                }
+                console.log(this.query.hidSelectTab)
             },
         }
     })
