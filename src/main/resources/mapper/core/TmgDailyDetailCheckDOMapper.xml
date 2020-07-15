@@ -260,8 +260,8 @@
             , #{day}
             , #{itemCode}
             , null
-            , TMG_F_CONV_HHMI2MIN(#{txtTDAD_NOPEN})
-            , TMG_F_CONV_HHMI2MIN(#{txtTDAD_NCLOSE})
+            , TMG_F_CONV_HHMI2MIN(#{txtTDAD_NOPEN,jdbcType=VARCHAR})
+            , TMG_F_CONV_HHMI2MIN(#{txtTDAD_NCLOSE,jdbcType=VARCHAR})
             , 0
             , #{nIdx}
             , #{txtTDAD_CSPARECHAR1,jdbcType=VARCHAR}

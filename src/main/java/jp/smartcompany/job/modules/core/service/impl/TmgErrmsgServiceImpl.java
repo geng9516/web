@@ -107,17 +107,8 @@ public class TmgErrmsgServiceImpl extends ServiceImpl<TmgErrmsgMapper, TmgErrmsg
      */
     @Override
     public int buildSQLForInsertErrMsg(String custID, String compCode, String userCode, String programId, String language, String targetUser, String day){
-        Map<String, Object> map = MapUtil.newHashMap(7);
 
-        map.put("custID,", custID);
-        map.put("compCode", compCode);
-        map.put("userCode", userCode);
-        map.put("programId", programId);
-        map.put("language", language);
-        map.put("targetUser", targetUser);
-        map.put("day", day);
-
-        return baseMapper.buildSQLForInsertErrMsg(map);
+        return baseMapper.buildSQLForInsertErrMsg(custID, compCode, userCode, programId, language, targetUser, day);
     }
 
 }

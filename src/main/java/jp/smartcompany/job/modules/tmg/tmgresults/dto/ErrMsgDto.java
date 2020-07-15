@@ -6,14 +6,14 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 /**
- * パラメータDTO
- *
  * @author Nie Wanqun
- */
+ * @description エラーチェック結果情報
+ * @objectSource
+ * @date 2020/06/12
+ **/
 @Getter
 @Setter
 @ToString
-@Accessors(chain = true)
 public class ErrMsgDto {
     /**
      * エラーコード

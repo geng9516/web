@@ -81,7 +81,9 @@
                     <i-button type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">コメントのみ登録</i-button>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily" :loading="updateDailyLoading">登録</i-button>
+                    <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily" :loading="updateDailyLoading">
+                        登録
+                    </i-button>
                 </i-col>
             </Row>
             <div class="titlenorm mb10">
@@ -92,7 +94,7 @@
                 <Row>
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
-                        <i-select v-model="workingId" class="mr30" @on-change=""
+                        <i-select v-model="workingId" class="mr30" @on-change="changeWorkingID"
                                   v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
                             <i-option v-for="(item, index) of workingIdList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
@@ -103,7 +105,7 @@
                 </Row>
                 <Row>
                     <i-col span="8" class="label tc">出張</i-col>
-                    <i-col span="8" class="no-border-radius">
+                    <i-col span="8" class="no-border-radius" v-if="!bDisable">
                         <i-select v-model="businessTrip" class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
                             <i-option v-for="(item, index) of businessTripList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
@@ -111,31 +113,45 @@
                         </i-select>
                         <p v-else align="center">{{dailyEdit.tdaCbusinesstripidRName}}</p>
                     </i-col>
-
+                    <i-col span="8" class="no-border-radius" v-else>
+                        <i-select v-model="businessTrip" class="mr30" @on-change="" disabled
+                                  v-if="(!bHoliday && !bFixed)">
+                            <i-option v-for="(item, index) of businessTripList" :key="index"
+                                      :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
+                            </i-option>
+                        </i-select>
+                        <p v-else align="center">{{dailyEdit.tdaCbusinesstripidRName}}</p>
+                    </i-col>
                 </Row>
-                <i-table :columns="columnsWork" :data="workData" ransfer>
+                <i-table :columns="columnsWork" :data="workData">
                     <template slot-scope="{ row }" slot="workStart">
-                        <i-input v-model="row.workStart" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
+                        <i-input v-model="row.workStart"
+                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="workEnd">
                         <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
                         <span v-else>{{ row.workEnd | toTime }}</span>
                     </template>
+
                 </i-table>
+
 
                 <Row>
                     <i-col span="8" class="label tc">本人コメント</i-col>
                     <i-col span="16">
-                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" v-if="!bFixed"></i-input>
-                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" v-else readonly></i-input>
+                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea"
+                                 v-if="!bFixed"></i-input>
+                        <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" v-else
+                                 readonly></i-input>
                     </i-col>
                 </Row>
                 <Row class="mb5">
                     <i-col span="8" class="label tc">承認者コメント</i-col>
                     <i-col span="16">
                         <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea" readonly ></i-input>
+                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea"
+                                 readonly></i-input>
                         <!--                        <span >{{ dailyEdit.tdaCbosscommentR }}</span>-->
                     </i-col>
                 </Row>
@@ -150,14 +166,20 @@
             </div>
             <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                 <i-col span="6" offset="15">
-                    <i-select v-model="categoryNonduty" class="mr30" @on-change="">
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="" v-if="!bDisable">
+                        <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
+                                  　:value="item.itemCode">
+                        </i-option>
+                    </i-select>
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="" disabled v-else>
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
                     </i-select>
                 </i-col>
                 <i-col span="3">
-                    <i-button type="primary" ghost @click="addNotWork">追加</i-button>
+                    <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
+                    <i-button type="primary" ghost @click="addNotWork" disabled v-else>追加</i-button>
                 </i-col>
             </Row>
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
@@ -191,8 +213,13 @@
             </div>
             <Row class="mb15 tr" v-if="!bHoliday && !bFixed ">
 
-                <i-col span="6" offset="11">
-                    <i-select v-model="categoryOverhours" class="mr30" @on-change="">
+                <i-col span="6" offset="15">
+                    <i-select v-model="categoryOverhours" class="mr30" @on-change="" v-if="!bDisable">
+                        <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
+                                  　:value="item.itemCode">
+                        </i-option>
+                    </i-select>
+                    <i-select v-model="categoryOverhours" class="mr30" @on-change="" disabled v-else>
                         <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
@@ -200,11 +227,13 @@
                 </i-col>
 
                 <i-col span="3">
-                    <i-button type="primary" ghost @click="addOverWork">追加</i-button>
+                    <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
+                    <i-button type="primary" ghost @click="addOverWork" disabled v-else>追加</i-button>
                 </i-col>
-                <i-col span="4">
-                    <i-button type="primary" ghost>時刻補完</i-button>
-                </i-col>
+<!--                <i-col span="4">-->
+<!--                    <i-button type="primary" ghost v-if="!bDisable">時刻補完</i-button>-->
+<!--                    <i-button type="primary" ghost disabled v-else>時刻補完</i-button>-->
+<!--                </i-col>-->
             </Row>
 
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
@@ -232,8 +261,8 @@
             </i-table>
 
             <div class="titlenorm mb10">
-                <Icon type="logo-buffer" ></Icon>
-                <a  @click ="showLog"> 更新履歴</a>
+                <Icon type="logo-buffer"></Icon>
+                <a @click="showLog"> 更新履歴</a>
             </div>
             <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20" v-if="isLogShow">
 
@@ -293,9 +322,9 @@
                     selMgdCbusinessTrip: '',
                     txtDYYYYMMDD: '',
                     tdaCowncommentR: '',
-                    nonDutyList:[],
-                    overHoursList:[],
-                    hasAuthority:true,
+                    nonDutyList: [],
+                    overHoursList: [],
+                    hasAuthority: true,
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                 },
                 workingId: '',
@@ -477,6 +506,7 @@
                 notWorkType: 1,
                 dailyData: {},
                 workData0: [],
+                mgdCsparechar4VOList: [],
                 workDataLoading: false,
                 columnsNotWorkLoading: false,
                 columnsOverWorkLoading: false,
@@ -484,17 +514,23 @@
                 bFixed: false,
                 isEdiTableResult4Inp: false,
                 isCommonDiscretionaryLabor: false,
-                bOpen:false,
-                bClose:false,
+                bOpen: false,
+                bClose: false,
+                // 承認者コメントの入力制御
                 bApproved: false,
 
                 txtDYYYYMMDD: '',
                 index: 0,
+                // 承認ステータス
                 isConfirm: false,
-                comment: '',
+                // 更新履歴の表示制御
                 isLogShow: false,
-                updateDailyLoading:false,
-
+                updateDailyLoading: false,
+                // 就業区分切替の表示制御
+                bDisable: false,
+                overHourLimit: '',
+                targetForOverTime: '',
+                errMsg: []
 
 
             }
@@ -594,7 +630,7 @@
 
                 this.query.today = data.today
                 this.dispMonthlyList = data.monthLy
-                console.log(this.dispMonthlyList)
+
 
                 if (data.monthLy.length > 0) {
                     this.model1 = this.dispMonthlyList[0].code
@@ -642,7 +678,6 @@
                 this.monthlyMap = data.monthlyDateMap
                 this.isConfirm = data.monthlyTilteMapList.TMO_CSTATUSFLG
 
-                console.log(data)
 
                 this.columns = data.dailyTittleMapList.map(e => {
                     return {
@@ -665,7 +700,7 @@
                 this.workData0 = []
                 this.detailNonDutyVOList = []
                 this.detailOverhoursVOList = []
-                this.title = e[0].TDA_DYYYYMMDD + '(' + e[0].TDA_DYYYYMMDD_DY + ')'
+                this.title = '  '
                 this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
                 this.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
@@ -695,6 +730,7 @@
                 this.businessTripList = data.businessTripList
                 // this.businessTrip = this.businessTripList[0].mgdCmastercode
 
+
                 // 非勤務ドロップダウン
                 this.categoryNondutyList = data.categoryNondutyList
                 this.categoryNonduty = this.categoryNondutyList[0].itemCode
@@ -702,6 +738,7 @@
                 // 超過勤務ドロップダウン
                 this.categoryOverhoursList = data.categoryOverhoursList
                 this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+                this.mgdCsparechar4VOList = data.mgdCsparechar4VOList
 
                 // 詳細:欠勤離籍以外
                 this.workData0 = data.dailyDetail0List
@@ -709,10 +746,6 @@
                 // 就業実績
                 this.dailyEdit = data.dailyEditVO
 
-
-                console.log(this.dailyEdit.tdaCstatusflg)
-                console.log(this.dailyEdit.tdaCmodifieruseridR)
-                console.log(this.dailyEdit.tdaDmodifieddateR)
 
                 if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
                     && '' !== this.dailyEdit.tdaCmodifieruseridR
@@ -731,22 +764,22 @@
 
                 //就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
                 this.isEdiTableResult4Inp = data.isEdiTableResult4Inp
-                console.log(this.isEdiTableResult4Inp)
+
                 this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
 
 
-                if(this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp){
+                if (this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp) {
                     this.bOpen = true
-                }else{
+                } else {
                     this.bOpen = false
                 }
-                if(this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp){
+                if (this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp) {
                     this.bClose = true
-                }else{
+                } else {
                     this.bClose = false
                 }
 
-                if(this.isEdiTableResult4Inp){
+                if (this.isEdiTableResult4Inp) {
                     this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNopenRHidden
                     this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
                 }
@@ -763,6 +796,7 @@
                 }
 
                 this.workingId = this.dailyEdit.tdaCworkingidR
+                this.changeWorkingID(this.workingId)
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
                 this.title = this.dailyEdit.tdaDyyyymmddDy
 
@@ -779,6 +813,10 @@
 
                     }
                 })
+                let limitOfBasedateVO = data.limitOfBasedateVO
+
+                this.overHourLimit = limitOfBasedateVO.dailyConvMinute
+                this.targetForOverTime = data.targetForOverTime
             },
 
             handleClose() {
@@ -788,7 +826,7 @@
             },
             addOverWork() {
                 let detailOverhoursVO = this.categoryOverhoursList.find(e => e.itemCode === this.categoryOverhours)
-                console.log(detailOverhoursVO)
+
                 this.detailOverhoursVOList.push({
                     attributeUrl: detailOverhoursVO.attributeUrl,
                     tdadCnotworkid: detailOverhoursVO.itemCode,
@@ -808,7 +846,6 @@
             },
             addNotWork() {
                 let categoryNondutyVO = this.categoryNondutyList.find(e => e.itemCode === this.categoryNonduty)
-                console.log(categoryNondutyVO)
 
                 this.detailNonDutyVOList.push({
                     attributeUrl: categoryNondutyVO.attributeUrl,
@@ -845,198 +882,410 @@
                 this.isShow = false
             }),
             //登録
-            async updateDaily(){
-                this.updateDailyLoading= true
-                this.tmgResultsDto.txtAction = 'ACT_EDITINP_UDAILY'
-                this.tmgResultsDto.holiday = this.bHoliday
-                this.tmgResultsDto.workingId = this.workingId
-                this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
-                this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
-                this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
-                this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
-                this.tmgResultsDto.nonDutyList= this.detailNonDutyVOList
-                this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
-                if (this.bFixed || this.bHoliday) {
-                    this.tmgResultsDto.hasAuthority = false
-                } else {
-                    this.tmgResultsDto.hasAuthority = true
+            async updateDaily() {
+
+                if (!this.errorCheck()) {
+                    return
                 }
 
+                this.updateDailyLoading = true
+
+                this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
+                this.tmgResultsDto.txtAction = 'ACT_EDITINP_UDAILY'
+
+                this.tmgResultsDto.workingId = this.workingId
+                this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
+                this.tmgResultsDto.holiday = null
+                this.tmgResultsDto.txtTdaNopenR = ''
+                this.tmgResultsDto.txtTdaNcloseR = ''
+                this.tmgResultsDto.tdaCowncommentR = ''
+                this.tmgResultsDto.hasAuthority = ''
+
+                if (!this.bDisable) {
+                    this.tmgResultsDto.holiday = this.bHoliday
+
+                    this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                    this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                    this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+                    this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
+                    this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
+                    if (this.bFixed || this.bHoliday) {
+                        this.tmgResultsDto.hasAuthority = false
+                    } else {
+                        this.tmgResultsDto.hasAuthority = true
+                    }
+                }
+
+                if (!await this.getSQLVecForAjax()) {
+                    this.updateDailyLoading = false
+                    return
+                }
                 await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                this.updateDailyLoading= false
+                this.updateDailyLoading = false
                 this.isShow = false
                 this.getTitleData()
 
             },
+            async getSQLVecForAjax() {
+                const {data} = await this.http.post('sys/tmgResults/getSQLVecForAjax', this.tmgResultsDto)
+
+                let terCerrcode = data.terCerrcode
+
+                if (terCerrcode === '0') {
+                    return true
+                }
+                this.errMsg = JSON.parse(terCerrcode)
+
+                let errMsg20 = ''
+                let errMsg30 = ''
+                let check = Object.keys(this.errMsg).some(e => {
+                    if (e === 'ERRTYPE_10') {
+
+                        this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
+
+                        return true
+                    }
+
+                    if (e === 'ERRTYPE_20') {
+                        this.errMsg.ERRTYPE_20.forEach(e20 => {
+                            errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                        })
+
+                    }
+                    if (e === 'ERRTYPE_30') {
+                        this.errMsg.ERRTYPE_30.forEach(e30 => {
+                            errMsg30 = errMsg30 + e30.ERRMSG + '/n'
+                        })
+                    }
+
+                })
+                if (check) return false
+
+                if (errMsg20 !== '') {
+                    this.$Notice.warning({desc: errMsg20})
+
+                }
+                if (errMsg30 !== '') {
+                    this.$Modal.confirm({
+                        title: '',
+                        content: 'errMsg30',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+
+                        },
+                        onCancel: () => {
+                            return false
+                        }
+                    })
+
+                }
+                return true
+            },
+
             showLog() {
-                if(this.isLogShow){
+                if (this.isLogShow) {
                     this.isLogShow = false
-                }else{
+                } else {
                     this.isLogShow = true
                 }
 
             },
 
-    //         // 表示制御
-    //         changeWorkingID(chgFlg) {
-    //
-    //             let bDisable     = false;
-    //
-    //             // 休暇
-    //             if( HOLIDAY ) {
-    //                 bDisable = true;
-    //                 // 休暇以外
-    //             } else {
-    //                 let workingid = getWorkingIdValue();
-    //                 // 出勤 or 休日出勤
-    //                 if(gsMgdCsparechar4[workingid] == '0'){
-    //                     bDisable = false;
-    //                     // 欠勤
-    //                 } else {
-    //                     bDisable = true;
-    //                 }
-    //             }
-    //
-    //             // 「出勤」「休日出勤」時処理
-    //     if( !bDisable ) {
-    //
-    //         document.fm.txtTDA_NOPEN_R.disabled = false;
-    //         document.fm.txtTDA_NCLOSE_R.disabled = false;
-    //
-    //         // コンボボックスが表示されている場合（休日、確定済み以外）
-    //         if(document.fm.selMGD_CBUSINESS_TRIP){
-    //             document.fm.selMGD_CBUSINESS_TRIP.disabled = false;
-    //         }
-    //
-    //         /*
-    //          * 就業区分リストボックスを変更する際に、
-    //          * txtTDA_NOPEN_Rがhiddenタイプの場合、一旦「欠勤」に変更すると値がクリアされるので、
-    //          * そのまま登録すると、実績が空となる為、「出勤」を選択した際は退避しておいた実績時刻からデータを復帰する。
-    //          */
-    //         if (chgFlg == "0" && document.fm.txtTDA_NOPEN_R.type == "hidden" && document.fm.txtTDA_NOPEN_R.value == "") {
-    //
-    //             document.fm.txtTDA_NOPEN_R.value  = back_Open;
-    //             document.fm.txtTDA_NCLOSE_R.value = back_Close;
-    //         }
-    //
-    //         // 休憩をdisable解除
-    //         for (i = 0; i < nonDutyObj.addCount; i++) {
-    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
-    //             // 休憩の項目コードをhiddenに持っている場合
-    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() == TMG_ITEMS_RESULT_REST){
-    //                 inputElement.removeAttr("disabled");
-    //             }
-    //         }
-    //
-    //         // 休憩以外の非勤務をdisable解除
-    //         for (i = 0; i < nonDutyObj.addCount; i++) {
-    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
-    //             // 休憩の項目コードをhiddenに持っている場合
-    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
-    //                 inputElement.removeAttr("disabled");
-    //             }
-    //         }
-    //
-    //
-    //
-    //         // コンボボックス、ボタン
-    //         $("[name='selMGD_CITEMCODE_NONDUTY']").removeAttr("disabled");
-    //         $("[name='selMGD_CITEMCODE_OVERHOURS']").removeAttr("disabled");
-    //
-    //
-    //         // 出勤
-    //         if(gsMgdCsparechar4[workingid] == '0' && workingid != WORK_HOLIDAYWORK){
-    //             // 休憩以外の日勤務をdisable解除
-    //             for (i = 0; i < nonDutyObj.addCount; i++) {
-    //                 var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
-    //                 // 休憩の項目コードをhiddenに持っている場合
-    //                 if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
-    //                     inputElement.removeAttr("disabled");
-    //                 }
-    //             }
-    //         }
-    //
-    //         if(OVERTIME) {
-    //             // 超過勤務をdisable解除
-    //             for (i = 0; i < overhoursObj.addCount; i++) {
-    //                 var inputElement = $("#" + overhoursObj.addToId + " ." + overhoursObj.addFromId + i + " :input");
-    //                 inputElement.removeAttr("disabled");
-    //             }
-    //         }
-    //
-    //     } else {
-    //
-    //         document.fm.txtTDA_NOPEN_R.value = "";
-    //         document.fm.txtTDA_NOPEN_R.disabled = true;
-    //         document.fm.txtTDA_NCLOSE_R.value = "";
-    //         document.fm.txtTDA_NCLOSE_R.disabled = true;
-    //
-    //         // 裁量労働者以外の場合(裁量労働制職員は休日等であっても出張区分を登録可能)
-    //         if (!DISCRETIONWORK) {
-    //             // コンボボックスが表示されている場合（休日、確定済み以外）
-    //             if(document.fm.selMGD_CBUSINESS_TRIP){
-    //                 document.fm.selMGD_CBUSINESS_TRIP.disabled = true;
-    //             }
-    //         }
-    //
-    //         // 休憩をdisable
-    //         for (i = 0; i < nonDutyObj.addCount; i++) {
-    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
-    //             // 休憩の項目コードをhiddenに持っている場合
-    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() == TMG_ITEMS_RESULT_REST){
-    //                 inputElement.attr("disabled", "true");
-    //                 inputElement.filter("[name='txtTDAD_NOPEN']").val("");					// 開始時刻をクリア
-    //                 inputElement.filter("[name='txtTDAD_NCLOSE']").val("");					// 終了時刻をクリア
-    //                 inputElement.filter("[name='chkTDAD_BCHECK']").removeAttr("checked");	// 削除チェックボックスをクリア
-    //             }
-    //         }
-    //
-    //         // 休憩以外の日勤務をdisable
-    //         for (i = 0; i < nonDutyObj.addCount; i++) {
-    //             var inputElement = $("#" + nonDutyObj.addToId + " ." + nonDutyObj.addFromId + i + " :input");
-    //             // 休憩の項目コードをhiddenに持っている場合
-    //             if(inputElement.filter("[name='txtTDAD_CNOTWORKID']").val() != TMG_ITEMS_RESULT_REST){
-    //                 inputElement.attr("disabled", "true");
-    //                 inputElement.filter("[name='txtTDAD_NOPEN']").val("");					// 開始時刻をクリア
-    //                 inputElement.filter("[name='txtTDAD_NCLOSE']").val("");					// 終了時刻をクリア
-    //                 inputElement.filter("[name='txtTDAD_CSPARECHAR1']").val("");			// 内容をクリア
-    //                 inputElement.filter("[name='chkTDAD_BCHECK']").removeAttr("checked");	// 削除チェックボックスをクリア
-    //             }
-    //         }
-    //
-    //
-    //         // コンボボックス、ボタン
-    //         $("[name='selMGD_CITEMCODE_NONDUTY']").attr("disabled", "true");
-    //         $("[name='selMGD_CITEMCODE_OVERHOURS']").attr("disabled", "true");
-    //
-    //
-    //         if(OVERTIME) {
-    //             // 超過勤務をdisable
-    //             for (i = 0; i < overhoursObj.addCount; i++) {
-    //                 var inputElement = $("#" + overhoursObj.addToId + " ." + overhoursObj.addFromId + i + " :input");
-    //                 inputElement.attr("disabled", "true");
-    //             }
-    //         }
-    //
-    //     }
-    //
-    //     // 反映エラーがあるときは画面表示時にエラー内容をアラート表示(onLoad時のみ)
-    //     if(chgFlg == 1 && ERROR_MSG != '&nbsp;' && ERROR_MSG != '') {
-    //
-    //         // 表示対象日にエラーが有るかチェックを行う。
-    //         execErrorCheckLogicForDisp(ERROR_MSG)
-    //     }
-    //
-    //     // 裁量労働適用者の場合、初期表示時に就業区分が"出勤"、"休日出勤"の場合は勤務時間数（裁量労働）の必須入力チェックを行う設定を行う。
-    //     if(chgFlg == 1 && DISCRETIONWORK && gsMgdCsparechar4[workingid] == '0'){
-    //
-    //         // 勤務時間数（裁量労働）の必須入力チェックを行う様にする。
-    //         IS_INPUTCHECK_ENTRYDISCRETIONWORK = true;
-    //     }
-    // },
+            // 就業区分の切り替え表示制御
+            changeWorkingID(workingid) {
+
+                this.bDisable = false;
+
+                // 休暇
+                if (this.bHoliday) {
+                    this.bDisable = true;
+                    // 休暇以外
+                } else {
+
+                    let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
+
+                    // 出勤 or 休日出勤
+                    if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
+                        this.bDisable = false;
+                        // 欠勤
+                    } else {
+                        this.bDisable = true;
+                    }
+                }
+
+                if (this.bDisable === true) {
+                    this.detailNonDutyVOList = []
+                    this.detailOverhoursVOList = []
+
+                }
+            },
 
 
+            // エラーチェック
+            errorCheck() {
+
+                // 修正出社時刻形式
+                if (!this.checkFormatTimeValue(this.dailyEdit.tdaNopenR, '就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                    return false;
+                }
+
+                // 修正退社時刻形式
+                if (!this.checkFormatTimeValue(this.dailyEdit.tdaNcloseR, '就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                    return false;
+                }
+
+                if (this.dailyEdit.tdaCowncommentR !== null && this.getLengthB(this.dailyEdit.tdaCowncommentR) > 100) {
+
+                    this.$Notice.error({desc: "本人コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+
+                    return false;
+                }
+
+                //非勤務
+                const checkNonDuty = this.detailNonDutyVOList.some(e => {
+
+                    if (!this.checkFormatTimeValue(e.tdadNopen, '非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                        return true;
+                    }
+                    if (!this.checkFormatTimeValue(e.tdadNclose, '非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                        return true;
+                    }
+                    if (e.tdadCsparechar1 !== null && this.getLengthB(e.tdadCsparechar1) > 100) {
+                        this.$Notice.error({desc: "中断備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+                        return true
+
+                    }
+                })
+                if (checkNonDuty) return false
+
+                // 超過勤務
+                const checkOverhour = this.detailOverhoursVOList.some(e => {
+
+                    if (!this.checkFormatTimeValue(e.tdadNopen, '超過勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                        return true;
+                    }
+                    if (!this.checkFormatTimeValue(e.tdadNclose, '超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
+
+                        return true;
+                    }
+                    if (e.tdadCsparechar1 !== null && e.tdadCsparechar1.length > 100) {
+                        this.$Notice.error({desc: "超過勤務備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+                        return true
+                    }
+
+                })
+                if (checkOverhour) return false
+
+
+                let nOverTimeTotal = 0;
+                // 超過勤務命令の明細部配下を行単位で取得
+                this.detailOverhoursVOList.forEach(e => {
+
+                    // 超過勤務命令の時間数を算出
+                    let sOpen = this.toMinuteFromHHcMI60(e.tdadNopen);
+                    let sClose = this.toMinuteFromHHcMI60(e.tdadNclose);
+                    nOverTimeTotal = nOverTimeTotal + (sClose - sOpen);
+                })
+
+
+                // 超過勤務命令時間が入力されていて、超過勤務対象「無」の場合は警告メッセージを表示する
+                if (nOverTimeTotal > 0 && this.targetForOverTime === "1") {
+                    // 警告メッセージの表示および、応答の確認
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+
+                        },
+                        onCancel: () => {
+                            return false
+                        }
+                    })
+
+                }
+
+                // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
+                if (nOverTimeTotal > this.overHourLimit) {
+                    // 警告メッセージの表示および、応答の確認
+                    //TODO
+                    if (!this.$Modal.confirm('ERROR_OVERTIMECHECK')) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+            getLengthB(moji) {
+
+                let i, j, cnt = 0;
+
+                // "§", "¨", "°", "±", "´", "¶"を追加。2005.08.22 Oyama
+                let multiStr = new Array("×", "§", "¨", "°", "±", "´", "¶");
+
+                for (i = 0; i < moji.length; i++) {
+                    for (j = 0; j < multiStr.length; j++) {
+                        if (multiStr[j].length == 0) {
+                            continue;
+                        }
+                        moji = moji.replace(multiStr[j], "00");
+                    }
+                }
+
+                // MAC OSの場合、改行コードが「\n」となり、Windowsの改行コード「\r\n」とバイト数が異なるので、
+                // 改行コードは「\r\n」で桁数を計算する様にする。
+                moji = moji.split("\r\n").join("\n"); // 一旦「\r\n」 ⇒ 「\n」の変換を行い、改行コードを「\n」に合わせる。
+                moji = moji.split("\n").join("\r\n"); // 「\n」 ⇒ 「\r\n」の変換を行い、改行コード全てを「\r\n」にする。
+
+                // バイト数を求めます。
+                for (i = 0; i < moji.length; i++)
+                    if (escape(moji.charAt(i)).length >= 4) cnt += 2; else cnt++;
+                return cnt;
+
+            },
+            // 時刻形式チェック
+            checkFormatTimeValue(obj, mes) {
+
+
+                if (!this.checkFormatTimeValueMain(obj)) {
+                    this.$Notice.error({desc: mes})
+                    return false;
+                }
+
+                return true;
+            },
+
+
+            // 時刻形式チェック（実判定処理部）
+            checkFormatTimeValueMain(obj) {
+                if (obj == null) obj = ''
+                if (obj !== '' && !this.time_check(obj)) {
+                    return false;
+                } else {
+                    if (!(this.checkFormatHHcMI60(obj))) {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+            time_check(sTime) {
+
+                return sTime.match(/^([0-9]?[0-9]):([0-9][0-9])$/);
+
+            },
+            // *****************************************************************************
+            //		関数名:		checkFormatHHcMI60
+            //		機能:		HH:MI60形式で入力が行われているかどうかチェック
+            //		パラメータ:	時刻or時間
+            //		戻り値:		正しい入力 未入力:true　不正な入力:false
+            checkFormatHHcMI60(para) {
+
+                let colonSTR = ':'
+                let nColonPoint
+                let bColonIs = '0'
+                let vHHMI
+                let vMI
+
+                // 未入力はtrueで返す
+                if (para.length === 0) {
+                    return true
+                }
+
+                // 桁数チェック
+                if (para.length < 4 || para.length > 5) {
+                    return false
+                }
+
+                // ":"の有無を調べる
+                for (let i = 0; i < para.length; i++) {
+                    if (para.charAt(i) === colonSTR) {
+                        nColonPoint = i
+                        bColonIs = 1
+                        break
+                    }
+                }
+                if (bColonIs === 0) {
+                    return false
+                }
+
+                // 数値チェック
+                vHHMI = para.substring(0, nColonPoint) + para.substring(nColonPoint + 1, para.length);
+                if (isNaN(vHHMI) === true) {
+                    return false
+                }
+                // 分チェック
+                vMI = para.substring(nColonPoint + 1, para.length)
+                if (vMI.length !== 2) {
+                    return false
+                }
+
+                const sixty = +vMI
+                if (eval(sixty) >= eval(60)) {
+                    return false
+                }
+
+                return true
+            },
+            // *****************************************************************************
+            //  	関数名:		toMinuteFromHHcMI60
+            //      機能:		HH:MMをXXXX分に変換する
+            //      			12:34→754、8:00→480
+            //					引数は必ずHH:MMorH:MMのいずれかで渡されるものとする
+            //					※パラメータが何も渡されなければ空を返す
+            //					※パラメータに":"が含まれていない場合場合"0"を返す
+            //		パラメータ:	HH:MM
+            //		戻り値:		XXXX
+            toMinuteFromHHcMI60(pHHMM) {
+
+                let colonSTR = ':';
+                let retMinute;
+                let bColonIs = 0;
+                let nColonPoint;
+                let nHour = new Number();
+                let nMinute = new Number();
+
+                // コロンがあるかどうか
+                let bColon = false;
+
+                // 何もパラメータが渡されなかった場合、そのまま返す
+                if (pHHMM === '') {
+                    return '';
+                }
+
+                // ":"の有無を調べる
+                for (let i = 0; i < pHHMM.length; i++) {
+                    if (pHHMM.charAt(i) === colonSTR) {
+                        nColonPoint = i;
+                        bColonIs = 1;
+
+                        // コロンがあるかどうか
+                        bColon = true;
+
+                        break;
+                    }
+                }
+
+                if (bColon === false) {
+                    return 0;
+                }
+
+                // 分に変換します
+                nHour = eval(pHHMM.substring(0, +nColonPoint) * 60);
+
+                nMinute = eval(+(pHHMM.substring(nColonPoint + 1, pHHMM.length)));
+
+                retMinute = eval(nHour + nMinute);
+
+                return retMinute;
+            },
 
 
             //登録画面/////////////////////////////////////////////////////////////////

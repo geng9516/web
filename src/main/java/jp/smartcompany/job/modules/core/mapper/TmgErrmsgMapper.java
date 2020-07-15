@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgErrmsgDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
 
@@ -37,5 +38,11 @@ public interface TmgErrmsgMapper extends BaseMapper<TmgErrmsgDO> {
     /**
      * エラーメッセージをインサートする
      */
-    int buildSQLForInsertErrMsg(Map<String, Object> map);
+    int buildSQLForInsertErrMsg(@Param("custID") String custID,
+                                @Param("compCode")String compCode,
+                                @Param("userCode")String userCode,
+                                @Param("programId")String programId,
+                                @Param("language")String language,
+                                @Param("targetUser")String targetUser,
+                                @Param("day")String day);
 }

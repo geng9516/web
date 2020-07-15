@@ -5,6 +5,7 @@ import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -106,6 +107,26 @@ public class TmgResultsController {
         //メントのみ登録
         return tmgResultsBean.updateInp(psDBBean, tmgResultsDto);
     }
+
+
+    /**
+     * 登録ボタンを押下する
+     *
+     * @param psDBBean
+     * @return
+     */
+    @PostMapping("getSQLVecForAjax")
+    @ResponseBody
+    public ErrMsgDto getSQLVecForAjax(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                      @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
+
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+        tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
+
+        //就業実績登録
+        return tmgResultsBean.getSQLVecForAjax(tmgResultsDto,psDBBean);
+    }
+
 
 
     /**
