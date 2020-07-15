@@ -209,7 +209,6 @@ public class AuthBusiness {
             List<Entity> tmgAdminEntityList=  SqlExecutor.query(preparedStatement,new EntityListHandler(),adminParams);
             convertDbData(tmgAdminList, tmgAdminEntityList);
 
-
             List<Object> tmgInpParams = CollUtil.newArrayList();
             tmgInpParams.addAll(commonParams);
             tmgInpParams.add( TmgUtil.Cs_SITE_ID_TMG_INP);

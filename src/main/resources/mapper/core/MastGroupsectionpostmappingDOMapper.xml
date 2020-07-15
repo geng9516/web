@@ -42,7 +42,7 @@
                 '${searchDate}',
                 '${language}'
             ) AS KAN_JI_NAME,
-            VERSION_NO
+            VERSIONNO
         FROM MAST_GROUPSECTIONPOSTMAPPING
         WHERE
             MAG_CCUSTOMERID_CK_FK = #{customerId}
@@ -104,7 +104,7 @@
                 '${searchDate}',
                 '${language}'
             ) AS KAN_JI_NAME,
-            VERSION_NO
+            VERSIONNO
         FROM
             MAST_GROUPSECTIONPOSTMAPPING
         WHERE
@@ -168,7 +168,7 @@
                 '${searchDate}',
                 '${language}'
             ) AS kanJiName,
-            VERSION_NO
+            VERSIONNO
         FROM
             MAST_GROUPSECTIONPOSTMAPPING
         WHERE

@@ -226,6 +226,8 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         psDBBean.setTargetComp(session.getLoginCompany());
         psDBBean.setTargetCust(session.getLoginCustomer());
 
+        String selectedTab = request.getParameter(TmgReferList.TREEVIEW_OBJ_HIDSELECT);
+
         // 管理Site的选中员工和部门
         String targetAdminSection = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         String targetAdminEmp = request.getParameter(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
@@ -252,6 +254,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         }
         if (StrUtil.isNotBlank(selectedView)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_SELECTED_VIEW,selectedView);
+        }
+        if (StrUtil.isNotBlank(selectedTab)) {
+            hashtable.put(TmgReferList.TREEVIEW_OBJ_HIDSELECT,selectedTab);
         }
 
         // 部门基准日
