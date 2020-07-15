@@ -677,8 +677,6 @@
                 this.monthlyTilteMapList = data.monthlyTilteMapList
                 this.monthlyMap = data.monthlyDateMap
                 this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
-                console.log(this.isConfirm)
-
 
                 this.columns = data.dailyTittleMapList.map(e => {
                     return {
@@ -801,6 +799,20 @@
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
                 this.title = this.dailyEdit.tdaDyyyymmddDy
 
+                if(this.dailyEdit.tdaCerrcode !== null){
+
+                    let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
+                    Object.keys(tempErrCode).some(e => {
+                        console.log(e)
+                        if (e === 'ERRTYPE_10') {
+
+                            this.$Notice.error({desc: tempErrCode.ERRTYPE_10[0].ERRMSG})
+                            return true
+                        }
+                    })
+
+                }
+
                 // 非勤務
                 this.detailNonDutyVOList = data.detailNonDutyVOList
                 // 超過勤務
@@ -818,6 +830,10 @@
 
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.targetForOverTime = data.targetForOverTime
+
+
+
+
             },
 
             handleClose() {
