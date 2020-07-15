@@ -19,7 +19,7 @@
             <div class="btnbox">
                 <span style="flex:1"></span>
                 <p class="pr15" style="height: 40px;line-height: 45px;font-size: 16px;font-weight: bold;">
-                    {{ `現在の承認状況： ${isConfirm==="TMG_DATASTATUS|5" ? '承認済' : '未承認'}` }}
+                    {{ `現在の承認状況： ${isConfirm==='TMG_DATASTATUS|5' ? '承認済' : '未承認'}` }}
                 </p>
             </div>
         </div>
@@ -522,7 +522,7 @@
                 txtDYYYYMMDD: '',
                 index: 0,
                 // 承認ステータス
-                isConfirm: false,
+                isConfirm: '',
                 // 更新履歴の表示制御
                 isLogShow: false,
                 updateDailyLoading: false,
@@ -676,7 +676,8 @@
 
                 this.monthlyTilteMapList = data.monthlyTilteMapList
                 this.monthlyMap = data.monthlyDateMap
-                this.isConfirm = data.monthlyTilteMapList.TMO_CSTATUSFLG
+                this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
+                console.log(this.isConfirm)
 
 
                 this.columns = data.dailyTittleMapList.map(e => {
