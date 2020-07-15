@@ -167,60 +167,60 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="startTime">
-                        <div v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].overTimeList[i].tdadNopen"></i-input>
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen"></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <div v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].overTimeList[i].tdadNclose"></i-input>
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose"></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <Row :gutter="10" v-for="(item, i) of value[row._index].overTimeList" :key="i" class="mb2">
-                            <i-col :span="value[row._index].overTimeList.length > 1 ? 18 : 24">
-                                <i-input v-model="value[row._index].overTimeList[i].tdadCsparechar1" type="textarea"
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                            <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
+                                <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea"
                                     :autosize="{ minRows: 2, maxRows: 5 }"></i-input>
                             </i-col>
-                            <i-col span="6" v-show="value[row._index].overTimeList.length > 1">
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
                                 <i-button ghost type="error"
-                                    @click="handleMinusOverTime(value[row._index].overTimeList, i)">-</i-button>
+                                    @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-</i-button>
                                 <span
-                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('0') > -1"
+                                    v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
                                     class="confirm-sytle ing">待</span>
                                 <span
-                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('5') > -1"
+                                    v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('5') > -1"
                                     class="confirm-sytle">済</span>
                                 <span
-                                    v-if="value[row._index].overTimeList[i].tdadCsparechar2 && value[row._index].overTimeList[i].tdadCsparechar2.indexOf('6') > -1"
+                                    v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
                                     class="confirm-sytle">命</span>
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddOverTime(value[row._index].overTimeList)"
-                            v-show="value[row._index].overTimeList.length < 4">
+                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)"
+                            v-show="value[row._index].updateOverTimeDtoList.length < 4">
                             +
                         </i-button>
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime">
-                        <Row :gutter="10" v-for="(item, i) of value[row._index].restTimeList" :key="i" class="mb2">
-                            <i-col :span="value[row._index].restTimeList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].restTimeList[i].tdadNopenTime"></i-input>
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i" class="mb2">
+                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"></i-input>
                             </i-col>
-                            <i-col :span="value[row._index].restTimeList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].restTimeList[i].tdadNcloseTime"></i-input>
+                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"></i-input>
                             </i-col>
-                            <i-col span="8" v-show="value[row._index].restTimeList.length > 1">
+                            <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">
                                 <i-button ghost type="error"
-                                    @click="handleMinusRest(value[row._index].restTimeList, i)">-</i-button>
+                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)">-</i-button>
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddRest(value[row._index].restTimeList)"
-                            v-show="value[row._index].restTimeList.length < 4">
+                            @click="handleAddRest(value[row._index].updateRestTimeDtoList)"
+                            v-show="value[row._index].updateRestTimeDtoList.length < 4">
                             +
                         </i-button>
                     </template>
@@ -647,7 +647,29 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data
-                        this.value = Utils.deepClone(data)
+                        this.value = data.map(e=>{
+                            const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t=>{
+                                return {
+                                    sNOpen: t.tdadNopen,
+                                    sNClose: t.tdadNclose,
+                                    sCComment: t.tdadCsparechar1,
+                                    sStatus: t.tdadCsparechar2,
+                                }
+                            })
+                            const updateRestTimeDtoList = e.restTimeList && e.restTimeList.map(t=>{
+                                return {
+                                    sNRestOpen:t.tdadNopenTime,
+                                    sNRestClose:t.tdadNopenTime,
+                                }
+                            })
+                            return {
+                                baseDay: this.query.baseDay,
+                                baseMonth: this.query.baseMonth,
+                                sEmpId: e.empId,
+                                updateOverTimeDtoList:updateOverTimeDtoList,
+                                updateRestTimeDtoList:updateRestTimeDtoList,
+                            }
+                        })
                     } catch (error) {
                         return
                     } finally {
@@ -703,13 +725,13 @@
 
                 },
                 handleAddRest(e) {
-                    e.push({ tdadNopenTime: '', tdadNcloseTime: '' })
+                    e.push({ sNRestOpen: '', sNRestClose: '' })
                 },
                 handleMinusRest(e, i) {
                     e.splice(i, 1)
                 },
                 handleAddOverTime(e) {
-                    e.push({ tdadNopen: '', tdadNclose: '', tdadCsparechar1: '' })
+                    e.push({ sNOpen: '', sNClose: '', sCComment: '' })
                 },
                 handleMinusOverTime(e, i) {
                     e.splice(i, 1)
@@ -769,7 +791,7 @@
                 async overTimeUpdate() {
                     // 将没打勾的排除出去
                     const selectedData = this.$refs.selection2.getSelection().map(e=> e.empId)
-                    const UpdateData = this.value.filter(e=> selectedData.includes(e.empId))
+                    const UpdateData = this.value.filter(e=> selectedData.includes(e.sEmpId))
                     console.log(UpdateData)
                     if(UpdateData.length === 0){
                     this.$Modal.error({
@@ -778,7 +800,7 @@
                     })
                     return
                  }
-                    await this.http.post('sys/overtimeinstruct/uploadData', {UpdateListDto:UpdateData})
+                    await this.http.post('sys/overtimeinstruct/uploadData', {updateDtoList:UpdateData})
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 合并2个月
