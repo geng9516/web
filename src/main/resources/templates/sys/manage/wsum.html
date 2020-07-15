@@ -360,9 +360,19 @@
                 return  yearMMDD
             },
             async download() {
-                const { data } = await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
+                await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
 
-                 window.open('http://localhost:6879/sys/deptStatList/executeDownloadDownload?txtAction=ACT_Disp_RList&txtDYYYYMM=2020%2F04%2F01&txtTDA_DYYYYMM=2020%2F07%2F01&page=1&txtDYYYYMMDD=&txtTmgReferListTreeViewRecordDate=2020%2F07%2F01&txtTmgReferListTreeViewPermTargetSection=201000000000&psSite=TMG_PERM&psApp=DeptStatList')
+                    .then((response) => {
+                        const bom = '\uFEFF'
+                        const url = URL.createObjectURL(new Blob([bom, response]));
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
+                        document.body.appendChild(link);
+                        link.click();
+                        link.revokeObjectURL();
+                    });
+
             },
             async handleDeptViewTypeChange() {
                 await this.getOrgTree()
