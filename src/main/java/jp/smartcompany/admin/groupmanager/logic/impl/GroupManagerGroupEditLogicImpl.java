@@ -23,9 +23,6 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.text.ParseException;
 import java.util.*;
 
@@ -75,7 +72,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private static final String FLG_CERTAIN_COMMANY = BASE_FLG_DEF;
     /* ▲2007/10/12 A.SUZUKI 社員選択による定義を追加 */
 
-    @Transactional(propagation = Propagation.REQUIRED,readOnly = true)
+
     public Map<String,Object> detail(Date searchDate, String systemId, String groupId) throws ParseException {
         PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
         Date maxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
@@ -105,17 +102,15 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
          * 該当条件(条件式選択)情報を取得
          */
         // 条件式編集 - 定義情報取得
-        List<QueryConditionRowDTO> oQueryConditionRowList = null;
-//                iHistGroupdefinitionsService.selectGroupDefinitions(psSession.getLoginCustomer(), companyId,
-//                        systemId, groupId, searchDate, null);
+        List<QueryConditionRowDTO> oQueryConditionRowList = iHistGroupdefinitionsService.selectGroupDefinitions(psSession.getLoginCustomer(), companyId,
+                        systemId, groupId, searchDate, null);
         QueryConditionDTO queryConditionDTO=dispQueryConditionInfo(companyId, searchDate, oQueryConditionRowList,psSession.getLoginCustomer());
 
         /**
          * 定義設定画面の初期表示状態を取得する
          */
         // グループ定義条件情報を取得
-        List<MastGroupdefinitionsDO> oList =
-                iMastGroupdefinitionsService.selectGroupDefinitions(
+        List<MastGroupdefinitionsDO> oList = iMastGroupdefinitionsService.selectGroupDefinitions(
                         searchDate, psSession.getLoginCustomer(),systemId, groupId);
         groupDTO.setGsBaseFlg(getGroupDefinitionsDispInfo(oList,groupDTO));
         // 全社区分を含むか否かを取得する
@@ -143,7 +138,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      * @param dSearchDate           今回改定日
      * @param poDtoList             基点組織編集 - 定義情報取得(法人リスト)
      */
-    @Transactional(propagation = Propagation.SUPPORTS)
     public String dispBaseSectionInfo(String psCustomerId, Date dSearchDate,
                                      List<BaseSectionRowDTO> poDtoList,String systemId,String groupId,String language) {
         // 基点組織以下・のみフラグ
@@ -154,6 +148,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             // 組織ごとの定義情報取得(法人＆組織＆役職リスト)
             List<BaseSectionRowListDTO> sectionList = iMastGroupbasesectionService.selectGroupBaseSectionList(
                     psCustomerId, sCompanyId, systemId, groupId, language, dSearchDate);
+            System.out.println("----");
+            System.out.println(sectionList.size());
             rowDTO.setGlSectionList(sectionList);
             // 現在の保持している組織リストの件数を保持する
             rowDTO.setGnSelectedSectionCnt(sectionList.size());
@@ -181,7 +177,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      * @param language    言語区分
      *
      */
-    @Transactional(propagation = Propagation.SUPPORTS)
     public GroupManagerGroupListDTO getGroupInfoDispInfo(String customerId, String systemId,
                                      String groupId, Designation designation, Date startDate,
                                      Date endDate, String weightage, String language,List<String> companyList) {
@@ -193,8 +188,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             List<GroupManagerGroupListDTO> oGroupInfo  = iMastGroupService.selectGroupHistoryList(
                     customerId, systemId, language, groupId, startDate, companyList
             );
-            GroupManagerGroupListDTO groupInfo = oGroupInfo.get(0);
             if (CollUtil.isNotEmpty(oGroupInfo)) {
+                GroupManagerGroupListDTO groupInfo = oGroupInfo.get(0);
                 BeanUtil.copyProperties(groupInfo,groupListDTO);
             }
         }
@@ -210,7 +205,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      * @param psCompanyId   法人コード
      * @param psCompanyName 法人名称
      */
-    @Transactional(propagation = Propagation.SUPPORTS)
     public SectionPostDTO getSectionPostDispInfo(String psCustomerId, Date pdSearchDate,
                                                  String psCompanyId, String psCompanyName,String language,String systemId,String groupId) {
         SectionPostDTO sectionPostDTO = new SectionPostDTO();
@@ -272,7 +266,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         return sectionPostDTO;
     }
 
-    @Transactional(propagation = Propagation.SUPPORTS)
     public SelectEmployeesEditDTO getEmpList(String customerId,String companyId,String systemId,String groupId,Date searchDate,String language) {
         SelectEmployeesEditDTO employeesEditDTO = new SelectEmployeesEditDTO();
         // 該当条件編集 - 定義情報取得(法人＆社員リスト)

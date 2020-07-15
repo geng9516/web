@@ -24,18 +24,18 @@
             HGD_NSEQ AS SEQ,
             VERSIONNO
         FROM
-        HIST_GROUPDEFINITIONS
+            HIST_GROUPDEFINITIONS
         WHERE
-        HGD_CCUSTOMERID  = /*psCustomerId*/'01'          AND
-        HGD_CCOMPANYID   = /*psCompanyId*/'01'           AND
-        HGD_CSYSTEMID    = /*psSystemId*/'999'           AND
-        HGD_CGROUPID     = /*psGroupId*/'1'              AND
-        HGD_DSTARTDATE  <![CDATA[ <= ]]> /*pdSearchDate*/'2007/07/07'  AND
-        /*IF psSeq != null*/
-        HGD_DENDDATE    >= /*pdSearchDate*/'2007/07/07'  AND
-        HGD_NSEQ         = /*psSeq*/1
-        /*END*/
-        ORDER BY HGD_NSEQ
+            HGD_CCUSTOMERID = #{customerId} AND
+            HGD_CCOMPANYID = #{companyId} AND
+            HGD_CSYSTEMID = #{systemId} AND
+            HGD_CGROUPID = #{groupId} AND
+            HGD_DSTARTDATE  <![CDATA[<=]]> #{searchDate} AND
+            <if test="seq!=null">
+                HGD_DENDDATE >= #{searchDate}  AND
+                HGD_NSEQ = #{seq}
+            </if>
+            ORDER BY HGD_NSEQ
     </select>
 
 </mapper>

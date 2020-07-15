@@ -85,6 +85,14 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
       if (StrUtil.isBlank(psCompanyId)){
           psCompanyId = "01";
       }
+      /**
+       *   @Param("custId") String psCustomerId,
+       *            @Param("systemId") String psSystemId,
+       *            @Param("companyId") String companyId,
+       *            @Param("groupId") String psGroupId,
+       *            @Param("language") String psLanguage,
+       *            @Param("searchDate") String searchDate
+       */
       return baseMapper.selectGroupBaseSectionList(psCustomerId, psSystemId,
               psCompanyId,psGroupId, psLanguage, strSearchDate);
   }
