@@ -100,7 +100,7 @@
             </i-table>
 
 
-            <Drawer :title="title" class="tc" width="1300" v-model="showDayApply">
+            <Drawer :title="query.baseDay ? `${title} (${query.baseDay})` : title" class="tc" width="1300" v-model="showDayApply">
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
                         <i-button type="primary" size="large" class="tr" @click="overTimeUpdate">命令/確認</i-button>
@@ -144,11 +144,11 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="option">
-                        <i-button type="primary" class="mr5" ghost @click="handleSelectAll2(false)">
+                        <i-button type="primary" class="mr5" ghost @click="changeSelectedDataByGroup(false)">
                             クリア
                         </i-button>
-                        <i-button type="primary" class="mr5" ghost @click="handleSelectAll2(true)">
-                            全選択
+                        <i-button type="primary" class="mr5" ghost @click="changeSelectedDataByGroup(true)">
+                            適用
                         </i-button>
                     </template>
                 </i-table>
@@ -160,6 +160,14 @@
                     <Icon type="logo-buffer"></Icon>
                     超過勤務命令
                 </div>
+                <div class="tr mb10">
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectAll(false)">
+                        クリア
+                    </i-button>
+                    <i-button type="primary" ghost @click="handleSelectAll(true)">
+                        全選択
+                    </i-button>
+                </div>
                 <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
                         <span @click="toWorkPage"
@@ -168,25 +176,27 @@
 
                     <template slot-scope="{ row }" slot="startTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen"></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" @on-blur="handleInputChange(row._index)"></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose"></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" @on-blur="handleInputChange(row._index)"></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i"
+                            class="mb2">
                             <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
                                 <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea"
-                                    :autosize="{ minRows: 2, maxRows: 5 }"></i-input>
+                                    :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index)"></i-input>
                             </i-col>
                             <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
                                 <i-button ghost type="error"
-                                    @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-</i-button>
+                                    @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
+                                </i-button>
                                 <span
                                     v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
                                     class="confirm-sytle ing">待</span>
@@ -206,16 +216,17 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime">
-                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i" class="mb2">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"
+                            class="mb2">
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"></i-input>
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen" @on-blur="handleInputChange(row._index)"></i-input>
                             </i-col>
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"></i-input>
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose" @on-blur="handleInputChange(row._index)"></i-input>
                             </i-col>
                             <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">
                                 <i-button ghost type="error"
-                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)">-</i-button>
+                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)" @on-blur="handleInputChange(row._index)">-</i-button>
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
@@ -429,7 +440,7 @@
                             align: 'center'
                         },
                         {
-                            title: '一括適用/クリア',
+                            title: 'チェックした職員に対し',
                             slot: 'option',
                             align: 'center'
                         }
@@ -602,8 +613,9 @@
                     }
                 },
                 handleDatePicker() {
+                    this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
                     if (this.deptName !== '選んでください') {
-                        this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+                        this.getTableHead()
                         this.getTableData()
                         return
                     }
@@ -642,13 +654,14 @@
                     }
                 },
                 async getTableDataDaily(e) {
+                    console.table({e:e})
                     this.dailyTableLoading = true
                     this.query.baseDay = e
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data
-                        this.value = data.map(e=>{
-                            const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t=>{
+                        this.value = data.map(e => {
+                            const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
                                 return {
                                     sNOpen: t.tdadNopen,
                                     sNClose: t.tdadNclose,
@@ -656,20 +669,21 @@
                                     sStatus: t.tdadCsparechar2,
                                 }
                             })
-                            const updateRestTimeDtoList = e.restTimeList && e.restTimeList.map(t=>{
+                            const updateRestTimeDtoList = e.restTimeList && e.restTimeList.map(t => {
                                 return {
-                                    sNRestOpen:t.tdadNopenTime,
-                                    sNRestClose:t.tdadNopenTime,
+                                    sNRestOpen: t.tdadNopenTime,
+                                    sNRestClose: t.tdadNopenTime,
                                 }
                             })
                             return {
                                 baseDay: this.query.baseDay,
                                 baseMonth: this.query.baseMonth,
                                 sEmpId: e.empId,
-                                updateOverTimeDtoList:updateOverTimeDtoList,
-                                updateRestTimeDtoList:updateRestTimeDtoList,
+                                updateOverTimeDtoList: updateOverTimeDtoList.length > 0 ?  updateOverTimeDtoList : [{}],
+                                updateRestTimeDtoList: updateRestTimeDtoList.length > 0 ?  updateRestTimeDtoList : [{}],
                             }
                         })
+                        console.log(this.value)
                     } catch (error) {
                         return
                     } finally {
@@ -691,7 +705,6 @@
                         }
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
-                        console.log(this.tableData)
                     } catch (error) {
                         return
                     } finally {
@@ -775,32 +788,51 @@
                         this.isScroll = false
                     }
                 }, 50),
-                handleSelectAll2(status) {
-                    this.$refs.selection2.selectAll(status)
-
+                changeSelectedDataByGroup(status) {
                     //一括適用
-                    const that = this
+                    const selectedData = this.$refs.selection2.getSelection()
+                    if(selectedData.length === 0) return
+                    const selectedDataKeys = selectedData.map(e => e.empId)
+                    const PATTERN = Utils.deepClone(this.pattern)
+                    // 只将被勾选项赋值
                     this.value.forEach(item => {
-                        Object.keys(item).forEach(function (key) {
-                            if (key in that.pattern) {
-                                item[key] = that.pattern[key]
-                            }
-                        })
+                        if (selectedDataKeys.includes(item.sEmpId)) {
+                            Object.keys(PATTERN).forEach(function (key) {
+                                if(status) {
+                                    item[key] = PATTERN[key]
+                                } else {
+                                    // 清空操作
+                                    if(key.indexOf('List') > -1) {
+                                        item[key] = [{}]
+                                    } else {
+                                        item[key] = ''
+                                    }
+                                }
+                            })
+                        }
                     })
+                },
+                handleSelectAll(status) {
+                    this.$refs.selection2.selectAll(status)
+                },
+                handleInputChange(i) {
+                    // 填完后自动checkbox
+                    this.$set(this.tableData3[i], '_checked', true )
                 },
                 async overTimeUpdate() {
                     // 将没打勾的排除出去
-                    const selectedData = this.$refs.selection2.getSelection().map(e=> e.empId)
-                    const UpdateData = this.value.filter(e=> selectedData.includes(e.sEmpId))
+                    const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
+                    const UpdateData = this.value.filter(e => selectedData.includes(e.sEmpId))
                     console.log(UpdateData)
-                    if(UpdateData.length === 0){
-                    this.$Modal.error({
-                        title:'データを選択してください！',
-                        okText: 'OK'
-                    })
-                    return
-                 }
-                    await this.http.post('sys/overtimeinstruct/uploadData', {updateDtoList:UpdateData})
+                    if (UpdateData.length === 0) {
+                        this.$Modal.error({
+                            title: 'データを選択してください！',
+                            okText: 'OK'
+                        })
+                        return
+                    }
+                    await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
+                    this.getTableDataDaily(this.query.baseDay)
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 合并2个月
