@@ -11,6 +11,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -130,5 +131,34 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
                 searchDate = "2007/07/07";
             }
             return baseMapper.selectHistoryDate(customerCode,systemId,companyList,searchDate);
+        }
+
+        @Override
+        public List<GroupManagerGroupListDTO> selectGroupHistoryList(
+                String customerCode, String systemId, String language, String groupId, Date searchDate, List<String> companyList
+        ) {
+            String strSearchDate;
+            if (searchDate==null){
+                strSearchDate = "2007/07/07";
+            } else {
+                strSearchDate = SysUtil.transDateToString(searchDate);
+            }
+
+            if (StrUtil.isBlank(customerCode)){
+                customerCode = "01";
+            }
+            if (StrUtil.isBlank(systemId)){
+                systemId = "02";
+            }
+            if (StrUtil.isBlank(language)){
+                language = "ja";
+            }
+            if (CollUtil.isEmpty(companyList)){
+                companyList = CollUtil.newArrayList("01","02");
+            }
+            if (StrUtil.isBlank(groupId)){
+                groupId = "1";
+            }
+           return baseMapper.selectGroupHistoryList(customerCode,systemId,language,groupId,strSearchDate,companyList);
         }
 }

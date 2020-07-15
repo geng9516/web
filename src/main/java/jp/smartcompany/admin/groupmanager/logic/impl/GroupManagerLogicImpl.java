@@ -54,7 +54,7 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
         List<GroupManagerGroupListDTO> validGroupList= iMastGroupService.selectValidGroup(session.getLoginCustomer(),systemId,session.getLanguage(),searchDateStr,companyList);
         validGroupList.forEach(item->{
             if (StrUtil.equals(item.getMgCcompanyid(), PsConst.CODE_ALL_COMPANIES)){
-                item.setGsCompanyName("全社区分");
+                item.setCompanyName("全社区分");
             }
         });
         // 获取当前系统未被使用的groupList

@@ -49,6 +49,17 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
                                                            @Param("companyId") String companyId,
                                                            @Param("searchCompanyList") List<String> searchCompanyList);
 
+        /**
+         * 現在、有効なグループについての情報を取得
+         *
+         * @author  isolyamada
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   searchDate    今回改定日
+         * @param   companyList  参照可能な法人一覧
+         * @return  List < GroupManagerGroupListDto >  グループリスト(有効)
+         */
         List<GroupManagerGroupListDTO> selectValidGroup(
                 @Param("customerCode") String customerCode,
                 @Param("systemId") String systemId,
@@ -57,6 +68,17 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
                 @Param("companyList") List<String> companyList
         );
 
+        /**
+         * 現在、無効なグループについての情報を取得
+         *
+         * @author  isolyamada
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   validGroupList    有効なグループ一覧
+         * @param   companyList  参照可能な法人一覧
+         * @return  List<GroupManagerGroupListDto>  グループリスト(無効)
+         */
         List<GroupManagerGroupListDTO> selectInvalidGroup(
                 @Param("customerCode") String customerCode,
                 @Param("systemId") String systemId,
@@ -70,5 +92,26 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
                 @Param("systemId") String systemId,
                 @Param("companyList") List<String> companyList,
                 @Param("searchDate") String searchDate
+        );
+
+        /**
+         * 今回改定日が未入力(NULL)のときは、指定されたグループの歴情報を取得
+         * 今回改定日が入力済のときは、今回改定日時点の指定されたグループ情報を取得
+         *
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   groupId       グループID
+         * @param   searchDate    今回改定日
+         * @param   companyList  参照可能な法人一覧
+         * @return  List<GroupManagerGroupListDTO>  グループ履歴リスト
+         */
+        List<GroupManagerGroupListDTO> selectGroupHistoryList(
+                @Param("customerCode") String customerCode,
+                @Param("systemId") String systemId,
+                @Param("language") String language,
+                @Param("groupId") String groupId,
+                @Param("searchDate") String searchDate,
+                @Param("companyList") List<String> companyList
         );
 }

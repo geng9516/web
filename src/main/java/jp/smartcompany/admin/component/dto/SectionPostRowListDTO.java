@@ -16,6 +16,7 @@ import java.util.List;
 @ToString
 public class SectionPostRowListDTO implements Serializable {
 
+    private static final long serialVersionUID = -6452959735389402480L;
     /** 組織・役職条件選択情報 格納リスト 役職一覧(指定法人＆指定組織) */
     private List<SectionPostRowDTO> glPostCompList;
     /** 選択済みの役職一覧(指定法人＆指定組織)の件数 */
@@ -25,39 +26,39 @@ public class SectionPostRowListDTO implements Serializable {
     /** 選択済みの社員一覧(指定法人＆指定組織)の件数 */
     private int gnSelectedEmpoyeesCompCnt = 0;
     /** 顧客名称 */
-    private String gsCustomerName;
+    private String customerName;
     /** 法人名称 */
-    private String gsCompanyName;
+    private String companyName;
     /** 組織名称 */
-    private String gsSectionName;
+    private String sectionName;
     /** 役職名称 */
-    private String gsPostName;
+    private String postName;
     /** 漢字氏名 */
-    private String gsKanjiname;
+    private String kanJiName;
     /** 顧客コード */
-    private String gsCustomerid;
+    private String customerId;
     /** システムコード */
-    private String gsSystemid;
+    private String systemId;
     /** グループコード */
-    private String gsGroupid;
+    private String groupId;
     /** 開始日 */
-    private String gsStartdate;
+    private String startdate;
     /** 終了日 */
-    private String gsEnddate;
+    private String enddate;
     /** 定義ID */
-    private String gsPermissionid;
+    private String permissionId;
     /** 定義区分 */
-    private String gsTypeid;
+    private String typeId;
     /** 法人コード */
-    private String gsCompanyid;
+    private String companyId;
     /** 組織コード */
-    private String gsSectionid;
+    private String sectionId;
     /** 役職コード */
-    private String gsPostid;
+    private String postId;
     /** 社員番号 */
-    private String gsEmployeeid;
+    private String employeeId;
     /** ID */
-    private Integer id;
+    private Long id;
     /** VERSIONNO */
     private Integer versionNo;
     /** 削除フラグ  */

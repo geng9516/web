@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -24,6 +25,9 @@ public class PsSearchCompanyUtil {
 
     private final IMastCompanyService iMastCompanyService;
 //    private final PsBuildTargetSql psBuildTargetSql;
+
+    /** 全社区分判定フラグ */
+    private boolean gbAllCompaniesFlg;
 
     /**
      * システム情報取得-検索対象範囲設定情報取得機能を用い<br>
@@ -43,40 +47,41 @@ public class PsSearchCompanyUtil {
                         SysUtil.transDateToString(searchDate)
         ));
         List<String> lResultList = CollUtil.newArrayList();
-//        String sCust = null;
+        String sCust = null;
         for (HistDesignationDO histDesignationDO : lHistDesignationEntityList) {
             lResultList.add(histDesignationDO.getHdCcompanyidCk());
-            histDesignationDO.getHdCcustomeridCk();
-//            sCust = histDesignationDO.getHdCcustomeridCk();
+            sCust = histDesignationDO.getHdCcustomeridCk();
         }
+
         // 全社区分に対する権限を判定
-//        if (sCust != null && !lResultList.isEmpty()) {
-//            List <HistDesignationDO> comp = iMastCompanyService.selectAllCompany(
-//                    sCust, this.getPsSearchDate());
-//            // 「権限を持つ法人リスト」の内容が、「有効な法人リスト」の要素と同じ場合、
-//            // 全社区分に対する権限も持つと判定し、リストに追加
-//            if (lResultList.size() == comp.size()) {
-//                boolean bEquals = true;
-//                for (String sComp : lResultList) {
-//                    boolean bCodeCheck = false;
-//                    for (HistDesignationDO mac : comp) {
-//                        if (sComp.equalsIgnoreCase(mac.getHdCcompanyidCk())) {
-//                            bCodeCheck = true;
-//                            break;
-//                        }
-//                    }
-//                    if (!bCodeCheck) {
-//                        bEquals = false;
-//                        break;
-//                    }
-//                }
-//                if (bEquals) {
-//                    lResultList.add(PsConst.CODE_ALL_COMPANIES);
-//                }
-//                // 全社区分判定フラグをセットする
-//                this.gbAllCompaniesFlg = bEquals;
-//            }
-//        }
+        if (sCust != null && !lResultList.isEmpty()) {
+            List <HistDesignationDO>
+                    comp = iMastCompanyService.selectAllCompany(
+                    sCust, searchDate);
+            // 「権限を持つ法人リスト」の内容が、「有効な法人リスト」の要素と同じ場合、
+            // 全社区分に対する権限も持つと判定し、リストに追加
+            if (lResultList.size() == comp.size()) {
+                boolean bEquals = true;
+                for (String sComp : lResultList) {
+                    boolean bCodeCheck = false;
+                    for (HistDesignationDO mac : comp) {
+                        if (sComp.equalsIgnoreCase(mac.getHdCcompanyidCk())) {
+                            bCodeCheck = true;
+                            break;
+                        }
+                    }
+                    if (!bCodeCheck) {
+                        bEquals = false;
+                        break;
+                    }
+                }
+                if (bEquals) {
+                    lResultList.add(PsConst.CODE_ALL_COMPANIES);
+                }
+                // 全社区分判定フラグをセットする
+                this.gbAllCompaniesFlg = bEquals;
+            }
+        }
         return lResultList;
     }
 
@@ -105,6 +110,10 @@ public class PsSearchCompanyUtil {
             throw new GlobalException(PsConst.PARAM_KEY_SEARCHDATE+"-"+"yyyy/MM/dd");
         }
         return dSearchDate;
+    }
+
+    public boolean isAllCompaniesFlg() {
+        return this.gbAllCompaniesFlg;
     }
 
 }

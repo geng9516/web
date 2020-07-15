@@ -49,4 +49,41 @@
         ORDER BY MGBS_CCOMPANYID
     </select>
 
+    <select id="selectGroupBaseSectionList"  parameterType="map" resultType="jp.smartcompany.admin.component.dto.BaseSectionRowListDTO">
+        SELECT
+            MGBS_ID,
+            MGBS_CCUSTOMERID,
+            MGBS_CSYSTEMID,
+            MGBS_CGROUPID,
+            MGBS_DSTARTDATE,
+            MGBS_DENDDATE,
+            MGBS_CCOMPANYID,
+            PSMASTER.FUNC_GET_COMP_NAME(
+                MGBS_CCUSTOMERID,
+                MGBS_CCOMPANYID,
+                '${searchDate}',
+                '${language}'
+            ) AS COMPANYNAME,
+            MGBS_CSECTIONID,
+            PSMASTER.FUNC_GET_SECTION_NAME(
+                MGBS_CCUSTOMERID
+                ,MGBS_CCOMPANYID
+                ,MGBS_CSECTIONID
+                ,'${searchDate}'
+                ,'${language}'
+            ) AS SECTIONNAME,
+            MGBS_CLAYEREDSECTIONID,
+            MGBS_CBELOWORSINGLE,
+            VERSIONNO
+        FROM MAST_GROUPBASESECTION
+        WHERE
+          MGBS_CCUSTOMERID = #{custId}
+          AND MGBS_CCOMPANYID = #{companyId}
+          AND MGBS_CSYSTEMID = #{systemId}
+          AND MGBS_CGROUPID = #{groupId}
+          AND MGBS_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+          AND MGBS_DENDDATE >= #{searchDate}
+        ORDER BY MGBS_CSECTIONID
+    </select>
+
 </mapper>

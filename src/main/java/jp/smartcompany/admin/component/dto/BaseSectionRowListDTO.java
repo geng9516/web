@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -15,8 +16,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class BaseSectionRowListDTO  {
+public class BaseSectionRowListDTO implements Serializable {
 
+    private static final long serialVersionUID = 5386799097052972359L;
     /**
      * ｉｄカラム
      */

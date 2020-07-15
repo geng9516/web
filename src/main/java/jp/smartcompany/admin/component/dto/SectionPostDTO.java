@@ -18,7 +18,7 @@ import java.util.List;
 @ToString
 public class SectionPostDTO implements Serializable {
 
-    private static final long serialVersionUID = 5779789995663607842L;
+    private static final long serialVersionUID = -4869981621184855986L;
 
     /** 各定義ごと情報一覧 */
     private List<SectionPostSelectDTO> glMenuList;
@@ -28,9 +28,6 @@ public class SectionPostDTO implements Serializable {
 
     /** 選択された定義ID */
     private String gsPermissionId;
-
-    /** 選択された定義区分 */
-    private String gsPeramId;
 
     /** 選択中の親情報 組織コード */
     /** (検索対象範囲設定の場合は法人コード) */
@@ -57,19 +54,11 @@ public class SectionPostDTO implements Serializable {
     /** 選択された法人名称 */
     private String gsSelectedCompanyName;
 
-    /** 組織・役職設定情報 削除用一覧(グループ定義) */
-    private List <MastGroupsectionpostmappingDO> glDeleteSectionPost;
-
-    /** 組織・役職設定情報 削除用一覧(検索対象範囲設定) */
-    private List <MastDatasectionpostmappingDO> glDeleteSectionPostCompany;
 
     /** 表示中のアプリケーションID */
     private String gsDispAppId;
 
     /** 表示フラグ (0:単一法人 1:複数法人) */
     private int gnDispFlg;
-
-    /** 組織・役職設定情報一覧(JSON形式) */
-    private String gsJSONData;
 
 }

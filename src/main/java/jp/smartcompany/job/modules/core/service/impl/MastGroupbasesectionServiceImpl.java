@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.component.dto.BaseSectionRowDTO;
+import jp.smartcompany.admin.component.dto.BaseSectionRowListDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
@@ -49,8 +50,43 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
       if (StrUtil.isBlank(psGroupId)){
           psGroupId = "1";
       }
+      if (StrUtil.isBlank(psSystemId)){
+          psSystemId = "01";
+      }
+      if (StrUtil.isBlank(psCustomerId)){
+          psCustomerId = "01";
+      }
       return baseMapper.selectGroupBaseSectionCompanyList(psCustomerId, psSystemId,
               psGroupId, psLanguage, strSearchDate, plValidCompany);
+  }
+
+  @Override
+  public List<BaseSectionRowListDTO> selectGroupBaseSectionList(String psCustomerId,
+                                                                String psCompanyId, String psSystemId, String psLanguage,
+                                                                String psGroupId, Date pdSearchDate) {
+      if (StrUtil.isBlank(psLanguage)){
+          psLanguage = "ja";
+      }
+      String strSearchDate;
+      if (pdSearchDate==null) {
+          strSearchDate = "2020/07/07";
+      }else {
+          strSearchDate = SysUtil.transDateToString(pdSearchDate);
+      }
+      if (StrUtil.isBlank(psGroupId)){
+          psGroupId = "1";
+      }
+      if (StrUtil.isBlank(psSystemId)){
+          psSystemId = "01";
+      }
+      if (StrUtil.isBlank(psCustomerId)){
+          psCustomerId = "01";
+      }
+      if (StrUtil.isBlank(psCompanyId)){
+          psCompanyId = "01";
+      }
+      return baseMapper.selectGroupBaseSectionList(psCustomerId, psSystemId,
+              psCompanyId,psGroupId, psLanguage, strSearchDate);
   }
 
 }

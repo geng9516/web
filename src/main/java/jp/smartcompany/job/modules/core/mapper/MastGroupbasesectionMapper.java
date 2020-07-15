@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.admin.component.dto.BaseSectionRowDTO;
+import jp.smartcompany.admin.component.dto.BaseSectionRowListDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.GroupBaseSectionBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupbasesectionDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -32,6 +33,15 @@ public interface MastGroupbasesectionMapper extends BaseMapper<MastGroupbasesect
            @Param("language") String psLanguage,
            @Param("searchDate") String searchDate,
            @Param("companyList") List<String> plValidCompany
+   );
+
+   List<BaseSectionRowListDTO> selectGroupBaseSectionList(
+           @Param("custId") String psCustomerId,
+           @Param("systemId") String psSystemId,
+           @Param("companyId") String companyId,
+           @Param("groupId") String psGroupId,
+           @Param("language") String psLanguage,
+           @Param("searchDate") String searchDate
    );
 
 }

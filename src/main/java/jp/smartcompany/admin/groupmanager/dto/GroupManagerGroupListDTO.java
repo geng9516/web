@@ -7,8 +7,6 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 
@@ -119,16 +117,12 @@ public class GroupManagerGroupListDTO implements Serializable {
      */
     private Date mgDmodifieddate;
 
-    /**
-     * バージョンno
-     */
-    private Long versionno;
 
     /** 画面遷移用のURL(パラメータ付加) */
     private String gsAddParmURL;
 
     /** 法人名称(MAC_CCOMPANYNAME：名称取得ファンクションより取得) */
-    private String gsCompanyName;
+    private String companyName;
 
     /** 法人名称一覧 */
     private List<MastCompanyDO> glCompanyNameList;
@@ -152,10 +146,10 @@ public class GroupManagerGroupListDTO implements Serializable {
     private boolean gbDisabled;
 
     /** 初期表示開始日付 */
-    private Timestamp goStartdate;
+    private Date goStartdate;
 
     /** 初期表示終了日付 */
-    private Timestamp goEnddate;
+    private Date goEnddate;
 
     /** グループ定義種別フラグ(0:組織・役職設定で定義/1:条件式で定義) */
     private String gsBaseFlg;
@@ -170,10 +164,10 @@ public class GroupManagerGroupListDTO implements Serializable {
     private String gsPrevFlag;
 
     /** グループ定義条件マスタ ID */
-    private BigDecimal mgpId;
+    private Long mgpId;
 
     /** グループ定義条件マスタ VersionNo */
-    private Integer mgpversionNo;
+    private Long mgpversionNo;
 
     /** グループ判定クエリ妥当性チェック結果 */
     private int gnCheckResult = 0;

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
@@ -14,8 +15,9 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class BaseSectionRowDTO {
+public class BaseSectionRowDTO implements Serializable {
 
+    private static final long serialVersionUID = -3115843172677875563L;
     /**
      * ｉｄカラム
      */
@@ -87,7 +89,7 @@ public class BaseSectionRowDTO {
     /** 組織名称 */
     private String gsSectionName;
     /** 組織一覧(指定法人) */
-    private List< BaseSectionRowListDTO> glSectionList;
+    private List<BaseSectionRowListDTO> glSectionList;
     /** 選択済みの組織一覧(指定法人)の件数 */
     private int gnSelectedSectionCnt = 0;
     /** 削除フラグ  */

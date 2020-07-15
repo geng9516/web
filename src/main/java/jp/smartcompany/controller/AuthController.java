@@ -48,6 +48,16 @@ public class AuthController {
     }
 
     /**
+     * 不登录打卡
+     * @return
+     */
+    @PostMapping("stamping")
+    public GlobalResponse stamping() {
+//        authBusiness.basicStamping()
+        return null;
+    }
+
+    /**
      * 退出登录API
      * @return RedirectView
      */

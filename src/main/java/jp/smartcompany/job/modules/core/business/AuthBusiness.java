@@ -14,6 +14,7 @@ import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.boot.util.*;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.CoreError;
+import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
@@ -29,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -102,6 +104,24 @@ public class AuthBusiness {
         String username = ShiroUtil.getUsername();
         saveLoginInfo(false, username);
         ShiroUtil.getSubject().logout();
+    }
+
+    // 打卡时验证用户是否登录
+    public LoginAccountBO basicStamping(String username,String password) {
+        MastAccountDO mastAccountDO = iMastAccountService.getByUsername(username);
+        //パラメータアカウントがない場合
+        if (mastAccountDO == null) {
+            throw new UnknownAccountException(ErrorMessage.USER_NOT_EXIST.msg());
+        }
+        if (mastAccountDO.getMaNpasswordlock() == 1) {
+            throw new LockedAccountException(CoreError.USER_LOCK.msg());
+        }
+        String digestPassword = new Md5Hash(password).toHex();
+        boolean isValid = checkPassword(mastAccountDO,digestPassword);
+        if (isValid) {
+            return iMastAccountService.getAccountInfo(username);
+        }
+        return null;
     }
 
     public void saveLoginInfo(boolean status,String username) {

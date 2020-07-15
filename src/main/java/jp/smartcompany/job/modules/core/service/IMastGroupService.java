@@ -98,4 +98,20 @@ public interface IMastGroupService extends IService<MastGroupDO> {
                 String searchDate
         );
 
+        /**
+         * 今回改定日が未入力(NULL)のときは、指定されたグループの歴情報を取得
+         * 今回改定日が入力済のときは、今回改定日時点の指定されたグループ情報を取得
+         *
+         * @param   customerCode  顧客コード
+         * @param   systemId      システムID
+         * @param   language      言語区分
+         * @param   groupId       グループID
+         * @param   searchDate    今回改定日
+         * @param   companyList  参照可能な法人一覧
+         * @return  List<GroupManagerGroupListDTO>  グループ履歴リスト
+         */
+        List<GroupManagerGroupListDTO> selectGroupHistoryList(
+                String customerCode, String systemId, String language, String groupId, Date searchDate, List<String> companyList
+        );
+
 }
