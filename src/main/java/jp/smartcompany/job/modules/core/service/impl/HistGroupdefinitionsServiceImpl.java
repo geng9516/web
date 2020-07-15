@@ -46,9 +46,9 @@ public class HistGroupdefinitionsServiceImpl extends ServiceImpl<HistGroupdefini
                 if (StrUtil.isBlank(systemId)){
                         systemId = "01";
                 }
-                if (seq==null){
-                        seq = 1L;
-                }
+//                if (seq==null){
+//                        seq = 1L;
+//                }
                 return baseMapper.selectGroupDefinitions(customerId,companyId,systemId,groupId,strSearchDate,seq);
         }
 }

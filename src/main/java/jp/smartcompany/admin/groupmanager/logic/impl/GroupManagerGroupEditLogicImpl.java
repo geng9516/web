@@ -147,9 +147,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             String sCompanyId = rowDTO.getMgbsCcompanyid();
             // 組織ごとの定義情報取得(法人＆組織＆役職リスト)
             List<BaseSectionRowListDTO> sectionList = iMastGroupbasesectionService.selectGroupBaseSectionList(
-                    psCustomerId, sCompanyId, systemId, groupId, language, dSearchDate);
-            System.out.println("----");
-            System.out.println(sectionList.size());
+                    psCustomerId, sCompanyId, systemId, language,groupId, dSearchDate);
             rowDTO.setGlSectionList(sectionList);
             // 現在の保持している組織リストの件数を保持する
             rowDTO.setGnSelectedSectionCnt(sectionList.size());

@@ -32,7 +32,7 @@
                MGBS_CCOMPANYID,
                '${searchDate}',
                '${language}')
-        AS COMPANYNAME
+        AS COMPANY_NAME
         FROM MAST_GROUPBASESECTION
         WHERE
           MGBS_CCUSTOMERID = #{custId}
@@ -63,7 +63,7 @@
                 MGBS_CCOMPANYID,
                 '${searchDate}',
                 '${language}'
-            ) AS COMPANYNAME,
+            ) AS COMPANY_NAME,
             MGBS_CSECTIONID,
             PSMASTER.FUNC_GET_SECTION_NAME(
                 MGBS_CCUSTOMERID
@@ -71,7 +71,7 @@
                 ,MGBS_CSECTIONID
                 ,'${searchDate}'
                 ,'${language}'
-            ) AS SECTIONNAME,
+            ) AS SECTIO_NNAME,
             MGBS_CLAYEREDSECTIONID,
             MGBS_CBELOWORSINGLE,
             VERSIONNO

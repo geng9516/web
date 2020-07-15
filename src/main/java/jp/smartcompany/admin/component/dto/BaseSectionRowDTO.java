@@ -85,9 +85,9 @@ public class BaseSectionRowDTO implements Serializable {
 
 
     /** 法人名称 */
-    private String gsCompanyName;
+    private String companyName;
     /** 組織名称 */
-    private String gsSectionName;
+    private String sectionName;
     /** 組織一覧(指定法人) */
     private List<BaseSectionRowListDTO> glSectionList;
     /** 選択済みの組織一覧(指定法人)の件数 */

@@ -35,6 +35,9 @@
                 HGD_DENDDATE >= #{searchDate}  AND
                 HGD_NSEQ = #{seq}
             </if>
+            <if test="seq==null">
+                HGD_DENDDATE >= #{searchDate}
+            </if>
             ORDER BY HGD_NSEQ
     </select>
 
