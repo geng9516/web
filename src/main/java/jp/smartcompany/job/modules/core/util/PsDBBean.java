@@ -15,6 +15,8 @@ import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.*;
 //import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -212,7 +214,9 @@ public class PsDBBean {
         setGroupID((String)this.requestHash.get("GroupCode"));
         setUserCode((String)this.requestHash.get("UserCode"));
         setCustID((String)requestHash.get("CustID"));
-        setTargetUser((String)requestHash.get("EmployeeCode"));
+        if (StrUtil.equals(TmgUtil.Cs_SITE_ID_TMG_INP,getSiteId())) {
+            setTargetUser((String)requestHash.get("EmployeeCode"));
+        }
         setSystemCode((String)requestHash.get("SystemCode"));
 
 //        setPostID((Vector) this.requestHash.get("PostCode"));

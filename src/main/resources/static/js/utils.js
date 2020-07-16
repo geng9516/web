@@ -156,7 +156,32 @@ const Utils = {
     }
     return new Date(date)
   },
-
+  /**
+   * 下载文件
+   * @param data repsonse
+   * @param filename filename
+   * @param type Blob type
+   */
+  downloadFile: function(data, filename, type) {
+  const file = new Blob([`\ufeff${data}`], { type: type })
+  if (window.navigator.msSaveOrOpenBlob) {
+    // IE10+
+    window.navigator.msSaveOrOpenBlob(file, filename)
+  } else {
+    // Others
+    let a = document.createElement('a')
+    const url = URL.createObjectURL(file)
+    a.href = url
+    a.download = filename
+    a.style.display = 'none'
+    document.body.appendChild(a)
+    a.click()
+    setTimeout(function() {
+      document.body.removeChild(a)
+      window.URL.revokeObjectURL(url)
+    }, 0)
+  }
+},
   minusMonths: function (date, months) {
     let d = date.getMonth()
     date.setMonth(date.getMonth() - months)

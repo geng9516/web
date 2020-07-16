@@ -71,12 +71,16 @@ const uploadFiles = (url, formData) => {
 const get = (url, params) => {
   return new Promise(async (resolve, reject) => {
     try {
-      const { data } = await axios({
+      const { data, headers } = await axios({
         method: 'get',
         url,
         params: params
       })
-      resolve(data)
+      if(/csv|pdf|octet/g.test(headers['content-type'])) {
+        resolve({ data:data, headers: headers})
+      } else {
+        resolve({ ...data, headers: headers})
+      }
     } catch (e) {
       reject(e)
     }

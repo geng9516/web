@@ -28,6 +28,6 @@ public interface ITmgUpdsKintaiService extends IService<TmgUpdsKintaiDO> {
          * @param lang：言語区分
          * @return
          */
-        Map<String,Object>  selectMoUpds(List<String> columnList, String functionID, String sectionID,
+        List<Map<String,Object>>  selectMoUpds(List<String> columnList, String functionID, String sectionID,
                                          String dlTypeID, String date, String custID, String compID, String lang);
         }

@@ -77,12 +77,12 @@
                     <i-button v-if="row.totalStatus === 1" type="primary" ghost size="small" @click="total(row.yyyymm)"　long>集計処理</i-button>
                     <p class="mt2" v-if="row.totalTime">{{ row.totalTime.replace(' ','\n') }}</p>
                     <i-button  v-if="row.totalAlert === 1" type="error" ghost size="small" @click="totalError(row.yyyymm)"　long>***集計時の問題***</i-button>
-                    <p class="mt2" v-if="row.totalStatus === 2">集計中</p>
+                    <p class="mt2" v-if="row.totalStatus === 2">集計中<i-button style="margin-left: 5px;margin-bottom: 3px;border-radius: 50%;" type="primary" ghost size="small" icon="md-refresh" :loading="solvingBtnLoading" @click="getData(true)"></i-button></p>
                 </template>
 
                 <template slot-scope="{ row }" slot="download">
                     <i-button v-if="row.worksKintai === 1" class="mb5" type="primary"  ghost size="small" @click="download(row.yyyymm)" long>月例ダウンロード</i-button>
-                    <i-button v-if="row.worksRetro === 1" type="primary" ghost size="small" @click="download(row.yyyymm)" long>遡及ダウンロード</i-button>
+                    <i-button v-if="row.worksRetro === 1" type="primary" ghost size="small" @click="download(row.yyyymm,'on')" long>遡及ダウンロード</i-button>
                 </template>
 
                 <template slot-scope="{ row }" slot="notFix">
@@ -143,9 +143,10 @@
                 月次集計データダウンロード：{{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}
             </div>
             <div class="tr">
-            <checkbox type="primary" ghost size="small">ダブルクオート（"）で値を囲む</checkbox><br/>
-            <i-button type="primary" class="mt2"  >定員内</i-button>
-            <i-button type="primary" class="mt2"  >非常勤</i-button>
+            <checkbox type="primary" ghost size="small" v-model="opts.checkValue">ダブルクオート（"）で値を囲む</checkbox><br/>
+            <div v-for="(item, i) in downloadBtn" :key="i">
+                <i-button type="primary" class="mt2" @click="downloadFile(item.mgdCdltypeid)">{{item.mgdCdltypename}}</i-button>
+            </div>
             </div>
             <div slot="footer"></div>
         </Modal>
@@ -170,6 +171,7 @@
             el: '.monthsuminfo-warp',
             data() {
                 return {
+                    downloadBtn:[],
                     totalDisabled:true,
                     totalUpdated:false,
                     message:'',
@@ -246,10 +248,12 @@
                         txtTmgReferListTreeViewRecordDate: '',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 41,
+                        checkValue:false,
                         sRetroFlg:'', //遡及フラグ
                         dlTypeId:'',  //DL種別コード
                     },
                     empDeptLoading: false,  // 組織ツリーloading用
+                    solvingBtnLoading: false,
                     deptDrawShow: false,    //組織ツリー用
                     treeData: [],            //組織ツリー用
                     isSearchHistory: false,
@@ -295,12 +299,12 @@
                     totalCol:[
                         {
                         title: '氏名',
-                        key: 'yyyymm',
+                        key: 'name',
                         align: 'center'
                         },
                         {
                             title: 'メールアドレス',
-                            key: 'yyyymm',
+                            key: 'mailAddress',
                             align: 'center'
                         },
                     ],
@@ -321,17 +325,22 @@
             computed: {
             },
             methods: {
-                getData: Debounce(async function () {
+                getData: Debounce(async function (byBtn) {
+                    if(byBtn) {
+                        this.solvingBtnLoading = true
+                    } else {
+                        this.loading = true
+                    }
                     this.totalUpdated=false
                     this.optsDisp.year=Utils.formatDate(this.curDate,'yyyy').concat('/01/01')
                     try {
-                        this.loading = true
                         const { data } = await this.http.get('sys/sumdate/monthlyOutputDisp', this.optsDisp)
                         this.tableData = data.reverse().slice(0,12)
                     } catch (error) {
                         return
                     } finally {
                         this.loading = false
+                        this.solvingBtnLoading = false
                     }
                 }),
                 async getOrgTree() {
@@ -481,11 +490,18 @@
                         }
                     })
                 },
-                total(e) {
+                async total(e) {
                     this.opts.baseDate = e.concat('/01')
-                    this.message='月次集計処理完了後、以下の職員に完了通知メールが配信されます。'
-                    this.totalDisabled=false
-                    this.totalLink=true
+                    try {
+                        this.message = '月次集計処理完了後、以下の職員に完了通知メールが配信されます。'
+                        this.totalDisabled = false
+                        this.totalLink = true;
+                        const {data} = await this.http.get('sys/sumdate/totalDisp', this.opts)
+                        this.totalData = data
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    }
                 },
                 totalStart(){
                     this.$Modal.confirm({
@@ -511,17 +527,41 @@
                         if(this.totalUpdated){
                             this.getData()
                         }
-                        console.log('guanle')
                     }
                 },
                 totalError(e) {
                     this.opts.baseDate = e.concat('/01')
-                    this.downloadLink=true;
+                    //this.downloadLink=true;
                 },
-                download(e) {
+
+                async download(e,f) {
+                    if(f){
+                        this.opts.sRetroFlg = f
+                    }
                     this.opts.baseDate = e.concat('/01')
-                    this.downloadLink=true;
+                    try{
+                        this.downloadLink = true;
+                        const { data } = await this.http.get('sys/sumdate/downloadDisp', this.opts)
+                        this.downloadBtn = data
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    }
                 },
+
+                async downloadFile(e) {
+                    if(e){
+                        this.opts.dlTypeId = e
+                    }
+                    try{
+                        const { data, headers } = await this.http.get('sys/sumdate/downloadFile', this.opts)
+                        Utils.downloadFile(data,headers['content-disposition'].split('filename="')[1].slice(0, -1),'text/csv')
+                    } catch (error) {
+                        console.log(error)
+                        return
+                    }
+                },
+
                 async notAprSec(e) {
                     if (e != null) {
                         this.opts.baseDate = e.concat('/01')
