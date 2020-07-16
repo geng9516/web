@@ -68,7 +68,8 @@ public class CusomCsvUtil {
         response.setCharacterEncoding(pro.getProperty("file.encoding"));
         response.setHeader("Content-Type", "text/csv;charset=Shift_JIS");
         response.setHeader("Access-Control-Expose-Headers", "Content-Disposition");
-        response.setHeader("Content-Disposition", "application;filename=\""+ URLEncoder.encode(fileName, "utf-8")+"\"");
+        response.setHeader("Content-Disposition", "application");
+        response.setHeader("filename", URLEncoder.encode(fileName, "utf-8"));
 
     }
 

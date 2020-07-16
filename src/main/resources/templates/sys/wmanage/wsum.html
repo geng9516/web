@@ -345,7 +345,7 @@
             async download() {
 
                 const { data, headers } = await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
-                Utils.downloadFile(data,headers['content-disposition'].split('filename="')[1].slice(0, -1),'text/csv')
+                Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
                 // await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
                 //
                 //     .then((response) => {
