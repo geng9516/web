@@ -185,12 +185,12 @@
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
                      :loading="columnsNotWorkLoading">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
-                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed"></i-input>
+                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailNonDutyVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="tdadNclose">
-                    <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed "></i-input>
+                    <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed " @on-blur="detailNonDutyVOList[index].tdadNclose=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNclose)"></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
@@ -239,12 +239,12 @@
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
                      :loading="columnsOverWorkLoading">
                 <template slot-scope="{ row ,index }" slot="tdadNopen">
-                    <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed"></i-input>
+                    <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{ row.tdadNopen | toTime }}</span>
                 </template>
 
                 <template slot-scope="{ row ,index}" slot="tdadNclose">
-                    <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed"></i-input>
+                    <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNclose=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNclose)"></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
@@ -529,6 +529,7 @@
                 // 就業区分切替の表示制御
                 bDisable: false,
                 overHourLimit: '',
+                otDaily:'',
                 targetForOverTime: '',
                 errMsg: []
 
@@ -829,6 +830,7 @@
                 let limitOfBasedateVO = data.limitOfBasedateVO
 
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
+                this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
 
 
@@ -983,19 +985,10 @@
 
                 }
                 if (errMsg30 !== '') {
-                    this.$Modal.confirm({
-                        title: '',
-                        content: 'errMsg30',
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: async () => {
 
-                        },
-                        onCancel: () => {
-                            return false
-                        }
-                    })
-
+                    if(!confirm('errMsg30')){
+                        return false
+                    }
                 }
                 return true
             },
@@ -1114,28 +1107,20 @@
                 // 超過勤務命令時間が入力されていて、超過勤務対象「無」の場合は警告メッセージを表示する
                 if (nOverTimeTotal > 0 && this.targetForOverTime === "1") {
                     // 警告メッセージの表示および、応答の確認
-                    this.$Modal.confirm({
-                        title: '',
-                        content: '超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？',
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: async () => {
 
-                        },
-                        onCancel: () => {
-                            return false
-                        }
-                    })
-
+                    if(!confirm('超過勤務対象外として設定されています。\n超過勤務命令を登録してもよろしいですか？')){
+                        return false
+                    }
                 }
 
                 // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
                 if (nOverTimeTotal > this.overHourLimit) {
                     // 警告メッセージの表示および、応答の確認
-                    //TODO
-                    if (!this.$Modal.confirm('ERROR_OVERTIMECHECK')) {
-                        return false;
+
+                    if(!confirm('超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？')){
+                        return false
                     }
+
                 }
 
                 return true;
@@ -1251,15 +1236,7 @@
 
                 return true
             },
-            // *****************************************************************************
-            //  	関数名:		toMinuteFromHHcMI60
-            //      機能:		HH:MMをXXXX分に変換する
-            //      			12:34→754、8:00→480
-            //					引数は必ずHH:MMorH:MMのいずれかで渡されるものとする
-            //					※パラメータが何も渡されなければ空を返す
-            //					※パラメータに":"が含まれていない場合場合"0"を返す
-            //		パラメータ:	HH:MM
-            //		戻り値:		XXXX
+
             toMinuteFromHHcMI60(pHHMM) {
 
                 let colonSTR = ':';
@@ -1304,7 +1281,56 @@
                 return retMinute;
             },
 
+            toHHHcMI60FromHHHMI60(pHHMM) {
+                console.log(pHHMM)
+                return this.toHHcMI60FromHHMI60(pHHMM)
+            },
+            toHHcMI60FromHHMI60(pHHMM) {
+                let colonSTR = ':';
+                let dSTR = '.';
+                let retHHMM;
+                let bColonIs = 0;
+                let nColonPoint;
 
+                if (!pHHMM.match(/^(\d{1,2}:?)?[0-5][0-9]$/)) {
+                    // フォーマットが不正である場合は入力された値をそのまま返す
+                    return pHHMM;
+                }
+
+                if (pHHMM.length < 3) {
+                    return "0:" + pHHMM;
+                }
+
+                // ":"の有無を調べる
+                for (let i = 0; i < pHHMM.length; i++) {
+                    if (pHHMM.charAt(i) === colonSTR) {
+                        nColonPoint = i;
+                        bColonIs = 1;
+                        break;
+                    }
+                }
+
+                // ":"がなければ
+                if (bColonIs === 0) {
+                    // ３桁の場合
+                    if (pHHMM.length === 3) {
+                        retHHMM = pHHMM.substring(0, 1) + colonSTR + pHHMM.substring(1, 3);
+                        // ４桁の場合
+                    } else {
+                        retHHMM = pHHMM.substring(0, 2) + colonSTR + pHHMM.substring(2, 4);
+                    }
+                    // ":"があれば
+                } else {
+                    retHHMM = pHHMM;
+                }
+
+                // 0X:XXの場合１桁目の0は削除
+                if (retHHMM.charAt(0) === '0' && retHHMM.charAt(1) !== colonSTR) {
+                    retHHMM = retHHMM.substring(1, retHHMM.length);
+                }
+
+                return retHHMM;
+            },
             //登録画面/////////////////////////////////////////////////////////////////
 
             handleDatePicker() {

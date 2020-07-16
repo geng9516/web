@@ -370,7 +370,7 @@
                         link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
                         document.body.appendChild(link);
                         link.click();
-                        link.revokeObjectURL();
+                        URL.revokeObjectURL(url)
                     });
 
             },
