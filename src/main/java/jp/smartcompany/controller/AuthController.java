@@ -63,20 +63,26 @@ public class AuthController {
     @ResponseBody
     public ClockResultVO stamping(String username, String password, String pAction) {
         LoginAccountBO loginAccountBo = null;
-        ClockResultVO clockResultVO = null;
+        ClockResultVO clockResultVO = new ClockResultVO();
         //1.decode　又は　md5+salt
         //2.チェック
         //3.打刻
         if (null != username && null != password) {
             //チェック
-            loginAccountBo = authBusiness.basicStamping(username, password);
+            try {
+                loginAccountBo = authBusiness.basicStamping(username, password);
+            } catch (Exception e) {
+                clockResultVO.setResultCode("10");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください");
+                return clockResultVO;
+            }
             if (null != loginAccountBo) {
                 //打刻
                 clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
             } else {
                 clockResultVO.setEmployeeId(username);
                 clockResultVO.setResultCode("10");
-                clockResultVO.setResultMsg("チェック失敗しました、もう一度ユーザー又はパスワードを入力し直してください");
+                clockResultVO.setResultMsg("アカウント又はパスワードをチェック失敗しました、もう一度入力し直してください");
             }
         } else {
             clockResultVO.setResultCode("10");

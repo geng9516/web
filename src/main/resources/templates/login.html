@@ -161,40 +161,45 @@
                             //退勤
                             this.exiting = true
                         }
-                        const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
-                        console.log(data)
-                        if (data) {
-                            //チェック合格
-                            if (data.resultCode === "0") {
-                                //打刻成功(0)
-                                if (pAction === "ACT_EXEC_OPEN") {
-                                    this.clockData.startTime = data.clockTime
-                                    this.clockBtn.clock = '出勤(' + data.clockTime + ')'
-                                    this.$Notice.info({title: '打刻情報', desc: "今日も一日頑張りましょう"})
-                                    this.$Modal.confirm({
-                                        title: '操作確認',
-                                        content: '打刻は終わりました、ホームページへ遷移しますか？',
-                                        okText: '遷移',
-                                        cancelText: 'いいえ',
-                                        onOk: async () => {
-                                            this.loging()
-                                        },
-                                        onCancel: () => {
+                        try {
+                            const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
+                            console.log(data)
+                            if (data) {
+                                //チェック合格
+                                if (data.resultCode === "0") {
+                                    //打刻成功(0)
+                                    if (pAction === "ACT_EXEC_OPEN") {
+                                        this.clockData.startTime = data.clockTime
+                                        this.clockBtn.clock = '出勤(' + data.clockTime + ')'
+                                        this.$Notice.info({title: '打刻成功', desc: "今日も一日頑張りましょう"})
+                                        this.$Modal.confirm({
+                                            title: '操作確認',
+                                            content: '打刻は終わりました、ホームページへ遷移しますか？',
+                                            okText: '遷移',
+                                            cancelText: 'いいえ',
+                                            onOk: async () => {
+                                                this.loging()
+                                            },
+                                            onCancel: () => {
 
-                                        }
-                                    })
+                                            }
+                                        })
+                                    } else {
+                                        this.clockData.endTime = data.clockTime
+                                        this.clockBtn.exit = '退勤(' + data.clockTime + ')'
+                                        this.$Notice.info({title: '打刻成功', desc: "今日も一日お疲れ様でした"})
+                                    }
                                 } else {
-                                    this.clockData.endTime = data.clockTime
-                                    this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                                    this.$Notice.info({title: '打刻情報', desc: "今日も一日お疲れ様でした"})
+                                    //打刻失敗(10,20,30)
+                                    this.$Notice.error({title: '打刻エラー', desc: data.resultMsg})
                                 }
                             } else {
-                                //打刻失敗(10,20,30)
-                                this.$Notice.warning({title: '打刻エラー', desc: "エラーコード:" + data.resultCode + "  エラーメッセージ：" + data.resultMsg})
+                                //チェック不合格
+                                this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
                             }
-                        } else {
-                            //チェック不合格
-                            this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
+                        } catch (error) {
+                            this.clocking = false
+                            this.exiting = false
                         }
                     } else {
                         //

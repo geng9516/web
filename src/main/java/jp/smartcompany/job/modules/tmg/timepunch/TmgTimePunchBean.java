@@ -16,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -157,9 +158,12 @@ public class TmgTimePunchBean {
     @Transactional(rollbackFor = GlobalException.class)
     public boolean clock(String employeeId, String custId, String compId, String psAction) {
         boolean result = false;
-        this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-        this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-        this.deleteTmgTrgger(custId, compId, employeeId, psAction);
+        //lock thread safe
+        synchronized (this) {
+            this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+            this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+            this.deleteTmgTrgger(custId, compId, employeeId, psAction);
+        }
         result = true;
         return result;
     }
@@ -214,14 +218,14 @@ public class TmgTimePunchBean {
             resultMsg = "打刻タイプが不正です";
             logger.warn(resultMsg);
         }
-        if(isPass){
+        if (isPass) {
             //2、打刻をしますかとしないか
             String gsToday = this.getTimePunchday(custId, compId, employeeId);
             boolean isVIP = this.isNotTimePunch(custId, compId, employeeId, gsToday);
             String clockTime = "";
             if (!isVIP) {
                 //3、打刻する
-                boolean flag = this.clock( employeeId,custId, compId,psAction);
+                boolean flag = this.clock(employeeId, custId, compId, psAction);
                 clockTime = DateUtil.format(new Date(), "HH:mm");
                 clockResultVO.setClockTime(clockTime);
                 if (flag) {
