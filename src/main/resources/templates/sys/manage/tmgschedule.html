@@ -128,7 +128,7 @@
                 <div class="label">勤務パターン</div>
             </i-col>
             <i-col span="6">
-                <i-select class="no-border-radius"  v-model="workPatternSelected" @on-change="handleChangeWorkPattern()">
+                <i-select class="no-border-radius"  :disabled="!patternDisabled" v-model="workPatternSelected" @on-change="handleChangeWorkPattern()">
                     <i-option v-for="(item, i) of workPatternList" :key="i" :value="item.CPATTERNID">{{ item.CPATTERNNAME }}</i-option>
                 </i-select>
             </i-col>
@@ -136,7 +136,7 @@
 
         <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
             <template slot-scope="{ row }" slot="workDivision">
-                <i-select  transfer v-model="pattern.workId">
+                <i-select  transfer v-model="pattern.workId" @on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
             </template>
@@ -148,26 +148,27 @@
             </template>
 
             <template slot-scope="{ row }" slot="startTime">
-                <i-input v-model="pattern.nopen"/>
+                <i-input v-model="pattern.nopen" :disabled="!patternDisabled"/>
             </template>
 
             <template slot-scope="{ row }" slot="endTime">
-                <i-input v-model="pattern.nclose"/>
+                <i-input v-model="pattern.nclose" :disabled="!patternDisabled"/>
             </template>
 
             <template slot-scope="{ row }" slot="restTime" >
                 <Row :gutter="10" v-for="(item, i) of pattern.restList" :key="i" class="mb5" >
                     <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                        <i-input v-model="pattern.restList[i].restOpen"/>
+                        <i-input v-model="pattern.restList[i].restOpen"　:disabled="!patternDisabled"/>
                     </i-col>
                     <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                        <i-input v-model="pattern.restList[i].restClose"/>
+                        <i-input v-model="pattern.restList[i].restClose"　:disabled="!patternDisabled"/>
                     </i-col>
                     <i-col span="8" v-show="pattern.restList.length > 1">
                         <i-button ghost type="error" @click="handleMinusRest(pattern.restList, i)">-</i-button>
                     </i-col>
                 </Row>
                 <i-button
+                        :disabled="!patternDisabled"
                         class="mt5"
                         size="small"
                         ghost
@@ -218,12 +219,12 @@
             </template>
 
             <template slot-scope="{ row}" slot="workStartFinal">
-                <i-input v-model="value[row._index].nopen" v-if=" isEditable"></i-input>
+                <i-input v-model="value[row._index].nopen" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nopen', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nopen }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workEndFinal">
-                <i-input v-model="value[row._index].nclose" v-if=" isEditable"></i-input>
+                <i-input v-model="value[row._index].nclose" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nclose', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nclose}}</span>
             </template>
 
@@ -231,10 +232,10 @@
                 <div v-if=" isEditable">
                     <Row :gutter="10" v-for="(item, i) of value[row._index].restList" :key="i" class="mb5">
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restOpen" />
+                            <i-input v-model="value[row._index].restList[i].restOpen" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restOpen', $event.target)"/>
                         </i-col>
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restClose"/>
+                            <i-input v-model="value[row._index].restList[i].restClose" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restClose', $event.target)"/>
                         </i-col>
                         <i-col span="8" v-show="value[row._index].restList.length > 1">
                             <i-button ghost type="error" @click="handleMinusRest(value[row._index].restList, i)">-</i-button>
@@ -271,6 +272,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                patternDisabled:false,
                 yyyyMMdd:'',
                 pattern:{nclose:"",nopen:"",workId:"",bussinessTripid:"",restList:[]},
                 value: [],
@@ -347,12 +349,11 @@
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
+                    EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                    txtTmgReferListTreeViewPermTargetSection: '',
-                    txtTmgReferListTreeViewPermTargetEmp:'',
                     content:{}
                 },
             }
@@ -440,6 +441,11 @@
             }
         },
         methods: {
+            handleInputChange(i,object,value,el) {
+                if(object) {
+                    this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
+                }
+            },
             handleSelectAll(selection){
                 this.valueMap=selection.map(item=> {
                     return item.tda_nmmdd
@@ -463,6 +469,9 @@
             },
             handleAddRest(e) {
                 e.push({ restOpen: '', restClose: '' })
+            },
+            handleChangeDivision(e){
+                "TMG_WORK|000"==e?this.patternDisabled=true:this.patternDisabled=false
             },
             handleChangeWorkPattern() {
                 const handleTime = Vue.filter('handleTime');
@@ -488,10 +497,9 @@
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
-                this.query.txtTmgReferListTreeViewPermTargetSection=e[0].secid
-                this.query.txtTmgReferListTreeViewPermTargetEmp=e[0].empid
                 this.kanjiName = e[0].empname
                 this.loginEmployee = e[0].empid
+                this.query.EmployeeCode = e[0].empid
                 this.selectDisabled = true
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
@@ -640,17 +648,17 @@
                 }
                 return 'rest-cell'
             },
-            preMonth() {
+            async preMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.preStart
                 this.query.txtEndDate=this.selectScheduleInfo.preEnd
-                this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
+                await this.getSelectScheduleInfo()
+                await this.getSelectIkkaInfo()
             },
-            nextMonth() {
+            async nextMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.nextStart
                 this.query.txtEndDate=this.selectScheduleInfo.nextEnd
-                this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
+                await this.getSelectScheduleInfo()
+                await this.getSelectIkkaInfo()
             },
             rowClass(row) {
                 // 表格变色
