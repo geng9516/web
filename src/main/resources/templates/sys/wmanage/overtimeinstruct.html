@@ -120,25 +120,25 @@
                 <!-- 一括適用table start -->
                 <i-table border :columns="columnsAction" :data="columnsActionData">
                     <template slot-scope="{ row }" slot="startTime">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen" />
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen" @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNOpen', $event.target)"/>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose" />
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose" @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNClose', $event.target)"/>
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
                         <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea"
-                            :autosize="{ minRows: 2, maxRows: 5 }" />
+                            :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)"/>
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime">
                         <Row :gutter="10">
                             <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" />
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestOpen', $event.target)"/>
                             </i-col>
                             <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" />
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestClose', $event.target)"/>
                             </i-col>
                         </Row>
                     </template>
@@ -176,13 +176,13 @@
 
                     <template slot-scope="{ row }" slot="startTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" @on-blur="handleInputChange(row._index)"></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)"></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" @on-blur="handleInputChange(row._index)"></i-input>
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)"></i-input>
                         </div>
                     </template>
 
@@ -191,7 +191,7 @@
                             class="mb2">
                             <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
                                 <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea"
-                                    :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index)"></i-input>
+                                    :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)"></i-input>
                             </i-col>
                             <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
                                 <i-button ghost type="error"
@@ -219,14 +219,14 @@
                         <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"
                             class="mb2">
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen" @on-blur="handleInputChange(row._index)"></i-input>
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen" @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestOpen', $event.target)"></i-input>
                             </i-col>
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose" @on-blur="handleInputChange(row._index)"></i-input>
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose" @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestClose', $event.target)"></i-input>
                             </i-col>
                             <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">
                                 <i-button ghost type="error"
-                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)" @on-blur="handleInputChange(row._index)">-</i-button>
+                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)" @on-blur="handleInputChange(row._index, false)">-</i-button>
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
@@ -274,6 +274,7 @@
                 return {
                     showAverage: false,
                     showDayApply: false,
+                    hasPassedTimeCheck: false,
                     dailyTableLoading: false,
                     title: '日別編集画面',
                     slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
@@ -392,7 +393,7 @@
                                 },
                                 {
                                     title: '承認',
-                                    slot: 'workApplyStatus',
+                                    key: 'workApplyStatus',
                                     width: 30,
                                     align: 'center'
                                 }
@@ -672,7 +673,7 @@
                             const updateRestTimeDtoList = e.restTimeList && e.restTimeList.map(t => {
                                 return {
                                     sNRestOpen: t.tdadNopenTime,
-                                    sNRestClose: t.tdadNopenTime,
+                                    sNRestClose: t.tdadNcloseTime,
                                 }
                             })
                             return {
@@ -815,9 +816,13 @@
                 handleSelectAll(status) {
                     this.$refs.selection2.selectAll(status)
                 },
-                handleInputChange(i) {
+                handleInputChange(i,object,value,el) {
                     // 填完后自动checkbox
+                    this.$set(this.tableData3[i], '_checked', false )
                     this.$set(this.tableData3[i], '_checked', true )
+                    if(object) {
+                        this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
+                    }
                 },
                 async overTimeUpdate() {
                     // 将没打勾的排除出去
