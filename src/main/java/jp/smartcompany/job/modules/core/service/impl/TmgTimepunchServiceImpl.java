@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -132,5 +133,14 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         params.put("custId", custId);
         params.put("compCode", compCode);
         return baseMapper.selectErrMsg(params);
+    }
+
+    @Override
+    public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        return baseMapper.selectClockInfo(params);
     }
 }

@@ -172,7 +172,7 @@
                                         this.clockData.startTime = data.clockTime
                                         this.clockBtn.clock = '出勤(' + data.clockTime + ')'
                                         this.$Notice.info({title: '打刻成功', desc: "今日も一日頑張りましょう"})
-                                        this.$Modal.confirm({
+                                        /*this.$Modal.confirm({
                                             title: '操作確認',
                                             content: '打刻は終わりました、ホームページへ遷移しますか？',
                                             okText: '遷移',
@@ -183,7 +183,7 @@
                                             onCancel: () => {
 
                                             }
-                                        })
+                                        })*/
                                     } else {
                                         this.clockData.endTime = data.clockTime
                                         this.clockBtn.exit = '退勤(' + data.clockTime + ')'

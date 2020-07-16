@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.boot.util.ShiroUtil;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,6 +78,19 @@ public class AuthController {
                 return clockResultVO;
             }
             if (null != loginAccountBo) {
+                //打刻したかしなかった
+                ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), loginAccountBo.getHdCemployeeidCk());
+                if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
+                    //予定データがない場合、打刻しない
+                    clockResultVO.setResultCode("20");
+                    clockResultVO.setResultMsg("今日は出勤しない日です");
+                }
+                if (null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
+                    //出勤打刻データがある場合、画面へ返却する
+                    clockResultVO.setResultCode("0");
+                    clockResultVO.setClockTime(clockInfoVO.getNopen());
+                    return clockResultVO;
+                }
                 //打刻
                 clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
             } else {

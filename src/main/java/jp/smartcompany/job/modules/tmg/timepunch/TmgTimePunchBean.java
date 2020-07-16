@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -568,6 +569,18 @@ public class TmgTimePunchBean {
         }
         return checkMsg;
     }
+
+    /**
+     * 打刻と予定データを取得する
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId){
+       return iTmgTimepunchService.selectClockInfo(custId,compCode,employeeId);
+    }
+
 
 
     public static void main(String[] args) {

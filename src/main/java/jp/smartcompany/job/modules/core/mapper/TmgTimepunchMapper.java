@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.HashMap;
@@ -99,5 +100,14 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
      * @return
      */
     String selectErrMsg(HashMap<String, Object> params);
+
+    /**
+     * 打刻と予定データを取得する
+     *
+     * @param params
+     * @return
+     */
+    ClockInfoVO selectClockInfo(HashMap<String, Object> params);
+
 
 }

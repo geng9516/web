@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 
 import java.util.HashMap;
 import java.util.List;
@@ -136,5 +137,15 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      * @return
      */
     String selectErrMsg(String employeeId, String targetDate, String timepunch, String custId, String compCode);
+
+    /**
+     * 打刻と予定データを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId);
 
 }
