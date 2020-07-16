@@ -85,14 +85,21 @@ public class AuthController {
                     clockResultVO.setResultCode("20");
                     clockResultVO.setResultMsg("今日は出勤しない日です");
                 }
-                if (null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
+                if ("ACT_EXEC_OPEN".equals(pAction) && null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
                     //出勤打刻データがある場合、画面へ返却する
                     clockResultVO.setResultCode("0");
                     clockResultVO.setClockTime(clockInfoVO.getNopen());
+                    clockResultVO.setResultMsg("今日はもう出勤打刻しました");
                     return clockResultVO;
                 }
                 //打刻
                 clockResultVO = tmgTimePunchBean.execTimePunch(loginAccountBo.getHdCemployeeidCk(), loginAccountBo.getHdCcustomeridCk(), loginAccountBo.getHdCcompanyidCk(), pAction);
+                if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+                    clockResultVO.setResultMsg("今日も一日頑張りましょう");
+                }
+                if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+                    clockResultVO.setResultMsg("今日も一日お疲れ様でした");
+                }
             } else {
                 clockResultVO.setEmployeeId(username);
                 clockResultVO.setResultCode("10");

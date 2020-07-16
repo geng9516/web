@@ -148,19 +148,6 @@
                 var isPass = this.formCheck()
                 if (isPass) {
                     if (pAction) {
-                        if (pAction === "ACT_EXEC_OPEN") {
-                            //出勤
-                            if(this.clockData.startTime){
-                                // 出勤打刻した場合、もう一度打刻できない
-                                this.$Notice.info({title: '打刻情報', desc: "今日はもう打刻しました"})
-                                return
-                            }
-                            this.clocking = true
-                        }
-                        if (pAction === "ACT_EXEC_CLOSE") {
-                            //退勤
-                            this.exiting = true
-                        }
                         try {
                             const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
                             console.log(data)
@@ -171,7 +158,7 @@
                                     if (pAction === "ACT_EXEC_OPEN") {
                                         this.clockData.startTime = data.clockTime
                                         this.clockBtn.clock = '出勤(' + data.clockTime + ')'
-                                        this.$Notice.info({title: '打刻成功', desc: "今日も一日頑張りましょう"})
+                                        this.$Notice.info({title: '打刻成功', desc: data.resultMsg})
                                         /*this.$Modal.confirm({
                                             title: '操作確認',
                                             content: '打刻は終わりました、ホームページへ遷移しますか？',
@@ -187,7 +174,7 @@
                                     } else {
                                         this.clockData.endTime = data.clockTime
                                         this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                                        this.$Notice.info({title: '打刻成功', desc: "今日も一日お疲れ様でした"})
+                                        this.$Notice.info({title: '打刻成功', desc:  data.resultMsg})
                                     }
                                 } else {
                                     //打刻失敗(10,20,30)

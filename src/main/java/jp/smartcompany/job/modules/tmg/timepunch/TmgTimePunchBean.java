@@ -245,11 +245,9 @@ public class TmgTimePunchBean {
                             }
                         } else {
                             resultCode = "0";
-                            resultMsg = "打刻完了しました";
                         }
                     } else {
                         resultCode = "0";
-                        resultMsg = "打刻完了しました";
                     }
                 } else {
                     resultCode = "30";
