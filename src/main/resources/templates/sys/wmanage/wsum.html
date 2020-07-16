@@ -343,18 +343,21 @@
                 return  yearMMDD
             },
             async download() {
-                await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
 
-                    .then((response) => {
-                        const bom = '\uFEFF'
-                        const url = URL.createObjectURL(new Blob([bom, response]));
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
-                        document.body.appendChild(link);
-                        link.click();
-                        URL.revokeObjectURL(url)
-                    });
+                const { data, headers } = await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
+                Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
+                // await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
+                //
+                //     .then((response) => {
+                //         const bom = '\uFEFF'
+                //         const url = URL.createObjectURL(new Blob([bom, response]));
+                //         const link = document.createElement('a');
+                //         link.href = url;
+                //         link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
+                //         document.body.appendChild(link);
+                //         link.click();
+                //         URL.revokeObjectURL(url)
+                //     });
 
             }
         }

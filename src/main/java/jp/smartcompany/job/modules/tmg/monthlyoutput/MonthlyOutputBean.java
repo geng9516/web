@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.monthlyoutput;
 
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -15,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.MonthlyOutPutDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.*;
+import jp.smartcompany.job.modules.tmg.util.CusomCsvUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.ModelMap;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +51,7 @@ public class MonthlyOutputBean {
     private final ITmgMonthlyOutputLogService iTmgMonthlyOutputLogService;
     private final ITmgMonthlyOutputLogSecService iTmgMonthlyOutputLogSecService;
     private final ITmgAlertmsgService iTmgAlertmsgService;
-
+    private final CusomCsvUtil csvUtil;
 
     /** 表示中のページ */
     private int _currentPage = 1;
@@ -85,6 +88,9 @@ public class MonthlyOutputBean {
     public static final String MOD_ID_UFIXESMONTHLY = "MonthlyOutput_ACT_UFIXESMONTHLY";
     /** 更新プログラムID.勤怠月次締め解除処理 */
     public static final String MOD_ID_DFIXESMONTHLY = "MonthlyOutput_ACT_DFIXESMONTHLY";
+
+    /** OS改行文字 */
+    public static final String LINE_SEPARATOR = System.getProperty("line.separator");
 
     /**
      * 月次集計データ一覧画面表示処理プロセスを実行します。 以下は主な処理プロセスです。
@@ -195,11 +201,18 @@ public class MonthlyOutputBean {
      * 月次集計データ作成画面表示処理プロセスを実行します。 以下は処理プロセスです。
      * executeDisp_RCalc
      */
-    private List<MastGenericDetailDO> actionExecuteDispRCalc(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
+    public List<SectionAdminMailVo> actionExecuteDispRCalc(String baseDate,PsDBBean psDBBean,TmgReferList referList) {
         List<MastGenericDetailDO> mgdDtoList=iMastGenericDetailService.selectTmgSectionAdmin(psDBBean.getCustID(), psDBBean.getCompCode(),referList.getTargetSec()
                 ,psDBBean.getLanguage(),baseDate);
-
-        return   mgdDtoList;
+        List<SectionAdminMailVo> Vos=new ArrayList<>();
+        for(MastGenericDetailDO Do:mgdDtoList){
+            if(!StrUtil.hasEmpty(Do.getMgdCsparechar3())){
+                SectionAdminMailVo mailVo=new SectionAdminMailVo();
+                mailVo.setName(Do.getMgdCsparechar4());
+                mailVo.setMailAddress(Do.getMgdCsparechar3());
+            }
+        }
+        return   Vos;
     }
 
     /**
@@ -212,16 +225,13 @@ public class MonthlyOutputBean {
      * dlTypeId   DL種別コード
      * executeDownload_CDownload
      */
-    private void actionexecuteDownloadCDownload(String baseDate,String sRetroFlg,String dlTypeId,PsDBBean psDBBean,TmgReferList referList){
+    public void actionexecuteDownloadCDownload(boolean checked,String baseDate,String sRetroFlg,String dlTypeId,PsDBBean psDBBean,TmgReferList referList) throws Exception {
         // ダブルクオートで囲む場合
-        if (StringUtils.isNotBlank(psDBBean.getReqParam(CB_USE_DOUBLE_QUOT))) {
-            CSV_CONCAT1 = ",\"";
-            CSV_CONCAT2 = "\",";
-            DOUBLE_QUOT = "\"";
+        if (checked) {
+            CSV_CONCAT1 = "\"";
+
         } else {
-            CSV_CONCAT1 = ",";
-            CSV_CONCAT2 = ",";
-            DOUBLE_QUOT = "";
+            CSV_CONCAT1 = "";
         }
         List<TmgMoTableFunctionVo> tmgMoTableFunctionVoList = new ArrayList<TmgMoTableFunctionVo>();
         List<String>   tmgMoRetroLayout = new ArrayList<String>();
@@ -246,24 +256,55 @@ public class MonthlyOutputBean {
 
 
         // CSVデータ取得用SQL構築
-        Map<String,Object> moUpds = iTmgUpdsKintaiService.selectMoUpds(tmgMoRetroLayout,tmgMoTableFunctionVoList.get(0).getMgdCfunctionid()
+        List<Map<String,Object>> moUpds = iTmgUpdsKintaiService.selectMoUpds(tmgMoRetroLayout,tmgMoTableFunctionVoList.get(0).getMgdCfunctionid()
         ,referList.getTargetSec(),dlTypeId,baseDate, psDBBean.getCompCode(), psDBBean.getCompCode(),psDBBean.getLanguage());
 
 
         // CSVファイル名
         String TmgMoCsvFileName = iMastGenericDetailService.selectTmgMoCsvFileName(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode(),baseDate,dlTypeId);
 
+        List<List<Object>> rowData =getCsvOfBody(moUpds,tmgMoRetroLayout);
 
+        csvUtil.writeCsv(TmgMoCsvFileName,rowData);
+    }
+
+
+
+    /**
+     * CSV出力ファイル作成
+     * @param moUpds：CSVレイアウトカラムリスト
+     * @return CSV出力文字列
+     */
+    private List<List<Object>> getCsvOfBody(List<Map<String,Object>> moUpds,List<String> tmgMoRetroLayout) throws Exception {
+
+        List<List<Object>> rowData = CollUtil.newArrayList();
+
+        for(Map<String,Object> map:moUpds){
+            List<Object> rowTilte = CollUtil.newArrayList();
+            for (String col:tmgMoRetroLayout) {
+                String value;
+                if(map.get(col) != null){
+                    value= CSV_CONCAT1+String.valueOf(map.get(col))+CSV_CONCAT1;
+                }else{
+                    value=CSV_CONCAT1+StringUtils.defaultString("")+CSV_CONCAT1;
+                }
+                rowTilte.add(value);
+            }
+            rowData.add(rowTilte);
+        }
+        return rowData;
     }
 
     /**
      * CSVダウンロード画面表示処理プロセスを実行します。 リクエストパラメータから検索対象年月を取得し、このクラスオブジェクトに保持します。
      * executeDisp_RDownloadView
      */
-    private void actionExecuteDispRDownloadView(String baseDate,PsDBBean psDBBean,TmgReferList referList){
+    public List<MoDLTypeVo> actionExecuteDispRDownloadView(String baseDate,PsDBBean psDBBean){
 
         List<MoDLTypeVo> moDLTypeVoList = iMastGenericDetailService.selectTmgMoDLType(psDBBean.getCustID(), psDBBean.getCompCode()
                                                                                             ,psDBBean.getLanguage(),baseDate);
+
+        return moDLTypeVoList;
     }
 
     /**

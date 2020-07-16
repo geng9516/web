@@ -20,7 +20,7 @@ import java.util.Map;
 @Mapper
 public interface TmgUpdsKintaiMapper extends BaseMapper<TmgUpdsKintaiDO> {
 
-    Map<String, Object> selectMoUpds(@Param("columnList")List<String> columnList,
+    List<Map<String,Object>> selectMoUpds(@Param("columnList")List<String> columnList,
                                      @Param("functionID")String functionID,
                                      @Param("sectionID")String sectionID,
                                      @Param("dlTypeID")String dlTypeID,

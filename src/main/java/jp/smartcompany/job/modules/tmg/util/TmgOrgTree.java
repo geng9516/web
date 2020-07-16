@@ -276,9 +276,9 @@ public class TmgOrgTree {
     public String getTargetSectionData(String targetSectionId,int keyIndex){
         try{
             for(Iterator i = dataArray.iterator(); i.hasNext();){
-                Vector data = (Vector)i.next();
-                if(data.elementAt(DEFAULT_KEY_SECID).equals(targetSectionId)){
-                    return (String)data.elementAt(keyIndex);
+                List data = (List)i.next();
+                if(data.get(DEFAULT_KEY_SECID).equals(targetSectionId)){
+                    return (String)data.get(keyIndex);
                 }
             }
             return null;

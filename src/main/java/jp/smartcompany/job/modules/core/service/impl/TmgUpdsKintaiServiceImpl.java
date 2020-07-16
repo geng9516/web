@@ -35,7 +35,7 @@ import java.util.Map;
          * @return
          */
         @Override
-        public Map<String,Object> selectMoUpds(List<String> columnList, String functionID, String sectionID,
+        public List<Map<String,Object>> selectMoUpds(List<String> columnList, String functionID, String sectionID,
                                         String dlTypeID, String date, String custID, String compID, String lang){
                 return baseMapper.selectMoUpds(columnList,functionID,sectionID, dlTypeID, date, custID, compID, lang);
         }

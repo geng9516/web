@@ -4,9 +4,7 @@ package jp.smartcompany.controller;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.MonthlyOutputBean;
-import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotAppSectionListVo;
-import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalListVo;
-import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoYearListVo;
+import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.*;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.ResultMonthlyVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -98,6 +96,18 @@ public class MonthlyOutputController {
 
 
     /**
+     * 集計処理表示
+     *
+     */
+    @GetMapping("totalDisp")
+    public List<SectionAdminMailVo> actionExecuteDispRCalc(@RequestParam("baseDate")String baseDate
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        return  monthlyOutputBean.actionExecuteDispRCalc( baseDate, psDBBean, referList);
+    }
+
+
+    /**
      * 集計処理
      *
      */
@@ -107,4 +117,30 @@ public class MonthlyOutputController {
         TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
         return  monthlyOutputBean.actionExecuteCALCCCALC( baseDate, psDBBean, referList);
     }
+
+
+    /**
+     * ダウンロード画面表示
+     *
+     */
+    @GetMapping("downloadDisp")
+    public List<MoDLTypeVo> actionExecuteDispRDownloadView(@RequestParam("baseDate")String baseDate
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return  monthlyOutputBean.actionExecuteDispRDownloadView( baseDate, psDBBean);
+    }
+
+    /**
+     * ダウンロード画面表示
+     *
+     */
+    @GetMapping("downloadFile")
+    public void actionexecuteDownloadCDownload(@RequestParam("checkValue")boolean checked,
+                                               @RequestParam("baseDate")String baseDate,
+                                               @RequestParam("sRetroFlg")String sRetroFlg,
+                                               @RequestParam("dlTypeId")String dlTypeId,
+                                               @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList =new TmgReferList(psDBBean,"MonthlyOutput",baseDate,TmgReferList.TREEVIEW_TYPE_DIVLIST,true);
+        monthlyOutputBean.actionexecuteDownloadCDownload(checked, baseDate,sRetroFlg ,dlTypeId,psDBBean,referList);
+    }
+
 }

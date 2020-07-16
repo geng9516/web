@@ -4,11 +4,11 @@
 
     <select id="selectMoUpds" resultType="java.util.Map" statementType="STATEMENT">
         SELECT
-            <foreach collection="list" item="columnList" index="index" open="" separator="," close="">
+            <foreach collection="columnList" item="columnList" index="index" open="" separator="," close="">
                 ${columnList}
             </foreach>
         FROM
-            TABLE(${functionID}(${sectionID},${dlTypeID},${date},${custID},${compID},${lang}))
+            TABLE(${functionID}('${sectionID}','${dlTypeID}','${date}','${custID}','${compID}','${lang}'))
             ;
     </select>
 </mapper>

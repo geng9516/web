@@ -875,11 +875,11 @@
         FROM
             TMG_V_MGD_MORETRO_LAYOUT
         WHERE
-            MGD_CCUSTOMERID = #{custID}
-        AND MGD_CCOMPANYID_CK_FK = #{compID}
+            MGD_CCUSTOMERID = #{custId}
+        AND MGD_CCOMPANYID_CK_FK = #{compId}
         AND MGD_CLANGUAGE_CK = #{lang}
-        AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
-        AND MGD_DEND >= #{date}
+        AND MGD_DSTART_CK <![CDATA[<=]]> #{targetDate}
+        AND MGD_DEND >= #{targetDate}
         AND MGD_CDLTYPEID = #{dlTypeID}
         ORDER BY
             MGD_NSEQ;
