@@ -1019,15 +1019,6 @@ public class TmgScheduleBean {
     }
 
     /**
-     * [出張]汎用マスタより出張区分コンボボックスの選択値を取得します
-     *
-     * @return
-     */
-    private List<HashMap<String, Object>> selectBusinessTrip() {
-        return iTmgScheduleService.selectBusinessTrip(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
-    }
-
-    /**
      * 勤務パターンテーブルより勤務パターンコンボボックスの選択値を取得します.(一括指定用)
      *
      * @param sectionid
@@ -1036,6 +1027,15 @@ public class TmgScheduleBean {
      */
     private List<HashMap<String, Object>> selectWorkPatternIkkatu(String sectionid, String groupid) {
         return iTmgScheduleService.selectWorkPatternIkkatu(_targetCompCode, _targetCustCode, sectionid, groupid, _baseDate);
+    }
+
+    /**
+     * [出張]汎用マスタより出張区分コンボボックスの選択値を取得します
+     *
+     * @return
+     */
+    private List<HashMap<String, Object>> selectBusinessTrip() {
+        return iTmgScheduleService.selectBusinessTrip(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
     }
 
     /**
@@ -1052,12 +1052,12 @@ public class TmgScheduleBean {
         String groupid = referList.getTargetGroup();
 
         if ("".equals(sectionid) || null == sectionid) {
-            logger.error("sectionidが空です");
+            logger.warn("sectionidが空です");
             return null;
         }
         if ("".equals(groupid) || null == groupid) {
-            logger.error("groupIdが空です");
-            return null;
+            logger.warn("groupIdが空です");
+            groupid = "null";
         }
 
         //[区分]
@@ -1476,6 +1476,7 @@ public class TmgScheduleBean {
 
         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO1);
+        System.out.println("予定作成jsonフォーマット:\n" + JSONUtil.parseArray(tmgWeekPatternCheckDTOList).toString());
 
         return tmgWeekPatternCheckDTOList;
     }
@@ -1483,12 +1484,16 @@ public class TmgScheduleBean {
 
     /**
      * 週勤務パターン登録画面　登録処理
+     *
+     * @param content
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void executeMakeWeekPattern_UWPtn() {
+    public void executeMakeWeekPattern_UWPtn(String content) {
 
         //画面から(暫くは　フェイクデータ)
         List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = this.loadTmgWeekPatternCheckDTOData();
+
+
 
         String _errCode = "0";
         /**
