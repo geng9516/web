@@ -70,10 +70,44 @@ const Utils = {
     let newObj = obj instanceof Array ? [] : {}
     for (let key in obj) {
       if (obj.hasOwnProperty(key)) {
-        newObj[key] = typeof obj[key] === 'object' ? Utils.deepClone(obj[key]) : obj[key]
+        newObj[key] = typeof obj[key] === 'object' ? this.deepClone(obj[key]) : obj[key]
       }
     }
     return newObj
+  },
+  /**
+   * 时间check和自动转换
+   * 715 -> 7:15, 1005 -> 10:05 自动加冒号
+   * 360 -> 4:00, 1487 -> 15:27  分钟正确进位小时
+   * 使用方法:　在你的on-blur / on-change 的时候传入更新用value的对应对象引用, 键名, $el
+   *          你可以保存该返回值, 在对应文件中点击更新按钮时再次弹出提醒
+   * @param obj 对象引用
+   * @param name 属性键名
+   * @param el element
+   * @returns 是否通过了时间check, false为未通过
+   */
+  checkTime(object, name,el) {
+    if (!object[name]) {
+      return true
+    }
+    const regExp1 = /^[0-9]{1,2}:[0-9]{2}$/g
+    const regExp2 = /^[0-9]{3,4}$/g
+    if (regExp1.test(object[name]) || regExp2.test(object[name])) {
+      // 兼容三位和四位的输入
+      const minutes = this.timeToMinute(object[name])
+      // 统一格式化为变成HH:MM
+      const handleTime = Vue.filter('handleTime')
+
+      object[name] = handleTime(+minutes)
+      return true
+    }
+    el.focus()
+    Vue.prototype.$Notice.error({
+      title: '注意',
+      desc: '時刻をHH:MM形式で入力してください',
+      duration: 6.5
+    })
+    return false
   },
   /**
    * 将不规范的JSON规范化
