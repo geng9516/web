@@ -201,10 +201,11 @@ public class ScheduleController {
     @ResponseBody
     public void executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
                                              @RequestParam("txtEndDate") String txtEndDate,
+                                             @RequestParam("content") String content,
                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-        tmgScheduleBean.executeMakeWeekPattern_UWPtn();
+        tmgScheduleBean.executeMakeWeekPattern_UWPtn(content);
     }
 
     /**
