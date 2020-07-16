@@ -138,4 +138,12 @@
                and d.tda_cemployeeid = #{employeeId}
     </select>
 
+    <!-- エラーメッセージを取得する -->
+    <select id="selectErrMsg" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tmg_f_check_timepunch( #{employeeId}, to_date(#{targetDate}, 'yyyy/mm/dd'), #{timepunch},#{custId}, #{compCode}) as checkMsg from dual
+    </select>
+
+
+
+
 </mapper>

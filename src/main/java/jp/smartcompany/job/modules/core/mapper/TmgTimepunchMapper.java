@@ -87,8 +87,17 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
 
     /**
      * 予定データ取得
+     *
      * @return
      */
     ScheduleInfoDTO selectScheduleInfo(HashMap<String, Object> params);
+
+    /**
+     * エラーメッセージを取得する
+     *
+     * @param params
+     * @return
+     */
+    String selectErrMsg(HashMap<String, Object> params);
 
 }

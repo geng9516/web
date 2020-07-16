@@ -116,6 +116,7 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
 
     /**
      * 予定データ取得
+     *
      * @param custId
      * @param compCode
      * @param employeeId
@@ -124,5 +125,16 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      */
     ScheduleInfoDTO selectScheduleInfo(String custId, String compCode, String employeeId, String targetDate);
 
+    /**
+     * エラーメッセージを取得する
+     *
+     * @param employeeId
+     * @param targetDate
+     * @param timepunch
+     * @param custId
+     * @param compCode
+     * @return
+     */
+    String selectErrMsg(String employeeId, String targetDate, String timepunch, String custId, String compCode);
 
 }

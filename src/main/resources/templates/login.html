@@ -4,92 +4,291 @@
 <head th:replace="layout/header::common_header(title='ログイン',cssPaths='/pages/login.min.css')"></head>
 
 <body>
-  <div th:replace="layout/loadingBar::loadingBar"></div>
-  <div class="login">
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<div class="login">
     <Row>
-      <i-col span="16" style="transform: translate(-3%, 3%)">
-        <figure class="hero-warp" style="background-image: url('../static/svg/LoginSvg.svg')"></figure>
-      </i-col>
-      <i-col span="8">
-        <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
-          <div class="title">
-            <figure class="logo-warp" style="background-image: url('../static/svg/Logo.svg')"></figure>
-            <p class="login-time">3月15 木 9：29</p>
-          </div>
-          <div class="login-content">
-            <p class="login-label">アカウント</p>
-            <form-item class="login-item" prop="username">
-              <i-input prefix="ios-contact" v-model="login.username" @keyup.enter.native="loging" placeholder="アカウント" />
-            </form-item>
-            <p class="login-label">パスワード</p>
-            <form-item class="login-item" prop="password">
-              <i-input prefix="md-key" v-model="login.password" @keyup.enter.native="loging" placeholder="パスワード"
-                type="password" autocomplete="new-password" />
-            </form-item>
-            <Row :gutter="16" class="mt10 mb5">
-              <i-col span="12">
-                <i-button type="primary" size="large" ghost long>出勤</i-button>
-              </i-col>
-              <i-col span="12">
-                <i-button size="large" long>退勤</i-button>
-              </i-col>
-            </Row>
-            <form-item class="login-btn">
-              <i-button @click="loging" type="primary" size="large" :loading="loading" long>
-                ログイン
-              </i-button>
-            </form-item>
-          </div>
-        </i-form>
-      </i-col>
+        <i-col span="16" style="transform: translate(-3%, 3%)">
+            <figure class="hero-warp" style="background-image: url('../static/svg/LoginSvg.svg')"></figure>
+        </i-col>
+        <i-col span="8">
+            <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
+                <div class="title">
+                    <figure class="logo-warp" style="background-image: url('../static/svg/Logo.svg')"></figure>
+                    <!--                    <p class="login-time"></p>-->
+                    <!--                    <i-time class="login-time" :time="time" :interval="1" type="datetime"></i-time>-->
+                    <!--                    <Clock ref="clock"></Clock>-->
+                </div>
+                <div class="login-content">
+                    <p class="login-label">アカウント</p>
+                    <form-item class="login-item" prop="username">
+                        <i-input prefix="ios-contact" v-model="login.username" @keyup.enter.native="loging" placeholder="アカウント"/>
+                    </form-item>
+                    <p class="login-label">パスワード</p>
+                    <form-item class="login-item" prop="password">
+                        <i-input prefix="md-key" v-model="login.password" @keyup.enter.native="loging" placeholder="パスワード" type="password" autocomplete="new-password"/>
+                    </form-item>
+                    <Row :gutter="16" class="mt10 mb5">
+                        <i-col span="12">
+                            <i-button type="primary" size="large" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" ghost long>{{ clockBtn.clock }}</i-button>
+                        </i-col>
+                        <i-col span="12">
+                            <i-button size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" long>{{ clockBtn.exit }}</i-button>
+                        </i-col>
+                    </Row>
+                    <form-item class="login-btn">
+                        <i-button @click="loging" type="primary" size="large" :loading="loading" long>
+                            ログイン
+                        </i-button>
+                    </form-item>
+                </div>
+            </i-form>
+        </i-col>
     </Row>
-  </div>
-  <div th:replace="layout/script::common_script"></div>
-  <script type="text/babel" data-presets="latest">
+</div>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" data-presets="latest">
     const login = new Vue({
-      el: '.login',
-      data() {
-        return {
-          userCode: '',
-          password: '',
-          login: {
-            username: '',
-            password: ''
-          },
-          loading: false,
-          ruleValidate: {
-            username: [
-              {
-                required: true,
-                message: '社員コードを入力してください',
-                trigger: 'blur'
-              }
-            ],
-            password: [
-              {
-                required: true,
-                message: 'パスワードを入力してください',
-                trigger: 'blur'
-              }
-            ]
-          }
+        el: '.login',
+        //components: {Clock},
+        data() {
+            return {
+                time: (new Date()).getTime(),
+                userCode: '',
+                password: '',
+                login: {
+                    username: '',
+                    password: ''
+                },
+                loading: false,
+                clocking: false,
+                exiting: false,
+                clockBtn: {
+                    clock: '出勤',
+                    exit: '退勤'
+                },
+                clockData:{
+                    startTime:'',
+                    endTime:''
+                },
+                ruleValidate: {
+                    username: [
+                        {
+                            required: true,
+                            message: '社員コードを入力してください',
+                            trigger: 'blur'
+                        }
+                    ],
+                    password: [
+                        {
+                            required: true,
+                            message: 'パスワードを入力してください',
+                            trigger: 'blur'
+                        }
+                    ]
+                },
+                timeCount: {
+                    year: 0,
+                    month: 0,
+                    date: 0,
+                    hour: 0,
+                    minu: 0,
+                    seco: 0,
+                    week: '',
+                    serverTime: ''
+                }
+            }
+        },
+        async mounted() {
+            // await this.getData()
+            // this.$refs.clock.showTime()
+            // await this.nowTime()
+        },
+        beforeDestroy() {
+            // this.$refs.clock.cleanClock()
+        },
+        methods: {
+            //undefined チェックする
+            valid_ifnull(title, msg) {
+                if (!msg) {
+                    this.$Notice.warning({title: 'ログインチェック', desc: title + 'を入力してください'})
+                    return false
+                }
+                return true
+            },
+            //form check
+            formCheck() {
+                var isPass = true
+                if (!this.valid_ifnull('アカウント', this.login.username)) {
+                    isPass = false
+                    return
+                }
+                if (!this.valid_ifnull('パスワード', this.login.password)) {
+                    isPass = false
+                    return
+                }
+                return isPass
+            },
+            loging: Debounce(async function () {
+                var isPass = this.formCheck()
+                if (isPass) {
+                    this.loading = true
+                    try {
+                        // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
+                        await this.http.postForm('/login', this.login)
+                        location.href = "/login";
+                    } catch (error) {
+                        this.loading = false
+                    }
+                    // 因为直接跳页, 所以不需要取消loading
+                }
+            }),
+
+            //打刻
+            async clock(pAction) {
+                var isPass = this.formCheck()
+                if (isPass) {
+                    if (pAction) {
+                        if (pAction === "ACT_EXEC_OPEN") {
+                            //出勤
+                            if(this.clockData.startTime){
+                                // 出勤打刻した場合、もう一度打刻できない
+                                this.$Notice.info({title: '打刻情報', desc: "今日はもう打刻しました"})
+                                return
+                            }
+                            this.clocking = true
+                        }
+                        if (pAction === "ACT_EXEC_CLOSE") {
+                            //退勤
+                            this.exiting = true
+                        }
+                        const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
+                        console.log(data)
+                        if (data) {
+                            //チェック合格
+                            if (data.resultCode === "0") {
+                                //打刻成功(0)
+                                if (pAction === "ACT_EXEC_OPEN") {
+                                    this.clockData.startTime = data.clockTime
+                                    this.clockBtn.clock = '出勤(' + data.clockTime + ')'
+                                    this.$Notice.info({title: '打刻情報', desc: "今日も一日頑張りましょう"})
+                                    this.$Modal.confirm({
+                                        title: '操作確認',
+                                        content: '打刻は終わりました、ホームページへ遷移しますか？',
+                                        okText: '遷移',
+                                        cancelText: 'いいえ',
+                                        onOk: async () => {
+                                            this.loging()
+                                        },
+                                        onCancel: () => {
+
+                                        }
+                                    })
+                                } else {
+                                    this.clockData.endTime = data.clockTime
+                                    this.clockBtn.exit = '退勤(' + data.clockTime + ')'
+                                    this.$Notice.info({title: '打刻情報', desc: "今日も一日お疲れ様でした"})
+                                }
+                            } else {
+                                //打刻失敗(10,20,30)
+                                this.$Notice.warning({title: '打刻エラー', desc: "エラーコード:" + data.resultCode + "  エラーメッセージ：" + data.resultMsg})
+                            }
+                        } else {
+                            //チェック不合格
+                            this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
+                        }
+                    } else {
+                        //
+                        this.$Notice.warning({title: '打刻エラー', desc: "パラメータが不正です"})
+                    }
+                    this.clocking = false
+                    this.exiting = false
+                }
+            },
+            nowTime() {
+                //1.先ずは、サーバー時間を取得する
+                var serverTime = "2020/07/15 18:50"
+                var reg = /-/g
+                var serverTime_date = new Date(serverTime.replace(reg, "/"))
+                this.year = serverTime_date.getFullYear()
+                this.month = serverTime_date.getMonth() + 1
+                this.date = serverTime_date.getDate()
+                this.hour = serverTime_date.getHours()
+                this.minu = serverTime_date.getMinutes()
+                this.seco = serverTime_date.getSeconds()
+                this.week = '日月火水木金土'.charAt(serverTime_date.getDay())
+                //2.
+                setInterval("this.serverTimeOper", 2000)
+                // this.serverTimeOper()
+                //setInterval(this.serverTimeOper, 1000)
+                //console.log(this.timeCount.serverTime)
+            },
+            //サーバー時間を更新
+            serverTimeOper() {
+                this.seco++;
+                if (this.seco == 60) {
+                    this.minu += 1
+                    this.seco = 0
+                }
+                if (this.minu == 60) {
+                    this.hour += 1
+                    this.minu = 0
+                }
+                if (this.hour == 24) {
+                    this.date += 1
+                    this.hour = 0
+                }
+                //日期处理
+                if (this.month == 1 || this.month == 3 || this.month == 5 || this.month == 7 || this.month == 8 || this.month == 10 || this.month == 12) {
+                    if (this.date == 32) {
+                        this.date = 1
+                        this.month += 1
+                    }
+                } else if (this.month == 4 || this.month == 6 || this.month == 9 || this.month == 11) {
+                    if (this.date == 31) {
+                        this.date = 1
+                        this.month += 1
+                    }
+                } else if (this.month == 2) {
+                    if (this.year % 4 == 0 && this.year % 100 != 0) {//闰年处理
+                        if (this.date == 29) {
+                            this.date = 1
+                            this.month += 1
+                        }
+                    } else {
+                        if (this.date == 28) {
+                            this.date = 1
+                            this.month += 1
+                        }
+                    }
+                }
+                if (this.month == 13) {
+                    this.year += 1
+                    this.month = 1
+                }
+                var sseco = this.addZero(this.seco)
+                var sminu = this.addZero(this.minu)
+                var shour = this.addZero(this.hour)
+                var sdate = this.addZero(this.date)
+                var smonth = this.addZero(this.month)
+                var syear = this.year
+                var cur = syear + "-" + smonth + "-" + sdate + " " + shour + ":" + sminu + ":" + sseco + " " + this.week;
+                console.log("今日は；" + cur)
+                //setTimeout(this.serverTimeOper(), 1000)
+            },
+            //"0"を追加する
+            addZero(num) {
+                num = Math.floor(num)
+                return ((9 >= num) ? ("0" + num) : num)
+            },
+            getData() {
+                /*   localStorage.setItem('Mobile_Sever_Time', Date.now())
+                   localStorage.setItem('Mobile_Local_Time', Date.now())
+                   this.timeCount.serverTime = Date.now()
+                   console.log(this.timeCount.serverTime)*/
+            },
         }
-      },
-      methods: {
-        loging: Debounce(async function () {
-          this.loading = true
-          try {
-            // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
-            await this.http.postForm('/login', this.login)
-            location.href = "/login";
-          } catch (error) {
-            this.loading = false
-          }
-          // 因为直接跳页, 所以不需要取消loading
-        })
-      }
     })
-  </script>
+</script>
 </body>
 
 </html>

@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -86,6 +87,11 @@ public class TmgTimePunchBean {
     private final String DUTYHOURS_KEY = "COL1";
 
     /**
+     * 打刻反映処理
+     */
+    private final String Cn_PHASE_SET_TIMEPUNCH = "500";
+
+    /**
      * パラメータを初期化する
      */
     public void setExecuteParameters(String pBaseDate, PsDBBean psDBBean) {
@@ -128,6 +134,7 @@ public class TmgTimePunchBean {
         iTmgTimepunchService.insertTmgTrgger(custId, compCode, employeeId, minDate, maxDate, modifierprogramid);
     }
 
+
     /**
      * TMG_TRIGGERへDELETEする
      *
@@ -148,66 +155,156 @@ public class TmgTimePunchBean {
      * @param psAction ホムページから打刻の場合、ログインしない状況が可能ですから、このパラメータが必要です
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public boolean execTimePunch(String employeeId, String psAction) {
-        logger.info("打刻タスクが始めます...");
+    public boolean clock(String employeeId, String custId, String compId, String psAction) {
         boolean result = false;
-        String custId = psDBBean.getCustID();
-        String compCode = psDBBean.getCompCode();
-        if (null == employeeId || "".equals(employeeId)) {
-            //ホムページから打刻の場合、ログインしない状況が可能ですから、このパラメータが必要です
-            employeeId = psDBBean.getUserCode();
-        }
-        if (null == psAction || "".equals(psAction)) {
-            if (null != psDBBean.getRequestHash().get("txtAction") || "".equals(psDBBean.getRequestHash().get("txtAction"))) {
-                psAction = psDBBean.getRequestHash().get("txtAction").toString();
-            } else {
-                logger.warn("psDBBean中でtxtActionが空です");
-            }
-        }
-        this.insertTmgTimePunch(custId, compCode, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-        this.insertTmgTrgger(custId, compCode, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
-        this.deleteTmgTrgger(custId, compCode, employeeId, psAction);
-        logger.info("打刻タスクがおまりました...");
+        this.insertTmgTimePunch(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+        this.insertTmgTrgger(custId, compId, employeeId, Cs_MINDATE, Cs_MAXDATE, psAction);
+        this.deleteTmgTrgger(custId, compId, employeeId, psAction);
         result = true;
         return result;
     }
 
     /**
-     * 打刻画面表示判断
+     * 打刻処理
+     *
+     * @param employeeId
+     * @param custId
+     * @param compId
+     * @param psAction
+     * @return
+     */
+    public ClockResultVO execTimePunch(String employeeId, String custId, String compId, String psAction) {
+        logger.info("打刻タスクが始めます...");
+        ClockResultVO clockResultVO = new ClockResultVO();
+        String resultMsg = "";
+        String resultCode = "10";
+        boolean isPass = true;
+        //1、パラメータをチェックする
+        if (null == psDBBean) {
+            logger.info("ログインしなかった");
+        } else {
+            //ログインしたら、psDBBeanからパラメータを取得する
+            employeeId = psDBBean.getEmployeeCode();
+            custId = psDBBean.getCustID();
+            compId = psDBBean.getCompCode();
+        }
+
+        if (null == employeeId || "".equals(employeeId)) {
+            isPass = false;
+            resultMsg = "社員番号が空です";
+            logger.warn(resultMsg);
+        }
+        if (null == custId || "".equals(custId)) {
+            isPass = false;
+            resultMsg = "顧客番号が空です";
+            logger.warn(resultMsg);
+        }
+        if (null == compId || "".equals(compId)) {
+            isPass = false;
+            resultMsg = "会社コードが空です";
+            logger.warn(resultMsg);
+        }
+        if (null == psAction || "".equals(psAction)) {
+            isPass = false;
+            resultMsg = "打刻タイプが空です";
+            logger.warn(resultMsg);
+        }
+        if (!psAction.equals(ACT_EXEC_OPEN) && !psAction.equals(ACT_EXEC_CLOSE)) {
+            isPass = false;
+            resultMsg = "打刻タイプが不正です";
+            logger.warn(resultMsg);
+        }
+        if(isPass){
+            //2、打刻をしますかとしないか
+            String gsToday = this.getTimePunchday(custId, compId, employeeId);
+            boolean isVIP = this.isNotTimePunch(custId, compId, employeeId, gsToday);
+            String clockTime = "";
+            if (!isVIP) {
+                //3、打刻する
+                boolean flag = this.clock( employeeId,custId, compId,psAction);
+                clockTime = DateUtil.format(new Date(), "HH:mm");
+                clockResultVO.setClockTime(clockTime);
+                if (flag) {
+                    //4、打刻結果メッセージを取得する
+                    String checkMsgJson = this.getCheckMsg(custId, compId, employeeId);
+                    if (null != checkMsgJson && !"".equals(checkMsgJson)) {
+                        //結果メッセージはjsonフォマードですから、解析が必要です
+                        logger.info("checkMsgJson:" + checkMsgJson);
+                        if (JSONUtil.isJson(checkMsgJson)) {
+                            JSONObject jsonObject = JSONUtil.parseObj(checkMsgJson);
+                            if (null != jsonObject.get("ERRCODE")) {
+                                resultCode = jsonObject.get("ERRCODE").toString();
+                            }
+                            if (null != jsonObject.get("ERRMSG")) {
+                                resultMsg = jsonObject.get("ERRMSG").toString();
+                            }
+                        } else {
+                            resultCode = "0";
+                            resultMsg = "打刻完了しました";
+                        }
+                    } else {
+                        resultCode = "0";
+                        resultMsg = "打刻完了しました";
+                    }
+                } else {
+                    resultCode = "30";
+                    resultMsg = "打刻時に、内部エラーが発生しました";
+                }
+
+            } else {
+                //打刻しない
+                resultMsg = "当社員が打刻しない";
+            }
+        }
+
+        clockResultVO.setCompanyId(compId);
+        clockResultVO.setCustomerId(custId);
+        clockResultVO.setEmployeeId(employeeId);
+        clockResultVO.setResultCode(resultCode);
+        clockResultVO.setResultMsg(resultMsg);
+
+        logger.info("打刻タスクが終わりました...");
+        return clockResultVO;
+    }
+
+    /**
+     * 打刻画面表示判断（打刻しない場合、打刻画面を表示しない」）
      *
      * @param employeeId ホムページから打刻の場合、ログインしない状況が可能ですから、このパラメータが必要です
      * @return
      */
-    public boolean isNotTimePunch(String employeeId) {
-        String custId = psDBBean.getCustID();
-        String compCode = psDBBean.getCompCode();
-        if (null == employeeId || "".equals(employeeId)) {
-            employeeId = psDBBean.getUserCode();
-        }
-        String gsToday = "";
+    public boolean isNotTimePunch(String custId, String compCode, String employeeId, String gsToday) {
 
-        String sType = psDBBean.getSystemProperty("TMG_TIMEPUNCH_TYPE");
-        if (this.isEmpty(sType) || sType.equalsIgnoreCase("company")) {
-            BaseTimesDTO baseTimesDTO = iTmgTimepunchService.selectBaseTimes(custId, compCode);
-            // 更新条件用、更新値用の日付情報を作成する
-            if (Integer.parseInt(baseTimesDTO.getSNow()) < Integer.parseInt(baseTimesDTO.getSTosStartMinutesday())) {
-                // 本日日付 - 1日の日付を設定する
-                gsToday = baseTimesDTO.getSYesterday();
-            } else {
-                // 本日日付を設定する
-                gsToday = baseTimesDTO.getSToday();
-            }
-        } else {
-            gsToday = iTmgTimepunchService.selectBaseTimesWithPattern(custId, compCode, employeeId);
+        if (null != gsToday) {
+            logger.warn("打刻更新日が取得していない");
+            return false;
         }
-
         String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
         if (null == ret || "".equals(ret)) {
             return false;
         }
-
         return NOT_TIMEPUNCH_TARGET.equals(ret);
     }
+
+    /**
+     * 打刻画面表示判断（打刻しない場合、打刻画面を表示しない」）
+     *
+     * @param employeeId ホムページから打刻の場合、ログインしない状況が可能ですから、このパラメータが必要です
+     * @return
+     */
+    public boolean isNotTimePunch(String custId, String compCode, String employeeId) {
+        String gsToday = this.getTimePunchday(custId, compCode, employeeId);
+        if (null != gsToday) {
+            logger.warn("打刻更新日が取得していない");
+            return false;
+        }
+        String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
+        if (null == ret || "".equals(ret)) {
+            return false;
+        }
+        return NOT_TIMEPUNCH_TARGET.equals(ret);
+    }
+
 
     /**
      * 出勤日数  出勤時間  超過勤務時間   年次休暇  取得する
@@ -404,6 +501,68 @@ public class TmgTimePunchBean {
             return TmgUtil.Cs_MGD_TMG_TPTYPE_02;
         }
 
+    }
+
+    /**
+     * 打刻更新日を取得し返却する
+     *
+     * @return String 打刻更新日
+     * @throws Exception
+     */
+    private String getTimePunchday(String custId, String compCode, String employeeId) {
+        String gsToday = null;
+        String sToday = "";
+        String sYesterday = "";
+        String sNow = "";
+        String sStartMinutes = "";
+        String sType = "";
+        if (null != psDBBean) {
+            sType = psDBBean.getSystemProperty("TMG_TIMEPUNCH_TYPE");
+        } else {
+            sType = "employees";
+        }
+        if (this.isEmpty(sType) || sType.equalsIgnoreCase("company")) {
+            BaseTimesDTO baseTimesDTO = iTmgTimepunchService.selectBaseTimes(custId, compCode);
+            if (null != baseTimesDTO) {
+                sToday = baseTimesDTO.getSToday();
+                sYesterday = baseTimesDTO.getSYesterday();
+                sNow = baseTimesDTO.getSNow();
+                sStartMinutes = baseTimesDTO.getSTosStartMinutesday();
+                // 更新条件用、更新値用の日付情報を作成する
+                if (Integer.parseInt(sNow) < Integer
+                        .parseInt(sStartMinutes)) {
+                    // 本日日付 - 1日の日付を設定する
+                    gsToday = sYesterday;
+                } else {
+                    // 本日日付を設定する
+                    gsToday = sToday;
+                }
+            } else {
+                logger.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました");
+            }
+        } else {
+            gsToday = iTmgTimepunchService.selectBaseTimesWithPattern(custId, compCode, employeeId);
+        }
+        return gsToday;
+    }
+
+    /**
+     * エラーチェック結果の取得
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return errMsg JSON 文字
+     */
+    private String getCheckMsg(String custId, String compCode, String employeeId) {
+        String targetDate = this.getTimePunchday(custId, compCode, employeeId);
+        String checkMsg = "";
+        if (null != targetDate) {
+            checkMsg = iTmgTimepunchService.selectErrMsg(employeeId, targetDate, this.Cn_PHASE_SET_TIMEPUNCH, custId, compCode);
+        } else {
+            logger.warn("打刻更新日を取得しない");
+        }
+        return checkMsg;
     }
 
 
