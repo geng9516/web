@@ -23,7 +23,7 @@
             <div class="searchwrap">
                 <span class="label">年</span>
                 <date-picker class="mar" v-model="curDate" type="year" :editable="false" :clearable="false"
-                    format="yyyy年"></date-picker>
+                    format="yyyy年"  @on-change="handleDatePicker" ></date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="content_body">
-            <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading">
+            <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
 
                 <template slot-scope="{ row }" slot="approval" v-if="row.notApproval === 1 ">
                     <i-button type="primary" ghost size="small" long @click="notApprovalList(row.yyyymm)">未承認者状況</i-button>
@@ -160,7 +160,7 @@
                 <i-button type="primary" class="mt2" @click="totalStart"　:disabled="totalDisabled">実行</i-button>
             </div>
             <Alert class="primary-info lb tl">{{ message }}</Alert>
-            <i-table border :columns="totalCol" :data="totalData">
+            <i-table border :columns="totalCol" :data="totalData" no-data-text="無">
             </i-table>
             <div slot="footer"></div>
         </Modal>
@@ -561,7 +561,13 @@
                         return
                     }
                 },
-
+                handleDatePicker() {
+                    if (this.deptName !== '選んでください') {
+                        this.getData()
+                        return
+                    }
+                    this.$Notice.warning({ title: '所属を選択して下さい' })
+                },
                 async notAprSec(e) {
                     if (e != null) {
                         this.opts.baseDate = e.concat('/01')

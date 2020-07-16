@@ -283,10 +283,10 @@ public class MonthlyOutputBean {
             List<Object> rowTilte = CollUtil.newArrayList();
             for (String col:tmgMoRetroLayout) {
                 String value;
-                if(StrUtil.hasEmpty(String.valueOf(map.get(col)))){
-                    value=CSV_CONCAT1+StringUtils.defaultString("")+CSV_CONCAT1;
-                }else{
+                if(map.get(col) != null){
                     value= CSV_CONCAT1+String.valueOf(map.get(col))+CSV_CONCAT1;
+                }else{
+                    value=CSV_CONCAT1+StringUtils.defaultString("")+CSV_CONCAT1;
                 }
                 rowTilte.add(value);
             }

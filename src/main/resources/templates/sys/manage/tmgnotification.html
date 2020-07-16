@@ -642,7 +642,7 @@
               this.loading = true
               await this.http.uploadFiles('sys/vapply/MakeApply', {
                 params: JSON.stringify(query),
-                psSite: this.referListObject.psSite
+                psSite: this.referListObject.psSite,
               })
 
               this.getTableData(false, true)
