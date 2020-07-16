@@ -538,7 +538,8 @@
                     if(e[0].children) return
 
                     this.deptDrawShow = false
-                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
+
                     this.referListObject[section] = e[0].secid
                     this.loginEmployee = e[0].empid
                     this.deptName = e[0].secnic

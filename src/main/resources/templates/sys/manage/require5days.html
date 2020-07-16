@@ -1,10 +1,780 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='年5日有給指定',cssPaths='/pages/content.min.css,' + '/pages/tmgacquired5daysholiday.min.css')">
 </head>
+
 <body>
-年5日時季指定取得確認
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main class="content tmgacquired5daysholiday-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{  '年5日有給指定' }}
+                </h1>
+            </div>
+        </div>
+        <div class="searchwrap" >
+            <div class="titlenorm mt15" >
+                <span class="label">年度</span>
+                <date-picker type="year" :value="query.year"
+                             :disabled = "!yearShow"
+                             class="mb5" placeholder="" format="yyyy年" ref="datePicker"
+                             @on-change="handleYearChange">
+                </date-picker>
+            </div>
+            <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                              style="width: calc(100% - 120px);border-radius:0">
+                        {{ deptName }}
+                    </i-button>
+                <!-- 共通組織図画面 start-->
+                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                  <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                   <tab-pane label="ツリー" name="organisationTree">
+                       <div class="titlenorm mb5">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Row class="tl mb5">
+                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="7" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                            </i-col>
+                        </Row>
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし">
+                        </Tree>
+                   </tab-pane>
+                   <tab-pane label="検索" name="organisationSearch">
+                        <Row class="tl mb2" :gutter="8">
+                            <i-col span="15">
+                                <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">
+                                    <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px" placeholder="項目">
+                                        <i-option v-for="(item,i) of searchTypesList" :value="item.value">{{ item.name }}</i-option>
+                                    </i-select>
+                                    <i-select v-model="referListObject.hidSearchCondition"  slot="append" style="width: 108px" placeholder="条件">
+                                        <i-option v-for="(item,i) of searchConditionsList" :value="item.value">{{ item.name }}</i-option>
+                                    </i-select>
+                                </i-input>
+                            </i-col>
+                            <i-col span="8" class="no-border-radius">
+                                <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" style="width: 100px" @click="searchOrgTree">検索</i-button>
+                            </i-col>
+                        </Row>
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Spin size="large" fix v-if="emplistLoading"></Spin>
+                        </div>
+                   </tab-pane>
+                  </Tabs>
+                </Drawer>
+                <!-- 共通組織図画面 end-->
+                </span>
+            <span style="flex:1"></span>
+        </div>
+    </div>
+    <div class="content_body">
+        <i-table class="long-table" border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
+                 :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)">
+            <template slot-scope="{ row }" slot="vactionGiveDay">
+                <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="paidDays">
+                <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="lackDays">
+                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="season">
+                <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row)" v-if="row.detailshow">詳細</i-button>
+                <span v-else> - </span>
+            </template>
+        </i-table>
+        <Modal v-model="isShow" title="年5日時季指定取得確認" width="950" @on-cancel="cancel" :mask-closable="false"
+               footer-hide>
+            <div>
+                <Row :gutter="10">
+                    <i-col span="8">
+                        <div class="label">所属</div>
+                        <div class="person-info">{{ privateInfo.deptName }}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label">氏名</div>
+                        <div class="person-info">{{ privateInfo.name }}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label">種別</div>
+                        <div class="person-info">{{ privateInfo.workType }}</div>
+                    </i-col>
+                </Row>
+            </div>
+            <div class="tr mt20 mb20" v-if="!isSeason">
+                <i-button type="success" @click="register" ghost class="mr15 width15">登録</i-button>
+                <i-button type="success" @click="clear" ghost class="mr15 width15">初期化</i-button>
+            </div>
+
+            <div class="titlenorm mb10" v-if="!isSeason">
+                <Icon type="logo-buffer"></Icon>
+                修正年次休暇付与内容
+            </div>
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
+                <template slot-scope="{ row }" slot="editBasedDay">
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer></date-picker>
+                </template>
+
+                <template slot-scope="{ row }" slot="adjustTakenDays">
+                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="vactionGiveDay">
+                    <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="paidDays">
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="lackDays">
+                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                </template>
+
+            </i-table>
+            <span v-if="isSeason">
+                    <div class="titlenorm mb10 mt20">
+                        <Icon type="logo-buffer"></Icon>
+                        取得状況
+                    </div>
+                    <Row :gutter="10">
+                        <i-col span="8">
+                        <div class="label">基準日</div>
+                        <div class="person-info">{{ privateInfo.taKijyunbi }}</div>
+                        </i-col>
+                        <i-col span="8">
+                        <div class="label">取得日数</div>
+                        <div class="person-info">{{ privateInfo.sumSyutokudays }}</div>
+                        </i-col>
+                    </Row>
+                    <div class="titlenorm mb10 mt20">
+                    </div>
+                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="loading" class="mb30">
+                    </i-table>
+                </span>
+        </Modal>
+    </div>
+</main>
+
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const FIVE_DAYS_HOLIDAY = new Vue({
+        el: '.tmgacquired5daysholiday-warp',
+        data() {
+            return {
+                columns: [
+                    {
+                        title: '氏名',
+                        key: 'name',
+                        width: 150,
+                        align: 'center'
+                    },
+                    {
+                        title: '種別',
+                        key: 'type',
+                        minWidth: 180,
+                        align: 'left'
+                    },
+                    {
+                        title: '年次休暇\n付与日',
+                        slot: 'vactionGiveDay',
+                        minWidth: 100,
+                        maxWidth: 200,
+                        align: 'center'
+                    },
+                    {
+                        title: '付与\n日数',
+                        width: '70',
+                        slot: 'paidDays',
+                        align: 'center'
+                    },
+                    {
+                        title: '期間内取得状況',
+                        children: [
+                            {
+                                title: '基準日',
+                                key: 'basedDay',
+                                align: 'center'
+                            },
+                            {
+                                title: 'チェック期間',
+                                key: 'checkPeriod',
+                                align: 'center'
+                            },
+                            {
+                                title: '取得日数',
+                                key: 'takenDays',
+                                align: 'center'
+                            },
+                            {
+                                title: '必要日数',
+                                key: 'mustDays',
+                                align: 'center'
+                            },
+                            {
+                                title: '不足日数',
+                                className: 'checkin',
+                                slot: 'lackDays',
+                                align: 'center'
+                            }
+                        ]
+                    },
+                    {
+                        title: '時季',
+                        width: 120,
+                        slot: 'season',
+                        align: 'center'
+                    }
+                ],
+                paidColums: [
+                    {
+                        title: '年次休暇\n付与日',
+                        slot: 'vactionGiveDay',
+                        minWidth: 100,
+                        maxWidth: 200,
+                        align: 'center'
+                    },
+                    {
+                        title: '付与\n日数',
+                        width: 70,
+                        slot: 'paidDays',
+                        align: 'center'
+                    },
+                    {
+                        title: '期間内取得状況',
+                        children: [
+                            {
+                                title: '基準日',
+                                key: 'basedDay',
+                                align: 'center'
+                            },
+                            {
+                                title: '修正基準日',
+                                className: 'checkin',
+                                slot: 'editBasedDay',
+                                width: 140,
+                                align: 'center'
+                            },
+                            {
+                                title: 'チェック\n期間',
+                                key: 'checkPeriod',
+                                align: 'center'
+                            },
+                            {
+                                title: '取得\n日数',
+                                key: 'editTakenDays',
+                                width: 70,
+                                align: 'center'
+                            },
+                            {
+                                title: '調整\n取得日数',
+                                className: 'checkin',
+                                width: 100,
+                                slot: 'adjustTakenDays',
+                                align: 'center'
+                            },
+                            {
+                                title: '必要\n日数',
+                                key: 'mustDays',
+                                width: 70,
+                                align: 'center'
+                            },
+                            {
+                                title: '不足\n日数',
+                                className: 'checkin',
+                                width: 70,
+                                slot: 'lackDays',
+                                align: 'center'
+                            }
+                        ]
+                    }
+                ],
+
+                paidData: [],
+                takenDaysColums: [
+                    {
+                        title: '取得日',
+                        key: 'tdaDyyyymmdd'
+                    },
+                    {
+                        title: '名称',
+                        key: 'tdaCworkingname'
+                    }
+                ],
+                takenDaysData: [],
+
+                tableHead: [],
+                tableData: [],
+                loading: false,
+                referListObject: {
+                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    hidSearchData:'',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 31
+                },
+                deptName: '選んでください',
+                query: {
+                    txtAction: 'ACT_DISP',
+                    txtDYYYYMM: '',
+                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                    page: '1',
+                    year: '',
+                    txtUserCode: null,
+                    kijunbi: '',
+                    pdSearchStart: '',
+                    pdSearchEnd: '',
+                    recordDate: '',
+                    txtDYYYYMMDD: '',
+                    hidSelectTab:'0',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewPermTargetSection: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                updateAcquired5DaysVO: {
+                    recordDate: '',
+                    txtUserCode: '',
+                    txtYear: '',
+                    kijunbi: '',
+                    kijunbiEdit: '',
+                    usedDaysEdit: '',
+                    txtUpdateflg: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewPermTargetSection: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                privateInfo: {
+                    taKijyunbi: '',
+                    sumSyutokudays: '',
+                    deptName: '',
+                    name: '',
+                    workType: ''
+                },
+                empDeptLoading: false,
+                deptDrawShow: false,
+                treeData: [],
+                yearShow: false,   　//年度表示制御
+                dispMonthlyList: [],       //年月リスト
+                model1: '',
+
+                title: '',
+                isSearchHistory: false,
+
+                // detailshow: false,
+                isSeason: false,
+                isShow: false,
+                selectedDeptViewType: 3,
+                searchTypesList: [],     //組織ツリー用
+                searchConditionsList: [],//組織ツリー用
+                empTreeData: [],        //組織ツリー用
+                emplistLoading: false,  //職員一覧ローディング用動画
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                dataLoading: false
+            }
+        },
+        async mounted() {
+            this.getOrgTree()
+            this.getSearchCondition()
+        },
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 300) return true
+                else return false
+            },
+        },
+        methods: {
+
+            async handleBtn(e) {
+                console.log(e)
+                this.privateInfo.taKijyunbi = e.basedDay
+                this.privateInfo.sumSyutokudays = e.takenDays
+
+                this.privateInfo.deptName = this.deptName
+                this.privateInfo.name = e.name
+                this.privateInfo.workType = e.type
+
+                this.query.txtUserCode = e.taCemployeeid
+                this.query.kijunbi = e.basedDay
+                this.query.pdSearchStart = e.tpDntfSurveyStart
+                this.query.pdSearchEnd = e.tpDntfSurveyEnd
+
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
+                this.takenDaysData =data
+
+                this.isShow = true
+                this.isSeason = true
+            },
+            async handleRowClick(e) {
+                console.log("handleRowClick-s")
+                console.log(e[0])
+                this.query.txtUserCode = e[0].taCemployeeid
+
+                // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
+                // this.paidData = data
+
+                this.paidData = [e[0]]
+                // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
+                // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
+                if (e[0].taKijyunbi == null) {
+                    this.paidData[0].basedDay = '-'
+                } else {
+                    this.paidData[0].basedDay = e[0].taKijyunbi
+                }
+
+                this.privateInfo.deptName = this.deptName
+                this.privateInfo.name = e[0].name
+                this.privateInfo.workType = e[0].type
+
+                const addNumDeci = Vue.filter('addNumDeci')
+                //事前に
+                this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
+                // this.updateAcquired5DaysVO.txtYear = '2020'
+                this.updateAcquired5DaysVO.kijunbi = e[0].taKijyunbi
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].editBasedDay
+                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfSyutokudaysAdjust,true)
+                console.log("this.updateAcquired5DaysVO")
+                console.log(this.updateAcquired5DaysVO)
+
+                this.isShow = true
+                this.isSeason = false
+            },
+            cancel() {
+                this.isShow = false
+            },
+            async getTableData() {
+                this.dataLoading = true
+                this.tableData = []
+
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
+                if(data.length>0){
+                    let b = data.map((e,i) => {
+                        const vactionGiveDay = [{
+                            day:e.taDyyyymmdd,
+                            isReGive: data[i].taCduplicateflg === '1'
+                        }]
+                        return {
+                            name:e.cemployeeName,
+                            type:e.workertypeNm,
+                            vactionGiveDay,
+                            paidDays:[e.taFuyodays],
+
+                            basedDay:e.taKijyunbi,
+                            checkPeriod:e.taKikanbi,
+                            takenDays:e.tpSyutokudays,
+                            mustDays:e.taMustdays,
+                            lackDays:e.taLessdays,
+
+                            editBasedDay:'',    //編集画面用_修正基準日
+                            editTakenDays:'',    //編集画面用_取得日数
+                            adjustTakenDays:'', //編集画面用_調整取得日数
+                            detailshow:true,
+
+                            cemployeeName:e.cemployeeName,
+                            sumSyutokudays:e.sumSyutokudays,
+                            taCduplicateflg:e.taCduplicateflg,
+                            taCemployeeid:e.taCemployeeid,
+                            taDyyyymmdd:e.taDyyyymmdd,
+                            taFuyodays:e.taFuyodays,
+                            taKijyunbi:e.taKijyunbi,
+                            taKikanbi:e.taKikanbi,
+                            taLessdays:e.taLessdays,
+                            taMustdays:e.taMustdays,
+                            taRowpan:e.taRowpan,
+                            tpDntfSurveyEnd:e.tpDntfSurveyEnd,
+                            tpDntfSurveyStart:e.tpDntfSurveyStart,
+                            tpSyutokudays:e.tpSyutokudays,
+                            tpfKijyunbi:e.tpfKijyunbi,
+                            tpfKikanbi:e.tpfKikanbi,
+                            tpfLessdays:e.tpfLessdays,
+                            tpfMustdays:e.tpfMustdays,
+                            tpfSyutokudays:e.tpfSyutokudays,
+                            tpfSyutokudaysAdjust:e.tpfSyutokudaysAdjust,
+                            workertypeId:e.workertypeId,
+                            workertypeNm:e.workertypeNm
+                        }
+                    })
+                    let a=[]
+                    for (var i=0;i < b.length;i++){
+                        if (b[i].taRowpan == 1) {
+                            a.push(b[i])
+                        } else if (b[i].taRowpan > 1) {
+                            a.push(b[i])
+
+                            let max = i + +b[i].taRowpan
+                            for (var j=i+1;j <  max;j++){
+                                a[i].vactionGiveDay.push(b[j].vactionGiveDay[0])
+                                a[i].paidDays.push(b[j].paidDays[0])
+                            }
+                            i = i + +b[i].taRowpan - 1
+                        }
+                    }
+                    const addNumDeci = Vue.filter('addNumDeci')
+                    //
+                    for (var i=0;i < a.length;i++){
+                        if (a[i].taKijyunbi == null && a[i].tpfKijyunbi == null){
+                            a[i].basedDay = "-"
+                            a[i].checkPeriod = "-"
+                            a[i].takenDays = "-"
+                            a[i].mustDays = "-"
+                            a[i].lackDays = "-"
+
+                            a[i].editTakenDays = "-"  //編集画面用‐取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+
+                            a[i].detailshow = false
+                        } else if (a[i].taKijyunbi != null && a[i].tpfKijyunbi == null) {
+                            a[i].basedDay = a[i].taKijyunbi
+                            a[i].checkPeriod = a[i].taKikanbi
+                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                            a[i].mustDays = a[i].taMustdays
+                            a[i].lackDays = a[i].taLessdays
+
+                            a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+
+                        } else if (a[i].tpfKijyunbi != null) {
+                            a[i].basedDay = a[i].tpfKijyunbi
+                            a[i].checkPeriod = a[i].tpfKikanbi
+                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                            a[i].mustDays = a[i].tpfMustdays
+                            a[i].lackDays = a[i].tpfLessdays
+
+                            a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
+                            a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                        }
+                    }
+                    this.tableData = a
+                    this.dataLoading = false
+                } else if(data.length == 0){
+                    this.tableData = data
+                    this.dataLoading = false
+                }
+            },
+            async getOrgTree(refreshDept) {
+                this.empDeptLoading = true
+                try {
+                    const { sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    this.treeData = Utils.convertTreeData(sectionList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                    this.empDeptLoading = false
+                }
+            },
+            async getSearchCondition() {
+                const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList= Object.keys(data.searchConditions).map(e=> { return { name:data.searchConditions[e], value:e }})
+                this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
+            },
+            searchOrgTree: Debounce( async function() {
+                this.empDeptLoading = true
+                try {
+                    const { data } = await this.http.get('sys/tree/search', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(data)
+                    this.$Notice.success({ title:'所属図更新完了' })
+                } catch (error) {
+                    return
+                } finally {
+                    this.empDeptLoading = false
+                }
+            }),
+            handleClickEmpLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                this.deptDrawShow = false
+                this.query.txtAction = 'ACT_DISP'
+                this.deptName = e[0].secnic
+                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.query.txtUserCode = e[0].empid
+                if (!this.query.year) {
+                    this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+
+                this.getTableData()
+            },
+            async handleDeptDateChange(e) {
+                this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.isSearchHistory = true
+                await this.getOrgTree()
+                this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+            },
+            async handleYearChange(e) {
+                this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
+                this.query.year = e.replace("年", "")
+                await this.getTableData()
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
+            showDay: Debounce(function () {
+                this.isShow = true
+            }),
+            toTop() {
+                const animateMachine = requestAnimationFrame(this.toTop)
+                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                if (this.$refs.layout.scrollTop === 0) {
+                    cancelAnimationFrame(animateMachine)
+                }
+            },
+            convertTreeData(treeData = []) {
+                return treeData.map(e => {
+                    const children = e.child || e.children
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            // 前两层级默认展开方便查看
+                            expand: e.data.level < 2 || !e.data.level,
+                            children: this.convertTreeData(children)
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            title: e.data.label
+                        }
+                    }
+                })
+            },
+            handleSelector() { },
+            async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if (!e[0]) return
+
+                this.deptDrawShow = false
+                this.query.txtAction = 'ACT_DISP'
+
+                const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
+                this.referListObject[section] = e[0].secid
+
+                this.deptName = e[0].label
+                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                this.query.txtUserCode = null
+
+                //初期
+                if (!this.query.year) {
+                    this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+                if (!this.updateAcquired5DaysVO.txtYear) {
+                    this.updateAcquired5DaysVO.txtYear = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+                this.yearShow = true
+                await this.getTableData()
+
+            },
+            dateFormat(e) {
+                //YYYY年MM月からYYYY/MM/01へ変換する
+                let yearMMDD = e.replace("年", "/")
+                yearMMDD = yearMMDD.replace("月", "/")
+                yearMMDD = yearMMDD + "01"
+                return yearMMDD
+            },
+            register(e) {
+                //1:登録　2:クリア
+                this.updateAcquired5DaysVO.txtUpdateflg = '1'
+
+                this.$Modal.confirm({
+                    title: '',
+                    content: '入力内容を保存します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+
+                        //年5日時季指定取得確認画面を閉じる
+                        this.isShow = false
+                        //一覧画面取得
+                        this.getTableData()
+                    },
+                    onCancel: () => {
+                    }
+                })
+            },
+            clear(e) {
+                //1:登録　2:クリア
+                this.updateAcquired5DaysVO.txtUpdateflg = '2'
+                //修正基準日を削除
+                this.updateAcquired5DaysVO.kijunbiEdit = ''
+                //調整取得日数を削除
+                this.updateAcquired5DaysVO.usedDaysEdit = ''
+
+                this.$Modal.confirm({
+                    title: '',
+                    content: '編集内容を削除します。よろしいですか？',
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+
+                        //年5日時季指定取得確認画面を閉じる
+                        this.isShow = false
+                        //一覧画面取得
+                        this.getTableData()
+                    },
+                    onCancel: () => {
+                    }
+                })
+            },
+            blur(e) {
+                this.updateAcquired5DaysVO.usedDaysEdit = e.adjustTakenDays
+            },
+            handleChangeDay(e) {
+                this.updateAcquired5DaysVO.kijunbiEdit = e
+            },
+            currentTabChanged(name) {
+                if (name=="organisationTree") {
+                    this.query.hidSelectTab='0'
+                } else if (name=="organisationTree") {
+                    this.query.hidSelectTab='1'
+                }
+            },
+        }
+    })
+</script>
 </body>
+
 </html>
