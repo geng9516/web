@@ -33,6 +33,41 @@
         </div>
     </div>
     <div class="content_body">
+        <Row :gutter="10" class="mt20 mb10">
+            <i-col span="12" v-if="bDispKinmujokyoKakunin">
+                <div class="label tc">勤務状況確認</div>
+                <div class="tl">
+                    <div class="person-info">
+                        <span class="time tl" style="width: 67%;">{{this.kinmujokyoEnd -2}}～{{this.kinmujokyoEnd}}月の勤務実績に、相違がないことを確認しました。</span>
+                        <span class="with-split" style="width: 26%;" v-if="bWorkChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 26%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 3%;" v-if="!bWorkChkStatus">
+                            <i-button type="primary" ghost size="small" @click="confWork">確認</i-button>
+                        </span>
+                    </div>
+                </div>
+            </i-col>
+            <i-col span="12" v-if="bDispKenkojotaiKakunin">
+                <div class="label tc">勤務状況確認</div>
+                <div class="tl">
+                    <div class="person-info">
+                        <span class="time tl" style="width: 67%;">健康状態に問題が生じて
+                                <i-select v-model="selHealthStatus" :disabled="bHealthChkStatus" size="small" style="width:80px">
+                                    <i-option v-for="(item, index) of selHealthStatusList" :key="index" :label="item.name" :value="item.code"></i-option>
+                                </i-select>ことを報告します。</span>
+
+                        <span class="with-split" style="width: 26%;" v-if="bHealthChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 26%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 3%;"  v-if="!bHealthChkStatus">
+                            <i-button type="primary" ghost size="small" @click="confHealth" >確認</i-button>
+                        </span>
+                    </div>
+                </div>
+            </i-col>
+        </Row>
+        <div v-if="(bDispKinmujokyoKakunin && bWorkChkStatus) || (bDispKenkojotaiKakunin && bHealthChkStatus)">
+            <span >※確定の解除を希望される場合は、所属の勤務時間管理担当部署へ連絡してください。</span>
+        </div>
 
         <div class="titlenorm mb10 " style="font-size:15px">
             <Icon type="logo-buffer"></Icon>
@@ -282,7 +317,6 @@
             return {
                 contentScrollTop: 0,
                 isScroll: false,
-
                 selectDisabled: false,   　//年月選択可否制御
                 dispMonthlyList: [],       //年月リスト
                 model1: '',
@@ -293,11 +327,23 @@
                 dailyDataList: [],
                 data: [],
                 loading: false,
+                selHealthStatus:'TMG_ONOFF|0',
+                selHealthStatusList: [
+                    {
+                        code:'TMG_ONOFF|0',
+                        name:'いない'
+                    },
+                    {
+                        code:'TMG_ONOFF|1',
+                        name:'いる'
+                    }
+                ],
                 query: {
                     txtAction: 'ACT_DISP_RMONTHLY',
                     txtDYYYYMM: '2020/04/01',
                     txtDYYYYMMDD: '',
                     today: '',
+                    selHealthStatus:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -531,7 +577,12 @@
                 overHourLimit: '',
                 otDaily:'',
                 targetForOverTime: '',
-                errMsg: []
+                errMsg: [],
+                bDispKinmujokyoKakunin:false,
+                bDispKenkojotaiKakunin:false,
+                bWorkChkStatus:false,
+                bHealthChkStatus:false,
+                kinmujokyoEnd:0
 
 
             }
@@ -670,10 +721,17 @@
             // 就業実績のタイトルとデータを取得
             async getTitleData() {
                 this.loading = true
+
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
                 this.dailyDataList = []
                 const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
+                this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
+                this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
+                this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
+                this.bHealthChkStatus = data.workHealthChkVO.bhealthChkStatus
+                this.kinmujokyoEnd = data.workHealthChkVO.kinmujokyoEnd
+                this.selHealthStatus = data.workHealthChkVO.selHealthStatus
 
                 this.monthlyTilteMapList = data.monthlyTilteMapList
                 this.monthlyMap = data.monthlyDateMap
@@ -688,6 +746,20 @@
 
                 this.dailyDataList = data.dailyMapList
                 this.loading = false
+
+            },
+            async confWork(){
+                this.query.txtAction='ACT_CONF_WORK_ON'
+                this.query.txtDYYYYMM = this.model1
+                await this.http.get('sys/tmgResults/updateWorkChk', this.query)
+                this.bWorkChkStatus = true
+            },
+            async confHealth(){
+                this.query.txtAction='ACT_CONF_HEALTH_ON'
+                this.query.txtDYYYYMM = this.model1
+                this.query.selHealthStatus= this.selHealthStatus
+                await this.http.get('sys/tmgResults/updateHealthChk', this.query)
+                this.bHealthChkStatus = true
 
             },
             //一覧から日次実績をクリックする

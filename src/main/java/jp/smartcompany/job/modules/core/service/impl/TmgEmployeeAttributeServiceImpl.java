@@ -146,5 +146,40 @@ public class TmgEmployeeAttributeServiceImpl extends ServiceImpl<TmgEmployeeAttr
         return baseMapper.buildSQLForSelectTargetForOverTime(map);
     }
 
+    /**
+     * 個人属性の指定タイプレコードの内、基準日以降に始まるレコードを削除
+     *
+     * @param custID             顧客コード
+     * @param compCode           法人コード
+     * @param targetUser         対象者
+     * @param cycleDay           基準日
+     * @param typeItemWorkStatus 　ステータス
+     */
+    @Override
+    public int buildSQLForDeleteTmgEmployeeAttribute(String custID, String compCode, String targetUser, String cycleDay, String typeItemWorkStatus) {
+
+        return baseMapper.buildSQLForDeleteTmgEmployeeAttribute(custID, compCode, targetUser, cycleDay, typeItemWorkStatus);
+    }
+
+    /**
+     * 個人属性の指定タイプレコードの、基準日で始まるレコードを追加
+     *
+     * @param custID            顧客コード
+     * @param compCode          法人コード
+     * @param targetUser        　対象者
+     * @param cycleDay1         適応期間開始
+     * @param cycleDay2         　適応期間終了
+     * @param userCode          　更新者
+     * @param modifierProgramId 更新プログラムID
+     * @param status            　ステータス
+     * @param action            action
+     * @param selHealthStatus   　健康ステータス
+     */
+    @Override
+    public int buildSQLForInsertTmgEmployeeAttribute(String custID, String compCode, String targetUser, String cycleDay1, String cycleDay2, String userCode, String modifierProgramId, String status, String action, String selHealthStatus) {
+
+        return baseMapper.buildSQLForInsertTmgEmployeeAttribute(custID, compCode, targetUser, cycleDay1, cycleDay2, userCode, modifierProgramId, status, action, selHealthStatus);
+    }
+
 
 }

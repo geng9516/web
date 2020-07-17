@@ -72,6 +72,47 @@ public class TmgResultsController {
     }
 
     /**
+     * 勤務状況チェック
+     *
+     * @param psDBBean   PsDBBean
+     * @param txtAction  アクション
+     * @param txtDYYYYMM 　対象月
+     */
+    @GetMapping("updateWorkChk")
+    @ResponseBody
+    public void updateWorkChk(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                              @RequestParam("txtAction") String txtAction,
+                              @RequestParam("txtDYYYYMM") String txtDYYYYMM) {
+        //初期化対象
+        tmgResultsBean.setMonth(txtDYYYYMM);
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+
+        tmgResultsBean.updateStatus(psDBBean, "TMG_ITEMS|WorkStatus", txtAction, null);
+    }
+
+    /**
+     * 県境状況チェック
+     *
+     * @param psDBBean   PsDBBean
+     * @param txtAction  アクション
+     * @param txtDYYYYMM 　対象月
+     * @param selHealthStatus 健康状態
+     */
+    @GetMapping("updateHealthChk")
+    @ResponseBody
+    public void updateHealthChk(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                @RequestParam("txtAction") String txtAction,
+                                @RequestParam("txtDYYYYMM") String txtDYYYYMM,
+                                @RequestParam("selHealthStatus") String selHealthStatus) {
+
+        //初期化対象
+        tmgResultsBean.setMonth(txtDYYYYMM);
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+
+        tmgResultsBean.updateStatus(psDBBean, "TMG_ITEMS|HealthStatus", txtAction, selHealthStatus);
+    }
+
+    /**
      * 就業登録画面初期化
      * @param psDBBean PsDBBean
      * @param txtDYYYYMMDD 対象日

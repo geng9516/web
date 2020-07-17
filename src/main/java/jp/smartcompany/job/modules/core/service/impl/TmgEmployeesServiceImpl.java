@@ -114,7 +114,7 @@ public class TmgEmployeesServiceImpl extends ServiceImpl<TmgEmployeesMapper, Tmg
         map.put("compId", compId);
         map.put("empId", empId);
         map.put("lang", lang);
-        map.put("month", month);
+        map.put("baseDate", month);
 
         return baseMapper.buildIsWorkHealthChk(map);
     }

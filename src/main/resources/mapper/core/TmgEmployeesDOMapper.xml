@@ -30,8 +30,8 @@
 
     <select id="buildIsWorkHealthChk" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.IsWorkHealthChkVO">
         SELECT
-            TMG_F_IS_WORKCHK_TARGET(#{custId}, #{compId}, #{empId}, TRUNC(#{baseDate,jdbcType=DATE}, 'MM'), #{lang}) as workChk,
-            TMG_F_IS_HEALTHCHK_TARGET(#{custId}, #{compId}, #{empId}, #{baseDate,jdbcType=DATE}, #{lang}) as healthChk
+            TMG_F_IS_WORKCHK_TARGET(#{custId}, #{compId}, #{empId}, TRUNC(to_date(#{baseDate},'yyyy/MM/dd'), 'MM'), #{lang}) as workChk,
+            TMG_F_IS_HEALTHCHK_TARGET(#{custId}, #{compId}, #{empId}, #{baseDate}, #{lang}) as healthChk
         FROM
             DUAL
     </select>

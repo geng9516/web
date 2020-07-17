@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -1338,7 +1339,6 @@ public class TmgResultsBean {
     /**
      * 勤務状況確認欄の使用判定変数
      */
-    // TODO 画面表示用
     private boolean isWorkChkFlg = false;
 
     /**
@@ -1362,7 +1362,6 @@ public class TmgResultsBean {
     /**
      * 健康状態確認欄の使用判定変数
      */
-    // TODO 画面表示用
     private boolean isHealthChkFlg = false;
 
     /**
@@ -1387,6 +1386,7 @@ public class TmgResultsBean {
      * 勤務状況確認欄、健康状態確認欄の使用可否設定を行います。
      */
     private void setEditableWorkHealthChk(PsDBBean psDBBean) {
+
 
         // 表示対象職員の顧客コード
         String custId = psDBBean.getTargetCust();
@@ -1417,7 +1417,6 @@ public class TmgResultsBean {
     /**
      * 勤務状況確認の確定ボタンを表示するか
      */
-    // TODO 画面判断用
     public boolean isKinmujokyoKakunin() {
         boolean retval = false;
 
@@ -1464,7 +1463,6 @@ public class TmgResultsBean {
     /**
      * 健康状況確認の確定ボタンを表示するか
      */
-    // TODO 画面判断用
     public boolean isKenkojotaiKakunin() {
         boolean retval = false;
 
@@ -1504,6 +1502,152 @@ public class TmgResultsBean {
         cDisp.set(Calendar.DAY_OF_MONTH, cDisp.getActualMaximum(Calendar.DAY_OF_MONTH) - 7);
 
         retval = cToday.compareTo(cDisp) >= 0 ? true : false;
+
+        return retval;
+    }
+
+    /** 日付形式1 */
+    private static final String FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
+    private static final String FORMAT_SLASH      = "/";
+    private static final int BASEDATE = 1; // 勤務状況確認、健康状態確認の基準月
+
+    private static final int CYCLEDATE_WORK = 3; // 勤務状況確認
+
+    private static final int CYCLEDATE_HEALTH = 6; // 健康状態確認
+
+    private static final int CYCLEDATE_OVERHOURS = 0; // 超勤申請
+
+    /**
+     * 引数で指定されたyyyy/mm/dd形式の日付文字列を「/」で分割しint型配列に格納します。
+     * @param date 基準日 (「yyyy/mm/dd」形式の文字列)
+     * @exception NumberFormatException
+     * @exception ArrayIndexOutOfBoundsException
+     */
+    public int[] devideDateFormatString(String date)
+            throws NumberFormatException, ArrayIndexOutOfBoundsException {
+
+        int[] dates = new int[3]; //日付値格納配列
+
+        try {
+            StringTokenizer st = new StringTokenizer(date, FORMAT_SLASH);
+            for(int i = 0; st.hasMoreTokens(); i++) {
+                dates[i] = Integer.parseInt(st.nextToken());
+            }
+        } catch (NumberFormatException e) {
+
+        } catch (ArrayIndexOutOfBoundsException e) {
+
+        }
+        return dates;
+    }
+    /**
+     * 勤務状況確認、健康状態確認の適応期間開始日取得
+     * @param   psMonth 対象月
+     * @param   psType 勤務状況確認、健康状態確認
+     * @param   pnTarget 取得対象(1:開始日、2：終了日)
+     * @return  適応開始日
+     */
+    private String getCycleDay(String psMonth, String psType, int pnTarget){
+        // 日付文字列を分割
+        int nDates[] = devideDateFormatString(psMonth);
+        // 月のみ取得
+        int sMonth = nDates[1];
+
+        // 適応期間の間隔を設定
+        int nCycleDate = 0;
+        // 勤務状況の場合
+        if(psType.equals(TYPE_ITEM_WORK_STATUS)){
+            if(CYCLEDATE_WORK > 0){
+                nCycleDate = CYCLEDATE_WORK - 1;
+            }
+        }
+        // 健康状態の確認
+        if(psType.equals(TYPE_ITEM_HEALTH_STATUS)){
+            if(CYCLEDATE_HEALTH > 0){
+                nCycleDate = CYCLEDATE_HEALTH - 1;
+            }
+        }
+        // 超勤の申請理由
+        if(psType.equals(TYPE_ITEM_OVERHOURS_REASON)){
+            if(CYCLEDATE_OVERHOURS > 0){
+                nCycleDate = CYCLEDATE_OVERHOURS - 1;
+            }
+        }
+
+        // どの範囲に含まれているかチェック
+        int nStartDate = BASEDATE;
+        int nEndDate = nStartDate + nCycleDate;
+        // 適応される期間を取得
+        while(nEndDate <= 12){
+            if( nStartDate <= sMonth && sMonth <= nEndDate){
+                break;
+            }
+            nStartDate = nEndDate + 1;
+            nEndDate = nStartDate + nCycleDate;
+        }
+
+        // 開始月を返す
+        if(pnTarget == 1){
+            return getFormatDate(nDates[0],nStartDate,1);
+            // 終了月を返す
+        }else if(pnTarget == 2){
+            return getFormatDate(nDates[0],nEndDate,1);
+        }
+
+        // 当てはまらない場合
+        return getFormatDate(nDates[0],sMonth,nDates[2]);
+    }
+    /**
+     * 引数で指定された年月日をyyyy/mm/ddの形式で返します。
+     * @param year 年
+     * @param month 月
+     * @param day 日
+     * @return String 年月日(yyyy/mm/dd)
+     */
+    public String getFormatDate(int year, int month, int day) {
+        SimpleDateFormat df = new SimpleDateFormat(FORMAT_DATE_TYPE1);
+
+        try {
+
+            Date objDate = null;
+
+            Calendar calendar = Calendar.getInstance();
+
+            calendar.set(year,month-1,day); // カレンダーに設定
+
+            objDate = calendar.getTime();
+
+            return df.format(objDate);
+
+        } catch (Exception e) {}
+
+        return null;
+    }
+
+    /**
+     * 勤務状況確認の開始月
+     */
+    public int getKinmujokyoEnd(){
+        int retval = 0;
+
+        //表示中の月
+        String sMonth = getMonth();
+        Date   dMonth;
+        try{
+            dMonth = DateFormat.getDateInstance().parse(sMonth);
+        }catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+            return 0;
+        }
+        Calendar cMonth = new GregorianCalendar();
+        cMonth.setTime(dMonth);
+
+        //表示開始の日付
+        int iMonth = cMonth.get(Calendar.MONTH) + 1;
+        iMonth = ((int)((iMonth + 2) / 3)) * 3;
+
+        retval = iMonth;
 
         return retval;
     }
@@ -2072,7 +2216,81 @@ public class TmgResultsBean {
         }
 
         monthlyMap.put("dailyMapList", dailyMapList);
+
+        this.setEditableWorkHealthChk(psDBBean);
+        ///  6 勤務状況
+        List<TmgEmployeeAttributeVO> workStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , getToday()
+                , psDBBean.getTargetUser()
+                , getMonth()
+                , TYPE_ITEM_WORK_STATUS
+                , TYPE_ITEM_OVERHOURS_REASON);
+
+        //  7 健康状態
+        List<TmgEmployeeAttributeVO> healthStatus = iTmgEmployeeAttributeService.buildSQLForSelectTmgEmployeeAttribute(psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , getToday()
+                , psDBBean.getTargetUser()
+                , getMonth()
+                , TYPE_ITEM_HEALTH_STATUS
+                , TYPE_ITEM_OVERHOURS_REASON);
+
+        // 勤務状況確認表示可否フラグ
+        boolean bDispKinmujokyoKakunin = this.getIsWorkChkFlg() && this.isKinmujokyoKakunin();
+        // 健康状態確認表示可否フラグ
+        boolean bDispKenkojotaiKakunin = this.getIsHealthChkFlg() && this.isKenkojotaiKakunin();
+
+
+        // 現在の状況（勤務状況確認）:true(確認済)、false(未確認)
+        boolean bWorkChkStatus = workStatus.size() > 0 && TmgUtil.Cs_MGD_ONOFF_1.equals(workStatus.get(0).getTesCattribute()) ;
+        // 現在の状況（健康状態確認）:true(確認済)、false(未確認)
+        boolean bHealthChkStatus = healthStatus.size() > 0 && TmgUtil.Cs_MGD_ONOFF_1.equals(healthStatus.get(0).getTesCattribute());
+
+        WorkHealthChkVO workHealthChkVO = new WorkHealthChkVO();
+        workHealthChkVO.setBDispKinmujokyoKakunin(bDispKinmujokyoKakunin);
+        workHealthChkVO.setBDispKenkojotaiKakunin(bDispKenkojotaiKakunin);
+        workHealthChkVO.setBWorkChkStatus(bWorkChkStatus);
+        workHealthChkVO.setBHealthChkStatus(bHealthChkStatus);
+        workHealthChkVO.setKinmujokyoEnd(getKinmujokyoEnd());
+        if( healthStatus.size() > 0 && TmgUtil.Cs_MGD_ONOFF_1.equals(healthStatus.get(0).getCcode01())){
+            workHealthChkVO.setSelHealthStatus(TmgUtil.Cs_MGD_ONOFF_1);
+        }else{
+            workHealthChkVO.setSelHealthStatus(TmgUtil.Cs_MGD_ONOFF_0);
+        }
+
+        monthlyMap.put("workHealthChkVO", workHealthChkVO);
+
+
         return monthlyMap;
+    }
+
+    /**
+     * 勤務・健康状況の確認/解除を行うメソッド
+     *
+     * @param psStatus 確認/解除
+     * @return なし
+     */
+    public void updateStatus(PsDBBean psDBBean, String psStatus, String action, String selHealthStatus) {
+
+        iTmgEmployeeAttributeService.buildSQLForDeleteTmgEmployeeAttribute(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                this.getCycleDay(getMonth(), psStatus, 1),
+                psStatus
+        );
+        iTmgEmployeeAttributeService.buildSQLForInsertTmgEmployeeAttribute(
+                psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getTargetUser(),
+                this.getCycleDay(getMonth(), psStatus, 1),
+                this.getCycleDay(getMonth(), psStatus, 2),
+                psDBBean.getUserCode(),
+                BEAN_DESC + '_' + action,
+                psStatus,
+                action,
+                selHealthStatus);
+
     }
     //////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////就業登録一覧画面表示終了////////////////////////////////////////////////////////
