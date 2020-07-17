@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.tmg.calendar;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import io.micrometer.core.instrument.util.JsonUtils;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
@@ -56,10 +58,12 @@ public class CalendarBean {
         if(MoDo==null){
             return null;
         }
+
+
         List<CalendarDispVo> calendarDispVoList=new ArrayList<CalendarDispVo>();
         String groupId;
         if(StrUtil.hasEmpty(referList.getTargetGroup())){
-            groupId="null";
+            groupId="'"+referList.getTargetSec() +  "|000000"+"'";
         }else{
             groupId="'"+referList.getTargetGroup()+"'";
         }
@@ -119,6 +123,9 @@ public class CalendarBean {
                 // 全学の場合は更新のみ使用可能
                 calendarVo.setGTopLevelOrganization(false);
             }
+        }
+        for(CalendarDispVo dispVo: calendarDispVoList){
+            dispVo.setDataFlg(JSONUtil.parseObj(dispVo.getMonthPara()));
         }
         calendarVo.setCalendarDispVoList(calendarDispVoList);
         return calendarVo;

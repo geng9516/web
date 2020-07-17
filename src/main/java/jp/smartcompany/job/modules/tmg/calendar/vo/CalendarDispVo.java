@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.tmg.calendar.vo;
 
+
+import cn.hutool.json.JSONObject;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -44,4 +46,5 @@ public class CalendarDispVo {
     private String lastDay;
     private String standarDday;
     private String monthPara;
+    private JSONObject dataFlg;
 }
