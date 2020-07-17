@@ -359,8 +359,8 @@ public class TmgScheduleBean {
         _targetCustCode = "";
 
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
-        if (null != psDBBean.getRequestHash().get("txtTmgReferListTreeViewPermTargetEmp")) {
-            _targetUserCode = psDBBean.getRequestHash().get("txtTmgReferListTreeViewPermTargetEmp").toString();
+        if (null != psDBBean.getEmployeeCode()) {
+            _targetUserCode = psDBBean.getEmployeeCode();
         } else {
             _targetUserCode = psDBBean.getTargetUser();
         }
@@ -603,7 +603,7 @@ public class TmgScheduleBean {
             // 2019/12/02 NSC.OU 入力サイトで、予定作成画面を表示する対応
             if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(psDBBean.getSiteId())) {
                 // 対象ユーザー
-                if (null != psDBBean.getTargetUser() && !"".equals(psDBBean.getTargetUser())) {
+                if (null != psDBBean.getTargetUser() && !"".equals(psDBBean.getTargetUser()) && null == _targetUserCode) {
                     _targetUserCode = psDBBean.getTargetUser();
                 }
             } else {
@@ -611,7 +611,7 @@ public class TmgScheduleBean {
                     return;
                 } else {
                     // 対象ユーザー
-                    if (null != referList.getTargetEmployee() && !"".equals(referList.getTargetEmployee())) {
+                    if (null != referList.getTargetEmployee() && !"".equals(referList.getTargetEmployee()) && null == _targetUserCode) {
                         _targetUserCode = referList.getTargetEmployee();
                     }
                     // 組織コード
@@ -1019,8 +1019,8 @@ public class TmgScheduleBean {
      *
      * @return
      */
-    private List<HashMap<String, Object>> selectGenericDetail() {
-        return iTmgScheduleService.selectGenericDetail(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
+    private List<HashMap<String, Object>> selectGenericDetail(String custId, String compId, String language, String baseDate) {
+        return iTmgScheduleService.selectGenericDetail(language, baseDate, compId, custId);
     }
 
     /**
@@ -1030,8 +1030,8 @@ public class TmgScheduleBean {
      * @param groupid
      * @return
      */
-    private List<HashMap<String, Object>> selectWorkPatternIkkatu(String sectionid, String groupid) {
-        return iTmgScheduleService.selectWorkPatternIkkatu(_targetCompCode, _targetCustCode, sectionid, groupid, _baseDate);
+    private List<HashMap<String, Object>> selectWorkPatternIkkatu(String sectionid, String groupid, String baseDate, String custId, String compId) {
+        return iTmgScheduleService.selectWorkPatternIkkatu(compId, custId, sectionid, groupid, baseDate);
     }
 
     /**
@@ -1039,8 +1039,8 @@ public class TmgScheduleBean {
      *
      * @return
      */
-    private List<HashMap<String, Object>> selectBusinessTrip() {
-        return iTmgScheduleService.selectBusinessTrip(_loginLanguageCode, _baseDate, _targetCompCode, _targetCustCode);
+    private List<HashMap<String, Object>> selectBusinessTrip(String custId, String compId, String language, String baseDate) {
+        return iTmgScheduleService.selectBusinessTrip(language, baseDate, compId, custId);
     }
 
     /**
@@ -1048,14 +1048,23 @@ public class TmgScheduleBean {
      *
      * @return
      */
-    public HashMap<String, Object> selectIkkaInfo() {
-        if (null == referList) {
-            logger.error("referList対象が空です");
+    public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid, String baseDate, String custId, String compId, String language) {
+        if ("".equals(baseDate) || null == baseDate) {
+            logger.warn("baseDateが空です");
             return null;
         }
-        String sectionid = referList.getTargetSec();
-        String groupid = referList.getTargetGroup();
-
+        if ("".equals(custId) || null == custId) {
+            logger.warn("custIdが空です");
+            return null;
+        }
+        if ("".equals(compId) || null == compId) {
+            logger.warn("compIdが空です");
+            return null;
+        }
+        if ("".equals(language) || null == language) {
+            logger.warn("languageが空です");
+            return null;
+        }
         if ("".equals(sectionid) || null == sectionid) {
             logger.warn("sectionidが空です");
             return null;
@@ -1066,11 +1075,11 @@ public class TmgScheduleBean {
         }
 
         //[区分]
-        List<HashMap<String, Object>> kubunnList = this.selectGenericDetail();
+        List<HashMap<String, Object>> kubunnList = this.selectGenericDetail(custId, compId, language, baseDate);
         //[出張]
-        List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip();
+        List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip(custId, compId, language, baseDate);
         // 勤務パターン
-        List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid);
+        List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid, baseDate, custId, compId);
         // データフォマードを変更する
         for (int i = 0; i < workPatternList.size(); i++) {
             HashMap<String, Object> hashMap = workPatternList.get(i);
