@@ -6,6 +6,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import javafx.beans.binding.When;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -1391,6 +1392,24 @@ public class TmgScheduleBean {
         return iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, employeeId);
     }
 
+    private String workTypeConvert(String divisionId) {
+        if (null != divisionId) {
+            if ("TMG_WORK|000".equals(divisionId)) {
+                return "0";
+            } else if ("TMG_WORK|500".equals(divisionId)) {
+                return "1";
+            } else if ("TMG_WORK|570".equals(divisionId)) {
+                return "3";
+            } else if ("TMG_WORK|480".equals(divisionId)) {
+                return "0";
+            } else {
+                return "";
+            }
+        } else {
+            logger.warn("勤務区分が空です");
+        }
+        return "";
+    }
 
     /**
      * 週勤務パターン登録画面　登録処理
@@ -1399,7 +1418,7 @@ public class TmgScheduleBean {
      */
     @Transactional(rollbackFor = GlobalException.class)
     public void executeMakeWeekPattern_UWPtn(String content) {
-        List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = null;
+        List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
         if (JSONUtil.isJsonObj(content)) {
             JSONObject jsonObject = JSONUtil.parseObj(content);
             if (null != JSONUtil.parseObj(content)) {
@@ -1418,49 +1437,49 @@ public class TmgScheduleBean {
                     if (null != jsonObject.get("applyList")) {
                         weekPatternFormDTOList = JSONUtil.parseArray(jsonObject.get("applyList")).toList(WeekPatternFormDTO.class);
                         for (int i = 0; i < weekPatternFormDTOList.size(); i++) {
-                            WeekPatternFormDTO weekPatternFormDTO = weekPatternInputDTO.getWeekPatternFormDTOList().get(i);
+                            WeekPatternFormDTO weekPatternFormDTO = weekPatternFormDTOList.get(i);
                             if ("0".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen1(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose1(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen1(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose1(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg1(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg1(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("1".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen2(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose2(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen2(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose2(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg2(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg2(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("2".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen3(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose3(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen3(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose3(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg3(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg3(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("3".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen4(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose4(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen4(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose4(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg4(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg4(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("4".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen5(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose5(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen5(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose5(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg5(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg5(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("5".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen6(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose6(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen6(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose6(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg6(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg6(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else if ("6".equals(weekPatternFormDTO.getWorkFlag())) {
                                 tmgWeekPatternCheckDTO.setTwp_copen7(weekPatternFormDTO.getStartTime() == null ? "" : weekPatternFormDTO.getStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_cclose7(weekPatternFormDTO.getEndTime() == null ? "" : weekPatternFormDTO.getEndTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestopen7(weekPatternFormDTO.getRestStartTime() == null ? "" : weekPatternFormDTO.getRestStartTime());
                                 tmgWeekPatternCheckDTO.setTwp_crestclose7(weekPatternFormDTO.getRestEndTime() == null ? "" : weekPatternFormDTO.getRestEndTime());
-                                tmgWeekPatternCheckDTO.setTwp_cholflg7(weekPatternFormDTO.getWorkDivisionId() == null ? "" : weekPatternFormDTO.getWorkDivisionId());
+                                tmgWeekPatternCheckDTO.setTwp_cholflg7(workTypeConvert(weekPatternFormDTO.getWorkDivisionId()));
                             } else {
                                 logger.warn("データが認識できません");
                             }
