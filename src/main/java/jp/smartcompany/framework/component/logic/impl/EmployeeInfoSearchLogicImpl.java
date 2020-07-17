@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.util.*;
 
 /**
@@ -30,7 +29,7 @@ import java.util.*;
  * @author Xiao Wenpeng
  *
  */
-//@Service
+@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeInfoSearchLogicImpl {
 
@@ -78,27 +77,6 @@ public class EmployeeInfoSearchLogicImpl {
 
     private String ignoreRetiredData;
 
-//    @PostConstruct
-    public void init() {
-//        ResourceBundle resourceBundle = ResourceBundle.getBundle(
-//                "jp/smartcompany/framework/component/EmployeeSearch", Locale.JAPAN);
-        // 法人名称を略称にするか判断
-        sysPropertyCacheComp = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_COMPANY_ABBREVIATION);
-        // 所属名称を略称にするか判断
-        sysPropertyCacheSec = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_SECTION_ABBREVIATION);
-        // 役職名称を略称にするか判断
-        sysPropertyCachePost = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_POST_ABBREVIATION);
-        // 社員検索結果が１件の時自動選択するか判断
-        sysPropertyCacheEmpSearch = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_EMP_SEARCH_AUTO_SELECT);
-        // 在職・退職を表示するか判断(2009/10/26 K.Monden 追加)
-        sysPropertyCacheDispIfStillEmployedId = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_DISP_IF_STILL_EMPLOYEDID);
-        // #2638社員検索ダイアログＲ２対応チケット▼▼▼
-        // システムプロパティ
-        ignoreRetiredData = scCacheUtil.getSystemProperty("IgnoreRetiredData");
-        if (StrUtil.isBlank(ignoreRetiredData)) {
-            throw new GlobalException(EmployeeInfoSearchLogicImpl.class.getName()+":IgnoreRetiredData");
-        }
-    }
 
     // リクエスト 検索対象範囲種別(1:法人絞込み検索範囲 それ以外:検索対象範囲)
     public List<EmployeeInfoSearchEntity> searchEmpList(String searchWord,
@@ -108,12 +86,13 @@ public class EmployeeInfoSearchLogicImpl {
                               String searchFlg,
                               String companyId,
                               String targetComp,
-                              // /社員番号表示可否(false:非表示)
-                              boolean showEmployeeId,
                               // hidden⇔requestとして保持し続けるオブジェクト (本務兼務区分)
                               String ifKeyorAdditionalRole,
                               String targetDept,
                               Integer type) {
+
+        configSearchEnvs();
+
         PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
 
         searchWord = escapeSearchWord(searchWord+"%");
@@ -187,10 +166,10 @@ public class EmployeeInfoSearchLogicImpl {
         List<EmployeeInfoSearchEntity> lEmpInfoUserID =CollUtil.newArrayList();
         // 社員検索
         if (type == 1) {
-//            lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDList(searchDTO);
+            lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDList(searchDTO);
         // 所属一覧検索(兼務を含む)
         } else {
-//            lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDListAdd(searchDTO);
+            lEmpInfoUserID = iMastEmployeesService.selectEmployeeInfoUserIDListAdd(searchDTO);
         }
 
         // ユーザID一覧生成
@@ -214,12 +193,13 @@ public class EmployeeInfoSearchLogicImpl {
         }
         // 社員情報を取得
         List<EmployeeInfoSearchEntity> lEmpInfo = CollUtil.newArrayList();
-        if (sEmpInfoUserIDList != null && !sEmpInfoUserIDList.isEmpty()) {
+        if (CollUtil.isNotEmpty(sEmpInfoUserIDList)) {
 
-//            lEmpInfo = iMastEmployeesService.selectEmployeeInfoList(
-//                    sSearchDate, session.getLanguage(), sDesignaion,
-//                    sEmpInfoUserIDList, sCompNick, sSectionNick, sPostNick,
-//                    session.getLoginUser(), PsConst.DEFAULT_SYSTEM);
+            lEmpInfo = iMastEmployeesService.selectEmployeeInfoList(
+                    sSearchDate, session.getLanguage(), sDesignaion,
+                    SysUtil.separateList("ME_CUSERID", sEmpInfoUserIDList),
+                    sCompNick, sSectionNick, sPostNick,
+                    session.getLoginUser(), PsConst.DEFAULT_SYSTEM);
 
         }
         // 社員情報をMapに格納。キーはユーザID + "_" + 異動歴ID(退職者はnull)
@@ -269,6 +249,27 @@ public class EmployeeInfoSearchLogicImpl {
             entity.setMeCifStillEmployedName(masking(entity.getMeCifStillEmployedName(), sMask, behavior.isMeCifstillemployedid()));
         }
         return plEntity;
+    }
+
+    private void configSearchEnvs() {
+        //        ResourceBundle resourceBundle = ResourceBundle.getBundle(
+//                "jp/smartcompany/framework/component/EmployeeSearch", Locale.JAPAN);
+        // 法人名称を略称にするか判断
+        sysPropertyCacheComp = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_COMPANY_ABBREVIATION);
+        // 所属名称を略称にするか判断
+        sysPropertyCacheSec = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_SECTION_ABBREVIATION);
+        // 役職名称を略称にするか判断
+        sysPropertyCachePost = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_POST_ABBREVIATION);
+        // 社員検索結果が１件の時自動選択するか判断
+        sysPropertyCacheEmpSearch = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_EMP_SEARCH_AUTO_SELECT);
+        // 在職・退職を表示するか判断(2009/10/26 K.Monden 追加)
+        sysPropertyCacheDispIfStillEmployedId = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_DISP_IF_STILL_EMPLOYEDID);
+        // #2638社員検索ダイアログＲ２対応チケット▼▼▼
+        // システムプロパティ
+        ignoreRetiredData = scCacheUtil.getSystemProperty("IgnoreRetiredData");
+        if (StrUtil.isBlank(ignoreRetiredData)) {
+            throw new GlobalException(EmployeeInfoSearchLogicImpl.class.getName()+":IgnoreRetiredData");
+        }
     }
 
     /**

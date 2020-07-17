@@ -2,6 +2,8 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
+import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
+import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
@@ -95,5 +97,26 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
     EmployMentWithMEVo selectDateofemploymentWithME(@Param("custId") String custId,
                                                     @Param("compId") String compId,
                                                     @Param("empId") String empId);
+
+
+    /**
+     * =================== 社员检索（group定义用） =================
+     */
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDList(EmployInfoSearchDTO searchDTO);
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDListAdd(EmployInfoSearchDTO searchDTO);
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoList(
+            @Param("searchDate") String searchDate,
+            @Param("language") String language,
+            @Param("designation") String designation,
+            @Param("sEmpInfoUserIDList") String sEmpInfoUserIDList,
+            @Param("sCompNick") String sCompNick,
+            @Param("sSectionNick") String sSectionNick,
+            @Param("sPostNick") String sPostNick,
+            @Param("loginUser") String loginUser,
+            @Param("systemId") String systemId
+    );
 
 }

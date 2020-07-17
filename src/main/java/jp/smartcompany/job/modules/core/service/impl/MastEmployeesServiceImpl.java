@@ -5,6 +5,8 @@ import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
+import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
+import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import jp.smartcompany.job.modules.core.mapper.MastEmployeesMapper;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
@@ -187,5 +189,34 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     @Override
     public EmployMentWithMEVo selectDateofemploymentWithME(String custId, String compId, String empId){
         return baseMapper.selectDateofemploymentWithME( custId,  compId,  empId);
-     }
+    }
+
+
+    /**
+     * ================社员检索(Group定义中社员检索弹窗用)===========
+     */
+    @Override
+    public List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDList(EmployInfoSearchDTO searchDTO) {
+        return baseMapper.selectEmployeeInfoUserIDList(searchDTO);
+    }
+
+    @Override
+    public  List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDListAdd(EmployInfoSearchDTO searchDTO) {
+        return baseMapper.selectEmployeeInfoUserIDListAdd(searchDTO);
+    }
+
+    @Override
+    public List<EmployeeInfoSearchEntity> selectEmployeeInfoList(
+            String searchDate,
+            String language,
+            String designation,
+            String sEmpInfoUserIDList,
+            String sCompNick,
+            String sSectionNick,
+            String sPostNick,
+            String loginUser,
+            String systemId
+    ) {
+        return baseMapper.selectEmployeeInfoList(searchDate,language,designation,sEmpInfoUserIDList,sCompNick,sSectionNick,sPostNick,loginUser,systemId);
+    }
 }
