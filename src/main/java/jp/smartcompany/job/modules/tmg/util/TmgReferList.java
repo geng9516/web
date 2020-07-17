@@ -496,6 +496,7 @@ public class TmgReferList {
         setSysdate();
         // targetDate(遡り基準日)がSYSDATEより後の日付だった場合、targetDate = SYSDATE とする
         SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
+        String recordDate = psDBBean.getReqParam(TREEVIEW_KEY_RECORD_DATE);
         Date date = sdf.parse(targetDate);
         if(SysDateUtil.isGreater(date,gcSysdate)) {
             targetDate = sdf.format(gcSysdate.getTime());
@@ -503,7 +504,7 @@ public class TmgReferList {
         // SYSDATEをYYYY/MM/DD形式の文字列にしておく
         String baseDate = sdf.format(gcSysdate.getTime());
         // 基準日を格納
-        if (psDBBean.getReqParam(TREEVIEW_KEY_RECORD_DATE) == null){
+        if (StrUtil.isBlank(recordDate)){
             setRecordDate(baseDate);
         }
         sessionControl4SearchTree(csSessionControl4SearchTreeInitialization, null, null);
@@ -554,20 +555,19 @@ public class TmgReferList {
         // セッションに登録されていなかった場合、基準日が変更された場合、基準日を使用せず基準日として設定されている値が現在日付ではない場合にSYSDATE他諸々をDBから取得する
         if((gcSysdate == null || gcPreMonthDate == null || gcPreYearDate == null) ||
                 !getRecordDate().equals(sdf.format(gcSysdate.getTime())) ||
-                (isUseRecordDate() == false && !getRecordDate().equals(sdf.format(dDate)))
+                (!isUseRecordDate() && !getRecordDate().equals(sdf.format(dDate)))
                 || String.valueOf(this.gbUseManageFLG).equals(useManage)
         ){
-
-            StringBuilder sSQL = new StringBuilder("");
+            StringBuilder sSQL = new StringBuilder();
             if (getRecordDate() != null && isUseRecordDate()){
                 sSQL.append(" SELECT ");
-                sSQL.append(    " TO_CHAR(TO_DATE('" + getRecordDate() + "'),'"+DEFAULT_DATE_FORMAT+"') as sysDate, ");
+                sSQL.append(    " TO_CHAR(TO_DATE('" + getRecordDate() + "'),'"+DEFAULT_DATE_FORMAT+"') as systemDate, ");
                 sSQL.append(    " TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE('" + getRecordDate() + "'),'MM'),-1),'"+DEFAULT_DATE_FORMAT+"') as preMonthDate, ");
                 sSQL.append(    " TO_CHAR(TMG_F_GET_THE_YEARZONE( TMG_F_GET_THE_YEAR(ADD_MONTHS(TO_DATE('" + getRecordDate() + "'),-12)), 0, ADD_MONTHS(TO_DATE('" + getRecordDate() + "'),-12)),'"+DEFAULT_DATE_FORMAT+"') preYearDate ");
                 sSQL.append(" FROM DUAL ");
             } else {
                 sSQL.append(" SELECT ");
-                sSQL.append(    " TO_CHAR(SYSDATE,'"+DEFAULT_DATE_FORMAT+"') as sysDate, ");
+                sSQL.append(    " TO_CHAR(SYSDATE,'"+DEFAULT_DATE_FORMAT+"') as systemDate, ");
                 sSQL.append(    " TO_CHAR(ADD_MONTHS(TRUNC(SYSDATE,'MM'),-1),'"+DEFAULT_DATE_FORMAT+"') as preMonthDate, ");
                 sSQL.append(    " TO_CHAR(TMG_F_GET_THE_YEARZONE( TMG_F_GET_THE_YEAR(ADD_MONTHS(SYSDATE,-12)), 0, ADD_MONTHS(SYSDATE,-12)),'"+DEFAULT_DATE_FORMAT+"') preYearDate ");
                 sSQL.append(" FROM DUAL ");
@@ -578,14 +578,15 @@ public class TmgReferList {
                 /* 执行查询语句，返回实体列表，一个Entity对象表示一行的数据，Entity对象是一个继承自HashMap的对象，存储的key为字段名，value为字段值 */
                 List<Entity> entityList = SqlExecutor.query(conn, sSQL.toString(), new EntityListHandler());
                 Entity entity = entityList.get(0);
-                Date sysdate      = sdf.parse((String)entity.get("sysDate"));
-                Date preMonthDate = sdf.parse((String)entity.get("preMonthDate"));
-                Date preYearDate  = sdf.parse((String)entity.get("preYearDate"));
+                Date sysdate      = sdf.parse((String)entity.get("SYSTEMDATE"));
+                Date preMonthDate = sdf.parse((String)entity.get("PREMONTHDATE"));
+                Date preYearDate  = sdf.parse((String)entity.get("PREYEARDATE"));
 
                 gcSysdate = DateUtil.date(sysdate);
                 gcPreMonthDate = DateUtil.date(preMonthDate);
                 gcPreYearDate = DateUtil.date(preYearDate);
             } catch (SQLException | ParseException e) {
+                e.printStackTrace();
                 // 例外発生時の緊急対応
                 Calendar calendar = CalendarUtil.calendar();
                 calendar.set(Calendar.AM_PM, Calendar.AM);  // 午前にする
@@ -938,7 +939,7 @@ public class TmgReferList {
 
             log.info("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
-            if(SysDateUtil.isLess(date,gcPreYearDate)){
+            if(date.before(gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);
                 empList.createEmpList(
                         "'"+psDBBean.getCustID()+"'",

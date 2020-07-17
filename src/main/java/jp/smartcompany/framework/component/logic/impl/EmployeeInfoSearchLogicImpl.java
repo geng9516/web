@@ -30,7 +30,7 @@ import java.util.*;
  * @author Xiao Wenpeng
  *
  */
-@Service
+//@Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EmployeeInfoSearchLogicImpl {
 
@@ -78,7 +78,7 @@ public class EmployeeInfoSearchLogicImpl {
 
     private String ignoreRetiredData;
 
-    @PostConstruct
+//    @PostConstruct
     public void init() {
 //        ResourceBundle resourceBundle = ResourceBundle.getBundle(
 //                "jp/smartcompany/framework/component/EmployeeSearch", Locale.JAPAN);
