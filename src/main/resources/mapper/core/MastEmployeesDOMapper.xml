@@ -256,7 +256,122 @@
             ME_DDATEOFEMPLOYEMENT
         ORDER BY
             MIN( ME_DSTARTDATE ) DESC
-        ;
     </select>
+
+<!--    <select id="selectEmployeeInfoUserIDList" parameterType="jp.smartcompany.framework.component.dto.EmployInfoSearchDTO" resultType="jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity">-->
+<!--        <if test="searchFlg == null or searchFlg == 0">-->
+<!--            SELECT-->
+<!--                &#45;&#45; (社員検索ダイアログ)-->
+<!--                HD.HD_ID,-->
+<!--                ME_CUSERID,-->
+<!--                (-->
+<!--                    SELECT-->
+<!--                        MAP_NWEIGHTAGE-->
+<!--                    FROM-->
+<!--                        MAST_POST-->
+<!--                    WHERE-->
+<!--                        MAP_CCUSTOMERID_CK_FK = HD.HD_CCUSTOMERID_CK-->
+<!--                        AND MAP_CCOMPANYID_CK_FK = HD.HD_CCOMPANYID_CK-->
+<!--                        AND MAP_CPOSTID_CK = HD.HD_CPOSTID_FK-->
+<!--                        AND MAP_CLANGUAGE = 'ja'-->
+<!--                        AND MAP_DSTART <![CDATA[<=]]> #{searchDate}-->
+<!--                        AND MAP_DEND >= #{searchDate}-->
+<!--                ) AS MAP_NWEIGHTAGE,-->
+<!--                ME_CIFSTILLEMPLOYEDID,-->
+<!--                ME_CEMPLOYEEID_CK,-->
+<!--                ME_CKANANAME,-->
+<!--                HD_CBOSSORNOT,-->
+<!--                HD_DSTARTDATE_CK,-->
+<!--                HD_CPOSTID_FK-->
+<!--            FROM-->
+<!--                (-->
+<!--                    SELECT /*+ INDEX(MAST_EMPLOYEES MAST_EMPLOYEES_IDX4) */*-->
+<!--                    FROM MAST_EMPLOYEES-->
+<!--                    WHERE-->
+<!--                        ME_CCUSTOMERID_CK = '01'-->
+<!--                        AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}-->
+<!--                        AND ME_DENDDATE >= #{searchDate}-->
+<!--                        AND ME_CIFSTILLEMPLOYEDID = '0'-->
+<!--                ) ME,-->
+<!--                (-->
+<!--                    SELECT /*+ INDEX(HIST_DESIGNATION PS_HIST_DESIGNATION_IDX5) */*-->
+<!--                    FROM ${designation}-->
+<!--                    WHERE-->
+<!--                        HD_CCUSTOMERID_CK = '01'-->
+<!--                        AND HD_DSTARTDATE_CK <![CDATA[<=]]> #{searchDate}-->
+<!--                        AND HD_DENDDATE >= #{searchDate}-->
+<!--                ) HD-->
+<!--            WHERE-->
+<!--                 HD.HD_CUSERID = ME_CUSERID-->
+<!--                 AND (-->
+<!--                     ME_CEMPLOYEEID_CK LIKE #{searchWord} ESCAPE '\\'-->
+<!--                     OR ME_CKANANAME LIKEC #{searchWordConve*} ESCAPE TO_NCHAR('\\')-->
+<!--                     OR ME_CKANJINAME LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                     OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish} ESCAPE '\\'-->
+<!--                     OR ME_CEMPLOYEENAMECH LIKE #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                     OR ME_CEMPLOYEENAME01 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                     OR ME_CEMPLOYEENAME02 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                 )-->
+<!--                 <if test="validCompanies != null and validCompanies.size()>0">-->
+<!--                    AND ME_CCOMPANYID IN-->
+<!--                    <foreach collection="validCompanies" index="index" item="companyId" separator="," open="(" close=")">-->
+<!--                        #{companyId}-->
+<!--                    </foreach>-->
+<!--                 </if>-->
+<!--                 <if test="companyCode != null">-->
+<!--                    AND HD.HD_CCOMPANYID_CK = #{companyCode}-->
+<!--                 </if>-->
+<!--                 <if test="ifkeyoradditionalrole != null">-->
+<!--                     AND HD.HD_CIFKEYORADDITIONALROLE = #{ifKeyorAdditionalRole}-->
+<!--                 </if>-->
+<!--                 ${exists}-->
+<!--        </if>-->
+<!--        <if test='propValue == "no" and searchFlg == null'>-->
+<!--            UNION ALL-->
+<!--        </if>-->
+<!--        <if test='searchFlg == 1 or (propValue == "no" and searchFlg == null)'>-->
+<!--            SELECT-->
+<!--                NULL AS HD_ID,-->
+<!--                ME_CUSERID,-->
+<!--                NULL MAP_NWEIGHTAGE,-->
+<!--                ME_CIFSTILLEMPLOYEDID,-->
+<!--                ME_CEMPLOYEEID_CK,-->
+<!--                ME_CKANANAME,-->
+<!--                NULL AS HD_CBOSSORNOT,-->
+<!--                NULL AS HD_DSTARTDATE_CK,-->
+<!--                NULL AS HD_CPOSTID_FK-->
+<!--            FROM-->
+<!--                (-->
+<!--                    SELECT /*+ INDEX(MAST_EMPLOYEES MAST_EMPLOYEES_IDX4) */*-->
+<!--                        FROM MAST_EMPLOYEES-->
+<!--                        WHERE-->
+<!--                              ME_CCUSTOMERID_CK = '01'-->
+<!--                              AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}-->
+<!--                              AND ME_DENDDATE >= #{searchDate}-->
+<!--                              AND ME_CIFSTILLEMPLOYEDID = '1'-->
+<!--                )-->
+<!--            WHERE-->
+<!--                (-->
+<!--                    ME_CEMPLOYEEID_CK LIKE #{searchWord} ESCAPE '\\'-->
+<!--                    OR  ME_CKANANAME LIKEC #{searchWordConve} ESCAPE TO_NCHAR('\\')-->
+<!--                    OR  ME_CKANJINAME LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                    OR  LOWER(ME_CENGLISHNAME) LIKE #{dto.searchWordEnglish} ESCAPE '\\'-->
+<!--                    OR  ME_CEMPLOYEENAMECH LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                    OR  ME_CEMPLOYEENAME01 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                    OR  ME_CEMPLOYEENAME02 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')-->
+<!--                )-->
+<!--                <if test="validCompanies != null and validCompanies.size()>0">-->
+<!--                    AND ME_CCOMPANYID IN-->
+<!--                    <foreach collection="validCompanies" index="index" item="companyId" separator="," open="(" close=")">-->
+<!--                        #{companyId}-->
+<!--                    </foreach>-->
+<!--                </if>-->
+<!--                <if test="companyCode!=null">-->
+<!--                    AND ME_CCOMPANYID = #{companyCode}-->
+<!--                </if>-->
+<!--                ${exists}-->
+<!--        </if>-->
+<!--        ${orderBy}-->
+<!--    </select>-->
 
 </mapper>
