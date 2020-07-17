@@ -68,19 +68,25 @@ public class ScheduleController {
      * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=46402406&txtBaseDate=&txtEndDate=
      * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
      *
-     * @param txtBaseDate
-     * @param txtEndDate
-     * @param psDBBean
+     * @param sectionid
+     * @param groupid
+     * @param baseDate
+     * @param custId
+     * @param compId
+     * @param language
      * @return
      */
     @GetMapping("selectIkkaInfo")
     @ResponseBody
-    public HashMap<String, Object> selectIkkaInfo(@RequestParam("txtBaseDate") String txtBaseDate,
-                                                  @RequestParam("txtEndDate") String txtEndDate,
-                                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public HashMap<String, Object> selectIkkaInfo(
+            @RequestAttribute("sectionid") String sectionid,
+            @RequestAttribute("groupid") String groupid,
+            @RequestAttribute("baseDate") String baseDate,
+            @RequestAttribute("custId") String custId,
+            @RequestAttribute("compId") String compId,
+            @RequestAttribute("language") String language) {
         //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-        return tmgScheduleBean.selectIkkaInfo();
+        return tmgScheduleBean.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
     }
 
     /**
