@@ -94,34 +94,34 @@
                 </Col>
             </Row>
         </div>
+        <div style="position: relative;">
+            <Row :gutter="10" class="mt5 mb15 tc">
+                <i-col span="4">
+                    <div class="label">公休日数</div>
+                    <div class="person-info">{{paidHolidayVO.nationalHolidayDays}}</div>
+                </i-col>
+                <i-col span="4">
+                    <div class>
+                        <div class="label">基準日数</div>
+                        <div class="person-info">{{paidHolidayVO.dateOfRecordDays}}</div>
+                    </div>
+                </i-col>
+                <i-col span="4">
+                    <div class="label">基準時間</div>
+                    <div class="person-info">{{paidHolidayVO.dateOfRecord}}</div>
+                </i-col>
+                <i-col span="4">
+                    <div class="label">年次休暇残</div>
+                    <div class="person-info">{{paidHolidayVO.npaidRestDaysHour}}</div>
+                </i-col>
+            </Row>
 
-        <Row :gutter="10" class="mt5 mb15 tc">
-            <i-col span="4">
-                <div class="label">公休日数</div>
-                <div class="person-info">{{paidHolidayVO.nationalHolidayDays}}</div>
-            </i-col>
-            <i-col span="4">
-                <div class>
-                    <div class="label">基準日数</div>
-                    <div class="person-info">{{paidHolidayVO.dateOfRecordDays}}</div>
-                </div>
-            </i-col>
-            <i-col span="4">
-                <div class="label">基準時間</div>
-                <div class="person-info">{{paidHolidayVO.dateOfRecord}}</div>
-            </i-col>
-            <i-col span="4">
-                <div class="label">年次休暇残</div>
-                <div class="person-info">{{paidHolidayVO.npaidRestDaysHour}}</div>
-            </i-col>
-        </Row>
-
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             一括適用
         </div>
 
-        <Row v-if=" isEditable" class="mb10">
+            <Row v-if=" isEditable" class="mb10">
             <i-col span="3">
                 <div class="label">勤務パターン</div>
             </i-col>
@@ -132,7 +132,7 @@
             </i-col>
         </Row>
 
-        <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
+            <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
             <template slot-scope="{ row }" slot="workDivision">
                 <i-select  transfer v-model="pattern.workId"　@on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
@@ -187,13 +187,13 @@
             </template>
         </i-table>
 
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             勤務予定
         </div>
 
-        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
-                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList" :loading="loading"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
+                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)"
         >
 
@@ -259,7 +259,8 @@
                 <span v-else>{{ value[row._index].comment }}</span>
             </template>
         </i-table>
-
+            <Spin size="large" fix v-if="loading"></Spin>
+        </div>
         <Drawer title="週勤務パターン 編集" width="800" v-model="showWeek" draggable>
             <Row>
                 <i-col span="6" class="label">所属</i-col>
@@ -881,19 +882,12 @@
 
             },
             async getSelectIkkaInfo() {
-                this.loading=true
-                try {
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
                     //let data={"workPatternList":[{"CPATTERNID":"TMG_PATTERN|","CPATTERNNAME":"(変更しない)","JSON":{"dutyArray":[],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|08301300","CPATTERNNAME":"(4.50)_08:30-13:00","JSON":{"dutyArray":[{"NCLOSE":"780","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|08301600","CPATTERNNAME":"(6.75)_08:30-16:00","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301615","CPATTERNNAME":"(7.00)_08:30-16:15","JSON":{"dutyArray":[{"NCLOSE":"975","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301630","CPATTERNNAME":"(7.25)_08:30-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301645","CPATTERNNAME":"(7.50)_08:30-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301700","CPATTERNNAME":"(7:75)_08:30-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301715","CPATTERNNAME":"(8.00)_08:30-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08451700","CPATTERNNAME":"(7.50)_08:45-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"525","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001200","CPATTERNNAME":"(3.00)_09:00-12:00","JSON":{"dutyArray":[{"NCLOSE":"720","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09001300","CPATTERNNAME":"(4.00)_09:00-13:00","JSON":{"dutyArray":[{"NCLOSE":"780","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09001330","CPATTERNNAME":"(3.75)_09:00-13:30","JSON":{"dutyArray":[{"NCLOSE":"810","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001400","CPATTERNNAME":"(4.25)_09:00-14:00","JSON":{"dutyArray":[{"NCLOSE":"840","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001445","CPATTERNNAME":"(5.00)_09:00-14:45","JSON":{"dutyArray":[{"NCLOSE":"885","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001500","CPATTERNNAME":"(5.25)_09:00-15:00","JSON":{"dutyArray":[{"NCLOSE":"900","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001545","CPATTERNNAME":"(6.00)_09:00-15:45","JSON":{"dutyArray":[{"NCLOSE":"945","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001600","CPATTERNNAME":"(6.25)_09:00-16:00","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001630","CPATTERNNAME":"(6.75)_09:00-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001645","CPATTERNNAME":"(7.00)_09:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001700","CPATTERNNAME":"(7.25)_09:00-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001715","CPATTERNNAME":"(7.50)_09:00-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001730","CPATTERNNAME":"(7.75)_09:00-17:30","JSON":{"dutyArray":[{"NCLOSE":"1050","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151215","CPATTERNNAME":"(3.00)_09:15-12:45","JSON":{"dutyArray":[{"NCLOSE":"765","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09151400","CPATTERNNAME":"(4.00)_09:15-14:00","JSON":{"dutyArray":[{"NCLOSE":"840","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151500","CPATTERNNAME":"(5.00)_09:15-15:00","JSON":{"dutyArray":[{"NCLOSE":"900","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151600","CPATTERNNAME":"(6.00)_09:15-1600","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151700","CPATTERNNAME":"(7.00)_09:45-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301230","CPATTERNNAME":"(3.00)_09:30-12:30","JSON":{"dutyArray":[{"NCLOSE":"750","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09301515","CPATTERNNAME":"(5.00)_09:30-15:15","JSON":{"dutyArray":[{"NCLOSE":"915","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301615","CPATTERNNAME":"(6.00)_09:30-16:15","JSON":{"dutyArray":[{"NCLOSE":"975","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301700","CPATTERNNAME":"(6.75)_09:30-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301715","CPATTERNNAME":"(7.00)_09:30-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301745","CPATTERNNAME":"(7.50)_09:30-17:45","JSON":{"dutyArray":[{"NCLOSE":"1065","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301800","CPATTERNNAME":"(7.75)_09:30-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09451630","CPATTERNNAME":"(6.00)_09:45-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09451800","CPATTERNNAME":"(7.50)_09:45-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001445","CPATTERNNAME":"(4.00)_10:00-14:45","JSON":{"dutyArray":[{"NCLOSE":"885","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001545","CPATTERNNAME":"(5.00)_10:00-15:45","JSON":{"dutyArray":[{"NCLOSE":"945","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001645","CPATTERNNAME":"(6.00)_10:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001745","CPATTERNNAME":"(7.00)_10:00-17:45","JSON":{"dutyArray":[{"NCLOSE":"1065","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10151800","CPATTERNNAME":"(7.00)_10:15-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"615","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10451630","CPATTERNNAME":"(5.00)_10:45-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"645","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|11001645","CPATTERNNAME":"(5.00)_11:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"660","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|12451645","CPATTERNNAME":"(4.00)_12:45-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"765","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}}],"kubunnList":[{"MGD_CMASTERCODE":"TMG_WORK|000","MGD_CGENERICDETAILDESC":"出勤"},{"MGD_CMASTERCODE":"TMG_WORK|480","MGD_CGENERICDETAILDESC":"勤務を要しない日"},{"MGD_CMASTERCODE":"TMG_WORK|500","MGD_CGENERICDETAILDESC":"法定休"},{"MGD_CMASTERCODE":"TMG_WORK|570","MGD_CGENERICDETAILDESC":"所定休"},{"MGD_CMASTERCODE":"TMG_WORK|800","MGD_CGENERICDETAILDESC":"休職（無給）"},{"MGD_CMASTERCODE":"TMG_WORK|801","MGD_CGENERICDETAILDESC":"休職（有給）"},{"MGD_CMASTERCODE":"TMG_WORK|805","MGD_CGENERICDETAILDESC":"停職"},{"MGD_CMASTERCODE":"TMG_WORK|810","MGD_CGENERICDETAILDESC":"育児休業"},{"MGD_CMASTERCODE":"TMG_WORK|811","MGD_CGENERICDETAILDESC":"介護休業"},{"MGD_CMASTERCODE":"TMG_WORK|820","MGD_CGENERICDETAILDESC":"自己啓発休業"}],"syuccyouList":[{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|00","MGD_CGENERICDETAILDESC":"なし"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|01","MGD_CGENERICDETAILDESC":"出張(国内)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|02","MGD_CGENERICDETAILDESC":"出張(海外)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|03","MGD_CGENERICDETAILDESC":"出張(移動日)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|04","MGD_CGENERICDETAILDESC":"研修"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|05","MGD_CGENERICDETAILDESC":"講習"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|06","MGD_CGENERICDETAILDESC":"留学(国内)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|07","MGD_CGENERICDETAILDESC":"留学(海外)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|08","MGD_CGENERICDETAILDESC":"外勤"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|09","MGD_CGENERICDETAILDESC":"職場外(部署外)勤務"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|10","MGD_CGENERICDETAILDESC":"赴任"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|11","MGD_CGENERICDETAILDESC":"帰住"}]}
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
-                }
             },
             async getOrgTree() {
                 try {

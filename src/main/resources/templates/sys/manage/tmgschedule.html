@@ -96,8 +96,8 @@
                 </Col>
             </Row>
         </div>
-
-        <Row :gutter="10" class="mt5 mb15 tc">
+        <div style="position: relative;">
+            <Row :gutter="10" class="mt5 mb15 tc">
             <i-col span="4">
                 <div class="label">公休日数</div>
                 <div class="person-info">{{paidHolidayVO.nationalHolidayDays}}</div>
@@ -118,12 +118,12 @@
             </i-col>
         </Row>
 
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             一括適用
         </div>
 
-        <Row v-if=" isEditable" class="mb10">
+            <Row v-if=" isEditable" class="mb10">
             <i-col span="3">
                 <div class="label">勤務パターン</div>
             </i-col>
@@ -134,7 +134,7 @@
             </i-col>
         </Row>
 
-        <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
+            <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
             <template slot-scope="{ row }" slot="workDivision">
                 <i-select  transfer v-model="pattern.workId" @on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
@@ -189,13 +189,13 @@
             </template>
         </i-table>
 
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             勤務予定
-        </div>
+            </div>
 
-        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
-                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList" :loading="loading"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
+                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)"
         >
 
@@ -261,6 +261,8 @@
                 <span v-else>{{ value[row._index].comment }}</span>
             </template>
         </i-table>
+            <Spin size="large" fix v-if="loading"></Spin>
+        </div>
     </div>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
             <Icon size="24" type="md-arrow-round-up" />
@@ -582,9 +584,6 @@
 
             },
             async getSelectIkkaInfo() {
-                this.loading=true
-                try {
-
                     this.query.sectionid= e[0].secid
                     this.query.language='ja'
                     this.query.groupid='null'
@@ -597,11 +596,6 @@
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
-                }
             },
             async getOrgTree() {
                 this.empDeptLoading = true
