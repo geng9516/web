@@ -350,6 +350,7 @@
                 const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                 this.tableData = data.tmgMonthlyInfoVOList
                 this.approval = data.approval
+                this.isSearchHistory = false
             },
             async getTmgMonthlyInfoVOList() {
                 this.query.txtAction = 'ACT_DISP_MONTHLY'
