@@ -148,20 +148,20 @@
             </template>
 
             <template slot-scope="{ row }" slot="startTime">
-                <i-input v-model="pattern.nopen" :disabled="!patternDisabled"/>
+                <i-input v-model="pattern.nopen" :disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nopen', $event.target)"/>
             </template>
 
             <template slot-scope="{ row }" slot="endTime">
-                <i-input v-model="pattern.nclose" :disabled="!patternDisabled"/>
+                <i-input v-model="pattern.nclose" :disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern,'nclose', $event.target)"/>
             </template>
 
             <template slot-scope="{ row }" slot="restTime" >
                 <Row :gutter="10" v-for="(item, i) of pattern.restList" :key="i" class="mb5" >
                     <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                        <i-input v-model="pattern.restList[i].restOpen"　:disabled="!patternDisabled"/>
+                        <i-input v-model="pattern.restList[i].restOpen"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restOpen', $event.target)"/>
                     </i-col>
                     <i-col :span="pattern.restList.length > 1 ? 8 : 12">
-                        <i-input v-model="pattern.restList[i].restClose"　:disabled="!patternDisabled"/>
+                        <i-input v-model="pattern.restList[i].restClose"　:disabled="!patternDisabled" @on-blur="handleInputChange(row._index, pattern.restList[i],'restClose', $event.target)"/>
                     </i-col>
                     <i-col span="8" v-show="pattern.restList.length > 1">
                         <i-button ghost type="error" @click="handleMinusRest(pattern.restList, i)">-</i-button>
@@ -253,7 +253,7 @@
                     </i-button>
 
                 </div>
-                <span v-for="(item) of value[row._index].restList" v-else>{{item.restOpen}}-{{item.restClose}}</span>
+                <span v-for="(item,i) of value[row._index].restList" v-else>{{i==0?"":" / "}}{{item.restOpen}}-{{item.restClose}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="remark">
@@ -272,6 +272,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                valuebak:[],
                 patternDisabled:false,
                 yyyyMMdd:'',
                 pattern:{nclose:"",nopen:"",workId:"",bussinessTripid:"",restList:[]},
@@ -354,7 +355,15 @@
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                    content:{}
+                    content:{},
+
+                    //
+                    sectionid:'',
+                    groupid:'',
+                    baseDate:'',
+                    custId:'',
+                    compId:'',
+                    language:'',
                 },
             }
         },
@@ -455,14 +464,20 @@
                 this.$refs.selection2.selectAll(status)
 
                 //一括適用
-                const that = this
-                this.value.forEach(item=>{
-                    Object.keys(item).forEach(function(key) {
-                        if(key in that.pattern) {
-                            item[key]=that.pattern[key]
-                        }
+                if(status){
+                    const that = this
+                    this.value.forEach(item=>{
+                        Object.keys(item).forEach(function(key) {
+                            if(key in that.pattern) {
+                                item[key]=that.pattern[key]
+                            }
+                        })
                     })
-                })
+                }else{
+                    this.value=JSON.parse(JSON.stringify(this.valuebak))
+                }
+
+
             },
             handleMinusRest(e, i) {
                 e.splice(i, 1)
@@ -531,6 +546,7 @@
                             "restList":restList
                         }
                     })
+                    this.valuebak=JSON.parse(JSON.stringify(this.value))
                 } catch (error) {
                     return
                 } finally {
@@ -568,6 +584,14 @@
             async getSelectIkkaInfo() {
                 this.loading=true
                 try {
+
+                    this.query.sectionid= e[0].secid
+                    this.query.language='ja'
+                    this.query.groupid='null'
+                    this.query.baseDate=Utils.formatDate(Date.now())
+                    this.query.custId=e[0].cust
+                    this.query.compId=e[0].comp
+
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
