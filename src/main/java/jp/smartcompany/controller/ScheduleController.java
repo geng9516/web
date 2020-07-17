@@ -203,7 +203,7 @@ public class ScheduleController {
      * @param txtEndDate
      * @param psDBBean
      */
-    @GetMapping("executeMakeWeekPattern")
+    @PostMapping("executeMakeWeekPattern")
     @ResponseBody
     public void executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
                                              @RequestParam("txtEndDate") String txtEndDate,
