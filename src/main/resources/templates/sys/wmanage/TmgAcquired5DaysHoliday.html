@@ -161,7 +161,7 @@
                     </Row>
                     <div class="titlenorm mb10 mt20">
                     </div>
-                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="loading" class="mb30">
+                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="takenDaysDataLoading" class="mb30">
                     </i-table>
                 </span>
         </Modal>
@@ -318,6 +318,7 @@
                 tableHead: [],
                 tableData: [],
                 loading: false,
+                takenDaysDataLoading: false,
                 referListObject: {
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -405,6 +406,7 @@
 
         async handleBtn(e) {
                 console.log(e)
+
                 this.privateInfo.taKijyunbi = e.basedDay
                 this.privateInfo.sumSyutokudays = e.takenDays
 
@@ -416,12 +418,13 @@
                 this.query.kijunbi = e.basedDay
                 this.query.pdSearchStart = e.tpDntfSurveyStart
                 this.query.pdSearchEnd = e.tpDntfSurveyEnd
-
-                const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
-                this.takenDaysData =data
-
+                //まずは年5日時季指定取得確認画面を開く
                 this.isShow = true
                 this.isSeason = true
+                this.takenDaysDataLoading = true
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
+                this.takenDaysData =data
+                this.takenDaysDataLoading = false
             },
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
