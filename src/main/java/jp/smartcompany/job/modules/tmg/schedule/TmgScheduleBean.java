@@ -1416,7 +1416,7 @@ public class TmgScheduleBean {
                     tmgWeekPatternCheckDTO.setCheckFlag(true);
                     tmgWeekPatternCheckDTO.setPeriod(weekPatternInputDTO.getApplyStart() + "-" + weekPatternInputDTO.getApplyEnd());
                     if (null != jsonObject.get("applyList")) {
-                        weekPatternFormDTOList = JSONUtil.parseArray(jsonObject.get("applyList")).toBean((Type) WeekPatternFormDTO.class);
+                        weekPatternFormDTOList = JSONUtil.parseArray(jsonObject.get("applyList")).toList(WeekPatternFormDTO.class);
                         for (int i = 0; i < weekPatternFormDTOList.size(); i++) {
                             WeekPatternFormDTO weekPatternFormDTO = weekPatternInputDTO.getWeekPatternFormDTOList().get(i);
                             if ("0".equals(weekPatternFormDTO.getWorkFlag())) {
