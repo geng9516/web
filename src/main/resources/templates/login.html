@@ -66,9 +66,9 @@
                     clock: '出勤',
                     exit: '退勤'
                 },
-                clockData:{
-                    startTime:'',
-                    endTime:''
+                clockData: {
+                    startTime: '',
+                    endTime: ''
                 },
                 ruleValidate: {
                     username: [
@@ -148,6 +148,12 @@
                 var isPass = this.formCheck()
                 if (isPass) {
                     if (pAction) {
+                        if (pAction === "ACT_EXEC_OPEN") {
+                            this.clocking = true
+                        } else {
+                            this.exiting = true
+                        }
+
                         try {
                             const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
                             console.log(data)
@@ -174,7 +180,7 @@
                                     } else {
                                         this.clockData.endTime = data.clockTime
                                         this.clockBtn.exit = '退勤(' + data.clockTime + ')'
-                                        this.$Notice.info({title: '打刻成功', desc:  data.resultMsg})
+                                        this.$Notice.info({title: '打刻成功', desc: data.resultMsg})
                                     }
                                 } else {
                                     //打刻失敗(10,20,30)
