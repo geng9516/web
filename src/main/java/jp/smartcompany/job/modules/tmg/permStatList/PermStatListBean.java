@@ -87,6 +87,7 @@ public class PermStatListBean {
 
     public static final String APPLICATION_ID = "PermStatList";
 
+    private TmgReferList referList;
     /**
      * リクエストキー - アクション
      */
@@ -184,28 +185,28 @@ public class PermStatListBean {
      */
     private String _reqDYYYYMM = null;
 
-    /**
-     * 対象年月の前月
-     */
-    private String _prevMonth = null;
-    /**
-     * 対象年月の翌月
-     */
-    private String _nextMonth = null;
+//    /**
+//     * 対象年月の前月
+//     */
+//    private String _prevMonth = null;
+//    /**
+//     * 対象年月の翌月
+//     */
+//    private String _nextMonth = null;
     /**
      * 今月
      */
     private String _thisMonth = null;
 
-    /**
-     * 対象組織が選択されているかどうかを表します。
-     * <p>
-     * true(選択あり) / false(選択なし) <br>
-     * 初回遷移時などでは汎用参照コンポーネントで組織が選択されていない状態
-     * のためfalseとなります。
-     * </p>
-     */
-    private boolean _isSelectSection = false;
+//    /**
+//     * 対象組織が選択されているかどうかを表します。
+//     * <p>
+//     * true(選択あり) / false(選択なし) <br>
+//     * 初回遷移時などでは汎用参照コンポーネントで組織が選択されていない状態
+//     * のためfalseとなります。
+//     * </p>
+//     */
+//    private boolean _isSelectSection = false;
 
     /**
      * 勤怠シートの参照権限(基準日の翌月)
@@ -215,14 +216,14 @@ public class PermStatListBean {
      * 勤怠シートの参照権限(基準月)
      */
     boolean _authorityMonth = false;
-    /**
-     * 参照権限：参照可能
-     */
-    private static final boolean CB_CAN_REFER = true;
-    /**
-     * 参照権限：参照不可能
-     */
-    private static final boolean CB_CANT_REFER = false;
+//    /**
+//     * 参照権限：参照可能
+//     */
+//    private static final boolean CB_CAN_REFER = true;
+//    /**
+//     * 参照権限：参照不可能
+//     */
+//    private static final boolean CB_CANT_REFER = false;
 
     /**
      * 検索対象年月を返す
@@ -308,7 +309,7 @@ public class PermStatListBean {
      *
      * @see TmgReferList#setTargetEmployee(String)
      */
-    private void executeRedirect(ModelMap modelMap, PsDBBean psDBBean, TmgReferList referList) {
+    private void executeRedirect(ModelMap modelMap, PsDBBean psDBBean) {
 
         String reqEmployeeId = String.valueOf(psDBBean.getRequestHash().get(REQ_CEMPLOYEEID));
         String sBean = psDBBean.getReqParam(REQ_REDIRECT_BEAN);
@@ -423,7 +424,7 @@ public class PermStatListBean {
      * @return 判定結果（true：対象者、false：対象外者）
      * @throws Exception
      */
-    public boolean isDisableNoOverHourpermApprovalEmp(String empId, String targetDate, String nonAppOverhourFlg, PsDBBean psDBBean, TmgReferList referList) throws Exception {
+    public boolean isDisableNoOverHourpermApprovalEmp(String empId, String targetDate, String nonAppOverhourFlg, PsDBBean psDBBean) throws Exception {
         // 機能の使用可否設定
         String gDisableNoOverhourpermApproval = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROP_NAME_TMG_DISABLE_NO_OVERHOURPERM_APPROVAL);
         // 設定を返す
@@ -518,10 +519,10 @@ public class PermStatListBean {
      * @param psEndDay     対象期間終了日
      * @return String(表示しない ： disabled 、 表示する ： 空白)
      */
-    public String getEnableCheckBox(String psDailyCount, String psEmployeeId, String psStatus, String psStartDay, String psEndDay, TmgReferList referList) {
+    public String getEnableCheckBox(String psDailyCount, String psEmployeeId, String psStatus, String psStartDay, String psEndDay) {
 
         if (CsApprovedDailyCount.equals(psDailyCount) && !TmgUtil.Cs_MGD_DATASTATUS_5.equals(psStatus) &&
-                existsDispMonthlyApproval(psEmployeeId, psStartDay, psEndDay, referList)) {
+                existsDispMonthlyApproval(psEmployeeId, psStartDay, psEndDay)) {
             return "";
         }
 
@@ -546,7 +547,7 @@ public class PermStatListBean {
      *
      * @return boolean 表示制御値
      */
-    public boolean isDispEnableBatchApproval(PsDBBean psDBBean, List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList, TmgReferList referList) {
+    public boolean isDispEnableBatchApproval(PsDBBean psDBBean, List<TmgMonthlyInfoVO> tmgMonthlyInfoVOList) {
 
         if (!isMonthlyApproval(psDBBean)) {
             return false;
@@ -558,7 +559,7 @@ public class PermStatListBean {
                     TmgUtil.Cs_MGD_DATASTATUS_0.equals(tmgMonthlyInfoVO.getTmoCstatusflg())) {
 
                 return existsDispMonthlyApproval(tmgMonthlyInfoVO.getEmpid(),
-                        getReqDYYYYMM(), tmgMonthlyInfoVO.getLastBaseDate(), referList);
+                        getReqDYYYYMM(), tmgMonthlyInfoVO.getLastBaseDate());
             }
         }
 
@@ -570,7 +571,7 @@ public class PermStatListBean {
      *
      * @return boolean(true : 権限あり 、 false : 権限なし)
      */
-    private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay, TmgReferList referList) {
+    private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay) {
 
         try {
 
@@ -685,134 +686,139 @@ public class PermStatListBean {
 
         return days;
     }
-
-    /**
-     * メインメソッド。
-     */
-    public TmgReferList execute(PsDBBean psDBBean) throws Exception {
-
-        TmgReferList referList = setExecuteParameter(psDBBean);
-
-        // ■初期表示時：
-        //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
-        //   評価状況一覧コンテンツの参照権限をチェックする。
-        //   参照権限がある場合は、問題なく評価状況一覧を表示する。
-        //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
-        //   1ヶ月遡った月の参照権限があればその月の評価状況一覧を表示し、
-        //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
-        //   メッセージを画面へ表示する。
-        // ■初期表示以外：
-        //   選択した組織、(もしくはグループ)の対象年月時点での評価状況一覧コンテンツの参照権限をチェックする。
-        //   権限があれば問題なく評価状況一覧を表示する。
-        //   権限が無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
-        //   メッセージを画面へ表示する。
-        //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
-        //     権限が無いのと同じ扱いとする。
-        // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
-        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
-            // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
-            // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
-            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) ||
-                    TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) && isSelectSection()
-            ) {
-                // 参照権限チェック(現在時点での年月)
-                if (referList.existsAnyone(getFirstDayOfSysdate()) && referList.isThereSomeEmployees(getFirstDayOfSysdate())) {
-                    setAuthorityMonth(CB_CAN_REFER);
-
-                    // 参照権限が無い場合は、1ヶ月過去のシートの権限をチェックする。
-                } else {
-                    String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
-
-                    // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
-                    referList = new TmgReferList(psDBBean, "PermStatList", sPrevMonth, TmgReferList.TREEVIEW_TYPE_LIST, true);
-
-                    // 参照権限の設定:
-                    // 初期表示時の対象年月の時点の参照権限が無い場合に、
-                    // 1ヶ月過去の参照権限を判定し参照権限がある場合は1ヶ月過去のシートを参照する。
-                    // 権限が無い場合は、参照できない。
-                    if (referList.existsAnyone(sPrevMonth) && referList.isThereSomeEmployees(sPrevMonth)) {
-
-                        // 対象年月が現在の年月の場合、1ヶ月過去の年月を対象年月に設定します
-                        // このif文は、現在「部署A」を選択していて対象年月が変更された状態で「組織B」を選択しなおすと
-                        // 「組織B」の現在日付時点の年月と、その年月-1ヶ月時点での参照権限をチェックします。
-                        // その際に、変更後対象年月が現在年月でない場合にも現在年月-1ヶ月を設定されるのを防ぐ為
-                        // 「対象年月が現在の年月の場合」という条件を実装しています。
-                        if (getFirstDayOfSysdate().equals(getReqDYYYYMM())) {
-                            // 対象年月を1ヶ月過去に設定します
-                            setReqDYYYYMM(sPrevMonth);
-                            // 検索対象年月の前月
-                            _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
-                            // 検索対象年月の翌月
-                            _nextMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_NEXT_MONTH);
-                        }
-                        setAuthorityMonth(CB_CAN_REFER);
-                    } else {
-                        // 対象年月を元に戻します
-
-                        referList = new TmgReferList(psDBBean, "PermStatList", getReqDYYYYMM(), TmgReferList.TREEVIEW_TYPE_LIST, true);
-
-                        setAuthorityMonth(CB_CANT_REFER);
-                    }
-                }
-
-                // 2007/08/07 	H.Kawabata		参照権限チェック仕様変更対応
-                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
-                // 翌月の権限があればリンク「>」を画面に表示する。
-                // 権限が無い場合は「>」を表示しない。
-                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
-                //   権限が無いのと同じ扱いとする。
-                if (referList.existsAnyone(getNextMonth()) && referList.isThereSomeEmployees(getNextMonth())) {
-                    setAuthorityNextMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityNextMonth(CB_CANT_REFER);
-                }
-
-                // 初期表示時以外
-                // ※組織を選択していないときは権限チェックを行わない。
-                // 　勤怠管理サイトで組織未選択時に権限チェックを行うとえらーで落ちてしまうので
-                // 　それを防ぐ為に「組織を選択しているとき」という条件を実装しています。
-            } else if (isSelectSection()) {
-                // 参照権限の判定：設定(当月分)
-                // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
-                String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
-                if (referList.existsAnyone(getFirstDayOfSysdate()) && referList.isThereSomeEmployees(getFirstDayOfSysdate()) ||
-                        referList.existsAnyone(sPrevMonth) && referList.isThereSomeEmployees(sPrevMonth)
-                ) {
-                    setAuthorityMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityMonth(CB_CANT_REFER);
-                }
-
-                // 2007/08/07 	H.Kawabata		参照権限チェック仕様変更対応
-                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
-                // 翌月の権限があればリンク「>」を画面に表示する。
-                // 権限が無い場合は「>」を表示しない。
-                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
-                //   権限が無いのと同じ扱いとする。
-                if (referList.existsAnyone(getNextMonth()) && referList.isThereSomeEmployees(getNextMonth())) {
-                    setAuthorityNextMonth(CB_CAN_REFER);
-                } else {
-                    setAuthorityNextMonth(CB_CANT_REFER);
-                }
-            }
-            // その他のサイトの場合
-        } else {
-            setAuthorityMonth(CB_CAN_REFER);
-        }
-
-        return referList;
-    }
+//
+//    /**
+//     * メインメソッド。
+//     */
+//    public void execute(PsDBBean psDBBean) throws Exception {
+//
+//        setExecuteParameter(psDBBean);
+//
+//        // ■初期表示時：
+//        //   　選択した組織、(もしくはグループ)の対象年月(デフォルトでは現在日付時点の年月)時点での
+//        //   評価状況一覧コンテンツの参照権限をチェックする。
+//        //   参照権限がある場合は、問題なく評価状況一覧を表示する。
+//        //   　しかし、参照権限が無い場合は1ヶ月遡った月の参照権限をチェックする。
+//        //   1ヶ月遡った月の参照権限があればその月の評価状況一覧を表示し、
+//        //   1ヶ月遡った月の参照権限も無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
+//        //   メッセージを画面へ表示する。
+//        // ■初期表示以外：
+//        //   選択した組織、(もしくはグループ)の対象年月時点での評価状況一覧コンテンツの参照権限をチェックする。
+//        //   権限があれば問題なく評価状況一覧を表示する。
+//        //   権限が無い場合は画面に「参照できる職員が存在しません」(文言変更有り)
+//        //   メッセージを画面へ表示する。
+//        //   ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
+//        //     権限が無いのと同じ扱いとする。
+//        // 勤怠承認サイト、もしくは勤怠管理サイトの場合に以下の処理を実行する
+//        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) || TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
+//            // 勤怠承認サイトは初期表示時、勤怠管理サイトは初期表示+(組織選択時or組織選択済)の場合
+//            // ※勤怠管理サイトの場合、初期表示時でも組織が選択されていない状態なら権限チェックを行わない
+//            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) ||
+//                    TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId()) && StrUtil.isEmpty(_sAction) && isSelectSection()
+//            ) {
+//                // 参照権限チェック(現在時点での年月)
+//                if (referList.existsAnyone(getFirstDayOfSysdate()) && referList.isThereSomeEmployees(getFirstDayOfSysdate())) {
+//                    setAuthorityMonth(CB_CAN_REFER);
+//
+//                    // 参照権限が無い場合は、1ヶ月過去のシートの権限をチェックする。
+//                } else {
+//                    String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
+//
+//                    // 汎用参照コンポーネントの基準日を基準日の前月(過去)に設定しなおす
+//                    referList = new TmgReferList(psDBBean, "PermStatList", sPrevMonth, TmgReferList.TREEVIEW_TYPE_LIST, true);
+//
+//                    // 参照権限の設定:
+//                    // 初期表示時の対象年月の時点の参照権限が無い場合に、
+//                    // 1ヶ月過去の参照権限を判定し参照権限がある場合は1ヶ月過去のシートを参照する。
+//                    // 権限が無い場合は、参照できない。
+//                    if (referList.existsAnyone(sPrevMonth) && referList.isThereSomeEmployees(sPrevMonth)) {
+//
+//                        // 対象年月が現在の年月の場合、1ヶ月過去の年月を対象年月に設定します
+//                        // このif文は、現在「部署A」を選択していて対象年月が変更された状態で「組織B」を選択しなおすと
+//                        // 「組織B」の現在日付時点の年月と、その年月-1ヶ月時点での参照権限をチェックします。
+//                        // その際に、変更後対象年月が現在年月でない場合にも現在年月-1ヶ月を設定されるのを防ぐ為
+//                        // 「対象年月が現在の年月の場合」という条件を実装しています。
+//                        if (getFirstDayOfSysdate().equals(getReqDYYYYMM())) {
+//                            // 対象年月を1ヶ月過去に設定します
+//                            setReqDYYYYMM(sPrevMonth);
+//                            // 検索対象年月の前月
+//                            _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
+//                            // 検索対象年月の翌月
+//                            _nextMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_NEXT_MONTH);
+//                        }
+//                        setAuthorityMonth(CB_CAN_REFER);
+//                    } else {
+//                        // 対象年月を元に戻します
+//
+//                        referList = new TmgReferList(psDBBean, "PermStatList", getReqDYYYYMM(), TmgReferList.TREEVIEW_TYPE_LIST, true);
+//
+//                        setAuthorityMonth(CB_CANT_REFER);
+//                    }
+//                }
+//
+//                // 2007/08/07 	H.Kawabata		参照権限チェック仕様変更対応
+//                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+//                // 翌月の権限があればリンク「>」を画面に表示する。
+//                // 権限が無い場合は「>」を表示しない。
+//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
+//                //   権限が無いのと同じ扱いとする。
+//                if (referList.existsAnyone(getNextMonth()) && referList.isThereSomeEmployees(getNextMonth())) {
+//                    setAuthorityNextMonth(CB_CAN_REFER);
+//                } else {
+//                    setAuthorityNextMonth(CB_CANT_REFER);
+//                }
+//
+//                // 初期表示時以外
+//                // ※組織を選択していないときは権限チェックを行わない。
+//                // 　勤怠管理サイトで組織未選択時に権限チェックを行うとえらーで落ちてしまうので
+//                // 　それを防ぐ為に「組織を選択しているとき」という条件を実装しています。
+//            } else if (isSelectSection()) {
+//                // 参照権限の判定：設定(当月分)
+//                // 当月もしくは、先月どちらかの権限が有効な場合は過去に関しては常に表示する(シートがある限り)
+//                String sPrevMonth = TmgUtil.getFirstDayOfMonth(getFirstDayOfSysdate(), PARAM_PREV_MONTH);
+//                if (referList.existsAnyone(getFirstDayOfSysdate()) && referList.isThereSomeEmployees(getFirstDayOfSysdate()) ||
+//                        referList.existsAnyone(sPrevMonth) && referList.isThereSomeEmployees(sPrevMonth)
+//                ) {
+//                    setAuthorityMonth(CB_CAN_REFER);
+//                } else {
+//                    setAuthorityMonth(CB_CANT_REFER);
+//                }
+//
+//                // 2007/08/07 	H.Kawabata		参照権限チェック仕様変更対応
+//                // 選択した組織、(もしくはグループ)の対象年月の翌月(未来の月)の権限をチェックする。
+//                // 翌月の権限があればリンク「>」を画面に表示する。
+//                // 権限が無い場合は「>」を表示しない。
+//                // ※また、権限はあるが選択している組織(もしくはグループ)に所属している職員が存在しない場合も
+//                //   権限が無いのと同じ扱いとする。
+//                if (referList.existsAnyone(getNextMonth()) && referList.isThereSomeEmployees(getNextMonth())) {
+//                    setAuthorityNextMonth(CB_CAN_REFER);
+//                } else {
+//                    setAuthorityNextMonth(CB_CANT_REFER);
+//                }
+//            }
+//            // その他のサイトの場合
+//        } else {
+//            setAuthorityMonth(CB_CAN_REFER);
+//        }
+//
+//
+//    }
 
     /**
      * 処理実行用パラメータの設定を行います。
      *
      * @throws Exception
      */
-    public TmgReferList setExecuteParameter(PsDBBean psDBBean) throws Exception {
+    public void setExecuteParameter(PsDBBean psDBBean,String txtTmgReferListTreeViewRecordDate) throws Exception {
 
         _sAction = (String) psDBBean.getRequestHash().get(REQ_ACTION);
         _reqDYYYYMM = (String) psDBBean.getRequestHash().get(REQ_DYYYYMM);
         _reqDYYYYMMDD = (String) psDBBean.getRequestHash().get(REQ_DYYYYMMDD);
+        String recordDate = txtTmgReferListTreeViewRecordDate;
+
+        if(recordDate == null|| recordDate.length() == 0){
+            recordDate = psDBBean.getSysDate();
+        }
 
         // 検索対象年月の入力がなければ、現在日付月初を検索対象年月する。
         if (_reqDYYYYMM == null || _reqDYYYYMM.length() == 0) {
@@ -820,28 +826,28 @@ public class PermStatListBean {
         }
 
         // TmgReferListの生成
-        TmgReferList referList = new TmgReferList(psDBBean, "PermStatList", _reqDYYYYMM, TmgReferList.TREEVIEW_TYPE_LIST, true);
+       referList = new TmgReferList(psDBBean, "PermStatList", recordDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
 
         // 組織コードの取得
         _reqSectionId = referList.getTargetSec();
 
-        // 組織が選択されているか確認
-        if (_reqSectionId == null || _reqSectionId.length() == 0) {
-            _isSelectSection = false;
-        } else {
-            _isSelectSection = true;
-        }
+//        // 組織が選択されているか確認
+//        if (_reqSectionId == null || _reqSectionId.length() == 0) {
+//            _isSelectSection = false;
+//        } else {
+//            _isSelectSection = true;
+//        }
 
-        // 検索対象年月の前月
-        _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
-        // 検索対象年月の翌月
-        _nextMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_NEXT_MONTH);
+//        // 検索対象年月の前月
+//        _prevMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_PREV_MONTH);
+//        // 検索対象年月の翌月
+//        _nextMonth = TmgUtil.getFirstDayOfMonth(_reqDYYYYMM, PARAM_NEXT_MONTH);
 
-        /*
-         * 初期表示時、または組織ツリー再表示時の表示対象日付設定を行う。
-         * 初期表示時は「getReqParm(REQ_ACTION)」がNULLとなる。
-         * 再表示ボタン押下時は「getReqParm(TREEVIEW_KEY_REFRESH_FLG)」に値が設定される。
-         */
+//        /*
+//         * 初期表示時、または組織ツリー再表示時の表示対象日付設定を行う。
+//         * 初期表示時は「getReqParm(REQ_ACTION)」がNULLとなる。
+//         * 再表示ボタン押下時は「getReqParm(TREEVIEW_KEY_REFRESH_FLG)」に値が設定される。
+//         */
         // 組織ツリー基準日情報チェック
         if (referList.getRecordDate() == null) {
             // 今月の月初
@@ -849,20 +855,19 @@ public class PermStatListBean {
         } else {
             // 組織ツリー基準日
             _thisMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
-
-            // 初期表示、再表示ボタン使用時処理
-            if (StrUtil.isEmpty(_sAction) || StrUtil.isNotEmpty(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
-
-                // 表示日付変更
-                _reqDYYYYMM = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
-                // 検索対象年月の前月
-                _prevMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_PREV_MONTH);
-                // 検索対象年月の翌月
-                _nextMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_NEXT_MONTH);
-            }
+//
+//            // 初期表示、再表示ボタン使用時処理
+//            if (StrUtil.isEmpty(_sAction) || StrUtil.isNotEmpty(psDBBean.getReqParam(TREEVIEW_KEY_REFRESH_FLG))) {
+//
+//                // 表示日付変更
+//                _reqDYYYYMM = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_THIS_MONTH);
+//                // 検索対象年月の前月
+//                _prevMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_PREV_MONTH);
+//                // 検索対象年月の翌月
+//                _nextMonth = TmgUtil.getFirstDayOfMonth(referList.getRecordDate(), PARAM_NEXT_MONTH);
+//            }
         }
 
-        return referList;
     }
 
     /**
@@ -884,14 +889,14 @@ public class PermStatListBean {
         return sdf.format(date);
     }
 
-    /**
-     * 対象組織有無フラグを返却します。
-     *
-     * @return 対象組織有無フラグ
-     */
-    public boolean isSelectSection() {
-        return _isSelectSection;
-    }
+//    /**
+//     * 対象組織有無フラグを返却します。
+//     *
+//     * @return 対象組織有無フラグ
+//     */
+//    public boolean isSelectSection() {
+//        return _isSelectSection;
+//    }
 
     /**
      * 勤怠シートの参照権限(基準日の翌月)設定メソッド
@@ -911,19 +916,19 @@ public class PermStatListBean {
         this._reqDYYYYMM = sValue;
     }
 
-    /**
-     * 対象年月の前月を返却します。
-     */
-    public String getPrevMonth() {
-        return _prevMonth;
-    }
-
-    /**
-     * 対象年月の翌月を返却します。
-     */
-    public String getNextMonth() {
-        return _nextMonth;
-    }
+//    /**
+//     * 対象年月の前月を返却します。
+//     */
+//    public String getPrevMonth() {
+//        return _prevMonth;
+//    }
+//
+//    /**
+//     * 対象年月の翌月を返却します。
+//     */
+//    public String getNextMonth() {
+//        return _nextMonth;
+//    }
 
     /**
      * 今月の月初を返却します。
@@ -937,7 +942,7 @@ public class PermStatListBean {
      *
      * @return String 今日の日付
      */
-    private String getToDay(TmgReferList referList) {
+    private String getToDay() {
 
         if (referList != null) {
             return referList.getRecordDate();
@@ -977,11 +982,10 @@ public class PermStatListBean {
      * 表示月遷移リスト情報を取得する
      *
      * @param psDBBean  PsDBBean
-     * @param referList TmgReferList
      * @return 表示月遷移リスト情報
      * @throws Exception
      */
-    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean, TmgReferList referList) throws Exception {
+    public List<DispMonthlyVO> dispMonthlyList(PsDBBean psDBBean) throws Exception {
 
         String empSql = referList.buildSQLForSelectEmployees();
         // 打刻反映処理を行う。
@@ -993,10 +997,9 @@ public class PermStatListBean {
     /**
      * 前月リンクを作成する為の勤怠データ件数を取得する
      *
-     * @param referList TmgReferList
      * @return int
      */
-    public int dispMonthlyPrev(TmgReferList referList) {
+    public int dispMonthlyPrev() {
 
         String empSql = referList.buildSQLForSelectEmployees();
         // 3 表示対象月の前月データを持つ職員数
@@ -1008,10 +1011,9 @@ public class PermStatListBean {
     /**
      * 翌月リンクを作成する為の勤怠データ件数を取得する
      *
-     * @param referList TmgReferList
      * @return int
      */
-    public int dispMonthlyNext(TmgReferList referList) {
+    public int dispMonthlyNext() {
 
         String empSql = referList.buildSQLForSelectEmployees();
 
@@ -1025,10 +1027,9 @@ public class PermStatListBean {
      * カレンダーテーブルより休日フラグを取得する
      *
      * @param psDBBean  PsDBBean
-     * @param referList TmgReferList
      * @return CalenderVo
      */
-    public CalenderVo selectGetCalendarList(PsDBBean psDBBean, TmgReferList referList) {
+    public CalenderVo selectGetCalendarList(PsDBBean psDBBean) {
         // 1 カレンダー情報の取得
         CalenderVo calenderVo = iTmgCalendarService.selectGetCalendarList(psDBBean.getCustID(),
                 psDBBean.getCompCode(), referList.getTargetSec(), referList.getTargetGroup(), getReqDYYYYMM().substring(0, 4), getReqDYYYYMM());
@@ -1039,10 +1040,9 @@ public class PermStatListBean {
      * 一覧のタイトル取得して、編集する
      *
      * @param psDBBean  PsDBBean
-     * @param referList TmgReferList
      * @return List<OneMonthDetailVo>
      */
-    public List<OneMonthDetailVo> selectDayCount(PsDBBean psDBBean, TmgReferList referList) {
+    public List<OneMonthDetailVo> selectDayCount(PsDBBean psDBBean) {
         // 2 対象勤務年月の1ヶ月間の日付・曜日を取得
         List<OneMonthDetailVo> oneMonthDetailVoList = iTmgCalendarService.selectDayCount(getReqDYYYYMM());
         // 1 カレンダー情報の取得
@@ -1068,10 +1068,9 @@ public class PermStatListBean {
      * 職員氏名と、承認ステータス状態を取得する
      *
      * @param psDBBean
-     * @param referList
      * @return Map
      */
-    public Map getTmgMonthlyInfoVOList(PsDBBean psDBBean, TmgReferList referList) {
+    public Map getTmgMonthlyInfoVOList(PsDBBean psDBBean) {
 
         String empSql = referList.buildSQLForSelectEmployees();
 
@@ -1095,7 +1094,7 @@ public class PermStatListBean {
                 psDBBean.getCompCode(),
                 getReqDYYYYMM(),
                 psDBBean.getLanguage(),
-                getToDay(referList),
+                getToDay(),
                 empSql,
                 colNameList
         );
@@ -1107,8 +1106,7 @@ public class PermStatListBean {
                     tmgMonthlyInfoVO.getEmpid(),
                     tmgMonthlyInfoVO.getTmoCstatusflg(),
                     getReqDYYYYMM(),
-                    tmgMonthlyInfoVO.getLastBaseDate(),
-                    referList);
+                    tmgMonthlyInfoVO.getLastBaseDate());
 
             // 月次承認対象の場合、対象職員を月次承認エラーチェックする。
             if ("".equals(sChkBoxStatus)) {
@@ -1126,7 +1124,7 @@ public class PermStatListBean {
 
         Map map = MapUtil.newHashMap();
         map.put("tmgMonthlyInfoVOList", tmgMonthlyInfoVOList);
-        boolean approval = isDispEnableBatchApproval(psDBBean, tmgMonthlyInfoVOList, referList);
+        boolean approval = isDispEnableBatchApproval(psDBBean, tmgMonthlyInfoVOList);
         map.put("approval", approval);
         return map;
     }
@@ -1142,7 +1140,7 @@ public class PermStatListBean {
      * @param psDBBean PsDBBean
      * @return 所属情報
      */
-    public String getSectionName(PsDBBean psDBBean, TmgReferList referList) {
+    public String getSectionName(PsDBBean psDBBean) {
 
         // 組織の職員取得ｓｑｌ
         String empSql = referList.buildSQLForSelectEmployees();
@@ -1151,7 +1149,7 @@ public class PermStatListBean {
         execReflectionTimePunch(empSql, psDBBean);
 
         // 所属情報
-        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(referList), psDBBean.getCustID(), psDBBean.getCompCode());
+        String sectionName = iMastOrganisationService.buildSQLForSelectEmployeeDetail(_reqSectionId, getToDay(), psDBBean.getCustID(), psDBBean.getCompCode());
         return sectionName;
     }
 
@@ -1160,7 +1158,7 @@ public class PermStatListBean {
      *
      * @return Map
      */
-    public Map getReadTmgDaily(PsDBBean psDBBean, TmgReferList referList) throws Exception {
+    public Map getReadTmgDaily(PsDBBean psDBBean) throws Exception {
 
         Map resultMap = MapUtil.newHashMap();
 
@@ -1245,7 +1243,7 @@ public class PermStatListBean {
             boolean flg = bAuthorityEmp
                     && TmgUtil.Cs_MGD_DATASTATUS_3.equals(sStatus)
                     && !isNoClosetpWithOvertime(psDBBean, String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")))
-                    && !isDisableNoOverHourpermApprovalEmp(sEmpId, getReqDYYYYMMDD(), String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")), psDBBean, referList);
+                    && !isDisableNoOverHourpermApprovalEmp(sEmpId, getReqDYYYYMMDD(), String.valueOf(map.get("NOTCLOSETPWITHOVERTIME_EMPNAME")), psDBBean);
             if (!flg) {
                 // チェックボックスを無効設定
                 sChkOption = "true";
@@ -1277,7 +1275,7 @@ public class PermStatListBean {
      * </p>
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void executeUpdateTmgDaily(PsDBBean psDBBean, TmgReferList referList) {
+    public void executeUpdateTmgDaily(PsDBBean psDBBean) {
 
         String[] empIds = ((String) psDBBean.getRequestHash().get(REQ_EXECUTEEMPID)).split(",");
 

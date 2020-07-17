@@ -41,9 +41,9 @@ public class PermStatListController {
     @GetMapping("dispTmgMonthlyList")
     @ResponseBody
     public List<DispMonthlyVO> dispMonthlyList(
-            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList = permStatListBean.execute(psDBBean);
-        List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean,referList);
+            @RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+       permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        List<DispMonthlyVO> dispMonthlyList = permStatListBean.dispMonthlyList(psDBBean);
         return dispMonthlyList;
     }
 
@@ -62,9 +62,9 @@ public class PermStatListController {
      */
     @GetMapping("dispMonthlyPrev")
     @ResponseBody
-    public int dispMonthlyPrev(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList = permStatListBean.execute(psDBBean);
-        int dispMonthlyPrev = permStatListBean.dispMonthlyPrev(referList);
+    public int dispMonthlyPrev(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        int dispMonthlyPrev = permStatListBean.dispMonthlyPrev();
         return dispMonthlyPrev;
     }
 
@@ -83,9 +83,9 @@ public class PermStatListController {
      */
     @GetMapping("dispMonthlyNext")
     @ResponseBody
-    public int dispMonthlyNext(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList =permStatListBean.execute(psDBBean);
-        int dispMonthlyNext = permStatListBean.dispMonthlyNext(referList);
+    public int dispMonthlyNext(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        int dispMonthlyNext = permStatListBean.dispMonthlyNext();
         return dispMonthlyNext;
     }
 
@@ -105,9 +105,9 @@ public class PermStatListController {
      */
     @GetMapping("getTmgMonthlyInfoVOList")
     @ResponseBody
-    public Map getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList =permStatListBean.execute(psDBBean);
-        Map map = permStatListBean.getTmgMonthlyInfoVOList(psDBBean, referList);
+    public Map getTmgMonthlyInfoVOList(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        Map map = permStatListBean.getTmgMonthlyInfoVOList(psDBBean);
         return map;
     }
 
@@ -126,9 +126,9 @@ public class PermStatListController {
      */
     @GetMapping("selectGetCalendarList")
     @ResponseBody
-    public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList =permStatListBean.execute(psDBBean);
-        CalenderVo calenderVo = permStatListBean.selectGetCalendarList(psDBBean, referList);
+    public CalenderVo selectGetCalendarList(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        CalenderVo calenderVo = permStatListBean.selectGetCalendarList(psDBBean);
         return calenderVo;
     }
 
@@ -145,14 +145,14 @@ public class PermStatListController {
      * @return List<OneMonthDetailVo>
      * @throws Exception
      */
-    @GetMapping("selectDayCount")
+    @GetMapping("selectDayHead")
     @ResponseBody
-    public ArrayList<HashMap> selectDayCount(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public ArrayList<HashMap> selectDayHead(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
 
         ArrayList<HashMap> ids = new ArrayList<>();
 
-        TmgReferList referList =permStatListBean.execute(psDBBean);
-        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean, referList);
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean);
 
         for (OneMonthDetailVo item : oneMonthDetailVoList){
             LinkedHashMap listHashMap = new LinkedHashMap();
@@ -180,9 +180,9 @@ public class PermStatListController {
      */
     @GetMapping("getSectionName")
     @ResponseBody
-    public String getSectionName(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList =permStatListBean.execute(psDBBean);
-        String sectionName = permStatListBean.getSectionName(psDBBean, referList);
+    public String getSectionName(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        String sectionName = permStatListBean.getSectionName(psDBBean);
         return sectionName;
     }
 
@@ -200,9 +200,9 @@ public class PermStatListController {
      */
     @GetMapping("getReadTmgDaily")
     @ResponseBody
-    public Map getReadTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList = permStatListBean.execute(psDBBean);
-        Map resultMap = permStatListBean.getReadTmgDaily(psDBBean, referList);
+    public Map getReadTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        Map resultMap = permStatListBean.getReadTmgDaily(psDBBean);
         return resultMap;
     }
 
@@ -220,9 +220,9 @@ public class PermStatListController {
      */
     @GetMapping("executeUpdateTmgDaily")
     @ResponseBody
-    public void executeUpdateTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList = permStatListBean.execute(psDBBean);
-        permStatListBean.executeUpdateTmgDaily(psDBBean, referList);
+    public void executeUpdateTmgDaily(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
+        permStatListBean.executeUpdateTmgDaily(psDBBean);
 
     }
 
@@ -240,8 +240,8 @@ public class PermStatListController {
      */
     @GetMapping("executeUpdateTmgMonthly")
     @ResponseBody
-    public void executeUpdateTmgMonthly(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        TmgReferList referList = permStatListBean.execute(psDBBean);
+    public void executeUpdateTmgMonthly(@RequestAttribute("BeanName") PsDBBean psDBBean, String txtTmgReferListTreeViewRecordDate) throws Exception {
+        permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
         permStatListBean.executeUpdateTmgMonthly(psDBBean);
 
     }
