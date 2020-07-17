@@ -78,7 +78,7 @@
                 </Row>
             </div>
             <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange"
-                :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+                :disabled-hover="true" :loading="listLoading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
                     <span @click="toWorkPage"
                         class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
@@ -144,7 +144,7 @@
                     rawData: [],
                     isShow: false,
                     showPre: true,
-                    loading: false,
+                    listLoading: false,
                     showDayApply: false,
                     emplistLoading: false,
                     referListObject: {
@@ -294,8 +294,6 @@
             methods: {
                 async getDispTmgMonthlyList() {
                     this.query.txtAction = 'ACT_DISP_MONTHLY'
-
-                    this.loading = false
                     const { data } = await this.http.get('sys/permStatList/dispTmgMonthlyList', this.query)
                     this.dispMonthlyList = data
 
@@ -324,14 +322,15 @@
                 },
                 async getTableHead() {
                     this.query.txtAction = 'ACT_DISP_MONTHLY'
-
-                    const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
+                    const { data } = await this.http.get('sys/permStatList/selectDayHead', this.query)
                     this.tableHead = data
                 },
                 async getTableData() {
+                    this.listLoading  = true
                     const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
                     this.tableData = data.tmgMonthlyInfoVOList
                     this.approval = data.approval
+                    this.listLoading  = false
                     this.isSearchHistory = false
                 },
                 async getTmgMonthlyInfoVOList() {
@@ -350,7 +349,6 @@
                     } catch (error) {
                         return
                     } finally {
-                        this.loading = false
                         this.empDeptLoading = false
                     }
                 },
