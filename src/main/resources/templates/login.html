@@ -29,14 +29,14 @@
                     </form-item>
                     <Row :gutter="16" class="mt10 mb5">
                         <i-col span="12">
-                            <i-button type="primary" size="large" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" ghost long>{{ clockBtn.clock }}</i-button>
+                            <i-button type="primary" size="large" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable" ghost long>{{ clockBtn.clock }}</i-button>
                         </i-col>
                         <i-col span="12">
-                            <i-button size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" long>{{ clockBtn.exit }}</i-button>
+                            <i-button size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{ clockBtn.exit }}</i-button>
                         </i-col>
                     </Row>
                     <form-item class="login-btn">
-                        <i-button @click="loging" type="primary" size="large" :loading="loading" long>
+                        <i-button @click="loging" type="primary" size="large" :loading="loading" :disabled="clockDisable"　long>
                             ログイン
                         </i-button>
                     </form-item>
@@ -62,6 +62,7 @@
                 loading: false,
                 clocking: false,
                 exiting: false,
+                clockDisable:false,
                 clockBtn: {
                     clock: '出勤',
                     exit: '退勤'
@@ -153,10 +154,10 @@
                         } else {
                             this.exiting = true
                         }
-
+                        this.clockDisable = true
                         try {
                             const {data} = await this.http.postForm('/stamping', {username: this.login.username, password: this.login.password, pAction: pAction})
-                            console.log(data)
+                            //console.log(data)
                             if (data) {
                                 //チェック合格
                                 if (data.resultCode === "0") {
@@ -193,6 +194,7 @@
                         } catch (error) {
                             this.clocking = false
                             this.exiting = false
+                            this.clockDisable = false
                         }
                     } else {
                         //
@@ -200,6 +202,7 @@
                     }
                     this.clocking = false
                     this.exiting = false
+                    this.clockDisable = false
                 }
             },
             nowTime() {
