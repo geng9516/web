@@ -34,7 +34,6 @@
         <div class="searchwrap">
             <span class="label">改訂日</span>
             <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false" @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
-
             <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
@@ -56,12 +55,80 @@
                             </i-col>
                         </Row>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                  empty-text="所属データなし"></Tree>
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                     </Drawer>
                 </span>
+            <span style="padding-left: 8px; padding-right: 8px;">
+                 選択された所属にいる社員：
+                <i-button type="button" class="ivu-btn ivu-btn-default" v-on:click.native="empDrawShow = true"><!----> <!----> <span>照会</span></i-button>
+                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="empDrawShow">
+                    <div class="ivu-table ivu-table-default ivu-table-border"><!---->
+                        <div class="ivu-table-header">
+                            <table cellspacing="0" cellpadding="0" border="0" style="width: 767px;">
+                                <colgroup><col width="200"><col width="566"> </colgroup>
+                                <thead>
+                                <tr>
+                                    <th class="ivu-table-column-r2rzMZ ivu-table-column-right">
+                                        <div class="ivu-table-cell">
+                                            <span class="">氏名</span>
+                                        </div>
+                                    </th>
+                                    <th class="ivu-table-column-uWhKKP ivu-table-column-left">
+                                        <div class="ivu-table-cell">
+                                            <span class="">勤務パターン</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                                </thead>
+                            </table>
+                        </div>
+                        <div class="ivu-table-body">
+                            <table cellspacing="0" cellpadding="0" border="0" style="width: 767px;">
+                                <colgroup><col width="200"><col width="566"></colgroup>
+                                <tbody class="ivu-table-tbody">
+                                <tr class="ivu-table-row">
+                                    <td class="ivu-table-column-r2rzMZ ivu-table-column-right">
+                                        <div class="ivu-table-cell">
+                                            <span>40010001 氏名</span>
+                                        </div>
+                                    </td>
+                                    <td class="ivu-table-column-uWhKKP ivu-table-column-left">
+                                        <div class="ivu-table-cell">
+                                            <span>非常勤（日・時給） 短時間</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="ivu-table-row">
+                                    <td class="ivu-table-column-r2rzMZ ivu-table-column-right">
+                                        <div class="ivu-table-cell">
+                                            <span>40010002 氏名</span>
+                                        </div>
+                                    </td>
+                                    <td class="ivu-table-column-uWhKKP ivu-table-column-left">
+                                        <div class="ivu-table-cell">
+                                            <span>非常勤（日・時給） 短時間</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="ivu-table-tip" style="display: none;">
+                            <table cellspacing="0" cellpadding="0" border="0">
+                                <tbody>
+                                <tr>
+                                    <td style="width: 766px;">
+                                        <span>スクリーニングしたデータなし</span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div> <!----> <!----> <!----> <!---->
+                    </div>
+                </Drawer>
+            </span>
             <span style="flex:1"></span>
         </div>
     </div>
@@ -278,6 +345,7 @@
                 },
                 empDeptLoading: false,
                 deptDrawShow: false,
+                empDrawShow: false,
                 treeData: [],
                 selectDisabled: false,   　//年月選択可否制御
                 tmgPatternList: [],       //年月リスト
