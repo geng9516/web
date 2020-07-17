@@ -79,12 +79,12 @@ public class ScheduleController {
     @GetMapping("selectIkkaInfo")
     @ResponseBody
     public HashMap<String, Object> selectIkkaInfo(
-            @RequestAttribute("sectionid") String sectionid,
-            @RequestAttribute("groupid") String groupid,
-            @RequestAttribute("baseDate") String baseDate,
-            @RequestAttribute("custId") String custId,
-            @RequestAttribute("compId") String compId,
-            @RequestAttribute("language") String language) {
+            @RequestParam("sectionid") String sectionid,
+            @RequestParam("groupid") String groupid,
+            @RequestParam("baseDate") String baseDate,
+            @RequestParam("custId") String custId,
+            @RequestParam("compId") String compId,
+            @RequestParam("language") String language) {
         //初期化
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
     }
