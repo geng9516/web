@@ -37,7 +37,7 @@
                     </i-button>
 
                     <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                        v-model="deptDrawShow">
+                            :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
                             所属
@@ -217,6 +217,7 @@
                         psSite: Utils.getUrlParam(location.href, 'psSite')
 
                     },
+                    isSearchHistory: false,
                     endueDate: '',            //年次休暇付与日
                     endueDaysHours: '',       //年次休暇付与日数
                     tmyComment: '',           //摘要
@@ -421,6 +422,7 @@
                         return
                     } finally {
                         this.loading = false
+                        this.isSearchHistory = false
                     }
                 },
                 async getOrgTree() {
