@@ -325,7 +325,7 @@
                 async getTableHead() {
                     this.query.txtAction = 'ACT_DISP_MONTHLY'
 
-                    const { data } = await this.http.get('sys/permStatList/selectDayCount', this.query)
+                    const { data } = await this.http.get('sys/permStatList/selectDayHead', this.query)
                     this.tableHead = data
                 },
                 async getTableData() {
