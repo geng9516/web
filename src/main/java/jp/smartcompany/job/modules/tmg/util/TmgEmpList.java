@@ -248,7 +248,7 @@ public class TmgEmpList {
 
         String sSQL = buildSQLForSelectWardEmpList(cust, comp, ward, targetDate, language, ifKeyOrAdditionalRole);
 
-        Connection connection;
+        Connection connection = null;
         List entityList = null;
         log.info("createWardEmpList_SQL3：{}",sSQL);
 
@@ -257,6 +257,10 @@ public class TmgEmpList {
             entityList = SqlExecutor.query(connection,sSQL ,new EntityListHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         dataArray = JSONArrayGenerator.entityListTowardList(entityList);
