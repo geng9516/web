@@ -524,7 +524,7 @@ public class TmgEmpList {
         String sSQL =buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
                         bean.escDBString(bean.getCompCode()),psBaseDate, bean.escDBString(bean.getLanguage()));
 
-        Connection connection;
+        Connection connection = null;
         Entity entity = null;
         log.info("getMsgDispLimit4Tree_SQL4："+ sSQL);
         try {
@@ -532,6 +532,10 @@ public class TmgEmpList {
             entity = SqlExecutor.query(connection,sSQL ,new EntityHandler());
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connection.close();
+            }
         }
 
         //TMG_V_MGD_DISP_LIMIT4TREEから最大件数を取得できるなら、取得した最大件数を返却する。取得できないなら、固定値：100を返却する
