@@ -3,6 +3,8 @@ package jp.smartcompany.job.modules.core.service;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
+import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
+import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmployMentWithMEVo;
@@ -83,4 +85,20 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
     * 発令上の勤務開始日取得用SQL取得メソッド
     */
     EmployMentWithMEVo selectDateofemploymentWithME(String custId,String compId,String empId);
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDList(EmployInfoSearchDTO searchDTO);
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoUserIDListAdd(EmployInfoSearchDTO searchDTO);
+
+    List<EmployeeInfoSearchEntity> selectEmployeeInfoList(
+            String searchDate,
+            String language,
+            String designation,
+            String sEmpInfoUserIDList,
+            String sCompNick,
+            String sSectionNick,
+            String sPostNick,
+            String loginUser,
+            String systemId
+    );
 }

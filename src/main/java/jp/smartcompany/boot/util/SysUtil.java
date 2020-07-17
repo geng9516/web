@@ -439,4 +439,36 @@ public class SysUtil {
         return null;
     }
 
+    /**
+     * Listを1000要素単位に分割し、IN句を作成します。
+     * Oracleの制約により、INに1001個以上の要素を指定するとエラーが発生する現象の対応です
+     * @param カラムID
+     * @param plIdList 1000件単位でIN句を区切った文字列(クエリ)
+     */
+    public static String separateList(String psColumn, List < String > plIdList) {
+        String sReturn = "";
+        if (psColumn != null && !psColumn.equals("")
+                && plIdList != null && plIdList.size() != 0) {
+            StringBuilder sb = new StringBuilder(psColumn + " IN (");
+            Iterator < String > ite = plIdList.iterator();
+            int cnt = 0;
+            while (ite.hasNext()) {
+                cnt++;
+                sb.append("'").append(escapeQuote(ite.next())).append("'");
+                if (cnt >= 1000) {
+                    if (ite.hasNext()) {
+                        sb.append(") OR " + psColumn + " IN (");
+                    } else {
+                        sb.append(",");
+                    }
+                    cnt = 0;
+                } else {
+                    sb.append(",");
+                }
+            }
+            sReturn = sb.substring(0, sb.length()-1) + ")";
+        }
+        return sReturn;
+    }
+
 }
