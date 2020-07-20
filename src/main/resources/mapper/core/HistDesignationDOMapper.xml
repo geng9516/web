@@ -396,32 +396,32 @@
 
     <select id="selectemployee" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo">
         SELECT
-        TMG_F_GET_ME_NAME ( #{employeeId}, TRUNC( SYSDATE ), 0, #{custId}, #{compId} ) as NAME,
-        TMG_F_GET_MO (
-        (#{sectionId}
-        ,
-        TRUNC( SYSDATE ),
-        0,
-        #{custId},
-        #{compId},
-        #{language}
+            TMG_F_GET_ME_NAME ( #{employeeId}, TRUNC( SYSDATE ), 0, #{custId}, #{compId} ) as NAME,
+            TMG_F_GET_MO (
+                #{sectionId},
+                TRUNC( SYSDATE ),
+                0,
+                #{custId},
+                #{compId},
+                #{language}
         ) AS SECTION,
-        TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( #{employeeId}, TRUNC( SYSDATE ), #{custId}, #{compId} ), TRUNC( SYSDATE ), #{custId}, #{compId}, #{language}) AS WORKTYPE,
+            TMG_F_GET_MGD ( TMG_F_GET_WORKERTYPE ( #{employeeId}, TRUNC(SYSDATE), #{custId}, #{compId} ), TRUNC( SYSDATE ), #{custId}, #{compId}, #{language})
+        AS WORKTYPE,
         (
-        SELECT
-        TMG_F_GET_MP ( D.HD_CPOSTID_FK, SYSDATE, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
-        FROM
-        HIST_DESIGNATION D
-        WHERE
-        D.HD_CCUSTOMERID_CK = #{custId}
-        AND D.HD_CCOMPANYID_CK = #{compId}
-        AND D.HD_CEMPLOYEEID_CK = #{employeeId}
-        AND TRUNC( SYSDATE ) BETWEEN D.HD_DSTARTDATE_CK
-        AND D.HD_DENDDATE
-        AND D.HD_CIFKEYORADDITIONALROLE = 0
+            SELECT
+                TMG_F_GET_MP ( D.HD_CPOSTID_FK, SYSDATE, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK,#{language} )
+            FROM
+                HIST_DESIGNATION D
+            WHERE
+                D.HD_CCUSTOMERID_CK = #{custId}
+            AND D.HD_CCOMPANYID_CK = #{compId}
+            AND D.HD_CEMPLOYEEID_CK = #{employeeId}
+            AND TRUNC(SYSDATE) BETWEEN D.HD_DSTARTDATE_CK
+            AND D.HD_DENDDATE
+            AND D.HD_CIFKEYORADDITIONALROLE = 0
         ) AS POST
         FROM
-        DUAL;
+            DUAL;
     </select>
 
     <select id="selectemployeeList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeListVo">
