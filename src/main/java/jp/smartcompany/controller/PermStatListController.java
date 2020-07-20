@@ -153,12 +153,18 @@ public class PermStatListController {
 
         permStatListBean.setExecuteParameter(psDBBean,txtTmgReferListTreeViewRecordDate);
         List<OneMonthDetailVo> oneMonthDetailVoList = permStatListBean.selectDayCount(psDBBean);
-
-        for (OneMonthDetailVo item : oneMonthDetailVoList){
+        String today = psDBBean.getSysDate();
+        for (OneMonthDetailVo item : oneMonthDetailVoList) {
             LinkedHashMap listHashMap = new LinkedHashMap();
-            listHashMap.put("name",item.getSeq()+"\n"+item.getDayOfWeek());
-            listHashMap.put("tcaCholflg",item.getTcaCholflg());
-            listHashMap.put("day",item.getDay());
+            listHashMap.put("name", item.getSeq() + "\n" + item.getDayOfWeek());
+            listHashMap.put("tcaCholflg", item.getTcaCholflg());
+            listHashMap.put("day", item.getDay());
+            if (today.equals(item.getDay())) {
+                listHashMap.put("today", true);
+            } else {
+                listHashMap.put("today", false);
+            }
+
             ids.add(listHashMap);
         }
         return ids;
