@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.interceptor;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
@@ -47,6 +48,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
     private final AuthBusiness authBusiness;
+    private final LRUCache<Object,Object> lruCache;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws SQLException {
@@ -56,13 +58,19 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
         // customerId固定为01
         String customerId = "01";
-        List<MastSystemDO> systemList = iMastSystemService.getByLang(language);
+
+        List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
+        if (systemList==null) {
+            systemList =  iMastSystemService.getByLang(language);
+            lruCache.put(Constant.SYSTEM_LIST,systemList);
+        }
         if (StrUtil.isBlank(systemCode)) {
             systemCode = systemList.get(0).getMsCsystemidPk();
             // 默认customerId都为01
             httpSession.setAttribute(Constant.SYSTEM_CODE, systemCode);
             httpSession.setAttribute(Constant.CUSTOMER_ID, customerId);
         }
+
         // 初始化PsSession对象
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (session==null) {

@@ -130,7 +130,7 @@ public class AppAuthJudgmentCache {
                 sb.delete(sb.length() - 3, sb.length());
             }
         }
-        log.info("【アプリケーション起動権限判定:{}】",gAppAuthJudgmentInfo);
+//        log.info("【アプリケーション起動権限判定:{}】",gAppAuthJudgmentInfo);
         lruCache.put(ScCacheUtil.APP_AUTH_JUDGMENT_CACHE, gAppAuthJudgmentInfo);
     }
 }

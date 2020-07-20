@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * グループ定義
+ * システム管理menu-グループ定義
  * @author Xiao Wenpeng
  */
 @RestController

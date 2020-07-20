@@ -59,16 +59,22 @@ public class SearchRangeInfoCache {
      */
     public void loadSearchRangeInfo() {
         LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
-        IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
-        List <SearchRangeInfoDTO> lSecPostList = iMastDatapermissionService.selectDataSectionPost();
-        List <SearchRangeInfoDTO> lPermDefsList =iMastDatapermissionService.selectDataPermissionDefs();
-        // 検索範囲情報を常駐変数に保存する
-        ghmDataSectionPost = createSearchRangeInfo(lSecPostList,  true);
-        ghmDataPermissionDefs = createSearchRangeInfo(lPermDefsList, false);
-        log.info("【検索対象範囲条件取得（組織、役職）】:{}",ghmDataSectionPost);
-        log.info("【検索対象範囲条件取得（条件式）】:{}",ghmDataPermissionDefs);
-        lruCache.put(ScCacheUtil.GHM_DATA_SECTION_POST,ghmDataSectionPost);
-        lruCache.put(ScCacheUtil.GHM_DATA_PERMISSION_DEFS,ghmDataPermissionDefs);
+        ghmDataSectionPost = (Map<String, List<SearchRangeInfoDTO>>)lruCache.get(ScCacheUtil.GHM_DATA_SECTION_POST);
+        List<SearchRangeInfoDTO> lSecPostList;
+        List<SearchRangeInfoDTO> lPermDefsList;
+        System.out.println(ghmDataSectionPost);
+        if (ghmDataSectionPost == null) {
+            IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
+            lSecPostList = iMastDatapermissionService.selectDataSectionPost();
+            lPermDefsList = iMastDatapermissionService.selectDataPermissionDefs();
+            // 検索範囲情報を常駐変数に保存する
+            ghmDataSectionPost = createSearchRangeInfo(lSecPostList,  true);
+            ghmDataPermissionDefs = createSearchRangeInfo(lPermDefsList, false);
+            lruCache.put(ScCacheUtil.GHM_DATA_SECTION_POST,ghmDataSectionPost);
+            lruCache.put(ScCacheUtil.GHM_DATA_PERMISSION_DEFS,ghmDataPermissionDefs);
+        }
+//        log.info("【検索対象範囲条件取得（組織、役職）】:{}",ghmDataSectionPost);
+//        log.info("【検索対象範囲条件取得（条件式）】:{}",ghmDataPermissionDefs);
     }
 
     /**

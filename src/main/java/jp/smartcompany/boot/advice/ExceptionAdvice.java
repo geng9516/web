@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
@@ -113,7 +114,20 @@ public class ExceptionAdvice {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public GlobalResponse nullPointerException(NullPointerException e) {
         printStackTrace(e);
-        return GlobalResponse.error("NPC異常");
+        return GlobalResponse.error("NPE異常");
+    }
+
+    @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ModelAndView handleException(NoHandlerFoundException e) {
+        boolean isTestEnv = StrUtil.equals(Constant.Env.DEV, env) || StrUtil.equals(Constant.Env.TEST, env);
+        ModelAndView mv = new ModelAndView();
+        mv.setViewName("404");
+        mv.addObject("error",ErrorMessage.NOT_FOUND_ERROR);
+        if (isTestEnv) {
+            e.printStackTrace();
+        }
+        return mv;
     }
 
     @ExceptionHandler(Exception.class)
