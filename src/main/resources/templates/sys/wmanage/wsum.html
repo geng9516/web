@@ -186,8 +186,6 @@
         methods: {
             async getWorkDateList() {
                 this.query.txtAction = 'ACT_Disp_RList'
-
-                this.loading = false
                 const { data } = await this.http.get('sys/deptStatList/workDateList', this.query)
                 this.dispMonthlyList = data
 
@@ -211,6 +209,8 @@
                 }
             },
              async getTableData() {
+                 this.tableData2 = []
+                 this.loading = true
                 const { data } = await this.http.get('sys/deptStatList/executeDispStatList', this.query)
 
                 this.fullName = data.dispItemsList.slice(0,1)[0].title
@@ -224,6 +224,7 @@
                      this.tableData = [data.sectionMap]
                  }
                  this.isSearchHistory = false
+                 this.loading = false
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -345,22 +346,8 @@
                 return  yearMMDD
             },
             async download() {
-
                 const { data, headers } = await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
                 Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
-                // await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
-                //
-                //     .then((response) => {
-                //         const bom = '\uFEFF'
-                //         const url = URL.createObjectURL(new Blob([bom, response]));
-                //         const link = document.createElement('a');
-                //         link.href = url;
-                //         link.setAttribute('download', this.model1 + '_' + this.deptName + '.csv'); //ここらへんは適当に設定する
-                //         document.body.appendChild(link);
-                //         link.click();
-                //         URL.revokeObjectURL(url)
-                //     });
-
             }
         }
     })
