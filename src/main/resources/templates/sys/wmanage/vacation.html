@@ -515,7 +515,6 @@
             }
         },
         mounted() {
-            console.log([[${ session }]])
             this.getOrgTree()
         },
         methods: {
@@ -583,7 +582,7 @@
                 this.workertypenm = e[0].workertypenm
 
                 this.cemployeeid = e[0].tphCemployeeid
-                console.log(this.cemployeeid)
+
                 this.getDetailList(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
 
             },
@@ -857,14 +856,14 @@
                     this.$Notice.warning({desc: "付与日数の合計はマイナスに設定できません。"})
                     return false;
                 }
-                console.log(12222333332)
+
                 // 越日数の合計
                 if (+parseInt(+this.paidNowData[1].days) + +eval(+this.paidNowData[4].days) < 0) {
                     //MSG_LESS_TYOSEIKURIKOSINISSU
                     this.$Notice.warning({desc: "繰越日数の合計はマイナスに設定できません。"})
                     return false;
                 }
-                console.log(122222)
+
                 // 有効期限（調整付与）
                 if (this.toNumber(this.paidNowData[3].days) !== 0 || this.toNumber(this.paidNowData[3].times) !== 0) {
                     // 未入力
@@ -1116,7 +1115,7 @@
             },
             format_hours(sHours, nLowerLength) {
                 try {
-                    console.log(sHours)
+
                     return eval(sHours).toFixed(nLowerLength);
                 } catch (e) {
                     return sHours;
