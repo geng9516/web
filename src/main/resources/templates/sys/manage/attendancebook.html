@@ -588,15 +588,11 @@
                     this.commentBtnShow = false
                 },
                 currentTabChanged(name) {
-                    console.log("tabPaneClick")
-                    console.log(name)
-
                     if (name=="organisationTree") {
                         this.query.hidSelectTab='0'
                     } else if (name=="organisationSearch") {
                         this.query.hidSelectTab='1'
                     }
-                    console.log(this.query.hidSelectTab)
                 },
             }
         })
