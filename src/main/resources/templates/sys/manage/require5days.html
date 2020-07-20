@@ -726,7 +726,9 @@
                         //年5日時季指定取得確認画面を閉じる
                         this.isShow = false
                         //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
-                        this.query.txtUserCode = null
+                        if (this.query.hidSelectTab=='0'){
+                            this.query.txtUserCode = null
+                        }
                         //一覧画面取得
                         this.getTableData()
                     },
@@ -753,7 +755,9 @@
                         //年5日時季指定取得確認画面を閉じる
                         this.isShow = false
                         //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
-                        this.query.txtUserCode = null
+                        if (this.query.hidSelectTab=='0'){
+                            this.query.txtUserCode = null
+                        }
                         //一覧画面取得
                         this.getTableData()
                     },
@@ -770,7 +774,7 @@
             currentTabChanged(name) {
                 if (name=="organisationTree") {
                     this.query.hidSelectTab='0'
-                } else if (name=="organisationTree") {
+                } else if (name=="organisationSearch") {
                     this.query.hidSelectTab='1'
                 }
             },

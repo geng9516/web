@@ -107,7 +107,7 @@
                 deptName: '選んでください',
                 query: {
                     txtAction: 'ACT_Disp_RList',
-                    txtDYYYYMM: '2020/04/01',
+                    txtDYYYYMM: '',
                     txtTDA_DYYYYMM: '',
                     page: '1',
                     txtDYYYYMMDD: '',
@@ -198,6 +198,7 @@
                     result = result.replace("月","/")
                     result = result + "01"
                     this.query.txtTDA_DYYYYMM = result
+                    this.query.txtDYYYYMM = result
 
                     //年月リストを取得する時に、活性化にする
                     this.selectDisabled = true
