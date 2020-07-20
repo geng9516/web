@@ -62,7 +62,7 @@
             統計情報
         </div>
         <div >
-            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="EMPNAME"><span>{{ row.EMPNAME }}</span></template>
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
             </i-table>
@@ -73,13 +73,16 @@
             <i-button type="info" @click="download">ダウンロード</i-button>
         </div>
         <div v-show="tableData2.length > 0">
-            <i-table class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
+            <i-table :show-header="false" class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
                      :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="EMPNAME"><span>{{row.EMPNAME}}</span></template>
                 <template v-for="item of slotList2" slot-scope="{ row }" :slot="item"><span>{{row[item]}}</span></template>
             </i-table>
         </div>
     </div>
+    <span class="toTopBtn" @click="toTop" v-show="isScroll">
+            <Icon size="24" type="md-arrow-round-up" />
+    </span>
 </main>
 
 <div th:replace="layout/script::common_script"></div>
@@ -88,6 +91,8 @@
         el: '.deptstatlist-warp',
         data() {
             return {
+                contentScrollTop: 0,
+                isScroll: false,
                 tableHead: [],
                 tableData: [],
                 slotList: Utils.getNumArray(1, 40).map(e => `COL${e}`),
@@ -140,7 +145,7 @@
         },
         computed: {
             tableHeadFixed() {
-                if (this.contentScrollTop > 300) return true
+                if (this.contentScrollTop > 215) return true
                 else return false
             },
             columns() {
