@@ -23,8 +23,14 @@ Vue.filter('addNumDeci', function (e, isDay) {
 })
 
 const TURN_LINE_STR = "<br>"
+const WHITE_SPACE_STR = "&nbsp;"
 // 换行过滤器
 Vue.filter('turnLine', function (e) {
   if(!e) return
-  return e.replace(/(\<br\>)+/g, '\n')
+  return e.replace(/(\<br\/?\>)+/g, '\n')
+})
+
+Vue.filter('whiteSpace', function (e) {
+  if(!e) return
+  return e.replace(/(&nbsp;)+/g, '')
 })
