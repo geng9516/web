@@ -116,12 +116,11 @@
         <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" draggable>
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
-            <form-item label="所属" prop="deptName">
+            <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">
               <i-button class="input-like-span mr30 cursor grey width100 border-radius:0">
                   {{ deptName }}
               </i-button>
             </form-item>
-
             <form-item label="コード" prop="patternId">
               <i-input v-model="rawData.tpa_cpatternid" :disabled="isPatternCodeDisable" 　placeholder="入力してください"></i-input>
             </form-item>
@@ -159,14 +158,16 @@
                   <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
               </i-select>
             </form-item>
+            <form-item label="デフォルト設定値">
+                <checkbox v-model="isDefault" class="mt5 ml1" @on-change="defaultSelect"></checkbox>
+            </form-item>
           </i-form>
-          <div class="my-footer">
-            <!--<checkbox-group v-model="rawData.isDefault" @on-change="" class="tl">
-                 <Checkbox  lable="デフォルト設定値" class="mb5"></Checkbox>
-            </checkbox-group>-->
-            <i-button type="text" @click="cancel">キャンセル</i-button>
-            <i-button type="success" size="large" disabled v-if="btn_sk_commit_show===false">登録</i-button>
-            <i-button type="success" size="large" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+          <div>
+              <div style="text-align: right">
+                  <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
+                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
+                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+              </div>
           </div>
         </Modal>
       </span>
@@ -210,8 +211,7 @@
                     planRest4: [],
                     tpa_ndate_change_time: '',
                     tpa_cnextptn: '',
-                    flag: '',
-                    isDefault:false
+                    flag: ''
                 },
                 rawData_bak: {
                     tpa_csectionid: '',
@@ -225,8 +225,7 @@
                     planRest4: [],
                     tpa_ndate_change_time: '',
                     tpa_cnextptn: '',
-                    flag: '',
-                    isDefault:false
+                    flag: ''
                 },
                 //照会検索
                 query_sk: {
@@ -246,6 +245,7 @@
                 //翌日勤務パターン
                 ykjtPatternList: [],
                 ykjtPatternModel: '',
+                isDefault: false,
                 isShow: false,
                 loading: false,
                 tableLoading: false,
@@ -579,8 +579,15 @@
                     this.rawData.tpa_ndate_change_time = row.tpa_ndate_change_time
                     this.rawData.tpa_cnextptn = row.tpa_cnextptn
 
-                    //更新
-                    this.rawData.flag = 'TMG_ONOFF|1'
+                    //ディフォルト
+                    if (row.tpa_cdefaultflg === "TMG_ONOFF|1") {
+                        this.isDefault = true
+                        this.rawData.flag = row.tpa_cdefaultflg
+                    } else {
+                        this.isDefault = false
+                        this.rawData.flag = row.tpa_cdefaultflg
+                    }
+
 
                     //初期化データ
                     if (row.tpa_cnextptn == '' || row.tpa_cnextptn == undefined || row.tpa_cnextptn == null) {
@@ -596,6 +603,7 @@
                     this.ykjtPatternModel = ''
                     this.edit_flag = false
                     this.rawData.flag = 'TMG_ONOFF|0'
+                    this.isDefault = false
                     this.isPatternCodeDisable = false
                 }
 
@@ -620,6 +628,7 @@
                 this.$refs.localValue.resetFields()
                 this.isShow = false
                 this.edit_flag = false
+                this.isDefault = false
             },
             //
             handleReset(name) {
@@ -772,7 +781,6 @@
                 var planRest4 = this.rawData.planRest4
                 var changeTime = this.rawData.tpa_ndate_change_time
                 var nextptn = this.rawData.tpa_cnextptn
-                var isDefalut = this.rawData.isDefault
                 if (this.edit_flag) {
                     this.rawData_bak.tpa_ndate_change_time = changeTime
                     if (JSON.stringify(this.rawData_bak) === JSON.stringify(this.rawData)) {
@@ -885,6 +893,11 @@
                     return
                 }
                 this.btn_sk_commit_show = false
+                if (this.isDefault === true) {
+                    this.rawData.flag = "TMG_ONOFF|1"
+                } else {
+                    this.rawData.flag = "TMG_ONOFF|0"
+                }
                 //パターンを更新
                 await this.http.post('sys/patternSetting/modifiEditAndNew', this.rawData)
                 //新規又は編集画面を閉じる
@@ -1038,6 +1051,10 @@
                     this.query_sk_bak = Utils.deepClone(this.query_sk)
                 }
                 this.empTableLoading = false
+            },
+            //ディフォルト勤務パターン
+            defaultSelect(e) {
+
             }
         }
     })

@@ -412,8 +412,7 @@ public class PatternSettingBean {
 
 
     /**
-     * テストデータ
-     * 臨時ファンクショ　　本番環境では削除します
+     * 勤務パターンを登録する
      *
      * @return
      */
@@ -433,7 +432,11 @@ public class PatternSettingBean {
         tmgPatternInsertDTO.setDefaultFlag(tmgPatternMergeDTO.getFlag());
         tmgPatternInsertDTO.setChangeTime(tmgPatternMergeDTO.getTpa_ndate_change_time() == null ? "" : tmgPatternMergeDTO.getTpa_ndate_change_time());
         tmgPatternInsertDTO.setNextptn(tmgPatternMergeDTO.getTpa_cnextptn() == null ? "" : tmgPatternMergeDTO.getTpa_cnextptn());
-        tmgPatternInsertDTO.setC2caldays(tmgPatternMergeDTO.getFlag());
+        if(null!=tmgPatternMergeDTO.getTpa_ndate_change_time()&&!"".equals(tmgPatternMergeDTO.getTpa_ndate_change_time())){
+            tmgPatternInsertDTO.setC2caldays(PatternSettingConst.tmgOn);
+        }else{
+            tmgPatternInsertDTO.setC2caldays(PatternSettingConst.tmgOff);
+        }
 
         //　勤務時間
         if (tmgPatternMergeDTO.getDutyTime().length > 0) {
