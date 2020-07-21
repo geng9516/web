@@ -6,6 +6,7 @@ import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.annotation.IgnoreResponseSerializable;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -14,6 +15,7 @@ import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -33,17 +35,17 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType mediaType, Class aClass, ServerHttpRequest req, ServerHttpResponse res) {
+        String now = TmgUtil.getSysdate();
         if (body == null) {
-            return GlobalResponse.ok().put("sysDate", SysUtil.transDateToString(DateUtil.date()));
+            return GlobalResponse.ok().put("sysDate", now);
         } else if (body instanceof GlobalResponse) {
             GlobalResponse r = (GlobalResponse)body;
-            return r.put("sysDate", SysUtil.transDateToString(DateUtil.date()));
+            return r.put("sysDate", now);
         } else {
             GlobalResponse r= GlobalResponse.ok().put("data", body);
             // 如果返回值为string则要特殊处理
             if(body instanceof String) {
                 res.getHeaders().set("Content-Type",MediaType.APPLICATION_JSON_VALUE);
-                r.put("sysDate", SysUtil.transDateToString(DateUtil.date()));
                 return JSONUtil.toJsonStr(r);
             } else if (body instanceof LinkedHashMap){
                 // 如果返回值是500或者404
@@ -62,6 +64,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
                     return GlobalResponse.error(status,msg);
                 }
             }
+            r.put("sysDate",now);
             return r;
         }
     }

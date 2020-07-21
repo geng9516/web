@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -208,4 +209,42 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * @exception
      */
     Map<String,List<String>> getSubSectionEmp(String userId,Date searchDate, boolean virtualSection);
+
+    /**
+     * 取得結果を返却.
+     * @param psCustomerId 顧客コード
+     * @param psLanguage 言語区分
+     * @param psCompanyId 法人コード
+     * @param pdSearchDate 検索基準日
+     * @return String
+     **/
+    List<OrgTreeDTO> selectOrgList(
+      String customerId,
+      String language,
+      String companyId,
+      String searchDate,
+      String startDate,
+      String endDate,
+      String companyCode,
+      String sectionCode,
+      String sExists
+    );
+
+    /**
+     * 選択中の法人の取得結果を返却.
+     * @param psCustomerId 顧客コード
+     * @param psLanguage 言語区分
+     * @param psCompanyId 法人コード
+     * @param searchDate 検索基準日
+     * @param exists 検索条件範囲
+     * @return String
+     **/
+    List<OrgTreeDTO> getSelCompOrgTreeList(
+            String psCustomerId,
+            String psLanguage,
+            String psCompanyId,
+            String startDate,
+            String endDate,
+            String exists);
+
 }

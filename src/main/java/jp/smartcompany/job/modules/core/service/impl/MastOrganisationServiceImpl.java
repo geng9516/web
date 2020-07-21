@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.BaseSectionOrganisationBO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistDesignationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
@@ -16,6 +17,8 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.boot.util.SysUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -33,9 +36,11 @@ import java.util.stream.Collectors;
  * @since 2020-04-16
  */
 @Repository
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMapper, MastOrganisationDO> implements IMastOrganisationService {
 
-    private IHistDesignationService iHistDesignationService;
+    private final IHistDesignationService iHistDesignationService;
+
     @Override
     public MastOrganisationDO selectOrganisation(String customerId, String companyId, String sectionId, Date yyyymmdd) {
         QueryWrapper<MastOrganisationDO> qw = SysUtil.query();
@@ -317,4 +322,39 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
                                                            int numEnd){
         return baseMapper.selectNotFixedDeptList(custId, compId, secId, dyyyymm, lang, numStart,numEnd);
     }
+
+    @Override
+    public List<OrgTreeDTO> selectOrgList(
+            String customerId,
+            String language,
+            String companyId,
+            String searchDate,
+            String startDate,
+            String endDate,
+            String companyCode,
+            String sectionCode,
+            String sExists
+    ) {
+        return baseMapper.selectOrgList(customerId,
+                language,
+               companyId,
+                searchDate,
+               startDate,
+                 endDate,
+              companyCode,
+                sectionCode,
+               sExists);
+    }
+
+    @Override
+    public List<OrgTreeDTO> getSelCompOrgTreeList(
+            String psCustomerId,
+            String psLanguage,
+            String psCompanyId,
+            String startDate,
+            String endDate,
+            String exists) {
+        return baseMapper.selectSelCompOrgTreeList(psCustomerId,psLanguage,psCompanyId,startDate,endDate,exists);
+    }
+
 }

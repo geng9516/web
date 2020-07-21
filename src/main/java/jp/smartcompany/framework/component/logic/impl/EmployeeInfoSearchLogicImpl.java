@@ -9,9 +9,9 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.framework.component.behavior.EmployeeInfoSearchBehavior;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
+import jp.smartcompany.framework.component.logic.EmployeeInfoSearchLogic;
 import jp.smartcompany.framework.util.EmployeeInfoSearchOrderLogic;
 import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
@@ -31,7 +31,7 @@ import java.util.*;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class EmployeeInfoSearchLogicImpl {
+public class EmployeeInfoSearchLogicImpl implements EmployeeInfoSearchLogic {
 
     private final ScCacheUtil scCacheUtil;
     private final PsSearchCompanyUtil searchCompanyUtil;
@@ -76,9 +76,11 @@ public class EmployeeInfoSearchLogicImpl {
     public static final String TAG_VALUE_BOTH = "both";
 
     private String ignoreRetiredData;
+    ResourceBundle resourceBundle;
 
 
     // リクエスト 検索対象範囲種別(1:法人絞込み検索範囲 それ以外:検索対象範囲)
+    @Override
     public List<EmployeeInfoSearchEntity> searchEmpList(String searchWord,
                               String searchWordConve,
                               String searchWordEnglish,
@@ -90,14 +92,17 @@ public class EmployeeInfoSearchLogicImpl {
                               String ifKeyorAdditionalRole,
                               String targetDept,
                               Integer type) {
-
         configSearchEnvs();
-
+        if (StrUtil.isAllBlank(searchWord,searchWordConve,searchWordEnglish)){
+            throw new GlobalException(
+                    resourceBundle.getString("MSG_SEARCH_WORD_BLANK")
+            );
+        }
         PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
 
-        searchWord = escapeSearchWord(searchWord+"%");
-        searchWordConve = escapeSearchWord(searchWordConve+"%");
-        searchWordEnglish = escapeSearchWord(searchWordEnglish+"%");
+        searchWord = searchWord+"%";
+        searchWordConve = searchWordConve+"%";
+        searchWordEnglish = searchWordEnglish+"%";
 
         // 退職者非表示がyesの場合
         /** システムプロパティの設定値 退職者非表示 */
@@ -212,48 +217,13 @@ public class EmployeeInfoSearchLogicImpl {
             EmployeeInfoSearchEntity ent = lEmpInfoUserID.get(i);
             lEmpInfoUserID.set(i, mEmpInfo.get(ent.getMeCuserid() + "_" + ent.getHdId()));
         }
-        // ビヘイビア
-        lEmpInfoUserID = applyBehavior(lEmpInfoUserID,session);
         return lEmpInfoUserID;
     }
 
-    /**
-     * 項目参照権限適用
-     * @param plEntity 社員情報検索Dtoのリスト
-     * @return List<EmployeeInfoSearchEntity>
-     */
-    private List<EmployeeInfoSearchEntity> applyBehavior(List<EmployeeInfoSearchEntity> plEntity,PsSession session) {
-        // マスキング文字列取得
-        String sMask = scCacheUtil.getPermissionString(session.getLoginCustomer(),
-                session.getLoginCompany(),
-                session.getLanguage());
-        // リストのループ
-        for (EmployeeInfoSearchEntity entity : plEntity) {
-            // Behaviorクラス取得
-            entity.setBehavior(new EmployeeInfoSearchBehavior());
-            EmployeeInfoSearchBehavior behavior = entity.getBehavior();
-            // マスキング処理
-            // 社員番号
-            entity.setMeCemployeeidCk(masking(entity.getMeCemployeeidCk(), sMask, behavior.isMeCemployeeidCk()));
-            // カナ氏名
-            entity.setMeCkananame(masking(entity.getMeCkananame(), sMask, behavior.isMeCkananame()));
-            // 社員氏名
-            entity.setEmpName(masking(entity.getEmpName(), sMask, behavior.isEmpName()));
-            // 法人名称
-            entity.setCompName(masking(entity.getCompName(), sMask, behavior.isCompName()));
-            // 組織名称
-            entity.setSectionName(masking(entity.getSectionName(), sMask, behavior.isSectionName()));
-            // 役職名称
-            entity.setPostName(masking(entity.getPostName(), sMask, behavior.isPostName()));
-            // 在職・退職
-            entity.setMeCifStillEmployedName(masking(entity.getMeCifStillEmployedName(), sMask, behavior.isMeCifstillemployedid()));
-        }
-        return plEntity;
-    }
 
     private void configSearchEnvs() {
-        //        ResourceBundle resourceBundle = ResourceBundle.getBundle(
-//                "jp/smartcompany/framework/component/EmployeeSearch", Locale.JAPAN);
+                resourceBundle = ResourceBundle.getBundle(
+                "jp/smartcompany/framework/component/EmployeeSearch", Locale.JAPAN);
         // 法人名称を略称にするか判断
         sysPropertyCacheComp = scCacheUtil.getSystemProperty(SYSTEM_PROPERTY_USE_COMPANY_ABBREVIATION);
         // 所属名称を略称にするか判断
@@ -288,33 +258,6 @@ public class EmployeeInfoSearchLogicImpl {
             // 参照権限なしならマスキング文字列を返す
             return psMask;
         }
-    }
-
-    /**
-     * 検索文字列のエスケープ操作
-     * @param psSearchWord
-     * @return
-     */
-    private String escapeSearchWord(String psSearchWord) {
-        // Oracleは全角の_%もメタキャラクタになるらしい
-        String[] saEscapeWord = {"_", "%", "＿", "％", "\\"};
-        StringBuilder sbSearchWord = new StringBuilder();
-        for(int i = 0; i < psSearchWord.length(); i++) {
-            String sWord = psSearchWord.substring(i, i + 1);
-            int j;
-            for(j = 0; j < saEscapeWord.length; j++) {
-                // メタキャラクタのエスケープ
-                if(sWord.equals(saEscapeWord[j])) {
-                    sbSearchWord.append("\\").append(sWord);
-                    break;
-                }
-            }
-            // 一致しないときはそのまま
-            if(j == saEscapeWord.length) {
-                sbSearchWord.append(sWord);
-            }
-        }
-        return sbSearchWord.toString();
     }
 
 }

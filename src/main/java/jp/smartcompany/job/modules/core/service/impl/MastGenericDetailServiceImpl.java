@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -764,11 +765,12 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
 
     @Override
     public List<MastGenericDetailDO> selectPermissionString() {
+        Date now = DateUtil.date();
         return list(SysUtil.<MastGenericDetailDO>query()
                 .eq("MGD_CGENERICGROUPID", "PERMSTR")
                 .eq("MGD_CLANGUAGE_CK", "ja")
-                .le("MGD_DSTART_CK", "trunc(sysdate)")
-                .ge("MGD_DEND", "trunc(sysdate)")
+                .le("MGD_DSTART_CK", SysUtil.transDateToString(now))
+                .ge("MGD_DEND", SysUtil.transDateToString(now))
                 .orderByAsc("MGD_CCUSTOMERID", "MGD_CCOMPANYID_CK_FK"));
     }
 

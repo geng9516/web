@@ -304,13 +304,13 @@
             WHERE
                  HD.HD_CUSERID = ME_CUSERID
                  AND (
-                     ME_CEMPLOYEEID_CK LIKE #{searchWord} ESCAPE '\\'
-                     OR ME_CKANANAME LIKEC #{searchWordConve*} ESCAPE TO_NCHAR('\\')
-                     OR ME_CKANJINAME LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                     OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish} ESCAPE '\\'
-                     OR ME_CEMPLOYEENAMECH LIKE #{searchWord} ESCAPE TO_NCHAR('\\')
-                     OR ME_CEMPLOYEENAME01 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                     OR ME_CEMPLOYEENAME02 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
+                     ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                     OR ME_CKANANAME LIKE #{searchWordConve}
+                     OR ME_CKANJINAME LIKE #{searchWord}
+                     OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+                     OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                     OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                     OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
                  )
                  <if test="validCompanies != null and validCompanies.size()>0">
                     AND ME_CCOMPANYID IN
@@ -352,13 +352,13 @@
                 )
             WHERE
                 (
-                    ME_CEMPLOYEEID_CK LIKE #{searchWord} ESCAPE '\\'
-                    OR  ME_CKANANAME LIKEC #{searchWordConve} ESCAPE TO_NCHAR('\\')
-                    OR  ME_CKANJINAME LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                    OR  LOWER(ME_CENGLISHNAME) LIKE #{dto.searchWordEnglish} ESCAPE '\\'
-                    OR  ME_CEMPLOYEENAMECH LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                    OR  ME_CEMPLOYEENAME01 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                    OR  ME_CEMPLOYEENAME02 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
+                    ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                    OR ME_CKANANAME LIKE #{searchWordConve}
+                    OR ME_CKANJINAME LIKE #{searchWord}
+                    OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+                    OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                    OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                    OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
                 )
                 <if test="validCompanies != null and validCompanies.size()>0">
                     AND ME_CCOMPANYID IN
@@ -403,13 +403,19 @@
             AND ME_DSTARTDATE <![CDATA[<=]]> #{searchDate}
             AND ME_DENDDATE >= #{searchDate}
             AND (
-                ME_CEMPLOYEEID_CK LIKE #{searchWord} ESCAPE '\\'
-                OR ME_CKANANAME LIKEC #{searchWordConve} ESCAPE TO_NCHAR('\\')
-                OR ME_CKANJINAME LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish} ESCAPE '\\'
-                OR ME_CEMPLOYEENAMECH LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                OR ME_CEMPLOYEENAME01 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
-                OR ME_CEMPLOYEENAME02 LIKEC #{searchWord} ESCAPE TO_NCHAR('\\')
+                <if test="searchWord!=null">
+                  ME_CEMPLOYEEID_CK LIKE #{searchWord}
+                  OR ME_CKANJINAME LIKE #{searchWord}
+                  OR ME_CEMPLOYEENAMECH LIKE #{searchWord}
+                  OR ME_CEMPLOYEENAME01 LIKE #{searchWord}
+                  OR ME_CEMPLOYEENAME02 LIKE #{searchWord}
+                </if>
+                <if test="searchWordEnglish">
+                    OR LOWER(ME_CENGLISHNAME) LIKE #{searchWordEnglish}
+                </if>
+                <if test="searchWordConve">
+                    OR ME_CKANANAME LIKEC #{searchWordConve}
+                </if>
             )
             <if test='propValue == "yes" and searchFlg != 1'>
                 AND	ME_CIFSTILLEMPLOYEDID = 0
@@ -428,33 +434,33 @@
             ME_CEMPLOYEEID_CK,
             ME_CUSERID,
             PSMASTER.FUNC_GET_EMP_NAME(
-                ME_CCUSTOMERID_CK,ME_CUSERID,${searchDate},'${language}'
+                ME_CCUSTOMERID_CK,ME_CUSERID,'${searchDate}','${language}'
             ) AS ME_CKANJINAME,
             ME_CKANANAME,
             HD.HD_CSECTIONID_FK,
             <if test='sSectionNick == "no"'>
                PSMASTER.FUNC_GET_SECTION_NAME(
                    HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
-                   HD.HD_CSECTIONID_FK,${searchDate},'${language}'
+                   HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
                ) AS HD_CSECTIONNAME,
             </if>
             <if test='sSectionNick=="yes"'>
                PSMASTER.FUNC_GET_SECTION_NICK(
                     HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
-                    HD.HD_CSECTIONID_FK,${searchDate},'${language}'
+                    HD.HD_CSECTIONID_FK,'${searchDate}','${language}'
                ) AS HD_CSECTIONNAME,
             </if>
             HD.HD_CPOSTID_FK,
             <if test='sPostNick == "no"'>
                 PSMASTER.FUNC_GET_POST_NAME(
                      HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
-                     HD.HD_CPOSTID_FK,${searchDate},'${language}'
+                     HD.HD_CPOSTID_FK,'${searchDate}','${language}'
                 ) AS HD_CPOSTNAME,
             </if>
             <if test='sPostNick == "yes"'>
                 PSMASTER.FUNC_GET_POST_NICK(
                      HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
-                     HD.HD_CPOSTID_FK,${searchDate},'${language}'
+                     HD.HD_CPOSTID_FK,'${searchDate}','${language}'
                 ) AS HD_CPOSTNAME,
             </if>
             (
@@ -478,20 +484,20 @@
             </if>
             <if test='sCompNick == "yes"'>
                 PSMASTER.FUNC_GET_COMP_NICK(
-                HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,${searchDate},'${language}'
+                  HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,'${searchDate}','${language}'
                 ) AS MAC_CCOMPANYNAME,
             </if>
             PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
                 ME_CCUSTOMERID_CK,ME_CCOMPANYID,'QZAITAI|' || ME_CIFSTILLEMPLOYEDID,
-                ${searchDate},'${language}'
+                '${searchDate}','${language}'
             ) AS ME_CIFSTILLEMPLOYED_NAME,
             PSMASTER.FUNC_GET_GENERICDETAIL_SPARE(
                 HD.HD_CCUSTOMERID_CK,HD.HD_CCOMPANYID_CK,
-                'QHONKEN|'||HD.HD_CIFKEYORADDITIONALROLE,${search},'${language}',1
+                'QHONKEN|'||HD.HD_CIFKEYORADDITIONALROLE,'${searchDate}','${language}',1
             ) AS HD_CIFKEYORADDITIONALROLE
         FROM
           MAST_EMPLOYEES,
-          ${desigination} HD
+          ${designation} HD
         WHERE
           HD.HD_CCUSTOMERID_CK(+) = ME_CCUSTOMERID_CK
           AND HD.HD_CUSERID(+) = ME_CUSERID

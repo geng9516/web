@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
@@ -83,4 +84,26 @@ public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
                                                       @Param("lang")String lang,
                                                       @Param("numStart")int numStart,
                                                       @Param("numEnd")int numEnd);
+
+     List<OrgTreeDTO> selectOrgList(
+             @Param("customerId") String customerId,
+             @Param("language") String language,
+             @Param("companyId") String companyId,
+             @Param("searchDate") String searchDate,
+             @Param("startDate") String startDate,
+             @Param("endDate") String endDate,
+             @Param("companyCode") String companyCode,
+             @Param("sectionCode") String sectionCode,
+             @Param("sExists") String sExists
+     );
+
+     List<OrgTreeDTO> selectSelCompOrgTreeList(
+             @Param("customerId") String customerId,
+             @Param("language") String language,
+             @Param("companyId") String companyId,
+             @Param("startDate") String startDate,
+             @Param("endDate") String endDate,
+             @Param("sExists") String sExists
+     );
+
 }

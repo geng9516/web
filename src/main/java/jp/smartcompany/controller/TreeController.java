@@ -6,9 +6,15 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
+import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -27,6 +35,8 @@ import java.util.Map;
 @Slf4j
 @RequestMapping("sys/tree")
 public class TreeController {
+
+    private final OrgTreeListLogic orgTreeListLogic;
 
     @GetMapping
     public GlobalResponse tree(@RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -229,4 +239,30 @@ public class TreeController {
         }
         return GlobalResponse.ok();
     }
+
+    /**
+      * ================== 弹窗相关json =================
+      */
+
+    // http://localhost:6879/sys/tree/orgs?psSite=Admin&companyCode=01&sectionCode=204000000000
+    @GetMapping("orgs")
+    List<OrgTreeDTO> orgTree(
+            @RequestParam(value="sectionCode",required = false) String sectionCode,
+            @RequestParam(value="companyCode",required = false) String companyCode,
+            @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
+            @RequestParam(value="searchRange",required = false) String searchRange, HttpServletRequest request) {
+        String searchDate = SysUtil.transDateToString(DateUtil.date());
+        PsSession session = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
+        return orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
+               session.getLanguage(),
+               session.getLoginCompany(),
+               searchDate,
+               companyCode,
+               sectionCode,
+               useSearchRange,
+               searchRange);
+    }
+
+
+
 }
