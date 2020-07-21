@@ -1119,6 +1119,9 @@ public class PermStatListBean {
                     // vecErrEmpname.add(tmgMonthlyInfoVO.getEmpname());
                 }
             }
+            if(!existsDispMonthlyApproval(tmgMonthlyInfoVO.getEmpid(),getReqDYYYYMM(),tmgMonthlyInfoVO.getLastBaseDate())){
+                tmgMonthlyInfoVO.setStatusName("不");
+            }
             tmgMonthlyInfoVO.set_disabled(sChkBoxStatus);
         }
 
