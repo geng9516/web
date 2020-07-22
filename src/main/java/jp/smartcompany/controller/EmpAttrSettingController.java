@@ -9,6 +9,8 @@ import jp.smartcompany.job.modules.tmg.calendar.CalendarBean;
 import jp.smartcompany.job.modules.tmg.empattrsetting.EmpAttrSettingBean;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.AvgTimeForUpdateDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.BeginDateForUpdateDto;
+import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateCheckInfoDto;
+import jp.smartcompany.job.modules.tmg.empattrsetting.dto.UpdateGroupInfoDto;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.BeginDateEditDispVo;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EditDispVo;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo;
@@ -17,6 +19,7 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationList
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
+import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -75,11 +78,19 @@ public class EmpAttrSettingController {
      * @param psDBBean
      * @return
      */
-    @GetMapping("manageFlagUpdate")
-    public GlobalResponse actionModifyManageFlag(@RequestParam("baseDate") String baseDate,
+    @PostMapping("manageFlagUpdate")
+    @ResponseBody
+    public GlobalResponse actionModifyManageFlag(
+                                @RequestParam("ManageList")List<UpdateCheckInfoDto> updateCheckInfoDtoManageList ,
+                                @RequestParam("OverTimesList")List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList ,
+                                @RequestParam(value = "WorkPlaceList",required = false)List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList ,
+                                @RequestParam("baseDate") String baseDate,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-
-        return empAttrSettingBean.actionModifyManageFlag(baseDate,psDBBean);
+        if(updateGroupInfoDtoWorkPlaceList.size()<0){
+            updateGroupInfoDtoWorkPlaceList=null;
+        }
+        return empAttrSettingBean.actionModifyManageFlag(updateCheckInfoDtoManageList,updateCheckInfoDtoOverTimesList
+                ,updateGroupInfoDtoWorkPlaceList,baseDate,psDBBean);
     }
 
 

@@ -286,19 +286,23 @@ public class EmpAttrSettingBean {
      *modifyManageFlag
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public GlobalResponse actionModifyManageFlag(String baseDate,PsDBBean psDBBean) throws Exception {
+    public GlobalResponse actionModifyManageFlag(List<UpdateCheckInfoDto> updateCheckInfoDtoManageList ,
+                                                 List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList ,
+                                                 List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList ,
+                                                 String baseDate,PsDBBean psDBBean) throws Exception {
         try {
+            if (updateCheckInfoDtoManageList.size() > 0) {
             // 管理対象者分の更新用クエリ取得
-            List<UpdateCheckInfoDto> updateCheckInfoDtoManageList = new ArrayList<UpdateCheckInfoDto>();
             updateManageFlgEmployee(baseDate, updateCheckInfoDtoManageList, psDBBean);
-
+            }
+            if(updateCheckInfoDtoOverTimesList.size()>0){
             // 超過勤務対象者分の更新用クエリ取得
-            List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList = new ArrayList<UpdateCheckInfoDto>();
             updateOverTimesEmployee(baseDate, updateCheckInfoDtoOverTimesList, psDBBean);
-
+            }
             // 勤務先グループの更新用クエリ取得
-            List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList = new ArrayList<UpdateGroupInfoDto>();
-            updateWorkPlace(baseDate, updateGroupInfoDtoWorkPlaceList, psDBBean);
+            if(updateGroupInfoDtoWorkPlaceList.size()>0){
+                updateWorkPlace(baseDate, updateGroupInfoDtoWorkPlaceList, psDBBean);
+            }
         }catch (GlobalException e){
             return GlobalResponse.error(e.getMessage());
         }

@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,7 +126,9 @@ public class TmgResultsController {
                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
                            @RequestParam("txtAction") String action) {
 
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化データ取得する
         return tmgResultsBean.dailyDetail(psDBBean, action);
