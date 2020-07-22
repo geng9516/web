@@ -279,7 +279,7 @@
               <Spin size="large" fix v-if="emplistLoading"></Spin>
             </div>
           </tab-pane>
-          <tab-pane label="2. 休暇・休業申請" name="name2" :disabled="agencyApplyPanel">
+          <tab-pane :label="tabPaneLabel" name="name2" :disabled="agencyApplyPanel">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
               社員情報
@@ -333,15 +333,16 @@
               代理申請
             </div>
             <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
-            <i-form label-position="right" :label-width="100">
-              <form-item label="申請区分">
+            <i-form label-position="right" :label-width="100" :rules="ruleValidate">
+              <form-item label="申請区分" prop="restTypeId">
                 <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                class="mb10 no-border-radius" ref="select" transfer>
-                <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
-                  <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName">
-                  </i-option>
-                </option-group>
-              </i-select>              </form-item>
+                  class="mb5 no-border-radius" ref="select" transfer>
+                  <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
+                    <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName">
+                    </i-option>
+                  </option-group>
+                </i-select>
+              </form-item>
               <form-item label="対象期間" v-show="!selectedRestInfo.transfer">
                 <span class="input-like-span">
                   <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
@@ -368,7 +369,8 @@
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period">
                 <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
-                  placeholder="日付け" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer></date-picker>
+                  placeholder="日付け" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
+                </date-picker>
               </form-item>
 
               <!-- 有加算日-->
@@ -465,20 +467,26 @@
                 <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }"
                   placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
+              <form-item label="">
+                <ul class="ivu-upload-list tl mb10">
+                  <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+                    <span @click="applyCardDownloadFile(item)">
+                      <Icon
+                        :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
+                      </Icon> {{ item.name }}
+                    </span>
+                    <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)"
+                      v-if="item.isDefault">既存</p>
+                    <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
+                  </li>
+                </ul>
+              </form-item>
+              <form-item label="">
+                <Alert class="primary-info">各上限 500kBytes</Alert>
+              </form-item>
             </i-form>
-            <ul class="ivu-upload-list tl mb10">
-              <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                <span @click="applyCardDownloadFile(item)">
-                  <Icon
-                    :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
-                  </Icon> {{ item.name }}
-                </span>
-                <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)"
-                  v-if="item.isDefault">既存</p>
-                <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
-              </li>
-            </ul>
-            <Alert class="primary-info">各上限 500kBytes</Alert>
+            <i-button class="btn" type="primary" long @click="apply()" icon="md-create" :loading="applyLoading">申請
+            </i-button>
           </tab-pane>
         </Tabs>
       </Drawer>
@@ -581,6 +589,8 @@
           restInfoLoading: false,
           errorInfo: false,
           agencyApplyPanel: true, // 代理申请第二个panel是否可点
+          agencyApplyPanelLoading: false,
+          applyLoading: false,
           errorMsg: '',
           timerangeType: 1,
           applyEmployRestInfoLoading: false,
@@ -655,8 +665,27 @@
             weekSelected: [],
             noreserved: 1
           },
+          tabPaneLabel: (h) => {
+            return h('div', [
+              h('i-button', {
+                props: {
+                  type: 'text',
+                  loading: this.agencyApplyPanelLoading,
+                  disabled: this.agencyApplyPanel
+                }
+              }, '2. 休暇・休業申請'),
+            ])
+          },
+          ruleValidate: {
+            restTypeId: [
+              { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+            ],
+          },
           contentScrollTop: 0,
           isScroll: false,
+          uploadFiles: [],
+          deleteFiles: [],
+          curClickedEmpId:0,
         }
       },
       async mounted() {
@@ -771,11 +800,14 @@
         async handleClickEmpLeaf(e) {
           if (!e[0]) return
           let OPTS = { ...this.referListObject }
+          this.curClickedEmpId = e[0].id
           OPTS.txtTmgReferListTreeViewPermTargetEmp = e[0].id
 
           // 3条都完成的时候，就可以进行代理申请了
+          this.agencyApplyPanelLoading = true
           Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
             this.agencyApplyPanel = false
+            this.agencyApplyPanelLoading = false
           })
 
           // this.loginEmployee = e[0].empid
@@ -1074,6 +1106,69 @@
             desc: 'File ' + file.name + ' is too large, no more than 500K.'
           });
         },
+        apply: Debounce(async function () {
+          // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
+          this.errorInfo = false
+          this.restApply.action = 'ACT_AlterApply_CAppl'
+          console.log(this.selectedRestInfo)
+          this.restApply.typeNew = this.selectedRestInfo.ntfId
+          // 代理申请用，个人申请此处为空
+          this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel5
+          this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
+          const week = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+          week.forEach((e, i) => {
+            if (this.restApply.weekSelectedHelper.indexOf(`${i + 1}`) > -1) this.restApply[e] = '1'
+            else this.restApply[e] = '0'
+          })
+          if (!this.selectedRestInfo.transfer) {
+            if (this.timerangeType === 2) {
+              this.restApply.begin = this.restApply.dateList[0]
+              this.restApply.end = this.restApply.dateList[1]
+            }
+            if (this.timerangeType === 1) {
+              this.restApply.begin = this.restApply.dateList
+              this.restApply.end = this.restApply.dateList
+            }
+          }
+          if (!this.restApply.typeNew) {
+            this.errorInfo = true
+            this.errorMsg = '申請区分を選んでください。'
+            return
+          }
+          if (!this.restApply.begin || !this.restApply.end) {
+            this.errorInfo = true
+            this.errorMsg = '期間を選んでください。'
+            return
+          }
+          this.deleteFiles = [...new Set(this.deleteFiles)]
+          try {
+            this.applyLoading = true
+            await this.http.uploadFiles('sys/vapply/MakeApply', {
+              params: JSON.stringify(this.restApply),
+              uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
+              deleteFiles: JSON.stringify(this.deleteFiles),
+              txtTmgReferListTreeViewPermTargetEmp:this.curClickedEmpId,
+              psSite: this.opts.psSite
+            })
+            this.restApply = {
+              useVacation: false,
+              restTypeId: '全て',
+              weekSelected: [],
+              noreserved: 1,
+              _dateList: ''
+            }
+            this.$refs.datepicker.handleClear()
+            this.$Message.success('申请完了')
+            this.uploadFiles = []
+          } catch (error) {
+            if (error.config || error.response && error.response.status === 500) return
+            this.errorInfo = true
+            this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
+          } finally {
+            this.applyLoading = false
+            this.deleteFiles = []
+          }
+        }),
         handleWeekSelect(e) {
           console.log(e)
         },

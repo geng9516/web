@@ -96,8 +96,8 @@
                 </Col>
             </Row>
         </div>
-
-        <Row :gutter="10" class="mt5 mb15 tc">
+        <div style="position: relative;">
+            <Row :gutter="10" class="mt5 mb15 tc">
             <i-col span="4">
                 <div class="label">公休日数</div>
                 <div class="person-info">{{paidHolidayVO.nationalHolidayDays}}</div>
@@ -118,12 +118,12 @@
             </i-col>
         </Row>
 
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             一括適用
         </div>
 
-        <Row v-if=" isEditable" class="mb10">
+            <Row v-if=" isEditable" class="mb10">
             <i-col span="3">
                 <div class="label">勤務パターン</div>
             </i-col>
@@ -134,7 +134,7 @@
             </i-col>
         </Row>
 
-        <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
+            <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
             <template slot-scope="{ row }" slot="workDivision">
                 <i-select  transfer v-model="pattern.workId" @on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
@@ -187,15 +187,20 @@
                     全選択
                 </i-button>
             </template>
+                <template slot-scope="{ row }" slot="apply">
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectApply">
+                        適用
+                    </i-button>
+                </template>
         </i-table>
 
-        <div class="titlenorm mb10 mt15" v-if=" isEditable">
+            <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             勤務予定
-        </div>
+            </div>
 
-        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
-                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList" :loading="loading"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
+                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)"
         >
 
@@ -261,6 +266,8 @@
                 <span v-else>{{ value[row._index].comment }}</span>
             </template>
         </i-table>
+            <Spin size="large" fix v-if="loading"></Spin>
+        </div>
     </div>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
             <Icon size="24" type="md-arrow-round-up" />
@@ -309,6 +316,11 @@
                     {
                         title: '一括適用/クリア',
                         slot: 'option',
+                        align: 'center'
+                    },
+                    {
+                        title: 'チェックした日に対し',
+                        slot: 'apply',
                         align: 'center'
                     }
                 ],
@@ -455,29 +467,36 @@
                     this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
                 }
             },
+            handleSelectApply(){
+                if(this.valueMap.length==0){
+                    this.$Notice.error({
+                        title: '注意',
+                        desc: 'データを選択してください',
+                        duration: 3.5
+                    })
+                    return
+                }
+                const that = this
+                this.value.forEach(item=>{
+                    Object.keys(item).forEach(function(key) {
+                        if(key in that.pattern) {
+                            item[key]=JSON.parse(JSON.stringify(that.pattern[key]))
+                        }
+                    })
+                })
+            },
             handleSelectAll(selection){
+
                 this.valueMap=selection.map(item=> {
                     return item.tda_nmmdd
                 })
+                console.log("handleSelectAll"+JSON.stringify(this.valueMap))
             },
             handleSelectAll2(status) {
                 this.$refs.selection2.selectAll(status)
-
-                //一括適用
-                if(status){
-                    const that = this
-                    this.value.forEach(item=>{
-                        Object.keys(item).forEach(function(key) {
-                            if(key in that.pattern) {
-                                item[key]=that.pattern[key]
-                            }
-                        })
-                    })
-                }else{
+                if(!status){
                     this.value=JSON.parse(JSON.stringify(this.valuebak))
                 }
-
-
             },
             handleMinusRest(e, i) {
                 e.splice(i, 1)
@@ -517,7 +536,7 @@
                 this.query.EmployeeCode = e[0].empid
                 this.selectDisabled = true
                 this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
+                this.getSelectIkkaInfo(e)
 
             },
             async getSelectScheduleInfo() {
@@ -555,9 +574,10 @@
             },
             async postExecuteEditMonthlyUSchedule(){
                 if(this.valueMap.length==0){
-                    this.$Modal.error({
-                        title:'データを選択してください！',
-                        okText: 'OK'
+                    this.$Notice.error({
+                        title: '注意',
+                        desc: 'データを選択してください',
+                        duration: 3.5
                     })
                     return
                 }
@@ -581,14 +601,11 @@
                 this.$Message.success('登録完了')
 
             },
-            async getSelectIkkaInfo() {
-                this.loading=true
-                try {
-
+            async getSelectIkkaInfo(e) {
                     this.query.sectionid= e[0].secid
                     this.query.language='ja'
                     this.query.groupid='null'
-                    this.query.baseDate=Utils.formatDate(Date.now())
+                    this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
                     this.query.custId=e[0].cust
                     this.query.compId=e[0].comp
 
@@ -597,11 +614,6 @@
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
-                }
             },
             async getOrgTree() {
                 this.empDeptLoading = true
