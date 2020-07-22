@@ -269,6 +269,9 @@
   &.ing {
     color: var(--primary);
   }
+  &.rest {
+    color: var(--text-green);
+  }
 }
 
 // 固定表格相关
