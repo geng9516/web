@@ -685,6 +685,7 @@
           isScroll: false,
           uploadFiles: [],
           deleteFiles: [],
+          curClickedEmpId:0,
         }
       },
       async mounted() {
@@ -799,6 +800,7 @@
         async handleClickEmpLeaf(e) {
           if (!e[0]) return
           let OPTS = { ...this.referListObject }
+          this.curClickedEmpId = e[0].id
           OPTS.txtTmgReferListTreeViewPermTargetEmp = e[0].id
 
           // 3条都完成的时候，就可以进行代理申请了
@@ -1145,6 +1147,7 @@
               params: JSON.stringify(this.restApply),
               uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
               deleteFiles: JSON.stringify(this.deleteFiles),
+              txtTmgReferListTreeViewPermTargetEmp:this.curClickedEmpId,
               psSite: this.opts.psSite
             })
             this.restApply = {
