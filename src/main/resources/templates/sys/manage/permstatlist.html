@@ -123,7 +123,7 @@
                 <i-button type="primary" size="large"  :disabled="!drawApproval" :loading="bulkApprovalLoading2" class="tr" @click="bulkApproval2">一括承認</i-button>
                 </Col>
             </Row>
-            <i-table border :columns="columns2" :data="tableData2" @on-select="tableSelect2" @on-selection-change="tableSelectChange2" ref="selection2">
+            <i-table border :columns="columns2" :loading="sublistLoading" :data="tableData2" @on-select="tableSelect2" @on-selection-change="tableSelectChange2" ref="selection2">
                 <template v-for="(item, i) of slotList2" slot-scope="{ row }" :slot="item">
                         <span v-if="i === 0">
                             <span @click="showDay" v-if="row[item] === '未'" class="confirm-sytle ing">未</span>
@@ -132,7 +132,7 @@
                             <span @click="showDay" v-if="row[item] === '済'" class="confirm-sytle">済</span>
                             <span @click="showDay" v-if="row[item] === '確'" class="confirm-sytle">確</span>
                         </span>
-                    <span v-else>{{ row[item] }}</span>
+                    <span v-else>{{ row[item] | turnLine | whiteSpace}}</span>
                 </template>
             </i-table>
         </Drawer>
@@ -141,7 +141,6 @@
 
 <div th:replace="layout/script::common_script"></div>
 <script type="text/babel" th:inline="javascript">
-    // const aliyun = "https://1615100189492697.ap-northeast-1.fc.aliyuncs.com/2016-08-15/proxy/api-dellen/test-func"
     const PERM_STATLIST = new Vue({
         el: '.permstatlist-warp',
         data() {
@@ -156,6 +155,7 @@
                 isShow: false,
                 showPre: true,
                 listLoading: false,
+                sublistLoading: false,
                 showDayApply: false,
                 emplistLoading: false,
                 referListObject: {
@@ -245,7 +245,7 @@
                 this.tableHead.forEach((e, i) => {
                     result = result.concat({
                         // title: e,
-                        className: e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                        className: e.today ? 'gold' : (e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : ''),
                         minWidth: 25,
                         renderHeader: (h, params) => {
                             return h(
@@ -282,7 +282,7 @@
                 const that = this
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
-                        minWidth: 25,
+                        width: e.mgdNwidth,
                         renderHeader: (h, params) => {
                             return h(
                                 'span',
@@ -298,7 +298,7 @@
                             )
                         },
                         slot: `COLUMNID${i + 1}`,
-                        align: 'center'
+                        align: e.mgdCdispstyle
                     })
                 })
                 result = result.concat({
@@ -549,7 +549,7 @@
                 console.log(this.tableData2)
             },
             async getReadTmgDaily() {
-
+                this.sublistLoading  = true
                 const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
 
                 //日別詳細画面のボタンを制御
@@ -557,6 +557,7 @@
 
                 this.tableHead2 = data.itemVOList
                 this.tableData2 = data.tmgDailyMapList
+                this.sublistLoading  = false
             },
             toWorkPage() {
                 // this.$router.push('/sys/confirmer/applyWork')
