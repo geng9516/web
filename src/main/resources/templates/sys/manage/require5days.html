@@ -337,7 +337,9 @@
                 query: {
                     txtAction: 'ACT_DISP',
                     txtDYYYYMM: '',
-                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                    hidSearchItems: '',     //検索種別
+                    hidSearchCondition: '', //検索条件
+                    hidSearchData: '',      //検索対象
                     page: '1',
                     year: '',
                     txtUserCode: null,
@@ -469,6 +471,15 @@
             async getTableData() {
                 this.dataLoading = true
                 this.tableData = []
+                if (this.query.hidSelectTab == '1') {
+                    this.query.hidSearchItems = this.referListObject.hidSearchItems
+                    this.query.hidSearchCondition = this.referListObject.hidSearchCondition
+                    this.query.hidSearchData = this.referListObject.hidSearchData
+                } else if (this.query.hidSelectTab == '0') {
+                    this.query.hidSearchItems = ''
+                    this.query.hidSearchCondition = ''
+                    this.query.hidSearchData = ''
+                }
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
