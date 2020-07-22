@@ -107,8 +107,6 @@
             </div>
         </div>
 
-
-
         <Modal v-model="isShow" title="個人属性設定" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide
             draggable>
             <Row :gutter="10">
@@ -196,9 +194,6 @@
                 <i-table border :columns="historyColums" :data="historyData" :loading="loading" v-if="isBeginDateEdit">
                 </i-table>
             </span>
-
-
-
 
             <span v-if="isAvgTimeEdit">
                 <div class="titlenorm mt10" style="margin-bottom:0">
@@ -441,8 +436,6 @@
                     this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     this.getTableData()
                 },
-                keywordSearch() {
-                },
                 async getTableData() {
                     this.loading = true
 
@@ -492,9 +485,6 @@
                     } finally {
 
                     }
-
-
-
                 },
                 async handleAvgTime(e) {
                     if (!e) return

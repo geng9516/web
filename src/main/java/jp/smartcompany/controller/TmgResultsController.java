@@ -156,36 +156,16 @@ public class TmgResultsController {
      * @param psDBBean
      * @return
      */
-    @PostMapping("getSQLVecForAjax")
-    @ResponseBody
-    public ErrMsgDto getSQLVecForAjax(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                                      @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
-
-        psDBBean.setTargetUser(psDBBean.getUserCode());
-        tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
-
-        //就業実績登録
-        return tmgResultsBean.getSQLVecForAjax(tmgResultsDto,psDBBean);
-    }
-
-
-
-    /**
-     * 登録ボタンを押下する
-     *
-     * @param psDBBean
-     * @return
-     */
     @PostMapping("updateDaily")
     @ResponseBody
-    public void updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
+    public GlobalResponse updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
                             @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
 
         //就業実績登録
-        tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
+        return tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
     }
 
 

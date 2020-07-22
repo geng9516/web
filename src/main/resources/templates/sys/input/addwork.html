@@ -18,9 +18,9 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <p class="pr15" style="height: 40px;line-height: 45px;font-size: 16px;font-weight: bold;">
-                    {{ `現在の承認状況： ${isConfirm==='TMG_DATASTATUS|5' ? '承認済' : '未承認'}` }}
-                </p>
+                <i-button type="text" class="pr15" style="height: 40px;line-height: 45px;font-size: 16px;font-weight: bold;" :loading="monthlyLoading">
+                    {{ `月次承認状況： ${isConfirm==='TMG_DATASTATUS|5' ? '承認済' : '未承認'}` }}
+                </i-button>
             </div>
         </div>
         <div class="searchwrap">
@@ -32,34 +32,38 @@
             </i-select>
         </div>
     </div>
-    <div class="content_body">
-        <Row :gutter="10" class="mt20 mb10">
+    <div class="content_body" style="position: relative">
+        <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin && bWorkChkStatus) || (bDispKenkojotaiKakunin && bHealthChkStatus)">
             <i-col span="12" v-if="bDispKinmujokyoKakunin">
                 <div class="label tc">勤務状況確認</div>
                 <div class="tl">
                     <div class="person-info">
-                        <span class="time tl" style="width: 67%;">{{this.kinmujokyoEnd -2}}～{{this.kinmujokyoEnd}}月の勤務実績に、相違がないことを確認しました。</span>
-                        <span class="with-split" style="width: 26%;" v-if="bWorkChkStatus">現在の状況：確認済 </span>
-                        <span class="with-split" style="width: 26%;" v-else>現在の状況：未確認 </span>
-                        <span class="with-split" style="width: 3%;" v-if="!bWorkChkStatus">
-                            <i-button type="primary" ghost size="small" @click="confWork">確認</i-button>
+                        <span class="time tl" style="width: 100%;">{{this.kinmujokyoEnd -2}}～{{this.kinmujokyoEnd}}月の勤務実績に、相違がないことを確認しました。</span>
+                    </div>
+                    <div class="person-info">
+                        <span class="with-split" style="width: 100%;" v-if="bWorkChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 72%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 25%;" v-if="!bWorkChkStatus">
+                                <i-button type="primary" ghost size="small" @click="confWork">確認</i-button>
                         </span>
                     </div>
                 </div>
             </i-col>
             <i-col span="12" v-if="bDispKenkojotaiKakunin">
-                <div class="label tc">勤務状況確認</div>
+                <div class="label tc">健康状態確認</div>
                 <div class="tl">
                     <div class="person-info">
-                        <span class="time tl" style="width: 67%;">健康状態に問題が生じて
+                        <span class="time tl" style="width: 100%;">健康状態に問題が生じて
                                 <i-select v-model="selHealthStatus" :disabled="bHealthChkStatus" size="small" style="width:80px">
                                     <i-option v-for="(item, index) of selHealthStatusList" :key="index" :label="item.name" :value="item.code"></i-option>
                                 </i-select>ことを報告します。</span>
 
-                        <span class="with-split" style="width: 26%;" v-if="bHealthChkStatus">現在の状況：確認済 </span>
-                        <span class="with-split" style="width: 26%;" v-else>現在の状況：未確認 </span>
-                        <span class="with-split" style="width: 3%;"  v-if="!bHealthChkStatus">
-                            <i-button type="primary" ghost size="small" @click="confHealth" >確認</i-button>
+                    </div>
+                    <div class="person-info">
+                        <span class="with-split" style="width: 100%;" v-if="bHealthChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 72%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 25%;"  v-if="!bHealthChkStatus">
+                            <i-button type="primary" ghost size="small" @click="confHealth" long>確認</i-button>
                         </span>
                     </div>
                 </div>
@@ -73,16 +77,16 @@
             <Icon type="logo-buffer"></Icon>
             就業実績
         </div>
-        <div class="month-sum tl">
 
+        <div class="month-sum tl">
             <div class="son" v-for="(item, i) of monthlyTilteMapList" :key="i">
                 <span class="label-monthSum">{{item.title | turnLine}}</span>
                 <span class="num">{{monthlyMap[item.key]}}</span>
             </div>
-
         </div>
         <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
-                 @on-row-click="showDay(arguments)" border :columns="columns"
+                 @on-row-click="showDay(arguments[0].TDA_DYYYYMMDD)"
+                 border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
                  no-data-text="勤怠シート未作成">
             <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
@@ -105,17 +109,18 @@
                 <span v-if="row.TDA_CNTFSTATUSFLG_NAME === 'エ'" class="confirm-sytle undo">エ</span>
             </template>
         </i-table>
+        <Spin size="large" fix v-if="monthlyLoading"></Spin>
     </div>
 
     <!--日次就業実績-->
-    <Drawer :title="title" width="800" v-model="isShow" @on-close="handleClose()" draggable>
-        <div class="content_body">
+    <Drawer :title="title" width="45" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
+        <div style="position: relative">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
             <Row class="mb15 tr">
-                <i-col span="6" offset="15">
+                <i-col span="6" offset="16">
                     <i-button type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">コメントのみ登録</i-button>
                 </i-col>
-                <i-col span="3">
+                <i-col span="1">
                     <i-button type="primary" ghost v-if="!bFixed" @click="updateDaily" :loading="updateDailyLoading">
                         登録
                     </i-button>
@@ -187,10 +192,8 @@
                         <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                         <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea"
                                  readonly></i-input>
-                        <!--                        <span >{{ dailyEdit.tdaCbosscommentR }}</span>-->
                     </i-col>
                 </Row>
-                <Spin size="large" fix v-if="workDataLoading"></Spin>
             </div>
 
 
@@ -218,7 +221,7 @@
                 </i-col>
             </Row>
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
-                     :loading="columnsNotWorkLoading">
+                     :loading="columnsNotWorkLoading" no-data-text="">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
                     <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailNonDutyVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
@@ -273,7 +276,7 @@
             </Row>
 
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
-                     :loading="columnsOverWorkLoading">
+                     :loading="columnsOverWorkLoading" no-data-text="">
                 <template slot-scope="{ row ,index }" slot="tdadNopen">
                     <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{ row.tdadNopen | toTime }}</span>
@@ -298,11 +301,11 @@
             </div>
             <div class="titlenorm mb10">
                 <Icon type="logo-buffer"></Icon>
-                <a @click="showLog"> 更新履歴</a>
+                更新履歴
             </div>
-            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20" v-if="isLogShow">
-
+            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
             </i-table>
+            <Spin size="large" fix v-if="dailyloading"></Spin>
         </div>
     </Drawer>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
@@ -316,6 +319,8 @@
         el: '.monthWorkConfirm-warp',
         data() {
             return {
+                monthlyLoading:false,
+                dailyloading:false,
                 contentScrollTop: 0,
                 isScroll: false,
                 selectDisabled: false,   　//年月選択可否制御
@@ -384,39 +389,7 @@
                 categoryOverhours: '',
                 categoryOverhoursName: '',
                 categoryOverhoursList: [],
-                dailyEdit: {
-                    noOvertimeDaysMsg: '',
-                    ntime: '',
-                    tdaCbosscommentR: '',
-                    tdaCbusinesstripidR: '',
-                    tdaCbusinesstripidRName: '',
-                    tdaCcommentO: '',
-                    tdaCerrcode: '',
-                    tdaCmodifieruseridR: '',
-                    tdaCowncommentR: '',
-                    tdaCstatusflg: '',
-                    tdaCworkingidR: '',
-                    tdaCworkingidRBame: '',
-                    tdaDmodifieddateR: '',
-                    tdaDyyyymmdd: '',
-                    tdaDyyyymmddDy: '',
-                    tdaNcloseN: '',
-                    tdaNcloseO: '',
-                    tdaNcloseP: '',
-                    tdaNclosePAtRest45: '',
-                    tdaNcloseR: '',
-                    tdaNcloseRHidden: '',
-                    tdaNcloseTp: '',
-                    tdaNopenN: '',
-                    tdaNopenO: '',
-                    tdaNopenP: '',
-                    tdaNopenR: '',
-                    tdaNopenRHidden: '',
-                    tdaNopenTp: '',
-                    tdaNrest45P: '',
-                    tdaNrestcloseR: '',
-                    tdaNrestopenR: ''
-                },
+                dailyEdit:[],
 
                 isShow: false,
                 title: {
@@ -554,7 +527,6 @@
                 dailyData: {},
                 workData0: [],
                 mgdCsparechar4VOList: [],
-                workDataLoading: false,
                 columnsNotWorkLoading: false,
                 columnsOverWorkLoading: false,
                 bHoliday: false,
@@ -584,8 +556,6 @@
                 bWorkChkStatus:false,
                 bHealthChkStatus:false,
                 kinmujokyoEnd:0
-
-
             }
         },
         async mounted() {
@@ -672,31 +642,33 @@
                     return
                 } finally {
                     this.loading = false
-
                 }
             },
             // 勤務年月一覧取得
             async getWorkDateList() {
                 this.query.txtAction = 'ACT_DISP_RMONTHLY'
-                this.loading = false
-                const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
+                try {
+                    const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
 
-                this.query.today = data.today
-                this.dispMonthlyList = data.monthLy
+                    this.query.today = data.today
+                    this.dispMonthlyList = data.monthLy
 
 
-                if (data.monthLy.length > 0) {
-                    this.model1 = this.dispMonthlyList[0].code
-                    this.query.txtDYYYYMM = this.model1
+                    if (data.monthLy.length > 0) {
+                        this.model1 = this.dispMonthlyList[0].code
+                        this.query.txtDYYYYMM = this.model1
 
-                    //年月リストを取得する時に、活性化にする
-                    this.selectDisabled = true
-                }
+                        //年月リストを取得する時に、活性化にする
+                        this.selectDisabled = true
+                    }
 
-                //年月リスト.lengthがゼロ場合、非活性化にする
-                if (data.monthLy.length === 0) {
-                    this.model1 = ''
-                    this.selectDisabled = false
+                    //年月リスト.lengthがゼロ場合、非活性化にする
+                    if (data.monthLy.length === 0) {
+                        this.model1 = ''
+                        this.selectDisabled = false
+                    }
+                } catch (error) {
+                    return
                 }
             },
             // 年月選択
@@ -721,33 +693,37 @@
             },
             // 就業実績のタイトルとデータを取得
             async getTitleData() {
-                this.loading = true
+
 
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
                 this.dailyDataList = []
-                const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
-                this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
-                this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
-                this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
-                this.bHealthChkStatus = data.workHealthChkVO.bhealthChkStatus
-                this.kinmujokyoEnd = data.workHealthChkVO.kinmujokyoEnd
-                this.selHealthStatus = data.workHealthChkVO.selHealthStatus
+                try {
+                    this.monthlyLoading=true
+                    const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
+                    this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
+                    this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
+                    this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
+                    this.bHealthChkStatus = data.workHealthChkVO.bhealthChkStatus
+                    this.kinmujokyoEnd = data.workHealthChkVO.kinmujokyoEnd
+                    this.selHealthStatus = data.workHealthChkVO.selHealthStatus
 
-                this.monthlyTilteMapList = data.monthlyTilteMapList
-                this.monthlyMap = data.monthlyDateMap
-                this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
+                    this.monthlyTilteMapList = data.monthlyTilteMapList
+                    this.monthlyMap = data.monthlyDateMap
+                    this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
 
-                this.columns = data.dailyTittleMapList.map(e => {
-                    return {
-                        ...e,
-                        title: e.title.replace(TURN_LINE_STR, '\n')
-                    }
-                })
-
-                this.dailyDataList = data.dailyMapList
-                this.loading = false
-
+                    this.columns = data.dailyTittleMapList.map(e => {
+                        return {
+                            ...e,
+                            title: e.title.replace(TURN_LINE_STR, '\n')
+                        }
+                    })
+                    this.dailyDataList = data.dailyMapList
+                } catch (error) {
+                    return
+                }finally {
+                    this.monthlyLoading= false
+                }
             },
             async confWork(){
                 this.query.txtAction='ACT_CONF_WORK_ON'
@@ -765,6 +741,9 @@
             },
             //一覧から日次実績をクリックする
             async showDay(e) {
+                // 業登録画面表示
+                this.isShow = true
+                this.dailyloading = true
 
                 // 就業登録画面項目クリアする
                 this.categoryNonduty = ''
@@ -773,36 +752,29 @@
                 this.workData0 = []
                 this.detailNonDutyVOList = []
                 this.detailOverhoursVOList = []
+
                 this.title = '  '
-                this.query.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
-                this.txtDYYYYMMDD = e[0].TDA_DYYYYMMDD
+                this.query.txtDYYYYMMDD = e
+                this.txtDYYYYMMDD = e
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.bFixed = false
                 this.bHoliday = false
-
-                // 業登録画面表示
-                this.isShow = true
-
                 // 業登録画面データ取得
                 await this.dailyDetail()
+                this.dailyloading = false
             },
 
             // 就業登録画面情報取得・設定する
             async dailyDetail() {
 
-                this.workDataLoading = true
                 // 画面情報取得
                 const {data} = await this.http.get('sys/tmgResults/dailyDetail', this.query)
-                this.workDataLoading = false
 
                 // 就業区分ドロップダウン
                 this.workingIdList = data.workIdList
-                // this.workingId = this.workingIdList[0].mgdCmastercode
 
                 // 出張ドロップダウン
                 this.businessTripList = data.businessTripList
-                // this.businessTrip = this.businessTripList[0].mgdCmastercode
-
 
                 // 非勤務ドロップダウン
                 this.categoryNondutyList = data.categoryNondutyList
@@ -818,7 +790,6 @@
 
                 // 就業実績
                 this.dailyEdit = data.dailyEditVO
-
 
                 if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
                     && '' !== this.dailyEdit.tdaCmodifieruseridR
@@ -901,14 +872,9 @@
                     }
                 })
                 let limitOfBasedateVO = data.limitOfBasedateVO
-
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
-
-
-
-
             },
 
             handleClose() {
@@ -970,16 +936,18 @@
                 this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
 
+                if (this.tmgResultsDto.tdaCowncommentR !== null && this.getLengthB(this.tmgResultsDto.tdaCowncommentR) > 100) {
+                    this.$Notice.error({desc: "中断備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
+                    return false
+                }
                 this.http.post('sys/tmgResults/updateInp', this.tmgResultsDto)
                 this.isShow = false
             }),
             //登録
             async updateDaily() {
-
                 if (!this.errorCheck()) {
                     return
                 }
-
                 this.updateDailyLoading = true
 
                 this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
@@ -1007,87 +975,44 @@
                         this.tmgResultsDto.hasAuthority = true
                     }
                 }
-
-                if (!await this.getSQLVecForAjax()) {
+                const { msg } = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                if(msg === '0'){
                     this.updateDailyLoading = false
+                    this.isShow = false
+                    this.getTitleData()
                     return
                 }
-                await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                this.updateDailyLoading = false
-                this.isShow = false
-                this.getTitleData()
-
-            },
-            async getSQLVecForAjax() {
-                const {data} = await this.http.post('sys/tmgResults/getSQLVecForAjax', this.tmgResultsDto)
-
-                let terCerrcode = data.terCerrcode
-
-                if (terCerrcode === '0') {
-                    return true
-                }
-                this.errMsg = JSON.parse(terCerrcode)
-
-                let errMsg20 = ''
-                let errMsg30 = ''
+                this.errMsg = JSON.parse(msg)
+                let errMsg20
                 let check = Object.keys(this.errMsg).some(e => {
                     if (e === 'ERRTYPE_10') {
-
                         this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
-
                         return true
                     }
-
                     if (e === 'ERRTYPE_20') {
                         this.errMsg.ERRTYPE_20.forEach(e20 => {
                             errMsg20 = errMsg20 + e20.ERRMSG + '/n'
                         })
-
-                    }
-                    if (e === 'ERRTYPE_30') {
-                        this.errMsg.ERRTYPE_30.forEach(e30 => {
-                            errMsg30 = errMsg30 + e30.ERRMSG + '/n'
-                        })
+                        this.$Notice.error({desc: errMsg20})
                     }
 
                 })
-                if (check) return false
-
-                if (errMsg20 !== '') {
-                    this.$Notice.warning({desc: errMsg20})
-
-                }
-                if (errMsg30 !== '') {
-
-                    if(!confirm('errMsg30')){
-                        return false
-                    }
-                }
-                return true
-            },
-
-            showLog() {
-                if (this.isLogShow) {
-                    this.isLogShow = false
-                } else {
-                    this.isLogShow = true
+                if (check) {
+                    this.updateDailyLoading = false
+                    return false
                 }
 
             },
 
             // 就業区分の切り替え表示制御
             changeWorkingID(workingid) {
-
                 this.bDisable = false;
-
                 // 休暇
                 if (this.bHoliday) {
                     this.bDisable = true;
                     // 休暇以外
                 } else {
-
                     let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
-
                     // 出勤 or 休日出勤
                     if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
                         this.bDisable = false;
@@ -1096,33 +1021,27 @@
                         this.bDisable = true;
                     }
                 }
-
                 if (this.bDisable === true) {
                     this.detailNonDutyVOList = []
                     this.detailOverhoursVOList = []
 
                 }
             },
-
-
             // エラーチェック
             errorCheck() {
-
                 // 修正出社時刻形式
-                if (!this.checkFormatTimeValue(this.dailyEdit.tdaNopenR, '就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                if (!this.time_check(this.dailyEdit.tdaNopenR)) {
+                    this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                     return false;
                 }
 
                 // 修正退社時刻形式
-                if (!this.checkFormatTimeValue(this.dailyEdit.tdaNcloseR, '就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                if (!this.time_check(this.dailyEdit.tdaNcloseR)) {
+                    this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                     return false;
                 }
 
                 if (this.dailyEdit.tdaCowncommentR !== null && this.getLengthB(this.dailyEdit.tdaCowncommentR) > 100) {
-
-                    this.$Notice.error({desc: "本人コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
 
                     return false;
                 }
@@ -1130,53 +1049,45 @@
                 //非勤務
                 const checkNonDuty = this.detailNonDutyVOList.some(e => {
 
-                    if (!this.checkFormatTimeValue(e.tdadNopen, '非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                    if (!this.time_check(e.tdadNopen)) {
+                        this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
-                    if (!this.checkFormatTimeValue(e.tdadNclose, '非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                    if (!this.time_check(e.tdadNclose)) {
+                        this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
                     if (e.tdadCsparechar1 !== null && this.getLengthB(e.tdadCsparechar1) > 100) {
                         this.$Notice.error({desc: "中断備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                         return true
-
                     }
                 })
                 if (checkNonDuty) return false
-
                 // 超過勤務
                 const checkOverhour = this.detailOverhoursVOList.some(e => {
 
-                    if (!this.checkFormatTimeValue(e.tdadNopen, '超過勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                    if (!this.checkFormatTimeValue(e.tdadNopen)) {
+                        this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
-                    if (!this.checkFormatTimeValue(e.tdadNclose, '超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。')) {
-
+                    if (!this.checkFormatTimeValue(e.tdadNclose)) {
+                        this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
                     if (e.tdadCsparechar1 !== null && e.tdadCsparechar1.length > 100) {
                         this.$Notice.error({desc: "超過勤務備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                         return true
                     }
-
                 })
                 if (checkOverhour) return false
-
-
                 let nOverTimeTotal = 0;
                 // 超過勤務命令の明細部配下を行単位で取得
                 this.detailOverhoursVOList.forEach(e => {
-
                     // 超過勤務命令の時間数を算出
                     let sOpen = this.toMinuteFromHHcMI60(e.tdadNopen);
                     let sClose = this.toMinuteFromHHcMI60(e.tdadNclose);
                     nOverTimeTotal = nOverTimeTotal + (sClose - sOpen);
                 })
-
-
                 // 超過勤務命令時間が入力されていて、超過勤務対象「無」の場合は警告メッセージを表示する
                 if (nOverTimeTotal > 0 && this.targetForOverTime === "1") {
                     // 警告メッセージの表示および、応答の確認
@@ -1185,26 +1096,18 @@
                         return false
                     }
                 }
-
                 // 超過勤務命令時間数合計が登録された超勤限度時間を超える場合は警告メッセージを表示する
                 if (nOverTimeTotal > this.overHourLimit) {
                     // 警告メッセージの表示および、応答の確認
-
                     if(!confirm('超過勤務命令の時間数が' +this.otDaily +'時間を超えています。\nこの超過勤務時間で登録してよろしいですか？')){
                         return false
                     }
-
                 }
-
                 return true;
             },
             getLengthB(moji) {
-
                 let i, j, cnt = 0;
-
-                // "§", "¨", "°", "±", "´", "¶"を追加。2005.08.22 Oyama
                 let multiStr = new Array("×", "§", "¨", "°", "±", "´", "¶");
-
                 for (i = 0; i < moji.length; i++) {
                     for (j = 0; j < multiStr.length; j++) {
                         if (multiStr[j].length == 0) {
@@ -1213,214 +1116,52 @@
                         moji = moji.replace(multiStr[j], "00");
                     }
                 }
-
                 // MAC OSの場合、改行コードが「\n」となり、Windowsの改行コード「\r\n」とバイト数が異なるので、
-                // 改行コードは「\r\n」で桁数を計算する様にする。
                 moji = moji.split("\r\n").join("\n"); // 一旦「\r\n」 ⇒ 「\n」の変換を行い、改行コードを「\n」に合わせる。
-                moji = moji.split("\n").join("\r\n"); // 「\n」 ⇒ 「\r\n」の変換を行い、改行コード全てを「\r\n」にする。
-
                 // バイト数を求めます。
                 for (i = 0; i < moji.length; i++)
                     if (escape(moji.charAt(i)).length >= 4) cnt += 2; else cnt++;
                 return cnt;
-
-            },
-            // 時刻形式チェック
-            checkFormatTimeValue(obj, mes) {
-
-
-                if (!this.checkFormatTimeValueMain(obj)) {
-                    this.$Notice.error({desc: mes})
-                    return false;
-                }
-
-                return true;
-            },
-
-
-            // 時刻形式チェック（実判定処理部）
-            checkFormatTimeValueMain(obj) {
-                if (obj == null) obj = ''
-                if (obj !== '' && !this.time_check(obj)) {
-                    return false;
-                } else {
-                    if (!(this.checkFormatHHcMI60(obj))) {
-                        return false;
-                    }
-                }
-
-                return true;
             },
             time_check(sTime) {
-
-                return sTime.match(/^([0-9]?[0-9]):([0-9][0-9])$/);
-
+                return sTime.match(/^(([0-3]?[0-9])|([4][0-7])):([0-5]?[0-9])$/);
             },
-            // *****************************************************************************
-            //		関数名:		checkFormatHHcMI60
-            //		機能:		HH:MI60形式で入力が行われているかどうかチェック
-            //		パラメータ:	時刻or時間
-            //		戻り値:		正しい入力 未入力:true　不正な入力:false
-            checkFormatHHcMI60(para) {
-
-                let colonSTR = ':'
-                let nColonPoint
-                let bColonIs = '0'
-                let vHHMI
-                let vMI
-
-                // 未入力はtrueで返す
-                if (para.length === 0) {
-                    return true
-                }
-
-                // 桁数チェック
-                if (para.length < 4 || para.length > 5) {
-                    return false
-                }
-
-                // ":"の有無を調べる
-                for (let i = 0; i < para.length; i++) {
-                    if (para.charAt(i) === colonSTR) {
-                        nColonPoint = i
-                        bColonIs = 1
-                        break
-                    }
-                }
-                if (bColonIs === 0) {
-                    return false
-                }
-
-                // 数値チェック
-                vHHMI = para.substring(0, nColonPoint) + para.substring(nColonPoint + 1, para.length);
-                if (isNaN(vHHMI) === true) {
-                    return false
-                }
-                // 分チェック
-                vMI = para.substring(nColonPoint + 1, para.length)
-                if (vMI.length !== 2) {
-                    return false
-                }
-
-                const sixty = +vMI
-                if (eval(sixty) >= eval(60)) {
-                    return false
-                }
-
-                return true
-            },
-
-            toMinuteFromHHcMI60(pHHMM) {
-
+            toHHHcMI60FromHHHMI60(pHHMM) {
                 let colonSTR = ':';
-                let retMinute;
-                let bColonIs = 0;
-                let nColonPoint;
-                let nHour = new Number();
-                let nMinute = new Number();
-
-                // コロンがあるかどうか
-                let bColon = false;
-
+                let retHHMM;
+                let bColonIs = 0
+                if (!pHHMM.match(/^\d{2}([0-5]?[0-9])$/)) {
+                    // フォーマットが不正である場合は入力された値をそのまま返す
+                    return pHHMM;
+                }
+                if (pHHMM.length < 3) {
+                    return "0:" + pHHMM;
+                }
+                // ３桁の場合
+                if (pHHMM.length === 3) {
+                    retHHMM = pHHMM.substring(0, 1) + colonSTR + pHHMM.substring(1, 3);
+                    // ４桁の場合
+                } else {
+                    retHHMM = pHHMM.substring(0, 2) + colonSTR + pHHMM.substring(2, 4);
+                }
+                return retHHMM;
+            },
+            toMinuteFromHHcMI60(pHHMM) {
                 // 何もパラメータが渡されなかった場合、そのまま返す
                 if (pHHMM === '') {
                     return '';
                 }
-
-                // ":"の有無を調べる
-                for (let i = 0; i < pHHMM.length; i++) {
-                    if (pHHMM.charAt(i) === colonSTR) {
-                        nColonPoint = i;
-                        bColonIs = 1;
-
-                        // コロンがあるかどうか
-                        bColon = true;
-
-                        break;
-                    }
-                }
-
-                if (bColon === false) {
-                    return 0;
-                }
-
+                let retMinute;
+                let nHour = new Number();
+                let nMinute = new Number();
                 // 分に変換します
-                nHour = eval(pHHMM.substring(0, +nColonPoint) * 60);
-
-                nMinute = eval(+(pHHMM.substring(nColonPoint + 1, pHHMM.length)));
-
+                nHour = eval(+(moji.split(":")[0] * 60));
+                nMinute = eval(+(moji.split(":")[1]));
                 retMinute = eval(nHour + nMinute);
-
                 return retMinute;
             },
 
-            toHHHcMI60FromHHHMI60(pHHMM) {
-                console.log(pHHMM)
-                return this.toHHcMI60FromHHMI60(pHHMM)
-            },
-            toHHcMI60FromHHMI60(pHHMM) {
-                let colonSTR = ':';
-                let dSTR = '.';
-                let retHHMM;
-                let bColonIs = 0;
-                let nColonPoint;
-
-                if (!pHHMM.match(/^(\d{1,2}:?)?[0-5][0-9]$/)) {
-                    // フォーマットが不正である場合は入力された値をそのまま返す
-                    return pHHMM;
-                }
-
-                if (pHHMM.length < 3) {
-                    return "0:" + pHHMM;
-                }
-
-                // ":"の有無を調べる
-                for (let i = 0; i < pHHMM.length; i++) {
-                    if (pHHMM.charAt(i) === colonSTR) {
-                        nColonPoint = i;
-                        bColonIs = 1;
-                        break;
-                    }
-                }
-
-                // ":"がなければ
-                if (bColonIs === 0) {
-                    // ３桁の場合
-                    if (pHHMM.length === 3) {
-                        retHHMM = pHHMM.substring(0, 1) + colonSTR + pHHMM.substring(1, 3);
-                        // ４桁の場合
-                    } else {
-                        retHHMM = pHHMM.substring(0, 2) + colonSTR + pHHMM.substring(2, 4);
-                    }
-                    // ":"があれば
-                } else {
-                    retHHMM = pHHMM;
-                }
-
-                // 0X:XXの場合１桁目の0は削除
-                if (retHHMM.charAt(0) === '0' && retHHMM.charAt(1) !== colonSTR) {
-                    retHHMM = retHHMM.substring(1, retHHMM.length);
-                }
-
-                return retHHMM;
-            },
-            //登録画面/////////////////////////////////////////////////////////////////
-
-            handleDatePicker() {
-            },
             rowClass(row) {
-                // 不可点击得时候，表格变色
-                // if (!row.memberDivisionCode || (!this.isEmployer && this.monthConfirmFlag)) {
-                //   if (row.dayDivisionCode === '4') {
-                //     return 'sun'
-                //   }
-                //   // 第一条避免错误数据被染上sat色
-                //   if (row.dayDivisionCode && row.dayDivisionCode !== '1') {
-                //     return 'sat'
-                //   }
-                //   return ''
-                // }
-                // 可点击得时候，表格变色
                 if (row.today) {
                     return 'select-col sun'
                 }
@@ -1445,6 +1186,5 @@
     })
 </script>
 </body>
-
 
 </html>

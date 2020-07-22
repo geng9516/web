@@ -182,6 +182,25 @@ public class SiteManageController {
         return "sys/manage/tmgnotification";
     }
 
+
+    /**
+     * 跳转到就業承認界面
+     *
+     * @param moduleIndex
+     * @param menuId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("tmgresults")
+    public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex,
+                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId);
+        return "sys/manage/addwork";
+    }
+
+
+
     /**
      * 跳转到权限设定
      *
