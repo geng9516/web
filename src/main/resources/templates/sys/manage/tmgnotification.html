@@ -243,9 +243,9 @@
       <!-- 详细以及承认申请的panel end -->
 
       <!-- 代理申请的 -->
-      <Drawer class="tc" title="代理申請" placement="right" width="100" v-model="agencyApplyShow">
-        <Row :gutter="10">
-          <i-col span="9">
+      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow">
+        <Tabs value="name1" :animated="false">
+          <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
               所属
@@ -265,7 +265,7 @@
               </div>
             </Row>
             <div style="position: relative;">
-              <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+              <Tree class="tree mt2" :data="treeData" @on-select-change="(e) => {handleClickLeaf(e, false)}" ref="tree"
                 empty-text="所属データなし"></Tree>
               <Spin size="large" fix v-if="empDeptLoading"></Spin>
             </div>
@@ -278,33 +278,27 @@
               </Tree>
               <Spin size="large" fix v-if="emplistLoading"></Spin>
             </div>
-          </i-col>
-          <i-col span="15">
-            <div class="titlenorm">
+          </tab-pane>
+          <tab-pane label="2. 休暇・休業申請" name="name2" :disabled="agencyApplyPanel">
+            <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
-              代理申請
+              社員情報
             </div>
-            <Row :gutter="10">
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">申請区分</div>
-                <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                  class="mb10 no-border-radius" ref="select">
-                  <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
-                    <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName">
-                    </i-option>
-                  </option-group>
-                </i-select>
-              </i-col>
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">氏名</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.name }}</div>
-              </i-col>
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">種別</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.worktype }}</div>
-              </i-col>
-            </Row>
-            <div style="position: relative;min-height: 100px;">
+            <div style="position: relative;">
+              <Row :gutter="10">
+                <i-col span="8">
+                  <div class="label" style="padding:1px 0">所属</div>
+                  <div class="person-info">{{ applyEmployPersonalInfo.section }}</div>
+                </i-col>
+                <i-col span="8">
+                  <div class="label" style="padding:1px 0">氏名</div>
+                  <div class="person-info">{{ applyEmployPersonalInfo.name }}</div>
+                </i-col>
+                <i-col span="8">
+                  <div class="label" style="padding:1px 0">種別</div>
+                  <div class="person-info">{{ applyEmployPersonalInfo.worktype }}</div>
+                </i-col>
+              </Row>
               <div v-for="(item, i) of applyEmployRestInfo" :key="i">
                 <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
                 <Row class="ft13 mb5 mt10">
@@ -334,11 +328,20 @@
               <Spin size="large" fix v-if="applyEmployRestInfoLoading"></Spin>
             </div>
             <!-- 申请的项目 -->
+            <div class="titlenorm mt10 mb5">
+              <Icon type="logo-buffer"></Icon>
+              代理申請
+            </div>
             <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
             <i-form label-position="right" :label-width="100">
-              <!-- <form-item label="申請区分">
-                <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCtypeName }}</span>
-              </form-item> -->
+              <form-item label="申請区分">
+                <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
+                class="mb10 no-border-radius" ref="select" transfer>
+                <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
+                  <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName">
+                  </i-option>
+                </option-group>
+              </i-select>              </form-item>
               <form-item label="対象期間" v-show="!selectedRestInfo.transfer">
                 <span class="input-like-span">
                   <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
@@ -350,22 +353,22 @@
               <form-item label="日付け" v-show="!selectedRestInfo.transfer">
                 <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100"
                   :value="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付け"
-                  ref="datepicker"></date-picker>
+                  ref="datepicker" transfer></date-picker>
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
                 <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5" placeholder="日付け"
-                  format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
+                  format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
                 <date-picker type="date" :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
-                  format="yyyy/MM/dd" @on-change="restApply.end = $event"></date-picker>
+                  format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period">
-                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100" placeholder="日付け"
-                  format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event"></date-picker>
+                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
+                  placeholder="日付け" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有加算日-->
@@ -442,7 +445,7 @@
               <!-- 有生年月日-->
               <form-item label="生年月日" 　v-show="selectedRestInfo.birthday">
                 <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付け"
-                  format="yyyy/MM/dd" @on-change="restApply.txtBirthday = $event"></date-picker>
+                  format="yyyy/MM/dd" @on-change="restApply.txtBirthday = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有伤病-->
@@ -452,15 +455,16 @@
               <form-item label="添付ファイル">
                 <Upload ref="upload" :show-upload-list="false"
                   :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag"
-                  action="/" :on-format-error="handleFormatError"
-                  :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
+                  action="/" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500"
+                  :on-exceeded-size="handleMaxSize">
                   <i-button style="border:0" icon="ios-cloud-upload-outline" long>ファイルを選択</i-button>
                 </Upload>
               </form-item>
 
               <form-item label="申請事由等" v-if="detailsData.tntfCowncomment">
                 <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }"
-                placeholder="文字の長さは１００位以内になっております。"></i-input>              </form-item>
+                  placeholder="文字の長さは１００位以内になっております。"></i-input>
+              </form-item>
             </i-form>
             <ul class="ivu-upload-list tl mb10">
               <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
@@ -475,7 +479,8 @@
               </li>
             </ul>
             <Alert class="primary-info">各上限 500kBytes</Alert>
-        </Row>
+          </tab-pane>
+        </Tabs>
       </Drawer>
     </div>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
@@ -575,6 +580,7 @@
           detailsLoading: false,
           restInfoLoading: false,
           errorInfo: false,
+          agencyApplyPanel: true, // 代理申请第二个panel是否可点
           errorMsg: '',
           timerangeType: 1,
           applyEmployRestInfoLoading: false,
@@ -743,7 +749,7 @@
           await this.getOrgTree()
           this.$Notice.success({ title: '所属図更新完了' })
         },
-        async handleClickLeaf(e) {
+        async handleClickLeaf(e, forAgencyApply) {
           if (!e[0]) return
           this.deptDrawShow = false
           this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
@@ -756,19 +762,21 @@
           }
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
-          this.getTableData(false, true)
+          if (forAgencyApply) {
+            // 代理申请点击所属的时候不需要拉取表格数据
+            this.getTableData(false, true)
+          }
           this.getEmplist()
         },
         async handleClickEmpLeaf(e) {
           if (!e[0]) return
           let OPTS = { ...this.referListObject }
           OPTS.txtTmgReferListTreeViewPermTargetEmp = e[0].id
-          // 员工信息
-          this.getApplyEmployPersonalInfo(OPTS)
-          // 请假list
-          this.getApplyEmployInfo(OPTS)
-          // 员工年休信息
-          this.getApplyEmployRestInfo(OPTS)
+
+          // 3条都完成的时候，就可以进行代理申请了
+          Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
+            this.agencyApplyPanel = false
+          })
 
           // this.loginEmployee = e[0].empid
           // this.sectionName = e[0].secnic
@@ -802,14 +810,20 @@
           this.applyEmployRestList = data
         },
         async getEmplist() {
-          const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
-          this.empList = data
-          this.empTreeData = data.map(e => {
-            return {
-              title: e.empname,
-              id: e.empid
-            }
-          })
+          this.emplistLoading = true
+          try {
+            const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
+            this.empList = data
+            this.empTreeData = data.map(e => {
+              return {
+                title: e.empname,
+                id: e.empid
+              }
+            })
+          } catch (error) {
+          } finally {
+            this.emplistLoading = false
+          }
         },
         async showDetails(row) {
           this.getDetails(row.tntfCntfNo)
