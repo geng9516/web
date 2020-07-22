@@ -68,6 +68,7 @@ public class Constant {
 
     public final static String SYSTEM_CODE = "systemCode";
     public final static String CUSTOMER_ID = "customerId";
+    public final static String SYSTEM_LIST = "systemList";
 
     public final static String SITE_INDEX = "siteIndex";
 

@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class SiteManageController {
 
     private final PermStatListBean permStatListBean;
+
     /**
      * 跳转到部署別統計情報確認界面
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
@@ -38,34 +40,36 @@ public class SiteManageController {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId)
-                .addAttribute("targetSection",referList.getTargetSec())
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-      return "sys/manage/wsum";
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+        return "sys/manage/wsum";
     }
 
     /**
      * 跳转到勤務パターン設定界面
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
      * @return
      */
-    @GetMapping("wpattern")
+/*    @GetMapping("wpattern")
     public String toManageAddWork(@RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+                                  @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId);
         return "sys/manage/wpattern";
-    }
+    }*/
 
     /**
      * 跳转到年5日時季指定取得確認界面
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
@@ -89,7 +93,7 @@ public class SiteManageController {
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
         return "sys/manage/require5days";
     }
 
@@ -102,15 +106,15 @@ public class SiteManageController {
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                 true, false, false, true);
         modelMap
-                .addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId)
-                .addAttribute("targetSection",referList.getTargetSec())
-                .addAttribute("targetGroup",referList.getTargetGroup())
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+                .addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute("targetGroup", referList.getTargetGroup())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
         return "sys/manage/attendancebook";
     }
 
@@ -123,20 +127,21 @@ public class SiteManageController {
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                 true, false, false, true);
         modelMap
-                .addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId)
-                .addAttribute("targetSection",referList.getTargetSec())
-                .addAttribute("targetGroup",referList.getTargetGroup())
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+                .addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute("targetGroup", referList.getTargetGroup())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
         return "sys/manage/tmgschedule";
     }
 
     /**
      * 跳转到承認状況一覧界面
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
@@ -150,19 +155,20 @@ public class SiteManageController {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 true, false, false, true);
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId)
-                .addAttribute("targetSection",referList.getTargetSec())
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE,TmgReferList.TREEVIEW_KEY_RECORD_DATE)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG,TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION,TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
-                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP,TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
         return "sys/manage/permstatlist";
     }
 
     /**
      * 跳转到休暇承認界面
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
@@ -170,14 +176,15 @@ public class SiteManageController {
      */
     @GetMapping("tmgnotification")
     public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex,
-                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId);
         return "sys/manage/tmgnotification";
     }
 
     /**
      * 跳转到权限设定
+     *
      * @param moduleIndex
      * @param menuId
      * @param modelMap
@@ -185,9 +192,40 @@ public class SiteManageController {
      */
     @GetMapping("perms")
     public String toPerms(@RequestParam("moduleIndex") Integer moduleIndex,
-                               @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+                          @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId);
         return "sys/manage/perms";
     }
+
+
+    /**
+     * 跳转到 勤務パターン
+     *
+     * @param moduleIndex
+     * @param menuId
+     * @return
+     */
+    @RequestMapping("wpattern")
+    public String patternSetting(
+            @RequestParam(value = "moduleIndex") Integer moduleIndex,
+            @RequestParam(value = "menuId") Long menuId,
+            @RequestAttribute("BeanName") PsDBBean psDBBean,
+            ModelMap modelMap
+    ) throws Exception {
+        String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
+        TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
+                true, false, false, true);
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId)
+                .addAttribute("targetSection", referList.getTargetSec())
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_EMP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_SECTION, TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION)
+                .addAttribute(TmgReferList.ATTR_TREEVIEW_PERM_TARGET_GROUP, TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+        return "sys/manage/patternsetting";
+    }
+
+
 }

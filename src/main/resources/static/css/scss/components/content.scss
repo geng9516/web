@@ -6,6 +6,7 @@
 }
 .content {
   max-height: calc(100vh);
+  min-width: 1220px;
   background-color: var(--white);
   overflow-y: auto;
   .content_head {

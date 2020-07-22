@@ -103,7 +103,7 @@
             <Drawer :title="query.baseDay ? `${title} (${query.baseDay})` : title" class="tc" width="1300" v-model="showDayApply">
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
-                        <i-button type="primary" size="large" class="tr" @click="overTimeUpdate">命令/確認</i-button>
+                        <i-button type="primary" size="large" class="tr" @click="overTimeUpdate" :loading="updateBtnLoading">命令/確認</i-button>
                     </i-col>
                 </Row>
                 <Row class="mb15">
@@ -197,6 +197,18 @@
                                 <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
+                            </i-col>
+                        </Row>
+                        <i-button class="mt5" size="small" ghost type="success" long
+                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)"
+                            v-show="value[row._index].updateOverTimeDtoList.length < 4">
+                            +
+                        </i-button>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="workApplyStatus">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i"
+                            class="mb2">
                                 <span
                                     v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
                                     class="confirm-sytle ing">待</span>
@@ -206,13 +218,7 @@
                                 <span
                                     v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
                                     class="confirm-sytle">命</span>
-                            </i-col>
-                        </Row>
-                        <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)"
-                            v-show="value[row._index].updateOverTimeDtoList.length < 4">
-                            +
-                        </i-button>
+                        </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime">
@@ -276,6 +282,7 @@
                     showDayApply: false,
                     hasPassedTimeCheck: false,
                     dailyTableLoading: false,
+                    updateBtnLoading:false,
                     title: '日別編集画面',
                     slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
                     loading: false,
@@ -393,8 +400,8 @@
                                 },
                                 {
                                     title: '承認',
-                                    key: 'workApplyStatus',
-                                    width: 30,
+                                    slot: 'workApplyStatus',
+                                    width: 80,
                                     align: 'center'
                                 }
                             ],
@@ -402,7 +409,7 @@
                         },
                         {
                             title: '休憩',
-                            minWidth: 200,
+                            minWidth: 180,
                             slot: 'restTime',
                             align: 'center'
                         },
@@ -543,7 +550,7 @@
                                         },
                                         on: {
                                             click() {
-                                                that.handleClickHead(e.day)
+                                                that.handleClickHead(e)
                                             },
                                         },
                                     }
@@ -655,9 +662,10 @@
                     }
                 },
                 async getTableDataDaily(e) {
-                    console.table({e:e})
+                    console.table(e)
                     this.dailyTableLoading = true
-                    this.query.baseDay = e
+                    this.query.baseDay = e.day
+                    this.query.today = e.today
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data
@@ -709,6 +717,7 @@
                     } catch (error) {
                         return
                     } finally {
+                        this.isSearchHistory = false
                         this.loading = false
                     }
                 },
@@ -820,14 +829,13 @@
                     this.$set(this.tableData3[i], '_checked', false )
                     this.$set(this.tableData3[i], '_checked', true )
                     if(object) {
-                        this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
+                        this.hasPassedTimeCheck = Utils.checkTime(object, value,el)
                     }
                 },
                 async overTimeUpdate() {
                     // 将没打勾的排除出去
                     const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
                     const UpdateData = this.value.filter(e => selectedData.includes(e.sEmpId))
-                    console.log(UpdateData)
                     if (UpdateData.length === 0) {
                         this.$Modal.error({
                             title: 'データを選択してください！',
@@ -835,8 +843,15 @@
                         })
                         return
                     }
-                    await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
-                    this.getTableDataDaily(this.query.baseDay)
+                    try {
+                        this.updateBtnLoading = true
+                        await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
+                        this.getTableDataDaily(this.query.baseDay)
+                    } catch (error) {
+                    } finally {
+                        this.updateBtnLoading = false
+                    }
+
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 合并2个月

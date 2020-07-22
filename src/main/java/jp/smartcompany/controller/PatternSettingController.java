@@ -70,7 +70,7 @@ public class PatternSettingController {
      *
      * @param baseDate
      */
-    @GetMapping("selectTmgPatternApplies")
+    @PostMapping("selectTmgPatternApplies")
     public List<TmgPatternAppliesDTO> selectTmgPatternApplies(@RequestParam("baseDate") String baseDate,
                                                               @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
@@ -158,7 +158,7 @@ public class PatternSettingController {
     @ResponseBody
     public PeriodDateVO selectEditPeriodDate(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化対象
-        patternSettingBean.setExecuteParameters(null, psDBBean);
+        //patternSettingBean.setExecuteParameters(null, psDBBean);
         String periodDate = patternSettingBean.selectEditPeriodDate();
         PeriodDateVO periodDateVO = new PeriodDateVO();
         periodDateVO.setPeriodDate(periodDate);

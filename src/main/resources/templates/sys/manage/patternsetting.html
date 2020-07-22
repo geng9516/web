@@ -21,7 +21,7 @@
                     新規
                 </i-button>
                 <i-button type="primary" class="ivu-btn ivu-btn-success ivu-btn-large" @click="mergePattern(null)" size="large" :loading="bulkApprovalLoading" v-else>+ 新規</i-button>
-                <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select">
+                <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select" style="margin-top: 8px">
                     <i-button type="warning" class="ivu-btn ivu-btn-warning ivu-btn-large ivu-btn-ghost" disabled v-if="addPatternShow===false">CSVファイル取込</i-button>
                     <i-button type="warning" class="ivu-btn ivu-btn-warning ivu-btn-large ivu-btn-ghost" v-else>CSVファイル取込</i-button>
                 </Upload>
@@ -35,30 +35,36 @@
             <span class="label">改訂日</span>
             <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false" @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
             <span style="display:flex;width: calc(15% + 200px);">
-                    <span class="label">所属</span>
-                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                              style="width: calc(100% - 120px);border-radius:0">
-                        {{ deptName }}
-                    </i-button>
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                            :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                        <Row class="tl">
-                            <i-col span="8" class="label tc" style="height: 32px;">基準日</i-col>
-                            <i-col span="8" class="no-border-radius">
-                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                         class="mb5" placeholder="日付け" format="yyyy/MM/dd" ref="datePicker"
-                                         @on-change="handleDeptDateChange"></date-picker>
-                            </i-col>
+               <span class="label">所属</span>
+               <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey" style="width: calc(100% - 120px);border-radius:0">
+                   {{ deptName }}
+               </i-button>
+               <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                   <div class="titlenorm mb5">
+                      <Icon type="logo-buffer"></Icon>
+                      所属
+                   </div>
+                   <Row class="tl mb5">
+                       <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                       <i-col span="7" class="no-border-radius">
+                          <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
+                                       @on-change="handleDeptDateChange"></date-picker>
+                       </i-col>
+                          <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
+                          <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
+                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                              <i-option :value="2">グループごとに</i-option>
+                              <i-option :value="3">部署ごとに</i-option>
+                            </i-select>
+                          </div>
                         </Row>
+                        ​
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし"></Tree>
-                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                          <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                empty-text="所属データなし"></Tree>
+                          <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
-                    </Drawer>
+                      </Drawer>
                 </span>
             <span style="padding-left: 8px; padding-right: 8px;">
                  選択された所属にいる社員：
@@ -186,6 +192,7 @@
                 loadingStatus: false,
                 errorFlag: false,
                 errorMsg: '',
+                selectedDeptViewType: 3, //組織ツリー用
                 planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
                 localValue: {
@@ -258,7 +265,7 @@
                     txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    type: 31
+                    type: 21
                 },
                 empTreeData: [],
                 deptName: '選んでください',
@@ -277,7 +284,7 @@
                     txtExecuteEmpId: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    type: 31
+                    type: 21
                 },
                 query_ykjtPattern: {
                     txtAction: 'ACTION_DISP_DISP',
@@ -292,7 +299,7 @@
                     txtExecuteEmpId: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    type: 31
+                    type: 21
                 },
                 //勤務パターン削除
                 query_delete: {
@@ -433,17 +440,33 @@
                 this.tableLoading = false
                 this.addPatternShow = true
             },
+            async handleDeptViewTypeChange() {
+                await this.getOrgTree()
+                if (this.selectedDeptViewType === 3) {
+                    this.query.txtTmgReferListTreeViewPermSelectedView = 'section'
+                }
+                if (this.selectedDeptViewType === 2) {
+                    this.query.txtTmgReferListTreeViewPermSelectedView = 'group'
+                }
+                console.log("handleDeptViewTypeChange")
+                console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
+                this.$Notice.success({title: '所属図更新完了'})
+            },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
                 try {
-                    const {orgList, recordDate} = await this.http.get('sys/tree', this.referListObject)
+                    const {groupList, sectionList, recordDate} = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据
-                    this.treeData = Utils.convertTreeData(orgList)
+                    if (this.selectedDeptViewType === 3) {
+                        this.treeData = Utils.convertTreeData(sectionList)
+                    }
+                    if (this.selectedDeptViewType === 2) {
+                        this.treeData = Utils.convertTreeData(groupList)
+                    }
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                 } catch (error) {
                     return
                 } finally {
-                    this.loading = false
                     this.empDeptLoading = false
                 }
             },
@@ -505,10 +528,17 @@
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
 
+                if (this.selectedDeptViewType === 3) {
+                    this.deptName = e[0].label
+                }
+                if (this.selectedDeptViewType === 2) {
+                    this.deptName = e[0].secnic
+                }
+
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACTION_DISP_DISP'
-                this.deptName = e[0].secnic
-                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
                 this.query.sectionId = e[0].secid
                 this.query_ykjtPattern.sectionId = e[0].secid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
@@ -520,8 +550,6 @@
                 this.query_upload.groupId = e[0].groupId
                 this.query_sk.sectionId = e[0].secid
                 this.query_sk.groupId = e[0].groupId
-                // this.sectionId = [0].secid
-                // this.groupId = e[0].groupId
 
                 //適用時間を取得する
                 if (!this.periodDate) {

@@ -95,7 +95,7 @@ public class SystemPropertyCache {
             // 格納
             systemPropertyMap.put(key, property);
         }
-        log.info("【システムプロパティ：{}】",systemPropertyMap);
+//        log.info("【システムプロパティ：{}】",systemPropertyMap);
         lruCache.put(ScCacheUtil.SYSTEM_PROPERTY_MAP,systemPropertyMap);
     }
 

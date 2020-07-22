@@ -35,9 +35,11 @@
                     </i-button>
 
                 <!-- 共通組織図画面 start-->
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+             <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <div class="titlenorm mt15">
+                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <tab-pane label="ツリー" name="organisationTree">
+                      <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             所属
                         </div>
@@ -49,7 +51,19 @@
                                          placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
-                        <Row class="tl mb2" :gutter="8">
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
+                              empty-text="所属データなし"></Tree>
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Spin size="large" fix v-if="emplistLoading"></Spin>
+                        </div>
+                </tab-pane>
+                <tab-pane label="検索" name="organisationSearch">
+                       <Row class="tl mb2" :gutter="8">
                             <i-col span="15">
                                 <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">
                                     <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px" placeholder="項目">
@@ -64,17 +78,18 @@
                                 <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" @click="searchOrgTree">検索</i-button>
                             </i-col>
                         </Row>
-
-                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
-                              empty-text="所属データなし"></Tree>
+<!--                        <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"-->
+<!--                              empty-text="所属データなし"></Tree>-->
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
+                </tab-pane>
+               </Tabs>
                     </Drawer>
                 <!-- 共通組織図画面 end-->
                 </span>
@@ -203,6 +218,7 @@
                     employeeId: '',        //組織ツリーで選択した職員番号
                     year: '',              //年度情報
                     month: 0,              //表示開始月
+                    hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                     modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
                     comment: this.tmyComment,                                  //摘要
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -235,6 +251,7 @@
                 deptDrawShow: false,    //組織ツリー用
                 treeData: [],           //組織ツリー用
                 empTreeData: [],        //組織ツリー用
+                searchEmpTreeData: [],        //組織ツリー用
                 deptName: '選んでください',   //所属名称
                 tableDataSum:[],        //月出勤情報統計
                 existsAttendanceBook: {},　 //年度選択制御
@@ -243,7 +260,8 @@
 
                 searchTypesList: [],     //組織ツリー用
                 searchConditionsList: [],//組織ツリー用
-                empDeptLoading: false  // 組織ツリーloading用
+                empDeptLoading: false,  // 組織ツリーloading用
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
             }
         },
         async mounted() {
@@ -343,6 +361,11 @@
         },
         methods: {
             async getData(isInit) {
+                //初期化
+                this.endueDate = ''
+                this.endueDaysHours = ''
+                this.query.comment = ''
+
                 if (isInit) await this.getdefaultDate()
                 else await this.getqueryDate()
                 await this.getExistsAttendanceBook()
@@ -420,7 +443,7 @@
                 this.empDeptLoading = true
                 try {
                     const { data } = await this.http.get('sys/tree/search', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(data)
+                    this.searchEmpTreeData = Utils.convertTreeData(data)
                     this.$Notice.success({ title:'所属図更新完了' })
                 } catch (error) {
                     return
@@ -599,7 +622,14 @@
             },
             cancelComment() {
                 this.commentBtnShow = false
-            }
+            },
+            currentTabChanged(name) {
+                if (name=="organisationTree") {
+                    this.query.hidSelectTab='0'
+                } else if (name=="organisationSearch") {
+                    this.query.hidSelectTab='1'
+                }
+            },
         }
     })
 </script>

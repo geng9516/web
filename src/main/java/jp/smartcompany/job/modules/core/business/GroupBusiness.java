@@ -12,7 +12,6 @@ import jp.smartcompany.job.modules.core.pojo.bo.PQueryUserGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.handler.UserGroupEntityListHandler;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
-import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.boot.util.ShiroUtil;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +35,6 @@ import java.util.Map;
 @Slf4j
 public class GroupBusiness {
 
-    private final IMastSystemService iMastSystemService;
     private final IMastGroupService iMastGroupService;
     private final HttpSession httpSession;
 
@@ -50,8 +48,6 @@ public class GroupBusiness {
     public void getGroupList(String language, List<MastSystemDO> systemList) {
         String groupCheckMode = GROUP_CHECK_MODE_MULTIPLE;
         boolean groupCheckFlag = false;
-        iMastSystemService.getByLang(language);
-        log.info("【getGroupList:{}】",language);
         if (groupCheckFlag) {
             setPretreatGroup(language);
         } else {

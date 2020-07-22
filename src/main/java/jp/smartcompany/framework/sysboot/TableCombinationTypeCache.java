@@ -77,7 +77,7 @@ public class TableCombinationTypeCache {
             }
         }
         lruCache.put(ScCacheUtil.TABLE_COMBINATION_TYPE_MAP,tableCombinationTypeMap);
-        log.info("【テーブル結合条件情報取得処理】：{}",tableCombinationTypeMap);
+//        log.info("【テーブル結合条件情報取得処理】：{}",tableCombinationTypeMap);
     }
 
 }

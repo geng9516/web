@@ -27,5 +27,5 @@ public class TmgPatternMergeDTO {
     private String tpa_ndate_change_time;
     private String tpa_cnextptn;
     private String flag;
-    
+
 }

@@ -98,25 +98,6 @@
                 </i-col>
             </Row>
 
-<!--            <Row :gutter="10" class="mt20 mb10">-->
-<!--                <i-col span="16">-->
-<!--                    <div class="label tc">発令</div>-->
-<!--                    <div class="tl">-->
-<!--                        <div class="person-info">-->
-<!--                            <span class="time">2009/03/01～2009/05/31</span>-->
-<!--                            <span class="with-split">短時間勤務</span>-->
-<!--                        </div>-->
-<!--                        <div class="person-info">-->
-<!--                            <span class="time">2010/04/01～</span>-->
-<!--                            <span class="with-split">復帰支援</span>-->
-<!--                        </div>-->
-<!--                    </div>-->
-<!--                </i-col>-->
-<!--                <i-col span="8">-->
-<!--                    <div class="label tc">変形労働</div>-->
-<!--                    <div class="person-info tc">2023/03/01～2025/07/31</div>-->
-<!--                </i-col>-->
-<!--            </Row>-->
             <div style="position: relative;">
                 <Row :gutter="10" class="mt20 mb10">
                     <i-col span="12">
@@ -133,7 +114,7 @@
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2">
                             <template slot-scope="{ row ,index }" slot="days">
-                                <i-input  v-model="paidNowData[index].days" v-if="row.isEditable"  class=" tc"></i-input>
+                                <i-input  v-model="paidNowData[index].days" v-if="row.isEditable"  class=" tc" ></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
@@ -143,9 +124,10 @@
                             </template>
 
                             <template slot-scope="{ row ,index}" slot="expiryDate">
-                                <!--                                <date-picker type="date" class="mar" v-model="paidNowData[index].expiryDate" transfer="true"-->
-                                <!--                                             format="yyyy/MM/dd" ref="datePicker" v-if="row.isEditable" :editable = "false" ></date-picker>-->
-                                <i-input v-model="paidNowData[index].expiryDate" v-if="row.isEditable"></i-input>
+                                <date-picker type="date"  v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付け"
+                                             format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event" v-if="row.isEditable" transfer ></date-picker>
+
+<!--                                <i-input v-model="paidNowData[index].expiryDate" v-if="row.isEditable"></i-input>-->
                                 <p v-else>{{ row.expiryDate }}</p>
                             </template>
                         </i-table>
@@ -317,7 +299,7 @@
                     {
                         title: '有効期限',
                         align: 'center',
-                        width: 120,
+                        width: 140,
                         slot: 'expiryDate'
                     }
                 ],
@@ -509,7 +491,8 @@
                     {
                         name: '合計付与',
                         days: this.dataDetail.ninvestDays,
-                        cellClassName: {name: 'rest-title'},
+                        cellClassName: {name: 'rest-title',days:'sub-title'},
+
                         times: this.dataDetail.ninvestHours
                     },
                     {
@@ -532,7 +515,6 @@
             }
         },
         mounted() {
-            console.log([[${ session }]])
             this.getOrgTree()
         },
         methods: {
@@ -600,7 +582,7 @@
                 this.workertypenm = e[0].workertypenm
 
                 this.cemployeeid = e[0].tphCemployeeid
-                console.log(this.cemployeeid)
+
                 this.getDetailList(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
 
             },
@@ -638,22 +620,6 @@
                 setTimeout(()=>this.paidDetailsLoading = false)
 
             },
-            // async getDetail(tphDyyyymmdd, tphCemployeeid) {
-            //     this.paidDetailsLoading = true
-            //     try {
-            //         this.param.txtDate = tphDyyyymmdd
-            //         this.param.txtUserCode = tphCemployeeid
-            //         const {data} = await this.http.get('sys/paidholiday/detail', this.param)
-            //
-            //         this.dataDetail = data
-            //         this.dataDetailBack = data
-            //
-            //     } catch (error) {
-            //         return
-            //     } finally {
-            //         this.paidDetailsLoading = false
-            //     }
-            // },
 
             //クリアボタン押下
             async clear() {
@@ -709,13 +675,13 @@
                 this.paidDetailsLoading = true
 
                 this.dataDetail.ninvestDays = (eval(this.dataDetail.ninvest)
-                    + eval(this.dataDetail.nthroughout)
-                    + eval(nadjust)
-                    + eval(nadjustTo))
+                    + eval(+this.dataDetail.nthroughout)
+                    + eval(+nadjust)
+                    + eval(+nadjustTo))
 
-                this.dataDetail.ninvestHours = (this.toMinuteFromHours(this.dataDetail.nthroughoutHours)
-                    + this.toMinuteFromHours(nadjustHours)
-                    + this.toMinuteFromHours(nadjustHoursTo))/60
+                this.dataDetail.ninvestHours = (this.toMinuteFromHours(+this.dataDetail.nthroughoutHours)
+                    + this.toMinuteFromHours(+nadjustHours)
+                    + this.toMinuteFromHours(+nadjustHoursTo))/60
                 this.dataDetail.nadjust = nadjust
                 this.dataDetail.nadjustHours = nadjustHours
                 this.dataDetail.dexpireAdjust = dexpireAdjust
@@ -818,6 +784,7 @@
                     return false;
                 }
 
+
                 // 調整付与時間数
                 if (!this.numeric_check(this.paidNowData[3].times * 1000 / 10) ||
                     this.toMinuteFromHours(this.paidNowData[3].times) % 15 > 0 ||
@@ -884,14 +851,14 @@
                 }
 
                 // 付与日数の合計
-                if (parseInt(this.paidNowData[0].days) + eval(this.paidNowData[3].days) < 0) {
+                if (parseInt(+this.paidNowData[0].days) + eval(+this.paidNowData[3].days) < 0) {
                     //MSG_LESS_KIJUNHUYONISSU
                     this.$Notice.warning({desc: "付与日数の合計はマイナスに設定できません。"})
                     return false;
                 }
 
                 // 越日数の合計
-                if (parseInt(this.paidNowData[1].days) + eval(this.paidNowData[4].days) < 0) {
+                if (+parseInt(+this.paidNowData[1].days) + +eval(+this.paidNowData[4].days) < 0) {
                     //MSG_LESS_TYOSEIKURIKOSINISSU
                     this.$Notice.warning({desc: "繰越日数の合計はマイナスに設定できません。"})
                     return false;
@@ -907,13 +874,13 @@
 
                         return false;
                     }
-                    // 	形式チェック
-                    if (!this.date_check(this.paidNowData[3].expiryDate)) {
-                        //MSG_NO_DATE_EXPIRE
-                        this.$Notice.warning({desc: "有効期限（調整付与）はyyyy/mm/dd形式で入力してください。"})
-
-                        return false;
-                    }
+                    // // 	形式チェック
+                    // if (!this.date_check(this.paidNowData[3].expiryDate)) {
+                    //     //MSG_NO_DATE_EXPIRE
+                    //     this.$Notice.warning({desc: "有効期限（調整付与）はyyyy/mm/dd形式で入力してください。"})
+                    //
+                    //     return false;
+                    // }
                     //付与日チェック
                     if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[3].expiryDate) < 0) {
                         // MSG_BEFORE_EXPIRE
@@ -933,13 +900,13 @@
 
                         return false;
                     }
-                    // 	形式チェック
-                    if (!this.date_check(this.paidNowData[4].expiryDate)) {
-                        //MSG_NO_DATE_EXPIRE_TO
-                        this.$Notice.warning({desc: "有効期限（調整繰越）はyyyy/mm/dd形式で入力してください。"})
-
-                        return false;
-                    }
+                    // // 	形式チェック
+                    // if (!this.date_check(this.paidNowData[4].expiryDate)) {
+                    //     //MSG_NO_DATE_EXPIRE_TO
+                    //     this.$Notice.warning({desc: "有効期限（調整繰越）はyyyy/mm/dd形式で入力してください。"})
+                    //
+                    //     return false;
+                    // }
                     //付与日チェック
                     if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[4].expiryDate) < 0) {
                         // MSG_BEFORE_EXPIRE_TO
@@ -1091,7 +1058,7 @@
             },
             toDate(pDate) {
 
-                let dateArr = pDate.split("/");
+                let dateArr = Utils.formatDate(pDate,'yyyy/mm/dd').split("/");
 
                 for (let i = dateArr.length; i < 3; i++) {
                     dateArr[i] = 1;
@@ -1148,7 +1115,7 @@
             },
             format_hours(sHours, nLowerLength) {
                 try {
-                    console.log(sHours)
+
                     return eval(sHours).toFixed(nLowerLength);
                 } catch (e) {
                     return sHours;

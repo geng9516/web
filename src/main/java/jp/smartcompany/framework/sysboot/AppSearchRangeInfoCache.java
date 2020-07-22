@@ -76,6 +76,6 @@ public class AppSearchRangeInfoCache {
 
         }
         lruCache.put(ScCacheUtil.APP_SEARCH_RANGE_INFO,gAppSearchRangeInfo);
-        log.info("【アプリケーション別検索範囲:{}】",gAppSearchRangeInfo);
+//        log.info("【アプリケーション別検索範囲:{}】",gAppSearchRangeInfo);
     }
 }

@@ -31,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
@@ -275,7 +277,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
   @Override
   public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException, SQLException {
-    PsSession psSession = (PsSession)ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+    HttpServletRequest request = ContextUtil.getHttpRequest();
+    PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>)session.getAttribute(REQ_SCOPE_NAME);
     if (CollUtil.isEmpty(lTable)) {
@@ -510,6 +513,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
          }
        }
     }
+
+    // 刷新启动权限
+    request.removeAttribute(Constant.TOP_NAVS);
 
     return "権限の変更が成功しました";
   }

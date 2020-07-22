@@ -241,6 +241,7 @@
                 </template>
             </i-table>
 
+            <div v-if="isCommonDiscretionaryLabor">
             <!-- 超過勤務 -->
             <div class="titlenorm mb10">
                 <Icon type="logo-buffer"></Icon>
@@ -294,7 +295,7 @@
                     <i-button type="error" ghost size="small" class="width100" @click="delOverWork(row)">削除</i-button>
                 </template>
             </i-table>
-
+            </div>
             <div class="titlenorm mb10">
                 <Icon type="logo-buffer"></Icon>
                 <a @click="showLog"> 更新履歴</a>

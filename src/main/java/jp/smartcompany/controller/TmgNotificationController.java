@@ -75,7 +75,7 @@ public class TmgNotificationController {
     /**
      * 申請区分マスタ 新規用
      *
-     * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
+     * @return
      */
     @GetMapping("NtfTypeList")
     public List<TypeGroupVo> getMgdNtfTypeAppList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
@@ -167,5 +167,13 @@ public class TmgNotificationController {
         return tmgNotificationBean.getEmployeeList(psDBBean);
     }
 
-
+    /**
+     * 社員情報
+     *
+     * @return　エラー
+     */
+    @GetMapping("EmployInfo")
+    public EmployeeDetailVo getEmpInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgNotificationBean.getEmpInfo(psDBBean);
+    }
 }
