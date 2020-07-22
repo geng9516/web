@@ -185,6 +185,11 @@
                     全選択
                 </i-button>
             </template>
+                <template slot-scope="{ row }" slot="apply">
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectApply">
+                        適用
+                    </i-button>
+                </template>
         </i-table>
 
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
@@ -521,6 +526,11 @@
                         title: '一括適用/クリア',
                         slot: 'option',
                         align: 'center'
+                    },
+                    {
+                        title: 'チェックした日に対し',
+                        slot: 'apply',
+                        align: 'center'
                     }
                 ],
                 columnsActionData: [{ JSON: {} }],
@@ -674,23 +684,29 @@
                 })
 
             },
+            handleSelectApply(){
+                if(this.valueMap.length==0){
+                    this.$Notice.error({
+                        title: '注意',
+                        desc: 'データを選択してください',
+                        duration: 3.5
+                    })
+                    return
+                }
+                const that = this
+                this.value.forEach(item=>{
+                    Object.keys(item).forEach(function(key) {
+                        if(key in that.pattern) {
+                            item[key]=JSON.parse(JSON.stringify(that.pattern[key]))
+                        }
+                    })
+                })
+            },
             handleSelectAll2(status) {
                 this.$refs.selection2.selectAll(status)
-
-                //一括適用
-                if(status){
-                    const that = this
-                    this.value.forEach(item=>{
-                        Object.keys(item).forEach(function(key) {
-                            if(key in that.pattern) {
-                                item[key]=that.pattern[key]
-                            }
-                        })
-                    })
-                }else{
+                if(!status){
                     this.value=JSON.parse(JSON.stringify(this.valuebak))
                 }
-
             },
             handleMinusRest(e, i) {
                 e.splice(i, 1)
@@ -856,9 +872,10 @@
             },
             async postExecuteEditMonthlyUSchedule(){
                 if(this.valueMap.length==0){
-                    this.$Modal.error({
-                        title:'データを選択してください！',
-                        okText: 'OK'
+                    this.$Notice.error({
+                        title: '注意',
+                        desc: 'データを選択してください',
+                        duration: 3.5
                     })
                     return
                 }
