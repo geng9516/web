@@ -35,6 +35,9 @@
   color: var(--grey);
   font-weight: bold;
 }
+.ivu-tabs-nav .ivu-tabs-tab .ivu-icon {
+  height: unset;
+}
 // checkbox 外边距
 .ivu-checkbox-wrapper {
   margin-right: 8px;
