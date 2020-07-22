@@ -519,7 +519,7 @@ public class TmgNotificationBean {
 
         param.setTodayD(DateUtil.parse(param.getToday()));
         //再申請の場合、元番号を使用する
-        if(param.getAction().equals(ACT_ALTERAPPLY_CAPPLY) && param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)){
+        if(param.getAction().equals(ACT_ALTERAPPLY_CAPPLY) || param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)){
             // 3 シーケンス採番
             String seq = iTmgNotificationService.selectNotificationSeq();
             param.setSeq(seq);
@@ -548,7 +548,6 @@ public class TmgNotificationBean {
         //ntfAction
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
-            param.setTargetUser(param.getSearchEmp());
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_3);
         } else if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {
             //新規申請
@@ -571,7 +570,7 @@ public class TmgNotificationBean {
             int deleteErrMsg = deleteErrMsg(param);
             int deleteNotificationCheck = deleteNotificationnCheck(param);
 
-            if (!param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || !param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
+            if (!(param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY))) {
                 // 取消　再申請　承認　申請の場合は、申请番号非空
                 if(!StrUtil.hasEmpty(param.getNtfNo())){
                     int insertNotificationCheckUpdate = insertNotificationCheckUpdate(param);
