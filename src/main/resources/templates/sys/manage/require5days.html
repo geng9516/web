@@ -124,7 +124,7 @@
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer></date-picker>
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -434,7 +434,9 @@
                 console.log("handleRowClick-s")
                 console.log(e[0])
                 //初期化 datePicker
-                this.$refs.datePicker.handleClear()
+                if(this.$refs.editDatepicker){
+                    this.$refs.editDatepicker.handleClear()
+                }
 
                 this.query.txtUserCode = e[0].taCemployeeid
 
