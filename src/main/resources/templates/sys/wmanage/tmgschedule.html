@@ -364,7 +364,9 @@
             </i-table>
         </Drawer>
 
-        <Modal v-model="showWeekHistory" width="700" title="週勤務パターン参照" footer-hide draggable>
+        <div style="position: relative;">
+            <Modal v-model="showWeekHistory" width="700" title="週勤務パターン参照" footer-hide draggable>
+                <Spin size="large" fix v-if="weekPatternloading"></Spin>
             <Row>
                 <i-col span="6" class="label">適用期間</i-col>
                 <i-col span="8">
@@ -402,7 +404,9 @@
                     </Row>
                 </template>
             </i-table>
-        </Modal>
+            </Modal>
+
+        </div>
     </div>
     <span class="toTopBtn" @click="toTop" v-show="isScroll">
             <Icon size="24" type="md-arrow-round-up" />
@@ -414,6 +418,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                weekPatternloading:false,
                 valuebak:[],
                 patternDisabled:false,
                 emplistLoading: false,  //職員番号ローディング用動画
@@ -836,29 +841,34 @@
                 this.workDivisionList=data
             },
             async selectWeekPatternInfo(i){
-                    this.query.twp_nid= this.tableDataUsed[i].twp_nid
-                    const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, this.query)
+                this.weekPatternloading = true
+                try{
+                        this.query.twp_nid= this.tableDataUsed[i].twp_nid
+                        const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, this.query)
+                        this.applyStartTime=data.twp_dstartdate
+                        this.applyEndTime=data.twp_denddate
+                        let index=-1;
+                        Object.keys(data).map(e=>{
+                            if(e.startsWith("workname")){
+                                index++
+                                this.tableData3[index].workname=data[e]
+                            }
+                            if(e.startsWith("twp_copen")){
+                                this.tableData3[index].twp_copen=data[e]
+                            }
+                            if(e.startsWith("twp_cclose")){
+                                this.tableData3[index].twp_cclose=data[e]
+                            }
+                            if(e.startsWith("rest")){
+                                this.tableData3[index].rest=data[e].split('-')
+                            }
 
-                    this.applyStartTime=data.twp_dstartdate
-                    this.applyEndTime=data.twp_denddate
-
-                    let index=-1;
-                    Object.keys(data).map(e=>{
-                        if(e.startsWith("workname")){
-                            index++
-                            this.tableData3[index].workname=data[e]
-                        }
-                        if(e.startsWith("twp_copen")){
-                            this.tableData3[index].twp_copen=data[e]
-                        }
-                        if(e.startsWith("twp_cclose")){
-                            this.tableData3[index].twp_cclose=data[e]
-                        }
-                        if(e.startsWith("rest")){
-                            this.tableData3[index].rest=data[e].split('-')
-                        }
-
-                    })
+                        })
+                    }catch (error) {
+                        return
+                    }finally {
+                        this.weekPatternloading = false
+                    }
             },
             async deleteWeekPtn(index){
                 this.query.twp_nid= this.tableDataUsed[index].twp_nid
