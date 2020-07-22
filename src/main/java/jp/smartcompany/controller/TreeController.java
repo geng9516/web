@@ -10,9 +10,11 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastPostDO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +40,7 @@ import java.util.Map;
 public class TreeController {
 
     private final OrgTreeListLogic orgTreeListLogic;
+    private final PostGenericLogic postGenericLogic;
 
     @GetMapping
     public GlobalResponse tree(@RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -242,11 +246,12 @@ public class TreeController {
 
     /**
       * ================== 弹窗相关json =================
+      *
       */
 
     // http://localhost:6879/sys/tree/orgs?psSite=Admin&companyCode=01&sectionCode=204000000000
     @GetMapping("orgs")
-    List<OrgTreeDTO> orgTree(
+    public List<OrgTreeDTO> orgTree(
             @RequestParam(value="sectionCode",required = false) String sectionCode,
             @RequestParam(value="companyCode",required = false) String companyCode,
             @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
@@ -263,6 +268,14 @@ public class TreeController {
                searchRange);
     }
 
-
+    @GetMapping("posts")
+    public Map<String,Object> postTree(Boolean useSearchRange,String companyCode) throws ParseException {
+        String searchDate = SysUtil.transDateToString(DateUtil.date());
+        return postGenericLogic.dispPost(
+                companyCode,
+                searchDate,
+                useSearchRange
+        );
+    }
 
 }

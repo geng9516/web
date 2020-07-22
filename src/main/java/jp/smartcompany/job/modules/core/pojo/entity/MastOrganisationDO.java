@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -23,14 +23,14 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("mast_organisation")
+@KeySequence("MAST_ORGANISATION_SEQ")
 public class MastOrganisationDO implements Serializable {
 
-private static final long serialVersionUID=1L;
-
-        /**
+    private static final long serialVersionUID = -3636447463637694821L;
+    /**
          * ｉｄカラム
          */
-                @TableId(value = "mo_id", type = IdType.AUTO)
+                @TableId(value = "mo_id")
                 private Long moId;
 
         /**
