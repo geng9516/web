@@ -79,7 +79,7 @@
         <i-table class="long-table" border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)">
             <template slot-scope="{ row }" slot="vactionGiveDay">
-                    <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+                <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="paidDays">
@@ -431,6 +431,9 @@
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
                 console.log(e[0])
+                //初期化 datePicker
+                this.$refs.datePicker.handleClear()
+
                 this.query.txtUserCode = e[0].taCemployeeid
 
                 // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
@@ -536,8 +539,8 @@
 
                             let max = i + +b[i].taRowpan
                             for (var j=i+1;j <  max;j++){
-                                a[i].vactionGiveDay.push(b[j].vactionGiveDay[0])
-                                a[i].paidDays.push(b[j].paidDays[0])
+                                a[a.length-1].vactionGiveDay.push(b[j].vactionGiveDay[0])
+                                a[a.length-1].paidDays.push(b[j].paidDays[0])
                             }
                             i = i + +b[i].taRowpan - 1
                         }
