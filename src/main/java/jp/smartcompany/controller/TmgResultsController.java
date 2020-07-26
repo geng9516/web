@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -125,7 +126,9 @@ public class TmgResultsController {
                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
                            @RequestParam("txtAction") String action) {
 
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化データ取得する
         return tmgResultsBean.dailyDetail(psDBBean, action);
@@ -156,36 +159,16 @@ public class TmgResultsController {
      * @param psDBBean
      * @return
      */
-    @PostMapping("getSQLVecForAjax")
-    @ResponseBody
-    public ErrMsgDto getSQLVecForAjax(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                                      @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
-
-        psDBBean.setTargetUser(psDBBean.getUserCode());
-        tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
-
-        //就業実績登録
-        return tmgResultsBean.getSQLVecForAjax(tmgResultsDto,psDBBean);
-    }
-
-
-
-    /**
-     * 登録ボタンを押下する
-     *
-     * @param psDBBean
-     * @return
-     */
     @PostMapping("updateDaily")
     @ResponseBody
-    public void updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
+    public GlobalResponse updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
                             @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
 
         psDBBean.setTargetUser(psDBBean.getUserCode());
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
 
         //就業実績登録
-        tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
+        return tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
     }
 
 

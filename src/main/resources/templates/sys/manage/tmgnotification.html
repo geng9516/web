@@ -243,7 +243,7 @@
       <!-- 详细以及承认申请的panel end -->
 
       <!-- 代理申请的 -->
-      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow">
+      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="getTableData(false, true)">
         <Tabs value="name1" :animated="false">
           <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
@@ -470,13 +470,11 @@
               <form-item label="">
                 <ul class="ivu-upload-list tl mb10">
                   <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                    <span @click="applyCardDownloadFile(item)">
+                    <span>
                       <Icon
-                        :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' ">
+                        :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document'">
                       </Icon> {{ item.name }}
                     </span>
-                    <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)"
-                      v-if="item.isDefault">既存</p>
                     <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
                   </li>
                 </ul>
@@ -485,7 +483,7 @@
                 <Alert class="primary-info">各上限 500kBytes</Alert>
               </form-item>
             </i-form>
-            <i-button class="btn" type="primary" long @click="apply()" icon="md-create" :loading="applyLoading">申請
+            <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create" :loading="applyLoading">申請
             </i-button>
           </tab-pane>
         </Tabs>
@@ -809,14 +807,6 @@
             this.agencyApplyPanel = false
             this.agencyApplyPanelLoading = false
           })
-
-          // this.loginEmployee = e[0].empid
-          // this.sectionName = e[0].secnic
-          // this.query.employeeId = e[0].empid
-          // this.kanjiName = e[0].empname
-          // this.selectDisabled = true
-          // this.remarksDisabled = true
-          // this.getData(true)
         },
         async getApplyEmployPersonalInfo(opts) {
           // 员工信息
@@ -1113,7 +1103,7 @@
           console.log(this.selectedRestInfo)
           this.restApply.typeNew = this.selectedRestInfo.ntfId
           // 代理申请用，个人申请此处为空
-          this.restApply.finalApprovalLevel = this.selectedRestInfo.finalApprovalLevel5
+          this.restApply.finalApprovalLevel = this.selectedRestInfo.sparechar2
           this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
           const week = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
           week.forEach((e, i) => {
@@ -1148,7 +1138,7 @@
               uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
               deleteFiles: JSON.stringify(this.deleteFiles),
               txtTmgReferListTreeViewPermTargetEmp:this.curClickedEmpId,
-              psSite: this.opts.psSite
+              psSite: this.referListObject.psSite
             })
             this.restApply = {
               useVacation: false,
@@ -1159,6 +1149,8 @@
             }
             this.$refs.datepicker.handleClear()
             this.$Message.success('申请完了')
+            this.agencyApplyShow = false
+            this.getTableData(false, true)
             this.uploadFiles = []
           } catch (error) {
             if (error.config || error.response && error.response.status === 500) return

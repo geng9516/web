@@ -124,7 +124,7 @@
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer></date-picker>
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -337,7 +337,9 @@
                 query: {
                     txtAction: 'ACT_DISP',
                     txtDYYYYMM: '',
-                    // txtCallBeanAction: 'ACT_DISP_MONTHLY',
+                    hidSearchItems: '',     //検索種別
+                    hidSearchCondition: '', //検索条件
+                    hidSearchData: '',      //検索対象
                     page: '1',
                     year: '',
                     txtUserCode: null,
@@ -431,6 +433,11 @@
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
                 console.log(e[0])
+                //初期化 datePicker
+                if(this.$refs.editDatepicker){
+                    this.$refs.editDatepicker.handleClear()
+                }
+
                 this.query.txtUserCode = e[0].taCemployeeid
 
                 // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
@@ -469,6 +476,15 @@
             async getTableData() {
                 this.dataLoading = true
                 this.tableData = []
+                if (this.query.hidSelectTab == '1') {
+                    this.query.hidSearchItems = this.referListObject.hidSearchItems
+                    this.query.hidSearchCondition = this.referListObject.hidSearchCondition
+                    this.query.hidSearchData = this.referListObject.hidSearchData
+                } else if (this.query.hidSelectTab == '0') {
+                    this.query.hidSearchItems = ''
+                    this.query.hidSearchCondition = ''
+                    this.query.hidSearchData = ''
+                }
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
@@ -527,8 +543,8 @@
 
                             let max = i + +b[i].taRowpan
                             for (var j=i+1;j <  max;j++){
-                                a[i].vactionGiveDay.push(b[j].vactionGiveDay[0])
-                                a[i].paidDays.push(b[j].paidDays[0])
+                                a[a.length-1].vactionGiveDay.push(b[j].vactionGiveDay[0])
+                                a[a.length-1].paidDays.push(b[j].paidDays[0])
                             }
                             i = i + +b[i].taRowpan - 1
                         }
