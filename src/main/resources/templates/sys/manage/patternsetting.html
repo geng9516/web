@@ -411,6 +411,7 @@
         },
         async mounted() {
             this.getOrgTree()
+            this.referListObject.txtTmgReferListTreeViewRecordDate = new Date()
         },
         computed: {
             tableHeadFixed() {
@@ -472,6 +473,7 @@
             },
             async handleDeptDateChange(e) {
                 this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.curDate = e
                 this.isSearchHistory = true
                 await this.getOrgTree()
                 this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
@@ -512,9 +514,13 @@
                 })
             },
 
-            // ----------------------
-            handleDatePicker() {
+            // 改訂日を変更すると　所属リストを更新する
+            async handleDatePicker() {
+                //console.log(this.curDate)
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate,'YYYY/MM/DD')
 
+                this.isSearchHistory = true
+                await this.getOrgTree()
             },
             //翌日勤務パターン
             handleChangePattern(e) {
