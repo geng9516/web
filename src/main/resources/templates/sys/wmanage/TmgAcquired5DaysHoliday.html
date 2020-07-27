@@ -122,7 +122,30 @@
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
+                <template slot-scope="{ row }" slot="editBasedDay">
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
+                </template>
+
+                <template slot-scope="{ row }" slot="adjustTakenDays">
+                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="vactionGiveDay">
+                    <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="paidDays">
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="lackDays">
+                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                </template>
+
+            </i-table>
+
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
                 </template>
@@ -391,7 +414,8 @@
                 empTreeData: [],        //組織ツリー用
                 emplistLoading: false,  //職員一覧ローディング用動画
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
-                dataLoading: false
+                dataLoading: false,
+                forRest: true
             }
         },
         async mounted() {
@@ -731,10 +755,8 @@
                     cancelText: 'キャンセル',
                     onOk: async () => {
                         const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
-                        //初期化 datePicker
-                        if(this.$refs.editDatepicker){
-                            this.$refs.editDatepicker.handleClear()
-                        }
+                        // 销毁table
+                        this.forRest = !this.forRest
                         //年5日時季指定取得確認画面を閉じる
                         this.isShow = false
                         //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
