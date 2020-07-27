@@ -667,6 +667,7 @@
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
             async handleYearChange(e) {
+              this.query.txtUserCode = null
               this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
               this.query.year = e.replace("年", "")
               await this.getTableData()
