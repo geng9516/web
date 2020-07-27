@@ -397,14 +397,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="rest">
-                    <Row :gutter="16">
-                        <i-col span="12">
-                        <span>{{ row.rest[0] }}</span>
-                        </i-col>
-                        <i-col span="12">
-                        <span>{{ row.rest[1] }}</span>
-                        </i-col>
-                    </Row>
+                    <span>{{row.rest[0]}}-{{row.rest[1]}}</span>
                 </template>
             </i-table>
             </Modal>
