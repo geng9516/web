@@ -124,11 +124,11 @@
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
+                    <date-picker :value="updateValue.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                    <i-input v-model="updateValue.adjustTakenDays" @on-blur="blur(row)"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -391,7 +391,8 @@
                 empTreeData: [],        //組織ツリー用
                 emplistLoading: false,  //職員一覧ローディング用動画
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
-                dataLoading: false
+                dataLoading: false,
+                updateValue:{}
             }
         },
         async mounted() {
@@ -431,17 +432,17 @@
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
                 console.log(e[0])
-                //初期化 datePicker
-                if(this.$refs.editDatepicker){
-                    this.$refs.editDatepicker.handleClear()
-                }
-
                 this.query.txtUserCode = e[0].taCemployeeid
 
                 // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
                 // this.paidData = data
 
-                this.paidData = [e[0]]
+                this.paidData = [{...e[0]}]
+                //初期化 datePicker
+                // if(this.$refs.editDatepicker){
+                //     this.$refs.editDatepicker.handleClear()
+                // }
+                this.updateValue = {...e[0]}
                 // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
                 // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
                 if (e[0].taKijyunbi == null) {
