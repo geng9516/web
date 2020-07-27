@@ -747,28 +747,30 @@
             register(e) {
                 //1:登録　2:クリア
                 this.updateAcquired5DaysVO.txtUpdateflg = '1'
-
-                this.$Modal.confirm({
-                    title: '',
-                    content: '入力内容を保存します。よろしいですか？',
-                    okText: 'OK',
-                    cancelText: 'キャンセル',
-                    onOk: async () => {
-                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
-                        // 销毁table
-                        this.forRest = !this.forRest
-                        //年5日時季指定取得確認画面を閉じる
-                        this.isShow = false
-                        //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
-                        if (this.query.hidSelectTab=='0'){
-                            this.query.txtUserCode = null
+                if (this.errorCheck()){
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '入力内容を保存します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+                            // 销毁table
+                            this.forRest = !this.forRest
+                            //年5日時季指定取得確認画面を閉じる
+                            this.isShow = false
+                            //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                            if (this.query.hidSelectTab=='0'){
+                                this.query.txtUserCode = null
+                            }
+                            //一覧画面取得
+                            this.getTableData()
+                        },
+                        onCancel: () => {
                         }
-                        //一覧画面取得
-                        this.getTableData()
-                    },
-                    onCancel: () => {
-                    }
-                })
+                    })
+                }
+
             },
             clear(e) {
                 //1:登録　2:クリア
@@ -816,6 +818,27 @@
                 }
                 console.log(this.query.hidSelectTab)
             },
+            errorCheck() {
+                let date = this.updateAcquired5DaysVO.kijunbiEdit
+                let days = this.updateAcquired5DaysVO.usedDaysEdit
+
+                // 修正基準日チェック ※2019/04/01(法改日)以降
+                if (date != "" && date.split("/").join("") - 20190401 < 0) {
+                    // this.$Notice.error({ title:'修正基準日は2019/04/01以降の日付に入力してください。' })
+                    alert('修正基準日は2019/04/01以降の日付に入力してください。');
+                    // this.commentBtnLoading = false
+                    return
+                }
+
+                // 調整取得日数チェック
+                if(isNaN(days) || days%0.5 > 0 || days < 0){
+                    // this.$Notice.error({ title:'調整取得日数は半休単位(0.5)で入力してください。' })
+                    alert('調整取得日数は半休単位(0.5)で入力してください。');
+                    // this.commentBtnLoading = false
+                    return
+                 }
+                 return true;
+             }
         }
     })
 </script>
