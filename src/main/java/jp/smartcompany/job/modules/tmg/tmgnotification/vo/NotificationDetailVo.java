@@ -49,9 +49,9 @@ public class NotificationDetailVo {
     // 14 終業前の非勤務時間
     private int tntfNtimeClose;
     // 15 開始時刻
-    private String tntfNtimeOpenHhmi;
+    private String tntfNtimezoneOpenHhmi;
     // 16 終了時刻
-    private String tntfNtimeCloseHhmi;
+    private String tntfNtimezoneCloseHhmi;
     // 17 月曜
     private int tntfNmon;
     // 18 火曜
