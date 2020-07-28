@@ -280,7 +280,7 @@
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
                                     label,restTime,sickApply -->
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
-                                    <Upload ref="upload"  :show-upload-list="false" :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag" class="tl mt15 mb10" action="/" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500" :on-exceeded-size="handleMaxSize">
+                                    <Upload ref="upload"  :show-upload-list="false" multiple type="drag" class="tl mt15 mb10" action="/" :before-upload="handleBeforeUpload">
                                         <div style="padding: 20px 0">
                                             <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
                                             <p>Click or drag files here to upload</p>
@@ -726,20 +726,30 @@
                     // 伤病
                     this.restApply.txtSickName = data.tntfCsickName
                 },
-                handleFormatError (file) {
-                    this.$Notice.warning({
-                        title: 'The file format is incorrect',
-                        desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
-                    });
-                },
                 handleBeforeUpload (files) {
                     // 返回false, 取消自带上传
-                    const check = this.uploadFiles.length < 5;
-                     if (!check) {
+                    let checkPassed = true
+                     if (this.uploadFiles.length >= 5) {
                         this.$Notice.warning({
                         title: 'Up to five files can be uploaded.'
-                    })
-                    } else {
+                        })
+                        checkPassed = false
+                    }
+                    if (files.size / 1024 > 500) {
+                        this.$Notice.warning({
+                            title: 'Exceeding file size limit',
+                            desc: 'File ' + files.name + ' is too large, no more than 500K.'
+                        })
+                        checkPassed = false
+                    }
+                    if (!/(\w\W)*jpg|png|jpeg|gif|pdf|excel|spreadsheetml|msword|wordprocessingml(\w\W)*/g.test(files.type)) {
+                        this.$Notice.warning({
+                            title: 'The file format is incorrect',
+                            desc: 'File format of ' + files.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
+                        })
+                        checkPassed = false
+                    }
+                    if(checkPassed) {
                         this.uploadFiles.push(files)
                     }
                     return false;
@@ -748,12 +758,6 @@
                     // 删除文件
                     this.deleteFiles.push(file.name)
                     this.uploadFiles = this.uploadFiles.filter(e=> e.name !== file.name)
-                },
-                handleMaxSize (file) {
-                    this.$Notice.warning({
-                        title: 'Exceeding file size limit',
-                        desc: 'File ' + file.name + ' is too large, no more than 500K.'
-                    });
                 },
                 handleTypeNameShow(e) {
                     let result = e.tntfCtype

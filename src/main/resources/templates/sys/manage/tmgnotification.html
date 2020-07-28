@@ -455,10 +455,7 @@
                 <i-input v-model="restApply.txtSickName" />
               </form-item>
               <form-item label="添付ファイル">
-                <Upload ref="upload" :show-upload-list="false"
-                  :format="['pdf','csv','png','xlsx','jpeg','jpg','gif','xls','docx','doc']" multiple type="drag"
-                  action="/" :on-format-error="handleFormatError" :before-upload="handleBeforeUpload" :max-size="500"
-                  :on-exceeded-size="handleMaxSize">
+                <Upload ref="upload" :show-upload-list="false" multiple type="drag" action="/" :before-upload="handleBeforeUpload">
                   <i-button style="border:0" icon="ios-cloud-upload-outline" long>ファイルを選択</i-button>
                 </Upload>
               </form-item>
@@ -683,7 +680,7 @@
           isScroll: false,
           uploadFiles: [],
           deleteFiles: [],
-          curClickedEmpId:0,
+          curClickedEmpId: 0,
         }
       },
       async mounted() {
@@ -1067,20 +1064,30 @@
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
           console.log(this.selectedRestInfo)
         },
-        handleFormatError(file) {
-          this.$Notice.warning({
-            title: 'The file format is incorrect',
-            desc: 'File format of ' + file.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
-          });
-        },
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
-          const check = this.uploadFiles.length < 5;
-          if (!check) {
+          let checkPassed = true
+          if (this.uploadFiles.length >= 5) {
             this.$Notice.warning({
               title: 'Up to five files can be uploaded.'
             })
-          } else {
+            checkPassed = false
+          }
+          if (files.size / 1024 > 500) {
+            this.$Notice.warning({
+              title: 'Exceeding file size limit',
+              desc: 'File ' + files.name + ' is too large, no more than 500K.'
+            })
+            checkPassed = false
+          }
+          if (!/(\w\W)*jpg|png|jpeg|gif|pdf|excel|spreadsheetml|msword|wordprocessingml(\w\W)*/g.test(files.type)) {
+            this.$Notice.warning({
+              title: 'The file format is incorrect',
+              desc: 'File format of ' + files.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
+            })
+            checkPassed = false
+          }
+          if (checkPassed) {
             this.uploadFiles.push(files)
           }
           return false;
@@ -1089,12 +1096,6 @@
           // 删除文件
           this.deleteFiles.push(file.name)
           this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
-        },
-        handleMaxSize(file) {
-          this.$Notice.warning({
-            title: 'Exceeding file size limit',
-            desc: 'File ' + file.name + ' is too large, no more than 500K.'
-          });
         },
         apply: Debounce(async function () {
           // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
@@ -1137,7 +1138,7 @@
               params: JSON.stringify(this.restApply),
               uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
               deleteFiles: JSON.stringify(this.deleteFiles),
-              txtTmgReferListTreeViewPermTargetEmp:this.curClickedEmpId,
+              txtTmgReferListTreeViewPermTargetEmp: this.curClickedEmpId,
               psSite: this.referListObject.psSite
             })
             this.restApply = {
