@@ -114,4 +114,6 @@ public interface IMastGroupService extends IService<MastGroupDO> {
                 String customerCode, String systemId, String language, String groupId, Date searchDate, List<String> companyList
         );
 
+        int selectGroupExists(String customerId,String systemId,String groupId);
+
 }

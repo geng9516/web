@@ -1,9 +1,12 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**
@@ -21,5 +24,7 @@ public interface MastDatadictionaryMapper extends BaseMapper<MastDatadictionaryD
         List<MastDatadictionaryDO> selectAllDicts();
 
         List<MastDatadicSeclevelDTO> selectAllDataDicSecLevel();
+
+        List<QueryConditionRowDTO> selectGroupJoinQuery(@Param("customerId") String customerId,@Param("tableId") String tableId);
 
 }

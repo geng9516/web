@@ -1,6 +1,5 @@
 package jp.smartcompany.framework.component.entity;
 
-import jp.smartcompany.framework.component.behavior.EmployeeInfoSearchBehavior;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,10 +12,6 @@ import java.io.Serializable;
 public class EmployeeInfoSearchEntity implements Serializable {
 
     private static final long serialVersionUID = 7141438846326320517L;
-
-    // プロパティ変数 //
-    /** 社員情報検索結果件数 */
-    private String rownum; // rownum
 
     /** 異動歴"HIST_DESIGNATION"社員番号 */
     private String hdCemployeeidCk; // HD_CEMPLOYEEID_CK
@@ -68,9 +63,6 @@ public class EmployeeInfoSearchEntity implements Serializable {
 
     /** 社員基本情報 MAST_EMPLOYEES"カナ名称" */
     private String meCkananame; // ME_CKANANAME
-
-    /** Behaviorクラス */
-    private EmployeeInfoSearchBehavior behavior;
 
     /** リレーション */
     private String relation;

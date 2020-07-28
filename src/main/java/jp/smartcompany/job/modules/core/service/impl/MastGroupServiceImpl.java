@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
@@ -160,5 +161,13 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
                 groupId = "1";
             }
            return baseMapper.selectGroupHistoryList(customerCode,systemId,language,groupId,strSearchDate,companyList);
+        }
+
+        @Override
+        public int selectGroupExists(String customerId,String systemId,String groupId) {
+            QueryWrapper<MastGroupDO> qw = SysUtil.query();
+            qw.eq("MG_CCUSTOMERID",customerId).eq("MG_CSYSTEMID_CK_FK",systemId)
+                    .eq("MG_CGROUPID_PK",groupId);
+            return count(qw);
         }
 }

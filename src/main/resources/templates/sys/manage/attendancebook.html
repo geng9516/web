@@ -571,13 +571,18 @@
                     this.commentBtnLoading = true
 
                     if(this.query.comment != null){
-                        if (this.query.comment.length > 400) {
-                            this.$Notice.error({ title:'摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。' })
+                        if (this.query.comment.replace(/[^\x00-\xff]/g, '01').length > 400) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。'
+                            });
                             this.commentBtnLoading = false
                             return
                         } else {
-                            const { data } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
-                            if(data){
+                            const { data,code } = await this.http.get(`sys/attendanceBook/updateComment`, this.query)
+                            if(code==0){
                                 this.$Message.success('登録完了')
                                 this.commentBtnLoading = false
                             }

@@ -136,4 +136,25 @@ public class MastGroupsectionpostmappingServiceImpl extends ServiceImpl<MastGrou
         return baseMapper.selectGroupSection(customerId,companyId,systemId,groupId,strSearchDate,permissionId,language);
     }
 
+    @Override
+    public int deleteGroupSectionPostAll(String psCustomerId, String psCompanyId,
+                                  String psSystemId, String psGroupId, Date pdSearchDate) {
+        String searchDate = SysUtil.transDateToString(pdSearchDate);
+        return baseMapper.deleteGroupSectionPostAll(psCustomerId,psCompanyId,psSystemId,psGroupId,searchDate);
+    }
+
+    @Override
+    public int deleteSectionPostTypeList(String psCustomerId, String psSystemId,
+                                             String psGroupId, List<String> psTypeIdList, Date pdSearchDate) {
+        String searchDate = SysUtil.transDateToString(pdSearchDate);
+        return baseMapper.deleteSectionPostTypeList(
+                psCustomerId, psSystemId, psGroupId, psTypeIdList, searchDate);
+    }
+
+    @Override
+    public void deleteSectionPostType(
+            String customerId,String systemId,String groupId, String typeId, Date startDate) {
+        String sStartDate = SysUtil.transDateToString(startDate);
+         baseMapper.deleteSectionPostType(customerId,systemId,groupId, typeId, sStartDate);
+    }
 }

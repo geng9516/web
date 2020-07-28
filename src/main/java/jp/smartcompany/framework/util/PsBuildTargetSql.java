@@ -383,6 +383,7 @@ public class PsBuildTargetSql {
      * 検索対象範囲情報生成ロジックが実行されていない場合にのみ処理が行われます。
      */
     protected void createSearchRange(String psDomainCode, String psMode) {
+        setRequest(ContextUtil.getHttpRequest());
         setDomain(psDomainCode);
         // createしてなかったら処理続行
         if (this.gFromListMap.get(this.getDomain()) != null &&

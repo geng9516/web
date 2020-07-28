@@ -85,4 +85,46 @@ public interface IMastGroupsectionpostmappingService extends IService<MastGroups
                 Date searchDate,
                 String permissionId,
                 String language);
+
+        /**
+         * グループ条件定義マスタ(組織、役職)の指定された情報をすべて削除します
+         *
+         * @author  isolyamada
+         * @param   psCustomerId    顧客コード
+         * @param   psCompanyId     法人コード
+         * @param   psSystemId      システムID
+         * @param   psGroupId       グループID
+         * @param   pdSearchDate    今回改定日
+         * @return  int             更新件数
+         * @exception
+         */
+        int deleteGroupSectionPostAll(String psCustomerId, String psCompanyId,
+                                  String psSystemId, String psGroupId, Date pdSearchDate);
+
+        /**
+         * グループ条件定義マスタ(組織、役職)の定義区分(複数指定）ごとの削除処理
+         *
+         * @param   psCustomerId 顧客コード
+         * @param   psSystemId   システムコード
+         * @param   psGroupId    グループID
+         * @param   psTypeIdList     定義区分(複数指定)
+         * @param   pdSearchDate    今回改定日
+         * @return  グループ条件定義マスタ取得(組織、役職)
+         * @exception
+         */
+        int deleteSectionPostTypeList(String psCustomerId, String psSystemId,
+                                      String psGroupId, List<String> psTypeIdList, Date pdSearchDate);
+
+        /**
+         * グループ条件定義マスタ(組織、役職)の定義区分(複数指定）ごとの削除処理
+         *
+         * @param   customerId 顧客コード
+         * @param   systemId   システムコード
+         * @param   groupId    グループID
+         * @param   typeId     定義区分(複数指定)
+         * @param   startDate    今回改定日
+         */
+        void deleteSectionPostType(
+                String customerId,String systemId,String groupId, String typeId, Date startDate);
+
 }

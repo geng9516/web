@@ -83,11 +83,19 @@
             </template>
 
             <template slot-scope="{ row }" slot="paidDays">
-                <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="takenDays">
+                <span>{{ row.takenDays | addNumDeci(true)}}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="mustDays">
+                <span>{{ row.mustDays | addNumDeci(true)}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="lackDays">
-                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="season">
@@ -128,7 +136,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -136,11 +144,19 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="paidDays">
-                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="editTakenDays">
+                    <span>{{ row.editTakenDays  | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="mustDays">
+                    <span>{{ row.mustDays  | addNumDeci(true)}}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
-                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>
                 </template>
 
             </i-table>
@@ -150,7 +166,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -158,11 +174,19 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="paidDays">
-                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="editTakenDays">
+                    <span>{{ row.editTakenDays  | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="mustDays">
+                    <span>{{ row.mustDays  | addNumDeci(true)}}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
-                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>
                 </template>
 
             </i-table>
@@ -178,7 +202,7 @@
                         </i-col>
                         <i-col span="8">
                         <div class="label">取得日数</div>
-                        <div class="person-info">{{ privateInfo.sumSyutokudays }}</div>
+                        <div class="person-info">{{ privateInfo.sumSyutokudays | addNumDeci(true) }}</div>
                         </i-col>
                     </Row>
                     <div class="titlenorm mb10 mt20">
@@ -237,12 +261,12 @@
                             },
                             {
                                 title: '取得日数',
-                                key: 'takenDays',
+                                slot: 'takenDays',
                                 align: 'center'
                             },
                             {
                                 title: '必要日数',
-                                key: 'mustDays',
+                                slot: 'mustDays',
                                 align: 'center'
                             },
                             {
@@ -296,7 +320,7 @@
                             },
                             {
                                 title: '取得\n日数',
-                                key: 'editTakenDays',
+                                slot: 'editTakenDays',
                                 width: 70,
                                 align: 'center'
                             },
@@ -309,7 +333,7 @@
                             },
                             {
                                 title: '必要\n日数',
-                                key: 'mustDays',
+                                slot: 'mustDays',
                                 width: 70,
                                 align: 'center'
                             },

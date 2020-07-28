@@ -1,7 +1,9 @@
 package jp.smartcompany.framework.component.logic;
 
 import jp.smartcompany.framework.component.dto.QueryConditionDTO;
+import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 
+import java.util.List;
 import java.util.ResourceBundle;
 
 /**
@@ -12,10 +14,10 @@ public interface QueryConditionValidatorLogic {
 
     /**
      * 定義情報チェック処理(条件式定義)<br>
-     *
+     * @param queryConditionList 現在、定義されている条件定義情報を取得する
      * @return  int チェック結果
      */
-    public int checkQueryCondition();
+    public int checkQueryCondition(List<QueryConditionRowDTO> queryConditionList);
 
     /**
      * 名称マスタコード取得処理<br>

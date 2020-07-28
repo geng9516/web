@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.smartcompany.job.modules.core.mapper.MastPostMapper">
+
+    <select id="select"  parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastPostDO">
+        -- 役職マスタ検索
+        SELECT
+            MAP_CPOSTID_CK,
+            PSMASTER.FUNC_GET_POST_NAME(
+               '${customerId}',
+               '${companyId}',
+                MAP_CPOSTID_CK,
+               '${baseDate}',
+               '${language}'
+            ) AS MAP_CPOSTNAME
+        FROM
+            MAST_POST
+        WHERE
+            MAP_CCUSTOMERID_CK_FK = #{customerId}
+            AND MAP_CCOMPANYID_CK_FK = #{companyId}
+            AND MAP_DSTART <![CDATA[ <= ]]> #{baseDate}
+            AND MAP_DEND >= #{baseDate}
+            AND MAP_CLANGUAGE = 'ja'
+            ${sExists}
+        ORDER BY MAP_CPOSTID_CK ASC
+<!--            <if test="sortkbn == 0 and ascdesckbn == 0">-->
+<!--                MAP_CPOSTID_CK ASC-->
+<!--            </if>-->
+<!--            <if test="sortkbn == 0 and ascdesckbn == 1">-->
+<!--                MAP_CPOSTID_CK DESC-->
+<!--            </if>-->
+<!--            <if test="sortkbn == 1 and ascdesckbn == 0">-->
+<!--                MMAP_CPOSTNAME ASC-->
+<!--            </if>-->
+<!--            <if test="sortkbn == 1 and ascdesckbn == 1">-->
+<!--                MAP_CPOSTNAME DESC-->
+<!--            </if>-->
+<!--            <if test="sortkbn == null or ascdesckbn == null">-->
+<!--                MAP_CPOSTID_CK ASC-->
+<!--            </if>-->
+    </select>
+
+</mapper>

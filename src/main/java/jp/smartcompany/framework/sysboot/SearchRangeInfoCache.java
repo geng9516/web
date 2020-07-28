@@ -62,7 +62,6 @@ public class SearchRangeInfoCache {
         ghmDataSectionPost = (Map<String, List<SearchRangeInfoDTO>>)lruCache.get(ScCacheUtil.GHM_DATA_SECTION_POST);
         List<SearchRangeInfoDTO> lSecPostList;
         List<SearchRangeInfoDTO> lPermDefsList;
-        System.out.println(ghmDataSectionPost);
         if (ghmDataSectionPost == null) {
             IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
             lSecPostList = iMastDatapermissionService.selectDataSectionPost();
