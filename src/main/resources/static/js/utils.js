@@ -86,7 +86,7 @@ const Utils = {
    * @param el element
    * @returns 是否通过了时间check, false为未通过
    */
-  checkTime(object, name,el) {
+  checkTime(object, name, el) {
     if (!object[name]) {
       return true
     }
@@ -162,26 +162,26 @@ const Utils = {
    * @param filename filename
    * @param type Blob type
    */
-  downloadFile: function(data, filename, type) {
-  const file = new Blob([`\ufeff${data}`], { type: type })
-  if (window.navigator.msSaveOrOpenBlob) {
-    // IE10+
-    window.navigator.msSaveOrOpenBlob(file, filename)
-  } else {
-    // Others
-    let a = document.createElement('a')
-    const url = URL.createObjectURL(file)
-    a.href = url
-    a.download = filename
-    a.style.display = 'none'
-    document.body.appendChild(a)
-    a.click()
-    setTimeout(function() {
-      document.body.removeChild(a)
-      window.URL.revokeObjectURL(url)
-    }, 0)
-  }
-},
+  downloadFile: function (data, filename, type) {
+    const file = new Blob([`\ufeff${data}`], { type: type })
+    if (window.navigator.msSaveOrOpenBlob) {
+      // IE10+
+      window.navigator.msSaveOrOpenBlob(file, filename)
+    } else {
+      // Others
+      let a = document.createElement('a')
+      const url = URL.createObjectURL(file)
+      a.href = url
+      a.download = filename
+      a.style.display = 'none'
+      document.body.appendChild(a)
+      a.click()
+      setTimeout(function () {
+        document.body.removeChild(a)
+        window.URL.revokeObjectURL(url)
+      }, 0)
+    }
+  },
   minusMonths: function (date, months) {
     let d = date.getMonth()
     date.setMonth(date.getMonth() - months)
@@ -189,6 +189,17 @@ const Utils = {
       date.setDate(0)
     }
     return new Date(date)
+  },
+  /**
+   * 检测时间段是否重叠,为true重叠
+   * @param StartA 8:00
+   * @param EndA   12:00
+   * @param StartB 9:00
+   * @param EndB   10:00
+   * @returns {boolean}
+   */
+  timeOverlap: function (StartA, EndA, StartB, EndB) {
+    return Math.max(this.timeToMinute(StartA), this.timeToMinute(StartB)) < Math.min(this.timeToMinute(EndA), this.timeToMinute(EndB))
   },
   /**
    * 获取一个自增的数字数组，如输入1，4 获得[1,2,3,4]

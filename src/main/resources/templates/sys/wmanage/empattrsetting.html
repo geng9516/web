@@ -5,31 +5,37 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <main class="content empattrsettinginfo-warp" @scroll.passive="handleScroll" ref="layout">
-        <div class="content_head">
-            <div class="header">
-                <div class="title1">
-                    <h1>
-                        <Icon type="i-emeer colored"></Icon>
-                        {{ `個人属性設定` }}
-                    </h1>
-                </div>
-
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main class="content empattrsettinginfo-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `個人属性設定` }}
+                </h1>
             </div>
-            <div class="searchwrap">
-                <span class="label">年月日</span>
-                <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false"
-                    @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
-                <!-- 共通組織図画面 start-->
-                <span style="display:flex;width: calc(15% + 200px);">
+            <div class="btnbox">
+                <span style="flex:1"></span>
+                <i-button type="primary" size="large" icon="md-create"  @click="isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="success" icon="md-create" size="large" v-if=" isEditable" @click="manageFlagUpdate">登録</i-button>
+                <i-button size="large" v-if=" isEditable" @click="isEditable = !isEditable">キャンセル</i-button>
+            </div>
+
+        </div>
+        <div class="searchwrap">
+            <span class="label">年月日</span>
+            <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false"
+                         @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
+            <!-- 共通組織図画面 start-->
+            <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                        style="width: calc(100% - 120px);border-radius:0">
+                              style="width: calc(100% - 120px);border-radius:0">
                         {{ deptName }}
                     </i-button>
                     <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                            :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
                             所属
@@ -38,102 +44,114 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                    placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
-                                    @on-change="handleDeptDateChange"></date-picker>
+                                             placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
+                                             @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                empty-text="所属データなし"></Tree>
+                                  empty-text="所属データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                     </Drawer>
                 </span>
-                <!-- 共通組織図画面 end-->
-                <span class="label">キーワード</span>
-                <i-input @on-search="keywordSearch" class="mar like-select" v-model="opts.keyword"
-                    placeholder="社員名或はコード" search enter-button />
-                <span style="flex:1"></span>
+            <!-- 共通組織図画面 end-->
+            <span class="label">キーワード</span>
+            <i-input @on-search="keywordSearch" class="mar like-select" v-model="opts.keyword"
+                     placeholder="社員名或はコード" search enter-button />
+            <span style="flex:1"></span>
+        </div>
+        <div class="content_body">
+            <div class="table-top">
+                <Row :gutter="16">
+                    <i-col span="12">
+                        <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+                              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
+                    </i-col>
+                    <i-col span="7" offset="5" v-if="isEditable">
+                        <i-button type="primary" ghost @click="checkAlladmin" class="mr15">
+                            管理対象者 一括チェック
+                        </i-button>
+                        <i-button type="primary" ghost @click="checkOverWorkAlladmin" class="pr20 pl20">
+                            超過勤務対象者 一括チェック
+                        </i-button>
+                    </i-col>
+                </Row>
             </div>
-            <div class="content_body">
-                <div class="table-top">
-                    <Row :gutter="16">
-                        <i-col span="13" offset="11" class="tr">
-                            <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
-                                  :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
-                        </i-col>
-                    </Row>
-                </div>
-                <template>
-                    <div>
-                        <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
-                            :row-class-name="() => 'select-col'">
-                            <template slot-scope="{ row }" slot="manageFlg">
+            <template>
+                <div>
+                    <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
+                             :row-class-name="() => 'select-col'">
+                        <template slot-scope="{ row }" slot="manageFlg">
                                 <span :class="row.manageFlg ? 'blue' : 'red'"
-                                    v-show="!isEditable">{{ `${row.manageFlg ? '〇' : '除外'}` }}</span>
-                            </template>
+                                      v-show="!isEditable">{{ `${row.manageFlg ? '〇' : '除外'}` }}</span>
+                            <Checkbox v-show="isEditable" v-model="row.manageFlg" @on-change="checkBoxChange($event,row._index,'manage')"></Checkbox>
+                        </template>
 
-                            <template slot-scope="{ row }" slot="excludeOvertime">
+                        <template slot-scope="{ row }" slot="excludeOvertime">
                                 <span :class="row.excludeOvertime ? 'blue' : 'red'"
-                                    v-show="!isEditable">{{ `${row.excludeOvertime ? '〇' : '除外'}` }}</span>
-                            </template>
+                                      v-show="!isEditable">{{ `${row.excludeOvertime ? '〇' : '除外'}` }}</span>
+                            <Checkbox v-show="isEditable" v-model="row.excludeOvertime" @on-change="checkBoxChange($event,row._index,'over')"></Checkbox>
+                        </template>
 
 
-                            <template slot-scope="{ row }" slot="begindate">
-                                <i-button type="primary" ghost size="small" style="margin-right: 5px"
-                                    @click.stop="handleBeginDate(row)">
-                                    {{ row.begindate }}
-                                </i-button>
-                            </template>
+                        <template slot-scope="{ row }" slot="begindate">
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                                      @click.stop="handleBeginDate(row)">
+                                {{ row.begindate }}
+                            </i-button>
+                        </template>
 
-                            <template slot-scope="{ row }" slot="tphaNavgworktime">
-                                <i-button type="primary" ghost size="small" style="margin-right: 5px"
-                                    @click.stop="handleAvgTime(row)">
-                                    {{ row.tphaNavgworktime | handleTime }}
-                                </i-button>
-                            </template>
+                        <template slot-scope="{ row }" slot="tphaNavgworktime">
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                                      @click.stop="handleAvgTime(row)">
+                                {{ row.tphaNavgworktime | handleTime }}
+                            </i-button>
+                        </template>
 
-                            <template slot-scope="{ row }" slot="tphaNworkingdaysWeek">
-                                <i-button type="primary" ghost size="small" style="margin-right: 5px"
-                                    @click.stop="handleAvgTime(row)">
-                                    {{ row.tphaNworkingdaysWeek }}
-                                </i-button>
-                            </template>
+                        <template slot-scope="{ row }" slot="tphaNworkingdaysWeek">
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                                      @click.stop="handleAvgTime(row)">
+                                {{ row.tphaNworkingdaysWeek }}
+                            </i-button>
+                        </template>
 
 
-                        </i-table>
-                    </div>
-                </template>
-            </div>
+                    </i-table>
+                </div>
+            </template>
+        </div>
+    </div>
+
+
+
+    <Modal v-model="isShow" title="個人属性設定" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide
+           draggable>
+        <Row :gutter="10">
+            <i-col span="8">
+                <div class="label">所属</div>
+                <div class="person-info">{{ deptName }}</div>
+            </i-col>
+            <i-col span="8">
+                <div class="label">氏名</div>
+                <div class="person-info">{{ empName }}</div>
+            </i-col>
+            <i-col span="8">
+                <div class="label">種別</div>
+                <div class="person-info">{{ workerTypeName }}</div>
+            </i-col>
+        </Row>
+
+        <Alert v-if="isBeginDateEdit" class="primary-info lb tl">{{ msg }}</Alert>
+        <Alert v-if="false" type="error" class="error-info lb tl">{{ errorMsg }}</Alert>
+
+        <div class="tr mb10">
+            <i-button type="error" ghost class="mr15">削除</i-button>
+            <i-button type="primary" ghost class="mr15" v-if="isBeginDateEdit" @click.stop="clear">クリア</i-button>
+            <i-button type="success" ghost class="mr15">登録</i-button>
         </div>
 
-        <Modal v-model="isShow" title="個人属性設定" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide
-            draggable>
-            <Row :gutter="10">
-                <i-col span="8">
-                    <div class="label">所属</div>
-                    <div class="person-info">{{ deptName }}</div>
-                </i-col>
-                <i-col span="8">
-                    <div class="label">氏名</div>
-                    <div class="person-info">{{ empName }}</div>
-                </i-col>
-                <i-col span="8">
-                    <div class="label">種別</div>
-                    <div class="person-info">{{ workerTypeName }}</div>
-                </i-col>
-            </Row>
-
-            <Alert v-if="isBeginDateEdit" class="primary-info lb tl">{{ msg }}</Alert>
-            <Alert v-if="false" type="error" class="error-info lb tl">{{ errorMsg }}</Alert>
-
-            <div class="tr mb10">
-                <i-button type="error" ghost class="mr15">削除</i-button>
-                <i-button type="primary" ghost class="mr15" v-if="isBeginDateEdit" @click.stop="clear">クリア</i-button>
-                <i-button type="success" ghost class="mr15">登録</i-button>
-            </div>
-
-            <span v-if="isBeginDateEdit">
+        <span v-if="isBeginDateEdit">
                 <Row :gutter="10" class="mt20 mb10" v-if="isBeginDateEdit">
                     <i-col span="15">
                         <div class="titlenorm">
@@ -141,21 +159,21 @@
                             勤務開始日設定状況
                         </div>
                         <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="forClear" key="forClear1"
-                            class="mt2">
+                                 class="mt2">
                             <template slot-scope="{ row }" slot="radio">
                                 <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                             </template>
 
                             <template slot-scope="{ row }" slot="time">
                                 <date-picker :value="row.dstart" format="yyyy/MM/dd" type="date" transfer
-                                    style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
                                 <date-picker :value="row.dend" format="yyyy/MM/dd" type="date" transfer
-                                    style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
                             </template>
 
                             <template slot-scope="{ row }" slot="beginDate">
                                 <date-picker :value="row.beginDate" :disabled="row._index !== radioCheckedIndex"
-                                    format="yyyy/MM/dd" type="date" transfer></date-picker>
+                                             format="yyyy/MM/dd" type="date" transfer></date-picker>
                             </template>
                         </i-table>
 
@@ -184,7 +202,7 @@
                             [参考]発令上の勤務開始日
                         </div>
                         <i-table border :columns="referSettingColums" :data="referSettingData" :loading="loading"
-                            class="mt2"></i-table>
+                                 class="mt2"></i-table>
                     </i-col>
                 </Row>
                 <div class="titlenorm mb10" v-if="isBeginDateEdit">
@@ -195,7 +213,10 @@
                 </i-table>
             </span>
 
-            <span v-if="isAvgTimeEdit">
+
+
+
+        <span v-if="isAvgTimeEdit">
                 <div class="titlenorm mt10" style="margin-bottom:0">
                     <Icon type="logo-buffer"></Icon>
                     平均勤務時間設定:変更内容
@@ -203,7 +224,7 @@
                 <span class="input-like-span tl pl20" style="border-top:0">
                     {{opts.baseDate}} から
                     <time-picker format="HH:mm" :steps="[1, 15]" size="small" :value="nowWorkTime"
-                        class="del-seconds ml15 mr15" style="width: 120px"></time-picker>
+                                 class="del-seconds ml15 mr15" style="width: 120px"></time-picker>
                     (週
                     <i-input size="small" class="mr10 ml10" style="width: 50px" v-model="nowWorKDays"></i-input>
                     日) 勤務とする
@@ -215,332 +236,405 @@
 
                 <i-table border :columns="averageTimeColums" :data="averageTimeData" :loading="loading"></i-table>
             </span>
-        </Modal>
-    </main>
-    <div th:replace="layout/script::common_script"></div>
-    <script type="text/babel" th:inline="javascript">
-        const MONTH_SUM_INFO = new Vue({
-            el: '.empattrsettinginfo-warp',
-            data() {
-                return {
-                    contentScrollTop: 0,
-                    pageValue: {
-                        amount: 0,
-                        curPage: 1,
-                        curSize: 50
+    </Modal>
+</main>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const MONTH_SUM_INFO = new Vue({
+        el: '.empattrsettinginfo-warp',
+        data() {
+            return {
+                manageValue:[],
+                overValue:[],
+                manageFlg:false,
+                excludeOvertime:false,
+                contentScrollTop: 0,
+                pageValue: {
+                    amount: 0,
+                    curPage: 1,
+                    curSize: 50
+                },
+                radioCheckedIndex: 0,
+                nowWorkTime: '',
+                nowWorKDays: '',
+                empName: '',
+                workerTypeName: '',
+                isBeginDateEdit: false,
+                isAvgTimeEdit: false,
+                forClear: false,
+                msg: '※勤務開始日の変更によって年休付与日が変動する場合、設定済みの調整付与日数はクリアされます。\n' +
+                    '　変更後、年次休暇管理を確認し、残日数がマイナスになっている場合は改めて調整をしてください。\n' +
+                    '※注意：選択した対象区間のみ、更新処理を実行します。',
+                errorMsg: '',
+                isShow: false,
+                loading: false,
+                isEditable: false,
+                curDate: new Date(),
+                deptName: '選んでください',  //選択した職員の所属
+                isSearchHistory: false,
+                deptDrawShow: false,    //組織ツリー用
+                empDeptLoading: false,  // 組織ツリーloading用
+                referListObject: {       //組織ツリー共通
+                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 21
+                },
+                treeData: [],            //組織ツリー用
+                opts: {
+                    keyword: '',
+                    baseDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    //目标sec
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    //基准日
+                    txtTmgReferListTreeViewRecordDate: '',
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 21,
+                    page: '1',
+                    empId: ''
+                },
+                columns: [
+                    {
+                        title: '氏名',
+                        key: 'meCkanjiname',
+                        width: 150,
+                        align: 'right'
                     },
-                    radioCheckedIndex: 0,
-                    nowWorkTime: '',
-                    nowWorKDays: '',
-                    empName: '',
-                    workerTypeName: '',
-                    isBeginDateEdit: false,
-                    isAvgTimeEdit: false,
-                    forClear: false,
-                    msg: '※勤務開始日の変更によって年休付与日が変動する場合、設定済みの調整付与日数はクリアされます。\n' +
-                        '　変更後、年次休暇管理を確認し、残日数がマイナスになっている場合は改めて調整をしてください。\n' +
-                        '※注意：選択した対象区間のみ、更新処理を実行します。',
-                    errorMsg: '',
-                    isShow: false,
-                    loading: false,
-                    isEditable: false,
-                    curDate: new Date(),
-                    deptName: '選んでください',  //選択した職員の所属
-                    isSearchHistory: false,
-                    deptDrawShow: false,    //組織ツリー用
-                    empDeptLoading: false,  // 組織ツリーloading用
-                    referListObject: {       //組織ツリー共通
-                        [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
-                        [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
-                        [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
-                        [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
-                        psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        type: 21
+                    {
+                        title: '職種',
+                        key: 'hdCpostname',
+                        minWidth: 180,
+                        align: 'left',
+                        tooltip: true
                     },
-                    treeData: [],            //組織ツリー用
-                    opts: {
-                        keyword: '',
-                        baseDate: '',
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
-                        //目标sec
-                        txtTmgReferListTreeViewAdminTargetSection: '',
-                        //基准日
-                        txtTmgReferListTreeViewRecordDate: '',
-                        psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        type: 21,
-                        page: '1',
-                        empId: ''
+                    {
+                        title: '種別',
+                        key: 'temCworktypename',
+                        minWidth: 220,
+                        align: 'left',
+                        tooltip: true
                     },
-                    columns: [
-                        {
-                            title: '氏名',
-                            key: 'meCkanjiname',
-                            width: 150,
-                            align: 'right'
-                        },
-                        {
-                            title: '職種',
-                            key: 'hdCpostname',
-                            minWidth: 180,
-                            align: 'left',
-                            tooltip: true
-                        },
-                        {
-                            title: '種別',
-                            key: 'temCworktypename',
-                            minWidth: 220,
-                            align: 'left',
-                            tooltip: true
-                        },
-                        {
-                            title: '管理対象者',
-                            slot: 'manageFlg',
-                            minWidth: 80,
-                            maxWidth: 200,
-                            align: 'center'
-                        },
-                        {
-                            title: '超過勤務対象者',
-                            minWidth: 80,
-                            maxWidth: 200,
-                            slot: 'excludeOvertime',
-                            align: 'center'
-                        },
-                        {
-                            title: '勤務開始日',
-                            slot: 'begindate',
-                            minWidth: 100,
-                            align: 'center'
-                        },
-                        {
-                            title: '平均勤務\n時間設定',
-                            slot: 'tphaNavgworktime',
-                            minWidth: 80,
-                            align: 'center'
-                        },
-                        {
-                            title: '週勤務日数',
-                            minWidth: 60,
-                            slot: 'tphaNworkingdaysWeek',
-                            align: 'center'
-                        }
-                    ],
-                    tableData: [],
-                    referSettingColums: [
-                        {
-                            title: '発令日',
-                            key: 'dstart'
-                        },
-                        {
-                            title: '勤務開始日',
-                            key: 'ddateofemployement'
-                        }
-                    ],
-                    averageTimeColums: [
-                        {
-                            title: '開始年月日',
-                            key: 'tphaDstartdate',
-                            align: 'cener'
-                        },
-                        {
-                            title: '終了年月日',
-                            key: 'tphaDenddate'
-                        },
-                        {
-                            title: '設定内容',
-                            key: 'content'
-                        }
-                    ],
-                    historyColums: [
-                        {
-                            title: '更新者',
-                            key: 'modifieruserId',
-                            align: 'right',
-                            width: 150
-                        },
-                        {
-                            title: '更新日時',
-                            key: 'modifieddate',
-                            align: 'center',
-                            width: 200
-                        },
-                        {
-                            title: '更新内容',
-                            key: 'tdlgCmodifieddetail',
-                            align: 'left'
-                        }
-                    ],
-                    workDaySettingColums: [
-                        {
-                            title: ' ',
-                            slot: 'radio',
-                            width: 35
-                        },
-                        {
-                            title: '適用期間',
-                            slot: 'time',
-                            width: 300
-                        },
-                        {
-                            title: '勤務開始日',
-                            slot: 'beginDate'
-                        }
-                    ],
-                    workDaySettingData: [],
-                    beginDateListBackUp:[],
-                    averageTimeData: [],
-                    historyData: [],
-                    referSettingData: []
-                }
-            },
-            async mounted() {
-                this.getOrgTree()
-            },
+                    {
+                        title: '管理対象者',
+                        slot: 'manageFlg',
+                        minWidth: 80,
+                        maxWidth: 200,
+                        align: 'center'
+                    },
+                    {
+                        title: '超過勤務対象者',
+                        minWidth: 80,
+                        maxWidth: 200,
+                        slot: 'excludeOvertime',
+                        align: 'center'
+                    },
+                    {
+                        title: '勤務開始日',
+                        slot: 'begindate',
+                        minWidth: 100,
+                        align: 'center'
+                    },
+                    {
+                        title: '平均勤務\n時間設定',
+                        slot: 'tphaNavgworktime',
+                        minWidth: 80,
+                        align: 'center'
+                    },
+                    {
+                        title: '週勤務日数',
+                        minWidth: 60,
+                        slot: 'tphaNworkingdaysWeek',
+                        align: 'center'
+                    }
+                ],
+                tableData: [],
+                referSettingColums: [
+                    {
+                        title: '発令日',
+                        key: 'dstart'
+                    },
+                    {
+                        title: '勤務開始日',
+                        key: 'ddateofemployement'
+                    }
+                ],
+                averageTimeColums: [
+                    {
+                        title: '開始年月日',
+                        key: 'tphaDstartdate',
+                        align: 'cener'
+                    },
+                    {
+                        title: '終了年月日',
+                        key: 'tphaDenddate'
+                    },
+                    {
+                        title: '設定内容',
+                        key: 'content'
+                    }
+                ],
+                historyColums: [
+                    {
+                        title: '更新者',
+                        key: 'modifieruserId',
+                        align: 'right',
+                        width: 150
+                    },
+                    {
+                        title: '更新日時',
+                        key: 'modifieddate',
+                        align: 'center',
+                        width: 200
+                    },
+                    {
+                        title: '更新内容',
+                        key: 'tdlgCmodifieddetail',
+                        align: 'left'
+                    }
+                ],
+                workDaySettingColums: [
+                    {
+                        title: ' ',
+                        slot: 'radio',
+                        width: 35
+                    },
+                    {
+                        title: '適用期間',
+                        slot: 'time',
+                        width: 300
+                    },
+                    {
+                        title: '勤務開始日',
+                        slot: 'beginDate'
+                    }
+                ],
+                workDaySettingData: [],
+                beginDateListBackUp:[],
+                averageTimeData: [],
+                historyData: [],
+                referSettingData: []
+            }
+        },
+        async mounted() {
+            this.getOrgTree()
+        },
 
-            methods: {
-                handleDatePicker() {
-                    if (this.deptName !== '選んでください') {
-                        this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
-                        this.getTableData()
-                        return
-                    }
-                    this.$Notice.warning({ title: '所属を選択して下さい' })
-                },
-                async handleDeptDateChange(e) {
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
-                    this.isSearchHistory = true
-                    await this.getOrgTree()
-                    this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
-                },
-                async getOrgTree() {
-                    this.empDeptLoading = true
-                    try {
-                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-                        // 转为可用数据
-                        this.treeData = Utils.convertTreeData(orgList)
-                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                    } catch (error) {
-                        return
-                    } finally {
-                        this.loading = false
-                        this.empDeptLoading = false
-                    }
-                },
-                handleClickLeaf(e) {
-                    if (!e[0]) return
-                    this.deptDrawShow = false
-                    this.deptName = e[0].secnic
-                    this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                    this.opts.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+        methods: {
+            async manageFlagUpdate(){
+
+                this.opts.ManageList=JSON.stringify(this.manageValue)
+                this.opts.OverTimesList=JSON.stringify(this.overValue)
+                this.opts.baseDate=Utils.formatDate(this.opts.baseDate)
+                console.log("manageFlagUpdate"+JSON.stringify(this.opts))
+                const { data } = await this.http.postForm('sys/userprofile/manageFlagUpdate', this.opts)
+                console.log("manageFlagUpdate"+JSON.stringify(data))
+            },
+            checkBoxChange(e,i,name){
+                if(name=="over"){
+                    this.overValue[i].updaeCheckType=e
+                }else if(name=="manage"){
+                    this.manageValue[i].updaeCheckType=e
+                }
+
+                console.log("checkBoxChange"+JSON.stringify(this.overValue))
+                console.log("checkBoxChange"+JSON.stringify(this.manageValue))
+
+            },
+            checkOverWorkAlladmin() {
+                this.excludeOvertime = !this.excludeOvertime
+                let that=this
+                if (this.excludeOvertime) {
+                    this.tableData = this.tableData.map((e,index) => {
+                        that.overValue[index].updaeCheckType=true
+                        return { ...e, excludeOvertime: true }
+                    })
+                } else {
+                    this.tableData = this.tableData.map((e,index) => {
+                        that.overValue[index].updaeCheckType=false
+                        return { ...e, excludeOvertime: false }
+                    })
+                }
+                console.log("checkOverWorkAlladmin"+JSON.stringify(that.overValue))
+            },
+            checkAlladmin() {
+                this.manageFlg = !this.manageFlg
+                let that=this
+                if (this.manageFlg) {
+                    this.tableData = this.tableData.map((e,index) => {
+                        that.manageValue[index].updaeCheckType=true
+                        return { ...e, manageFlg: true }
+                    })
+                } else {
+                    this.tableData = this.tableData.map((e,index) => {
+                        that.manageValue[index].updaeCheckType=false
+                        return { ...e, manageFlg: false }
+                    })
+                }
+
+                console.log("checkAlladmin"+JSON.stringify(that.manageValue))
+            },
+            handleDatePicker() {
+                if (this.deptName !== '選んでください') {
                     this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     this.getTableData()
-                },
-                async getTableData() {
-                    this.loading = true
+                    return
+                }
+                this.$Notice.warning({ title: '所属を選択して下さい' })
+            },
+            async handleDeptDateChange(e) {
+                this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.isSearchHistory = true
+                await this.getOrgTree()
+                this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+            },
+            async getOrgTree() {
+                this.empDeptLoading = true
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 转为可用数据
+                    this.treeData = Utils.convertTreeData(orgList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                    this.empDeptLoading = false
+                }
+            },
+            handleClickLeaf(e) {
+                if (!e[0]) return
+                this.deptDrawShow = false
+                this.deptName = e[0].secnic
+                this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.opts.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
+                this.getTableData()
+            },
+            keywordSearch() {
+            },
+            async getTableData() {
+                this.loading = true
 
-                    try {
-                        const { data } = await this.http.get('sys/userprofile/screenDisp', this.opts)
-                        this.pageValue.amount = data.totalCount
-                        this.tableData = data.list
+                try {
+                    const { data } = await this.http.get('sys/userprofile/screenDisp', this.opts)
+                    this.pageValue.amount = data.totalCount
+                    this.tableData = data.list
+                    this.manageValue=Array(data.list.length).fill().
+                    map((e,index)=>({"employeeId":data.list[index].meCemployeeidCk,"initCheckType":data.list[index].manageFlg,"updaeCheckType":data.list[index].manageFlg}))
 
-                    } catch (error) {
-                        console.log(error)
-                        return
-                    } finally {
-                        this.loading = false
-                    }
-                },
-                async handleBeginDate(e) {
-                    if (!e) return
-                    this.opts.empId = e.meCemployeeidCk
-                    this.empName = e.meCkanjiname
-                    this.sectionName = this.deptName
-                    this.workerTypeName = e.temCworktypename
+                    this.overValue=Array(data.list.length).fill().
+                    map((e,index)=>({"employeeId":data.list[index].meCemployeeidCk,"initCheckType":data.list[index].excludeOvertime,"updaeCheckType":data.list[index].excludeOvertime}))
 
-                    try {
-                        const { data } = await this.http.get('sys/userprofile/beginDateEditDisp', this.opts)
-                        this.referSettingData = [data.beginDate]
-                        this.workDaySettingData = [
-                            {
-                                isChecked: true,
-                                dstart: '',
-                                dend: '',
-                                dendback: '',
-                                beginDate: ''
-                            }
-                        ].concat(data.list)
+                    console.log("manageValue"+JSON.stringify(this.manageValue))
+                    console.log("overValue"+JSON.stringify(this.overValue))
 
-                        this.beginDateListBackUp=Utils.deepClone(this.workDaySettingData)
-                        this.historyData = data.historyList
-                        console.log(this.referSettingData)
-                        console.log(this.workDaySettingData)
-                        console.log(this.historyData)
-                        this.isShow = true
-                        this.isBeginDateEdit = true
-                        this.isAvgTimeEdit = false
-                    } catch (error) {
-                        console.log(error)
-                        return
-                    } finally {
 
-                    }
-                },
-                async handleAvgTime(e) {
-                    if (!e) return
-                    this.opts.empId = e.meCemployeeidCk
-                    this.empName = e.meCkanjiname
-                    this.workerTypeName = e.temCworktypename
-                    try {
-                        const { data } = await this.http.get('sys/userprofile/avgWorkTimeEditDisp', this.opts)
-                        this.averageTimeData = data.historyList
-                        this.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
-                        this.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
-                        console.log(this.nowWorkTime)
-                        console.log(this.averageTimeData)
-                        this.isShow = true
-                        this.isAvgTimeEdit = true
-                        this.isBeginDateEdit = false
-                    } catch (error) {
-                        console.log(error)
-                        return
-                    } finally {
 
-                    }
 
-                },
-                cancel() {
-                    this.workDaySettingData= this.beginDateListBackUp
-                    this.forClear = !this.forClear
-                    this.handleRadio(0)
-                    this.isShow = false
-                },
-                handleRadio(index) {
-                    this.radioCheckedIndex = index
-                    this.workDaySettingData = this.workDaySettingData.map((e, i) => {
-                        return {
-                            ...e,
-                            isChecked: i === index ? true : false
+                } catch (error) {
+                    console.log(error)
+                    return
+                } finally {
+                    this.loading = false
+                }
+            },
+            async handleBeginDate(e) {
+                if (!e) return
+                this.opts.empId = e.meCemployeeidCk
+                this.empName = e.meCkanjiname
+                this.sectionName = this.deptName
+                this.workerTypeName = e.temCworktypename
+
+                try {
+                    const { data } = await this.http.get('sys/userprofile/beginDateEditDisp', this.opts)
+                    this.referSettingData = [data.beginDate]
+                    this.workDaySettingData = [
+                        {
+                            isChecked: true,
+                            dstart: '',
+                            dend: '',
+                            dendback: '',
+                            beginDate: ''
                         }
-                    })
-                },
-                clear(){
-                    this.workDaySettingData= this.beginDateListBackUp
-                    this.forClear = !this.forClear
-                    this.handleRadio(0)
+                    ].concat(data.list)
+
+                    this.beginDateListBackUp=Utils.deepClone(this.workDaySettingData)
+                    this.historyData = data.historyList
+                    console.log(this.referSettingData)
                     console.log(this.workDaySettingData)
-                },
-                pageChange(e) {
-                    this.opts.page = e
-                    this.pageValue.curPage = e
-                    this.getTableData()
-                },
-                handleScroll: Throttle(function (e) {
-                    this.contentScrollTop = e.target.scrollTop
-                }, 50),
-            }
-        })
-    </script>
+                    console.log(this.historyData)
+                    this.isShow = true
+                    this.isBeginDateEdit = true
+                    this.isAvgTimeEdit = false
+                } catch (error) {
+                    console.log(error)
+                    return
+                } finally {
+
+                }
+
+
+
+            },
+            async handleAvgTime(e) {
+                if (!e) return
+                this.opts.empId = e.meCemployeeidCk
+                this.empName = e.meCkanjiname
+                this.workerTypeName = e.temCworktypename
+                try {
+                    const { data } = await this.http.get('sys/userprofile/avgWorkTimeEditDisp', this.opts)
+                    this.averageTimeData = data.historyList
+                    this.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
+                    this.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
+                    console.log(this.nowWorkTime)
+                    console.log(this.averageTimeData)
+                    this.isShow = true
+                    this.isAvgTimeEdit = true
+                    this.isBeginDateEdit = false
+                } catch (error) {
+                    console.log(error)
+                    return
+                } finally {
+
+                }
+
+            },
+            cancel() {
+                this.workDaySettingData= this.beginDateListBackUp
+                this.forClear = !this.forClear
+                this.handleRadio(0)
+                this.isShow = false
+            },
+            handleRadio(index) {
+                this.radioCheckedIndex = index
+                this.workDaySettingData = this.workDaySettingData.map((e, i) => {
+                    return {
+                        ...e,
+                        isChecked: i === index ? true : false
+                    }
+                })
+            },
+            clear(){
+                this.workDaySettingData= this.beginDateListBackUp
+                this.forClear = !this.forClear
+                this.handleRadio(0)
+                console.log(this.workDaySettingData)
+            },
+            pageChange(e) {
+                this.opts.page = e
+                this.pageValue.curPage = e
+                this.getTableData()
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+            }, 50),
+        }
+    })
+</script>
 </body>
 
 </html>

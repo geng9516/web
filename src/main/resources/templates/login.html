@@ -133,14 +133,17 @@
                 var isPass = this.formCheck()
                 if (isPass) {
                     this.loading = true
+                    this.clockDisable = true
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.postForm('/login', this.login)
                         location.href = "/login";
                     } catch (error) {
                         this.loading = false
+                        this.clockDisable = false
                     }
                     // 因为直接跳页, 所以不需要取消loading
+                    // this.clockDisable = false
                 }
             }),
 
