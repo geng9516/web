@@ -89,4 +89,49 @@ public interface MastGroupsectionpostmappingMapper extends BaseMapper<MastGroups
                @Param("permissionId") String permissionId,
                @Param("language") String language);
 
+
+        /**
+         * グループ条件定義マスタ(組織、役職)の指定された情報をすべて削除します
+         *
+         * @author  isolyamada
+         * @param   psCustomerId    顧客コード
+         * @param   psCompanyId     法人コード
+         * @param   psSystemId      システムID
+         * @param   psGroupId       グループID
+         * @param   pdSearchDate    今回改定日
+         * @return  int             更新件数
+         * @exception
+         */
+       int deleteGroupSectionPostAll(@Param("customerId") String psCustomerId,@Param("companyId") String psCompanyId,
+                              @Param("systemId") String psSystemId,@Param("groupId") String psGroupId,@Param("searchDate") String pdSearchDate);
+
+        /**
+         * グループ条件定義マスタ(組織、役職)の定義区分(複数指定）ごとの削除処理
+         *
+         * @param   psCustomerId 顧客コード
+         * @param   psSystemId   システムコード
+         * @param   psGroupId    グループID
+         * @param   psTypeIdList     定義区分(複数指定)
+         * @param   pdSearchDate    今回改定日
+         * @return  グループ条件定義マスタ取得(組織、役職)
+         * @exception
+         */
+       int deleteSectionPostTypeList(@Param("customerId") String psCustomerId, @Param("systemId") String psSystemId,
+                              @Param("groupId") String psGroupId,@Param("typeIdList") List<String> psTypeIdList,@Param("searchDate") String pdSearchDate);
+
+    /**
+     * グループ条件定義マスタ(組織、役職)の定義区分(複数指定）ごとの削除処理
+     *
+     * @param   customerId 顧客コード
+     * @param   systemId   システムコード
+     * @param   groupId    グループID
+     * @param   typeId     定義区分(複数指定)
+     * @param   startDate    今回改定日
+     */
+       void deleteSectionPostType(
+               @Param("customerId") String customerId,@Param("systemId") String systemId,
+               @Param("groupId") String groupId,
+               @Param("typeId") String typeId,
+               @Param("startDate") String startDate);
+
 }

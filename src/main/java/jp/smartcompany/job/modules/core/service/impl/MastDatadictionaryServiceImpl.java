@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.core.mapper.MastDatadictionaryMapper;
@@ -29,5 +30,10 @@ public class MastDatadictionaryServiceImpl extends ServiceImpl<MastDatadictionar
         @Override
         public List<MastDatadicSeclevelDTO> selectAllDataDicSecLevel() {
            return baseMapper.selectAllDataDicSecLevel();
+        }
+
+        @Override
+        public List<QueryConditionRowDTO> selectGroupJoinQuery(String customerId, String tableId) {
+          return baseMapper.selectGroupJoinQuery(customerId,tableId);
         }
 }

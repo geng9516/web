@@ -268,8 +268,11 @@ public class TreeController {
                searchRange);
     }
 
+    // http://localhost:6879/sys/tree/posts?psSite=Admin
     @GetMapping("posts")
-    public Map<String,Object> postTree(Boolean useSearchRange,String companyCode) throws ParseException {
+    public Map<String,Object> postTree(
+        @RequestParam(value = "useSearchRange",defaultValue = "true",required = false) Boolean useSearchRange,
+        @RequestParam(value="companyCode",defaultValue = "01",required = false) String companyCode) throws ParseException {
         String searchDate = SysUtil.transDateToString(DateUtil.date());
         return postGenericLogic.dispPost(
                 companyCode,

@@ -3,6 +3,7 @@ package jp.smartcompany.boot.util;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 
 import javax.servlet.http.HttpSession;
@@ -469,6 +470,27 @@ public class SysUtil {
             sReturn = sb.substring(0, sb.length()-1) + ")";
         }
         return sReturn;
+    }
+
+    /**
+     * <B>【最大日付取得（Date型）】</B><BR>
+     * P@Sにて使用可能である最大日付を、Date型にて返却する。（非推奨）<BR>
+     * @return Date 最大日付
+     */
+    public static Date getMaxDateObject() {
+
+        // 日付の出力形式を設定
+        SimpleDateFormat fFormat = new SimpleDateFormat();
+        Date dRetDate = new Date();
+
+        try {
+            fFormat.applyPattern("yyyy/MM/dd");
+            return fFormat.parse(PsConst.MAXDATE);
+
+        } catch (ParseException e) {
+            // APIでは、特にエラーメッセージなどは返却しない
+            return dRetDate;
+        }
     }
 
 }

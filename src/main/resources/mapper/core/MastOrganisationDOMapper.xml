@@ -309,14 +309,14 @@
                 <otherwise>
                     AND MO.MO_CCOMPANYID_CK_FK = #{companyCode}
                     AND MO.MO_CLAYEREDSECTIONID LIKE (
-                    SELECT
-                    MO2.MO_CLAYEREDSECTIONID || '%'
-                    FROM MAST_ORGANISATION MO2
-                    WHERE
-                    MO2.MO_CCOMPANYID_CK_FK = #{companyCode}
-                    AND MO2.MO_CSECTIONID_CK = #{sectionCode}
-                    AND MO2.MO_DSTART <![CDATA[ <= ]]> #{searchDate}
-                    AND MO2.MO_DEND >= #{searchDate}
+                         SELECT
+                             MO2.MO_CLAYEREDSECTIONID || '%'
+                         FROM MAST_ORGANISATION MO2
+                         WHERE
+                             MO2.MO_CCOMPANYID_CK_FK = #{companyCode}
+                             AND MO2.MO_CSECTIONID_CK = #{sectionCode}
+                             AND MO2.MO_DSTART <![CDATA[<=]]> #{searchDate}
+                             AND MO2.MO_DEND >= #{searchDate}
                     )
                 </otherwise>
             </choose>

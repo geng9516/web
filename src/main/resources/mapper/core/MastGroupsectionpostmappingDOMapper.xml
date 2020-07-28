@@ -191,4 +191,49 @@
             MAG_CEMPLOYEEID
     </select>
 
+    <delete id="deleteGroupSectionPostAll" parameterType="map">
+        DELETE
+            FROM MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+            MAG_CCUSTOMERID_CK_FK   = #{customerId} AND
+            MAG_CCOMPANYID          = #{companyId}  AND
+            MAG_CSYSTEMID_CK        = #{systemId}   AND
+            MAG_CGROUPID_FK         = #{groupId}   AND
+            MAG_DSTARTDATE_CK       <![CDATA[<=]]> #{searchDate}	AND
+            MAG_DENDDATE            >= #{searchDate}
+    </delete>
+
+    <delete id="deleteSectionPostTypeList" parameterType="map">
+        DELETE
+            MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+            MAG_CCUSTOMERID_CK_FK = #{customerId}
+            AND MAG_CSYSTEMID_CK = #{systemId}
+            AND MAG_CGROUPID_FK  = #{groupId}
+            <if test="typeIdList!=null and typeIdList.size()>0">
+                AND MAG_CTYPEID IN
+                <foreach item="item" collection="typeIdList" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="searchDate!=null">
+                AND MAG_DSTARTDATE_CK <![CDATA[<=]]> #{searchDate}
+                AND MAG_DENDDATE >= #{searchDate}
+            </if>
+    </delete>
+
+    <delete id="deleteSectionPostType" parameterType="map">
+        DELETE
+            MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+            MAG_CCUSTOMERID_CK_FK = #{customerId}
+            AND MAG_CSYSTEMID_CK = #{systemId}
+            AND MAG_CGROUPID_FK = #{groupId}
+            AND MAG_CTYPEID = #{typeId}
+            <if test="startDate">
+                AND MAG_DSTARTDATE_CK <![CDATA[<=]]> #{startDate}
+                AND MAG_DENDDATE >= #{startDate}
+            </if>
+    </delete>
+
 </mapper>

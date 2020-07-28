@@ -2,6 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerLogic;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
@@ -51,6 +52,12 @@ public class GroupManagerController {
             systemId="01";
         }
         return groupManagerGroupEditLogic.detail(searchDate,systemId, groupId);
+    }
+
+    @PostMapping("update")
+    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
+        groupManagerGroupEditLogic.update(dto);
+        return "変更成功";
     }
 
     /*******弹窗相关路由*********/

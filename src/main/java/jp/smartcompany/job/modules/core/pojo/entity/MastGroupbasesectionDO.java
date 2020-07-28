@@ -1,10 +1,8 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -22,6 +20,7 @@ import lombok.experimental.Accessors;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
+@KeySequence("SEQUENCE MAST_GROUPBASESECTION_SEQ")
 @TableName("mast_groupbasesection")
 public class MastGroupbasesectionDO implements Serializable {
 
@@ -30,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * ｉｄカラム
          */
-                @TableId(value = "mgbs_id", type = IdType.AUTO)
+                @TableId(value = "mgbs_id")
                 private Long mgbsId;
 
         /**

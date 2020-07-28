@@ -3,18 +3,16 @@
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.MastPostMapper">
 
     <select id="select"  parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastPostDO">
-        -- 名称マスタ明細データ検索
+        -- 役職マスタ検索
         SELECT
-            MGD_CGENERICGROUPID,
-            MGD_CGENERICDETAILID_CK,
-            MGD_CMASTERCODE,
-            PSMASTER.FUNC_GET_GENERICDETAIL_DESC(
+            MAP_CPOSTID_CK,
+            PSMASTER.FUNC_GET_POST_NAME(
                '${customerId}',
                '${companyId}',
-               MGD_CMASTERCODE,
+                MAP_CPOSTID_CK,
                '${baseDate}',
                '${language}'
-            ) AS MGD_CGENERICDETAILDESC
+            ) AS MAP_CPOSTNAME
         FROM
             MAST_POST
         WHERE
