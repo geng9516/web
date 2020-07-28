@@ -47,13 +47,6 @@
                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
-              <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-              <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                  <i-option :value="2">グループごとに</i-option>
-                  <i-option :value="3">部署ごとに</i-option>
-                </i-select>
-              </div>
             </Row>
             ​
             <div style="position: relative;">
@@ -256,13 +249,6 @@
                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
-              <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-              <div style="display: inline-block;width: 36.3%;" class="no-border-radius">
-                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                  <i-option :value="2">グループごとに</i-option>
-                  <i-option :value="3">部署ごとに</i-option>
-                </i-select>
-              </div>
             </Row>
             <div style="position: relative;">
               <Tree class="tree mt2" :data="treeData" @on-select-change="(e) => {handleClickLeaf(e, false)}" ref="tree"
@@ -641,7 +627,6 @@
           restInfoList: [],
           restTypeListForReview: [],
           selectedRestInfo: {},
-          selectedDeptViewType: 3, //組織ツリー用
           empDeptLoading: false,  // 組織ツリーloading用
           deptDrawShow: false,    //組織ツリー用
           treeData: [],            //組織ツリー用
@@ -737,14 +722,9 @@
         async getOrgTree() {
           this.empDeptLoading = true
           try {
-            const { groupList, sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+            const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
             // 先将数据转为标准格式，再转为可用数据
-            if (this.selectedDeptViewType === 3) {
-              this.treeData = Utils.convertTreeData(sectionList)
-            }
-            if (this.selectedDeptViewType === 2) {
-              this.treeData = Utils.convertTreeData(groupList)
-            }
+            this.treeData = Utils.convertTreeData(orgList)
             this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
           } catch (error) {
             return
@@ -772,21 +752,12 @@
           if (!e) return
           this.getTableData(false, true)
         },
-        async handleDeptViewTypeChange() {
-          await this.getOrgTree()
-          this.$Notice.success({ title: '所属図更新完了' })
-        },
         async handleClickLeaf(e, forAgencyApply) {
           if (!e[0]) return
           this.deptDrawShow = false
           this.referListObject.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
           this.referListObject.txtTmgReferListTreeViewAdminTargetGroup = e[0].groupid
-          if (this.selectedDeptViewType === 3) {
-            this.deptName = e[0].label
-          }
-          if (this.selectedDeptViewType === 2) {
-            this.deptName = e[0].secnic
-          }
+          this.deptName = e[0].secnic
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
           if (forAgencyApply) {
