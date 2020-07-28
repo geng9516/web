@@ -9,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -17,34 +16,13 @@ import java.util.List;
 @ToString
 public class GroupManagerEditDTO extends MastGroupDO {
 
-    /**
-     * 適正数
-     */
-    private Long mgNpartinentnumber;
-    /**
-     * 優先順
-     */
-    private Long mgNweightage;
-    /**
-     * 備考欄
-     */
-    private String mgCtext;
+
     /** グループ定義条件マスタ ID */
     private Long mgpId;
 
-    private String mgCcustomerid;
-    private String mgCcompanyid;
+
     private String msCsystemidPk;
-    /**
-     * 言語区分
-     */
-    private String mgClanguage;
-    /**
-     * グループid
-     */
-    private String mgCgroupidPk;
-    private Date mgDstartdate;
-    private Date mgDenddate;
+
     /** グループ定義種別フラグ(0:組織・役職設定で定義/1:条件式で定義) */
     private String baseFlg;
 
@@ -69,31 +47,5 @@ public class GroupManagerEditDTO extends MastGroupDO {
     /** 基点組織設定情報 削除用一覧 */
     private List <MastGroupbasesectionDO> deleteBaseSection;
 
-    private String mgCgroupdescription;
-
-    /**
-     * グループ名称（日本語）
-     */
-    private String mgCgroupdescriptionja;
-
-    /**
-     * グループ名称（英語）
-     */
-    private String mgCgroupdescriptionen;
-
-    /**
-     * グループ名称（中国語）
-     */
-    private String mgCgroupdescriptionch;
-
-    /**
-     * グループ名称（予備01）
-     */
-    private String mgCgroupdescription01;
-
-    /**
-     * グループ名称（予備02）
-     */
-    private String mgCgroupdescription02;
 
 }
