@@ -14,12 +14,16 @@ Vue.filter('handleTime', function (e) {
 
 // 给天数和时间数字增加精度
 Vue.filter('addNumDeci', function (e, isDay) {
-  if (!e) {
-    if (!isDay) return '0.00'
-    return '0.0'
+  if (isNaN(e)){
+    return e
+  } else {
+    if (!e) {
+      if (!isDay) return '0.00'
+      return '0.0'
+    }
+    if (!isDay) return parseFloat(e).toFixed(2)
+    else return parseFloat(e).toFixed(1)
   }
-  if (!isDay) return parseFloat(e).toFixed(2)
-  else return parseFloat(e).toFixed(1)
 })
 
 const TURN_LINE_STR = "<br>"

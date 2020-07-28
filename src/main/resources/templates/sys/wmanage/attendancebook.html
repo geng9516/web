@@ -608,7 +608,12 @@
 
                 if(this.query.comment != null){
                     if (this.query.comment.length > 400) {
-                        alert('摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。');
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '摘要が設定値を超えています。全角・半角カナ200字以内、半角英数400字以内。'
+                        });
                         this.commentBtnLoading = false
                         return
                     } else {
