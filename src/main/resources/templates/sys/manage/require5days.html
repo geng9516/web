@@ -122,7 +122,29 @@
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason" class="mb30" >
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
+                <template slot-scope="{ row }" slot="editBasedDay">
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
+                </template>
+
+                <template slot-scope="{ row }" slot="adjustTakenDays">
+                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                </template>
+
+                <template slot-scope="{ row }" slot="vactionGiveDay">
+                    <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="paidDays">
+                    <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="lackDays">
+                    <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays }}</span>
+                </template>
+
+            </i-table>
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
                 </template>
@@ -393,7 +415,8 @@
                 empTreeData: [],        //組織ツリー用
                 emplistLoading: false,  //職員一覧ローディング用動画
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
-                dataLoading: false
+                dataLoading: false,
+                forRest: true
             }
         },
         async mounted() {
@@ -649,6 +672,7 @@
                 this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
             },
             async handleYearChange(e) {
+                this.query.txtUserCode = null
                 this.updateAcquired5DaysVO.txtYear = e.replace("年", "")
                 this.query.year = e.replace("年", "")
                 await this.getTableData()
@@ -730,27 +754,29 @@
             register(e) {
                 //1:登録　2:クリア
                 this.updateAcquired5DaysVO.txtUpdateflg = '1'
-
-                this.$Modal.confirm({
-                    title: '',
-                    content: '入力内容を保存します。よろしいですか？',
-                    okText: 'OK',
-                    cancelText: 'キャンセル',
-                    onOk: async () => {
-                        const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
-
-                        //年5日時季指定取得確認画面を閉じる
-                        this.isShow = false
-                        //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
-                        if (this.query.hidSelectTab=='0'){
-                            this.query.txtUserCode = null
+                if (this.errorCheck()){
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '入力内容を保存します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            const { data } = await this.http.post('sys/tmgacquired5daysholiday/update', this.updateAcquired5DaysVO)
+                            // 销毁table
+                            this.forRest = !this.forRest
+                            //年5日時季指定取得確認画面を閉じる
+                            this.isShow = false
+                            //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
+                            if (this.query.hidSelectTab=='0'){
+                                this.query.txtUserCode = null
+                            }
+                            //一覧画面取得
+                            this.getTableData()
+                        },
+                        onCancel: () => {
                         }
-                        //一覧画面取得
-                        this.getTableData()
-                    },
-                    onCancel: () => {
-                    }
-                })
+                    })
+                }
             },
             clear(e) {
                 //1:登録　2:クリア
@@ -794,6 +820,33 @@
                     this.query.hidSelectTab='1'
                 }
             },
+            errorCheck() {
+                let date = this.updateAcquired5DaysVO.kijunbiEdit
+                let days = this.updateAcquired5DaysVO.usedDaysEdit
+
+                // 修正基準日チェック ※2019/04/01(法改日)以降
+                if (date != "" && date.split("/").join("") - 20190401 < 0) {
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 0,
+                        content: '修正基準日は2019/04/01以降の日付に入力してください。'
+                    });
+                    return
+                }
+
+                // 調整取得日数チェック
+                if(isNaN(days) || days%0.5 > 0 || days < 0){
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 0,
+                        content: '調整取得日数は半休単位(0.5)で入力してください。'
+                    });
+                    return
+                }
+                return true;
+            }
         }
     })
 </script>

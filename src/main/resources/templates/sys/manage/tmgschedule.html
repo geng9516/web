@@ -18,7 +18,7 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled"  @click="handleChangeWorkPattern();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0"  @click="handleChangeWorkPattern();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
                 <i-button type="success" icon="md-create" size="large" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
                 <i-button size="large" v-if=" isEditable" @click="isEditable = !isEditable">キャンセル</i-button>
             </div>
@@ -78,7 +78,9 @@
                 <!-- 共通組織図画面 end-->
                 </span>
             <span class="label">氏名</span>
-            <span class="input-like-span width15">{{ kanjiName }}</span>
+            <span class="input-like-span width15 mr30">{{ kanjiName }}</span>
+            <span class="label">種別</span>
+            <span class="input-like-span width15">{{wokertypename}}</span>
         </div>
     </div>
     <div class="content_body">
@@ -100,21 +102,21 @@
             <Row :gutter="10" class="mt5 mb15 tc">
             <i-col span="4">
                 <div class="label">公休日数</div>
-                <div class="person-info">{{paidHolidayVO.nationalHolidayDays}}</div>
+                <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}</div>
             </i-col>
             <i-col span="4">
                 <div class>
                     <div class="label">基準日数</div>
-                    <div class="person-info">{{paidHolidayVO.dateOfRecordDays}}</div>
+                    <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}</div>
                 </div>
             </i-col>
             <i-col span="4">
                 <div class="label">基準時間</div>
-                <div class="person-info">{{paidHolidayVO.dateOfRecord}}</div>
+                <div class="person-info tc">{{paidHolidayVO.dateOfRecord}}</div>
             </i-col>
             <i-col span="4">
                 <div class="label">年次休暇残</div>
-                <div class="person-info">{{paidHolidayVO.npaidRestDaysHour}}</div>
+                <div class="person-info tc">{{paidHolidayVO.npaidRestDaysHour}}</div>
             </i-col>
         </Row>
 
@@ -220,16 +222,16 @@
                 <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable">
                     <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
-                <span  v-else>{{ row.tda_cbusinesstripid_mm }}</span>
+                <span  v-else>{{ row.tda_cbusinesstripid_mm=='なし'?'':row.tda_cbusinesstripid_mm }}</span>
             </template>
 
             <template slot-scope="{ row}" slot="workStartFinal">
-                <i-input v-model="value[row._index].nopen" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nopen', $event.target)"></i-input>
+                <i-input v-model="value[row._index].nopen" :disabled="value[row._index].workId!='TMG_WORK|000'" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nopen', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nopen }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workEndFinal">
-                <i-input v-model="value[row._index].nclose" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nclose', $event.target)"></i-input>
+                <i-input v-model="value[row._index].nclose" :disabled="value[row._index].workId!='TMG_WORK|000'" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nclose', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nclose}}</span>
             </template>
 
@@ -247,6 +249,7 @@
                         </i-col>
                     </Row>
                     <i-button
+                            :disabled="value[row._index].workId!='TMG_WORK|000'"
                             class="mt5"
                             size="small"
                             ghost
@@ -279,6 +282,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                wokertypename:'',
                 valuebak:[],
                 patternDisabled:false,
                 yyyyMMdd:'',
@@ -535,6 +539,7 @@
                 this.loginEmployee = e[0].empid
                 this.query.EmployeeCode = e[0].empid
                 this.selectDisabled = true
+                this.wokertypename=e[0].wokertypename
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo(e)
 
