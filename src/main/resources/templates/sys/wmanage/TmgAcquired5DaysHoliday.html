@@ -136,7 +136,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -167,7 +167,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input v-model="row.adjustTakenDays" @on-blur="blur(row)"/>
+                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
