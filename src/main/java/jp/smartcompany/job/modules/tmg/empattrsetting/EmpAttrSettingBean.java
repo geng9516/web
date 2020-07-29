@@ -688,11 +688,20 @@ public class EmpAttrSettingBean {
     }
 
     private int insertTmgEmployeeAttribute(String empId,String baseDate,String psType,String Attribute,PsDBBean psDBBean){
+        //基準日の月初日を取得
+        //获得baseDate 年的部分
+        String year =  String.valueOf(DateUtil.year(DateUtil.parse(baseDate)));
+        //获得baseDate 月份，从0开始计数
+        int mm = DateUtil.month(DateUtil.parse(baseDate))+1;
+        String month = mm >= 10 ? String.valueOf(mm) : ("0" + mm);
+
+        String yyyymm01 = year + month + "01";
+
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
         teaDo.setTesCcustomerid(psDBBean.getCustID());
         teaDo.setTesCcompanyid(psDBBean.getCompCode());
         teaDo.setTesCemployeeid(empId);
-        teaDo.setTesDstartdate(DateUtil.parse(baseDate));
+        teaDo.setTesDstartdate(DateUtil.parse(yyyymm01));
         teaDo.setTesDenddate(TmgUtil.maxDate);
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
