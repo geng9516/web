@@ -577,11 +577,11 @@ public class EmpAttrSettingBean {
 
 
                 int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                        .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                        .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                        .eq("TPHA_CEMPLOYEEID",ugiDto.getEmployeeId())
+                        .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                        .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                        .eq("TES_CEMPLOYEEID",ugiDto.getEmployeeId())
                         .likeRight("TES_CTYPE",TYPE_ITEM_WORKPLACE)
-                        .ge("TPHA_DSTARTDATE",baseDate));
+                        .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
 
                 int updateTmgEmployeeAttribute=updateTmgEmployeeAttributeGroup(ugiDto.getEmployeeId(),baseDate,TYPE_ITEM_WORKPLACE,psDBBean);
 
@@ -611,11 +611,11 @@ public class EmpAttrSettingBean {
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                            .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
+                            .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                            .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_EXCLUDE_OVERTIME)
-                            .ge("TPHA_DSTARTDATE",baseDate));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_EXCLUDE_OVERTIME,psDBBean);
 
