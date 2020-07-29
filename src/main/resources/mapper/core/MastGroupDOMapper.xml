@@ -155,7 +155,7 @@
                MG_CCUSTOMERID
                ,MG_CCOMPANYID
                ,'${searchDate}'
-               ,'${language}') AS GS_COMPANYNAME,
+               ,'${language}') AS COMPANY_NAME,
                MG_ID,
                VERSIONNO
         FROM
@@ -194,7 +194,7 @@
                 ,MG_CCOMPANYID
                 ,MG_DENDDATE
                 ,'${language}')
-                AS GS_COMPANYNAME,
+                AS COMPANY_NAME,
             MG_ID,
             VERSIONNO
         FROM

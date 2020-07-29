@@ -1245,15 +1245,13 @@ public class TmgReferList {
         }else
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             if(treeViewType == TREEVIEW_TYPE_LIST || treeViewType == TREEVIEW_TYPE_LIST_SEC){
-                if(PERM_SELECTEDVIEW_ALL.equals(getSelectedView())){
+                if (PERM_SELECTEDVIEW_ALL.equals(getSelectedView())){
                     sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectMemberList() : buildSQLForSelectMemberListAll();
-                }else
-                if(PERM_SELECTEDVIEW_SECTION.equals(getSelectedView())){
+                } else if(PERM_SELECTEDVIEW_SECTION.equals(getSelectedView())){
                     sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectMemberList() : buildSQLForSelectMemberListInSection(targetSec_perm);
-                }else
-                if(PERM_SELECTEDVIEW_GROUP.equals(getSelectedView())){
+                } else if(PERM_SELECTEDVIEW_GROUP.equals(getSelectedView())){
                     sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectMemberList() : buildSQLForSelectMemberListInGroup(targetGroup_perm);
-                }else{
+                } else{
                     sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectMemberList() : buildSQLForSelectMemberListAll();
                 }
             }
