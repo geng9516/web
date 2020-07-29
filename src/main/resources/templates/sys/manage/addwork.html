@@ -338,7 +338,7 @@
                     </template>
                 </i-table>
 
-                <div v-if="isCommonDiscretionaryLabor">
+                <div v-if="!isDiscretion">
                     <!-- 超過勤務 -->
                     <div class="titlenorm mb10">
                         <Icon type="logo-buffer"></Icon>
@@ -393,6 +393,7 @@
                         </template>
                     </i-table>
                 </div>
+
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
@@ -630,7 +631,8 @@
                     workData0: [],
                     // 承認者コメントの入力制御
                     bApproved: false,
-                    isCommonDiscretionaryLabor: false,//裁量労働制
+                    isCommonDiscretionaryLabor: false,//裁量労働制+就业实际时间修改控制
+                    isDiscretion:false,//裁量労働制
                     tmgResultsDto: {
                         txtAction: '',
                         holiday: false,
@@ -914,6 +916,71 @@
                     this.workData0 = data.dailyDetail0List
                     // 就業実績
                     this.dailyEdit = data.dailyEditVO
+
+                    if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
+                        && '' !== this.dailyEdit.tdaCmodifieruseridR
+                        && '' !== this.dailyEdit.tdaDmodifieddateR
+                    ) {
+                        this.bApproved = true
+                    } else {
+                        this.bApproved = false
+                    }
+
+                    // 登録ボタンとコメントのみ登録ボタンの表示制御
+                    this.bFixed = !data.isEditable
+                    if (data.workIdList.length < 2) {
+                        this.bHoliday = true
+                    }
+
+
+                    this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
+                    this.isDiscretion=data.isDiscretion
+
+                    if (this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp) {
+                        this.bOpen = true
+                    } else {
+                        this.bOpen = false
+                    }
+                    if (this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp) {
+                        this.bClose = true
+                    } else {
+                        this.bClose = false
+                    }
+
+
+                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNopenRHidden
+                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
+
+
+                    if (this.dailyEdit.tdaNopenTp === null) {
+                        this.dailyEdit.tdaNopenTp = '---'
+                    }
+                    if (this.dailyEdit.tdaNcloseTp === null) {
+                        this.dailyEdit.tdaNcloseTp = '---'
+                    }
+                    if (this.isDiscretion) {
+                        this.dailyEdit.tdaNopenN = '---'
+                        this.dailyEdit.tdaNcloseN = '---'
+                    }
+
+                    this.workingId = this.dailyEdit.tdaCworkingidR
+                    this.changeWorkingID(this.workingId)
+                    this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
+                    this.title = this.dailyEdit.tdaDyyyymmddDy
+
+                    if(this.dailyEdit.tdaCerrcode !== null){
+
+                        let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
+                        Object.keys(tempErrCode).some(e => {
+
+                            if (e === 'ERRTYPE_10') {
+
+                                this.$Notice.error({desc: tempErrCode.ERRTYPE_10[0].ERRMSG})
+                                return true
+                            }
+                        })
+
+                    }
                     this.workData=[
                         {
                             workTime: '予定時間',
@@ -952,72 +1019,6 @@
                             }
                         )
                     })
-
-                    if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
-                        && '' !== this.dailyEdit.tdaCmodifieruseridR
-                        && '' !== this.dailyEdit.tdaDmodifieddateR
-                    ) {
-                        this.bApproved = true
-                    } else {
-                        this.bApproved = false
-                    }
-
-                    // 登録ボタンとコメントのみ登録ボタンの表示制御
-                    this.bFixed = !data.isEditable
-                    if (data.workIdList.length < 2) {
-                        this.bHoliday = true
-                    }
-
-
-                    this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
-
-
-                    if (this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp) {
-                        this.bOpen = true
-                    } else {
-                        this.bOpen = false
-                    }
-                    if (this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp) {
-                        this.bClose = true
-                    } else {
-                        this.bClose = false
-                    }
-
-
-                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNopenRHidden
-                    this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
-
-
-                    if (this.dailyEdit.tdaNopenTp === null) {
-                        this.dailyEdit.tdaNopenTp = '---'
-                    }
-                    if (this.dailyEdit.tdaNcloseTp === null) {
-                        this.dailyEdit.tdaNcloseTp = '---'
-                    }
-                    if (!this.isCommonDiscretionaryLabor) {
-                        this.dailyEdit.tdaNopenN = '---'
-                        this.dailyEdit.tdaNcloseN = '---'
-                    }
-
-                    this.workingId = this.dailyEdit.tdaCworkingidR
-                    this.changeWorkingID(this.workingId)
-                    this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
-                    this.title = this.dailyEdit.tdaDyyyymmddDy
-
-                    if(this.dailyEdit.tdaCerrcode !== null){
-
-                        let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
-                        Object.keys(tempErrCode).some(e => {
-
-                            if (e === 'ERRTYPE_10') {
-
-                                this.$Notice.error({desc: tempErrCode.ERRTYPE_10[0].ERRMSG})
-                                return true
-                            }
-                        })
-
-                    }
-
                     // 非勤務
                     this.detailNonDutyVOList = data.detailNonDutyVOList
                     // 超過勤務

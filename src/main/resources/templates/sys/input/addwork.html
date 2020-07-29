@@ -245,7 +245,7 @@
                 </template>
             </i-table>
 
-            <div v-if="isCommonDiscretionaryLabor">
+            <div v-if="!isDiscretion">
             <!-- 超過勤務 -->
             <div class="titlenorm mb10">
                 <Icon type="logo-buffer"></Icon>
@@ -532,6 +532,7 @@
                 bFixed: false,
                 isEdiTableResult4Inp: false,
                 isCommonDiscretionaryLabor: false,
+                isDiscretion:false,//裁量労働制
                 bOpen: false,
                 bClose: false,
                 // 承認者コメントの入力制御
@@ -554,7 +555,8 @@
                 bDispKenkojotaiKakunin:false,
                 bWorkChkStatus:false,
                 bHealthChkStatus:false,
-                kinmujokyoEnd:0
+                kinmujokyoEnd:0,
+                workData:[]
             }
         },
         async mounted() {
@@ -566,50 +568,6 @@
             tableHeadFixed() {
                 if (this.contentScrollTop > 310) return true
                 else return false
-            },
-            workData() {
-
-                let result = [
-                    {
-                        workTime: '予定時間',
-                        workStart: this.dailyEdit.tdaNopenN,
-                        workEnd: this.dailyEdit.tdaNcloseN,
-                        cellClassName: {
-                            workTime: 'sub-title'
-                        }
-                    },
-                    {
-                        workTime: '打刻',
-                        workStart: this.dailyEdit.tdaNopenTp,
-                        workEnd: this.dailyEdit.tdaNcloseTp,
-                        cellClassName: {
-                            workTime: 'sub-title'
-                        }
-                    },
-                    {
-                        workTime: '就業時間',
-                        workStart: this.dailyEdit.tdaNopenR,
-                        workEnd: this.dailyEdit.tdaNcloseR,
-                        isInput: true,
-                        cellClassName: {
-                            workTime: 'sub-title'
-                        }
-                    }
-                ]
-                this.workData0.forEach(e => {
-                    result = result.concat(
-                        {
-                            workTime: e.tdadCnotworkName,
-                            workStart: e.tdadNopenHhmi,
-                            workEnd: e.tdadNcloseHhmi,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        }
-                    )
-                })
-
-                return result
             },
         },
         methods: {
@@ -809,7 +767,7 @@
                 this.isEdiTableResult4Inp = data.isEdiTableResult4Inp
 
                 this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
-
+                this.isDiscretion=data.isDiscretion
 
                 if (this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp) {
                     this.bOpen = true
@@ -833,7 +791,7 @@
                 if (this.dailyEdit.tdaNcloseTp === null) {
                     this.dailyEdit.tdaNcloseTp = '---'
                 }
-                if (!this.isCommonDiscretionaryLabor) {
+                if (this.isDiscretion) {
                     this.dailyEdit.tdaNopenN = '---'
                     this.dailyEdit.tdaNcloseN = '---'
                 }
@@ -856,7 +814,44 @@
                     })
 
                 }
-
+                this.workData=[
+                    {
+                        workTime: '予定時間',
+                        workStart: this.dailyEdit.tdaNopenN,
+                        workEnd: this.dailyEdit.tdaNcloseN,
+                        cellClassName: {
+                            workTime: 'sub-title'
+                        }
+                    },
+                    {
+                        workTime: '打刻',
+                        workStart: this.dailyEdit.tdaNopenTp,
+                        workEnd: this.dailyEdit.tdaNcloseTp,
+                        cellClassName: {
+                            workTime: 'sub-title'
+                        }
+                    },
+                    {
+                        workTime: '就業時間',
+                        workStart: this.dailyEdit.tdaNopenR,
+                        workEnd: this.dailyEdit.tdaNcloseR,
+                        isInput: true,
+                        cellClassName: {
+                            workTime: 'sub-title'
+                        }
+                    }]
+                this.workData0.forEach(e => {
+                    this.workData = this.workData.concat(
+                        {
+                            workTime: e.tdadCnotworkName,
+                            workStart: e.tdadNopenHhmi,
+                            workEnd: e.tdadNcloseHhmi,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        }
+                    )
+                })
                 // 非勤務
                 this.detailNonDutyVOList = data.detailNonDutyVOList
                 // 超過勤務

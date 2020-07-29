@@ -2340,7 +2340,8 @@ public class TmgResultsBean {
         // 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
         boolean isCommonDiscretionaryLabor = isCommonDiscretionaryLabor(psDBBean);
         dailyMap.put("isCommonDiscretionaryLabor", isCommonDiscretionaryLabor);
-
+        boolean isDiscretion=isDiscretion(psDBBean.getCustID(), psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay());
+        dailyMap.put("isDiscretion", isDiscretion);
         List<DailyLogVO> dailyLogVOList = iTmgDailyActionlogService.buildSQLForSelectTmgSelectDailyActionLog(psDBBean.getCustID()
                 , psDBBean.getCompCode()
                 , psDBBean.getTargetUser()
