@@ -101,6 +101,7 @@
             <template slot-scope="{ row }" slot="TDA_CSTATUSFLG_NAME">
                 <span v-if="row.TDA_CSTATUSFLG_NAME === '待'" class="confirm-sytle ing">待</span>
                 <span v-if="row.TDA_CSTATUSFLG_NAME === '済'" class="confirm-sytle">済</span>
+                <span v-if="row.TDA_CSTATUSFLG_NAME === '確'" class="confirm-sytle rest">確</span>
                 <span v-if="row.TDA_CSTATUSFLG_NAME === 'エ'" class="confirm-sytle undo">エ</span>
             </template>
             <template slot-scope="{ row }" slot="TDA_CNTFSTATUSFLG_NAME">
@@ -113,7 +114,7 @@
     </div>
 
     <!--日次就業実績-->
-    <Drawer :title="title" width="45" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
+    <Drawer :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
         <div style="position: relative">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
             <Row class="mb15 tr">
@@ -166,11 +167,11 @@
                 <i-table :columns="columnsWork" :data="workData">
                     <template slot-scope="{ row }" slot="workStart">
                         <i-input v-model="row.workStart"
-                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
+                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="workEnd">
-                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"></i-input>
+                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
                         <span v-else>{{ row.workEnd | toTime }}</span>
                     </template>
 
@@ -217,11 +218,11 @@
                 </i-col>
                 <i-col span="3">
                     <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
-                    <i-button type="primary" ghost @click="addNotWork" disabled v-else>追加</i-button>
+                    <i-button  disabled v-else>追加</i-button>
                 </i-col>
             </Row>
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
-                     :loading="columnsNotWorkLoading" no-data-text="">
+                      no-data-text="">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
                     <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailNonDutyVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
@@ -267,7 +268,7 @@
 
                 <i-col span="3">
                     <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
-                    <i-button type="primary" ghost @click="addOverWork" disabled v-else>追加</i-button>
+                    <i-button disabled v-else>追加</i-button>
                 </i-col>
 <!--                <i-col span="4">-->
 <!--                    <i-button type="primary" ghost v-if="!bDisable">時刻補完</i-button>-->
@@ -276,7 +277,7 @@
             </Row>
 
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
-                     :loading="columnsOverWorkLoading" no-data-text="">
+                      no-data-text="">
                 <template slot-scope="{ row ,index }" slot="tdadNopen">
                     <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNopen)"></i-input>
                     <span v-else>{{ row.tdadNopen | toTime }}</span>
@@ -527,8 +528,6 @@
                 dailyData: {},
                 workData0: [],
                 mgdCsparechar4VOList: [],
-                columnsNotWorkLoading: false,
-                columnsOverWorkLoading: false,
                 bHoliday: false,
                 bFixed: false,
                 isEdiTableResult4Inp: false,
@@ -675,7 +674,7 @@
             async handleStartMonth(e) {
                 this.query.txtAction = 'ACT_DISP_RMONTHLY'
                 this.query.txtDYYYYMM = e
-                this.query.txtDYYYYMMDD = this.query.today
+                this.query.txtDYYYYMMDD = ''
 
                 // 就業実績 --月次・日次実績
                 await this.getTitleData()

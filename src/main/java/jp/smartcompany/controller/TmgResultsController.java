@@ -2,12 +2,14 @@ package jp.smartcompany.controller;
 
 
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -65,8 +67,11 @@ public class TmgResultsController {
 
         //初期化対象
         tmgResultsBean.setMonth(txtDYYYYMM);
-        psDBBean.setTargetUser(psDBBean.getUserCode());
-        tmgResultsBean.setDay(txtDYYYYMMDD);
+        if(StrUtil.hasEmpty(txtDYYYYMMDD)){
+            tmgResultsBean.setDay(txtDYYYYMM);
+        }else{
+            tmgResultsBean.setDay(txtDYYYYMMDD);
+        }
         tmgResultsBean.execReflectionTimePunch(txtDYYYYMM, psDBBean);
 
         return tmgResultsBean.getTitleData(psDBBean);
@@ -113,6 +118,26 @@ public class TmgResultsController {
         tmgResultsBean.updateStatus(psDBBean, "TMG_ITEMS|HealthStatus", txtAction, selHealthStatus);
     }
 
+
+
+    /**
+     * 月次一覧画面で　月次承認・月次解除ボタンを押下する
+     *
+     * @param psDBBean
+     * @return
+     */
+     @PostMapping("updateMonth")
+     @ResponseBody
+     public GlobalResponse updateMonth(
+                @RequestParam("txtAction") String action,
+                @RequestParam("txtDYYYYMM") String month,
+                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+            tmgResultsBean.setMonth(month);
+            //メントのみ登録
+            return tmgResultsBean.updateMonth(action,psDBBean);
+     }
+
+
     /**
      * 就業登録画面初期化
      * @param psDBBean PsDBBean
@@ -123,12 +148,15 @@ public class TmgResultsController {
     @GetMapping("dailyDetail")
     @ResponseBody
     public Map dailyDetail(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                           @RequestParam("txtDYYYYMM") String txtDYYYYMM,
                            @RequestParam("txtDYYYYMMDD") String txtDYYYYMMDD,
                            @RequestParam("txtAction") String action) {
 
         if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
             psDBBean.setTargetUser(psDBBean.getUserCode());
         }
+        tmgResultsBean.setMonth(txtDYYYYMM);
+        tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
         tmgResultsBean.setDay(txtDYYYYMMDD);
         //初期化データ取得する
         return tmgResultsBean.dailyDetail(psDBBean, action);
@@ -154,7 +182,7 @@ public class TmgResultsController {
 
 
     /**
-     * 登録ボタンを押下する
+     * 登録・承認ボタンを押下する
      *
      * @param psDBBean
      * @return
@@ -170,6 +198,25 @@ public class TmgResultsController {
         //就業実績登録
         return tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
     }
+
+    /**
+     * 差戻ボタンを押下する
+     *
+     * @param psDBBean
+     * @return
+     */
+    @PostMapping("updateRemandsStatus")
+    @ResponseBody
+    public GlobalResponse updateRemandsStatus(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                      @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
+
+        psDBBean.setTargetUser(psDBBean.getUserCode());
+        tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
+        //就業実績登録
+        return tmgResultsBean.updateRemandsStatus(tmgResultsDto,psDBBean);
+    }
+
+
 
 
 }

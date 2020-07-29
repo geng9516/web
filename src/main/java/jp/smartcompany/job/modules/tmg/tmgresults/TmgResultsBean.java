@@ -256,89 +256,6 @@ public class TmgResultsBean {
         return gsThisMonth;
     }
 
-
-    /**
-     * 入力サイト・承認サイト
-     * 日別登録画面
-     * ACT_EDITINP_RDAILY
-     */
-    public void actEditinpRdaily(String action, PsDBBean psDBBean) {
-
-        this.execute(psDBBean);
-        this.showInp(action, psDBBean);
-    }
-
-    /**
-     * 入力サイト
-     * 日別登録画面
-     * ACT_EDITINP_UDAILY
-     */
-    public void actEditinpUdaily(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        this.updateDaily(psDBBean,dto);
-        this.showMonthly(action, psDBBean);
-    }
-
-    /**
-     * 承認サイト・管理サイト
-     * 日別登録・承認画面
-     * ACT_EDITPERM_UPERMIT
-     * <p>
-     * 承認
-     */
-    public void actEditpermUpermit(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        updateDaily(psDBBean,dto);
-        showMonthly(action, psDBBean);
-    }
-
-    /**
-     * 承認サイト・管理サイト
-     * 日別登録・承認画面
-     * ACT_REMANDS
-     */
-    public void actRemands(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        updateRemandsStatus(dto, psDBBean);
-        showMonthly(action, psDBBean);
-    }
-
-    /**
-     * 管理サイト
-     * 日別承認画面
-     * ACT_EDITPERM_RDAILY
-     */
-    public void actEditpermRdaily(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        showPerm(action, psDBBean);
-    }
-
-    /**
-     * 管理サイト
-     * 月別一覧画面
-     * ACT_FIXED
-     * <p>
-     * 月次承認[承認]
-     */
-    public void actFixed(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        updateMonth(psDBBean);
-        showMonthly(action, psDBBean);
-    }
-
-    /**
-     * 管理サイト
-     * 月別一覧画面
-     * ACT_RESCISSION
-     * <p>
-     * 月次承認[承認解除]
-     */
-    public void actRescission(String action, TmgResultsDto dto, PsDBBean psDBBean) {
-        this.execute(psDBBean);
-        updateMonth(psDBBean);
-        showMonthly(action, psDBBean);
-    }
-
     /**
      * 月別一覧画面を表示するメソッド
      */
@@ -723,15 +640,13 @@ public class TmgResultsBean {
      *
      * @return なし
      */
-    private void updateRemandsStatus(TmgResultsDto dto, PsDBBean psDBBean) {
+    public GlobalResponse updateRemandsStatus(TmgResultsDto dto, PsDBBean psDBBean) {
 
-        String action = psDBBean.getReqParam("txtAction");
-        if (StrUtil.isEmpty(action)) {
-
-            action = ACT_DISP_RMONTHLY;
+        if(StrUtil.hasEmpty(dto.getTxtAction())){
+            return GlobalResponse.error("アクションがない");
         }
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action, psDBBean);
+        this.buildSQLForDeleteTrigger(dto.getTxtAction(), psDBBean);
 
         // エラーチェック削除
         this.buildSQLForDeleteDailyCheck(psDBBean);
@@ -746,9 +661,8 @@ public class TmgResultsBean {
         dailyCheckDto.setMgdCbusinessTrip(dto.getSelMgdCbusinessTrip());
         dailyCheckDto.setTdaNopenR(dto.getTxtTdaNopenR());
         dailyCheckDto.setTdaNcloseR(dto.getTxtTdaNcloseR());
-        // TODO
-        //dailyCheckDto.setAction(psDBBean.getReqParam("txtAction"));
-        dailyCheckDto.setAction(ACT_DISP_RMONTHLY);
+
+        dailyCheckDto.setAction(dto.getTxtAction());
 
         dailyCheckDto.setHoliday(dto.getHoliday());
         dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
@@ -764,14 +678,14 @@ public class TmgResultsBean {
                 psDBBean.getTargetUser(),
                 getDay(),
                 psDBBean.getUserCode(),
-                action
+                dto.getTxtAction()
         );
         // トリガー削除
-        this.buildSQLForDeleteTrigger(action, psDBBean);
+        this.buildSQLForDeleteTrigger(dto.getTxtAction(), psDBBean);
 
         // エラーチェック削除
-        //buildSQLForDeleteDailyCheck
         this.buildSQLForDeleteDailyCheck(psDBBean);
+        return GlobalResponse.ok();
     }
 
     /**
@@ -921,28 +835,33 @@ public class TmgResultsBean {
     /**
      * 月次(承認・解除)処理を行うメソッド
      */
-    private void updateMonth(PsDBBean psDBBean) {
+    public GlobalResponse updateMonth(String Action,PsDBBean psDBBean) {
 
         // 月次承認
         // 初期化
         String sStatusApproved = "";
         String sModifierProgramId = "";
 
-        if (ACT_FIXED.equals(psDBBean.getReqParam("txtAction"))) {
+        if (ACT_FIXED.equals(Action)) {
             sModifierProgramId = BEAN_DESC + "_" + ACT_FIXED;
             sStatusApproved = STATUS_APPROVED;
-        } else if (ACT_RESCISSION.equals(psDBBean.getReqParam("txtAction"))) {
+        } else if (ACT_RESCISSION.equals(Action)) {
             sModifierProgramId = BEAN_DESC + "_" + ACT_RESCISSION;
             sStatusApproved = STATUS_UNINPUT;
         }
+        try{
+            iTmgMonthlyService.buildSQLForUpdateMonthly(psDBBean.getCustID(),
+                    psDBBean.getCompCode(),
+                    psDBBean.getTargetUser(),
+                    getMonth(),
+                    psDBBean.getUserCode(),
+                    sModifierProgramId,
+                    sStatusApproved);
 
-        iTmgMonthlyService.buildSQLForUpdateMonthly(psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getTargetUser(),
-                getMonth(),
-                psDBBean.getUserCode(),
-                sModifierProgramId,
-                sStatusApproved);
+        }catch (GlobalException e){
+            return GlobalResponse.error(e.getMessage());
+        }
+        return GlobalResponse.ok();
     }
 
     /**
@@ -1017,9 +936,7 @@ public class TmgResultsBean {
                 stDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getMinimum(Calendar.DATE);
                 endDate = cal.get(Calendar.YEAR) + "/" + (cal.get(Calendar.MONTH) + 1) + "/" + cal.getActualMaximum(Calendar.DATE);
             }
-
         } else {
-
             // 日次画面を表示する場合は打刻反映処理の対象が表示日のみなので開始、終了日共に表示日とする。
             stDate = getDay();
             endDate = getDay();
@@ -1036,8 +953,6 @@ public class TmgResultsBean {
         // トリガー削除
         this.buildSQLForDeleteTrigger(action, psDBBean);
 
-        // TODO 未実装
-//        TmgUtil.checkInsertErrors(setInsertValues(vQuery, BEAN_DESC), session, BEAN_DESC);
     }
 
     /**
@@ -1904,7 +1819,7 @@ public class TmgResultsBean {
      * @return なし
      * @throws
      */
-    private void setReferList(int iTree, PsDBBean psDBBean) {
+    public void setReferList(int iTree, PsDBBean psDBBean) {
 
         try {
             referList = new TmgReferList(psDBBean, BEAN_DESC, getThisMonth(), iTree, true, true, false, false, true);
@@ -1921,7 +1836,7 @@ public class TmgResultsBean {
      * @return なし
      * @throws
      */
-    private void setReferList(String sDate, int iTree, PsDBBean psDBBean) {
+    public void setReferList(String sDate, int iTree, PsDBBean psDBBean) {
 
         try {
             referList = new TmgReferList(psDBBean, BEAN_DESC, sDate, iTree, true, true, false, false, true);
@@ -2094,15 +2009,15 @@ public class TmgResultsBean {
     public boolean isCommonDiscretionaryLabor(PsDBBean psDBBean) {
 
         // 「裁量労働制の場合、当日の勤務予定欄の表示可否の制御を行う」設定がオフの場合、勤務予定は通常通りの表示
-        if (!isDiscretionaryLabor(psDBBean)) {
-            return true;
-            // 裁量労働制の場合、表示しない（基準日時点の裁量労働判定）
-        } else if (isDiscretion(psDBBean.getCustID(), psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay())) {
-            return false;
-        } else {
+        if(isDiscretion(psDBBean.getCustID(), psDBBean.getTargetComp(), psDBBean.getTargetUser(), getDay())){
+            if (!isDiscretionaryLabor(psDBBean)) {
+                return false;
+                // 裁量労働制の場合、表示しない（基準日時点の裁量労働判定）
+            }
+        }else{
             return true;
         }
-
+        return true;
     }
 
     ////////////////////////入力サイト///////////////////////////////////////////////////////////////////
@@ -2126,7 +2041,7 @@ public class TmgResultsBean {
         List<DispMonthlyVO> dispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispMonthlyList(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
-                psDBBean.getUserCode(),
+                psDBBean.getTargetUser(),
                 getToday()
         );
         return dispMonthlyVOList;
@@ -2250,6 +2165,17 @@ public class TmgResultsBean {
 
         monthlyMap.put("workHealthChkVO", workHealthChkVO);
 
+        //16 対象社員について対象月の未承認日数
+        String countNotApprovalDay = iTmgDailyService.buildSQLForSelectCountNotApprovalDay(
+                getMonth(),
+                psDBBean.getCompCode(),
+                psDBBean.getCustID(),
+                psDBBean.getTargetUser(),
+                TmgUtil.Cs_MGD_DATASTATUS_9,
+                TmgUtil.Cs_MGD_DATASTATUS_5
+        );
+
+        monthlyMap.put("countNotApprovalDay", countNotApprovalDay);
 
         return monthlyMap;
     }
