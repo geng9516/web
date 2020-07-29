@@ -23,6 +23,7 @@ import org.hibernate.validator.constraints.pl.REGON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -81,14 +82,14 @@ public class EmpAttrSettingController {
     @PostMapping("manageFlagUpdate")
     @ResponseBody
     public GlobalResponse actionModifyManageFlag(
-                                @RequestParam("ManageList")List<UpdateCheckInfoDto> updateCheckInfoDtoManageList ,
-                                @RequestParam("OverTimesList")List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList ,
-                                @RequestParam(value = "WorkPlaceList",required = false)List<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList ,
-                                @RequestParam("baseDate") String baseDate,
-                                                @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-        if(updateGroupInfoDtoWorkPlaceList.size()<0){
-            updateGroupInfoDtoWorkPlaceList=null;
-        }
+            @RequestParam("ManageList")String ManageList ,
+            @RequestParam("OverTimesList")String OverTimesList ,
+            @RequestParam("baseDate") String baseDate,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        ArrayList<UpdateGroupInfoDto> updateGroupInfoDtoWorkPlaceList=new ArrayList<UpdateGroupInfoDto>();
+        List<UpdateCheckInfoDto> updateCheckInfoDtoManageList=JSONUtil.parseArray(ManageList).toList(UpdateCheckInfoDto.class);
+        List<UpdateCheckInfoDto> updateCheckInfoDtoOverTimesList=JSONUtil.parseArray(OverTimesList).toList(UpdateCheckInfoDto.class);
         return empAttrSettingBean.actionModifyManageFlag(updateCheckInfoDtoManageList,updateCheckInfoDtoOverTimesList
                 ,updateGroupInfoDtoWorkPlaceList,baseDate,psDBBean);
     }
