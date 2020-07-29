@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.map.multi.ListValueMap;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
@@ -13,6 +14,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
+import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
 import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPostDO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -21,11 +23,13 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -249,23 +253,41 @@ public class TreeController {
       *
       */
 
-    // http://localhost:6879/sys/tree/orgs?psSite=Admin&companyCode=01&sectionCode=204000000000
+    // http://localhost:6879/sys/tree/orgs?psSite=Admin
+    // 要渲染具有层数的树结构时不能用这两个参数：companyCode=01&sectionCode=204000000000
     @GetMapping("orgs")
-    public List<OrgTreeDTO> orgTree(
-            @RequestParam(value="sectionCode",required = false) String sectionCode,
-            @RequestParam(value="companyCode",required = false) String companyCode,
+    public List<OrgTreeVO> orgTree(
+//            @RequestParam(value="sectionCode",required = false) String sectionCode,
+//            @RequestParam(value="companyCode",required = false) String companyCode,
             @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
             @RequestParam(value="searchRange",required = false) String searchRange, HttpServletRequest request) {
         String searchDate = SysUtil.transDateToString(DateUtil.date());
         PsSession session = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
-        return orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
-               session.getLanguage(),
-               session.getLoginCompany(),
-               searchDate,
-               companyCode,
-               sectionCode,
-               useSearchRange,
-               searchRange);
+        List<OrgTreeDTO> treeDTOList = orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
+                session.getLanguage(),
+                session.getLoginCompany(),
+                searchDate,
+                null,
+                null,
+                useSearchRange,
+                searchRange);
+        List<OrgTreeVO> orgTreeVoList = CollUtil.newArrayList();
+        treeDTOList.forEach(item -> {
+            if (StrUtil.equals(item.getMoClayeredsectionid(),",01,,|,000000,")) {
+                item.setMoClayeredsectionid("0");
+                item.setMoCparentid("0");
+            } else {
+                String tmpSectionLayerId = item.getMoClayeredsectionid()
+                        .replaceAll(",01,,\\|,","0,");
+                String tmpSectionLayerId2 = tmpSectionLayerId.substring(0,tmpSectionLayerId.length()-1);
+                int lastSectionIdIdx = tmpSectionLayerId2.lastIndexOf(",");
+                String tmpSectionLayerId3 = tmpSectionLayerId2.substring(0,lastSectionIdIdx);
+                item.setMoClayeredsectionid(tmpSectionLayerId3);
+            }
+            OrgTreeVO vo = OrgTreeVO.build(item);
+            orgTreeVoList.add(vo);
+        });
+        return generateTreeList(orgTreeVoList,"0");
     }
 
     // http://localhost:6879/sys/tree/posts?psSite=Admin
@@ -279,6 +301,56 @@ public class TreeController {
                 searchDate,
                 useSearchRange
         );
+    }
+
+    private List<OrgTreeVO> generateTreeList(List<OrgTreeVO> treeVoList, String level) {
+        if (CollectionUtils.isEmpty(treeVoList)) {
+            return CollUtil.newArrayList();
+        }
+        ListValueMap<String, OrgTreeVO> deptTreeMap = new ListValueMap<>();
+        List<OrgTreeVO> rootList = CollUtil.newArrayList();
+        for (OrgTreeVO treeVo : treeVoList) {
+            deptTreeMap.putValue(treeVo.getLayeredSectionId(), treeVo);
+            if (StrUtil.equals(level,treeVo.getLayeredSectionId())) {
+                rootList.add(treeVo);
+            }
+        }
+        rootList.sort(Comparator.comparing(OrgTreeVO::getSectionId));
+        // 递归生成树
+        transformTreeList(rootList, level, deptTreeMap);
+        return rootList;
+    }
+
+    private void transformTreeList(List<OrgTreeVO> treeList, String level,
+                                   ListValueMap<String, OrgTreeVO> deptTreeMap) {
+        treeList.forEach(treeItem -> {
+            // 处理当前层级的数据
+            String nextLevel = calculateLevel(level, treeItem.getSectionId());
+            // 处理下一层
+            List<OrgTreeVO> tempDeptList = deptTreeMap.get(nextLevel);
+            if (CollUtil.isNotEmpty(tempDeptList)) {
+                // 排序
+                tempDeptList.sort(Comparator.comparing(OrgTreeVO::getSectionId));
+                // 设置下一层部门
+                if(CollUtil.isNotEmpty(tempDeptList)){
+                    treeItem.setChildren(tempDeptList);
+                }
+                // 进入到下一层处理
+                transformTreeList(tempDeptList, nextLevel, deptTreeMap);
+            }
+        });
+    }
+
+    private final static String SEPARATOR = ",";
+
+    private final static String ROOT = "0";
+
+    private static String calculateLevel(String parentLevel, String parentId) {
+        if (StrUtil.isBlank(parentLevel)) {
+            return ROOT;
+        } else {
+            return StrUtil.join(SEPARATOR,parentLevel, parentId);
+        }
     }
 
 }
