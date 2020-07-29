@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.empattrsetting;
 
 
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -615,7 +616,7 @@ public class EmpAttrSettingBean {
                             .eq("TES_CCOMPANYID",psDBBean.getCompCode())
                             .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_EXCLUDE_OVERTIME)
-                            .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(getFirstDayOfMonth(baseDate))));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_EXCLUDE_OVERTIME,psDBBean);
 
@@ -646,7 +647,7 @@ public class EmpAttrSettingBean {
                             .eq("TES_CCOMPANYID",psDBBean.getCompCode())
                             .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_MANAGEFLG)
-                            .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(getFirstDayOfMonth(baseDate))));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_MANAGEFLG,psDBBean);
 
@@ -659,9 +660,9 @@ public class EmpAttrSettingBean {
 
     public String getAttribute(Boolean pbAttribute) {
         if (pbAttribute.equals(Boolean.TRUE)) {
-            return TmgUtil.Cs_MGD_ONOFF_1;
-        } else {
             return TmgUtil.Cs_MGD_ONOFF_0;
+        } else {
+            return TmgUtil.Cs_MGD_ONOFF_1;
         }
     }
 
@@ -674,34 +675,26 @@ public class EmpAttrSettingBean {
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
-        teaDo.setTesDenddate(DateUtil.parse(baseDate));
+        teaDo.setTesDenddate(DateUtil.offset(DateUtil.parse(baseDate), DateField.DAY_OF_MONTH, -1));
 
         QueryWrapper<TmgEmployeeAttributeDO> queryWrapper = new QueryWrapper<TmgEmployeeAttributeDO>();
         queryWrapper.eq("TES_CCUSTOMERID", psDBBean.getCustID());
         queryWrapper.eq("TES_CCOMPANYID", psDBBean.getCompCode());
         queryWrapper.eq("TES_CEMPLOYEEID", empId);
-        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(baseDate));
-        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(baseDate));
+        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(getFirstDayOfMonth(baseDate)));
+        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(getFirstDayOfMonth(baseDate)));
         queryWrapper.eq("TES_CTYPE", psType);
 
         return iTmgEmployeeAttributeService.getBaseMapper().update(teaDo,queryWrapper);
     }
 
     private int insertTmgEmployeeAttribute(String empId,String baseDate,String psType,String Attribute,PsDBBean psDBBean){
-        //基準日の月初日を取得
-        //获得baseDate 年的部分
-        String year =  String.valueOf(DateUtil.year(DateUtil.parse(baseDate)));
-        //获得baseDate 月份，从0开始计数
-        int mm = DateUtil.month(DateUtil.parse(baseDate))+1;
-        String month = mm >= 10 ? String.valueOf(mm) : ("0" + mm);
-
-        String yyyymm01 = year + month + "01";
 
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
         teaDo.setTesCcustomerid(psDBBean.getCustID());
         teaDo.setTesCcompanyid(psDBBean.getCompCode());
         teaDo.setTesCemployeeid(empId);
-        teaDo.setTesDstartdate(DateUtil.parse(yyyymm01));
+        teaDo.setTesDstartdate(DateUtil.parse(getFirstDayOfMonth(baseDate)));
         teaDo.setTesDenddate(TmgUtil.maxDate);
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
@@ -873,5 +866,24 @@ public class EmpAttrSettingBean {
         }
 
         return pageInfo;
+    }
+
+    /**
+     * 基準日の月初日を取得する。
+     *
+     * @param baseDate 基準日
+     * @return firstDayOfMonth　月初日
+     */
+    private String getFirstDayOfMonth(String baseDate) {
+
+        //获得baseDate 年的部分
+        String year =  String.valueOf(DateUtil.year(DateUtil.parse(baseDate)));
+        //获得baseDate 月份，从0开始计数
+        int mm = DateUtil.month(DateUtil.parse(baseDate))+1;
+        String month = mm >= 10 ? String.valueOf(mm) : ("0" + mm);
+
+        String firstDayOfMonth = year + month + "01";
+
+        return firstDayOfMonth;
     }
 }
