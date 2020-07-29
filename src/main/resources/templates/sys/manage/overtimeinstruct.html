@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head
+    th:replace="layout/header::common_header(title='超過勤務命令',cssPaths='/pages/content.min.css,' + '/pages/overtimeinstruct.min.css')">
+</head>
+
+<body>
+    <div th:replace="layout/loadingBar::loadingBar"></div>
+    <main class="content overtimeinstruchinfo-warp" @scroll.passive="handleScroll" ref="layout">
+        <div class="content_head">
+            <div class="header">
+                <div class="title1">
+                    <h1>
+                        <Icon type="i-emeer colored"></Icon>
+                        {{ `超過勤務命令` }}
+                    </h1>
+                </div>
+                <div class="btnbox">
+                    <div style="height:40px;margin:2px"></div>
+                </div>
+            </div>
+            <div class="searchwrap">
+                <span class="label">年月</span>
+                <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
+                    @on-change="handleDatePicker" format="yyyy年MM月度"></date-picker>
+                <!-- 共通組織図画面 start-->
+                <span style="display:flex;width: calc(15% + 200px);">
+                    <span class="label">所属</span>
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                        style="width: calc(100% - 120px);border-radius:0">
+                        {{ deptName }}
+                    </i-button>
+                    ​
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                        <div class="titlenorm mb5">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                        <Row class="tl mb5">
+                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                            <i-col span="7" class="no-border-radius">
+                                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                    placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
+                                    @on-change="handleDeptDateChange">
+                                </date-picker>
+                            </i-col>
+                            <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
+                            <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
+                                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                                    <i-option :value="2">グループごとに</i-option>
+                                    <i-option :value="3">部署ごとに</i-option>
+                                </i-select>
+                            </div>
+                        </Row>
+
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                empty-text="所属データなし"></Tree>
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
+                    </Drawer>
+                </span>
+                <!-- 共通組織図画面 end-->
+            </div>
+        </div>
+
+
+        <div class="content_body">
+            <div class="table-top tr">
+                <Row :gutter="16">
+                    <i-col span="8" class="tr" offset="16">
+                        <i-select v-model="overWorkViewType" @on-change="handleTypeChange">
+                            <i-option :value="1">超過勤務状況[命令時間]</i-option>
+                            <i-option :value="2">超過勤務状況[実績時間]</i-option>
+                            <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
+                        </i-select>
+                    </i-col>
+                </Row>
+            </div>
+            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
+                :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+                <template slot-scope="{ row }" slot="name">
+                    <span @click="toWorkPage"
+                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="overtime" v-if="row.overtime">
+                    <span :class="showRed(row.overtime)">{{ row.overtime.split('@')[0] }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="overtimeyear" v-if="row.overTimeYear">
+                    <span :class="showRed(row.overTimeYear)">{{ row.overTimeYear.split('@')[0] }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="overtimeover45" v-if="row.overTimeOver45">
+                    <span :class="showRed(row.overTimeOver45)">{{ row.overTimeOver45.split('@')[0] }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="restworkcount" v-if="row.workInHolidayCount">
+                    <span :class="showRed(row.workInHolidayCount)">{{ row.workInHolidayCount.split('@')[0]}}</span>
+                </template>
+                <template slot-scope="{ row }" slot="avgtime" v-if="row.avgOverTime">
+                    <span :class="['ave-worktime', showRed(row.avgOverTime, 'average')]"
+                        @click="showAverageDraw(row)">{{ row.avgOverTime.split('@')[0] }}
+                    </span>
+                </template>
+                <template v-for="(item, i) of slotList" slot-scope="{ row }" :slot="item">
+                    <span :class="showRed(row[item], 'day')" v-if="row[item]">{{ row[item].split('@')[0] }}</span>
+                </template>
+            </i-table>
+
+
+            <Drawer :title="query.baseDay ? `${title} (${query.baseDay})` : title" class="tc" width="1300"
+                :mask-closable="false" v-model="showDayApply">
+                <Row :gutter="16" class="mb5">
+                    <i-col span="13" offset="11" class="tr">
+                        <i-button type="primary" size="large" class="tr" @click="overTimeUpdate"
+                            :loading="updateBtnLoading">命令/確認</i-button>
+                    </i-col>
+                </Row>
+                <Row class="mb15">
+                    <i-col span="4" class="label">所属</i-col>
+                    <i-col span="6">
+                        <span class="input-like-span">{{ deptName }}</span>
+                    </i-col>
+                </Row>
+
+                <div class="titlenorm mb10">
+                    <Icon type="logo-buffer"></Icon>
+                    一括適用
+                </div>
+                <!-- 一括適用table start -->
+                <i-table border :columns="columnsAction" :data="columnsActionData">
+                    <template slot-scope="{ row }" slot="startTime">
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen"
+                            @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNOpen', $event.target)" />
+                    </template>
+
+                    <template slot-scope="{ row }" slot="endTime">
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose"
+                            @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNClose', $event.target)" />
+                    </template>
+
+                    <template slot-scope="{ row }" slot="content">
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100"
+                            :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
+                    </template>
+
+                    <template slot-scope="{ row }" slot="restTime" v-if="!restTimeSetDisable">
+                        <Row :gutter="10">
+                            <i-col span="12">
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen"
+                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestOpen', $event.target)" />
+                            </i-col>
+                            <i-col span="12">
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose"
+                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestClose', $event.target)" />
+                            </i-col>
+                        </Row>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="option">
+                        <i-button type="primary" class="mr5" ghost @click="changeSelectedDataByGroup(false)">
+                            クリア
+                        </i-button>
+                        <i-button type="primary" class="mr5" ghost @click="changeSelectedDataByGroup(true)">
+                            適用
+                        </i-button>
+                    </template>
+                </i-table>
+
+                <!-- 一括適用table end -->
+
+                <!-- 超过勤务命令的详细table start-->
+                <div class="titlenorm mb10">
+                    <Icon type="logo-buffer"></Icon>
+                    超過勤務命令
+                </div>
+                <div class="tr mb10">
+                    <i-button type="primary" class="mr5" ghost @click="handleSelectAll(false)">
+                        クリア
+                    </i-button>
+                    <i-button type="primary" ghost @click="handleSelectAll(true)">
+                        全選択
+                    </i-button>
+                </div>
+                <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
+                    <template slot-scope="{ row }" slot="name">
+                        <span @click="toWorkPage"
+                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="startTime">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen"
+                                @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)">
+                            </i-input>
+                        </div>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="endTime">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose"
+                                @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)">
+                            </i-input>
+                        </div>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="content">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i"
+                            class="mb2">
+                            <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
+                                <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea"
+                                    :autosize="{ minRows: 2, maxRows: 5 }" :maxlength="100"
+                                    @on-blur="handleInputChange(row._index, false)"></i-input>
+                            </i-col>
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
+                                <i-button ghost type="error"
+                                    @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
+                                </i-button>
+                            </i-col>
+                        </Row>
+                        <i-button class="mt5" size="small" ghost type="success" long
+                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)"
+                            v-show="value[row._index].updateOverTimeDtoList.length < 4">
+                            +
+                        </i-button>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="workApplyStatus">
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                            <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
+                                class="confirm-sytle ing">待</span>
+                            <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('5') > -1"
+                                class="confirm-sytle">済</span>
+                            <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
+                                class="confirm-sytle">命</span>
+                        </div>
+                    </template>
+
+                    <template slot-scope="{ row }" slot="restTime">
+                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"
+                            class="mb2">
+                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"
+                                    :disabled="restTimeSetDisable"
+                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestOpen', $event.target)">
+                                </i-input>
+                            </i-col>
+                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
+                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"
+                                    :disabled="restTimeSetDisable"
+                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestClose', $event.target)">
+                                </i-input>
+                            </i-col>
+                            <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">
+                                <i-button ghost type="error"
+                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)"
+                                    @on-blur="handleInputChange(row._index, false)">-</i-button>
+                            </i-col>
+                        </Row>
+                        <i-button class="mt5" size="small" ghost type="success" long
+                            @click="handleAddRest(value[row._index].updateRestTimeDtoList)"
+                            v-show="value[row._index].updateRestTimeDtoList.length < 4 && !restTimeSetDisable">
+                            +
+                        </i-button>
+                    </template>
+                    <template slot-scope="{ row }" slot="remark">
+                        <span>{{ row.message }}</span>
+                    </template>
+
+                </i-table>
+                <!-- 超过勤务命令的详细table end-->
+            </Drawer>
+
+
+            <Drawer title="平均超勤時間(月) 詳細" class="tc" width="800" v-model="showAverage">
+                <Row :gutter="10">
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">所属</div>
+                        <div class="person-info">{{ deptName}}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">氏名</div>
+                        <div class="person-info">{{ empName }}</div>
+                    </i-col>
+                    <i-col span="8">
+                        <div class="label" style="padding:1px 0">種別</div>
+                        <div class="person-info">{{ empWorkerTypeName }}</div>
+                    </i-col>
+                </Row>
+                <i-table border class="mt20" :columns="monthAverageColumns" :data="monthAverageTable"
+                    :span-method="handleSpan" :loading="averageTableLoading">
+                </i-table>
+            </Drawer>
+
+        </div>
+    </main>
+    <div th:replace="layout/script::common_script"></div>
+    <script type="text/babel" th:inline="javascript">
+        const OVER_TIME_INSTRUCH = new Vue({
+            el: '.overtimeinstruchinfo-warp',
+            data() {
+                return {
+                    showAverage: false,
+                    showDayApply: false,
+                    hasPassedTimeCheck: false,
+                    dailyTableLoading: false,
+                    updateBtnLoading: false,
+                    title: '日別編集画面',
+                    slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
+                    loading: false,
+                    averageTableLoading: false,
+                    tableHead: [],   //表头
+                    monthAverageTableHead: [],   //月平均表头
+                    tableData: [],   //一览表数据
+                    monthAverageTable: [],   //月平均表数据
+                    columnsActionData: [{}],   //一括日别编辑表数据
+                    value: [],//一括日别编辑表更新用数据
+                    tableData3: [],   //日别编辑表数据
+                    overWorkViewType: 2,
+                    treeData: [],            //組織ツリー用
+                    curDate: new Date(),
+                    deptName: '選んでください',  //選択した職員の所属
+                    empName: '', //選択した職員名前
+                    empWorkerTypeName: '', //選択した職員種別
+                    isSearchHistory: false,
+                    selectedDeptViewType: 3, //組織ツリー用
+                    deptDrawShow: false,    //組織ツリー用
+                    empDeptLoading: false,  // 組織ツリーloading用
+                    referListObject: {       //組織ツリー共通
+                        txtTmgReferListTreeViewPermTargetSection: '',
+                        [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
+                        [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 21
+                    },
+                    query: {
+                        action: '',
+                        baseDay: '',
+                        baseMonth: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        //目标sec
+                        txtTmgReferListTreeViewPermTargetSection: '',
+                        //基准日
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 11,
+                        empId: '',
+                    },
+                    columns3: [
+                        {
+                            title: '氏名',
+                            slot: 'name',
+                            minWidth: 100,
+                            align: 'right'
+                        },
+                        {
+                            title: '区分',
+                            minWidth: 36,
+                            key: 'workingId',
+                            align: 'center'
+                        },
+                        {
+                            title: '予定',
+                            align: 'center',
+                            children: [
+                                {
+                                    title: '始業',
+                                    align: 'center',
+                                    width: 55,
+                                    key: 'openN'
+                                },
+                                {
+                                    title: '終業',
+                                    width: 55,
+                                    key: 'closeN',
+                                    align: 'center'
+                                }
+                            ]
+                        },
+                        {
+                            title: '打刻',
+                            align: 'center',
+                            className: 'checkin',
+                            children: [
+                                {
+                                    title: '始業',
+                                    width: 55,
+                                    key: 'openTp',
+                                    className: 'checkin',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '終業',
+                                    width: 55,
+                                    key: 'openTp',
+                                    className: 'checkin',
+                                    align: 'center'
+                                }
+                            ]
+                        },
+                        {
+                            title: '超勤',
+                            children: [
+                                {
+                                    title: '開始\n時間',
+                                    slot: 'startTime',
+                                    minWidth: 55,
+                                    align: 'center'
+                                },
+                                {
+                                    title: '終了\n時間',
+                                    slot: 'endTime',
+                                    minWidth: 55,
+                                    align: 'center'
+                                },
+                                {
+                                    title: '用務内容',
+                                    minWidth: 200,
+                                    slot: 'content',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '承認',
+                                    slot: 'workApplyStatus',
+                                    width: 80,
+                                    align: 'center'
+                                }
+                            ],
+                            align: 'center'
+                        },
+                        {
+                            title: '休憩',
+                            minWidth: 180,
+                            slot: 'restTime',
+                            align: 'center'
+                        },
+                        {
+                            title: '備考',
+                            minWidth: 70,
+                            slot: 'remark',
+                            align: 'center'
+                        },
+                        {
+                            type: 'selection',
+                            width: 60,
+                            align: 'center'
+                        }
+                    ],
+                    columnsAction: [
+                        {
+                            title: '開始時間',
+                            slot: 'startTime',
+                            align: 'center'
+                        },
+                        {
+                            title: '終了時間',
+                            slot: 'endTime',
+                            align: 'center'
+                        },
+                        {
+                            title: '用務内容',
+                            minWidth: 200,
+                            slot: 'content',
+                            align: 'center'
+                        },
+                        {
+                            title: '休憩',
+                            slot: 'restTime',
+                            align: 'center'
+                        },
+                        {
+                            title: 'チェックした職員に対し',
+                            slot: 'option',
+                            align: 'center'
+                        }
+                    ],
+                    pattern: {
+                        updateOverTimeDtoList: [{}],
+                        updateRestTimeDtoList: [{}]
+                    },
+                    sysDate: '',
+                    restTimeSetDisable: false
+                }
+            },
+            async mounted() {
+                this.getOrgTree()
+                this.getTableHead()
+            },
+            computed: {
+                columns() {
+                    let result = []
+                    if (this.overWorkViewType === 1) {
+                        result = [
+                            {
+                                title: '氏名',
+                                slot: 'name',
+                                minWidth: 100,
+                                align: 'right'
+                            },
+                            {
+                                title: '合計',
+                                slot: 'overtime',
+                                minWidth: 36,
+                                align: 'center'
+                            }
+                        ]
+                    } else {
+                        result = [
+                            {
+                                title: '氏名',
+                                slot: 'name',
+                                minWidth: 100,
+                                align: 'right'
+                            },
+                            {
+                                title: '超過勤務',
+                                //slot: 'overtime',
+                                minWidth: 75,
+                                align: 'center',
+                                children: [
+                                    {
+                                        title: '合計\n(月)',
+                                        slot: 'overtime',
+                                        minWidth: 25,
+                                        align: 'center'
+                                    },
+                                    {
+                                        title: '合計\n(年)',
+                                        slot: 'overtimeyear',
+                                        minWidth: 25,
+                                        align: 'center'
+
+                                    },
+                                    {
+                                        title: '45超\n(年)',
+                                        slot: 'overtimeover45',
+                                        minWidth: 25,
+                                        align: 'center'
+                                    }
+                                ]
+                            },
+                            {
+                                title: '休日\n出勤\n回数\n(月)',
+                                slot: 'restworkcount',
+                                minWidth: 25,
+                                align: 'center'
+                            },
+                            {
+                                title: '平均\n超勤\n時間\n(月)',
+                                slot: 'avgtime',
+                                minWidth: 25,
+                                align: 'center',
+                            }
+                        ]
+                    }
+                    const that = this
+                    this.tableHead.forEach((e, i) => {
+
+                        result = result.concat({
+                            // title: e,
+                            className: e.today ? 'gold' : e.tcaCholflg.indexOf('1') > -1 || e.tcaCholflg.indexOf('2') > -1 || e.tcaCholflg.indexOf('3') > -1 ? 'rest' : '',
+                            minWidth: 15,
+                            renderHeader: (h, params) => {
+                                return h(
+                                    'span',
+                                    {
+                                        style: {
+                                            cursor: 'pointer',
+                                        },
+                                        domProps: {
+                                            //className: 'table-head',
+                                            innerHTML: e.tableTop,
+                                        },
+                                        on: {
+                                            click() {
+                                                that.handleClickHead(e)
+                                            },
+                                        },
+                                    }
+                                )
+                            },
+                            slot: `tmiCinfo${i + 1}`,
+                            align: 'center'
+                        })
+                    })
+                    return result
+                },
+
+                monthAverageColumns() {
+                    let result = [
+                        {
+                            title: ' ',
+                            key: 'name',
+                            align: 'right',
+                            minWidth: 30,
+                        }
+                    ]
+
+                    this.monthAverageTableHead.forEach((e, i) => {
+                        result = result.concat({
+                            title: e,
+                            minWidth: 15,
+                            key: `m${i + 1}`,
+                            align: 'center'
+                        })
+                    })
+                    result = result.concat({
+                        title: '平均値',
+                        key: 'average',
+                        align: 'center'
+                    })
+                    return result
+                }
+            },
+            methods: {
+                toWorkPage() {
+
+                },
+                showAverageDraw(e) {
+                    this.getAvgTableData(e.empid)
+                    this.empName = e.empname
+                    this.showAverage = true
+
+                },
+                async handleDeptDateChange(e) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    this.isSearchHistory = true
+                    await this.getOrgTree()
+                    this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                },
+                async getOrgTree() {
+                    this.empDeptLoading = true
+                    try {
+                        const { groupList, sectionList, recordDate, sysDate } = await this.http.get('sys/tree', this.referListObject)
+                        // 转为可用数据
+                        if (this.selectedDeptViewType === 3) {
+                            this.treeData = Utils.convertTreeData(sectionList)
+                        }
+                        if (this.selectedDeptViewType === 2) {
+                            this.treeData = Utils.convertTreeData(groupList)
+                        }
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                        this.sysDate = sysDate
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                        this.empDeptLoading = false
+                    }
+                },
+                handleDatePicker() {
+                    this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+                    if (this.deptName !== '選んでください') {
+                        this.getTableHead()
+                        this.getTableData()
+                        return
+                    }
+                    this.$Notice.warning({ title: '所属を選択して下さい' })
+                },
+                handleClickLeaf(e) {
+                    if (!e[0]) return
+                    this.deptDrawShow = false
+                    if (this.selectedDeptViewType === 3) {
+                        this.deptName = e[0].label
+                    }
+                    if (this.selectedDeptViewType === 2) {
+                        this.deptName = e[0].secnic
+                    }
+                    this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.getTableHead()
+                    this.getTableData()
+                },
+                async handleDeptViewTypeChange() {
+                    await this.getOrgTree()
+                    if (this.selectedDeptViewType === 3) {
+                        this.query.txtTmgReferListTreeViewPermSelectedView = 'section'
+                    }
+                    if (this.selectedDeptViewType === 2) {
+                        this.query.txtTmgReferListTreeViewPermSelectedView = 'group'
+                    }
+                    this.$Notice.success({ title: '所属図更新完了' })
+                },
+                handleTypeChange() {
+                    if (this.deptName !== '選んでください') {
+                        this.getTableData()
+                    }
+                },
+                async getTableHead() {
+                    this.loading = true
+                    this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
+                        this.tableHead = data
+                        console.log(this.tableHead)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.loading = false
+                    }
+                },
+                async getTableDataDaily(e) {
+                    this.dailyTableLoading = true
+                    this.query.baseDay = e.day
+                    if (new Date(this.sysDate) > new Date(e.day)) {
+                        this.restTimeSetDisable = true
+                    } else {
+                        this.restTimeSetDisable = false
+                    }
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
+                        this.tableData3 = data
+                        this.value = data.map(e => {
+                            const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
+                                return {
+                                    sNOpen: t.tdadNopen,
+                                    sNClose: t.tdadNclose,
+                                    sCComment: t.tdadCsparechar1,
+                                    sStatus: t.tdadCsparechar2,
+                                }
+                            })
+                            const updateRestTimeDtoList = e.restTimeList && e.restTimeList.map(t => {
+                                return {
+                                    sNRestOpen: t.tdadNopenTime,
+                                    sNRestClose: t.tdadNcloseTime,
+                                }
+                            })
+                            return {
+                                openN: e.openN,
+                                closeN: e.closeN,
+                                baseDay: this.query.baseDay,
+                                baseMonth: this.query.baseMonth,
+                                sEmpId: e.empId,
+                                updateOverTimeDtoList: updateOverTimeDtoList.length > 0 ? updateOverTimeDtoList : [{}],
+                                updateRestTimeDtoList: updateRestTimeDtoList.length > 0 ? updateRestTimeDtoList : [{}],
+                            }
+                        })
+                        console.log(this.value)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.dailyTableLoading = false
+                    }
+                },
+                async getTableData() {
+                    this.loading = true
+                    let url = 'sys/overtimeinstruct/monthlyResult'
+                    try {
+                        if (this.overWorkViewType === 3) {
+                            this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
+                        }
+                        if (this.overWorkViewType === 1) {
+                            url = 'sys/overtimeinstruct/monthlyResultOti'
+                        }
+                        if (this.overWorkViewType === 2) {
+                            this.query.action = "ACT_DISP_RMONTHLY"
+                        }
+                        const { data } = await this.http.get(url, this.query)
+                        this.tableData = data
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.isSearchHistory = false
+                        this.loading = false
+                    }
+                },
+                async getAvgTableData(e) {
+                    this.averageTableLoading = true
+                    this.query.empId = e
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
+                        this.monthAverageTableHead = data.tableHeader
+                        this.monthAverageTable = data.tableData.concat([
+                            { name: "2か月平均", average: data.avgTimes[0], m5: "2か月平均", cellClassName: { m5: "rest-title" } },
+                            { name: "3か月平均", average: data.avgTimes[1], m4: "3か月平均", cellClassName: { m4: "rest-title" } },
+                            { name: "4か月平均", average: data.avgTimes[2], m3: "4か月平均", cellClassName: { m3: "rest-title" } },
+                            { name: "5か月平均", average: data.avgTimes[3], m2: "5か月平均", cellClassName: { m2: "rest-title" } },
+                            { name: "6か月平均", average: data.avgTimes[4], m1: "6か月平均", cellClassName: { m1: "rest-title" } }
+                        ])
+                        this.empWorkerTypeName = data.workTypeName
+                        console.log(this.monthAverageTable)
+                    } catch (error) {
+                        return
+                    } finally {
+                        this.averageTableLoading = false
+                    }
+                },
+                handleClickHead: Debounce(async function (e) {
+                    if (this.deptName === '選んでください') {
+                        this.$Notice.warning({ title: '所属を選択して下さい' })
+                        return
+                    }
+                    this.getTableDataDaily(e)
+                    this.showDayApply = true
+                }),
+                handleAddRest(e) {
+                    e.push({ sNRestOpen: '', sNRestClose: '' })
+                },
+                handleMinusRest(e, i) {
+                    e.splice(i, 1)
+                },
+                handleAddOverTime(e) {
+                    e.push({ sNOpen: '', sNClose: '', sCComment: '' })
+                },
+                handleMinusOverTime(e, i) {
+                    e.splice(i, 1)
+                },
+                showRed(e, type) {
+                    if (!e) return
+                    let result = e.split('@') && e.split('@')[1]
+                    if (type === 'day') {
+                        if (result === 'chokinDailyLvl1') return 'level2'
+                        else return 'normal'
+                    }
+                    if (type === 'average') {
+                        if (result === 'chokinAvgWarningLvl1') return 'level3'
+                        else return
+                    }
+                    if (!result) return
+                    if (result === 'chokinWarningLvl5') {
+                        return 'level5'
+                    }
+                    if (result === 'chokinWarningLvl4') {
+                        return 'level4'
+                    }
+                    if (result === 'chokinWarningLvl3') {
+                        return 'level3'
+                    }
+                    if (result === 'chokinWarningLvl2') {
+                        return 'level2'
+                    }
+                    if (result === 'chokinWarningLvl1') {
+                        return 'level1'
+                    }
+                    if (result === 'chokin_meirei') {
+                        return 'normal'
+                    }
+                },
+                handleScroll: Throttle(function (e) {
+                    this.contentScrollTop = e.target.scrollTop
+                    if (e.target.scrollTop > 200) {
+                        this.isScroll = true
+                    } else {
+                        this.isScroll = false
+                    }
+                }, 50),
+                changeSelectedDataByGroup(status) {
+                    //一括適用
+                    const selectedData = this.$refs.selection2.getSelection()
+                    if (selectedData.length === 0) return
+                    const selectedDataKeys = selectedData.map(e => e.empId)
+                    const PATTERN = Utils.deepClone(this.pattern)
+                    // 只将被勾选项赋值
+                    this.value.forEach(item => {
+                        if (selectedDataKeys.includes(item.sEmpId)) {
+                            Object.keys(PATTERN).forEach(function (key) {
+                                if (status) {
+                                    item[key] = PATTERN[key]
+                                } else {
+                                    // 清空操作
+                                    if (key.indexOf('List') > -1) {
+                                        item[key] = [{}]
+                                    } else {
+                                        item[key] = ''
+                                    }
+                                }
+                            })
+                        }
+                    })
+                },
+                handleSelectAll(status) {
+                    this.$refs.selection2.selectAll(status)
+                },
+                handleInputChange(i, object, value, el) {
+                    // 填完后自动checkbox
+                    this.$set(this.tableData3[i], '_checked', false)
+                    this.$set(this.tableData3[i], '_checked', true)
+                    if (object) {
+                        this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
+                    }
+                },
+                async overTimeUpdate() {
+                    // 将没打勾的排除出去
+                    const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
+                    const UpdateData = this.value.filter(e => selectedData.includes(e.sEmpId)).map(t => {
+                        return {
+                            ...t,
+                            updateOverTimeDtoList: Object.keys(t.updateOverTimeDtoList[0]).length === 0 ? [] : t.updateOverTimeDtoList,
+                            updateRestTimeDtoList: Object.keys(t.updateRestTimeDtoList[0]).length === 0 ? [] : t.updateRestTimeDtoList
+                        }
+                    })
+                    if (UpdateData.length === 0) {
+                        this.$Modal.error({
+                            title: 'データを選択してください！',
+                            okText: 'OK'
+                        })
+                        return
+                    }
+                    // handle 强制关闭抽屉取消失焦的错误
+                    if (!this.hasPassedTimeCheck) {
+                        this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください' })
+                        return
+                    }
+                    const that = this
+                    const check = UpdateData.some(e => {
+                        if (e.updateOverTimeDtoList.length > 0) {
+                            let checkArr = []
+                            let result = e.updateOverTimeDtoList.some(t => {
+                                if (!t.sNOpen && t.sNClose) {
+                                    that.$Notice.warning({ title: '注意', desc: '開始時間を入力してください。' })
+                                    return true
+                                }
+                                if (t.sNOpen && !t.sNClose) {
+                                    that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。' })
+                                    return true
+                                }
+                                if (!t.sCComment) {
+                                    that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください。' })
+                                    return true
+                                }
+                                if (t.sNOpen && t.sNClose) {
+                                    if (Utils.timeToMinute(t.sNOpen) >= Utils.timeToMinute(t.sNClose)) {
+                                        that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください。' })
+                                        return true
+                                    }
+                                    // check 超勤时间是否与勤务时间重复
+                                    if (Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
+                                        that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。' })
+                                        return true
+                                    }
+                                    // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
+                                    checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNOpen), Utils.timeToMinute(t.sNClose)).slice(1, -1))
+                                }
+                            })
+                            const checkArr2 = new Set([...checkArr])
+                            // 如果遭到了去重，则证明有重复的时间
+                            if (checkArr.length !== checkArr2.size) {
+                                that.$Notice.warning({ title: '注意', desc: '超勤勤務が重複しています。' })
+                                result = true
+                            }
+                            if (result) {
+                                return true
+                            }
+                        }
+                        if (e.updateRestTimeDtoList.length > 0) {
+                            let result = false
+                            if (!e.updateOverTimeDtoList.length > 0) {
+                                that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。' })
+                                return true
+                            }
+                            let checkArr = []
+                            result = e.updateRestTimeDtoList.some(t => {
+                                if (!t.sNRestOpen && t.sNRestClose) {
+                                    that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。' })
+                                    return true
+                                }
+                                if (t.sNRestOpen && !t.sNRestClose) {
+                                    that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。' })
+                                    return true
+                                }
+                                if (t.sNRestOpen && t.sNRestClose) {
+                                    if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
+                                        that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。' })
+                                        return true
+                                    }
+                                    // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
+                                    checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNRestOpen), Utils.timeToMinute(t.sNRestClose)).slice(1, -1))
+                                }
+                            })
+                            const checkArr2 = new Set([...checkArr])
+                            // 如果遭到了去重，则证明有重复的时间
+                            if (checkArr.length !== checkArr2.size) {
+                                that.$Notice.warning({ title: '注意', desc: '休憩時間が重複しています。' })
+                                result = true
+                            }
+                            if (result) {
+                                return true
+                            }
+                            // 超過勤務時間は予定始業時間～予定終業時間外で入力してください。
+                        }
+                    })
+                    if (!check) {
+                        try {
+                            this.updateBtnLoading = true
+                            await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
+                            this.getTableDataDaily({ day: this.query.baseDay })
+                            this.$Message.success('命令完了')
+                        } catch (error) {
+                        } finally {
+                            this.updateBtnLoading = false
+                        }
+                    }
+
+                },
+                handleSpan({ rowIndex, columnIndex }) {
+                    // 合并2个月
+                    // rowIndex 竖着算 columnIndex 横着算 从0开始
+                    // 返回[竖列着占几行， 横行着占几行]
+                    if (rowIndex === 3 && columnIndex === 5) {
+                        return [1, 2]
+                    } else if (rowIndex === 3 && columnIndex === 6) {
+                        return [0, 0]
+                    }
+
+                    if (rowIndex === 4 && columnIndex === 4) {
+                        return [1, 3]
+                    } else if ((rowIndex === 4 && columnIndex === 6) || (rowIndex === 4 && columnIndex === 5)) {
+                        return [0, 0]
+                    }
+
+                    if (rowIndex === 5 && columnIndex === 3) {
+                        return [1, 4]
+                    } else if (
+                        (rowIndex === 5 && columnIndex === 6) ||
+                        (rowIndex === 5 && columnIndex === 5) ||
+                        (rowIndex === 5 && columnIndex === 4)
+                    ) {
+                        return [0, 0]
+                    }
+
+                    if (rowIndex === 6 && columnIndex === 2) {
+                        return [1, 5]
+                    } else if (
+                        (rowIndex === 6 && columnIndex === 6) ||
+                        (rowIndex === 6 && columnIndex === 5) ||
+                        (rowIndex === 6 && columnIndex === 4) ||
+                        (rowIndex === 6 && columnIndex === 3)
+                    ) {
+                        return [0, 0]
+                    }
+
+                    if (rowIndex === 7 && columnIndex === 1) {
+                        return [1, 6]
+                    } else if (
+                        (rowIndex === 7 && columnIndex === 6) ||
+                        (rowIndex === 7 && columnIndex === 5) ||
+                        (rowIndex === 7 && columnIndex === 4) ||
+                        (rowIndex === 7 && columnIndex === 3) ||
+                        (rowIndex === 7 && columnIndex === 2)
+                    ) {
+                        return [0, 0]
+                    }
+                },
+            }
+        })
+    </script>
+</body>
+
+</html>

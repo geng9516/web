@@ -177,7 +177,7 @@ public class SiteWManageController {
 
 
     /**
-     * 跳转到 出勤薄
+     * 跳转到 超過勤務命令
      *
      * @param moduleIndex
      * @param menuId
