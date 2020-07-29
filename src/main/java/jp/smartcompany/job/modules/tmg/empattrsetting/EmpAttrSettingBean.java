@@ -574,7 +574,7 @@ public class EmpAttrSettingBean {
         //管理対象者分のSQL
         for (UpdateGroupInfoDto ugiDto:updateGroupInfoDtoWorkPlaceList){
             if (!ugiDto.getInitGroup().equals(ugiDto.getUpdaeGroup())){
-                attribute=getAttribute(!ugiDto.getUpdaeGroup().equals("") && ugiDto.getUpdaeGroup() != null);
+                attribute=getAttributeManageFlg(!ugiDto.getUpdaeGroup().equals("") && ugiDto.getUpdaeGroup() != null);
 
 
                 int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
@@ -608,7 +608,7 @@ public class EmpAttrSettingBean {
             // 変更確認
             // 変更されている場合
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
-                attribute=getAttribute(uciDto.isUpdaeCheckType());
+                attribute=getAttributeExcludeOvertime(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
@@ -639,7 +639,7 @@ public class EmpAttrSettingBean {
             // 変更確認
             // 変更されている場合
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
-                attribute=getAttribute(uciDto.isUpdaeCheckType());
+                attribute=getAttributeManageFlg(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
@@ -658,7 +658,15 @@ public class EmpAttrSettingBean {
     }
 
 
-    public String getAttribute(Boolean pbAttribute) {
+    public String getAttributeManageFlg(Boolean pbAttribute) {
+        if (pbAttribute.equals(Boolean.TRUE)) {
+            return TmgUtil.Cs_MGD_ONOFF_1;
+        } else {
+            return TmgUtil.Cs_MGD_ONOFF_0;
+        }
+    }
+
+    public String getAttributeExcludeOvertime(Boolean pbAttribute) {
         if (pbAttribute.equals(Boolean.TRUE)) {
             return TmgUtil.Cs_MGD_ONOFF_0;
         } else {
