@@ -13,7 +13,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        就業登録
+                        就業承認
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -247,23 +247,23 @@
                         </i-col>
                     </Row>
                     <i-table :columns="columnsWork" :data="workData">
-                        <template slot-scope="{ row }" slot="workStart">
+                        <template slot-scope="{ row, index }" slot="workStart">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="row.workStart" v-if="!isCommonDiscretionaryLabor" class="tc"></i-input>
+                                <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
                                 <span v-else>{{ row.workStart | toTime }}</span>
                             </div>
                             <div  v-else-if="row.isInput" >
-                                <i-input v-model="row.workStart" class="tc"></i-input>
+                                <i-input v-model="workData[index].workStart" class="tc" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                             </div>
                             <span v-else>{{ row.workStart | toTime }}</span>
                         </template>
-                        <template slot-scope="{ row }" slot="workEnd">
+                        <template slot-scope="{ row, index }" slot="workEnd">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="row.workEnd" v-if="!isCommonDiscretionaryLabor" class="tc"></i-input>
+                                <i-input v-model="row.workEnd" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                                 <span v-else>{{ row.workEnd | toTime }}</span>
                             </div>
                             <div  v-else-if="row.isInput" >
-                                <i-input v-model="row.workEnd" class="tc"></i-input>
+                                <i-input v-model="row.workEnd" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             </div>
                             <span v-else>{{ row.workEnd | toTime }}</span>
                         </template>
@@ -372,12 +372,12 @@
                     <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
                               no-data-text="">
                         <template slot-scope="{ row ,index }" slot="tdadNopen">
-                            <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNopen)"></i-input>
+                            <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
                             <span v-else>{{ row.tdadNopen | toTime }}</span>
                         </template>
 
                         <template slot-scope="{ row ,index}" slot="tdadNclose">
-                            <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNclose=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNclose)"></i-input>
+                            <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNclose', $event.target)"></i-input>
                             <span v-else>{{ row.tdadNclose | toTime }}</span>
                         </template>
 
@@ -643,8 +643,9 @@
                         nonDutyList: [],
                         overHoursList: [],
                         hasAuthority: true,
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psSite: Utils.getUrlParam(location.href, 'psSite')
                     },　//参数
+                    workData:[]
                 }
             },
             async mounted() {
@@ -657,50 +658,7 @@
                     if (this.contentScrollTop > 310) return true
                     else return false
                 },
-                workData() {
 
-                    let result = [
-                        {
-                            workTime: '予定時間',
-                            workStart: this.dailyEdit.tdaNopenN,
-                            workEnd: this.dailyEdit.tdaNcloseN,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        },
-                        {
-                            workTime: '打刻',
-                            workStart: this.dailyEdit.tdaNopenTp,
-                            workEnd: this.dailyEdit.tdaNcloseTp,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        },
-                        {
-                            workTime: '就業時間',
-                            workStart: this.dailyEdit.tdaNopenR,
-                            workEnd: this.dailyEdit.tdaNcloseR,
-                            isInput: true,
-                            cellClassName: {
-                                workTime: 'sub-title'
-                            }
-                        }
-                    ]
-                    this.workData0.forEach(e => {
-                        result = result.concat(
-                            {
-                                workTime: e.tdadCnotworkName,
-                                workStart: e.tdadNopenHhmi,
-                                workEnd: e.tdadNcloseHhmi,
-                                cellClassName: {
-                                    workTime: 'sub-title'
-                                }
-                            }
-                        )
-                    })
-
-                    return result
-                },
             },
             methods: {
 //head用　所属　年月　氏名
@@ -954,9 +912,46 @@
 
                     // 詳細:欠勤離籍以外
                     this.workData0 = data.dailyDetail0List
-
                     // 就業実績
                     this.dailyEdit = data.dailyEditVO
+                    this.workData=[
+                        {
+                            workTime: '予定時間',
+                            workStart: this.dailyEdit.tdaNopenN,
+                            workEnd: this.dailyEdit.tdaNcloseN,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        },
+                        {
+                            workTime: '打刻',
+                            workStart: this.dailyEdit.tdaNopenTp,
+                            workEnd: this.dailyEdit.tdaNcloseTp,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        },
+                        {
+                            workTime: '就業時間',
+                            workStart: this.dailyEdit.tdaNopenR,
+                            workEnd: this.dailyEdit.tdaNcloseR,
+                            isInput: true,
+                            cellClassName: {
+                                workTime: 'sub-title'
+                            }
+                        }]
+                    this.workData0.forEach(e => {
+                        this.workData = this.workData.concat(
+                            {
+                                workTime: e.tdadCnotworkName,
+                                workStart: e.tdadNopenHhmi,
+                                workEnd: e.tdadNcloseHhmi,
+                                cellClassName: {
+                                    workTime: 'sub-title'
+                                }
+                            }
+                        )
+                    })
 
                     if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
                         && '' !== this.dailyEdit.tdaCmodifieruseridR
@@ -1048,6 +1043,8 @@
                     }else{
                         this.notapproval=false
                     }
+
+                    console.log(this.workData)
                     console.log(this.bHoliday)
                     console.log(this.bFixed)
 
@@ -1232,14 +1229,6 @@
                     // 超過勤務
                     const checkOverhour = this.detailOverhoursVOList.some(e => {
 
-                        if (!this.checkFormatTimeValue(e.tdadNopen)) {
-                            this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-                            return true;
-                        }
-                        if (!this.checkFormatTimeValue(e.tdadNclose)) {
-                            this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-                            return true;
-                        }
                         if (e.tdadCsparechar1 !== null && e.tdadCsparechar1.length > 100) {
                             this.$Notice.error({desc: "超過勤務備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                             return true
