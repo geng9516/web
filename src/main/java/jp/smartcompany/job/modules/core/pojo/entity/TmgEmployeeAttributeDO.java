@@ -1,13 +1,17 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
-import lombok.*;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -42,7 +46,7 @@ private static final long serialVersionUID=1L;
         /**
          * 職員番号
          */
-                @TableId(value = "tes_cemployeeid", type = IdType.AUTO)
+                @TableId(value = "tes_cemployeeid", type = IdType.INPUT)
                 private String tesCemployeeid;
 
         /**

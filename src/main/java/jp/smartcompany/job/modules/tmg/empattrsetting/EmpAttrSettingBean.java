@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.*;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.*;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -644,11 +642,11 @@ public class EmpAttrSettingBean {
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                            .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
+                            .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                            .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_MANAGEFLG)
-                            .ge("TPHA_DSTARTDATE",baseDate));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_MANAGEFLG,psDBBean);
 
