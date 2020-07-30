@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import java.util.Date;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -23,15 +23,16 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("mast_groupdefinitions")
+@KeySequence("MAST_GROUPDEFINITIONS_SEQ")
 public class MastGroupdefinitionsDO implements Serializable {
 
-private static final long serialVersionUID=1L;
+       private static final long serialVersionUID=1L;
 
         /**
          * idカラム
          */
-                @TableId(value = "mgp_id", type = IdType.AUTO)
-                private Long mgpId;
+        @TableId(value = "mgp_id")
+        private Long mgpId;
 
         /**
          * 顧客コード

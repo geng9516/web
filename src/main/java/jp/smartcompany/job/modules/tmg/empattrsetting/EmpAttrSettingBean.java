@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.empattrsetting;
 
 
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -13,7 +14,6 @@ import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.empattrsetting.dto.*;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.*;
-import jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -575,15 +574,15 @@ public class EmpAttrSettingBean {
         //管理対象者分のSQL
         for (UpdateGroupInfoDto ugiDto:updateGroupInfoDtoWorkPlaceList){
             if (!ugiDto.getInitGroup().equals(ugiDto.getUpdaeGroup())){
-                attribute=getAttribute(!ugiDto.getUpdaeGroup().equals("") && ugiDto.getUpdaeGroup() != null);
+                attribute=getAttributeManageFlg(!ugiDto.getUpdaeGroup().equals("") && ugiDto.getUpdaeGroup() != null);
 
 
                 int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                        .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                        .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                        .eq("TPHA_CEMPLOYEEID",ugiDto.getEmployeeId())
+                        .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                        .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                        .eq("TES_CEMPLOYEEID",ugiDto.getEmployeeId())
                         .likeRight("TES_CTYPE",TYPE_ITEM_WORKPLACE)
-                        .ge("TPHA_DSTARTDATE",baseDate));
+                        .ge("TES_DSTARTDATE",DateUtil.parse(baseDate)));
 
                 int updateTmgEmployeeAttribute=updateTmgEmployeeAttributeGroup(ugiDto.getEmployeeId(),baseDate,TYPE_ITEM_WORKPLACE,psDBBean);
 
@@ -609,15 +608,15 @@ public class EmpAttrSettingBean {
             // 変更確認
             // 変更されている場合
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
-                attribute=getAttribute(uciDto.isUpdaeCheckType());
+                attribute=getAttributeExcludeOvertime(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                            .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
+                            .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                            .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_EXCLUDE_OVERTIME)
-                            .ge("TPHA_DSTARTDATE",baseDate));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(getFirstDayOfMonth(baseDate))));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_EXCLUDE_OVERTIME,psDBBean);
 
@@ -640,15 +639,15 @@ public class EmpAttrSettingBean {
             // 変更確認
             // 変更されている場合
             if(uciDto.isInitCheckType()!=uciDto.isUpdaeCheckType()){
-                attribute=getAttribute(uciDto.isUpdaeCheckType());
+                attribute=getAttributeManageFlg(uciDto.isUpdaeCheckType());
                 // 管理対象者一括チェックが編集可の場合のみ、TMG_EMPLOYEE_ATTRIBUTEに対する処理を行うようにする。
                 if("".equals(getEditTaisho(psDBBean))){
                     int deleteTmgEmployeeAttribute=iTmgEmployeeAttributeService.getBaseMapper().delete(SysUtil.<TmgEmployeeAttributeDO>query()
-                            .eq("TPHA_CCUSTOMERID",psDBBean.getCustID())
-                            .eq("TPHA_CCOMPANYID",psDBBean.getCompCode())
-                            .eq("TPHA_CEMPLOYEEID",uciDto.getEmployeeId())
+                            .eq("TES_CCUSTOMERID",psDBBean.getCustID())
+                            .eq("TES_CCOMPANYID",psDBBean.getCompCode())
+                            .eq("TES_CEMPLOYEEID",uciDto.getEmployeeId())
                             .eq("TES_CTYPE",TYPE_ITEM_MANAGEFLG)
-                            .ge("TPHA_DSTARTDATE",baseDate));
+                            .ge("TES_DSTARTDATE",DateUtil.parse(getFirstDayOfMonth(baseDate))));
 
                     int updateTmgEmployeeAttribute=updateTmgEmployeeAttribute(uciDto.getEmployeeId(),baseDate,TYPE_ITEM_MANAGEFLG,psDBBean);
 
@@ -659,11 +658,19 @@ public class EmpAttrSettingBean {
     }
 
 
-    public String getAttribute(Boolean pbAttribute) {
+    public String getAttributeManageFlg(Boolean pbAttribute) {
         if (pbAttribute.equals(Boolean.TRUE)) {
             return TmgUtil.Cs_MGD_ONOFF_1;
         } else {
             return TmgUtil.Cs_MGD_ONOFF_0;
+        }
+    }
+
+    public String getAttributeExcludeOvertime(Boolean pbAttribute) {
+        if (pbAttribute.equals(Boolean.TRUE)) {
+            return TmgUtil.Cs_MGD_ONOFF_0;
+        } else {
+            return TmgUtil.Cs_MGD_ONOFF_1;
         }
     }
 
@@ -676,25 +683,26 @@ public class EmpAttrSettingBean {
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
-        teaDo.setTesDenddate(DateUtil.parse(baseDate));
+        teaDo.setTesDenddate(DateUtil.offset(DateUtil.parse(baseDate), DateField.DAY_OF_MONTH, -1));
 
         QueryWrapper<TmgEmployeeAttributeDO> queryWrapper = new QueryWrapper<TmgEmployeeAttributeDO>();
         queryWrapper.eq("TES_CCUSTOMERID", psDBBean.getCustID());
         queryWrapper.eq("TES_CCOMPANYID", psDBBean.getCompCode());
         queryWrapper.eq("TES_CEMPLOYEEID", empId);
-        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(baseDate));
-        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(baseDate));
+        queryWrapper.lt("TES_DSTARTDATE", DateUtil.parse(getFirstDayOfMonth(baseDate)));
+        queryWrapper.ge("TES_DENDDATE", DateUtil.parse(getFirstDayOfMonth(baseDate)));
         queryWrapper.eq("TES_CTYPE", psType);
 
         return iTmgEmployeeAttributeService.getBaseMapper().update(teaDo,queryWrapper);
     }
 
     private int insertTmgEmployeeAttribute(String empId,String baseDate,String psType,String Attribute,PsDBBean psDBBean){
+
         TmgEmployeeAttributeDO teaDo=new TmgEmployeeAttributeDO();
         teaDo.setTesCcustomerid(psDBBean.getCustID());
         teaDo.setTesCcompanyid(psDBBean.getCompCode());
         teaDo.setTesCemployeeid(empId);
-        teaDo.setTesDstartdate(DateUtil.parse(baseDate));
+        teaDo.setTesDstartdate(DateUtil.parse(getFirstDayOfMonth(baseDate)));
         teaDo.setTesDenddate(TmgUtil.maxDate);
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
@@ -866,5 +874,24 @@ public class EmpAttrSettingBean {
         }
 
         return pageInfo;
+    }
+
+    /**
+     * 基準日の月初日を取得する。
+     *
+     * @param baseDate 基準日
+     * @return firstDayOfMonth　月初日
+     */
+    private String getFirstDayOfMonth(String baseDate) {
+
+        //获得baseDate 年的部分
+        String year =  String.valueOf(DateUtil.year(DateUtil.parse(baseDate)));
+        //获得baseDate 月份，从0开始计数
+        int mm = DateUtil.month(DateUtil.parse(baseDate))+1;
+        String month = mm >= 10 ? String.valueOf(mm) : ("0" + mm);
+
+        String firstDayOfMonth = year + month + "01";
+
+        return firstDayOfMonth;
     }
 }

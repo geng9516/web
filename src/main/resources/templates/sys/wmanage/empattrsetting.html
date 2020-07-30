@@ -145,10 +145,14 @@
         <Alert v-if="isBeginDateEdit" class="primary-info lb tl">{{ msg }}</Alert>
         <Alert v-if="false" type="error" class="error-info lb tl">{{ errorMsg }}</Alert>
 
-        <div class="tr mb10">
-            <i-button type="error" ghost class="mr15">削除</i-button>
-            <i-button type="primary" ghost class="mr15" v-if="isBeginDateEdit" @click.stop="clear">クリア</i-button>
-            <i-button type="success" ghost class="mr15">登録</i-button>
+        <div class="tr mb10" v-if="isBeginDateEdit">
+            <i-button type="error" ghost class="mr15" @click="beginDateDelete">削除</i-button>
+            <i-button @click.stop="clear" class="mr15" ghost type="primary">クリア</i-button>
+            <i-button type="success" ghost class="mr15" @click="beginDateUploadOrUpdate">登録</i-button>
+        </div>
+        <div class="tr mb10" v-else>
+            <i-button class="mr15" ghost type="error" @click="avgWorkTimeDelete">削除</i-button>
+            <i-button class="mr15" ghost type="success" @click="avgWorkTimeUpload">登録</i-button>
         </div>
 
         <span v-if="isBeginDateEdit">
@@ -158,41 +162,30 @@
                             <Icon type="logo-buffer"></Icon>
                             勤務開始日設定状況
                         </div>
-                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="forClear" key="forClear1"
+
+                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading"  v-if="!forClear"　key="forClear2"
                                  class="mt2">
                             <template slot-scope="{ row }" slot="radio">
                                 <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                             </template>
 
                             <template slot-scope="{ row }" slot="time">
-                                <date-picker :value="row.dstart" format="yyyy/MM/dd" type="date" transfer
-                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
-                                <date-picker :value="row.dend" format="yyyy/MM/dd" type="date" transfer
-                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
+                                <date-picker :value="workDaySettingData[row._index].dstart" format="yyyy/MM/dd" type="date" transfer
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"
+                                             @on-change="workDaySettingData[row._index].dstart=$event">
+                                </date-picker>
+
+                                <date-picker :value="workDaySettingData[row._index].dend" format="yyyy/MM/dd" type="date" transfer
+                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"
+                                             @on-change="workDaySettingData[row._index].dend=$event">
+                                </date-picker>
+
                             </template>
 
                             <template slot-scope="{ row }" slot="beginDate">
-                                <date-picker :value="row.beginDate" :disabled="row._index !== radioCheckedIndex"
-                                             format="yyyy/MM/dd" type="date" transfer></date-picker>
-                            </template>
-                        </i-table>
-
-                        <i-table border :columns="workDaySettingColums" :data="workDaySettingData" :loading="loading" v-if="!forClear" key="forClear2"
-                                 class="mt2">
-                            <template slot-scope="{ row }" slot="radio">
-                                <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
-                            </template>
-
-                            <template slot-scope="{ row }" slot="time">
-                                <date-picker :value="row.dstart" format="yyyy/MM/dd" type="date" transfer
-                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
-                                <date-picker :value="row.dend" format="yyyy/MM/dd" type="date" transfer
-                                             style="width:47%" :disabled="row._index !== radioCheckedIndex"></date-picker>
-                            </template>
-
-                            <template slot-scope="{ row }" slot="beginDate">
-                                <date-picker :value="row.beginDate" :disabled="row._index !== radioCheckedIndex"
-                                             format="yyyy/MM/dd" type="date" transfer></date-picker>
+                                <date-picker :value="workDaySettingData[row._index].beginDate" :disabled="row._index !== radioCheckedIndex"
+                                             format="yyyy/MM/dd" type="date" transfer
+                                             @on-change="workDaySettingData[row._index].beginDate=$event"></date-picker>
                             </template>
                         </i-table>
                     </i-col>
@@ -246,8 +239,6 @@
             return {
                 manageValue:[],
                 overValue:[],
-                manageFlg:false,
-                excludeOvertime:false,
                 contentScrollTop: 0,
                 pageValue: {
                     amount: 0,
@@ -424,6 +415,58 @@
         },
 
         methods: {
+            async avgWorkTimeUpload(){
+                let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
+                const OPTS = { ...this.opts,"params":JSON.stringify(params)}
+                console.log("avgWorkTimeUpload "+JSON.stringify(OPTS))
+                const { data } = await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
+
+
+            },
+            async avgWorkTimeDelete(){
+                let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
+                const OPTS = { ...this.opts,"params":JSON.stringify(params)}
+                console.log("avgWorkTimeDelete "+JSON.stringify(OPTS))
+                const { data } = await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
+
+            },
+            async beginDateDelete(){
+                let index=this.radioCheckedIndex
+                let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
+                    return {'action':'',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate,'psMaxOldStartDate':''}
+                })[0]
+
+                let params={...oldValue}
+                const OPTS = { ...this.opts,"params":JSON.stringify(params)}
+                console.log("beginDateDelete "+JSON.stringify(OPTS))
+                const { data } = await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
+
+            },
+            async beginDateUploadOrUpdate(){
+
+                let index=this.radioCheckedIndex;
+
+                let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
+                    return {"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
+                })[0]
+                let newValue=Array.of(this.workDaySettingData[index]).map(e=>{
+                    return {'action':'',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate}
+                })[0]
+
+                let tempUrl="";
+                if(index==0){
+                    tempUrl="beginDateUpload"
+                }else{
+                    tempUrl="beginDateUpdate"
+                }
+                let params={...newValue,...oldValue}
+                const OPTS = { ...this.opts,"params":JSON.stringify(params)}
+                console.log("beginDateUploadOrUpdate "+JSON.stringify(OPTS))
+                const { data } = await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
+
+
+
+            },
             async manageFlagUpdate(){
 
                 this.opts.ManageList=JSON.stringify(this.manageValue)
@@ -431,50 +474,34 @@
                 this.opts.baseDate=Utils.formatDate(this.opts.baseDate)
                 console.log("manageFlagUpdate"+JSON.stringify(this.opts))
                 const { data } = await this.http.postForm('sys/userprofile/manageFlagUpdate', this.opts)
-                console.log("manageFlagUpdate"+JSON.stringify(data))
+                this.$Notice.info({title: '登録成功', desc: ""})
             },
             checkBoxChange(e,i,name){
                 if(name=="over"){
                     this.overValue[i].updaeCheckType=e
+                    this.tableData[i].excludeOvertime=e
                 }else if(name=="manage"){
                     this.manageValue[i].updaeCheckType=e
+                    this.tableData[i].manageFlg=e
                 }
-
                 console.log("checkBoxChange"+JSON.stringify(this.overValue))
                 console.log("checkBoxChange"+JSON.stringify(this.manageValue))
 
             },
             checkOverWorkAlladmin() {
-                this.excludeOvertime = !this.excludeOvertime
-                let that=this
-                if (this.excludeOvertime) {
-                    this.tableData = this.tableData.map((e,index) => {
+                    let that=this
+                    this.tableData.forEach((e,index) => {
                         that.overValue[index].updaeCheckType=true
-                        return { ...e, excludeOvertime: true }
+                        e.excludeOvertime=true
                     })
-                } else {
-                    this.tableData = this.tableData.map((e,index) => {
-                        that.overValue[index].updaeCheckType=false
-                        return { ...e, excludeOvertime: false }
-                    })
-                }
                 console.log("checkOverWorkAlladmin"+JSON.stringify(that.overValue))
             },
-            checkAlladmin() {
-                this.manageFlg = !this.manageFlg
-                let that=this
-                if (this.manageFlg) {
-                    this.tableData = this.tableData.map((e,index) => {
+            checkAlladmin(){
+                    let that=this
+                    this.tableData.forEach((e,index) => {
                         that.manageValue[index].updaeCheckType=true
-                        return { ...e, manageFlg: true }
+                        e.manageFlg=true
                     })
-                } else {
-                    this.tableData = this.tableData.map((e,index) => {
-                        that.manageValue[index].updaeCheckType=false
-                        return { ...e, manageFlg: false }
-                    })
-                }
-
                 console.log("checkAlladmin"+JSON.stringify(that.manageValue))
             },
             handleDatePicker() {
@@ -605,7 +632,6 @@
             },
             cancel() {
                 this.workDaySettingData= this.beginDateListBackUp
-                this.forClear = !this.forClear
                 this.handleRadio(0)
                 this.isShow = false
             },
@@ -620,7 +646,6 @@
             },
             clear(){
                 this.workDaySettingData= this.beginDateListBackUp
-                this.forClear = !this.forClear
                 this.handleRadio(0)
                 console.log(this.workDaySettingData)
             },

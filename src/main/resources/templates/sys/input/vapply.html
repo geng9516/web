@@ -144,7 +144,42 @@
                                         {{ `承認者コメント：${item.tntfCcancelcomment || item.tntfCbosscomment}` }}</i-col>
                                 </Row>
                                 <Row>
-                                    <i-col span="8" style="margin-left: 66.5%" class="description light-grey mt10">{{ `申請日時：${item.tntfDnotification}` }}</i-col>
+                                    <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
+                                        <Poptip trigger="hover" class="cursor tl" placement="left-start" title="申請履歴" transfer>
+                                            {{ `申請日時：${item.tntfDnotification}` }}
+                                            <div slot="content" style="width: 500px;" class="tc">
+                                                <Row class="ft13 mb5 mt10">
+                                                    <i-col span="8">
+                                                        <p class="head-info mr1">更新者</p>
+                                                    </i-col>
+                                                    <i-col span="4">
+                                                        <p class="head-info mr1">操作</p>
+                                                    </i-col>
+                                                    <i-col span="4">
+                                                        <p class="head-info">状態</p>
+                                                    </i-col>
+                                                    <i-col span="8">
+                                                        <p class="head-info">更新日時</p>
+                                                    </i-col>
+                                                </Row>
+                                                <Row class="mb20 ft13 border">
+                                                    <i-col span="8" class="mb10">
+                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.empname }}</p>
+                                                    </i-col>
+                                                    <i-col span="4">
+                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.ntfactionname }}</p>
+                                                    </i-col>
+                                                    <i-col span="4">
+                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.statusname }}</p>
+                                                    </i-col>
+                                                    <i-col span="8">
+                                                        <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.tnalDmodifieddate }}</p>
+                                                    </i-col>
+                                                </Row>
+                                                <!-- <div class="mb2 blue" v-for="(e, i) of item.tmgNtfactionlogDOList">{{ `${e.empname} ${e.ntfactionname} ${e.statusname}` }}</div> -->
+                                            </div>
+                                        </Poptip>
+                                    </i-col>
                                 </Row>
                             </li>
                             <Spin size="large" fix v-if="listLoading"></Spin>
@@ -359,7 +394,7 @@
                     selectedRestInfo: {},
                     uploadFiles:[],
                     deleteFiles:[],
-                    isReApplyIng: false,
+                    isReApplyIng: false
                 }
             },
             watch: {

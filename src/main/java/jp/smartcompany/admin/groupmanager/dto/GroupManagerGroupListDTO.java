@@ -111,7 +111,6 @@ public class GroupManagerGroupListDTO implements Serializable {
      * 最終更新者
      */
     private String mgCmodifieruserid;
-
     /**
      * 最終更新日
      */

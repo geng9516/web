@@ -20,7 +20,7 @@ import lombok.experimental.Accessors;
 @ToString
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-@KeySequence("SEQUENCE MAST_GROUPBASESECTION_SEQ")
+@KeySequence("MAST_GROUPBASESECTION_SEQ")
 @TableName("mast_groupbasesection")
 public class MastGroupbasesectionDO implements Serializable {
 
@@ -29,19 +29,19 @@ private static final long serialVersionUID=1L;
         /**
          * ｉｄカラム
          */
-                @TableId(value = "mgbs_id")
-                private Long mgbsId;
+        @TableId(value = "mgbs_id")
+        private Long mgbsId;
 
         /**
          * 顧客コード
          */
-    @TableField("mgbs_ccustomerid")
+        @TableField("mgbs_ccustomerid")
         private String mgbsCcustomerid;
 
         /**
          * システムコード
          */
-    @TableField("mgbs_csystemid")
+        @TableField("mgbs_csystemid")
         private String mgbsCsystemid;
 
         /**
@@ -105,4 +105,4 @@ private static final long serialVersionUID=1L;
         private String mgbsCbeloworsingle;
 
 
-        }
+}
