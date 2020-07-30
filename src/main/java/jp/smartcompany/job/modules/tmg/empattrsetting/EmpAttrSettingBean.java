@@ -428,7 +428,7 @@ public class EmpAttrSettingBean {
     public GlobalResponse actionDeleteBeginDate(String empId,PsDBBean psDBBean,BeginDateForUpdateDto params) throws Exception {
 
         // 名称マスタから削除
-        int deleteMgd=iTmgTriggerService.getBaseMapper().delete(SysUtil.<TmgTriggerDO>query()
+        int deleteMgd=iMastGenericDetailService.getBaseMapper().delete(SysUtil.<MastGenericDetailDO>query()
                 .eq("MGD_CCUSTOMERID",psDBBean.getCustID())
                 .eq("MGD_CCOMPANYID_CK_FK",psDBBean.getCompCode())
                 .eq("MGD_CGENERICGROUPID","TMG_DATEOFEMPLOYMENT")
