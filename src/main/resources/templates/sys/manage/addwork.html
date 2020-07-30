@@ -259,11 +259,11 @@
                         </template>
                         <template slot-scope="{ row, index }" slot="workEnd">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="row.workEnd" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                                 <span v-else>{{ row.workEnd | toTime }}</span>
                             </div>
                             <div  v-else-if="row.isInput" >
-                                <i-input v-model="row.workEnd" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workEnd" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             </div>
                             <span v-else>{{ row.workEnd | toTime }}</span>
                         </template>
@@ -1067,12 +1067,12 @@
                     this.tmgResultsDto.txtTdaNcloseR = ''
                     this.tmgResultsDto.tdaCowncommentR = ''
                     this.tmgResultsDto.hasAuthority = ''
-
+                    console.log(this.workData)
                     if (!this.bDisable) {
                         this.tmgResultsDto.holiday = this.bHoliday
 
-                        this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                        this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                        this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
                         this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
                         this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
                         this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
@@ -1291,8 +1291,8 @@
                     let nHour = new Number();
                     let nMinute = new Number();
                     // 分に変換します
-                    nHour = eval(+(moji.split(":")[0] * 60));
-                    nMinute = eval(+(moji.split(":")[1]));
+                    nHour = eval(+(pHHMM.split(":")[0] * 60));
+                    nMinute = eval(+(pHHMM.split(":")[1]));
                     retMinute = eval(nHour + nMinute);
                     return retMinute;
                 },

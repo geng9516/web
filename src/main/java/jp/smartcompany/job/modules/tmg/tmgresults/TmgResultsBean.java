@@ -1911,14 +1911,9 @@ public class TmgResultsBean {
 
 
     // ボタン表示制御
-    public boolean isEditable(PsDBBean psDBBean, String action) {
+    public boolean isEditable(TmgStatus tmgStatus ,PsDBBean psDBBean, String action) {
 
         boolean isEditable = false;
-
-        TmgStatus tmgStatus = iTmgDailyService.buildSQLForSelectTmgStatus(psDBBean.getCustID(),
-                psDBBean.getCompCode(),
-                psDBBean.getUserCode(),
-                this.getDay());
 
         // 未来日付はサイト関係なく常に「編集不可」
         if ("1".equals(tmgStatus.getIsFuture())) {
@@ -2329,14 +2324,22 @@ public class TmgResultsBean {
                 , TYPE_ITEM_OVERHOURS_REASON);
         dailyMap.put("workStatus", workStatus);
 
+
+        TmgStatus tmgStatus = iTmgDailyService.buildSQLForSelectTmgStatus(psDBBean.getCustID(),
+                psDBBean.getCompCode(),
+                psDBBean.getUserCode(),
+                this.getDay());
+
         // 画面編集制御
-        boolean isEditable = this.isEditable(psDBBean, action);
+        boolean isEditable = this.isEditable(tmgStatus,psDBBean, action);
         dailyMap.put("isEditable", isEditable);
 
         // 就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
         boolean isEdiTableResult4Inp = isEdiTableResult4Inp(psDBBean);
         dailyMap.put("isEdiTableResult4Inp", isEdiTableResult4Inp);
-
+        //*締め済データの編集
+        boolean isShowFixedMonthlyEditButton =isShowFixedMonthlyEditButton(tmgStatus,psDBBean,action);
+        dailyMap.put("isShowFixedMonthlyEditButton", isShowFixedMonthlyEditButton);
         // 裁量労働制の場合、当日の勤務予定欄の表示可否の判定
         boolean isCommonDiscretionaryLabor = isCommonDiscretionaryLabor(psDBBean);
         dailyMap.put("isCommonDiscretionaryLabor", isCommonDiscretionaryLabor);
@@ -2756,6 +2759,20 @@ public class TmgResultsBean {
         }
 
         return GlobalResponse.ok();
+    }
+
+    public boolean isShowFixedMonthlyEditButton(TmgStatus tmgStatus,PsDBBean psDBBean,String action){
+        // 管理サイト、かつ、給与未確定、かつ、勤怠締め完了済み、の場合は、「締め完了済みデータの編集」ボタンを表示する
+        // ※現在のアクションが「締め完了済みデータの編集」であれば表示しない
+        if( TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())
+                && !"1".equals(tmgStatus.getIsFuture())
+                && !"1".equals(tmgStatus.getFixedSalary())
+                && "1".equals(tmgStatus.getFixedMonthly())
+                && !ACT_EDITPERM_EDIT.equals(action) ){
+            return true;
+        }else{
+            return  false;
+        }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////

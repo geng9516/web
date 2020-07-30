@@ -160,7 +160,7 @@ public class EmpAttrSettingController {
     }
 
     /**
-     * 勤務开始時間表示処理
+     * 勤務开始時間新規処理
      *
      * @param psDBBean
      * @return
