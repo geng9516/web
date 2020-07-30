@@ -32,26 +32,55 @@
                         {{ deptName }}
                     </i-button>
                     ​
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="selectedTab === '検索'"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <div class="titlenorm mb5">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                        <Row class="tl mb5">
-                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                            <i-col span="7" class="no-border-radius">
-                                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                    placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
-                                    @on-change="handleDeptDateChange"></date-picker>
-                            </i-col>
-                        </Row>
+                        <Tabs v-model="selectedTab" :animated="false" @on-click="handleTabClick">
+                            <tab-pane label="ツリー" name="ツリー">
+                                <div class="titlenorm mb5">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+                                <Row class="tl mb5">
+                                    <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                                    <i-col span="7" class="no-border-radius">
+                                        <date-picker type="date"
+                                            :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                                            format="yyyy/MM/dd" ref="datePicker" transfer
+                                            @on-change="handleDeptDateChange">
+                                        </date-picker>
+                                    </i-col>
+                                </Row>
 
-                        <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                empty-text="所属データなし"></Tree>
-                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
-                        </div>
+                                <div style="position: relative;">
+                                    <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf"
+                                        ref="tree" empty-text="所属データなし"></Tree>
+                                    <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                                </div>
+                            </tab-pane>
+                            <tab-pane label="検索" name="検索">
+                                <Row class="tl mb2" :gutter="8">
+                                    <i-col span="15">
+                                        <i-input v-model="hidSearchData" @on-search="getTableData"
+                                            class="mar mb5 like-select" search enter-button placeholder="検索">
+                                            <i-select v-model="query.hidSearchItems" slot="prepend" style="width: 108px"
+                                                placeholder="項目" transfer>
+                                                <i-option v-for="(item,i) of searchTypesList" :value="item.value">
+                                                    {{ item.name }}</i-option>
+                                            </i-select>
+                                            <i-select v-model="query.hidSearchCondition" slot="append"
+                                                style="width: 108px" placeholder="条件" transfer>
+                                                <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
+                                                    {{ item.name }}</i-option>
+                                            </i-select>
+                                        </i-input>
+                                    </i-col>
+                                    <i-col span="8" class="no-border-radius">
+                                        <i-button long type="primary" icon="md-search" ghost :loading="loading"
+                                            @click="getTableData">検索</i-button>
+                                    </i-col>
+                                </Row>
+                            </tab-pane>
+                        </Tabs>
                     </Drawer>
                 </span>
                 <!-- 共通組織図画面 end-->
@@ -304,6 +333,7 @@
                     title: '日別編集画面',
                     slotList: Utils.getNumArray(1, 31).map(e => `tmiCinfo${e}`),
                     loading: false,
+                    selectedTab: 'ツリー',
                     averageTableLoading: false,
                     tableHead: [],   //表头
                     monthAverageTableHead: [],   //月平均表头
@@ -319,6 +349,8 @@
                     empName: '', //選択した職員名前
                     empWorkerTypeName: '', //選択した職員種別
                     isSearchHistory: false,
+                    searchTypesList: [],     //組織ツリー用
+                    searchConditionsList: [],//組織ツリー用
                     deptDrawShow: false,    //組織ツリー用
                     empDeptLoading: false,  // 組織ツリーloading用
                     referListObject: {       //組織ツリー共通
@@ -335,6 +367,9 @@
                         baseDay: '',
                         baseMonth: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        hidSearchItems: 'EMPLOYEEID',
+                        hidSearchCondition: 'BROADMATCH',
+                        hidSelectTab: '0', //組織タブー0：ツリ、1:検索 
                         //目标sec
                         txtTmgReferListTreeViewAdminTargetSection: '',
                         //基准日
@@ -343,6 +378,7 @@
                         type: 21,
                         empId: '',
                     },
+                    hidSearchData: '',
                     columns3: [
                         {
                             title: '氏名',
@@ -482,6 +518,7 @@
             async mounted() {
                 this.getOrgTree()
                 this.getTableHead()
+                this.getSearchCondition()
             },
             computed: {
                 columns() {
@@ -667,6 +704,22 @@
                         this.getTableData()
                     }
                 },
+                handleTabClick(e) {
+                    // 用于点回ツリー时 显示已选中的项
+                    if (e === 'ツリー') {
+                        const target = this.$refs.tree.getSelectedNodes()[0]
+                        if (this.selectedDeptViewType === 1) {
+                            this.deptName = '全て表示中'
+                        }　else {
+                            this.deptName = target.secnic
+                        }
+                    }
+                },
+                async getSearchCondition() {
+                    const { data } = await this.http.get('sys/tree/conditions', this.referListObject) 
+                    this.searchConditionsList = Object.keys(data.searchConditions).map(e => { return { name: data.searchConditions[e], value: e } }) 
+                    this.searchTypesList = Object.keys(data.searchTypes).map(e => { return { name: data.searchTypes[e], value: e } }) 
+                },
                 async getTableHead() {
                     this.loading = true
                     this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
@@ -726,6 +779,15 @@
                 async getTableData() {
                     this.loading = true
                     let url = 'sys/overtimeinstruct/monthlyResult'
+                    // 用于检索时，直接检索表格，需要用到字段
+                    if (this.selectedTab === '検索') {
+                        this.deptName = '職員により検索中'
+                        this.query.hidSelectTab = '1'
+                        this.query.hidSearchData = this.hidSearchData
+                    } else {
+                        this.query.hidSelectTab = '0'
+                        delete this.query.hidSearchData
+                    }
                     try {
                         if (this.overWorkViewType === 3) {
                             this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
