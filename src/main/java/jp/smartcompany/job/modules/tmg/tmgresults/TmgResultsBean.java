@@ -666,7 +666,7 @@ public class TmgResultsBean {
 
         dailyCheckDto.setHoliday(dto.getHoliday());
         dailyCheckDto.setTdaCworkingidR(dto.getWorkingId());
-        dailyCheckDto.setSiteId(psDBBean.getSiteId());
+        dailyCheckDto.setSiteId(dto.getPsSite());
         dailyCheckDto.setTdaCbosscommentR(dto.getTxtTdaCbosscommentR());
         dailyCheckDto.setTdaCowncommentR(dto.getTdaCowncommentR());
         iTmgDailyCheckService.buildSQLForInsertDailyCheck(dailyCheckDto);
@@ -2591,7 +2591,7 @@ public class TmgResultsBean {
 //    }
 
     /**
-     * 日別登録画面_登録
+     * 日別登録画面_登録と承認画面_承認
      * @param psDBBean PsDBBean
      * @param dto TmgResultsDto
      */
@@ -2714,9 +2714,9 @@ public class TmgResultsBean {
             );
 
             // エラーメッセージ取得
-            ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getTargetUser());
+            ErrMsgDto ErrMsgDto = iTmgErrmsgService.buildSQLForSelectErrMsg(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
 
-            if(ErrMsgDto.getTerCerrcode().equals("0")){
+            if(ErrMsgDto!=null && ErrMsgDto.getTerCerrcode().equals("0")){
                 // トリガー追加
                 iTmgTriggerService.buildSQLForInsertTrigger(
                         psDBBean.getCustID(),

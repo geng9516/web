@@ -167,11 +167,11 @@
                 <i-table :columns="columnsWork" :data="workData">
                     <template slot-scope="{ row }" slot="workStart">
                         <i-input v-model="row.workStart"
-                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
+                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="workEnd">
-                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
+                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"></i-input>
                         <span v-else>{{ row.workEnd | toTime }}</span>
                     </template>
                 </i-table>
@@ -377,7 +377,6 @@
                     nonDutyList: [],
                     overHoursList: [],
                     hasAuthority: true,
-                    psSite: Utils.getUrlParam(location.href, 'psSite'),
                 },
                 workingId: '',
                 workingIdList: [],
@@ -390,7 +389,7 @@
                 categoryOverhoursName: '',
                 categoryOverhoursList: [],
                 dailyEdit:[],
-
+                workTimeDisable:false,
                 isShow: false,
                 title: {
                     type: String,
@@ -796,7 +795,6 @@
                 }
 
                 this.workingId = this.dailyEdit.tdaCworkingidR
-                this.changeWorkingID(this.workingId)
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
                 this.title = this.dailyEdit.tdaDyyyymmddDy
 
@@ -868,6 +866,7 @@
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
+                this.changeWorkingID(this.workingId)
             },
 
             handleClose() {
@@ -938,7 +937,7 @@
             }),
             //登録
             async updateDaily() {
-                if (!this.errorCheck()) {
+                if (!this.errorCheck(this.workingId)) {
                     return
                 }
                 this.updateDailyLoading = true
@@ -999,29 +998,39 @@
 
             // 就業区分の切り替え表示制御
             changeWorkingID(workingid) {
-                this.bDisable = false;
+                this.bDisable = false
                 // 休暇
                 if (this.bHoliday) {
-                    this.bDisable = true;
+                    this.bDisable = true
+                    this.workTimeDisable=true
                     // 休暇以外
                 } else {
                     let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                     // 出勤 or 休日出勤
                     if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
-                        this.bDisable = false;
+                        this.bDisable = false
+                        this.workTimeDisable=false
                         // 欠勤
                     } else {
                         this.bDisable = true;
+                        this.workTimeDisable=true
                     }
                 }
                 if (this.bDisable === true) {
+                    this.workData[2].workStart=''
+                    this.workData[2].workEnd=''
                     this.detailNonDutyVOList = []
                     this.detailOverhoursVOList = []
 
                 }
             },
             // エラーチェック
-            errorCheck() {
+            errorCheck(workingid) {
+                let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
+                // 出勤 or 休日出勤
+                if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
+                    return true;
+                }
                 // 修正出社時刻形式
                 if (!this.time_check(this.dailyEdit.tdaNopenR)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
