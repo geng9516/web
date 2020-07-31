@@ -1,10 +1,329 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='帳票出力',cssPaths='/pages/content.min.css,' + '/pages/csvoutput.min.css')">
 </head>
+
 <body>
-帳票出力
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<main @scroll.passive="handleScroll" class="content tmgLedger-warp" ref="layout">
+    <div class="content_body tc">
+        <Card class="card" title="帳票出力">
+            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>
+            <Divider class="mb10" orientation="left" size="small">帳票種別</Divider>
+            <i-select class="mb20 non-border-input" placeholder="帳票種別" style="width: 450px" v-model="curFileType">
+                <i-option :key="item.value" :value="item.value" v-for="item of fileTypes">{{ item.name }}</i-option>
+            </i-select>
+
+            <Divider class="mb10" orientation="left" size="small">対象職員</Divider>
+            <DeptSelector :isType2="true" />
+
+            <span v-if="curFileTypeInfo.hasYear">
+          <Divider class="mb10" orientation="left" size="small">対象年</Divider>
+          <date-picker
+                  :clearable="false"
+                  :editable="false"
+                  class="mb20 non-border-input"
+                  format="yyyy年度"
+                  placeholder="対象年"
+                  placement="bottom-end"
+                  style="width: 450px"
+                  type="year"
+                  v-model="localValue.year"
+          ></date-picker>
+        </span>
+
+            <span v-if="curFileTypeInfo.hasMonth">
+          <Divider class="mb10" orientation="left" size="small">対象月</Divider>
+          <i-select
+                  class="mb20 non-border-input"
+                  placeholder="対象月"
+                  style="width: 450px"
+                  transfer
+                  v-model="curMonth"
+          >
+            <i-option :key="index" :label="item" :value="index + 1" v-for="(item, index) of monthSelect"></i-option>
+          </i-select>
+        </span>
+
+            <span v-if="curFileTypeInfo.hasTimeRange">
+          <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
+          <date-picker
+                  class="mt10"
+                  format="yyyy/MM/dd"
+                  placement="bottom-end"
+                  style="width:47%"
+                  transfer
+                  type="date"
+          ></date-picker>
+          &nbsp;-&nbsp;
+          <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
+        </span>
+            <span v-if="curFileTypeInfo.hasRadio">
+          <Divider class="mb10" orientation="left" size="small">法定内超勤を含める</Divider>
+          <radio-group :value="1" class="mt10 mb10">
+            <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
+            <Radio :label="2" class="custom-radio" style="padding:8px 100px;">いいえ</Radio>
+          </radio-group>
+        </span>
+            <i-button
+                    :loading="empolyeeLoading"
+                    @click="downLoadByPdf"
+                    class="mt30 mr10"
+                    ghost
+                    icon="md-download"
+                    style="width:49%"
+                    type="primary">
+                PDFダウンロード
+            </i-button>
+
+            <i-button
+                    :loading="empolyeeLoading"
+                    @click="downLoadByPdf"
+                    class="mt30"
+                    ghost
+                    icon="md-download"
+                    style="width:49%"
+                    type="primary">
+                CSVダウンロード
+            </i-button>
+        </Card>
+    </div>
+</main>
+
+<div th:replace="layout/script::common_script"></div>
+<script th:inline="javascript" type="text/babel">
+    const DEPT_STATLIST = new Vue({
+        el: '.tmgLedger-warp',
+        data() {
+            return {
+                // monthSelect: getNumArray(1, 12).map(e => `${e}月`),
+                monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
+                referListObject: {
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 31
+                },
+                curMonth: 1,
+                curFileType: 5,
+                localValue: {
+                    id: '',
+                    deptId: '',
+                    year: new Date()
+                },
+                fileTypes: [
+                    { name: '看護単位別月別平均夜勤回数表', value: 5, hasYear: true, hasMonth: true },
+                    { name: '出勤簿（年単位）', value: 0, hasYear: true, hasMonth: true },
+                    { name: '個人別月別平均夜勤回数表', value: 1, hasMonth: true },
+                    { name: '年間年休取得・祝休取得一覧', value: 2, hasTimeRange: true },
+                    { name: '病気休暇・特別休暇取得状況一覧', value: 3, hasTimeRange: true },
+                    { name: '超過勤務実施状況リスト', value: 4, hasYear: true, hasRadio: true }
+                ],
+                searchLevel: [],
+                errorInfo: false,
+                errorMsg: '',
+                deptLoading: false,
+                empolyeeLoading: false,
+                empolyeeList: []
+            }
+        },
+        async mounted() {
+            // this.getOrgTree();
+        },
+        computed: {
+            curFileTypeInfo() {
+                return this.fileTypes.find(t => t.value === this.curFileType)
+            }
+        },
+        methods: {
+            async getWorkDateList() {
+                this.query.txtAction = 'ACT_Disp_RList'
+                const { data } = await this.http.get('sys/tmgLedger/workDateList', this.query)
+                this.dispMonthlyList = data
+
+                if (data.length > 0){
+                    this.model1 = data[0].val
+
+                    let result = this.model1.replace("年","/")
+                    result = result.replace("月","/")
+                    result = result + "01"
+                    this.query.txtTDA_DYYYYMM = result
+                    this.query.txtDYYYYMM = result
+
+                    //年月リストを取得する時に、活性化にする
+                    this.selectDisabled = true
+                }
+
+                //年月リスト.lengthがゼロ場合、非活性化にする
+                if (data.length === 0){
+                    this.model1 = ''
+                    this.selectDisabled = false
+                }
+            },
+            async getTableData() {
+                this.tableData2 = []
+                this.loading = true
+                const { data } = await this.http.get('sys/tmgLedger/executeDispStatList', this.query)
+
+                this.fullName = data.dispItemsList.slice(0,1)[0].title
+                console.log("getTableData")
+                this.tableHead2 = data.dispItemsList.slice(1)
+                this.tableData2 = data.employyesMap
+
+                if (data.sectionMap.CNT === 0){
+                    this.tableData = []
+                } else {
+                    this.tableData = [data.sectionMap]
+                }
+                this.isSearchHistory = false
+                this.loading = false
+            },
+            async getOrgTree(refreshDept) {
+                this.empDeptLoading = true
+                try {
+                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    this.treeData = Utils.convertTreeData(orgList)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                    this.empDeptLoading = false
+                }
+            },
+            async handleDeptDateChange(e) {
+                this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.isSearchHistory = true
+                await this.getOrgTree()
+                this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+            },
+            rowClass(row) {
+                // 表格变色
+                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
+                    return ''
+                }
+                return 'sat'
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
+            showDay: Debounce(function () {
+                this.isShow = true
+            }),
+            toTop() {
+                const animateMachine = requestAnimationFrame(this.toTop)
+                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                if (this.$refs.layout.scrollTop === 0) {
+                    cancelAnimationFrame(animateMachine)
+                }
+            },
+            convertTreeData(treeData = []) {
+                return treeData.map(e => {
+                    const children = e.child || e.children
+                    if (children) {
+                        return {
+                            ...e.data,
+                            title: e.data.label,
+                            // 前两层级默认展开方便查看
+                            expand: e.data.level < 2 || !e.data.level,
+                            children: this.convertTreeData(children)
+                        }
+                    } else {
+                        return {
+                            ...e.data,
+                            title: e.data.label
+                        }
+                    }
+                })
+            },
+            async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                console.log('e2')
+                console.log(e)
+                this.deptDrawShow = false
+                this.query.txtAction = 'ACT_Disp_RList'
+                this.deptName = e[0].secnic
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                //年月リストの取得
+                await this.getWorkDateList()
+
+                // await this.getTableHead()
+                await this.getTableData()
+
+            },
+            async getEmpList() {
+                try {
+                    this.emplistLoading = true
+                    const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
+                } catch (error) {
+                    return
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            handleClickEmpLeaf(e) {
+                this.deptDrawShow = false
+                // this.getData(true)
+            },
+            async handleStartMonth(e) {
+                console.log("handleStartMonth")
+                if(e){
+                    this.query.txtTDA_DYYYYMM = this.dateFormat(e)
+                    this.query.txtDYYYYMM = this.dateFormat(e)
+                    await this.getTableData()
+                }
+            },
+            dateFormat(e) {
+                //YYYY年MM月からYYYY/MM/01へ変換する
+                let yearMMDD = e.replace("年","/")
+                yearMMDD = yearMMDD.replace("月","/")
+                yearMMDD = yearMMDD+"01"
+                return  yearMMDD
+            },
+            async download() {
+                const { data, headers } = await this.http.get('sys/tmgLedger/executeDownloadDownload', this.query)
+                Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
+            },
+            async downLoadByPdf() {
+                if (!this.localValue.deptId) {
+                    this.errorInfo = true
+                    return (this.errorMsg = '対象職員を選んでください。')
+                }
+                const year = this.utils.formatDate(this.localValue.year, 'YYYY')
+                try {
+                    this.empolyeeLoading = true
+                    await this.api.output('paidVactionByEmployee', { deptId: this.localValue.deptId, year, isOutput: false })
+                    window.open(
+                        `${this.domain}/io/vacation/apply/user?deptId=${this.localValue.deptId}&year=${year}&isOutput=true`,
+                        '_blank'
+                    )
+                } catch (e) {
+                    return
+                } finally {
+                    this.errorInfo = false
+                    this.empolyeeLoading = false
+                }
+            }
+        }
+    })
+</script>
 </body>
+
 </html>
