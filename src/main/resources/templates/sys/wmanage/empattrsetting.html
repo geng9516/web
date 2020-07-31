@@ -433,7 +433,7 @@
             async beginDateDelete(){
                 let index=this.radioCheckedIndex
                 let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
-                    return {'action':'',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate,'psMaxOldStartDate':''}
+                    return {'action':'',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
                 })[0]
 
                 let params={...oldValue}
@@ -446,18 +446,24 @@
 
                 let index=this.radioCheckedIndex;
 
-                let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
-                    return {"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
-                })[0]
+                let max=Math.max.apply(null,this.beginDateListBackUp.slice(1).map(e=> new Date(e.dstart)))
+
+                let psMaxOldStartDate=Utils.formatDate(new Date(max))
+
+                let tempUrl;
+
                 let newValue=Array.of(this.workDaySettingData[index]).map(e=>{
                     return {'action':'',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate}
                 })[0]
 
-                let tempUrl="";
+                let oldValue;
                 if(index==0){
                     tempUrl="beginDateUpload"
                 }else{
                     tempUrl="beginDateUpdate"
+                    oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
+                        return {"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':psMaxOldStartDate}
+                    })[0]
                 }
                 let params={...newValue,...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
