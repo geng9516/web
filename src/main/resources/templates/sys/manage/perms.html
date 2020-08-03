@@ -17,9 +17,12 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" size="large" @click="permissionAdminAdd = true">承認者追加</i-button>
-                    <i-button type="primary" size="large" @click="PermissionGroupAdd = true">グループ作成</i-button>
-                    <i-button type="primary" size="large" @click="PermissionMemberAssign = true">メンバー割付</i-button>
+                    <i-button type="primary" size="large" v-if="btnAddEval" @click="permissionAdminAdd = true">承認者追加
+                    </i-button>
+                    <i-button type="primary" size="large" v-if="btnMakeGroup" @click="PermissionGroupAdd = true">グループ作成
+                    </i-button>
+                    <i-button type="primary" size="large" v-if="btnEditMember" @click="PermissionMemberAssign = true">
+                        メンバー割付</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
             </div>
@@ -65,16 +68,18 @@
             <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
                 :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
-                    <i-button type="primary" ghost size="small" :class="row.preIndex !== 0 ? 'ml30 width75' : 'width75'"
-                        @click="handleOverFlag">
+                    <span v-if="!row.enableEditGroup && !row.enableEditGroupName" :class="row.main ? 'width75' : 'ml30 width75'">{{ row.group }}</span>
+                    <i-button type="primary" ghost size="small" :class="row.main ? 'width75' : 'ml30 width75'"
+                        @click="handleOverFlag" v-else>
                         {{ row.group }}
                     </i-button>
                 </template>
                 <template slot-scope="{ row }" slot="name">
-                    <i-button type="primary" ghost size="small" long v-if="row.name" @click="handleEditData">
-                        {{ row.name }}
+                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" v-if="row.empId && !row.enableEmpEdit">{{ row.empId }}</span>
+                    <i-button type="primary" ghost size="small" long v-if="row.empId && row.enableEmpEdit" @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
+                        {{ row.empId }}
                     </i-button>
-                    <span v-else class="grey">未设定</span>
+                    <span v-if="!row.empId" class="grey">未设定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
                     <span class="blue">{{ row.workConfirm ? '〇' : '' }}</span>
@@ -98,6 +103,11 @@
 
                 <template slot-scope="{ row }" slot="restConfirm">
                     <span class="blue">{{ row.restConfirm ? '〇' : '' }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="validPeriod">
+                    <!-- 结束时间为 2222/12/31的时候不显示 -->
+                    <span>{{ `${row.validStartDate} ～ ${row.validEndDate === '2222/12/31' ? '' : row.validEndDate}` }}</span>
                 </template>
             </i-table>
         </div>
@@ -187,7 +197,8 @@
         <!-- グループ作成 end-->
 
         <!-- メンバー割付 start-->
-        <Modal v-model="PermissionMemberAssign" title="メンバー割付" width="650" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionMemberAssign" title="メンバー割付" width="650" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
                 <form-item label="所属">
                     <span class="input-like-span">{{ localValue.group }}</span>
@@ -215,13 +226,14 @@
         <!-- メンバー割付 end-->
 
         <!-- 権限変更 start-->
-        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <Row>
                 <i-col span="4">
-                <div class="label">所属</div>
+                    <div class="label">所属</div>
                 </i-col>
                 <i-col span="5">
-                <span class="input-like-span">XX庁</span>
+                    <span class="input-like-span">XX庁</span>
                 </i-col>
             </Row>
             <!-- <i-table border :columns="columns" :data="data" :loading="loading" class="mt15 mb20">
@@ -274,7 +286,8 @@
         <!-- 権限変更 end-->
 
         <!-- 警告値設定 start-->
-        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
                 <form-item label="所属">
                     <span class="input-like-span">{{ localValue.group }}</span>
@@ -369,7 +382,7 @@
                             title: '有効期間',
                             align: 'center',
                             width: 220,
-                            key: 'validPeriod'
+                            slot: 'validPeriod'
                         }
                     ],
                     loading: false,
@@ -377,7 +390,7 @@
                     mergeSpanInfo: [],
                     emplistLoading: false,
                     referListObject: {
-                        txtTmgReferListTreeViewRecordDate: '',
+                        txtTmgReferListTreeViewRecordDate: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         txtTmgReferListTreeViewAdminTargetSection: '',
                         txtTmgReferListTreeViewAdminTargetGroup: '',
                         txtTmgReferListTreeViewAdminTargetEmp: '',
@@ -398,6 +411,10 @@
                     PermissionMemberAssign: false,
                     PermissionEditerModals: false,
                     PermissionFlagModals: false,
+                    btnAddEval: false,
+                    btnMakeGroup: false,
+                    btnEditMember: false,
+                    bottomMessage: '',
                     // 承認者追加画面
                     localValue: {
                         name: '',
@@ -437,6 +454,7 @@
             async mounted() {
                 this.getOrgTree()
                 // this.getTableHead()
+                this.getTableData()
             },
             watch: {
                 data: {
@@ -462,20 +480,20 @@
                             // 个人占据了多少条
                             let whichMemberDuplicate = []
                             if (!e.memberList) {
-                                result = result.concat({ group: e.group })
+                                result = result.concat(e)
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
                                         // 成员无任何权限时
                                         deptOccupy += 1
-                                        result = result.concat({ preIndex: i, group: e.group, name: j.name })
+                                        result = result.concat({ ...e, ...j })
                                     } else {
                                         deptOccupy += j.validList.length
                                         if (j.validList.length > 1) {
                                             whichMemberDuplicate.push([_i, j.validList.length])
                                         }
                                         j.validList.forEach(h => {
-                                            result = result.concat({ preIndex: i, group: e.group, name: j.name, ...h })
+                                            result = result.concat({ ...e, ...j, ...h })
                                         })
                                     }
                                 })
@@ -543,9 +561,21 @@
                     // this.tableHead = data
                 },
                 async getTableData() {
-                    // this.listLoading = true
-                    // const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
-                    // this.tableData = data.tmgMonthlyInfoVOList
+                    this.loading = true
+                    try {
+                        const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
+                        console.log(data)
+                        // 操作按钮
+                        this.btnAddEval = data.btnAddEval
+                        this.btnMakeGroup = data.btnAddEval
+                        this.btnEditMember = data.btnAddEval
+                        this.bottomMessage = data.bottomMessage
+                        this.data = data.list
+                    } catch (error) {
+
+                    } finally {
+                        this.loading = false
+                    }
                     // this.approval = data.approval
                     // this.listLoading = false
                     // this.isSearchHistory = false
@@ -562,6 +592,8 @@
                         }
                     })
                 },
+                handleOverFlag() { },
+                handleEditData() { },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 这里将得到得合并信息进行表格列项合并
                     let result = []
