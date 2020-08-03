@@ -9,17 +9,25 @@
 <main @scroll.passive="handleScroll" class="content tmgLedger-warp" ref="layout">
     <div class="content_body tc">
         <Card class="card" title="帳票出力">
-            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>
-            <Divider class="mb10" orientation="left" size="small">帳票種別</Divider>
+            <!--            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>-->
+            <Divider class="mb10" orientation="left" size="default">帳票種別</Divider>
             <i-select class="mb20 non-border-input" placeholder="帳票種別" style="width: 450px" v-model="curFileType">
                 <i-option :key="item.value" :value="item.value" v-for="item of fileTypes">{{ item.name }}</i-option>
             </i-select>
 
-            <Divider class="mb10" orientation="left" size="small">対象職員</Divider>
-            <DeptSelector :isType2="true" />
+            <span v-if="!curFileTypeInfo.hasRadio">
+               <Divider class="mb10" orientation="left" size="default">対象職員</Divider>
+               <DeptSelector :isType2="true" />
+            </span>
 
-            <span v-if="curFileTypeInfo.hasYear">
-          <Divider class="mb10" orientation="left" size="small">対象年</Divider>
+            <span v-if="curFileTypeInfo.hasRadio">
+               <Divider class="mb10" orientation="left" size="default">対象部署</Divider>
+               <DeptSelector :isType2="true" />
+            </span>
+
+
+          <span v-if="curFileTypeInfo.hasYear">
+          <Divider class="mb10" orientation="left" size="default">対象年</Divider>
           <date-picker
                   :clearable="false"
                   :editable="false"
@@ -46,20 +54,13 @@
           </i-select>
         </span>
 
-            <span v-if="curFileTypeInfo.hasTimeRange">
+        <span v-if="curFileTypeInfo.hasTimeRange">
           <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
-          <date-picker
-                  class="mt10"
-                  format="yyyy/MM/dd"
-                  placement="bottom-end"
-                  style="width:47%"
-                  transfer
-                  type="date"
-          ></date-picker>
-          &nbsp;-&nbsp;
+          <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
           <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
         </span>
-            <span v-if="curFileTypeInfo.hasRadio">
+
+        <span v-if="curFileTypeInfo.hasRadio">
           <Divider class="mb10" orientation="left" size="small">法定内超勤を含める</Divider>
           <radio-group :value="1" class="mt10 mb10">
             <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
@@ -117,12 +118,12 @@
                     year: new Date()
                 },
                 fileTypes: [
-                    { name: '看護単位別月別平均夜勤回数表', value: 5, hasYear: true, hasMonth: true },
                     { name: '出勤簿（年単位）', value: 0, hasYear: true, hasMonth: true },
                     { name: '個人別月別平均夜勤回数表', value: 1, hasMonth: true },
                     { name: '年間年休取得・祝休取得一覧', value: 2, hasTimeRange: true },
                     { name: '病気休暇・特別休暇取得状況一覧', value: 3, hasTimeRange: true },
-                    { name: '超過勤務実施状況リスト', value: 4, hasYear: true, hasRadio: true }
+                    { name: '超過勤務実施状況リスト', value: 4, hasYear: true, hasRadio: true },
+                    { name: '看護単位別月別平均夜勤回数表', value: 5, hasYear: true, hasMonth: true }
                 ],
                 searchLevel: [],
                 errorInfo: false,
@@ -304,7 +305,13 @@
             async downLoadByPdf() {
                 if (!this.localValue.deptId) {
                     this.errorInfo = true
-                    return (this.errorMsg = '対象職員を選んでください。')
+                    // return (this.errorMsg = '対象職員を選んでください。')
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 0,
+                        content: '対象職員を選んでください。'
+                    });
                 }
                 const year = this.utils.formatDate(this.localValue.year, 'YYYY')
                 try {
