@@ -45,7 +45,6 @@ public class EvaluatorSettingBean {
         // ログインユーザーが、表示グループに対して権限を持っているか
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         boolean haveAuthority = processParams(psDBBean,params);
-        System.out.println(params.getYYYYMMDD());
         referList = new TmgReferList(psDBBean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
                 TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
         // REQUEST:組織
@@ -92,6 +91,8 @@ public class EvaluatorSettingBean {
         params.setCustomerID(psDBBean.getCustID());
         params.setSection(targetSectionId);
         params.setRootGroup(targetSectionId+"|"+TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        System.out.println("----");
+        System.out.println(params.getYYYYMMDD());
         if (StrUtil.isNotBlank(targetGroupId)){
             params.setGroup(targetGroupId);
         } else if (StrUtil.isNotBlank(lastTargetGroupId)){
@@ -959,6 +960,7 @@ public class EvaluatorSettingBean {
         String sDBCompId   = escDBString(evaluaterSettingParam.getCompanyId());  // 法人コード
         String sDBSecId    = escDBString(evaluaterSettingParam.getSection());    // 組織コード
         String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
+
 
 
         StringBuilder sbSQL = new StringBuilder();
