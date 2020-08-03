@@ -114,7 +114,7 @@
             null,
             null,
             <choose>
-                <when test="holiday == null">
+                <when test="holiday == 'false'">
                     #{tdaCworkingidR,jdbcType=VARCHAR},
                 </when>
 

@@ -167,11 +167,11 @@
                 <i-table :columns="columnsWork" :data="workData">
                     <template slot-scope="{ row }" slot="workStart">
                         <i-input v-model="row.workStart"
-                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
+                                 v-if="row.isInput && !bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"></i-input>
                         <span v-else>{{ row.workStart | toTime }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="workEnd">
-                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp" class="tc"></i-input>
+                        <i-input v-model="row.workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"></i-input>
                         <span v-else>{{ row.workEnd | toTime }}</span>
                     </template>
                 </i-table>
@@ -223,12 +223,12 @@
             <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
                       no-data-text="">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
-                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailNonDutyVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNopen)"></i-input>
+                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
                 </template>
 
                 <template slot-scope="{ row, index }" slot="tdadNclose">
-                    <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed " @on-blur="detailNonDutyVOList[index].tdadNclose=toHHHcMI60FromHHHMI60(detailNonDutyVOList[index].tdadNclose)"></i-input>
+                    <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed " @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNclose', $event.target)"></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
@@ -278,12 +278,12 @@
             <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
                       no-data-text="">
                 <template slot-scope="{ row ,index }" slot="tdadNopen">
-                    <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNopen=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNopen)"></i-input>
+                    <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
                     <span v-else>{{ row.tdadNopen | toTime }}</span>
                 </template>
 
                 <template slot-scope="{ row ,index}" slot="tdadNclose">
-                    <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed" @on-blur="detailOverhoursVOList[index].tdadNclose=toHHHcMI60FromHHHMI60(detailOverhoursVOList[index].tdadNclose)"></i-input>
+                    <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNclose', $event.target)"></i-input>
                     <span v-else>{{ row.tdadNclose | toTime }}</span>
                 </template>
 
@@ -377,7 +377,6 @@
                     nonDutyList: [],
                     overHoursList: [],
                     hasAuthority: true,
-                    psSite: Utils.getUrlParam(location.href, 'psSite'),
                 },
                 workingId: '',
                 workingIdList: [],
@@ -390,7 +389,7 @@
                 categoryOverhoursName: '',
                 categoryOverhoursList: [],
                 dailyEdit:[],
-
+                workTimeDisable:false,
                 isShow: false,
                 title: {
                     type: String,
@@ -796,7 +795,6 @@
                 }
 
                 this.workingId = this.dailyEdit.tdaCworkingidR
-                this.changeWorkingID(this.workingId)
                 this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
                 this.title = this.dailyEdit.tdaDyyyymmddDy
 
@@ -868,6 +866,7 @@
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
+                this.changeWorkingID(this.workingId)
             },
 
             handleClose() {
@@ -938,7 +937,7 @@
             }),
             //登録
             async updateDaily() {
-                if (!this.errorCheck()) {
+                if (!this.errorCheck(this.workingId)) {
                     return
                 }
                 this.updateDailyLoading = true
@@ -999,37 +998,47 @@
 
             // 就業区分の切り替え表示制御
             changeWorkingID(workingid) {
-                this.bDisable = false;
+                this.bDisable = false
                 // 休暇
                 if (this.bHoliday) {
-                    this.bDisable = true;
+                    this.bDisable = true
+                    this.workTimeDisable=true
                     // 休暇以外
                 } else {
                     let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                     // 出勤 or 休日出勤
                     if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
-                        this.bDisable = false;
+                        this.bDisable = false
+                        this.workTimeDisable=false
                         // 欠勤
                     } else {
                         this.bDisable = true;
+                        this.workTimeDisable=true
                     }
                 }
                 if (this.bDisable === true) {
+                    this.workData[2].workStart=''
+                    this.workData[2].workEnd=''
                     this.detailNonDutyVOList = []
                     this.detailOverhoursVOList = []
 
                 }
             },
             // エラーチェック
-            errorCheck() {
+            errorCheck(workingid) {
+                let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
+                // 出勤 or 休日出勤
+                if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
+                    return true;
+                }
                 // 修正出社時刻形式
-                if (!this.time_check(this.dailyEdit.tdaNopenR)) {
+                if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                     return false;
                 }
 
                 // 修正退社時刻形式
-                if (!this.time_check(this.dailyEdit.tdaNcloseR)) {
+                if (this.workData[2].workEnd ===null || !this.time_check(this.workData[2].workEnd)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                     return false;
                 }
@@ -1042,11 +1051,11 @@
                 //非勤務
                 const checkNonDuty = this.detailNonDutyVOList.some(e => {
 
-                    if (!this.time_check(e.tdadNopen)) {
+                    if (e.tdadNopen ===null ||  !this.time_check(e.tdadNopen)) {
                         this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
-                    if (!this.time_check(e.tdadNclose)) {
+                    if (e.tdadNclose ===null || !this.time_check(e.tdadNclose)) {
                         this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return true;
                     }
@@ -1059,14 +1068,6 @@
                 // 超過勤務
                 const checkOverhour = this.detailOverhoursVOList.some(e => {
 
-                    if (!this.checkFormatTimeValue(e.tdadNopen)) {
-                        this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-                        return true;
-                    }
-                    if (!this.checkFormatTimeValue(e.tdadNclose)) {
-                        this.$Notice.error({desc: "超過勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
-                        return true;
-                    }
                     if (e.tdadCsparechar1 !== null && e.tdadCsparechar1.length > 100) {
                         this.$Notice.error({desc: "超過勤務備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                         return true
