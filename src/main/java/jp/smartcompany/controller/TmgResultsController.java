@@ -3,8 +3,10 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
@@ -189,12 +191,15 @@ public class TmgResultsController {
      */
     @PostMapping("updateDaily")
     @ResponseBody
-    public GlobalResponse updateDaily(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                            @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
-
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+    public GlobalResponse updateDaily(@RequestBody TmgResultsDto tmgResultsDto,
+                                      @RequestAttribute("BeanName") PsDBBean psDBBean
+                                      ) throws Exception {
+        if(tmgResultsDto.getPsSite().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }else{
+            psDBBean.setTargetUser(tmgResultsDto.getTargetEmp());
+        }
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
-
         //就業実績登録
         return tmgResultsBean.updateDaily(psDBBean,tmgResultsDto);
     }
@@ -210,7 +215,11 @@ public class TmgResultsController {
     public GlobalResponse updateRemandsStatus(@RequestAttribute("BeanName") PsDBBean psDBBean,
                                       @RequestBody TmgResultsDto tmgResultsDto) throws Exception {
 
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+        if(tmgResultsDto.getPsSite().equals(TmgUtil.Cs_SITE_ID_TMG_INP)) {
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }else{
+            psDBBean.setTargetUser(tmgResultsDto.getTargetEmp());
+        }
         tmgResultsBean.setDay(tmgResultsDto.getTxtDYYYYMMDD());
         //就業実績登録
         return tmgResultsBean.updateRemandsStatus(tmgResultsDto,psDBBean);

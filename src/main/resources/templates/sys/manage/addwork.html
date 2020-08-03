@@ -249,21 +249,21 @@
                     <i-table :columns="columnsWork" :data="workData">
                         <template slot-scope="{ row, index }" slot="workStart">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
                                 <span v-else>{{ row.workStart | toTime }}</span>
                             </div>
                             <div  v-else-if="row.isInput" >
-                                <i-input v-model="workData[index].workStart" class="tc" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                             </div>
                             <span v-else>{{ row.workStart | toTime }}</span>
                         </template>
                         <template slot-scope="{ row, index }" slot="workEnd">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                                 <span v-else>{{ row.workEnd | toTime }}</span>
                             </div>
                             <div  v-else-if="row.isInput" >
-                                <i-input v-model="workData[index].workEnd" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                                <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             </div>
                             <span v-else>{{ row.workEnd | toTime }}</span>
                         </template>
@@ -647,7 +647,8 @@
                         hasAuthority: true,
                         psSite: Utils.getUrlParam(location.href, 'psSite')
                     },　//参数
-                    workData:[]
+                    workData:[],//就业时间
+                    workTimeDisable:false, //就業時間制御
                 }
             },
             async mounted() {
@@ -964,7 +965,6 @@
                     }
 
                     this.workingId = this.dailyEdit.tdaCworkingidR
-                    this.changeWorkingID(this.workingId)
                     this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
                     this.title = this.dailyEdit.tdaDyyyymmddDy
 
@@ -1036,23 +1036,17 @@
                     this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                     this.otDaily = limitOfBasedateVO.otDaily
                     this.targetForOverTime = data.targetForOverTime
-                    console.log(this.isCommonDiscretionaryLabor)
-                    console.log(data.dailyEditVO.tdaCstatusflg)
-                    console.log(this.monthlyMap.TMO_CSTATUSFLG)
+                    this.changeWorkingID(this.workingId)
                     if(data.dailyEditVO.tdaCstatusflg==='TMG_DATASTATUS|5' && 'TMG_DATASTATUS|0'===this.monthlyMap.TMO_CSTATUSFLG ){
                         this.notapproval=true
                     }else{
                         this.notapproval=false
                     }
 
-                    console.log(this.workData)
-                    console.log(this.bHoliday)
-                    console.log(this.bFixed)
-
                 },
                 //承認
                 async updateDaily() {
-                    if (!this.errorCheck()) {
+                    if (!this.errorCheck(this.workingId)) {
                         return
                     }
                     this.updateDailyLoading = true
@@ -1067,10 +1061,11 @@
                     this.tmgResultsDto.txtTdaNcloseR = ''
                     this.tmgResultsDto.tdaCowncommentR = ''
                     this.tmgResultsDto.hasAuthority = ''
-                    console.log(this.workData)
+                    this.tmgResultsDto.nonDutyList = []
+                    this.tmgResultsDto.overHoursList = []
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
                     if (!this.bDisable) {
                         this.tmgResultsDto.holiday = this.bHoliday
-
                         this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
                         this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
@@ -1082,37 +1077,42 @@
                             this.tmgResultsDto.hasAuthority = true
                         }
                     }
-                    const { msg } = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                    if(msg === '0'){
-                        this.updateDailyLoading = false
-                        this.isShow = false
-                        this.getTitleData()
+                    try {
+                        const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                        if (msg === '0') {
+                            this.updateDailyLoading = false
+                            this.isShow = false
+                            this.getTitleData()
+                            return
+                        }
+                        this.errMsg = JSON.parse(msg)
+                        let errMsg20
+                        let check = Object.keys(this.errMsg).some(e => {
+                            if (e === 'ERRTYPE_10') {
+                                this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
+                                return true
+                            }
+                            if (e === 'ERRTYPE_20') {
+                                this.errMsg.ERRTYPE_20.forEach(e20 => {
+                                    errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                                })
+                                this.$Notice.error({desc: errMsg20})
+                            }
+
+                        })
+                        if (check) {
+
+                            return false
+                        }
+                    }catch(error){
                         return
-                    }
-                    this.errMsg = JSON.parse(msg)
-                    let errMsg20
-                    let check = Object.keys(this.errMsg).some(e => {
-                        if (e === 'ERRTYPE_10') {
-                            this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
-                            return true
-                        }
-                        if (e === 'ERRTYPE_20') {
-                            this.errMsg.ERRTYPE_20.forEach(e20 => {
-                                errMsg20 = errMsg20 + e20.ERRMSG + '/n'
-                            })
-                            this.$Notice.error({desc: errMsg20})
-                        }
-
-                    })
-                    if (check) {
+                    }finally {
                         this.updateDailyLoading = false
-                        return false
                     }
-
                 },
                 //差戻
                 async updateRemandsStatus() {
-                    if (!this.errorCheck()) {
+                    if (!this.errorCheck(this.workingId)) {
                         return
                     }
                     this.updateDailyLoading = true
@@ -1125,7 +1125,9 @@
                     this.tmgResultsDto.txtTdaNcloseR = ''
                     this.tmgResultsDto.tdaCowncommentR = ''
                     this.tmgResultsDto.hasAuthority = ''
-
+                    this.tmgResultsDto.nonDutyList = []
+                    this.tmgResultsDto.overHoursList = []
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
                     if (!this.bDisable) {
                         this.tmgResultsDto.holiday = this.bHoliday
 
@@ -1140,33 +1142,37 @@
                             this.tmgResultsDto.hasAuthority = true
                         }
                     }
-                    const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                    if (msg === '0') {
-                        this.updateDailyLoading = false
-                        this.isShow = false
-                        this.getTitleData()
+                    try{
+                        const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                        if (msg === '0') {
+                            this.updateDailyLoading = false
+                            this.isShow = false
+                            this.getTitleData()
+                            return
+                        }
+                        this.errMsg = JSON.parse(msg)
+                        let errMsg20
+                        let check = Object.keys(this.errMsg).some(e => {
+                            if (e === 'ERRTYPE_10') {
+                                this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
+                                return true
+                            }
+                            if (e === 'ERRTYPE_20') {
+                                this.errMsg.ERRTYPE_20.forEach(e20 => {
+                                    errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                                })
+                                this.$Notice.error({desc: errMsg20})
+                            }
+
+                        })
+                        if (check) {
+                            return false
+                        }
+                    }catch (error) {
                         return
-                    }
-                    this.errMsg = JSON.parse(msg)
-                    let errMsg20
-                    let check = Object.keys(this.errMsg).some(e => {
-                        if (e === 'ERRTYPE_10') {
-                            this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
-                            return true
-                        }
-                        if (e === 'ERRTYPE_20') {
-                            this.errMsg.ERRTYPE_20.forEach(e20 => {
-                                errMsg20 = errMsg20 + e20.ERRMSG + '/n'
-                            })
-                            this.$Notice.error({desc: errMsg20})
-                        }
-
-                    })
-                    if (check) {
+                    }finally {
                         this.updateDailyLoading = false
-                        return false
                     }
-
                 },
                 // 就業区分の切り替え表示制御
                 changeWorkingID(workingid) {
@@ -1174,34 +1180,44 @@
                     // 休暇
                     if (this.bHoliday) {
                         this.bDisable = true;
+                        this.workTimeDisable=true
                         // 休暇以外
                     } else {
                         let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                         // 出勤 or 休日出勤
                         if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
                             this.bDisable = false;
+                            this.workTimeDisable=false
                             // 欠勤
                         } else {
                             this.bDisable = true;
+                            this.workTimeDisable=true
                         }
                     }
                     if (this.bDisable === true) {
+                        this.workData[2].workStart=''
+                        this.workData[2].workEnd=''
                         this.detailNonDutyVOList = []
                         this.detailOverhoursVOList = []
 
                     }
                 },
                 // エラーチェック
-                errorCheck() {
+                errorCheck(workingid) {
+                    let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
+                    // 出勤 or 休日出勤
+                    if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
+                        return true;
+                    }
                     // 修正出社時刻形式
-                    if (!this.time_check(this.dailyEdit.tdaNopenR)) {
+                    if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
                         this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return false;
                     }
 
                     // 修正退社時刻形式
-                    if (!this.time_check(this.dailyEdit.tdaNcloseR)) {
-                        this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
+                    if (this.workData[2].workEnd ===null || !this.time_check(this.workData[2].workEnd)) {
+                        this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                         return false;
                     }
 
@@ -1213,11 +1229,11 @@
                     //非勤務
                     const checkNonDuty = this.detailNonDutyVOList.some(e => {
 
-                        if (!this.time_check(e.tdadNopen)) {
+                        if (e.tdadNopen ===null ||  !this.time_check(e.tdadNopen)) {
                             this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                             return true;
                         }
-                        if (!this.time_check(e.tdadNclose)) {
+                        if (e.tdadNclose ===null ||  !this.time_check(e.tdadNclose)) {
                             this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                             return true;
                         }

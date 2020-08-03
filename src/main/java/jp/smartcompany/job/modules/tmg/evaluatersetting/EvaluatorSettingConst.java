@@ -120,31 +120,31 @@ public interface EvaluatorSettingConst {
 
 	int COL_EVALLIST_SECTIONNAME = 4; // 所属部署名
 
-	int COL_EVALLIST_POSTNAME = 5;// 役職名
+	int COL_EVALLIST_POSTNAME = 4;// 役職名
 
-	int COL_EVALLIST_EDITABLEFLG = 6;// 編集可能フラグ
+	int COL_EVALLIST_EDITABLEFLG = 5;// 編集可能フラグ
 
-	int COL_EVALLIST_RESULTS = 7; // 権限：勤怠承認
+	int COL_EVALLIST_RESULTS = 6; // 権限：勤怠承認
 
-	int COL_EVALLIST_NOTIFICATION = 8; // 権限：休暇休出承認
+	int COL_EVALLIST_NOTIFICATION = 7; // 権限：休暇休出承認
 
-	int COL_EVALLIST_OVERTIME = 9; // 権限：超過勤務命令
+	int COL_EVALLIST_OVERTIME = 8; // 権限：超過勤務命令
 
-	int COL_EVALLIST_SCHEDULE = 10; // 権限：予定作成 #427
+	int COL_EVALLIST_SCHEDULE = 9; // 権限：予定作成 #427
 
-	int COL_EVALLIST_AUTHORITY = 11; // 権限：権限付与 #427順序変更
+	int COL_EVALLIST_AUTHORITY = 10; // 権限：権限付与 #427順序変更
 
-	int COL_EVALLIST_ADMINFLG = 12; // 人事管理フラグ
+	int COL_EVALLIST_ADMINFLG = 11; // 人事管理フラグ
 
-	int COL_EVALLIST_MONTHLYRESULTS = 13; // 権限：月次承認
+	int COL_EVALLIST_MONTHLYRESULTS = 12; // 権限：月次承認
 
-	int COL_EVALLIST_SECTIONEVALUATER = 14; // // デフォルト承認者フラグ
+	int COL_EVALLIST_SECTIONEVALUATER = 13; // // デフォルト承認者フラグ
 
-	int COL_EVALLIST_APPROVALLEVEL = 15; // 決裁レベル
+	int COL_EVALLIST_APPROVALLEVEL = 14; // 決裁レベル
 
-	int COL_EVALLIST_TERM_FROM = 16; // 権限設定有効期間・開始日
+	int COL_EVALLIST_TERM_FROM = 15; // 権限設定有効期間・開始日
 
-	int COL_EVALLIST_TERM_TO   = 17; // 権限設定有効期間・終了日
+	int COL_EVALLIST_TERM_TO   = 16; // 権限設定有効期間・終了日
 
 	// リンク用基準日
 	int COL_DATE_PREVMONTH = 0;
