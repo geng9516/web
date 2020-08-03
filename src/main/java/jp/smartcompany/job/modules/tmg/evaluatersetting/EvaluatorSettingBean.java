@@ -81,6 +81,7 @@ public class EvaluatorSettingBean {
         params.setSite(psDBBean.getSiteId());
         params.setLanguage(psDBBean.getLanguage());
         String txtAction = (String)psDBBean.getRequestHash().get(EvaluatorSettingConst.REQUEST_KEY_ACTION);
+        psDBBean.getRequestHash().put("txtGroupName",groupName);
         if (StrUtil.isNotBlank(txtAction)) {
             params.setAction(txtAction);
         } else {
@@ -91,8 +92,6 @@ public class EvaluatorSettingBean {
         params.setCustomerID(psDBBean.getCustID());
         params.setSection(targetSectionId);
         params.setRootGroup(targetSectionId+"|"+TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
-        System.out.println("----");
-        System.out.println(params.getYYYYMMDD());
         if (StrUtil.isNotBlank(targetGroupId)){
             params.setGroup(targetGroupId);
         } else if (StrUtil.isNotBlank(lastTargetGroupId)){
@@ -1061,6 +1060,7 @@ public class EvaluatorSettingBean {
         }
         sbSQL.append(" AND   T2.TGR_DSTARTDATE <= " + sDBBaseDate);
         sbSQL.append(" AND   T2.TGR_DENDDATE   >= " + sDBBaseDate);
+        sbSQL.append(";");
         return sbSQL.toString();
     }
 

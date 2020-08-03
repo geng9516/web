@@ -18,20 +18,22 @@ public class AjaxBean {
             int UPDATE = 1;
             String sSQL = vecQuery.elementAt(0);
             int currentMode;
-            if(isSelect(sSQL))
+            if(isSelect(sSQL)) {
                 currentMode = SELECT;
-            else
+            } else {
                 currentMode = UPDATE;
+            }
             Vector vecSQL = new Vector();
             Vector vecResult = new Vector();
             vecSQL.add(sSQL);
             for(int index = 1; index < vecQuery.size(); index++) {
                 sSQL = vecQuery.elementAt(index);
                 int mode;
-                if(isSelect(sSQL))
+                if(isSelect(sSQL)) {
                     mode = SELECT;
-                else
+                } else {
                     mode = UPDATE;
+                }
                 if(mode != currentMode) {
                     if(currentMode == SELECT) {
                         PsResult res = psDBBean.getValuesforMultiquery(vecSQL, "AjaxBean");

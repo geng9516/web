@@ -31,6 +31,7 @@ public class EvaluatorSettingController {
     }
 
     @GetMapping("makegroup")
+    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup04
     public PsResult makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
                               @RequestParam(value="targetSectionId",required = false) String targetSectionId,
                               @RequestParam(value="targetGroupId",required = false) String targetGroupId,
