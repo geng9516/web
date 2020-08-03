@@ -874,7 +874,7 @@ public class EvaluatorSettingBean {
     /**
      * 名称マスタ詳細情報より、権限設定用メッセージを取得
      *
-     * @param EvaluaterSettingParam
+     * @param params
      * @return String SQL
      */
     private String buildSQL4SelectTmgVMgdEvasetMessage(EvaluatorSettingParam params) {
