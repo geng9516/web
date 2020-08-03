@@ -78,3 +78,19 @@
     margin-top: 25px;
   }
 }
+
+.p {
+  width: 450px;
+  color: var(--primary);
+  font-weight: bold;
+  border-bottom: 1px solid var(--input-border-grey);
+  margin: 0 auto 20px;
+  &:focus {
+    border-color: var(--login-input-border-active);
+    cursor: pointer;
+  }
+  &:hover {
+    border-color: var(--login-input-border-active);
+    cursor: pointer;
+  }
+}
