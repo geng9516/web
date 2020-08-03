@@ -37,12 +37,21 @@ public class DbAccessLogicImpl implements DbAccessLogic {
 
     @Override
     public int executeUpdate(Connection connection,String sSql) throws SQLException {
-        return SqlExecutor.execute(connection,sSql ,new EntityListHandler());
+        System.out.println("---");
+        System.out.println(sSql);
+        int count = SqlExecutor.execute(connection,sSql);
+        System.out.println("***");
+        System.out.println(count);
+        return count;
     }
 
     @Override
     public int executeUpdate(Connection connection,String sSql,Vector vecParam) throws SQLException {
-        return SqlExecutor.execute(connection,sSql ,new EntityListHandler(),vecParam);
+        Object[] objs = new Object[vecParam.size()];
+        for (int i = 0; i < vecParam.size(); i++) {
+            objs[i]=vecParam.get(i);
+        }
+        return SqlExecutor.execute(connection,sSql,objs);
     }
 
     @Override
