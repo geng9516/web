@@ -6,6 +6,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import io.micrometer.core.instrument.util.JsonUtils;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgCalendarSectionDO;
@@ -135,81 +136,82 @@ public class CalendarBean {
     /**
      * 新規登録処理
      */
-    public void insertCalendar(CalendarYearDto yearDto, PsDBBean psDBBean, TmgReferList referList){
+    public GlobalResponse insertCalendar(CalendarYearDto yearDto, PsDBBean psDBBean, TmgReferList referList){
         MastOrganisationDO MoDo=selectOrganization(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec());
         String parentId = MoDo.getMoCparentid();
 
-        for(CalendarMonthDto monthDto:yearDto.getMonthlist()){
-            if(monthDto.getHolFlgList().size()<31){
-                for(int i= monthDto.getHolFlgList().size();i<31;i++){
-                    monthDto.getHolFlgList().add("");
-                }
-            }
-            int insertCalendarSecton = iTmgCalendarSectionService.insertCalendarSecton(psDBBean.getCustID(),psDBBean.getCompCode()
-            ,referList.getTargetSec(),psDBBean.getUserCode(),referList.getTargetGroup(),monthDto.getHolFlgList());
-        }
+        try{
 
+            for(CalendarMonthDto monthDto:yearDto.getMonthlist()){
+                if(monthDto.getHolFlgList().size()<31){
+                    for(int i= monthDto.getHolFlgList().size();i<31;i++){
+                        monthDto.getHolFlgList().add("");
+                    }
+                }
+                int insertCalendarSecton = iTmgCalendarSectionService.insertCalendarSecton(psDBBean.getCustID(),psDBBean.getCompCode()
+                        ,referList.getTargetSec(),psDBBean.getUserCode(),referList.getTargetGroup(),monthDto.getHolFlgList());
+            }
+        }catch (GlobalException e){
+            return GlobalResponse.error(e.getMessage());
+        }
+        return GlobalResponse.ok();
     }
 
 
     /**
      * 更新処理
      */
-    public void updateCalendar(CalendarYearDto yearDto,PsDBBean psDBBean, TmgReferList referList){
+    public GlobalResponse updateCalendar(CalendarYearDto yearDto,PsDBBean psDBBean, TmgReferList referList){
         MastOrganisationDO MoDo=selectOrganization(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec());
         String parentId = MoDo.getMoCparentid();
 
         int updateCalendar;
-        for(CalendarMonthDto monthDto:yearDto.getMonthlist()){
 
-            List<CalendarColumnDto> calendarColumnDtoList=new ArrayList<CalendarColumnDto>();
+        try{
+            for(CalendarMonthDto monthDto:yearDto.getMonthlist()){
+
+                List<CalendarColumnDto> calendarColumnDtoList=new ArrayList<CalendarColumnDto>();
 
 
-            if(monthDto.getUpdateFlg()){
-                // 全学判定
-                if (parentId == null){
-                    // UPDATE     Calendar
-                    for(int i=0;i<monthDto.getHolFlgList().size();i++){
-                        CalendarColumnDto dto=new CalendarColumnDto();
-                        if (i < 9){
-                            dto.setColumnName("TCA_CHOLFLG0"+(i+1));
-                        } else {
-                            dto.setColumnName("TCA_CHOLFLG"+(i+1));
+                if(monthDto.getUpdateFlg()){
+                    // 全学判定
+                    if (parentId == null){
+                        // UPDATE     Calendar
+                        for(int i=0;i<monthDto.getHolFlgList().size();i++){
+                            CalendarColumnDto dto=new CalendarColumnDto();
+                            if (i < 9){
+                                dto.setColumnName("TCA_CHOLFLG0"+(i+1));
+                            } else {
+                                dto.setColumnName("TCA_CHOLFLG"+(i+1));
+                            }
+                            dto.setColumnValue(monthDto.getHolFlgList().get(i));
                         }
-                        dto.setColumnValue(monthDto.getHolFlgList().get(i));
-                    }
-                    updateCalendar = iTmgCalendarService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
-                            ,psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
-                } else {
-                    // UPDATE     CalendarOrganization
-                    for(int i=0;i<monthDto.getHolFlgList().size();i++){
-                        CalendarColumnDto dto=new CalendarColumnDto();
-                        if (i < 9){
-                            dto.setColumnName("TCAS_CHOLFLG0"+(i+1));
-                        } else {
-                            dto.setColumnName("TCAS_CHOLFLG"+(i+1));
+                        updateCalendar = iTmgCalendarService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
+                                ,psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
+                    } else {
+                        // UPDATE     CalendarOrganization
+                        for(int i=0;i<monthDto.getHolFlgList().size();i++){
+                            CalendarColumnDto dto=new CalendarColumnDto();
+                            if (i < 9){
+                                dto.setColumnName("TCAS_CHOLFLG0"+(i+1));
+                            } else {
+                                dto.setColumnName("TCAS_CHOLFLG"+(i+1));
+                            }
+                            dto.setColumnValue(monthDto.getHolFlgList().get(i));
                         }
-                        dto.setColumnValue(monthDto.getHolFlgList().get(i));
+                        updateCalendar = iTmgCalendarSectionService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
+                                ,referList.getTargetSec(),referList.getTargetGroup(),psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
                     }
-                    updateCalendar = iTmgCalendarSectionService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
-                            ,referList.getTargetSec(),referList.getTargetGroup(),psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
                 }
+
             }
+        }catch(GlobalException e){
+            return GlobalResponse.error(e.getMessage());
         }
 
-
+        return GlobalResponse.ok();
 
     }
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -219,15 +221,20 @@ public class CalendarBean {
 
 
     @Transactional(rollbackFor = GlobalException.class)
-    public void deleteCalendar(String year,PsDBBean psDBBean,TmgReferList referList){
+    public GlobalResponse deleteCalendar(String year,PsDBBean psDBBean,TmgReferList referList){
 
-        int deleteCalendar=iTmgCalendarSectionService.getBaseMapper().delete(SysUtil.<TmgCalendarSectionDO>query()
-                .eq("TCAS_CCUSTOMERID",psDBBean.getCustID())
-                .eq("TCAS_CCOMPANYID",psDBBean.getCompCode())
-                .eq("TCAS_CSECTIONID",referList.getTargetSec())
-                .eq("TCAS_CGROUPID",referList.getTargetGroup())
-                .le("TCAS_DYYYYMM",year+"/12/31")
-                .ge("TCAS_DYYYYMM",year+"/01/01"));
+        try{
+            int deleteCalendar=iTmgCalendarSectionService.getBaseMapper().delete(SysUtil.<TmgCalendarSectionDO>query()
+                    .eq("TCAS_CCUSTOMERID",psDBBean.getCustID())
+                    .eq("TCAS_CCOMPANYID",psDBBean.getCompCode())
+                    .eq("TCAS_CSECTIONID",referList.getTargetSec())
+                    .eq("TCAS_CGROUPID",referList.getTargetGroup())
+                    .le("TCAS_DYYYYMM",year+"/12/31")
+                    .ge("TCAS_DYYYYMM",year+"/01/01"));
+        }catch (GlobalException e){
+            return GlobalResponse.error(e.getMessage());
+        }
+        return GlobalResponse.ok();
     }
 
     /**
