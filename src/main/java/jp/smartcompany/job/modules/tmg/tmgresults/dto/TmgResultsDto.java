@@ -25,7 +25,7 @@ public class TmgResultsDto {
     private String txtDYYYYMMDD;
     private String psSite;
     private String hasAuthority;
-
+    private String targetEmp;
     /**
      * 出張区分
      */
