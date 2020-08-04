@@ -300,9 +300,9 @@
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
-                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
-                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
-                    [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_GROUP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -713,11 +713,17 @@
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
 
+                console.log("handleClickEmpLeaf "+JSON.stringify(e))
+
                 this.deptDrawShow = false
 
+                this.opts.empId = e[0].empid
+                this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.opts.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
+                this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
 
                 this.deptName = e[0].secnic
-                this.opts.empId = e[0].empid
+
                 this.kanjiName = e[0].empname
                 this.selectDisabled = true
                 this.remarksDisabled = true
