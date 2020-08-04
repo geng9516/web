@@ -52,7 +52,6 @@
                                     @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
-                        ​
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                                 empty-text="所属データなし"></Tree>
@@ -401,7 +400,7 @@
                         txtTmgReferListTreeViewPermTargetSection: '',
                         txtTmgReferListTreeViewPermTargetGroup: '',
                         txtTmgReferListTreeViewPermTargetEmp: '',
-                        txtTmgReferListTreeViewPermSelectedView: 'sectio',
+                        txtTmgReferListTreeViewPermSelectedView: 'section',
                         txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),

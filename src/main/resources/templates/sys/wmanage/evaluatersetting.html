@@ -52,7 +52,6 @@
                                     @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
-                        ​
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                                 empty-text="所属データなし"></Tree>
@@ -269,19 +268,28 @@
         <!-- 権限変更 end-->
 
         <!-- 警告値設定 start-->
-        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false"
+        <Modal v-model="PermissionFlagModals" class="tc" width="650" title="警告値設定" footer-hide :mask-closable="false"
             @on-cancel="cancel">
-            <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
-                <form-item label="所属">
-                    <span class="input-like-span">{{ localValue.group }}</span>
-                </form-item>
-                <form-item label="改訂日">
-                    <span class="input-like-span">{{ localValue.date }}</span>
-                </form-item>
-                <form-item label="夜間連携">
-                    <Checkbox class="input-like-span">デフォルト承認者の自動設定を行う</Checkbox>
-                </form-item>
-            </i-form> -->
+            <Row>
+                <i-col span="6">
+                    <div class="label tr">所属</div>
+                </i-col>
+                <i-col span="18">
+                    <span class="input-like-span mb2 tl">{{ deptName }}</span>
+                </i-col>
+                <i-col span="6">
+                    <div class="label tr">改訂日</div>
+                </i-col>
+                <i-col span="18">
+                    <span class="input-like-span mb2 tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
+                </i-col>
+                <i-col span="6">
+                    <div class="label tr">夜間連携</div>
+                </i-col>
+                <i-col span="18">
+                    <Checkbox class="input-like-span tl" style="margin-left: 0;">デフォルト承認者の自動設定を行う</Checkbox>
+                </i-col>
+            </Row>
 
             <!-- <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="time">
@@ -294,7 +302,7 @@
                     <i-input v-model="row.time" />
                 </template>
             </i-table> -->
-            <div class="my-footer">
+            <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel">キャンセル</i-button>
                 <i-button type="primary" size="large" @click="update()">変更</i-button>
             </div>
@@ -401,7 +409,7 @@
                         txtTmgReferListTreeViewAdminTargetSection: '',
                         txtTmgReferListTreeViewAdminTargetGroup: '',
                         txtTmgReferListTreeViewAdminTargetEmp: '',
-                        txtTmgReferListTreeViewAdminSelectedView: 'sectio',
+                        txtTmgReferListTreeViewAdminSelectedView: 'section',
                         txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -560,6 +568,7 @@
             },
             async mounted() {
                 this.getOrgTree()
+                await this.getTableData(true)
             },
             watch: {
                 data: {
@@ -653,11 +662,11 @@
                 handleClickLeaf(e) {
                     if (!e[0]) return
                     this.deptDrawShow = false
-                    this.deptName = e[0].groupname
+                    this.deptName = e[0].secnic
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                     this.getTableData()
                 },
-                async getTableData() {
+                async getTableData(isAdminSite) {
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
@@ -669,6 +678,11 @@
                         this.bottomMessage = data.bottomMessage
                         this.curDate = data.YYYYMMDD
                         this.data = data.list
+
+                        // 管理site需要一进去就请求
+                        if(isAdminSite) {
+                            this.deptName = this.data[0].group
+                        }
                     } catch (error) {
 
                     } finally {
@@ -694,15 +708,17 @@
                 },
                 handleCickGroup(row) {
                     console.log(row)
-                    if (row.enableEditGroup) {
-                        this.PermissionFlagModals = true
-                    }
-                    if (row.enableEditGroupName) {
-                        // 将グループ名作成部分隐藏
-                        this.PermissionGroupAdd = false
-                        this.editGroupNameModal = true
-                        this.gruopNameForm.groupName = row.groupName
-                    }
+                    this.PermissionFlagModals = true
+                    // if (row.enableEditGroup) {
+                    //     // 修改警告值得部分
+                    //     this.PermissionFlagModals = true
+                    // }
+                    // if (row.enableEditGroupName) {
+                    //     // 将グループ名作成部分隐藏
+                    //     this.PermissionGroupAdd = false
+                    //     this.editGroupNameModal = true
+                    //     this.gruopNameForm.groupName = row.groupName
+                    // }
                 },
                 handleClickMakeGroup() {
                     this.PermissionGroupAdd = true
