@@ -12,6 +12,8 @@ import java.util.List;
 @ToString
 public class CalendarMonthDto {
     private String month;
-    private Boolean updateFlg= false;
+
+    //private Boolean updateFlg= false;
+
     private List<String> holFlgList=new ArrayList<String>();
 }

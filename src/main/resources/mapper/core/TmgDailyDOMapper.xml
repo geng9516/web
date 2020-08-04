@@ -721,5 +721,9 @@
         AND M.TMO_CCUSTOMERID = D.TDA_CCUSTOMERID
         AND M.TMO_CCOMPANYID  = D.TDA_CCOMPANYID
     </select>
+    <select id="selectMaxDaily" resultType="java.lang.String">
+        select TO_CHAR(MAX(TDA_DYYYYMM),'yyyymm') AS MAX_DAY
+        from TMG_DAILY
+    </select>
 
 </mapper>

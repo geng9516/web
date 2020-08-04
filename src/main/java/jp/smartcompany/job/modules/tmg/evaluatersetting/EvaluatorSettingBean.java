@@ -4,7 +4,6 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
@@ -1244,17 +1243,18 @@ public class EvaluatorSettingBean {
      * @return String SQL
      */
     private String buildSQL4NextGroupId(String psSecId, String psCustId, String psCompId){
-        return "(T1.TGR_CSECTIONID || '|' || ( " +
-                "SELECT " +
-                "TO_CHAR(NVL(SUBSTR(MAX(TGR_CGROUPID),INSTR(MAX(TGR_CGROUPID),'|')+1,LENGTH(MAX(TGR_CGROUPID))),0)+1,'FM099999') " +
-                "FROM " +
-                "TMG_GROUP " +
-                "WHERE " +
-                "TGR_CCUSTOMERID = " + psCustId +
-                " AND TGR_CCOMPANYID = " + psCompId +
-                " AND TGR_CSECTIONID = " + psSecId +
-                ")" +
-                ") ";
+        return " (T1.TGR_CSECTIONID || '|' || ( " +
+                " SELECT " +
+                " TO_CHAR(NVL(SUBSTR(MAX(TGR_CGROUPID), INSTR(MAX(TGR_CGROUPID),'|') + 1, " +
+                " LENGTH(MAX(TGR_CGROUPID))), 0) + 1, 'FM099999') " +
+                " FROM " +
+                " TMG_GROUP " +
+                " WHERE " +
+                " TGR_CCUSTOMERID  =  " + psCustId +
+                " AND TGR_CCOMPANYID   =  " + psCompId +
+                " AND TGR_CSECTIONID   =  " + psSecId +
+                " ) " +
+                " ) ";
     }
 
     /**

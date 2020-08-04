@@ -47,12 +47,12 @@ public class CalendarController {
      */
     @PostMapping("insertCalendar")
     @ResponseBody
-    public GlobalResponse insertCalendar(@RequestBody CalendarYearDto calendarYearDto,
+    public GlobalResponse insertCalendar(@RequestBody CalendarYearDto CalendarYearDto,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
-                calendarYearDto.getMonthlist().get(0).getMonth()
+                CalendarYearDto.getMonthlist().get(0).getMonth()
                 ,TmgReferList.TREEVIEW_TYPE_LIST, true);
-        return calendarBean.insertCalendar(calendarYearDto,psDBBean,referList);
+        return calendarBean.insertCalendar(CalendarYearDto,psDBBean,referList);
     }
 
 
@@ -62,12 +62,12 @@ public class CalendarController {
      */
     @PostMapping("updateCalendar")
     @ResponseBody
-    public GlobalResponse updateCalendar(@RequestBody CalendarYearDto calendarYearDto,
+    public GlobalResponse updateCalendar(@RequestBody CalendarYearDto CalendarYearDto,
                                          @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
-                calendarYearDto.getMonthlist().get(0).getMonth()
+                CalendarYearDto.getMonthlist().get(0).getMonth()
                 ,TmgReferList.TREEVIEW_TYPE_LIST, true);
-        return calendarBean.updateCalendar(calendarYearDto,psDBBean,referList);
+        return calendarBean.updateCalendar(CalendarYearDto,psDBBean,referList);
     }
 
     /**

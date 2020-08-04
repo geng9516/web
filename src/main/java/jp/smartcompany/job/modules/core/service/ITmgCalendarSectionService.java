@@ -27,7 +27,7 @@ public interface ITmgCalendarSectionService extends IService<TmgCalendarSectionD
     /**
      * カレンダー情報を登録します。
      */
-    int insertCalendarSecton(String custID, String compCode, String targetSec, String userCode, String targetGroup, List<String> monthDto);
+    int insertCalendarSecton(String custID, String compCode, String targetSec, String userCode, String targetGroup,String month, List<String> monthDto);
 
     /**
      * カレンダー情報を登録します。
