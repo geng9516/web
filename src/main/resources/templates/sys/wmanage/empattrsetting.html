@@ -475,8 +475,9 @@
 
             },
             async beginDateDelete(){
+
                 let index=this.radioCheckedIndex
-                let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
+                let oldValue=Array.of(this.workDaySettingData[index]).map(e=>{
                     return {'action':'',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
                 })[0]
 
@@ -484,6 +485,8 @@
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 console.log("beginDateDelete "+JSON.stringify(OPTS))
                 const { data } = await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
+                this.workDaySettingData.splice(index,1)
+
 
             },
             async beginDateUploadOrUpdate(){
@@ -511,10 +514,9 @@
                 }
                 let params={...newValue,...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                console.log("beginDateUploadOrUpdate "+JSON.stringify(OPTS))
                 const { data } = await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
-
-
+                this.workDaySettingData[index].isChecked=false
+                this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
 
             },
             async manageFlagUpdate(){
@@ -525,6 +527,7 @@
                 console.log("manageFlagUpdate"+JSON.stringify(this.opts))
                 const { data } = await this.http.postForm('sys/userprofile/manageFlagUpdate', this.opts)
                 this.$Notice.info({title: '登録成功', desc: ""})
+
             },
             checkBoxChange(e,i,name){
                 if(name=="over"){
@@ -606,12 +609,6 @@
                     this.overValue=Array(data.list.length).fill().
                     map((e,index)=>({"employeeId":data.list[index].meCemployeeidCk,"initCheckType":data.list[index].excludeOvertime,"updaeCheckType":data.list[index].excludeOvertime}))
 
-                    console.log("manageValue"+JSON.stringify(this.manageValue))
-                    console.log("overValue"+JSON.stringify(this.overValue))
-
-
-
-
                 } catch (error) {
                     console.log(error)
                     return
@@ -641,9 +638,6 @@
 
                     this.beginDateListBackUp=Utils.deepClone(this.workDaySettingData)
                     this.historyData = data.historyList
-                    console.log(this.referSettingData)
-                    console.log(this.workDaySettingData)
-                    console.log(this.historyData)
                     this.isShow = true
                     this.isBeginDateEdit = true
                     this.isAvgTimeEdit = false
@@ -667,8 +661,6 @@
                     this.averageTimeData = data.historyList
                     this.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
                     this.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
-                    console.log(this.nowWorkTime)
-                    console.log(this.averageTimeData)
                     this.isShow = true
                     this.isAvgTimeEdit = true
                     this.isBeginDateEdit = false
@@ -697,7 +689,6 @@
             clear(){
                 this.workDaySettingData= this.beginDateListBackUp
                 this.handleRadio(0)
-                console.log(this.workDaySettingData)
             },
             pageChange(e) {
                 this.opts.page = e
