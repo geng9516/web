@@ -67,6 +67,25 @@
     box-shadow: 0 0 0 2px rgba(45, 140, 240, 0.2);
   }
 }
+.ivu-form:not(.classical) {
+  .ivu-form-item-label {
+    background-color: var(--form-label);
+    color: var(--white);
+  }
+   // 通用表单验证的星
+   .ivu-form-item-required .ivu-form-item-label:before {
+    content: "*";
+    background-color: var(--form-required-star);
+    padding: 0px 5px;
+    color: var(--white);
+    position: absolute;
+    left: 0;
+    height: 15px;
+    line-height: 15px;
+    top: 0;
+    border-radius: 2px 0 2px 0;
+  }
+}
 //环境设定的标题样式
 .titlenorm {
   border-top: solid 1px var(--form-title-border);
