@@ -310,6 +310,9 @@
                 },
                 treeData: [],            //組織ツリー用
                 opts: {
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    hidSearchData:'',
                     hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                     keyword: '',
                     baseDate: '',
@@ -712,11 +715,8 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-
-                console.log("handleClickEmpLeaf "+JSON.stringify(e))
-
                 this.deptDrawShow = false
-
+                this.opts.hidSearchData=e[0].empid
                 this.opts.empId = e[0].empid
                 this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.opts.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
