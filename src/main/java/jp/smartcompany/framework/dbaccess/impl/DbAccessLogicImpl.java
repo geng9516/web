@@ -36,12 +36,9 @@ public class DbAccessLogicImpl implements DbAccessLogic {
     }
 
     @Override
-    public int executeUpdate(Connection connection,String sSql) throws SQLException {
-        System.out.println("---");
+    public int executeUpdate(Statement statement,String sSql) throws SQLException {
         System.out.println(sSql);
-        int count = SqlExecutor.execute(connection,sSql);
-        System.out.println("***");
-        System.out.println(count);
+        int count = statement.executeUpdate(sSql);
         return count;
     }
 
