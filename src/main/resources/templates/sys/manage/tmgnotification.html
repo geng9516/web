@@ -181,7 +181,7 @@
           <Icon type="logo-buffer"></Icon>
           申請明細
         </div>
-        <i-form label-position="right" :label-width="100">
+        <i-form label-position="right" :label-width="100" class="classical">
           <form-item label="申請区分">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCtypeName }}</span>
           </form-item>
@@ -333,7 +333,7 @@
               代理申請
             </div>
             <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
-            <i-form label-position="right" :label-width="100" :rules="ruleValidate">
+            <i-form label-position="right" :label-width="100" :rules="ruleValidate" class="classical">
               <form-item label="申請区分" prop="restTypeId">
                 <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                   class="mb5 no-border-radius" ref="select" transfer>
