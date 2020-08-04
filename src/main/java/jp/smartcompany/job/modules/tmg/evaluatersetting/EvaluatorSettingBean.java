@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
@@ -146,7 +147,7 @@ public class EvaluatorSettingBean {
         return result;
     }
 
-    public GlobalResponse makeGroupHandler(PsDBBean psDBBean,String targetSectionId,String targetGroupId,String lastTargetGroupId,String groupName,String empId) {
+    public GlobalResponse makeGroupHandler(PsDBBean psDBBean, String targetSectionId, String targetGroupId, String lastTargetGroupId, String groupName, String empId) {
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         params.setSite(psDBBean.getSiteId());
         params.setLanguage(psDBBean.getLanguage());
