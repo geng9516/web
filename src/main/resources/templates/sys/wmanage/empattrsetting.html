@@ -717,16 +717,9 @@
                 if(!e[0]) return
                 this.deptDrawShow = false
                 this.opts.hidSearchData=e[0].empid
-                this.opts.empId = e[0].empid
                 this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                this.opts.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                 this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
-
                 this.deptName = e[0].secnic
-
-                this.kanjiName = e[0].empname
-                this.selectDisabled = true
-                this.remarksDisabled = true
                 this.getTableData()
             },
             searchOrgTree: Debounce( async function() {
