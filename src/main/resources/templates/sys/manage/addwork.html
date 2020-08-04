@@ -274,7 +274,7 @@
                     <Row>
                         <i-col span="8" class="label tc">本人コメント</i-col>
                         <i-col span="16">
-                            <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea"
+                            <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" disabled
                                      readonly></i-input>
                         </i-col>
                     </Row>
@@ -460,7 +460,6 @@
                         hidSearchItems:'EMPLOYEEID',
                         hidSearchCondition:'BROADMATCH',
                         hidSearchData:'',
-                        txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href,'psApp'),
                         type: 11
@@ -645,6 +644,7 @@
                         nonDutyList: [],
                         overHoursList: [],
                         hasAuthority: true,
+                        targetEmp:'',
                         psSite: Utils.getUrlParam(location.href, 'psSite')
                     },　//参数
                     workData:[],//就业时间
@@ -680,6 +680,7 @@
                             this.treeData = Utils.convertTreeData(memberList)
                         }
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                        this.empDeptLoading = false
                         await this.getWorkDateList()
                     } catch (error) {
                         return
@@ -1056,16 +1057,16 @@
 
                     this.tmgResultsDto.workingId = this.workingId
                     this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
-                    this.tmgResultsDto.holiday = null
                     this.tmgResultsDto.txtTdaNopenR = ''
                     this.tmgResultsDto.txtTdaNcloseR = ''
                     this.tmgResultsDto.tdaCowncommentR = ''
                     this.tmgResultsDto.hasAuthority = ''
                     this.tmgResultsDto.nonDutyList = []
                     this.tmgResultsDto.overHoursList = []
-                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
+                    this.tmgResultsDto.holiday = this.bHoliday
                     if (!this.bDisable) {
-                        this.tmgResultsDto.holiday = this.bHoliday
+
                         this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
                         this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
@@ -1127,7 +1128,7 @@
                     this.tmgResultsDto.hasAuthority = ''
                     this.tmgResultsDto.nonDutyList = []
                     this.tmgResultsDto.overHoursList = []
-                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
                     if (!this.bDisable) {
                         this.tmgResultsDto.holiday = this.bHoliday
 
