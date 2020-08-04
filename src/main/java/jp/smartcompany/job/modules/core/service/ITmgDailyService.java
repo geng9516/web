@@ -180,4 +180,11 @@ public interface ITmgDailyService extends IService<TmgDailyDO> {
      * @return
      */
     TmgStatus buildSQLForSelectTmgStatus(String custID, String compCode, String userCode, String day);
+
+
+    /**
+     * 予定入力可能情報を取得
+     * @return String SQL (予定入力可能年月取得用クエリ)
+     */
+    String selectMaxDaily();
 }

@@ -14,6 +14,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgPaidHolidayAttributeDO;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarSectionService;
 import jp.smartcompany.job.modules.core.service.ITmgCalendarService;
+import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarColumnDto;
 import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarMonthDto;
@@ -46,7 +47,7 @@ public class CalendarBean {
     private final IMastOrganisationService iMastOrganisationService;
     private final ITmgCalendarSectionService iTmgCalendarSectionService;
     private final ITmgCalendarService iTmgCalendarService;
-
+    private final ITmgDailyService iTmgDailyService;
 
     /**
      * カレンダー一覧表示の為のプロセスを実行します。<br>
@@ -129,6 +130,7 @@ public class CalendarBean {
             dispVo.setDataFlg(JSONUtil.parseObj(dispVo.getMonthPara()));
         }
         calendarVo.setCalendarDispVoList(calendarDispVoList);
+        calendarVo.setSelectMaxDaily(selectMaxDaily());
         return calendarVo;
     }
 
@@ -149,7 +151,7 @@ public class CalendarBean {
                     }
                 }
                 int insertCalendarSecton = iTmgCalendarSectionService.insertCalendarSecton(psDBBean.getCustID(),psDBBean.getCompCode()
-                        ,referList.getTargetSec(),psDBBean.getUserCode(),referList.getTargetGroup(),monthDto.getHolFlgList());
+                        ,referList.getTargetSec(),psDBBean.getUserCode(),referList.getTargetGroup(),monthDto.getMonth(),monthDto.getHolFlgList());
             }
         }catch (GlobalException e){
             return GlobalResponse.error(e.getMessage());
@@ -173,7 +175,7 @@ public class CalendarBean {
                 List<CalendarColumnDto> calendarColumnDtoList=new ArrayList<CalendarColumnDto>();
 
 
-                if(monthDto.getUpdateFlg()){
+
                     // 全学判定
                     if (parentId == null){
                         // UPDATE     Calendar
@@ -185,6 +187,7 @@ public class CalendarBean {
                                 dto.setColumnName("TCA_CHOLFLG"+(i+1));
                             }
                             dto.setColumnValue(monthDto.getHolFlgList().get(i));
+                            calendarColumnDtoList.add(dto);
                         }
                         updateCalendar = iTmgCalendarService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
                                 ,psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
@@ -198,11 +201,12 @@ public class CalendarBean {
                                 dto.setColumnName("TCAS_CHOLFLG"+(i+1));
                             }
                             dto.setColumnValue(monthDto.getHolFlgList().get(i));
+                            calendarColumnDtoList.add(dto);
                         }
                         updateCalendar = iTmgCalendarSectionService.updateCalendar(psDBBean.getCustID(),psDBBean.getCompCode()
                                 ,referList.getTargetSec(),referList.getTargetGroup(),psDBBean.getUserCode(),monthDto.getMonth(),calendarColumnDtoList);
                     }
-                }
+
 
             }
         }catch(GlobalException e){
@@ -222,13 +226,18 @@ public class CalendarBean {
 
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse deleteCalendar(String year,PsDBBean psDBBean,TmgReferList referList){
-
+        String groupId;
+        if(StrUtil.hasEmpty(referList.getTargetGroup())){
+            groupId=referList.getTargetSec()+"|000000";
+        }else{
+            groupId=referList.getTargetGroup();
+        }
         try{
             int deleteCalendar=iTmgCalendarSectionService.getBaseMapper().delete(SysUtil.<TmgCalendarSectionDO>query()
                     .eq("TCAS_CCUSTOMERID",psDBBean.getCustID())
                     .eq("TCAS_CCOMPANYID",psDBBean.getCompCode())
                     .eq("TCAS_CSECTIONID",referList.getTargetSec())
-                    .eq("TCAS_CGROUPID",referList.getTargetGroup())
+                    .eq("TCAS_CGROUPID",groupId)
                     .le("TCAS_DYYYYMM",year+"/12/31")
                     .ge("TCAS_DYYYYMM",year+"/01/01"));
         }catch (GlobalException e){
@@ -236,6 +245,14 @@ public class CalendarBean {
         }
         return GlobalResponse.ok();
     }
+    /**
+     * 予定入力可能情報を取得
+     * @return String SQL (予定入力可能年月取得用クエリ)
+     */
+    public String selectMaxDaily(){
+        return iTmgDailyService.selectMaxDaily();
+    }
+
 
     /**
      * 当年度情報を取得します。
@@ -272,4 +289,8 @@ public class CalendarBean {
     private MastOrganisationDO selectOrganization(String custId, String compId, String sectionId){
         return iMastOrganisationService.selectOrganisation(custId,compId,sectionId, DateTime.now());
     }
+
+
+
+
 }

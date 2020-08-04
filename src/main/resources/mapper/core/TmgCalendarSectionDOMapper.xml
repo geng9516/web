@@ -56,20 +56,26 @@
 		#{userCode},
 		SYSDATE,
 		'TMG_CALANDER_EDIT',
-		#{targetGroup},
-		#{monthDto.month},
+        <choose>
+            <when test=" targetGroup == null ">
+                #{targetSec} || '|000000',
+            </when>
+            <otherwise>
+                #{targetGroup,jdbcType=VARCHAR},
+            </otherwise>
+        </choose>
+		#{month},
 		'1',
-        <foreach collection="list" item="monthDto" index="index" open="" close="" separator=",">
-            #{monthDto.holFlgList}
+        <foreach collection="monthDto" item="item" index="index" open="" close="" separator=",">
+            '${item}'
         </foreach>
-        ;
 	)
     </insert>
     <update id="updateCalendar">
         UPDATE
             TMG_CALENDAR_SECTION
         SET
-        <foreach collection="list" item="holFlgList" index="index" open="" close="," separator=",">
+        <foreach collection="holFlgList" item="holFlgList" index="index" open="" close="," separator=",">
             ${holFlgList.columnName} = '${holFlgList.columnValue}'
         </foreach>
             TCAS_CMODIFIERUSERID = #{userCode},
@@ -80,7 +86,14 @@
 	        TCAS_CCUSTOMERID = #{custID}
         AND TCAS_CCOMPANYID = #{compCode}
         AND TCAS_CSECTIONID = #{targetSec}
-        AND TCAS_CGROUPID = #{targetGroup}
+        <choose>
+            <when test=" targetGroup == null ">
+                AND TCAS_CGROUPID = #{targetSec} || '|000000'
+            </when>
+            <otherwise>
+                AND TCAS_CGROUPID = #{targetGroup,jdbcType=VARCHAR}
+            </otherwise>
+        </choose>
         AND TCAS_DYYYYMM = #{month};
     </update>
 

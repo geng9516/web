@@ -123,4 +123,6 @@ public interface TmgDailyMapper extends BaseMapper<TmgDailyDO> {
                                          @Param("compCode")String compCode,
                                          @Param("userCode")String userCode,
                                          @Param("day")String day);
+
+    String selectMaxDaily();
 }

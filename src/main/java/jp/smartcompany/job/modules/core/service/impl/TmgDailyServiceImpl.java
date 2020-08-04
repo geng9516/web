@@ -297,4 +297,13 @@ public class TmgDailyServiceImpl extends ServiceImpl<TmgDailyMapper, TmgDailyDO>
         return baseMapper.buildSQLForSelectTmgStatus(custID, compCode, userCode, day);
     }
 
+    /**
+     * 予定入力可能情報を取得
+     * @return String SQL (予定入力可能年月取得用クエリ)
+     */
+    @Override
+    public String selectMaxDaily(){
+        return baseMapper.selectMaxDaily();
+    }
+
 }
