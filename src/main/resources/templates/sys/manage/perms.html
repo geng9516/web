@@ -17,9 +17,12 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" size="large" @click="permissionAdminAdd = true">承認者追加</i-button>
-                    <i-button type="primary" size="large" @click="PermissionGroupAdd = true">グループ作成</i-button>
-                    <i-button type="primary" size="large" @click="PermissionMemberAssign = true">メンバー割付</i-button>
+                    <i-button type="primary" size="large" v-if="btnAddEval" @click="permissionAdminAdd = true">承認者追加
+                    </i-button>
+                    <i-button type="primary" size="large" v-if="btnMakeGroup" @click="PermissionGroupAdd = true">グループ作成
+                    </i-button>
+                    <i-button type="primary" size="large" v-if="btnEditMember" @click="PermissionMemberAssign = true">
+                        メンバー割付</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
             </div>
@@ -63,18 +66,23 @@
         </div>
         <div class="content_body">
             <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
-                :disabled-hover="true">
+                no-data-text="所属を選択して下さい。" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
-                    <i-button type="primary" ghost size="small" :class="row.preIndex !== 0 ? 'ml30 width75' : 'width75'"
-                        @click="handleOverFlag">
+                    <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
+                        :class="row.main ? 'width75' : 'ml30 width75'" style="font-weight: bold;">{{ row.group }}</span>
+                    <i-button type="primary" ghost size="small" :class="row.main ? 'width75' : 'ml30 width75'"
+                        @click="handleCickGroup(row.enableEditGroup,row.enableEditGroupName)" v-else>
                         {{ row.group }}
                     </i-button>
                 </template>
                 <template slot-scope="{ row }" slot="name">
-                    <i-button type="primary" ghost size="small" long v-if="row.name" @click="handleEditData">
-                        {{ row.name }}
+                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}"
+                        v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
+                    <i-button type="primary" ghost size="small" long v-if="row.empId && row.enableEmpEdit"
+                        @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
+                        {{ `${row.empId} (${row.name}/${row.postName})`  }}
                     </i-button>
-                    <span v-else class="grey">未设定</span>
+                    <span v-if="!row.empId" class="grey">未设定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
                     <span class="blue">{{ row.workConfirm ? '〇' : '' }}</span>
@@ -98,6 +106,10 @@
 
                 <template slot-scope="{ row }" slot="restConfirm">
                     <span class="blue">{{ row.restConfirm ? '〇' : '' }}</span>
+                </template>
+
+                <template slot-scope="{ row }" slot="validPeriod">
+                    <span>{{ `${row.validStartDate} ～ ${row.validEndDate}` }}</span>
                 </template>
             </i-table>
         </div>
@@ -187,7 +199,8 @@
         <!-- グループ作成 end-->
 
         <!-- メンバー割付 start-->
-        <Modal v-model="PermissionMemberAssign" title="メンバー割付" width="650" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionMemberAssign" title="メンバー割付" width="650" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
                 <form-item label="所属">
                     <span class="input-like-span">{{ localValue.group }}</span>
@@ -215,13 +228,14 @@
         <!-- メンバー割付 end-->
 
         <!-- 権限変更 start-->
-        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <Row>
                 <i-col span="4">
-                <div class="label">所属</div>
+                    <div class="label">所属</div>
                 </i-col>
                 <i-col span="5">
-                <span class="input-like-span">XX庁</span>
+                    <span class="input-like-span">XX庁</span>
                 </i-col>
             </Row>
             <!-- <i-table border :columns="columns" :data="data" :loading="loading" class="mt15 mb20">
@@ -274,7 +288,8 @@
         <!-- 権限変更 end-->
 
         <!-- 警告値設定 start-->
-        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false" @on-cancel="cancel">
+        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
             <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
                 <form-item label="所属">
                     <span class="input-like-span">{{ localValue.group }}</span>
@@ -304,6 +319,29 @@
             </div>
         </Modal>
         <!-- 警告値設定 end-->
+
+        <!-- グループ名編集画面表示 start-->
+        <Modal v-model="editGroupNameModal" class="tc" width="450" title="グループ名編集" footer-hide :mask-closable="false"
+            @on-cancel="cancel">
+            <Alert type="error" class="error-info" style="padding-left: 70px;" v-show="errorFlag">{{ errorMsg }}</Alert>
+            <i-form :label-width="100" ref="gruopNameForm" :model="gruopNameForm" :rules="gruopNameFormValidate">
+                <form-item label="所属">
+                    <span class="input-like-span" style="width: 95%;">{{ gruopNameForm.group }}</span>
+                </form-item>
+                <form-item label="改訂日">
+                    <span class="input-like-span" style="width: 95%;">{{ gruopNameForm.date }}</span>
+                </form-item>
+                <form-item label="グループ名" prop="groupName">
+                    <i-input v-model="gruopNameForm.groupName" style="width: 95%;"></i-input>
+                </form-item>
+            </i-form>
+
+            <div class="my-footer tr mt15">
+                <i-button type="text" @click="cancel('gruopNameForm','editGroupNameModal')">キャンセル</i-button>
+                <i-button type="primary" size="large" @click="updateGruopName('gruopNameForm')">変更</i-button>
+            </div>
+        </Modal>
+        <!-- グループ名編集画面表示 end-->
     </main>
 
     <div th:replace="layout/script::common_script"></div>
@@ -369,7 +407,7 @@
                             title: '有効期間',
                             align: 'center',
                             width: 220,
-                            key: 'validPeriod'
+                            slot: 'validPeriod'
                         }
                     ],
                     loading: false,
@@ -377,10 +415,12 @@
                     mergeSpanInfo: [],
                     emplistLoading: false,
                     referListObject: {
-                        txtTmgReferListTreeViewRecordDate: '',
-                        txtTmgReferListTreeViewAdminTargetSection: '',
-                        txtTmgReferListTreeViewAdminTargetGroup: '',
-                        txtTmgReferListTreeViewAdminTargetEmp: '',
+                        txtTmgReferListTreeViewRecordDate: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
+                        txtTmgReferListTreeViewPermTargetSection: '',
+                        txtTmgReferListTreeViewPermTargetGroup: '',
+                        txtTmgReferListTreeViewPermTargetEmp: '',
+                        txtTmgReferListTreeViewPermSelectedView: 'sectio',
+                        txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
@@ -398,6 +438,13 @@
                     PermissionMemberAssign: false,
                     PermissionEditerModals: false,
                     PermissionFlagModals: false,
+                    editGroupNameModal: false,
+                    btnAddEval: false,
+                    btnMakeGroup: false,
+                    btnEditMember: false,
+                    errorFlag: false,
+                    errorMsg: '赤枠の項目を入力してください。',
+                    bottomMessage: '',
                     // 承認者追加画面
                     localValue: {
                         name: '',
@@ -432,11 +479,20 @@
                             name: '眞鍋 孝司',
                             value: '1'
                         }],
+                    // グループ名編集画面表示
+                    gruopNameForm: {},
+                    gruopNameFormValidate: {
+                        groupName: [
+                            {
+                                required: true,
+                                trigger: 'blur'
+                            }
+                        ]
+                    }
                 }
             },
             async mounted() {
                 this.getOrgTree()
-                // this.getTableHead()
             },
             watch: {
                 data: {
@@ -462,20 +518,20 @@
                             // 个人占据了多少条
                             let whichMemberDuplicate = []
                             if (!e.memberList) {
-                                result = result.concat({ group: e.group })
+                                result = result.concat(e)
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
                                         // 成员无任何权限时
                                         deptOccupy += 1
-                                        result = result.concat({ preIndex: i, group: e.group, name: j.name })
+                                        result = result.concat({ ...e, ...j })
                                     } else {
                                         deptOccupy += j.validList.length
                                         if (j.validList.length > 1) {
                                             whichMemberDuplicate.push([_i, j.validList.length])
                                         }
                                         j.validList.forEach(h => {
-                                            result = result.concat({ preIndex: i, group: e.group, name: j.name, ...h })
+                                            result = result.concat({ ...e, ...j, ...h })
                                         })
                                     }
                                 })
@@ -499,10 +555,10 @@
             },
             methods: {
                 handleDatePicker() {
-                    this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+                    this.referListObject.txtYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
                         // this.getTableHead()
-                        // this.getTableData()
+                        this.getTableData()
                         return
                     }
                     this.$Notice.warning({ title: '所属を選択して下さい' })
@@ -531,34 +587,59 @@
                 handleClickLeaf(e) {
                     if (!e[0]) return
                     this.deptDrawShow = false
-                    this.deptName = e[0].secnic
-                    this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                    this.getTableHead()
+                    this.deptName = e[0].groupname
+                    this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.getTableData()
                 },
-                async getTableHead() {
-                    // this.query.txtAction = 'ACT_DISP_MONTHLY'
-                    // const { data } = await this.http.get('sys/permStatList/selectDayHead', this.query)
-                    // this.tableHead = data
-                },
                 async getTableData() {
-                    // this.listLoading = true
-                    // const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.query)
-                    // this.tableData = data.tmgMonthlyInfoVOList
+                    this.loading = true
+                    try {
+                        const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
+                        console.log(data)
+                        // 操作按钮
+                        this.btnAddEval = data.btnAddEval
+                        this.btnMakeGroup = data.btnAddEval
+                        this.btnEditMember = data.btnAddEval
+                        this.bottomMessage = data.bottomMessage
+                        this.data = data.list
+                    } catch (error) {
+
+                    } finally {
+                        this.loading = false
+                    }
                     // this.approval = data.approval
                     // this.listLoading = false
                     // this.isSearchHistory = false
                 },
-                cancel() {
-                    this.$refs.localValue.resetFields()
-                    this.isShow = false
+                cancel(name, isShow) {
+                    this.$refs[name].resetFields()
+                    this[isShow] = false
+                    this.errorFlag = false
                 },
                 add() {
-                    this.$refs.localValue.validate(valid => {
+                    this.$refs[name].validate(valid => {
                         if (valid) {
                             this.$emit('add')
                             this.isShow = false
+                        }
+                    })
+                },
+                handleCickGroup(editGroup, editGroupName) {
+                    if (editGroup) {
+                        this.PermissionFlagModals = true
+                    }
+                    if (editGroupName) {
+                        this.editGroupNameModal = true
+                    }
+                },
+                handleEditData() { },
+                updateGruopName(name) {
+                    this.$refs[name].validate(valid => {
+                        if (valid) {
+                            this.errorFlag = false
+                            console.log('genggaisuoshuming')
+                        } else {
+                            this.errorFlag = true
                         }
                     })
                 },

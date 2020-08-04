@@ -8,18 +8,82 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <main @scroll.passive="handleScroll" class="content tmgLedger-warp" ref="layout">
     <div class="content_body tc">
-        <Card class="card" title="帳票出力">
-            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>
-            <Divider class="mb10" orientation="left" size="small">帳票種別</Divider>
+        <Card class="card" title="帳票出力選択">
+            <!--            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>-->
+            <Divider class="mb10" orientation="left" size="default">帳票種別</Divider>
             <i-select class="mb20 non-border-input" placeholder="帳票種別" style="width: 450px" v-model="curFileType">
                 <i-option :key="item.value" :value="item.value" v-for="item of fileTypes">{{ item.name }}</i-option>
             </i-select>
 
-            <Divider class="mb10" orientation="left" size="small">対象職員</Divider>
-            <DeptSelector :isType2="true" />
+            <span v-if="!curFileTypeInfo.hasRadio">
+               <Divider class="mb10" orientation="left" size="default">対象職員</Divider>
+<!--               <DeptSelector :isType2="true" />-->
 
-            <span v-if="curFileTypeInfo.hasYear">
-          <Divider class="mb10" orientation="left" size="small">対象年</Divider>
+                <p @click="deptDrawShow = true" class="p pb5">{{ deptName }}</p>
+               <!-- 共通組織図画面 start-->
+                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right" title="所属を選択してください"
+                     v-model="deptDrawShow" width="700">
+                      <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                       <Row class="tl mb5">
+                            <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                            <i-col class="no-border-radius" span="7">
+                            <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange"
+                                         format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" type="date"></date-picker>
+                            </i-col>
+                        </Row>
+                        <Tree :data="treeData" @on-select-change="handleClickLeafEmp" class="tree mt2" empty-text="所属データなし"
+                              ref="tree"></Tree>
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
+                        <div style="position: relative;">
+                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="社員データなし"></Tree>
+                            <Spin fix size="large" v-if="emplistLoading"></Spin>
+                        </div>
+                    </Drawer>
+               <!-- 共通組織図画面 end-->
+                </span>
+            </span>
+
+            <span v-if="curFileTypeInfo.hasRadio">
+               <Divider class="mb10" orientation="left" size="default">対象部署</Divider>
+<!--               <DeptSelector :isType2="true" />-->
+                <p @click="deptDrawShow = true" class="p pb5">{{ deptName }}</p>
+                <!-- 共通組織図画面 start-->
+                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right" title="所属を選択してください"
+                           v-model="deptDrawShow" width="700">
+                      <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            所属
+                        </div>
+                       <Row class="tl mb5">
+                            <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                            <i-col class="no-border-radius" span="7">
+                            <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange"
+                                         format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" type="date"></date-picker>
+                            </i-col>
+                        </Row>
+                        <Tree :data="treeData" @on-select-change="handleClickLeafDept" class="tree mt2" empty-text="所属データなし"
+                              ref="tree"></Tree>
+<!--                        <div class="titlenorm mt15">-->
+<!--                            <Icon type="logo-buffer"></Icon>-->
+<!--                            社員-->
+<!--                        </div>-->
+<!--                        <div style="position: relative;">-->
+<!--                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>-->
+<!--                            <Spin size="large" fix v-if="emplistLoading"></Spin>-->
+<!--                        </div>-->
+                    </Drawer>
+                <!-- 共通組織図画面 end-->
+            </span>
+
+
+          <span v-if="curFileTypeInfo.hasYear">
+          <Divider class="mb10" orientation="left" size="default">対象年</Divider>
           <date-picker
                   :clearable="false"
                   :editable="false"
@@ -46,20 +110,13 @@
           </i-select>
         </span>
 
-            <span v-if="curFileTypeInfo.hasTimeRange">
+        <span v-if="curFileTypeInfo.hasTimeRange">
           <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
-          <date-picker
-                  class="mt10"
-                  format="yyyy/MM/dd"
-                  placement="bottom-end"
-                  style="width:47%"
-                  transfer
-                  type="date"
-          ></date-picker>
-          &nbsp;-&nbsp;
+          <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
           <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
         </span>
-            <span v-if="curFileTypeInfo.hasRadio">
+
+        <span v-if="curFileTypeInfo.hasRadio">
           <Divider class="mb10" orientation="left" size="small">法定内超勤を含める</Divider>
           <radio-group :value="1" class="mt10 mb10">
             <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
@@ -97,8 +154,7 @@
         el: '.tmgLedger-warp',
         data() {
             return {
-                // monthSelect: getNumArray(1, 12).map(e => `${e}月`),
-                monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
+                monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //対象月
                 referListObject: {
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -107,7 +163,7 @@
                     txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    type: 31
+                    type: 11
                 },
                 curMonth: 1,
                 curFileType: 5,
@@ -117,13 +173,31 @@
                     year: new Date()
                 },
                 fileTypes: [
-                    { name: '看護単位別月別平均夜勤回数表', value: 5, hasYear: true, hasMonth: true },
                     { name: '出勤簿（年単位）', value: 0, hasYear: true, hasMonth: true },
                     { name: '個人別月別平均夜勤回数表', value: 1, hasMonth: true },
                     { name: '年間年休取得・祝休取得一覧', value: 2, hasTimeRange: true },
                     { name: '病気休暇・特別休暇取得状況一覧', value: 3, hasTimeRange: true },
-                    { name: '超過勤務実施状況リスト', value: 4, hasYear: true, hasRadio: true }
+                    { name: '超過勤務実施状況リスト', value: 4, hasYear: true, hasRadio: true },
+                    { name: '看護単位別月別平均夜勤回数表', value: 5, hasYear: true, hasMonth: true }
                 ],
+                deptName: '選んでください',   //所属名称
+                deptDrawShow: false,    //組織ツリー用
+                treeData: [],           //組織ツリー用
+                empTreeData: [],        //組織ツリー用
+                emplistLoading: false,  //職員番号ローディング用動画
+                query: {
+                    txtAction: 'ACT_DISP_MONTHLY',
+                    txtDYYYYMM: '',
+                    txtDYYYYMMDD: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    txtCEMPLOYEEID: '',
+                    sectionid: '',
+                    txtExecuteEmpId: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                isSearchHistory: false,
                 searchLevel: [],
                 errorInfo: false,
                 errorMsg: '',
@@ -133,7 +207,7 @@
             }
         },
         async mounted() {
-            // this.getOrgTree();
+            this.getOrgTree();
         },
         computed: {
             curFileTypeInfo() {
@@ -183,8 +257,7 @@
                 this.isSearchHistory = false
                 this.loading = false
             },
-            async getOrgTree(refreshDept) {
-                this.empDeptLoading = true
+            async getOrgTree() {
                 try {
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据
@@ -194,7 +267,6 @@
                     return
                 } finally {
                     this.loading = false
-                    this.empDeptLoading = false
                 }
             },
             async handleDeptDateChange(e) {
@@ -247,31 +319,43 @@
                     }
                 })
             },
-            async handleClickLeaf(e) {
+            async handleClickLeafDept(e) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
 
-                console.log('e2')
+                console.log('handleClickLeafDept')
                 console.log(e)
                 this.deptDrawShow = false
-                this.query.txtAction = 'ACT_Disp_RList'
+                // this.query.txtAction = 'ACT_Disp_RList'
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+            },
+            async handleClickLeafEmp(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
 
-                //年月リストの取得
-                await this.getWorkDateList()
+                console.log('handleClickLeafEmp')
+                console.log(e)
 
-                // await this.getTableHead()
-                await this.getTableData()
+                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                this.referListObject[section] = e[0].secid
+                this.deptName = e[0].secnic
+
+                this.getEmpList()
 
             },
             async getEmpList() {
                 try {
                     this.emplistLoading = true
-                    const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
+                    //初期化及び前回データをクリアする
+                    this.empTreeData = []
+                    this.referListObject.type = '11'
+                    const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(empList[0].child)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                 } catch (error) {
                     return
                 } finally {
@@ -280,6 +364,8 @@
             },
             handleClickEmpLeaf(e) {
                 this.deptDrawShow = false
+                // this.sectionName = e[0].secnic
+                this.deptName = e[0].secnic
                 // this.getData(true)
             },
             async handleStartMonth(e) {
@@ -304,16 +390,19 @@
             async downLoadByPdf() {
                 if (!this.localValue.deptId) {
                     this.errorInfo = true
-                    return (this.errorMsg = '対象職員を選んでください。')
+                    // return (this.errorMsg = '対象職員を選んでください。')
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 0,
+                        content: '対象職員を選んでください。'
+                    });
                 }
                 const year = this.utils.formatDate(this.localValue.year, 'YYYY')
                 try {
                     this.empolyeeLoading = true
                     await this.api.output('paidVactionByEmployee', { deptId: this.localValue.deptId, year, isOutput: false })
-                    window.open(
-                        `${this.domain}/io/vacation/apply/user?deptId=${this.localValue.deptId}&year=${year}&isOutput=true`,
-                        '_blank'
-                    )
+                    window.open(`${this.domain}/io/vacation/apply/user?deptId=${this.localValue.deptId}&year=${year}&isOutput=true`,'_blank')
                 } catch (e) {
                     return
                 } finally {

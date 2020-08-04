@@ -2,8 +2,10 @@ package jp.smartcompany.controller;
 
 
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.calendar.CalendarBean;
+import jp.smartcompany.job.modules.tmg.calendar.dto.CalendarYearDto;
 import jp.smartcompany.job.modules.tmg.calendar.vo.CalendarVo;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -28,7 +30,6 @@ public class CalendarController {
      * @throws Exception
      */
     @GetMapping("getCalendar")
-    @ResponseBody
     public CalendarVo getCalendar(@RequestParam(value="year",required = false) String year,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         if(StrUtil.hasEmpty(year)){
@@ -38,4 +39,49 @@ public class CalendarController {
                 year+"/01/01",TmgReferList.TREEVIEW_TYPE_LIST, true);
         return calendarBean.getCalendar(year,psDBBean,referList);
     }
+
+
+    /**
+     * 新規カレンダーを作成
+     * @throws Exception
+     */
+    @PostMapping("insertCalendar")
+    @ResponseBody
+    public GlobalResponse insertCalendar(@RequestBody CalendarYearDto calendarYearDto,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
+                calendarYearDto.getMonthlist().get(0).getMonth()
+                ,TmgReferList.TREEVIEW_TYPE_LIST, true);
+        return calendarBean.insertCalendar(calendarYearDto,psDBBean,referList);
+    }
+
+
+    /**
+     * カレンダーを更新
+     * @throws Exception
+     */
+    @PostMapping("updateCalendar")
+    @ResponseBody
+    public GlobalResponse updateCalendar(@RequestBody CalendarYearDto calendarYearDto,
+                                         @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
+                calendarYearDto.getMonthlist().get(0).getMonth()
+                ,TmgReferList.TREEVIEW_TYPE_LIST, true);
+        return calendarBean.updateCalendar(calendarYearDto,psDBBean,referList);
+    }
+
+    /**
+     * カレンダーを削除
+     * @throws Exception
+     */
+    @PostMapping("deleteCalendar")
+    @ResponseBody
+    public GlobalResponse deleteCalendar(@RequestParam(value="year") String year,
+                                         @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        TmgReferList referList= new TmgReferList(psDBBean,"Calendar",
+                year+"/01/01"
+                ,TmgReferList.TREEVIEW_TYPE_LIST, true);
+        return calendarBean.deleteCalendar(year,psDBBean,referList);
+    }
+
 }

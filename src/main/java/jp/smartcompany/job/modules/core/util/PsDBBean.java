@@ -15,14 +15,8 @@ import jp.smartcompany.job.modules.core.service.IHistDesignationService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.*;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-//import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Service;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.text.DateFormat;
@@ -609,6 +603,16 @@ public class PsDBBean {
      */
     public Version3CompatibleLogic getV3Logic() {
         return SpringUtil.getBean(Version3CompatibleLogic.class);
+    }
+
+    public int setInsertValues(Vector vecQuery, String beandesc) {
+        try {
+            return getV3Logic().setInsertValues(vecQuery, getUserCode(),
+                    beandesc, getCompCode(), getCustID(), getSystemCode(),
+                    getStrGUID());
+        } catch (Exception e) {
+        }
+        return 0;
     }
 
     /**

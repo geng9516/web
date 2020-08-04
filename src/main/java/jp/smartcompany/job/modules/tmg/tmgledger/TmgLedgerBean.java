@@ -22,20 +22,23 @@ public class TmgLedgerBean {
     /**
      * 帳票種別リストボックスのデータを取得するクエリ文を生成します。
      */
-    public void getLedgerSheetList(PsDBBean psDBBean){
+    public List<LedgerSheetVo> getLedgerSheetList(PsDBBean psDBBean){
         List<LedgerSheetVo> ledgerSheetVoList = iMastGenericDetailService.selectLedgerSheetList(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage());
+        return ledgerSheetVoList;
     }
 
     /**
      * 対象年リストボックスのデータを取得するクエリ文を生成します。
      */
-    public void getYearlist(PsDBBean psDBBean){
-        List<ListBoxVo> list = iTmgMonthlyService.selectYearDate(psDBBean.getCustID(),psDBBean.getCompCode());
+    public List<ListBoxVo> getYearlist(PsDBBean psDBBean){
+        List<ListBoxVo> yearList = iTmgMonthlyService.selectYearDate(psDBBean.getCustID(),psDBBean.getCompCode());
+        return yearList;
     }
     /**
      * 対象年月リストボックスのデータを取得するクエリ文を生成します。
      */
-    public void getMonthlist(PsDBBean psDBBean){
-        List<ListBoxVo> list = iTmgMonthlyService.selectMonthDate(psDBBean.getCustID(),psDBBean.getCompCode());
+    public List<ListBoxVo> getMonthlist(PsDBBean psDBBean){
+        List<ListBoxVo> monthList = iTmgMonthlyService.selectMonthDate(psDBBean.getCustID(),psDBBean.getCompCode());
+        return monthList;
     }
 }

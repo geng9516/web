@@ -94,7 +94,7 @@ public interface EvaluatorSettingConst {
 	String REQUEST_KEY_ACTION = "txtAction";
 
 	// リクエスト：基準日
-	String REQUEST_KEY_YYYYMMDD = "txtYYYYMMDD";
+	String REQUEST_KEY_YYYYMMDD = "txtDYYYYMMDD";
 
 	// リクエスト：組織グループ
 	String REQUEST_KEY_GROUP = "txtTargetGroupId";

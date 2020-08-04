@@ -136,7 +136,6 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             // setExceptionに空を設定
             vecException.add("");
         } catch (Exception e) {
-
             // e.getMessageをセット
             vecException.add(e.getMessage());
         }
@@ -161,6 +160,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                     nCount = (Integer) vUpdateCnt.get(vUpdateCnt.size() - 1);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 nCount = Version3CompatibleLogicImpl.UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
             }
         }
@@ -182,6 +182,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                     nCount = (Integer) vUpdateCnt.get(vUpdateCnt.size() - 1);
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 nCount = Version3CompatibleLogicImpl.UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
             }
         }
@@ -364,6 +365,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             // プロシージャ実行
             return dbControllerLogic.executeProcedure(vSQL, vParams);
         } catch (Exception e) {
+            e.printStackTrace();
             throw e;
         }
     }
@@ -445,6 +447,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             // 取得できた場合、setExceptionに空を設定
             vecException.add("");
         } catch (Exception e) {
+            e.printStackTrace();
             // e.getMessageをセット
             vecException.add(e.getMessage());
         }
