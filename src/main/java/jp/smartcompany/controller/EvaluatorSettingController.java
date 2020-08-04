@@ -1,7 +1,6 @@
 package jp.smartcompany.controller;
 
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,9 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.dispHandler(psDBBean);
     }
 
-    @GetMapping("makegroup")
-    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup04
-    public PsResult makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+    @PostMapping("makegroup")
+    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup06
+    public Object makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
                               @RequestParam(value="targetSectionId",required = false) String targetSectionId,
                               @RequestParam(value="targetGroupId",required = false) String targetGroupId,
                               @RequestParam(value="lastTargetGroupId",required = false) String lastTargetGroupId,
