@@ -11,6 +11,7 @@ import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.ErrMsgDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.HatuReiVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -225,6 +226,21 @@ public class TmgResultsController {
         return tmgResultsBean.updateRemandsStatus(tmgResultsDto,psDBBean);
     }
 
+
+    /**
+     * 発令日表示処理
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("hatuRei")
+    @ResponseBody
+    public HatuReiVo getHatuReiVoInfo(@RequestAttribute("BeanName") PsDBBean psDBBean
+                                        ) throws Exception {
+
+        tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
+        return tmgResultsBean.getHatuReiVoInfo(tmgResultsBean.getReferList().getRecordDate(),psDBBean);
+    }
 
 
 

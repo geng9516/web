@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.HistSuspensionDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.HatuReiDto;
 
 /**
  * <p>
@@ -13,4 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IHistSuspensionService extends IService<HistSuspensionDO> {
 
-        }
+    HatuReiDto getHatuRei(String custID, String compCode, String targetUser, String baseDate);
+}
