@@ -86,7 +86,7 @@
 
     </div>
     <div class="content_body">
-        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="columns" :data="tmgPatternList" border :loading="tableLoading">
+        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true">
             <!-- 勤務時間 -->
             <template slot-scope="{ row }" slot="dutyTime">
                 <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
@@ -119,7 +119,7 @@
     <!-- 勤務パターンSTART -->
     <template>
       <span>
-        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" draggable>
+        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" >
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
             <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">

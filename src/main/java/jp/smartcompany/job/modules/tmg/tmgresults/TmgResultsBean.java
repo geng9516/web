@@ -2,8 +2,6 @@ package jp.smartcompany.job.modules.tmg.tmgresults;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
-import jdk.nashorn.internal.objects.Global;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
@@ -112,6 +110,8 @@ public class TmgResultsBean {
      * ITmgDailyActionlogService
      */
     private final ITmgDailyActionlogService iTmgDailyActionlogService;
+
+    private final IHistSuspensionService iHistSuspensionService;
 
     /**
      * TmgReferList
@@ -2778,5 +2778,27 @@ public class TmgResultsBean {
     //////////////////////////////////////////////////////////////////////////////////////////////////
     ///////////////////就業登録画面終了////////////////////////////////////////////////////////////////
     /////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    /**
+     * 発令日表示処理
+     * @param psDBBean PsDBBean
+    　 @param baseDate TmgReferList.RecordDate
+     */
+    public HatuReiVo getHatuReiVoInfo(String baseDate,PsDBBean psDBBean){
+        HatuReiDto dto=iHistSuspensionService.getHatuRei(psDBBean.getCustID(),psDBBean.getCompCode(),
+        psDBBean.getTargetUser(),baseDate);
+        if(dto!=null){
+            HatuReiVo vo = new HatuReiVo();
+            vo.setName(dto.getHsCsuspensiontypecd());
+            vo.setTimerange(dto.getHsDstartdate()+"~"+dto.getHsDenddate());
+            return  vo;
+        }else{
+            return null;
+        }
+
+    }
+
+
 
 }

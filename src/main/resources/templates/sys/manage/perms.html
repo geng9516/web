@@ -29,7 +29,7 @@
             <div class="searchwrap">
                 <span class="label">改訂日指定</span>
                 <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
-                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください'"></date-picker>
+                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading"></date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
@@ -81,7 +81,7 @@
                         @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
                         {{ `${row.empId} (${row.name}/${row.postName})`  }}
                     </i-button>
-                    <span v-if="!row.empId" class="grey">未设定</span>
+                    <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
                     <span class="blue">{{ row.workConfirm ? '〇' : '' }}</span>
@@ -557,8 +557,9 @@
                     }
                 }
             },
-            async mounted() {
+            mounted() {
                 this.getOrgTree()
+                this.getTableData(true)
             },
             watch: {
                 data: {
@@ -582,8 +583,9 @@
                             let deptOccupy = 0
                             // 个人占据了多少条
                             let whichMemberDuplicate = []
-                            if (!e.memberList) {
+                            if (!e.memberList || e.memberList.length === 0) {
                                 result = result.concat(e)
+                                return { deptOccupy: 1 , isUnset: true }
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
@@ -656,7 +658,7 @@
                     this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.getTableData()
                 },
-                async getTableData() {
+                async getTableData(isPermSite) {
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
@@ -668,6 +670,10 @@
                         this.bottomMessage = data.bottomMessage
                         this.curDate = data.YYYYMMDD
                         this.data = data.list
+                        // 承认site需要一进去就请求
+                        if(isPermSite) {
+                            this.deptName = this.data[0].group
+                        }
                     } catch (error) {
 
                     } finally {
@@ -700,7 +706,7 @@
                         // 将グループ名作成部分隐藏
                         this.PermissionGroupAdd = false
                         this.editGroupNameModal = true
-                        this.gruopNameForm.groupName = row.groupName
+                        this.gruopNameForm.groupName = row.group
                     }
                 },
                 handleClickMakeGroup() {
@@ -723,8 +729,24 @@
                     let result = []
                     let curColumn = 0
                     this.mergeSpanInfo.forEach(e => {
+                        if(e.isUnset) {
+                            // 下面判断合并未設定者的row
+                            for (let i = 0; i < 9; i++) {
+                              if (i === 0) {
+                                if (rowIndex === curColumn && columnIndex === 1) {
+                                    result = [1, 9]
+                                }
+                              } else {
+                                if (rowIndex === curColumn && columnIndex === i + 1) {
+                                    result = [0, 0]
+                                }
+                              }
+                            }
+                            curColumn += 1
+                            return
+                        }
                         if (!e.whichMemberDuplicate) {
-                            // 不合并未设定承认者的行
+                            // 不合并未設定承认者的行
                             curColumn += 1
                             return
                         }

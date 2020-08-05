@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.HistSuspensionDO;
 import jp.smartcompany.job.modules.core.mapper.HistSuspensionMapper;
 import jp.smartcompany.job.modules.core.service.IHistSuspensionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgresults.dto.HatuReiDto;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -17,4 +18,9 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class HistSuspensionServiceImpl extends ServiceImpl<HistSuspensionMapper, HistSuspensionDO> implements IHistSuspensionService {
 
+
+        @Override
+        public HatuReiDto getHatuRei(String custID, String compCode, String targetUser, String baseDate){
+                return getBaseMapper().getHatuRei( custID,  compCode,  targetUser,  baseDate);
+        }
         }

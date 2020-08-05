@@ -17,7 +17,7 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" size="large" v-if="btnAddEval" @click="permissionAdminAdd = true">承認者追加
+                    <i-button type="primary" size="large" v-if="btnAddEval" @click="handleClickAddAdmin">承認者追加
                     </i-button>
                     <i-button type="primary" size="large" v-if="btnMakeGroup" @click="handleClickMakeGroup">グループ作成
                     </i-button>
@@ -29,7 +29,7 @@
             <div class="searchwrap">
                 <span class="label">改訂日指定</span>
                 <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
-                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください'"></date-picker>
+                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading"></date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
@@ -78,10 +78,10 @@
                     <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}"
                         v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
                     <i-button type="primary" ghost size="small" long v-if="row.empId && row.enableEmpEdit"
-                        @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
+                        @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
                         {{ `${row.empId} (${row.name}/${row.postName})`  }}
                     </i-button>
-                    <span v-if="!row.empId" class="grey">未设定</span>
+                    <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
                     <span class="blue">{{ row.workConfirm ? '〇' : '' }}</span>
@@ -114,8 +114,8 @@
         </div>
 
         <!-- 承認者追加画面 start-->
-        <Modal v-model="permissionAdminAdd" width="1280" class="tc" title="承認者追加" footer-hide :mask-closable="false"
-            @on-cancel="cancel('','permissionAdminAdd')">
+        <Modal v-model="permissionAdminAddModal" width="1280" class="tc" title="承認者追加" footer-hide :mask-closable="false"
+            @on-cancel="cancel('','permissionAdminAddModal')">
             <Row>
                 <i-col span="4">
                     <div class="label">所属</div>
@@ -166,8 +166,9 @@
                 </template>
             </i-table>
             <div class="my-footer tr">
-                <i-button type="text" @click="cancel('','permissionAdminAdd')">キャンセル</i-button>
-                <i-button type="success" size="large" @click="add()">登録</i-button>
+                <i-button type="text" @click="cancel('','permissionAdminAddModal')">キャンセル</i-button>
+                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="updatePermissionAdmin()">変更</i-button>
+                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="addPermissionAdmin('gruopNameForm')">登録</i-button>
             </div>
         </Modal>
         <!-- 承認者追加画面 end-->
@@ -207,91 +208,31 @@
         </Modal>
         <!-- メンバー割付 end-->
 
-        <!-- 権限変更 start-->
-        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false"
-            @on-cancel="cancel">
-            <Row>
-                <i-col span="4">
-                    <div class="label">所属</div>
-                </i-col>
-                <i-col span="5">
-                    <span class="input-like-span">XX庁</span>
-                </i-col>
-            </Row>
-            <!-- <i-table border :columns="columns" :data="data" :loading="loading" class="mt15 mb20">
-                <template slot-scope="{ row }" slot="workConfirm">
-                    <Checkbox v-model="row.workConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="monthConfirm">
-                    <Checkbox v-model="row.monthConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="overWorkConfirm">
-                    <Checkbox v-model="row.overWorkConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="scheduleCreate">
-                    <Checkbox v-model="row.scheduleCreate"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="permissionGive">
-                    <Checkbox v-model="row.permissionGive"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="restConfirm">
-                    <Checkbox v-model="row.restConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="level">
-                    <Select transfer>
-                        <i-option v-for="(item, i) of 5" :value="item" :key="i">{{ item }}</i-option>
-                    </Select>
-                </template>
-
-                <template slot-scope="{ row }" slot="validPeriod">
-                    <date-picker class="mt10" format="yyyy/MM/dd" type="date" transfer style="width:46%"
-                        placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker  format="yyyy/MM/dd" type="date"
-                        transfer style="width:46%" placement="bottom-end"></date-picker>
-                </template>
-
-                <template slot-scope="{ row }" slot="delete">
-                    <i-button type="error" ghost size="small">削除</i-button>
-                </template>
-            </i-table> -->
-
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
-                <i-button type="primary" size="large" @click="update()">変更</i-button>
-            </div>
-        </Modal>
-        <!-- 権限変更 end-->
-
         <!-- 警告値設定 start-->
         <Modal v-model="PermissionFlagModals" class="tc" width="650" title="警告値設定" footer-hide :mask-closable="false"
             @on-cancel="cancel">
             <Row>
                 <i-col span="6">
-                    <div class="label tr">所属</div>
+                    <div class="label tr" style="padding-right:12px;">所属</div>
                 </i-col>
                 <i-col span="18">
                     <span class="input-like-span mb2 tl">{{ deptName }}</span>
                 </i-col>
                 <i-col span="6">
-                    <div class="label tr">改訂日</div>
+                    <div class="label tr" style="padding-right:12px;">改訂日</div>
                 </i-col>
                 <i-col span="18">
                     <span class="input-like-span mb2 tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
                 </i-col>
                 <i-col span="6">
-                    <div class="label tr">夜間連携</div>
+                    <div class="label tr" style="padding-right:12px;">夜間連携</div>
                 </i-col>
                 <i-col span="18">
                     <Checkbox class="input-like-span tl" style="margin-left: 0;">デフォルト承認者の自動設定を行う</Checkbox>
                 </i-col>
             </Row>
 
-            <!-- <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
+            <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="time">
                     <i-input v-model="row.time" />
                 </template>
@@ -301,7 +242,7 @@
                 <template slot-scope="{ row }" slot="time">
                     <i-input v-model="row.time" />
                 </template>
-            </i-table> -->
+            </i-table>
             <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel">キャンセル</i-button>
                 <i-button type="primary" size="large" @click="update()">変更</i-button>
@@ -328,7 +269,7 @@
             <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel('gruopNameForm','editGroupNameModal')">キャンセル</i-button>
                 <i-button v-if="!PermissionGroupAdd" type="primary" size="large" @click="updateGruopName('gruopNameForm')">変更</i-button>
-                <i-button v-if="PermissionGroupAdd" type="success" size="large" @click="add('gruopNameForm')">登録</i-button>
+                <i-button v-if="PermissionGroupAdd" type="success" size="large" @click="addGruopName('gruopNameForm')">登録</i-button>
             </div>
         </Modal>
         <!-- グループ名編集画面表示 end-->
@@ -424,10 +365,10 @@
                     isSearchHistory: false,
                     deptLoading: false,
                     deptDrawShow: false,
-                    permissionAdminAdd: false,
+                    permissionAdminAddModal: false,
                     PermissionGroupAdd: false,
                     PermissionMemberAssign: false,
-                    PermissionEditerModals: false,
+                    PermissionAdminEditer: false,
                     PermissionFlagModals: false,
                     permissionAdminAddColumns: [
                         {
@@ -563,12 +504,54 @@
                                 trigger: 'blur'
                             }
                         ]
-                    }
+                    },
+                    // 警告値の設定
+                    overFlagColumns: [
+                        {
+                            title: '超勤実績の警告値の設定',
+                            width: 450,
+                            key: 'name'
+                        },
+                        {
+                            title: '現在値(時間)',
+                            slot: 'time'
+                        }
+                    ],
+                    overFlagData: [
+                        {
+                            name: '超勤実績の警告値(時間)(日次:レベル1)',
+                            time: 8
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(日次:レベル2)',
+                            time: 45
+                        }
+                    ],
+                    restFlagColumns: [
+                        {
+                            title: '休日勤務日数の警告値の設定',
+                            width: 450,
+                            key: 'name'
+                        },
+                        {
+                            title: '現在値(日数)',
+                            slot: 'time'
+                        }
+                    ],
+                    restFlagData: [
+                        {
+                            name: '警告値(日数)(月次:レベル1)',
+                            time: 8
+                        },
+                        {
+                            name: '警告値(日数)(月次:レベル2)',
+                            time: 45
+                        }
+                    ]
                 }
             },
-            async mounted() {
+            mounted() {
                 this.getOrgTree()
-                await this.getTableData(true)
             },
             watch: {
                 data: {
@@ -592,8 +575,9 @@
                             let deptOccupy = 0
                             // 个人占据了多少条
                             let whichMemberDuplicate = []
-                            if (!e.memberList) {
+                            if (!e.memberList || e.memberList.length === 0) {
                                 result = result.concat(e)
+                                return { deptOccupy: 1 , isUnset: true }
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
@@ -666,7 +650,7 @@
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                     this.getTableData()
                 },
-                async getTableData(isAdminSite) {
+                async getTableData() {
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
@@ -678,11 +662,6 @@
                         this.bottomMessage = data.bottomMessage
                         this.curDate = data.YYYYMMDD
                         this.data = data.list
-
-                        // 管理site需要一进去就请求
-                        if(isAdminSite) {
-                            this.deptName = this.data[0].group
-                        }
                     } catch (error) {
 
                     } finally {
@@ -699,32 +678,33 @@
                     this[isShow] = false
                     this.errorFlag = false
                 },
-                add(name) {
-                    this.$refs[name].validate(valid => {
-                        if (valid) {
-                            console.log('zhuijiagroup')
-                        }
-                    })
-                },
                 handleCickGroup(row) {
                     console.log(row)
-                    this.PermissionFlagModals = true
-                    // if (row.enableEditGroup) {
-                    //     // 修改警告值得部分
-                    //     this.PermissionFlagModals = true
-                    // }
-                    // if (row.enableEditGroupName) {
-                    //     // 将グループ名作成部分隐藏
-                    //     this.PermissionGroupAdd = false
-                    //     this.editGroupNameModal = true
-                    //     this.gruopNameForm.groupName = row.groupName
-                    // }
+                    if (row.enableEditGroup) {
+                        // 修改警告值得部分
+                        this.PermissionFlagModals = true
+                    }
+                    if (row.enableEditGroupName) {
+                        // 将グループ名作成部分隐藏
+                        this.PermissionGroupAdd = false
+                        this.editGroupNameModal = true
+                        this.gruopNameForm.groupName = row.group
+                    }
                 },
                 handleClickMakeGroup() {
                     this.PermissionGroupAdd = true
                     this.editGroupNameModal = true
                 },
-                handleEditData() { },
+                handleClickAddAdmin() {
+                    this.PermissionAdminEditer = false
+                    this.permissionAdminAddData = [{}]
+                    this.permissionAdminAddModal = true
+                },
+                handleEditData(row) {
+                    this.PermissionAdminEditer = true
+                    this.permissionAdminAddData = row.validList.concat({})
+                    this.permissionAdminAddModal = true
+                 },
                 updateGruopName(name) {
                     this.$refs[name].validate(valid => {
                         if (valid) {
@@ -735,13 +715,36 @@
                         }
                     })
                 },
+                addGruopName(name) {
+                    this.$refs[name].validate(valid => {
+                        if (valid) {
+                            console.log('zhuijiagroup')
+                        }
+                    })
+                },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 这里将得到得合并信息进行表格列项合并
                     let result = []
                     let curColumn = 0
                     this.mergeSpanInfo.forEach(e => {
+                        if(e.isUnset) {
+                            // 下面判断合并未設定者的row
+                            for (let i = 0; i < 9; i++) {
+                              if (i === 0) {
+                                if (rowIndex === curColumn && columnIndex === 1) {
+                                    result = [1, 9]
+                                }
+                              } else {
+                                if (rowIndex === curColumn && columnIndex === i + 1) {
+                                    result = [0, 0]
+                                }
+                              }
+                            }
+                            curColumn += 1
+                            return
+                        }
                         if (!e.whichMemberDuplicate) {
-                            // 不合并未设定承认者的行
+                            // 不合并未設定承认者的行
                             curColumn += 1
                             return
                         }

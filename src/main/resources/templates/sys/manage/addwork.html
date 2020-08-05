@@ -111,7 +111,7 @@
 
         <div class="content_body" style="position: relative">
             <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin && bWorkChkStatus) || (bDispKenkojotaiKakunin && bHealthChkStatus)">
-                <i-col span="12" v-if="bDispKinmujokyoKakunin">
+                <i-col span="8" v-if="bDispKinmujokyoKakunin">
                     <div class="label tc">勤務状況確認</div>
                     <div class="tl">
                         <div class="person-info">
@@ -123,7 +123,7 @@
                         </div>
                     </div>
                 </i-col>
-                <i-col span="12" v-if="bDispKenkojotaiKakunin">
+                <i-col span="8" v-if="bDispKenkojotaiKakunin">
                     <div class="label tc">健康状態確認</div>
                     <div class="tl">
                         <div class="person-info">
@@ -140,8 +140,19 @@
                         </div>
                     </div>
                 </i-col>
-            </Row>
 
+            </Row>
+            <div span="8" v-if="hatuReiDisp">
+                <div class="label tc">発令</div>
+                <div class="tl">
+                    <div class="person-info">
+                        <span style="width: 100%;">{{hatuReiName}}</span>
+                    </div>
+                    <div class="person-info">
+                        <span style="width: 100%;" >{{hatuResTimeRange}}</span>
+                    </div>
+                </div>
+            </div>
             <div class="titlenorm mb10 " style="font-size:15px">
                 <Icon type="logo-buffer"></Icon>
                 就業実績
@@ -274,7 +285,7 @@
                     <Row>
                         <i-col span="8" class="label tc">本人コメント</i-col>
                         <i-col span="16">
-                            <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea"
+                            <i-input v-model="dailyEdit.tdaCowncommentR" text-align="center;" type="textarea" disabled
                                      readonly></i-input>
                         </i-col>
                     </Row>
@@ -434,6 +445,9 @@
         //月次テーブル 使用参数
                     bDispKinmujokyoKakunin:false,  //勤務欄表示
                     bDispKenkojotaiKakunin:false,　//健康欄表示
+                    hatuReiDisp:false, //発令
+                    hatuReiName:'',
+                    hatuResTimeRange:'',
                     bWorkChkStatus:false,　　　　　　//勤務データ有無
                     bHealthChkStatus:false,　　　　　//健康データ有無
                     monthlyTilteMapList: [],　　　　　//月次情報表示項目
@@ -460,7 +474,6 @@
                         hidSearchItems:'EMPLOYEEID',
                         hidSearchCondition:'BROADMATCH',
                         hidSearchData:'',
-                        txtTmgReferListTreeViewRecordDate: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href,'psApp'),
                         type: 11
@@ -476,7 +489,7 @@
                         txtAction:''
                     },
                     updateMonthloading:false,
-
+                    today:'',
 
         //日次承认画面使用参数
                     dailyloading:false,
@@ -645,6 +658,7 @@
                         nonDutyList: [],
                         overHoursList: [],
                         hasAuthority: true,
+                        targetEmp:'',
                         psSite: Utils.getUrlParam(location.href, 'psSite')
                     },　//参数
                     workData:[],//就业时间
@@ -680,6 +694,7 @@
                             this.treeData = Utils.convertTreeData(memberList)
                         }
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                        this.empDeptLoading = false
                         await this.getWorkDateList()
                     } catch (error) {
                         return
@@ -718,6 +733,7 @@
                     this.referListObject[section] = e[0].secid
                     this.deptName = e[0].secnic
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
+                    this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.kanjiName = e[0].empname
                     this.selectDisabled = true
                     await this.getWorkDateList()
@@ -765,7 +781,6 @@
                     try {
                         const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
 
-                        this.query.today = data.today
                         this.dispMonthlyList = data.monthLy
 
 
@@ -786,18 +801,34 @@
                         return
                     }
                 },
+                // 発令
+                async getHatuRei() {
+                    try {
+                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                        if(data !=null){
+                            this.hatuReiDisp=true
+                            this.hatuReiName=data.name
+                            this.hatuResTimeRange=data.timerange
+                        }else{
+                            this.hatuReiDisp=false
+                        }
+                    } catch (error) {
+                        return
+                    }finally {
 
+                    }
+                },
                 // 就業実績のタイトルとデータを取得
                 async getTitleData() {
 
-
+                    this.getHatuRei()
                     this.query.txtAction = 'ACT_EDITINP_RDAILY'
                     this.monthlyMap = ''
                     this.dailyDataList = []
                     try {
                         this.monthlyLoading=true
                         this.updateMonthloading=true
-                        const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
+                        const {data,sysDate} = await this.http.get('sys/tmgResults/getTitleData', this.query)
                         this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
                         this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
                         this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
@@ -808,7 +839,7 @@
                         this.monthlyTilteMapList = data.monthlyTilteMapList
                         this.monthlyMap = data.monthlyDateMap
                         this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
-
+                        this.today=sysDate
                         this.columns = data.dailyTittleMapList.map(e => {
                             return {
                                 ...e,
@@ -835,14 +866,14 @@
                     return 'select-col sat'
                 },
                 dayRed(e) {
-                    const dayOfWeek = e.TDA_DYYYYMMDD_DY
+                    const dayOfWeek = e.TMG_HOLFLG
                     if (!dayOfWeek) {
                         return
                     }
-                    if (dayOfWeek.trim() === '土' || dayOfWeek.trim() === '日') {
+                    if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                         return 'blue'
                     }
-                    if (e.today) {
+                    if (e.TDA_DYYYYMMDD === this.today) {
                         return 'brown'
                     }
                 },
@@ -1056,16 +1087,16 @@
 
                     this.tmgResultsDto.workingId = this.workingId
                     this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
-                    this.tmgResultsDto.holiday = null
                     this.tmgResultsDto.txtTdaNopenR = ''
                     this.tmgResultsDto.txtTdaNcloseR = ''
                     this.tmgResultsDto.tdaCowncommentR = ''
                     this.tmgResultsDto.hasAuthority = ''
                     this.tmgResultsDto.nonDutyList = []
                     this.tmgResultsDto.overHoursList = []
-                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
+                    this.tmgResultsDto.holiday = this.bHoliday
                     if (!this.bDisable) {
-                        this.tmgResultsDto.holiday = this.bHoliday
+
                         this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
                         this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
@@ -1127,7 +1158,7 @@
                     this.tmgResultsDto.hasAuthority = ''
                     this.tmgResultsDto.nonDutyList = []
                     this.tmgResultsDto.overHoursList = []
-                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
                     if (!this.bDisable) {
                         this.tmgResultsDto.holiday = this.bHoliday
 

@@ -41,6 +41,97 @@ public class EvaluatorSettingBean {
     private final static int IDX_DATE			 = 2;	// リンク用基準日
     private final static int IDX_EVALEMPNUM	 = 3;	// グループ・職員ごとのデータ数
 
+    private static final int QUERY_SHOWMAKEGROUP_OverTimeLimit = 0;
+    private static final int QUERY_SHOWEDITGROUP_OverTimeLimit = 1;
+
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_01          = 0;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_02          = 1;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_03          = 2;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_04          = 3;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_05          = 4;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_01          = 5;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_02          = 6;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_03          = 7;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_04          = 8;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_05          = 9;
+    public static final int COL_OVERTIMELIMIT_OT_MONTHLY_COUNT      = 10;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_01_MGD      = 11;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_02_MGD      = 12;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_03_MGD      = 13;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_04_MGD      = 14;
+    public static final int COL_OVERTIMELIMIT_OT_MONTLY_05_MGD      = 15;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_01_MGD      = 16;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_02_MGD      = 17;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_03_MGD      = 18;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_04_MGD      = 19;
+    public static final int COL_OVERTIMELIMIT_OT_YEARLY_05_MGD      = 20;
+    public static final int COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD  = 21;
+    public static final int COL_OVERTIMELIMIT_OT_DAILY_01           = 22;
+    public static final int COL_OVERTIMELIMIT_OT_DAILY_01_MGD       = 23;
+    public static final int COL_OVERTIMELIMIT_OT_MONTHLY_AVG      = 24;//超勤実績の月平均時間
+    public static final int COL_OVERTIMELIMIT_OT_MONTHLY_AVG_MGD  = 25;
+
+
+    public static final int QUERY_SHOWMAKEGROUP_HolidayTimeLimit = 1;
+    public static final int QUERY_SHOWEDITGROUP_HolidayTimeLimit = 2;
+
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_01      = 0;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_02      = 1;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_03      = 2;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_04      = 3;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_05      = 4;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_01_MGD  = 5;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_02_MGD  = 6;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_03_MGD  = 7;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_04_MGD  = 8;
+    public static final int COL_OVERTIMELIMIT_HT_MONTLY_05_MGD  = 9;
+
+
+    public static final int QUERY_SHOWMAKEGROUP_NightLimitSelf = 2;
+    public static final int QUERY_SHOWEDITGROUP_NightLimitSelf = 5;
+
+    public static final int COL_NightLimitSelf_DAYNIGHTDUTY_WEEKLY  = 0;
+    public static final int COL_NightLimitSelf_DAYNIGHTDUTY_MONTHLY = 1;
+
+    public static final int QUERY_SHOWMAKEGROUP_DayLimitSelf = 3;
+    public static final int QUERY_SHOWEDITGROUP_DayLimitSelf = 6;
+
+    public static final int COL_DayLimitSelf_DAYNIGHTDUTY_WEEKLY  = 0;
+    public static final int COL_DayLimitSelf_DAYNIGHTDUTY_MONTHLY = 1;
+
+    public static final int QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf = 4;
+
+    public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_01 = 0;
+    public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_02 = 1;
+    public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_03 = 2;
+    public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_04 = 3;
+    public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_05 = 4;
+
+    /** グループ編集画面における、グループ属性テーブル検索結果クエリ番号 */
+    public static final int QUERY_SHOWEDITGROUP_GroupAttribute = 5;
+
+    /** デフォルト所属長の自動設定オン・オフ */
+    public static final int COL_GroupAttribute_AutoSet_Eva  = 0;
+
+    private final int IDX_GROUPNAME = 0; // グループ名称
+
+    public static final int QUERY_SHOWEDITGROUP_OverTimeLimitSelf = 3;
+
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_01     = 0;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_02     = 1;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_03     = 2;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_04     = 3;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_05     = 4;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_01     = 5;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_02     = 6;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_03     = 7;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_04     = 8;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_05     = 9;
+    public static final int COL_OverTimeLimitSelf_OT_MONTHLY_COUNT = 10;
+    public static final int COL_OverTimeLimitSelf_OT_DAILY_01      = 11;
+    public static final int COL_OverTimeLimitSelf_OT_MONTHLY_AVG      = 12;//超勤実績の月平均時間
+
+
     public Map<String,Object> dispHandler(PsDBBean psDBBean) throws Exception {
         Map<String,Object> result = MapUtil.newHashMap();
         // ログインユーザーが、表示グループに対して権限を持っているか
@@ -80,7 +171,7 @@ public class EvaluatorSettingBean {
         return result;
     }
 
-    public Object makeGroupHandler(PsDBBean psDBBean,String targetSectionId,String targetGroupId,String lastTargetGroupId,String groupName,String empId) {
+    public GlobalResponse makeGroupHandler(PsDBBean psDBBean, String targetSectionId, String targetGroupId, String lastTargetGroupId, String groupName, String empId) {
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         params.setSite(psDBBean.getSiteId());
         params.setLanguage(psDBBean.getLanguage());
@@ -91,7 +182,7 @@ public class EvaluatorSettingBean {
         } else {
             params.setAction(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP);
         }
-        params.setYYYYMMDD((String)psDBBean.getRequestHash().get(EvaluatorSettingConst.REQUEST_KEY_YYYYMMDD));
+        configYYYYMMDD(psDBBean, params);
         params.setCompanyId(psDBBean.getCompCode());
         params.setCustomerID(psDBBean.getCustID());
         params.setSection(targetSectionId);
@@ -127,6 +218,396 @@ public class EvaluatorSettingBean {
             }
         }
         return GlobalResponse.error("追加失敗しました");
+    }
+
+    /**
+     * グループ名編集画面表示の処理をするメソッド
+     */
+    public Map<String,Object> showEditGroupHandler(PsDBBean psDBBean,String sectionId,String groupId) {
+        Map<String,Object> map = MapUtil.newHashMap(true);
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        params.setSite(psDBBean.getSiteId());
+        params.setLanguage(psDBBean.getLanguage());
+        String txtAction = (String)psDBBean.getRequestHash().get(EvaluatorSettingConst.REQUEST_KEY_ACTION);
+        if (StrUtil.isNotBlank(txtAction)) {
+            params.setAction(txtAction);
+        } else {
+            params.setAction(EvaluatorSettingConst.ACT_EDITGROUP_RGROUP);
+        }
+        params.setGroup(groupId);
+        params.setSection(sectionId);
+        params.setCustomerID(psDBBean.getCustID());
+        params.setCompanyId(psDBBean.getCompCode());
+        params.setRootGroup(sectionId+"|"+TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        configYYYYMMDD(psDBBean, params);
+        // 検索
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForSelectGroupName(params));            // グループ名称取得
+        vQuery.add(buildSQLForSelectOverTimeLimit(params));        // 超勤実績の警告値の現在値を取得
+        vQuery.add(buildSQLForSelectHolidayTimeLimit(params));     // 休日勤務日数の警告値の現在値を取得
+        vQuery.add(buildSQLForSelectOverTimeLimitSelf(params));    // 超勤実績の警告値を取得
+        vQuery.add(buildSQLForSelectHolidayTimeLimitSelf(params)); // 休日勤務日数の警告値を取得
+        vQuery.add(buildSQLForSelectGroupAttribute(params));		  // グループ属性テーブル
+        PsResult psResult;
+        try {
+            psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        } catch (Exception e) {
+            throw new GlobalException(e.getMessage());
+        }
+        /**
+         * ==============================
+         *  Start 为前端准备显示数据
+         * ==============================
+         */
+        // 超過勤務制限値編集項目の編集可能項目の有無を確認
+
+        boolean bEditOvertimeAnyItem = false;
+        if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+            bEditOvertimeAnyItem = true;
+        }
+        // 休日勤務制限値編集項目の編集可能項目の有無を確認
+        boolean bEditHolidaytimeAnyItem = false;
+        if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+            bEditHolidaytimeAnyItem = true;
+        }
+        // 選択グループが組織既定のグループであるか確認
+        boolean bEditGroupName = false;
+        if (!params.getGroup().equals(
+                params.getRootGroup())) {
+            bEditGroupName = true;
+        }
+        boolean bEditGroupAnyItem = false;
+        if (bEditGroupName || bEditOvertimeAnyItem || bEditHolidaytimeAnyItem) {
+            bEditGroupAnyItem = true;
+        }
+        map.put("enableEditGroupName",bEditGroupName);
+        map.put("YYYYMMDD",params.getYYYYMMDD());
+        map.put("enableEditGroupAnyItem",bEditGroupAnyItem);
+
+        if (bEditGroupName) {
+//            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,EvaluatorSettingConst.COL_ADD_GROUPNAME,0));
+            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,0,0));
+        }
+
+        // デフォルトグループの場合のみ、夜間連携のデフォルト承認者自動設定フラグ入力欄を表示
+        boolean sAutosetChecked = false;
+        if (isDefaultGroup(params.getGroup())){
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0) == null ||
+                    TmgUtil.Cs_MGD_ONOFF_1.equals(psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0)) ){
+                sAutosetChecked = true;
+            }
+        }
+        map.put("autoStart",sAutosetChecked);
+
+        map.put("editOverTimeAnyItem",bEditGroupAnyItem);
+        if (bEditOvertimeAnyItem) {
+
+              // 超勤実績の警告値(時間)(日次:レベル1)
+              Map<String,Object> dailyOverTime = MapUtil.newHashMap();
+              boolean showDailyOverTime = false;
+              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                 showDailyOverTime = true;
+                 String dailyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_DAILY_01,0);
+                 String dailyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_DAILY_01,0);
+                 dailyOverTime.put("self",dailyOverTimeSelf);
+                 dailyOverTime.put("basic",dailyOverTimeBasic);
+              }
+              dailyOverTime.put("showDailyOverTime",showDailyOverTime);
+              map.put("dailyOverTime",dailyOverTime);
+
+              // 超勤実績の警告値(時間)(月次:黄色)
+              Map<String,Object> monthlyOverTimeYellow = MapUtil.newHashMap();
+              boolean showMonthlyOverTimeYellow = false;
+              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                  showMonthlyOverTimeYellow = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_01,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01,0);
+                  monthlyOverTimeYellow.put("self",monthlyOverTimeSelf);
+                  monthlyOverTimeYellow.put("basic",monthlyOverTimeBasic);
+              }
+              monthlyOverTimeYellow.put("showMonthlyOverTime",showMonthlyOverTimeYellow);
+              map.put("monthlyOverTimeYellow",monthlyOverTimeYellow);
+
+            // 超勤実績の警告値(時間)(月次:オレンジ)
+            Map<String,Object> monthlyOverTimeOrange = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeOrange = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeOrange = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_02,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02,0);
+                monthlyOverTimeOrange.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeOrange.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeOrange.put("showMonthlyOverTimeOrange",showMonthlyOverTimeOrange);
+            map.put("monthlyOverTimeOrange",monthlyOverTimeOrange);
+
+            // 超勤実績の警告値(時間)(月次:ピンク)
+            Map<String,Object> monthlyOverTimePink = MapUtil.newHashMap();
+            boolean showMonthlyOverTimePink = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimePink = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_03,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03,0);
+                monthlyOverTimePink.put("self",monthlyOverTimeSelf);
+                monthlyOverTimePink.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimePink.put("showMonthlyOverTimePink",showMonthlyOverTimePink);
+            map.put("monthlyOverTimePink",monthlyOverTimePink);
+
+            // 超勤実績の警告値(時間)(月次:赤色)
+            Map<String,Object> monthlyOverTimeRed = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeRed = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeRed = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_04,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04,0);
+                monthlyOverTimeRed.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeRed.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeRed.put("showMonthlyOverTimeRed",showMonthlyOverTimeRed);
+            map.put("monthlyOverTimeRed",monthlyOverTimeRed);
+
+            // 超勤実績の警告値(時間)(月次:？？)
+            Map<String,Object> monthlyOverTimeBackUp = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeBackUp = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeBackUp = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_05,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05,0);
+                monthlyOverTimeBackUp.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeBackUp.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeBackUp.put("showMonthlyOverTimeBackUp",showMonthlyOverTimeBackUp);
+            map.put("monthlyOverTimeBackUp",monthlyOverTimeBackUp);
+
+            // 超勤実績の警告値(時間)(年次:黄色)
+            Map<String,Object> yearlyOverTimeYellow = MapUtil.newHashMap();
+            boolean showYearlyOverTimeYellow= false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeYellow = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_01,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01,0);
+                yearlyOverTimeYellow.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeYellow.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeYellow.put("showYearlyOverTimeYellow",showYearlyOverTimeYellow);
+            map.put("yearlyOverTimeYellow",yearlyOverTimeYellow);
+
+            // 超勤実績の警告値(時間)(年次:オレンジ)
+            Map<String,Object> yearlyOverTimeOrange = MapUtil.newHashMap();
+            boolean showYearlyOverTimeOrange = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeOrange  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_02,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02,0);
+                yearlyOverTimeOrange.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeOrange.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeOrange.put("showYearlyOverTimeOrange",showYearlyOverTimeOrange);
+            map.put("yearlyOverTimeOrange",yearlyOverTimeOrange);
+
+            // 超勤実績の警告値(時間)(年次:ピンク)
+            Map<String,Object> yearlyOverTimePink = MapUtil.newHashMap();
+            boolean showYearlyOverTimePink = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimePink  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_03,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03,0);
+                yearlyOverTimePink.put("self",yearlyOverTimeSelf);
+                yearlyOverTimePink.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimePink.put("showYearlyOverTimePink",showYearlyOverTimePink);
+            map.put("yearlyOverTimePink",yearlyOverTimePink);
+
+            // 超勤実績の警告値(時間)(年次:赤色)
+            Map<String,Object> yearlyOverTimeRed = MapUtil.newHashMap();
+            boolean showYearlyOverTimeRed = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeRed  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_04,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04,0);
+                yearlyOverTimeRed.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeRed.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeRed.put("showYearlyOverTimeRed",showYearlyOverTimeRed);
+            map.put("yearlyOverTimeRed",yearlyOverTimeRed);
+
+            // 超勤実績の警告値(時間)(年次:？？)
+            Map<String,Object> yearlyOverTimeBackUp = MapUtil.newHashMap();
+            boolean showYearlyOverTimeBackUp = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeBackUp  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_05,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05,0);
+                yearlyOverTimeBackUp.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeBackUp.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeBackUp.put("showYearlyOverTimeBackUp",showYearlyOverTimeBackUp);
+            map.put("yearlyOverTimeBackUp",yearlyOverTimeBackUp);
+
+            // 超勤実績の月次警告値超過回数
+            Map<String,Object> countOverTime = MapUtil.newHashMap();
+            boolean showCountOverTime = false;
+
+            // 超勤実績の月平均時間
+            Map<String,Object> avgOverTime = MapUtil.newHashMap();
+            boolean showAvgOverTime = false;
+
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")) {
+                showCountOverTime  = true;
+                String countSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_COUNT,0);
+                String countBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT,0);
+                countOverTime.put("self",countSelf);
+                countOverTime.put("basic",countBasic);
+
+                showAvgOverTime = true;
+                String avgSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_AVG,0);
+                String avgBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_AVG,0);
+                avgOverTime.put("self",avgSelf);
+                avgOverTime.put("basic",avgBasic);
+            }
+            countOverTime.put("showCountOverTime",showCountOverTime);
+            map.put("countOverTime", countOverTime);
+            avgOverTime.put("showAvgOverTime", showAvgOverTime);
+            map.put("avgOverTime", avgOverTime);
+
+        }
+
+        // ====== 【阪大対応】  休日勤務日数と宿日直回数の警告値の設定項目を追加  ======
+        map.put("editHolidayTimeAnyItem",bEditHolidaytimeAnyItem);
+        if (bEditHolidaytimeAnyItem) {
+
+            // 警告値(日数)(月次:レベル1)
+            Map<String,Object> monthlyHolidayTimeLevel1 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel1 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel1 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_01,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01,0);
+                monthlyHolidayTimeLevel1.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel1.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel1.put("showMonthlyHolidayTimeLevel1",showMonthlyHolidayTimeLevel1 );
+            map.put("monthlyHolidayTimeLevel1",monthlyHolidayTimeLevel1 );
+
+            // 警告値(日数)(月次:レベル2)
+            Map<String,Object> monthlyHolidayTimeLevel2= MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel2 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel2 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_02,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02,0);
+                monthlyHolidayTimeLevel2.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel2.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel2.put("showMonthlyHolidayTimeLevel2",showMonthlyHolidayTimeLevel2);
+            map.put("monthlyHolidayTimeLevel2",monthlyHolidayTimeLevel2);
+
+            // 警告値(日数)(月次:レベル3)
+            Map<String,Object> monthlyHolidayTimeLevel3 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel3 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel3 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_03,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03,0);
+                monthlyHolidayTimeLevel3.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel3.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel3.put("showMonthlyHolidayTimeLevel3",showMonthlyHolidayTimeLevel3);
+            map.put("monthlyHolidayTimeLevel3",monthlyHolidayTimeLevel3);
+
+            // 警告値(日数)(月次:レベル4)
+            Map<String,Object> monthlyHolidayTimeLevel4= MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel4 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel4 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_04,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04,0);
+                monthlyHolidayTimeLevel4.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel4.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel4.put("showMonthlyHolidayTimeLevel4",showMonthlyHolidayTimeLevel4);
+            map.put("monthlyHolidayTimeLevel4",monthlyHolidayTimeLevel4);
+
+            // 警告値(日数)(月次:レベル5)
+            Map<String,Object> monthlyHolidayTimeLevel5 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel5 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel5 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_05,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05,0);
+                monthlyHolidayTimeLevel5.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel5.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel5.put("showMonthlyHolidayTimeLevel5",showMonthlyHolidayTimeLevel5);
+            map.put("monthlyHolidayTimeLevel5",monthlyHolidayTimeLevel5);
+
+        }
+
+        if (!bEditGroupAnyItem) {
+            map.put("MSG_NO_SELECT_SECTION",SysUtil.getpropertyvalue("ja","MSG_NO_SELECT_SECTION",TmgUtil.class.getName()));
+        }
+        return map;
+    }
+
+    /**
+     * 与えられたグループコードがデフォルトグループかどうかを返します。
+     * @param psGroupId
+     * @return
+     */
+    private boolean isDefaultGroup(String psGroupId){
+        if (psGroupId == null) return false;
+        return psGroupId.endsWith(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+    }
+
+
+    private void configYYYYMMDD(PsDBBean psDBBean, EvaluatorSettingParam params) {
+        // REQUEST:基準日
+        String YYYYMMDD = (String) psDBBean.getRequestHash().get(EvaluatorSettingConst.REQUEST_KEY_YYYYMMDD);
+
+        // 承認サイト、管理サイトで基準日設定を振り分ける。
+        if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
+            // 初期表示時、承認サイトの場合はシステム年月初日を設定
+            if (StrUtil.isBlank(YYYYMMDD)) {
+                YYYYMMDD = TmgUtil.getSysdate().substring(0, 8).concat("01");
+                params.setYYYYMMDD(YYYYMMDD);
+            } else {
+                params.setYYYYMMDD(YYYYMMDD);
+            }
+        } else {
+            if (StrUtil.isBlank(YYYYMMDD)) {
+                params.setYYYYMMDD(TmgUtil.getSysdate());
+                Vector vecSQL = new Vector();
+                vecSQL.add(buildSQLForTransitionDate(params));
+                PsResult psResult = null;
+                try {
+                    psResult = psDBBean.getValuesforMultiquery(vecSQL, EvaluatorSettingConst.BEAN_DESC);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                String baseDate = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
+                if (StrUtil.isNotBlank(baseDate)) {
+                    params.setYYYYMMDD(baseDate);
+                }
+            } else {
+                params.setYYYYMMDD(YYYYMMDD);
+            }
+        }
     }
 
     /**
@@ -401,7 +882,7 @@ public class EvaluatorSettingBean {
      * @param params
      * @return
      */
-    public boolean processParams(PsDBBean psDBBean, EvaluatorSettingParam params) {
+    private boolean processParams(PsDBBean psDBBean, EvaluatorSettingParam params) {
         boolean haveAuthority = true;
         // 汎用参照リストを生成する
         try {
@@ -423,31 +904,7 @@ public class EvaluatorSettingBean {
             } else if (params.isSiteTp() && StrUtil.isNotBlank(permTargetSection)) {
                 params.setSection(permTargetSection);
             }
-            // REQUEST:基準日
-            String YYYYMMDD = psDBBean.getReqParam(EvaluatorSettingConst.REQUEST_KEY_YYYYMMDD);
-            // 承認サイト、管理サイトで基準日設定を振り分ける。
-            if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(psDBBean.getSiteId())) {
-                // 初期表示時、承認サイトの場合はシステム年月初日を設定
-                if (StrUtil.isBlank(YYYYMMDD)) {
-                    YYYYMMDD = TmgUtil.getSysdate().substring(0, 8).concat("01");
-                    params.setYYYYMMDD(YYYYMMDD);
-                } else {
-                    params.setYYYYMMDD(YYYYMMDD);
-                }
-            } else {
-                if (StrUtil.isBlank(YYYYMMDD)) {
-                    params.setYYYYMMDD(TmgUtil.getSysdate());
-                    Vector vecSQL = new Vector();
-                    vecSQL.add(buildSQLForTransitionDate(params));
-                    PsResult psResult = psDBBean.getValuesforMultiquery(vecSQL, EvaluatorSettingConst.BEAN_DESC);
-                    String baseDate = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
-                    if (StrUtil.isNotBlank(baseDate)) {
-                        params.setYYYYMMDD(baseDate);
-                    }
-                } else {
-                    params.setYYYYMMDD(YYYYMMDD);
-                }
-            }
+            configYYYYMMDD(psDBBean, params);
         }  catch (Exception e) {
             e.printStackTrace();
             haveAuthority = false;
@@ -513,10 +970,8 @@ public class EvaluatorSettingBean {
     public String getOrgTreeSearchRangeForTreeBuild(PsDBBean psDBBean) {
         String sExists;
         try {
-            //sExists = tmgSearchRangeUtil.getExistsQuery(pRequestHash, pSession, "d.HD_CCOMPANYID_CK", "d.HD_CEMPLOYEEID_CK");
             sExists = tmgSearchRangeUtil.getExistsQueryOrganisation(psDBBean, ContextUtil.getHttpRequest().getSession(), "o.MO_CLAYEREDSECTIONID");
-        }
-        catch(Exception e) {
+        } catch(Exception e) {
             sExists = "";
         }
         return sExists;
@@ -1087,17 +1542,18 @@ public class EvaluatorSettingBean {
      * @return String SQL
      */
     private String buildSQL4NextGroupId(String psSecId, String psCustId, String psCompId){
-        return "(T1.TGR_CSECTIONID || '|' || ( " +
-                "SELECT " +
-                "TO_CHAR(NVL(SUBSTR(MAX(TGR_CGROUPID),INSTR(MAX(TGR_CGROUPID),'|')+1,LENGTH(MAX(TGR_CGROUPID))),0)+1,'FM099999') " +
-                "FROM " +
-                "TMG_GROUP " +
-                "WHERE " +
-                "TGR_CCUSTOMERID = " + psCustId +
-                " AND TGR_CCOMPANYID = " + psCompId +
-                " AND TGR_CSECTIONID = " + psSecId +
-                ")" +
-                ") ";
+        return " (T1.TGR_CSECTIONID || '|' || ( " +
+                " SELECT " +
+                " TO_CHAR(NVL(SUBSTR(MAX(TGR_CGROUPID), INSTR(MAX(TGR_CGROUPID),'|') + 1, " +
+                " LENGTH(MAX(TGR_CGROUPID))), 0) + 1, 'FM099999') " +
+                " FROM " +
+                " TMG_GROUP " +
+                " WHERE " +
+                " TGR_CCUSTOMERID  =  " + psCustId +
+                " AND TGR_CCOMPANYID   =  " + psCompId +
+                " AND TGR_CSECTIONID   =  " + psSecId +
+                " ) " +
+                " ) ";
     }
 
     /**
@@ -1205,5 +1661,190 @@ public class EvaluatorSettingBean {
                 + " AND G.TGR_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId());
     }
 
+    /**
+     * グループ名称を取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectGroupName(EvaluatorSettingParam params) {
+        String sSQL = " SELECT "
+                + "     G.TGR_CGROUPNAME "
+                + " FROM "
+                + "     TMG_GROUP G "
+                + " WHERE "
+                + "     G.TGR_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND G.TGR_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND G.TGR_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND G.TGR_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND G.TGR_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
+                + " AND G.TGR_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
+        return sSQL;
+    }
+
+    /**
+     *
+     * @param evaluaterSettingParam
+     * @return
+     */
+    private String buildSQLForSelectOverTimeLimit(EvaluatorSettingParam evaluaterSettingParam) {
+
+        // 検索条件に使用するパラメータを準備
+        String sDBCustId   = escDBString(evaluaterSettingParam.getCustomerId()); // 顧客コード
+        String sDBCompId   = escDBString(evaluaterSettingParam.getCompanyId());  // 法人コード
+        String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
+
+        String sbSQL = " SELECT " +
+                "     OT_MONTLY_01, " +
+                "     OT_MONTLY_02, " +
+                "     OT_MONTLY_03, " +
+                "     OT_MONTLY_04, " +
+                "     OT_MONTLY_05, " +
+                "     OT_YEARLY_01, " +
+                "     OT_YEARLY_02, " +
+                "     OT_YEARLY_03, " +
+                "     OT_YEARLY_04, " +
+                "     OT_YEARLY_05, " +
+                "     OT_MONTHLY_COUNT, " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTLY_01', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTLY_02', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTLY_03', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTLY_04', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTLY_05', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_YEARLY_01', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_YEARLY_02', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_YEARLY_03', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_YEARLY_04', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_YEARLY_05', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTHLY_COUNT', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     OT_DAILY_01, " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_DAILY_01', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0') " +
+                "     ,OT_MONTHLY_AVG " +//超勤実績の月平均時間
+                "     ,NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|OT_MONTHLY_AVG', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0') " +
+                " FROM " +
+                "     TABLE( " +
+                "         TMG_F_GET_OVERTIMELIMT(" + sDBCustId + ", " + sDBCompId + ", " + escDBString(evaluaterSettingParam.getSection()) + ", " + escDBString(evaluaterSettingParam.getGroup()) + ", " + sDBBaseDate + ") " +
+                "     ) ";
+        return sbSQL;
+    }
+
+    /**
+     * 休日勤務日数の警告値を取得する
+     *
+     * @param evaluaterSettingParam
+     * @return
+     */
+    private String buildSQLForSelectHolidayTimeLimit(EvaluatorSettingParam evaluaterSettingParam) {
+
+        // 検索条件に使用するパラメータを準備
+        String sDBCustId   = escDBString(evaluaterSettingParam.getCustomerId()); // 顧客コード
+        String sDBCompId   = escDBString(evaluaterSettingParam.getCompanyId());  // 法人コード
+        String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
+
+        String sbSQL = " SELECT " +
+                "     HT_MONTLY_01, " +
+                "     HT_MONTLY_02, " +
+                "     HT_MONTLY_03, " +
+                "     HT_MONTLY_04, " +
+                "     HT_MONTLY_05, " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|HT_MONTLY_01', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|HT_MONTLY_02', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|HT_MONTLY_03', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|HT_MONTLY_04', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0'), " +
+                "     NVL(TMG_F_GET_MGD_C ('TMG_LIMIT|HT_MONTLY_05', " + sDBBaseDate + ", 4, " + sDBCustId + ", " + sDBCompId + ", 'ja'), 'TMG_ONOFF|0') " +
+                " FROM " +
+                "     TABLE( " +
+                "         TMG_F_GET_HOLIDAYTIMELIMT("
+                + sDBCustId + ", "
+                + sDBCompId + ", "
+                + escDBString(evaluaterSettingParam.getSection()) + ", "
+                + escDBString(evaluaterSettingParam.getGroup()) + ", "
+                + sDBBaseDate +
+                "         ) " +
+                "     ) ";
+        return sbSQL;
+    }
+
+    /**
+     * 超勤実績の警告値を取得
+     *
+     * @param evaluaterSettingParam
+     * @return
+     */
+    private String buildSQLForSelectOverTimeLimitSelf(EvaluatorSettingParam evaluaterSettingParam) {
+        StringBuffer sbSQL = new StringBuffer();
+        sbSQL.append(" SELECT ");
+        sbSQL.append("     OT_MONTLY_01, ");
+        sbSQL.append("     OT_MONTLY_02, ");
+        sbSQL.append("     OT_MONTLY_03, ");
+        sbSQL.append("     OT_MONTLY_04, ");
+        sbSQL.append("     OT_MONTLY_05, ");
+        sbSQL.append("     OT_YEARLY_01, ");
+        sbSQL.append("     OT_YEARLY_02, ");
+        sbSQL.append("     OT_YEARLY_03, ");
+        sbSQL.append("     OT_YEARLY_04, ");
+        sbSQL.append("     OT_YEARLY_05, ");
+        sbSQL.append("     OT_MONTHLY_COUNT, ");
+        sbSQL.append("     OT_DAILY_01 ");
+        sbSQL.append("     ,OT_MONTHLY_AVG ");//超勤実績の月平均時間
+        sbSQL.append(" FROM ");
+        sbSQL.append("     TABLE( ");
+        sbSQL.append("         TMG_F_GET_OVERTIMELIMT_SELF("
+                + escDBString(evaluaterSettingParam.getCustomerId()) + ", "
+                + escDBString(evaluaterSettingParam.getCompanyId()) + ", "
+                + escDBString(evaluaterSettingParam.getSection()) + ", "
+                + escDBString(evaluaterSettingParam.getGroup()) + ", "
+                + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        sbSQL.append("         ) ");
+        sbSQL.append("     ) ");
+        return sbSQL.toString();
+    }
+
+    /**
+     * 休日勤務日数の警告値を取得する
+     *
+     * @param params
+     */
+    private String buildSQLForSelectHolidayTimeLimitSelf(EvaluatorSettingParam params) {
+
+        String sbSQL = " SELECT " +
+                "     HT_MONTLY_01, " +
+                "     HT_MONTLY_02, " +
+                "     HT_MONTLY_03, " +
+                "     HT_MONTLY_04, " +
+                "     HT_MONTLY_05 " +
+                " FROM " +
+                "     TABLE( " +
+                "         TMG_F_GET_HOLIDAYTIMELIMT_SELF("
+                + escDBString(params.getCustomerId()) + ", "
+                + escDBString(params.getCompanyId()) + ", "
+                + escDBString(params.getSection()) + ", "
+                + escDBString(params.getGroup()) + ", "
+                + SysUtil.transDateNullToDB(params.getYYYYMMDD()) +
+                "         ) " +
+                "     ) ";
+        return sbSQL;
+    }
+
+    /**
+     * グループ属性テーブルの情報を取得する
+     *
+     * @param params
+     * @return
+     */
+    private String buildSQLForSelectGroupAttribute(EvaluatorSettingParam params) {
+
+        String sSQL = " SELECT "
+                + "TGRA_CAUTOSET_EVA "
+                + " FROM "
+                + "TMG_GROUP_ATTRIBUTE "
+                + " WHERE "
+                + "     TGRA_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND TGRA_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND TGRA_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND TGRA_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND TGRA_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
+                + " AND TGRA_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
+
+        return sSQL;
+    }
 
 }

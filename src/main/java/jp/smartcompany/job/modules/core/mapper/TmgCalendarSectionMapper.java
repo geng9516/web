@@ -35,6 +35,7 @@ public interface TmgCalendarSectionMapper extends BaseMapper<TmgCalendarSectionD
                              @Param("targetSec")String targetSec,
                              @Param("userCode")String userCode,
                              @Param("targetGroup")String targetGroup,
+                             @Param("month")String month,
                              @Param("monthDto")List<String> monthDto);
 
     int updateCalendar(@Param("custID")String custID,

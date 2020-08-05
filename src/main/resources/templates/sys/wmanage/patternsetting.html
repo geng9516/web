@@ -113,7 +113,7 @@
     <!-- 勤務パターンSTART -->
     <template>
       <span>
-        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" draggable>
+        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
             <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">
@@ -158,16 +158,16 @@
                   <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
               </i-select>
             </form-item>
+
             <form-item label="デフォルト設定値">
                 <checkbox v-model="isDefault" class="mt5 ml1" @on-change="defaultSelect"></checkbox>
             </form-item>
+
           </i-form>
-          <div>
-              <div style="text-align: right">
+          <div style="text-align: right">
                   <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
                   <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
                   <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
-              </div>
           </div>
         </Modal>
       </span>

@@ -37,8 +37,8 @@ import java.util.List;
          * カレンダー情報を登録します。
          */
         @Override
-        public int insertCalendarSecton(String custID, String compCode, String targetSec, String userCode, String targetGroup, List<String> monthDto){
-                return baseMapper.insertCalendarSecton( custID,  compCode,  targetSec, userCode, targetGroup, monthDto);
+        public int insertCalendarSecton(String custID, String compCode, String targetSec, String userCode, String targetGroup,String month, List<String> monthDto){
+                return baseMapper.insertCalendarSecton( custID,  compCode,  targetSec, userCode, targetGroup,month, monthDto);
         }
 
 

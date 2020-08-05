@@ -18,6 +18,8 @@ public class CalendarVo {
     private boolean gErrorFlag = false;
     /** 全学判別用フラグ */
     private boolean gTopLevelOrganization = true;
+    //予定入力可能情報を取得(新規と更新用)
+    private String  selectMaxDaily;
 
     List<CalendarDispVo> calendarDispVoList=new ArrayList<CalendarDispVo>();
 }

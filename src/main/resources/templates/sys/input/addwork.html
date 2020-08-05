@@ -347,7 +347,7 @@
                 ],
                 query: {
                     txtAction: 'ACT_DISP_RMONTHLY',
-                    txtDYYYYMM: '2020/04/01',
+                    txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
                     today: '',
                     selHealthStatus:'',
@@ -381,6 +381,7 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                 },
                 workingId: '',
+                today: '',
                 workingIdList: [],
                 businessTrip: '',
                 businessTripList: [],
@@ -657,7 +658,7 @@
                 this.dailyDataList = []
                 try {
                     this.monthlyLoading=true
-                    const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
+                    const {data,sysDate} = await this.http.get('sys/tmgResults/getTitleData', this.query)
                     this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
                     this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
                     this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
@@ -668,7 +669,7 @@
                     this.monthlyTilteMapList = data.monthlyTilteMapList
                     this.monthlyMap = data.monthlyDateMap
                     this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
-
+                    this.today=sysDate
                     this.columns = data.dailyTittleMapList.map(e => {
                         return {
                             ...e,
@@ -1159,8 +1160,8 @@
                 let nHour = new Number();
                 let nMinute = new Number();
                 // 分に変換します
-                nHour = eval(+(moji.split(":")[0] * 60));
-                nMinute = eval(+(moji.split(":")[1]));
+                nHour = eval(+(pHHMM.split(":")[0] * 60));
+                nMinute = eval(+(pHHMM.split(":")[1]));
                 retMinute = eval(nHour + nMinute);
                 return retMinute;
             },
@@ -1175,14 +1176,14 @@
                 return 'select-col sat'
             },
             dayRed(e) {
-                const dayOfWeek = e.TDA_DYYYYMMDD_DY
+                const dayOfWeek = e.TMG_HOLFLG
                 if (!dayOfWeek) {
                     return
                 }
-                if (dayOfWeek.trim() === '土' || dayOfWeek.trim() === '日') {
+                if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                     return 'blue'
                 }
-                if (e.today) {
+                if (e.TDA_DYYYYMMDD === this.today) {
                     return 'brown'
                 }
             },
