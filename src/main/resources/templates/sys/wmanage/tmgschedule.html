@@ -197,7 +197,7 @@
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             勤務予定
-        </div>
+            </div>
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
@@ -209,7 +209,7 @@
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable">
+                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
 
@@ -725,7 +725,25 @@
                 e.push({ restOpen: '', restClose: '' })
             },
             handleChangeDivision(e){
-                "TMG_WORK|000"==e?this.patternDisabled=true:this.patternDisabled=false
+                console.log("handleChangeDivision"+e)
+                if("TMG_WORK|000"!=e){
+                    this.pattern.nclose=''
+                    this.pattern.nopen=''
+                    this.pattern.restList=[]
+                }
+
+
+                "TMG_WORK|000"==e ?this.patternDisabled=true:this.patternDisabled=false
+            },
+            handleChangeDivision2(index){
+                console.log("handleChangeDivision2"+index)
+
+                if(this.value[index].workId!='TMG_WORK|000'){
+                    this.value[index].nopen=''
+                    this.value[index].nclose=''
+                    this.value[index].restList=[]
+                }
+
             },
             handleChangeWorkPattern() {
                 const handleTime = Vue.filter('handleTime');
@@ -909,8 +927,13 @@
                 this.query.txtBaseDate=txtBaseDate
                 this.query.txtEndDate=txtEndDate
                 this.query.content=JSON.stringify(content)
+                console.log(JSON.stringify(this.query.content))
                 await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
                 this.$Message.success('登録完了')
+                this.query.content=''
+                this.isEditable=false
+                this.getSelectScheduleInfo()
+                this.getSelectIkkaInfo()
 
             },
             async getSelectIkkaInfo() {
@@ -967,7 +990,7 @@
                 if (!e) {
                     return
                 }
-                if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
+                if (e === 'TMG_HOLFLG|2' || e === 'TMG_HOLFLG|3' || e === 'TMG_HOLFLG|1') {
                     return 'rest-cell week-rest'
                 }
                 if (e.indexOf('休') > -1) {
@@ -988,11 +1011,6 @@
                 await this.getSelectIkkaInfo()
             },
             rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
             },
             toTop() {
                 const animateMachine = requestAnimationFrame(this.toTop)
