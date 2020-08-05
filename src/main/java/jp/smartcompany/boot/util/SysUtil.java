@@ -443,7 +443,6 @@ public class SysUtil {
     /**
      * Listを1000要素単位に分割し、IN句を作成します。
      * Oracleの制約により、INに1001個以上の要素を指定するとエラーが発生する現象の対応です
-     * @param カラムID
      * @param plIdList 1000件単位でIN句を区切った文字列(クエリ)
      */
     public static String separateList(String psColumn, List < String > plIdList) {
