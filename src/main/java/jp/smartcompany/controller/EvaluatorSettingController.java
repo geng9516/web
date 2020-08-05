@@ -49,4 +49,12 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.showEditGroupHandler(psDBBean,sectionId,groupId);
     }
 
+    @GetMapping("deletegroup")
+    // http://localhost:6879/sys/evaluatorsetting/deletegroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&targetGroupId=201000000000%7C000005&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    public GlobalResponse deleteGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                      @RequestParam(value="targetGroupId") String groupId,
+                                      @RequestParam(value="sectionId") String sectionId) {
+        return evaluatorSettingBean.deleteGroupHandler(psDBBean,sectionId,groupId);
+    }
+
 }

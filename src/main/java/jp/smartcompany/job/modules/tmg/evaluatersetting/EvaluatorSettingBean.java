@@ -568,13 +568,41 @@ public class EvaluatorSettingBean {
         return map;
     }
 
+    public GlobalResponse deleteGroupHandler(PsDBBean bean,String sectionId,String groupId) {
+        if (StrUtil.endWith(groupId,TmgUtil.Cs_DEFAULT_GROUPSEQUENCE)) {
+            throw new GlobalException("デフォルトグループを削除できません");
+        }
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(sectionId);
+        params.setGroup(groupId);
+        params.setCustomerID(bean.getCustID());
+        params.setCompanyId(bean.getCompCode());
+
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForDeleteGroup(params));        // グループテーブルから、対象グループ削除
+        vQuery.add(buildSQLForDeleteEvaluater(params));    // 承認者テーブルから、対象グループの承認者削除
+        vQuery.add(buildSQLForUpdateMovingEval(params));   // 割付テーブルにて、対象グループの承認者を直下のグループに移動
+        vQuery.add(buildSQLForDeletePattern(params));      // 対象グループに紐付く勤務パターン情報を削除
+        vQuery.add(buildSQLForDeletePatternRest(params));  // 対象グループに紐付く勤務パターン(休憩)情報を削除
+        vQuery.add(buildSQLForDeletePatternApply(params)); // 対象グループに紐付く勤務パターン割付情報を削除
+        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows == 0) {
+            return GlobalResponse.ok("削除成功しました");
+        }
+        return GlobalResponse.error("削除失敗しました");
+    }
+
+
+
+
+
+
+
 
     /*
      * ========================= 内部处理逻辑Start ==================
      */
-
-
-
 
     /**
      * 与えられたグループコードがデフォルトグループかどうかを返します。
@@ -586,6 +614,21 @@ public class EvaluatorSettingBean {
         return psGroupId.endsWith(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
     }
 
+    /**
+     * グループテーブルから、対象グループを削除するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForDeleteGroup(EvaluatorSettingParam params) {
+        return " DELETE FROM "
+                + "     TMG_GROUP T1 "
+                + " WHERE "
+                + "     T1.TGR_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND T1.TGR_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND T1.TGR_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND T1.TGR_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND T1.TGR_DSTARTDATE >= " + "TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + SysUtil.transDateNullToDB(params.getYYYYMMDD()) + ") "
+                + " AND T1.TGR_DENDDATE   <= " + "TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + SysUtil.transDateNullToDB(params.getYYYYMMDD()) + ") ";
+    }
 
     private void configYYYYMMDD(PsDBBean psDBBean, EvaluatorSettingParam params) {
         // REQUEST:基準日
@@ -666,10 +709,8 @@ public class EvaluatorSettingBean {
                      }
                  }
 
-                int nGroupNum = -1;				// 表示するグループの番号（最初にカウントアップするので、-1開始）
                 String sGroupName_Group = "";	// 表示するグループID
                 String sGroupName_Eval  = "";	// 承認者の所属するグループID
-                String sEvalEmpDataCnt  = "";	// 承認者の権限設定データ歴数
                 boolean sEmpNameLinkTagFlg;		// 承認者氏名のリンクタグフラグ
                 boolean sEmpNameBoldTagFlg;		// 承認者氏名の太字タグフラグ
 
@@ -683,7 +724,6 @@ public class EvaluatorSettingBean {
                     /* 2007/06/28  H.Kawabata      権限設定の仕様変更 */
                     if(!sGroupName_Group.equals(sGroupName_Eval)) {
                         sGroupName_Group = sGroupName_Eval;	//新しいグループIDをセット
-                        nGroupNum++;	//グループ番号をカウントアップ
 
                         //グループに所属する人の数だけ、セルを結合
                         if (i == 0) { //2008/10/10
@@ -726,8 +766,7 @@ public class EvaluatorSettingBean {
                         vo.setMemberList(memberList);
                     } else {
                         EvaluatorMemberVO memberVO = new EvaluatorMemberVO();
-                        // 承認者氏名欄の縦結合数を取得（ROWPANの値）
-                        sEvalEmpDataCnt = (String)groupEmpDataMap.get(sGroupName_Eval + "_" + sEvalEmpId);
+
                         // 承認者氏名欄の枠は、グループまたは承認者職員番号が変わるタイミングのみで生成する。
                         if (i==0
                                 || !psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1).equals(sGroupName_Eval)
@@ -1837,13 +1876,10 @@ public class EvaluatorSettingBean {
 
     /**
      * グループ属性テーブルの情報を取得する
-     *
      * @param params
-     * @return
      */
     private String buildSQLForSelectGroupAttribute(EvaluatorSettingParam params) {
-
-        String sSQL = " SELECT "
+        return " SELECT "
                 + "TGRA_CAUTOSET_EVA "
                 + " FROM "
                 + "TMG_GROUP_ATTRIBUTE "
@@ -1854,8 +1890,90 @@ public class EvaluatorSettingBean {
                 + " AND TGRA_CGROUPID    = " + escDBString(params.getGroup())
                 + " AND TGRA_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
                 + " AND TGRA_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
+    }
 
+    /**
+     * 承認者テーブルから、所属する承認者を削除するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForDeleteEvaluater(EvaluatorSettingParam evaluaterSettingParam) {
+        return "DELETE FROM "
+                + "     TMG_EVALUATER E "
+                + " WHERE "
+                + "     E.TEV_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND E.TEV_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND E.TEV_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND E.TEV_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId());
+    }
+
+    /**
+     * 割付テーブルにて、対象グループの承認者を組織直下のグループに移動するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForUpdateMovingEval(EvaluatorSettingParam evaluaterSettingParam) {
+        return " UPDATE "
+                + "     TMG_GROUP_MEMBER M "
+                + " SET "
+                + "     M.TGRM_CGROUPID = " + escDBString(evaluaterSettingParam.getRootGroup())
+                + " WHERE "
+                + "     M.TGRM_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND M.TGRM_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND M.TGRM_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND M.TGRM_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND M.TGRM_DENDDATE   >= " + "TMG_F_GET_ORG_STARTDATE(M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID, M.TGRM_CSECTIONID, " +  SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ") "
+                + " AND M.TGRM_DSTARTDATE <= " + "TMG_F_GET_ORG_ENDDATE(M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID, M.TGRM_CSECTIONID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ") ";
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePattern(EvaluatorSettingParam evaluaterSettingParam) {
+        return " DELETE FROM "
+                + "     TMG_PATTERN "
+                + " WHERE "
+                + "     TPA_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND TPA_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND TPA_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND TPA_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND TPA_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND TPA_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン(休憩)情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePatternRest(EvaluatorSettingParam params) {
+        String sSQL = " DELETE FROM "
+                + "     TMG_PATTERN_REST "
+                + " WHERE "
+                + "     TPR_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND TPR_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND TPR_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND TPR_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND TPR_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
+                + " AND TPR_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
         return sSQL;
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン割付情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePatternApply(EvaluatorSettingParam evaluaterSettingParam) {
+        return " DELETE FROM "
+                + "     TMG_PATTERN_APPLIES "
+                + " WHERE "
+                + "     TPAA_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND TPAA_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND TPAA_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND TPAA_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND TPAA_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
     }
 
 }
