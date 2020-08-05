@@ -148,16 +148,15 @@
            mgd_cmastercode,mgd_clanguage_ck,mgd_dstart_ck,mgd_dend,mgd_cmodifieruserid,
            mgd_dmodifieddate,mgd_csparechar1,mgd_csparechar2,mgd_csparechar3,versionno)
            values
-           (mast_generic_detail_seq.nextval,#{psCustId},#{psCompId},#{psGroupCode},#{psDetailId},
-           ,#{psMasterCode},#{psLanguage},#{psStartDate},#{psEndDate},#{psUpdateUser}
+           (mast_generic_detail_seq.nextval,#{psCustId},#{psCompId},#{psGroupCode},#{psDetailId}
+           ,#{psMasterCode},#{psLanguage},#{psStartDate},#{psEndDate},#{psUpdateUser},
            sysdate,#{psExuludecondType},#{psExuludecondFrom},#{psExuludecondTo},'1')
     </insert>
 
     <!--段階導入シミュレーション登録情報に登録する-->
-    <update id="updateTmgStatusWorkTypeSim" parameterType="java.util.HashMap">
+   <!-- <update id="updateTmgStatusWorkTypeSim" parameterType="java.util.HashMap">
         update tmg_status_worktype_sim set tsws_cmodifierprogramid=#{psModifierProgramId},tsws_cmodifieruserid=#{psModifierUserId},tsws_dmodifieddate=sysdate,tsws_cstatus=#{psStatus}
           where tsws_ccustomerid=#{psCustId} and tsws_ccompanyid=#{psCompId}  and tsws_dstartdate <![CDATA[<=]]> #{psStartDate} and tsws_denddate <![CDATA[>=]]> #{psEndDate}
-    </update>
-
+    </update>-->
 
 </mapper>
