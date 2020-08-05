@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='連携対象者マスタ設定',cssPaths='/pages/content.min.css')">
+</head>
+
+<body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<style>
+    .label-in-table {
+        display: inline-block;
+        min-height: 30px;
+        width: 160px;
+        margin-bottom: 2px;
+        text-align: right;
+        background-color: #e9f3ff;
+        color: #2d8cf0;
+        padding-top: 5px;
+        padding-right: 5px;
+    }
+</style>
+<main class="content simulation-warp" @scroll.passive="handleScroll" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `連携対象者マスタ設定 ` }}
+                </h1>
+            </div>
+            <div class="btnbox">
+                <span style="flex:1"></span>
+                <p class="pr15" style="height: 40px; line-height: 45px; font-size: 16px; font-weight: bold;">状態：未実行　</p>
+                <i-button type="primary" icon="ios-power" @click="" :loading="editLoading">実行開始</i-button>
+            </div>
+        </div>
+
+    </div>
+    <div class="content_body">
+
+        <div class="titlenorm mb10 mt5" style="font-size:15px">
+            <Icon type="logo-buffer"></Icon>
+            マスタデータリスト
+        </div>
+
+        <i-table border class="mb10" :columns="columns" :loading="loading" :data="tableData">
+            <template slot-scope="{ row }" slot="date">
+                <span class="mr10 pt2 pb2 pl10 pr10 cursor" @click="editDate">{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="master">
+                <Row>
+                    <i-col span="24" v-for="(item, i) of row.simulationDataDTOList" :key="i">
+                        <Row class="mb10">
+                            <i-col span="3" class="tr">
+                                <span class="label-in-table " style="padding-top: 7px;display: inline-block;height: 32px">{{ item.mgd_excludecond_type_name }}</span>
+                            </i-col>
+                            <i-col span="21" class="tl">
+                                <i-input v-model="item.excludecond" style="width:80%"></i-input>
+                            </i-col>
+                        </Row>
+                    </i-col>
+                </Row>
+            </template>
+
+            <template slot-scope="{ row }" slot="operator">
+                <Poptip v-model="lightDelBtnVisible[row._index]" placement="left" transfer>
+                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px">編集</i-button>
+                    <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash">削除</i-button>
+                    <i-button class="collapse-btn mt10" type="primary" icon="ios-add" style="width: 128px" v-if="row._index+1 == dataCount" @click="mergeMaster(null)">追加</i-button>
+                </Poptip>
+            </template>
+
+        </i-table>
+    </div>
+    <span class="toTopBtn" @click="toTop" v-show="isScroll">
+            <Icon size="24" type="md-arrow-round-up"/>
+    </span>
+    <!-- 連携対象マスタを追加するSTART -->
+    <span>
+        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
+          <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
+          <i-form :label-width="120" ref="localValue" :model="localValue">
+
+            <form-item label="期間" prop="period">
+               <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" 　placeholder="開始時間" v-model="masterResult.psStartDate"></date-picker>  ～  <date-picker
+                    class="mar"
+                    type="date"
+                    :editable="false"
+                    :clearable="false"
+                    format="yyyy/MM/dd"
+                    style="width: 47%"
+                    placeholder="終了時間"
+                    v-model="masterResult.psEndDate"></date-picker>
+            </form-item>
+
+            <form-item :label="item.mgd_excludecond_type_name" :pop="item.mgd_excludecond_type_name" v-for="(item, i) of masterList" :key="i">
+                  <i-input placeholder="入力してください" @on-blur="masterCheck(item,$event.target)"></i-input>
+            </form-item>
+
+          </i-form>
+
+
+            <div style="text-align: right">
+                  <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
+                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
+                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+            </div>
+        </Modal>
+      </span>
+    <!-- 連携対象マスタを追加するEND -->
+
+</main>
+<div th:replace="layout/script::common_script"></div>
+<script type="text/babel" th:inline="javascript">
+    const GROUP_SETTINGS = new Vue({
+        el: '.simulation-warp',
+        data() {
+            return {
+                loading: true,
+                editLoading: false,
+                tableLoading: false,
+                isScroll: false,
+                lightDelBtnVisible: [],
+                curDate: new Date(),
+                pageTitle: '連携対象マスタ追加',
+                errorFlag: false,
+                errorMsg: '',
+                isShow: false,
+                btn_sk_commit_show: true,
+                localValue: {
+                    name: '',
+                    group: '1',
+                    date: '2019年11月01日(金)'
+                },
+                opts: {
+                    systemId: '01',
+                    date: ''
+                },
+                query: {
+                    custId: [[${ session.psSession.loginCustomer}]],
+                    compCode: [[${ session.psSession.loginCompany}]],
+                    language: [[${ session.psSession.language}]],
+                    psGroupId: 'TMG_EXCLUDE4THW_SIM'
+                },
+                columns: [
+                    {
+                        title: '期間',
+                        align: 'center',
+                        slot: 'date',
+                        width: 250
+                    },
+                    {
+                        title: '条件',
+                        align: 'center',
+                        slot: 'master'
+                    },
+                    {
+                        title: '操作',
+                        slot: 'operator',
+                        align: 'center',
+                        width: 200
+                    }
+
+                ],
+                tableData: [{}],
+                masterList: [{}],
+                masterResult: {
+                    psStartDate: '',
+                    psEndDate: '',
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    custId: [[${ session.psSession.loginCustomer}]],
+                    compCode: [[${ session.psSession.loginCompany}]],
+                    language: [[${ session.psSession.language}]],
+                    psGroupId: 'TMG_EXCLUDE4THW_SIM',
+                    operType: '',
+                    masterList: [{}]
+                },
+                dataCount: 0
+
+            }
+        },
+        async created() {
+            this.getData()
+        },
+        computed: {
+            tableHeadFixed() {
+                //console.log(this.contentScrollTop)
+                if (this.contentScrollTop > 300) return true
+                else return false
+            }
+
+        },
+        methods: {
+            //マスタデータリスト
+            async getData() {
+                const OPTS = {...this.opts}
+                this.loading = true
+                try {
+                    const {data} = await this.http.get('sys/simulation/selectSimulationMasterList', this.query)
+                    this.dataCount = data.length;
+                    this.tableData = data
+                } catch (error) {
+
+                } finally {
+                    this.loading = false
+                }
+            },
+            //画面のトップに表示する
+            toTop() {
+                const animateMachine = requestAnimationFrame(this.toTop)
+                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
+                if (this.$refs.layout.scrollTop === 0) {
+                    cancelAnimationFrame(animateMachine)
+                }
+            },
+            //マウスホイールイベント
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.scrollTop
+                if (e.target.scrollTop > 200) {
+                    this.isScroll = true
+                } else {
+                    this.isScroll = false
+                }
+            }, 50),
+            // 新規と編集画面を開く
+            async mergeMaster(row) {
+                if (!row) {
+                    this.masterResult.operType = 'insert'
+                } else {
+                    this.masterResult.operType = 'update'
+                }
+                this.isShow = true
+                this.tableLoading = true
+                const {data} = await this.http.get('sys/simulation/selectExcludecondCtl', this.query)
+                this.tableLoading = false
+                this.masterList = data
+            },
+            // 入力チェック
+            async masterCheck(item, e) {
+                this.masterList.forEach(e1 => {
+                    if (item.mgd_excludecond_type === e1.mgd_excludecond_type) {
+                        e1.value = e.value
+                    }
+                })
+                this.masterResult.masterList = this.masterList
+            },
+            //登録
+            async handleSubmit(name) {
+                this.masterResult.psStartDate = Utils.formatDate(this.masterResult.psStartDate, "YYYY/MM/DD")
+                this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
+                var masterResult = JSON.stringify(this.masterResult)
+                await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
+            },
+            //新規又は更新する画面をキャンセルする
+            cancel(i) {
+                //全部データを初期化
+                this.masterResult.psStartDate = ''
+                this.masterResult.psEndDate = ''
+                this.masterResult.operType = ''
+                this.masterResult.masterList = [{}]
+                //画面を閉じる
+                this.isShow = false
+            },
+            //有効期限を変更する
+            editDate() {
+
+            }
+        }
+    })
+</script>
+</body>
+
+</html>

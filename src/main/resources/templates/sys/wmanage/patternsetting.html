@@ -113,7 +113,7 @@
     <!-- 勤務パターンSTART -->
     <template>
       <span>
-        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" draggable>
+        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
             <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">

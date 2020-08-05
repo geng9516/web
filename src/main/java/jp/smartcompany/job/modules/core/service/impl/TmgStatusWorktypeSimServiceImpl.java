@@ -4,8 +4,13 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgStatusWorktypeSimDO;
 import jp.smartcompany.job.modules.core.mapper.TmgStatusWorktypeSimMapper;
 import jp.smartcompany.job.modules.core.service.ITmgStatusWorktypeSimService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ConditionColDTO;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDataDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -21,7 +26,7 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
     /**
      * 段階導入シュミレーション登録情報を取得する
      *
-     * @param custID 顧客コード
+     * @param custID   顧客コード
      * @param compCode 法人コード
      * @param language 言語
      */
@@ -43,5 +48,26 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
     @Override
     public int buildSQLForUpdateTmgStatusWorkTypeSim(String custId, String compCode, String userCode, String programId, String status) {
         return baseMapper.buildSQLForUpdateTmgStatusWorkTypeSim(custId, compCode, userCode, programId, status);
+    }
+
+    @Override
+    public List<ConditionColDTO> selectExcludecondCtl(String custID, String compCode, String language, String editFlag) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        params.put("editFlag", editFlag);
+        return baseMapper.selectExcludecondCtl(params);
+    }
+
+    @Override
+    public List<SimulationDataDTO> selectSimulationMaster(String custID, String compCode, String language, String genericgroupId,String editFlag) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        params.put("editFlag", editFlag);
+        params.put("genericgroupId", genericgroupId);
+        return baseMapper.selectSimulationMaster(params);
     }
 }

@@ -2,7 +2,12 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgStatusWorktypeSimDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ConditionColDTO;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDataDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -34,4 +39,30 @@ public interface ITmgStatusWorktypeSimService extends IService<TmgStatusWorktype
      * @return 件数
      */
     int buildSQLForUpdateTmgStatusWorkTypeSim(String custId, String compCode, String userCode, String programId, String status);
+
+    /**
+     * HR連携除外条件区分マスタ情報の件数を取得する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param editFlag
+     * @return
+     */
+    List<ConditionColDTO> selectExcludecondCtl(String custID, String compCode, String language, String editFlag);
+
+    /**
+     * HR連携除外条件マスタ情報を取得する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @return
+     */
+    List<SimulationDataDTO> selectSimulationMaster(String custID, String compCode, String language, String genericgroupId,String editFlag);
+
+
+
+
 }
