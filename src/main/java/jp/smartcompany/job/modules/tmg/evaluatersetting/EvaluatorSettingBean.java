@@ -11,6 +11,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorGroupVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberRightVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberVO;
@@ -593,8 +594,34 @@ public class EvaluatorSettingBean {
         return GlobalResponse.error("削除失敗しました");
     }
 
+    /**
+     * グループ名編集処理をするメソッド
+     */
+    public GlobalResponse editGroupNameProcHandler(PsDBBean psDBBean, EditGroupDTO dto) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
 
 
+        Vector<String> vQuery = new Vector<>();
+        // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteGroupErrMsg(params));
+        // チェックテーブルへグループ名登録
+        vQuery.add(buildSQLForInsertGroupAttributeCheck(params,dto));
+        // エラーメッセージ追加
+        vQuery.add(buildSQLForInsertGroupAttributeErrMsg(params));
+        // トリガー追加
+        vQuery.add(buildSQLForInsertGroupTrigger(params));
+        // エラーメッセージ取得
+        vQuery.add(buildSQLForSelectGroupErrMsg(params));
+        // トリガー削除
+        vQuery.add(buildSQLForDeleteGroupTrigger(params));
+        // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteGroupErrMsg(params));
+        // エラーチェック削除
+        vQuery.add(buildSQLForDeleteGroupAttributeCheck(params));
+        // DB反映
+        psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        return GlobalResponse.ok();
+    }
 
 
 
@@ -610,7 +637,9 @@ public class EvaluatorSettingBean {
      * @return
      */
     private boolean isDefaultGroup(String psGroupId){
-        if (psGroupId == null) return false;
+        if (psGroupId == null) {
+            return false;
+        }
         return psGroupId.endsWith(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
     }
 
@@ -1730,11 +1759,6 @@ public class EvaluatorSettingBean {
         return sSQL;
     }
 
-    /**
-     *
-     * @param evaluaterSettingParam
-     * @return
-     */
     private String buildSQLForSelectOverTimeLimit(EvaluatorSettingParam evaluaterSettingParam) {
 
         // 検索条件に使用するパラメータを準備
@@ -1948,7 +1972,7 @@ public class EvaluatorSettingBean {
      * @return String SQL
      */
     private String buildSQLForDeletePatternRest(EvaluatorSettingParam params) {
-        String sSQL = " DELETE FROM "
+        return " DELETE FROM "
                 + "     TMG_PATTERN_REST "
                 + " WHERE "
                 + "     TPR_CCUSTOMERID = " + escDBString(params.getCustomerId())
@@ -1957,7 +1981,6 @@ public class EvaluatorSettingBean {
                 + " AND TPR_CGROUPID    = " + escDBString(params.getGroup())
                 + " AND TPR_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
                 + " AND TPR_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
-        return sSQL;
     }
 
     /**
@@ -1974,6 +1997,132 @@ public class EvaluatorSettingBean {
                 + " AND TPAA_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
                 + " AND TPAA_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
                 + " AND TPAA_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+    }
+
+    /**
+     * チェックテーブルへグループ名を登録するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForInsertGroupAttributeCheck(EvaluatorSettingParam evaluaterSettingParam,EditGroupDTO dto) {
+
+        String sCustomerId = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompanyId = escDBString(evaluaterSettingParam.getCompanyId());
+        String sSection = escDBString(evaluaterSettingParam.getSection());
+        String sGroupId = escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        String sYYYYMMDD = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+
+        // 「デフォルト承認者の自動設定を行う」チェックの処理
+        String sDefaultFlg;
+        if ("1".equals(dto.getAutoStart())) {
+            sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_1;
+        } else {
+            sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_0;
+        }
+
+        String sbSQL = "INSERT INTO TMG_GROUP_ATTRIBUTE_CHECK " +
+                "( " +
+                "TGRA_CCUSTOMERID, " +
+                "TGRA_CCOMPANYID, " +
+                "TGRA_CSECTIONID, " +
+                "TGRA_CGROUPID, " +
+                "TGRA_DSTARTDATE, " +
+                "TGRA_DENDDATE, " +
+                "TGRA_CMODIFIERUSERID, " +
+                "TGRA_DMODIFIEDDATE, " +
+                "TGRA_CAUTOSET_EVA, " +
+                "TGRA_CMODIFIERPROGRAMID, " +
+                "TGRA_OT_MONTLY_01, " +
+                "TGRA_OT_MONTLY_02, " +
+                "TGRA_OT_MONTLY_03, " +
+                "TGRA_OT_MONTLY_04, " +
+                "TGRA_OT_MONTLY_05, " +
+                "TGRA_OT_YEARLY_01, " +
+                "TGRA_OT_YEARLY_02, " +
+                "TGRA_OT_YEARLY_03, " +
+                "TGRA_OT_YEARLY_04, " +
+                "TGRA_OT_YEARLY_05, " +
+                "TGRA_OT_MONTHLY_COUNT, " +
+                "TGRA_HT_MONTLY_01, " +
+                "TGRA_HT_MONTLY_02, " +
+                "TGRA_HT_MONTLY_03, " +
+                "TGRA_HT_MONTLY_04, " +
+                "TGRA_HT_MONTLY_05, " +
+                "TGRA_OT_DAILY_01 " +
+                ",TGRA_OT_MONTHLY_AVG " +//超勤実績の月平均時間
+                ") " +
+                "VALUES ( " +
+                sCustomerId + ", " +
+                sCompanyId + ", " +
+                sSection + ", " +
+                escDBString(evaluaterSettingParam.getGroup()) + ", " +
+                sYYYYMMDD + ", " +
+                "TMG_F_GET_GROUP_ENDDATE(" + sCustomerId + ", " + sCompanyId + ", " + sSection + ", " + sGroupId + ", " + sYYYYMMDD + "), " +
+                escDBString(evaluaterSettingParam.getEmployee()) + ", " +
+                "SYSDATE, " +
+                escDBString(sDefaultFlg) + ", " +
+                escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ", " +
+                escDBString(dto.getMonthlyOverTimeYellow()) + ", " +
+                escDBString(dto.getMonthlyOverTimeOrange()) + ", " +
+                escDBString(dto.getMonthlyOverTimePink()) + ", " +
+                escDBString(dto.getMonthlyOverTimeRed()) + ", " +
+                escDBString(dto.getMonthlyOverTimeBackUp()) + ", " +
+                escDBString(dto.getYearlyOverTimeYellow()) + ", " +
+                escDBString(dto.getYearlyOverTimeOrange()) + ", " +
+                escDBString(dto.getYearlyOverTimePink()) + ", " +
+                escDBString(dto.getYearlyOverTimeRed()) + ", " +
+                escDBString(dto.getYearlyOverTimeBackUp()) + ", " +
+                escDBString(dto.getMonthlyOverTimeCount()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel1()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel2()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel3()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel4()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel5()) + ", " +
+                escDBString(dto.getDailyOverTime()) + ", " +
+                escDBString(dto.getMonthlyOverTimeAvg()) + ")";//超勤実績の月平均時間
+        return sbSQL;
+    }
+
+    /**
+     * エラーメッセージを追加するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForInsertGroupAttributeErrMsg(EvaluatorSettingParam params) {
+        return " INSERT INTO TMG_ERRMSG ( "
+                + " TER_CCUSTOMERID, "
+                + " TER_CCOMPANYID, "
+                + " TER_DSTARTDATE, "
+                + " TER_DENDDATE, "
+                + " TER_CMODIFIERUSERID, "
+                + " TER_DMODIFIEDDATE, "
+                + " TER_CMODIFIERPROGRAMID, "
+                + " TER_CERRCODE, "
+                + " TER_CLANGUAGE "
+                + " ) VALUES ( "
+                + escDBString(params.getCustomerId()) + ", "
+                + escDBString(params.getCompanyId()) + ", "
+                + TmgUtil.Cs_MINDATE + ", "
+                + TmgUtil.Cs_MAXDATE + ", "
+                + escDBString(params.getEmployee()) + ", "
+                + "SYSDATE, "
+                + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + params.getAction()) + ", "
+                + "0,"
+                + escDBString(params.getLanguage()) + ") ";
+    }
+
+    /**
+     * エラーチェックを削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeleteGroupAttributeCheck(EvaluatorSettingParam params) {
+        return " DELETE FROM "
+                + "     TMG_GROUP_ATTRIBUTE_CHECK G "
+                + " WHERE "
+                + "     G.TGRA_CMODIFIERUSERID    = " + escDBString(params.getEmployee())
+                + " AND G.TGRA_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + params.getAction())
+                + " AND G.TGRA_CCUSTOMERID        = " + escDBString(params.getCustomerId())
+                + " AND G.TGRA_CCOMPANYID         = " + escDBString(params.getCompanyId());
     }
 
 }

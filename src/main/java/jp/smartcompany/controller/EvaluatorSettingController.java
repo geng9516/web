@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,6 +48,12 @@ public class EvaluatorSettingController {
                                         @RequestParam(value="targetGroupId",required = false) String groupId,
                                         @RequestParam(value="sectionId",required = false) String sectionId) {
         return evaluatorSettingBean.showEditGroupHandler(psDBBean,sectionId,groupId);
+    }
+
+    @PostMapping("editgroup")
+    public GlobalResponse editGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                    @RequestBody EditGroupDTO dto) {
+        return evaluatorSettingBean.editGroupNameProcHandler(psDBBean,dto);
     }
 
     @GetMapping("deletegroup")

@@ -1,0 +1,39 @@
+package jp.smartcompany.job.modules.tmg.evaluatersetting.dto;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+/**
+ * @author Xiao Wenpeng
+ */
+@Getter
+@Setter
+@ToString
+public class EditGroupDTO {
+
+  private String autoStart;
+  private String dailyOverTime;
+  private String monthlyOverTimeAvg;
+  private String monthlyOverTimeCount;
+
+  private String monthlyOverTimeYellow;
+  private String monthlyOverTimeOrange;
+  private String monthlyOverTimePink;
+  private String monthlyOverTimeRed;
+  private String monthlyOverTimeBackUp;
+
+  private String yearlyOverTimeYellow;
+  private String yearlyOverTimeOrange;
+  private String yearlyOverTimePink;
+  private String yearlyOverTimeRed;
+  private String yearlyOverTimeBackUp;
+
+  private String monthlyHolidayTimeLevel1;
+  private String monthlyHolidayTimeLevel2;
+  private String monthlyHolidayTimeLevel3;
+  private String monthlyHolidayTimeLevel4;
+  private String monthlyHolidayTimeLevel5;
+
+
+}
