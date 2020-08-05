@@ -10,7 +10,6 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
-import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
@@ -67,13 +66,6 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
      */
     int selectNenkyuRuleT(Map<String, Object> map);
 
-    /**
-     * 常勤年休ルールを取得
-     *
-     * @param map 検索条件
-     * @return int 年休ルール
-     */
-    int selectNenkyuRuleT2(Map<String, Object> map);
 
     /**
      * 名称マスタを取得
@@ -82,15 +74,6 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
      * @return MastGenericDetailDO 名称マスタ
      */
     MastGenericDetailDO selectMastGenericDetailDO(Map<String, Object> map);
-
-    /**
-     * 2つの歴の引き算
-     *
-     * @param map 検索条件
-     * @return TmgTermRow 除外期間
-     */
-    List<TmgTermRow> tmgFExcludeTerm(Map<String, Object> map);
-
 
     /**
      * ワークタイプのデフォルトパターンを検索

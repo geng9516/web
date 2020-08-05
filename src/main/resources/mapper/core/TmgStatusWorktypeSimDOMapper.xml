@@ -37,9 +37,9 @@
         UPDATE
            TMG_STATUS_WORKTYPE_SIM
         SET
-           TSWS_CMODIFIERPROGRAMID = #{programId}
-           TSWS_CMODIFIERUSERID    = #{userCode}
-           TSWS_DMODIFIEDDATE      = SYSDATE
+           TSWS_CMODIFIERPROGRAMID = #{programId},
+           TSWS_CMODIFIERUSERID    = #{userCode},
+           TSWS_DMODIFIEDDATE      = SYSDATE,
            TSWS_CSTATUS            = #{status}
         WHERE
            TSWS_CCUSTOMERID        = #{custId}
@@ -65,7 +65,7 @@
                 TMG_V_MGD_WTSIMSTATUS
                 WHERE
                 MGD_DSTART_CK      <![CDATA[<=]]> TRUNC(SYSDATE)
-                AND MGD_DEND           >= TRUNC(SYSDATE)
+                AND MGD_DEND  >= TRUNC(SYSDATE)
                 AND MGD_CLANGUAGE_CK    = #{language}
             )
         WHERE
@@ -73,9 +73,9 @@
         AND TSWS_CCOMPANYID     = #{compCode}
         AND TSWS_DSTARTDATE    <![CDATA[<=]]> TRUNC(SYSDATE)
         AND TSWS_DENDDATE      >= TRUNC(SYSDATE)
-        AND TSWS_CCUSTOMERID    = MGD_CCUSTOMERID(+)
-        AND TSWS_CCOMPANYID     = MGD_CCOMPANYID_CK_FK(+)
-        AND TSWS_CSTATUS        = MGD_WTSIMSTATUS_CODE(+)
+        AND TSWS_CCUSTOMERID  = MGD_CCUSTOMERID(+)
+        AND TSWS_CCOMPANYID = MGD_CCOMPANYID_CK_FK(+)
+        AND TSWS_CSTATUS  = MGD_WTSIMSTATUS_CODE(+)
     </select>
 
     <!-- HR連携除外条件区分マスタ情報の件数を取得する -->
@@ -140,24 +140,6 @@
         where tab1.mgd_excludecond_type = tab2.mgd_excludecond_type
                order by tab1.start_time,tab1.end_time
     </select>
-
-    <!-- 名称マスタ詳細情報に登録する -->
-    <insert id="insertMastGenericDetail" parameterMap="insertMastGenericDetailMap">
-        insert into mast_generic_detail (
-           mgd_id,mgd_ccustomerid,mgd_ccompanyid_ck_fk,mgd_cgenericgroupid,mgd_cgenericdetailid_ck,
-           mgd_cmastercode,mgd_clanguage_ck,mgd_dstart_ck,mgd_dend,mgd_cmodifieruserid,
-           mgd_dmodifieddate,mgd_csparechar1,mgd_csparechar2,mgd_csparechar3,versionno)
-           values
-           (mast_generic_detail_seq.nextval,#{psCustId},#{psCompId},#{psGroupCode},#{psDetailId},
-           ,#{psMasterCode},#{psLanguage},#{psStartDate},#{psEndDate},#{psUpdateUser}
-           sysdate,#{psExuludecondType},#{psExuludecondFrom},#{psExuludecondTo},'1')
-    </insert>
-
-    <!--段階導入シミュレーション登録情報に登録する-->
-    <update id="updateTmgStatusWorkTypeSim" parameterType="java.util.HashMap">
-        update tmg_status_worktype_sim set tsws_cmodifierprogramid=#{psModifierProgramId},tsws_cmodifieruserid=#{psModifierUserId},tsws_dmodifieddate=sysdate,tsws_cstatus=#{psStatus}
-          where tsws_ccustomerid=#{psCustId} and tsws_ccompanyid=#{psCompId}  and tsws_dstartdate <![CDATA[<=]]> #{psStartDate} and tsws_denddate <![CDATA[>=]]> #{psEndDate}
-    </update>
 
 
 </mapper>

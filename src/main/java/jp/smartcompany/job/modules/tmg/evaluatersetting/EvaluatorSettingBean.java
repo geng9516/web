@@ -131,6 +131,9 @@ public class EvaluatorSettingBean {
     public static final int COL_OverTimeLimitSelf_OT_DAILY_01      = 11;
     public static final int COL_OverTimeLimitSelf_OT_MONTHLY_AVG      = 12;//超勤実績の月平均時間
 
+    /*
+     * ========================= 暴露给外部的handler ==================
+     */
 
     public Map<String,Object> dispHandler(PsDBBean psDBBean) throws Exception {
         Map<String,Object> result = MapUtil.newHashMap();
@@ -564,6 +567,14 @@ public class EvaluatorSettingBean {
         }
         return map;
     }
+
+
+    /*
+     * ========================= 内部处理逻辑Start ==================
+     */
+
+
+
 
     /**
      * 与えられたグループコードがデフォルトグループかどうかを返します。

@@ -24,10 +24,10 @@ server:
     encoding:
       charset: utf-8
       force: on
-management:
-  endpoint:
-    health:
-      show-details: always
+#management:
+#  endpoint:
+#    health:
+#      show-details: always
 spring:
   profiles:
     active: test
