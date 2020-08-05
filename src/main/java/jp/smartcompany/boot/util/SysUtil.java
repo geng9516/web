@@ -52,7 +52,7 @@ public class SysUtil {
         if ((psDate == null) || (psDate.equals(""))) {
             return "NULL";
         }
-        return "to_date('" + psDate + "', 'yyyy/mm/dd')";
+        return "to_date('" + psDate + "','yyyy/mm/dd')";
     }
 
     public static String transStringNullToDB(String psString) {

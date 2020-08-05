@@ -34,31 +34,56 @@
                               style="width: calc(100% - 120px);border-radius:0">
                         {{ deptName }}
                     </i-button>
+
                     <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <div class="titlenorm mb5">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                        <Row class="tl mb5">
-                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                            <i-col span="7" class="no-border-radius">
-                                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                             placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
-                                             @on-change="handleDeptDateChange"></date-picker>
-                            </i-col>
-                        </Row>
-                        <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                  empty-text="所属データなし"></Tree>
-                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
-                        </div>
+                       <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                        <tab-pane label="ツリー" name="organisationTree">
+                              <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+
+                               <Row class="tl mb5">
+                                    <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                                    <i-col span="7" class="no-border-radius">
+                                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                                 placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                                    </i-col>
+                                </Row>
+                                <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"
+                                      empty-text="所属データなし"></Tree>
+
+                        </tab-pane>
+                        <tab-pane label="検索" name="organisationSearch">
+                               <Row class="tl mb2" :gutter="8">
+                                    <i-col span="15">
+                                        <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">
+                                            <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px" placeholder="項目">
+                                                <i-option v-for="(item,i) of searchTypesList" :value="item.value">{{ item.name }}</i-option>
+                                            </i-select>
+                                            <i-select v-model="referListObject.hidSearchCondition"  slot="append" style="width: 108px" placeholder="条件">
+                                                <i-option v-for="(item,i) of searchConditionsList" :value="item.value">{{ item.name }}</i-option>
+                                            </i-select>
+                                        </i-input>
+                                    </i-col>
+                                    <i-col span="8" class="no-border-radius">
+                                        <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" @click="searchOrgTree">検索</i-button>
+                                    </i-col>
+                                </Row>
+                                <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    社員
+                                </div>
+                                <div style="position: relative;">
+                                    <Tree class="tree mt2" :data="searchEmpTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                                    <Spin size="large" fix v-if="emplistLoading"></Spin>
+                                </div>
+                        </tab-pane>
+                        </Tabs>
                     </Drawer>
                 </span>
             <!-- 共通組織図画面 end-->
-            <span class="label">キーワード</span>
-            <i-input @on-search="keywordSearch" class="mar like-select" v-model="opts.keyword"
-                     placeholder="社員名或はコード" search enter-button />
             <span style="flex:1"></span>
         </div>
         <div class="content_body">
@@ -237,6 +262,12 @@
         el: '.empattrsettinginfo-warp',
         data() {
             return {
+                searchEmpTreeData: [],        //組織ツリー用
+                searchTypesList: [],     //組織ツリー用
+                searchConditionsList: [],//組織ツリー用
+                emplistLoading: false,  //職員番号ローディング用動画
+                empTreeData: [],
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
                 manageValue:[],
                 overValue:[],
                 contentScrollTop: 0,
@@ -266,9 +297,12 @@
                 deptDrawShow: false,    //組織ツリー用
                 empDeptLoading: false,  // 組織ツリーloading用
                 referListObject: {       //組織ツリー共通
-                    [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]: '',
-                    [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
-                    [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    hidSearchData:'',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                    [[${ TREEVIEW_KEY_ADMIN_TARGET_GROUP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -276,6 +310,10 @@
                 },
                 treeData: [],            //組織ツリー用
                 opts: {
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    hidSearchData:'',
+                    hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                     keyword: '',
                     baseDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -412,9 +450,15 @@
         },
         async mounted() {
             this.getOrgTree()
+            this.getSearchCondition()
         },
 
         methods: {
+            async getSearchCondition() {
+                const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList= Object.keys(data.searchConditions).map(e=> { return { name:data.searchConditions[e], value:e }})
+                this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
+            },
             async avgWorkTimeUpload(){
                 let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
@@ -431,8 +475,9 @@
 
             },
             async beginDateDelete(){
+
                 let index=this.radioCheckedIndex
-                let oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
+                let oldValue=Array.of(this.workDaySettingData[index]).map(e=>{
                     return {'action':'',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
                 })[0]
 
@@ -440,6 +485,8 @@
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 console.log("beginDateDelete "+JSON.stringify(OPTS))
                 const { data } = await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
+                this.workDaySettingData.splice(index,1)
+
 
             },
             async beginDateUploadOrUpdate(){
@@ -467,10 +514,9 @@
                 }
                 let params={...newValue,...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                console.log("beginDateUploadOrUpdate "+JSON.stringify(OPTS))
                 const { data } = await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
-
-
+                this.workDaySettingData[index].isChecked=false
+                this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
 
             },
             async manageFlagUpdate(){
@@ -481,6 +527,7 @@
                 console.log("manageFlagUpdate"+JSON.stringify(this.opts))
                 const { data } = await this.http.postForm('sys/userprofile/manageFlagUpdate', this.opts)
                 this.$Notice.info({title: '登録成功', desc: ""})
+
             },
             checkBoxChange(e,i,name){
                 if(name=="over"){
@@ -562,12 +609,6 @@
                     this.overValue=Array(data.list.length).fill().
                     map((e,index)=>({"employeeId":data.list[index].meCemployeeidCk,"initCheckType":data.list[index].excludeOvertime,"updaeCheckType":data.list[index].excludeOvertime}))
 
-                    console.log("manageValue"+JSON.stringify(this.manageValue))
-                    console.log("overValue"+JSON.stringify(this.overValue))
-
-
-
-
                 } catch (error) {
                     console.log(error)
                     return
@@ -597,9 +638,6 @@
 
                     this.beginDateListBackUp=Utils.deepClone(this.workDaySettingData)
                     this.historyData = data.historyList
-                    console.log(this.referSettingData)
-                    console.log(this.workDaySettingData)
-                    console.log(this.historyData)
                     this.isShow = true
                     this.isBeginDateEdit = true
                     this.isAvgTimeEdit = false
@@ -623,8 +661,6 @@
                     this.averageTimeData = data.historyList
                     this.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
                     this.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
-                    console.log(this.nowWorkTime)
-                    console.log(this.averageTimeData)
                     this.isShow = true
                     this.isAvgTimeEdit = true
                     this.isBeginDateEdit = false
@@ -653,13 +689,42 @@
             clear(){
                 this.workDaySettingData= this.beginDateListBackUp
                 this.handleRadio(0)
-                console.log(this.workDaySettingData)
             },
             pageChange(e) {
                 this.opts.page = e
                 this.pageValue.curPage = e
                 this.getTableData()
             },
+            currentTabChanged(name) {
+                if (name=="organisationTree") {
+                    this.opts.hidSelectTab='0'
+                } else if (name=="organisationSearch") {
+                    this.opts.hidSelectTab='1'
+                }
+            },
+            handleClickEmpLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+                this.deptDrawShow = false
+                this.opts.hidSearchData=e[0].empid
+                this.opts.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.opts.baseDate = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
+                this.deptName = e[0].secnic
+                this.getTableData()
+            },
+            searchOrgTree: Debounce( async function() {
+                this.empDeptLoading = true
+                try {
+                    const { data } = await this.http.get('sys/tree/search', this.referListObject)
+                    this.searchEmpTreeData = Utils.convertTreeData(data)
+                    this.$Notice.success({ title:'所属図更新完了' })
+                } catch (error) {
+                    return
+                } finally {
+                    this.empDeptLoading = false
+                }
+            }),
             handleScroll: Throttle(function (e) {
                 this.contentScrollTop = e.target.scrollTop
             }, 50),

@@ -19,7 +19,7 @@
                     <span style="flex:1"></span>
                     <i-button type="primary" size="large" v-if="btnAddEval" @click="permissionAdminAdd = true">承認者追加
                     </i-button>
-                    <i-button type="primary" size="large" v-if="btnMakeGroup" @click="PermissionGroupAdd = true">グループ作成
+                    <i-button type="primary" size="large" v-if="btnMakeGroup" @click="handleClickMakeGroup">グループ作成
                     </i-button>
                     <i-button type="primary" size="large" v-if="btnEditMember" @click="PermissionMemberAssign = true">
                         メンバー割付</i-button>
@@ -29,7 +29,7 @@
             <div class="searchwrap">
                 <span class="label">改訂日指定</span>
                 <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
-                    @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
+                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading"></date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
@@ -52,7 +52,6 @@
                                     @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
-                        ​
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                                 empty-text="所属データなし"></Tree>
@@ -71,7 +70,7 @@
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
                         :class="row.main ? 'width75' : 'ml30 width75'" style="font-weight: bold;">{{ row.group }}</span>
                     <i-button type="primary" ghost size="small" :class="row.main ? 'width75' : 'ml30 width75'"
-                        @click="handleCickGroup(row.enableEditGroup,row.enableEditGroupName)" v-else>
+                        @click="handleCickGroup(row)" v-else>
                         {{ row.group }}
                     </i-button>
                 </template>
@@ -82,7 +81,7 @@
                         @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
                         {{ `${row.empId} (${row.name}/${row.postName})`  }}
                     </i-button>
-                    <span v-if="!row.empId" class="grey">未设定</span>
+                    <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
                     <span class="blue">{{ row.workConfirm ? '〇' : '' }}</span>
@@ -115,113 +114,94 @@
         </div>
 
         <!-- 承認者追加画面 start-->
-        <Modal v-model="permissionAdminAdd" title="承認者追加" footer-hide :mask-closable="false" @on-cancel="cancel">
-            <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
-                <form-item label="所属">
-                    <Select v-model="localValue.group" filterable transfer>
-                        <i-option v-for="(item, i) of groupList" :value="item.value" :key="i">{{ item.name }}</i-option>
-                    </Select>
-                </form-item>
+        <Modal v-model="permissionAdminAdd" width="1280" class="tc" title="承認者追加" footer-hide :mask-closable="false"
+            @on-cancel="cancel('','permissionAdminAdd')">
+            <Row>
+                <i-col span="4">
+                    <div class="label">所属</div>
+                </i-col>
+                <i-col span="5">
+                    <span class="input-like-span">{{ deptName }}</span>
+                </i-col>
+            </Row>
+            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" class="mt15 mb20">
+                <template slot-scope="{ row }" slot="workConfirm">
+                    <Checkbox v-model="row.workConfirm"></Checkbox>
+                </template>
 
-                <form-item label="承認者氏名">
-                    <Select v-model="localValue.group" filterable transfer>
-                        <i-option v-for="(item, i) of userList" :value="item.value" :key="i">{{ item.name }}</i-option>
-                    </Select>
-                </form-item>
+                <template slot-scope="{ row }" slot="monthConfirm">
+                    <Checkbox v-model="row.monthConfirm"></Checkbox>
+                </template>
 
-                <div class="titlenorm mt15">
-                    <Icon type="logo-buffer"></Icon>
-                    権限
-                </div>
-                <form-item label="就業承認">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
+                <template slot-scope="{ row }" slot="overWorkConfirm">
+                    <Checkbox v-model="row.overWorkConfirm"></Checkbox>
+                </template>
 
-                <form-item label="月次承認">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
+                <template slot-scope="{ row }" slot="scheduleCreate">
+                    <Checkbox v-model="row.scheduleCreate"></Checkbox>
+                </template>
 
-                <form-item label="超過勤務命令">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
+                <template slot-scope="{ row }" slot="permissionGive">
+                    <Checkbox v-model="row.permissionGive"></Checkbox>
+                </template>
 
-                <form-item label="予定作成">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
+                <template slot-scope="{ row }" slot="restConfirm">
+                    <Checkbox v-model="row.restConfirm"></Checkbox>
+                </template>
 
-                <form-item label="権限付与">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
-
-                <form-item label="休暇・休業承認">
-                    <check-box class="input-like-span"></check-box>
-                </form-item>
-
-                <form-item label="決裁レベル">
-                    <Select transfer>
+                <template slot-scope="{ row }" slot="level">
+                    <i-select transfer>
                         <i-option v-for="(item, i) of 5" :value="item" :key="i">{{ item }}</i-option>
-                    </Select>
-                </form-item>
+                    </i-select>
+                </template>
 
-                <form-item label="有効期間">
-                    <date-picker :value="localValue.timeStart" format="yyyy/MM/dd" type="date" transfer
-                        style="width:48%"></date-picker>
-                    <span style="vertical-align: super;"> - </span>
-                    <date-picker :value="localValue.timeEnd" format="yyyy/MM/dd" type="date" transfer style="width:48%">
-                    </date-picker>
-                </form-item>
-            </i-form> -->
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
+                <template slot-scope="{ row }" slot="validPeriod">
+                    <date-picker class="mt10" format="yyyy/MM/dd" type="date" transfer style="width:46%"
+                        placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker format="yyyy/MM/dd" type="date"
+                        transfer style="width:46%" placement="bottom-end"></date-picker>
+                </template>
+
+                <template slot-scope="{ row }" slot="delete">
+                    <i-button type="error" ghost size="small">削除</i-button>
+                </template>
+            </i-table>
+            <div class="my-footer tr">
+                <i-button type="text" @click="cancel('','permissionAdminAdd')">キャンセル</i-button>
                 <i-button type="success" size="large" @click="add()">登録</i-button>
             </div>
         </Modal>
         <!-- 承認者追加画面 end-->
 
-        <!-- グループ作成 start-->
-        <Modal v-model="PermissionGroupAdd" title="グループ作成" footer-hide :mask-closable="false" @on-cancel="cancel">
-            <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
-                <form-item label="所属">
-                    <span class="input-like-span">{{ localValue.group }}</span>
-                </form-item>
-                <form-item label="改訂日">
-                    <span class="input-like-span">{{ localValue.date }}</span>
-                </form-item>
-                <form-item label="新規グループ" prop="name">
-                    <i-input v-model="localValue.name" placeholder="新規グループ" :maxlength="15"></i-input>
-                </form-item>
-            </i-form> -->
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
-                <i-button type="success" size="large" @click="add()">登録</i-button>
-            </div>
-        </Modal>
-        <!-- グループ作成 end-->
-
         <!-- メンバー割付 start-->
-        <Modal v-model="PermissionMemberAssign" title="メンバー割付" width="650" footer-hide :mask-closable="false"
-            @on-cancel="cancel">
-            <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
-                <form-item label="所属">
-                    <span class="input-like-span">{{ localValue.group }}</span>
-                </form-item>
-                <form-item label="改訂日">
-                    <span class="input-like-span">{{ localValue.date }}</span>
-                </form-item>
-            </i-form> -->
+        <Modal v-model="PermissionMemberAssign" class="tc" title="メンバー割付" width="650" footer-hide :mask-closable="false"
+            @on-cancel="cancel('','PermissionMemberAssign')">
+            <Row>
+                <i-col span="6">
+                    <div class="label">所属</div>
+                </i-col>
+                <i-col span="18">
+                    <span class="input-like-span mb2 tl">{{ deptName }}</span>
+                </i-col>
+                <i-col span="6">
+                    <div class="label">改訂日</div>
+                </i-col>
+                <i-col span="18">
+                    <span class="input-like-span tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
+                </i-col>
+            </Row>
             <div class="titlenorm mt15">
                 <Icon type="logo-buffer"></Icon>
                 メンバー割付
             </div>
-            <!-- <i-table border :columns="columns" :data="data" :loading="loading">
+            <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData">
                 <template slot-scope="{ row }" slot="group">
-                    <Select v-model="row.newGroup" filterable transfer>
-                        <i-option v-for="(item, i) of groupList" :value="item.value" :key="i">{{ item.name }}</i-option>
-                    </Select>
+                    <i-select v-model="row.newGroup" filterable transfer>
+                        <i-option v-for="(item, i) of data" :value="item.groupId" :key="i">{{ item.groupName }}</i-option>
+                    </i-select>
                 </template>
-            </i-table> -->
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
+            </i-table>
+            <div class="my-footer tr mt20">
+                <i-button type="text" @click="cancel('','PermissionMemberAssign')">キャンセル</i-button>
                 <i-button type="success" size="large" @click="add()">登録</i-button>
             </div>
         </Modal>
@@ -240,27 +220,27 @@
             </Row>
             <!-- <i-table border :columns="columns" :data="data" :loading="loading" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="workConfirm">
-                    <check-box v-model="row.workConfirm"></check-box>
+                    <Checkbox v-model="row.workConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="monthConfirm">
-                    <check-box v-model="row.monthConfirm"></check-box>
+                    <Checkbox v-model="row.monthConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="overWorkConfirm">
-                    <check-box v-model="row.overWorkConfirm"></check-box>
+                    <Checkbox v-model="row.overWorkConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="scheduleCreate">
-                    <check-box v-model="row.scheduleCreate"></check-box>
+                    <Checkbox v-model="row.scheduleCreate"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="permissionGive">
-                    <check-box v-model="row.permissionGive"></check-box>
+                    <Checkbox v-model="row.permissionGive"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="restConfirm">
-                    <check-box v-model="row.restConfirm"></check-box>
+                    <Checkbox v-model="row.restConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="level">
@@ -298,7 +278,7 @@
                     <span class="input-like-span">{{ localValue.date }}</span>
                 </form-item>
                 <form-item label="夜間連携">
-                    <check-box class="input-like-span">デフォルト承認者の自動設定を行う</check-box>
+                    <Checkbox class="input-like-span">デフォルト承認者の自動設定を行う</Checkbox>
                 </form-item>
             </i-form> -->
 
@@ -320,25 +300,26 @@
         </Modal>
         <!-- 警告値設定 end-->
 
-        <!-- グループ名編集画面表示 start-->
-        <Modal v-model="editGroupNameModal" class="tc" width="450" title="グループ名編集" footer-hide :mask-closable="false"
-            @on-cancel="cancel">
-            <Alert type="error" class="error-info" style="padding-left: 70px;" v-show="errorFlag">{{ errorMsg }}</Alert>
+        <!-- グループ名作成・編集画面表示 start-->
+        <Modal v-model="editGroupNameModal" class="tc" width="450" :title="PermissionGroupAdd ? 'グループ作成' : 'グループ名編集'" footer-hide :mask-closable="false"
+            @on-cancel="cancel('gruopNameForm','editGroupNameModal')">
+            <Alert type="error" class="error-info" style="padding-left: 70px;width: 96%;" v-show="errorFlag">{{ errorMsg }}</Alert>
             <i-form :label-width="100" ref="gruopNameForm" :model="gruopNameForm" :rules="gruopNameFormValidate">
                 <form-item label="所属">
-                    <span class="input-like-span" style="width: 95%;">{{ gruopNameForm.group }}</span>
+                    <span class="input-like-span" style="width: 95%;">{{ deptName }}</span>
                 </form-item>
                 <form-item label="改訂日">
-                    <span class="input-like-span" style="width: 95%;">{{ gruopNameForm.date }}</span>
+                    <span class="input-like-span" style="width: 95%;">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
                 </form-item>
                 <form-item label="グループ名" prop="groupName">
-                    <i-input v-model="gruopNameForm.groupName" style="width: 95%;"></i-input>
+                    <i-input v-model="gruopNameForm.groupName" class="tl" style="width: 95%;"></i-input>
                 </form-item>
             </i-form>
 
-            <div class="my-footer tr mt15">
+            <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel('gruopNameForm','editGroupNameModal')">キャンセル</i-button>
-                <i-button type="primary" size="large" @click="updateGruopName('gruopNameForm')">変更</i-button>
+                <i-button v-if="!PermissionGroupAdd" type="primary" size="large" @click="updateGruopName('gruopNameForm')">変更</i-button>
+                <i-button v-if="PermissionGroupAdd" type="success" size="large" @click="add('gruopNameForm')">登録</i-button>
             </div>
         </Modal>
         <!-- グループ名編集画面表示 end-->
@@ -350,7 +331,7 @@
             el: '.perms-warp',
             data() {
                 return {
-                    curDate: new Date(),
+                    curDate: '',
                     columns: [
                         {
                             title: 'グループ',
@@ -419,7 +400,7 @@
                         txtTmgReferListTreeViewPermTargetSection: '',
                         txtTmgReferListTreeViewPermTargetGroup: '',
                         txtTmgReferListTreeViewPermTargetEmp: '',
-                        txtTmgReferListTreeViewPermSelectedView: 'sectio',
+                        txtTmgReferListTreeViewPermSelectedView: 'section',
                         txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -430,6 +411,7 @@
                     deptName: '選んでください',
                     data: [],
                     treeData: [],
+                    weekHelper: ['日', '月', '火', '水', '木', '金', '土'],
                     isSearchHistory: false,
                     deptLoading: false,
                     deptDrawShow: false,
@@ -438,6 +420,89 @@
                     PermissionMemberAssign: false,
                     PermissionEditerModals: false,
                     PermissionFlagModals: false,
+                    permissionAdminAddColumns: [
+                        {
+                            title: 'グループ',
+                            width: 170,
+                            align: 'right',
+                            key: 'group'
+                        },
+                        {
+                            title: '承認者氏名',
+                            width: 200,
+                            align: 'center',
+                            key: 'empId'
+                        },
+                        {
+                            title: '権限',
+                            children: [
+                                {
+                                    title: '就業\n承認',
+                                    slot: 'workConfirm',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '月次\n承認',
+                                    slot: 'monthConfirm',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '超過勤務\n命令',
+                                    slot: 'overWorkConfirm',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '予定\n作成',
+                                    slot: 'scheduleCreate',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '権限\n付与',
+                                    slot: 'permissionGive',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '休暇休業\n承認',
+                                    slot: 'restConfirm',
+                                    align: 'center'
+                                },
+                                {
+                                    title: '決裁\nレベル',
+                                    slot: 'level',
+                                    align: 'center'
+                                }
+                            ]
+                        },
+                        {
+                            title: '有効期間',
+                            width: 220,
+                            slot: 'validPeriod'
+                        },
+                        {
+                            title: '削除',
+                            width: 80,
+                            align: 'center',
+                            slot: 'delete'
+                        }
+                    ],
+                    permissionAdminAddData: [{}],
+                    PermissionMemberAssignColumns: [
+                        {
+                            title: '氏名',
+                            align: 'right',
+                            key: 'name'
+                        },
+                        {
+                            title: '現グループ',
+                            key: 'group',
+                            align: 'left'
+                        },
+                        {
+                            title: '新グループ',
+                            slot: 'group'
+                        }
+                    ],
+                    PermissionMemberAssignData: [],
                     editGroupNameModal: false,
                     btnAddEval: false,
                     btnMakeGroup: false,
@@ -480,25 +545,26 @@
                             value: '1'
                         }],
                     // グループ名編集画面表示
-                    gruopNameForm: {},
+                    gruopNameForm: {groupName:''},
                     gruopNameFormValidate: {
                         groupName: [
                             {
                                 required: true,
+                                type: 'string',
                                 trigger: 'blur'
                             }
                         ]
                     }
                 }
             },
-            async mounted() {
+            mounted() {
                 this.getOrgTree()
+                this.getTableData(true)
             },
             watch: {
                 data: {
                     handler() {
                         let result = []
-                        // 后端仅需返回netWork中请求的响应数据即可
                         // 此处理产生前端表格渲染数据以及行列合并的信息
                         // 示例合并信息说明如下
                         // [
@@ -517,8 +583,9 @@
                             let deptOccupy = 0
                             // 个人占据了多少条
                             let whichMemberDuplicate = []
-                            if (!e.memberList) {
+                            if (!e.memberList || e.memberList.length === 0) {
                                 result = result.concat(e)
+                                return { deptOccupy: 1 , isUnset: true }
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
@@ -591,7 +658,7 @@
                     this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.getTableData()
                 },
-                async getTableData() {
+                async getTableData(isPermSite) {
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
@@ -601,7 +668,12 @@
                         this.btnMakeGroup = data.btnAddEval
                         this.btnEditMember = data.btnAddEval
                         this.bottomMessage = data.bottomMessage
+                        this.curDate = data.YYYYMMDD
                         this.data = data.list
+                        // 承认site需要一进去就请求
+                        if(isPermSite) {
+                            this.deptName = this.data[0].group
+                        }
                     } catch (error) {
 
                     } finally {
@@ -612,25 +684,34 @@
                     // this.isSearchHistory = false
                 },
                 cancel(name, isShow) {
-                    this.$refs[name].resetFields()
+                    if (name) {
+                        this.$refs[name].resetFields()
+                    }
                     this[isShow] = false
                     this.errorFlag = false
                 },
-                add() {
+                add(name) {
                     this.$refs[name].validate(valid => {
                         if (valid) {
-                            this.$emit('add')
-                            this.isShow = false
+                            console.log('zhuijiagroup')
                         }
                     })
                 },
-                handleCickGroup(editGroup, editGroupName) {
-                    if (editGroup) {
+                handleCickGroup(row) {
+                    console.log(row)
+                    if (row.enableEditGroup) {
                         this.PermissionFlagModals = true
                     }
-                    if (editGroupName) {
+                    if (row.enableEditGroupName) {
+                        // 将グループ名作成部分隐藏
+                        this.PermissionGroupAdd = false
                         this.editGroupNameModal = true
+                        this.gruopNameForm.groupName = row.group
                     }
+                },
+                handleClickMakeGroup() {
+                    this.PermissionGroupAdd = true
+                    this.editGroupNameModal = true
                 },
                 handleEditData() { },
                 updateGruopName(name) {
@@ -648,8 +729,24 @@
                     let result = []
                     let curColumn = 0
                     this.mergeSpanInfo.forEach(e => {
+                        if(e.isUnset) {
+                            // 下面判断合并未設定者的row
+                            for (let i = 0; i < 9; i++) {
+                              if (i === 0) {
+                                if (rowIndex === curColumn && columnIndex === 1) {
+                                    result = [1, 9]
+                                }
+                              } else {
+                                if (rowIndex === curColumn && columnIndex === i + 1) {
+                                    result = [0, 0]
+                                }
+                              }
+                            }
+                            curColumn += 1
+                            return
+                        }
                         if (!e.whichMemberDuplicate) {
-                            // 不合并未设定承认者的行
+                            // 不合并未設定承认者的行
                             curColumn += 1
                             return
                         }

@@ -2,6 +2,7 @@ package jp.smartcompany.framework.dbaccess.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.framework.dbaccess.DbAccessLogic;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 
 /**
@@ -55,13 +57,23 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         }
         Vector<Integer> vecResult = new Vector<>();
         Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(false);
+        boolean success = true;
+        Statement statement = connection.createStatement();
         for (Object sql : vecQuery) {
-            int nCount = dbAccessLogic.executeUpdate(connection, (String)sql);
-            vecResult.add(nCount);
+            try {
+                int count = statement.executeUpdate((String) sql);
+                vecResult.add(count);
+            } catch (SQLException e) {
+                success = false;
+                connection.rollback();
+                break;
+            }
         }
-        if (connection!=null){
-            connection.close();
+        if (success) {
+            connection.commit();
         }
+        DbUtil.close(connection);
         return vecResult;
     }
 

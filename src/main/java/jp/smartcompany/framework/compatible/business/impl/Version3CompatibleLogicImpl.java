@@ -3,6 +3,7 @@ package jp.smartcompany.framework.compatible.business.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
@@ -28,6 +29,7 @@ import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +48,7 @@ import java.util.regex.Pattern;
  * V3互換(API)クラス
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
@@ -307,6 +310,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
         Vector<Vector<Object>> vecResult;
 
         Connection conn = dataSource.getConnection();
+        conn.setReadOnly(true);
         // SQLの数分処理
         for (int nSqlCnt = 0; nSqlCnt < pvSQL.size(); nSqlCnt++) {
             sSql = pvSQL.elementAt(nSqlCnt).toString();
@@ -315,7 +319,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             }
             vecResult = new Vector<>(); // 取得できなかった場合、初期化のまま設定
             try {
-
+                log.info("【executeMultiQuery：{}】",sSql);
                 // SQL実行
                 //2007/11/21 SQL内にROWIDが含まれる場合、rowidtocharで文字列に変換する処理を追加
                 vsqlResult =dbControllerLogic.executeQuery(addRowidConvert(sSql),conn);
@@ -340,9 +344,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
             // 1個のSQL分の結果セット
             vectorResult.add(vecResult);
         }
-        if (conn!=null){
-            conn.close();
-        }
+        DbUtil.close(conn);
         psResult.setException(vecException);
         psResult.setResult(vectorResult);
         return psResult;

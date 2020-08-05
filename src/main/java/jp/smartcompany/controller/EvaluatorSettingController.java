@@ -1,7 +1,7 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +30,23 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.dispHandler(psDBBean);
     }
 
-    @GetMapping("makegroup")
-    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup04
-    public PsResult makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                              @RequestParam(value="targetSectionId",required = false) String targetSectionId,
-                              @RequestParam(value="targetGroupId",required = false) String targetGroupId,
-                              @RequestParam(value="lastTargetGroupId",required = false) String lastTargetGroupId,
-                              @RequestParam(value="groupName",required = false) String groupName,
-                              @RequestParam(value="empId",required = false) String empId) {
+    @PostMapping("makegroup")
+    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup06
+    public GlobalResponse makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                    @RequestParam(value="targetSectionId",required = false) String targetSectionId,
+                                    @RequestParam(value="targetGroupId",required = false) String targetGroupId,
+                                    @RequestParam(value="lastTargetGroupId",required = false) String lastTargetGroupId,
+                                    @RequestParam(value="groupName",required = false) String groupName,
+                                    @RequestParam(value="empId",required = false) String empId) {
         return evaluatorSettingBean.makeGroupHandler(psDBBean,targetSectionId,targetGroupId,lastTargetGroupId,groupName,empId);
+    }
+
+    @GetMapping("editgroup")
+    // http://localhost:6879/sys/evaluatorsetting/editgroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&targetGroupId=201000000000%7C000000&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    public Map<String,Object> editGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                        @RequestParam(value="targetGroupId",required = false) String groupId,
+                                        @RequestParam(value="sectionId",required = false) String sectionId) {
+        return evaluatorSettingBean.showEditGroupHandler(psDBBean,sectionId,groupId);
     }
 
 }
