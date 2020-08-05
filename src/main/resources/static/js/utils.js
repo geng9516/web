@@ -192,6 +192,7 @@ const Utils = {
   },
   /**
    * 检测时间段是否重叠,为true重叠
+   * 用于日期时，务必转成yyyymm 或 yyyymmdd 的格式
    * @param StartA 8:00
    * @param EndA   12:00
    * @param StartB 9:00
@@ -199,7 +200,37 @@ const Utils = {
    * @returns {boolean}
    */
   timeOverlap: function (StartA, EndA, StartB, EndB) {
-    return Math.max(this.timeToMinute(StartA), this.timeToMinute(StartB)) < Math.min(this.timeToMinute(EndA), this.timeToMinute(EndB))
+    if (StartA.indexOf(':') > -1) {
+      return Math.max(this.timeToMinute(StartA), this.timeToMinute(StartB)) < Math.min(this.timeToMinute(EndA), this.timeToMinute(EndB))
+    }
+    return Math.max(+StartA, +StartB,) < Math.min(+EndA, +EndB)
+  },
+  /**
+   * 检测多个日期段是否重叠,为true重叠
+   * @param dateArray [{start:'2012/09/31',end:'2012/10/01'},{start:'2012/10/02',end:'2012/10/28'},{start:'2012/10/27',end:'2012/11/01'}]
+   * @returns {boolean}
+   */
+  multipleDateRangeOverlaps: function (dateArray) {
+    let _dateArray = []
+    dateArray.forEach(e=>{
+        _dateArray = _dateArray.concat(e.start.replace(/\//g, ''))
+        _dateArray = _dateArray.concat(e.end.replace(/\//g, ''))
+    })
+    // 被去重了就说明已经有重复的了
+    if(_dateArray.length !== new Set([..._dateArray]).size) return true
+
+    // 检查所有项目
+    for (let i = 0; i < _dateArray.length - 2; i += 2) {
+        for (let j = i + 2; j < _dateArray.length; j += 2) {
+            if (
+              this.timeOverlap(
+                    _dateArray[i], _dateArray[i+1],
+                    _dateArray[j], _dateArray[j+1]
+                )
+            ) return true;
+        }
+    }
+    return false;
   },
   /**
    * 获取一个自增的数字数组，如输入1，4 获得[1,2,3,4]
