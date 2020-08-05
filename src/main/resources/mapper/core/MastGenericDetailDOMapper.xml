@@ -328,7 +328,8 @@
             MGD_OUTPUT_TARGET_TYPE,
             MGD_OUTPUT_TERM_TYPE,
             MGD_PDF_DLFLG,
-            MGD_CSV_DLFLG
+            MGD_CSV_DLFLG,
+            MGD_SORT-1 AS MGD_SORT
         FROM
             TMG_V_MGD_LEDGER_SHEET
         WHERE

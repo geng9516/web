@@ -34,5 +34,9 @@ public class LedgerSheetVo {
      * CSVダウンロード表示フラグ
      */
     private  String mgdCsvDlflg;
+    /**
+     * レコード順
+     */
+    private  String mgdSort;
 
 }
