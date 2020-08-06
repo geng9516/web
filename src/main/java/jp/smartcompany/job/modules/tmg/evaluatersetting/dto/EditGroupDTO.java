@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author Xiao Wenpeng
  */
@@ -11,6 +13,9 @@ import lombok.ToString;
 @Setter
 @ToString
 public class EditGroupDTO {
+
+  @NotBlank(message = "sectionIdは空白するのを許可されていません")
+  private String sectionId;
 
   private String autoStart;
   private String dailyOverTime;

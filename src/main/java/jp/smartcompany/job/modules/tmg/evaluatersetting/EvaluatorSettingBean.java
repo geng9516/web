@@ -595,11 +595,16 @@ public class EvaluatorSettingBean {
     }
 
     /**
-     * グループ名編集処理をするメソッド
+     * グループ属性登録処理（夜間連携項目（など））
      */
     public GlobalResponse editGroupNameProcHandler(PsDBBean psDBBean, EditGroupDTO dto) {
         EvaluatorSettingParam params = new EvaluatorSettingParam();
-
+        params.setEmployee(psDBBean.getUserCode());
+        params.setAction(EvaluatorSettingConst.ACT_EDITGROUP_UGROUP);
+        params.setCustomerID(psDBBean.getCustID());
+        params.setCompanyId(psDBBean.getCompCode());
+        params.setLanguage(psDBBean.getLanguage());
+        configYYYYMMDD(psDBBean,params);
 
         Vector<String> vQuery = new Vector<>();
         // エラーメッセージ削除
@@ -619,8 +624,11 @@ public class EvaluatorSettingBean {
         // エラーチェック削除
         vQuery.add(buildSQLForDeleteGroupAttributeCheck(params));
         // DB反映
-        psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
-        return GlobalResponse.ok();
+        int rows = psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows == 0) {
+            return GlobalResponse.ok("登録処理成功しました");
+        }
+        return GlobalResponse.error("登録処理失敗しました");
     }
 
 
@@ -2007,8 +2015,8 @@ public class EvaluatorSettingBean {
 
         String sCustomerId = escDBString(evaluaterSettingParam.getCustomerId());
         String sCompanyId = escDBString(evaluaterSettingParam.getCompanyId());
-        String sSection = escDBString(evaluaterSettingParam.getSection());
-        String sGroupId = escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        String sSection = escDBString(dto.getSectionId());
+        String sGroupId = escDBString(dto.getSectionId() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
         String sYYYYMMDD = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
 
         // 「デフォルト承認者の自動設定を行う」チェックの処理
