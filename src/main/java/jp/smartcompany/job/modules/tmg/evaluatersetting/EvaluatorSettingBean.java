@@ -631,7 +631,25 @@ public class EvaluatorSettingBean {
         return GlobalResponse.error("登録処理失敗しました");
     }
 
+    public Map<String,Object> showAddEvalHandler(PsDBBean bean,String sectionId) {
+        Map<String,Object> map = MapUtil.newHashMap();
+        // todo 设置参数
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(sectionId);
 
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForSelectGroupList(params));         // グループ一覧取得
+        vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 決裁レベル取得
+        PsResult psResult;
+        try {
+           psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        } catch (Exception e) {
+           throw new GlobalException(e.getMessage());
+        }
+        System.out.println(psResult);
+        return map;
+    }
 
 
 
@@ -2131,6 +2149,54 @@ public class EvaluatorSettingBean {
                 + " AND G.TGRA_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + params.getAction())
                 + " AND G.TGRA_CCUSTOMERID        = " + escDBString(params.getCustomerId())
                 + " AND G.TGRA_CCOMPANYID         = " + escDBString(params.getCompanyId());
+    }
+
+    /**
+     * グループ一覧を取得するSQLを返す（承認者追加画面、メンバー割付画面で用いる）
+     *
+     * @return String SQL
+     */
+    private String buildSQLForSelectGroupList(EvaluatorSettingParam evaluaterSettingParam) {
+        return " SELECT " +
+                "     G.TGR_CGROUPID, " +
+                "     G.TGR_CGROUPNAME, " +
+                "     TO_CHAR(TMG_F_GET_GROUP_ENDDATE(G.TGR_CCUSTOMERID, G.TGR_CCOMPANYID, G.TGR_CSECTIONID, G.TGR_CGROUPID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + "), 'yyyy/mm/dd') as ENDDATE " +
+                " FROM " +
+                "     TMG_GROUP G " +
+                " WHERE " +
+                "     G.TGR_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection()) +
+                " AND G.TGR_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) +
+                " AND G.TGR_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND G.TGR_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId()) +
+                " AND G.TGR_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) +
+                " ORDER BY " +
+                "     G.TGR_CSECTIONID, " +
+                "     DECODE( SUBSTR(G.TGR_CGROUPID,INSTR(G.TGR_CGROUPID,'|') + 1, 6)," + escDBString(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE) + ", '0'||G.TGR_CGROUPNAME, '1'||G.TGR_CGROUPNAME) ";
+    }
+
+    /**
+     * 決裁レベル一覧を取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectApprovalLevelList(EvaluatorSettingParam evaluaterSettingParam){
+        String sBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+        String sCustId   = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompId   = escDBString(evaluaterSettingParam.getCompanyId());
+        String sLangage  = escDBString(evaluaterSettingParam.getLanguage());
+        return " SELECT " +
+                "     MGD_CMASTERCODE," +
+                "     MGD_CGENERICDETAILDESC " +
+                " FROM    " +
+                "     MAST_GENERIC_DETAIL " +
+                " WHERE" +
+                "     MGD_CCUSTOMERID       = " + sCustId +
+                " AND MGD_CCOMPANYID_CK_FK  = " + sCompId +
+                " AND MGD_CGENERICGROUPID   = " + escDBString(TmgUtil.Cs_MG_TMG_APPROVAL_LEVEL) +
+                " AND MGD_CLANGUAGE_CK      = " + sLangage +
+                " AND MGD_DSTART_CK        <= " + sBaseDate +
+                " AND MGD_DEND             >= " + sBaseDate +
+                " ORDER BY" +
+                "     MGD_NSPARENUM1";
     }
 
 }

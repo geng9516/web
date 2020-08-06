@@ -95,4 +95,10 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.deleteGroupHandler(psDBBean,sectionId,groupId);
     }
 
+    @GetMapping("addeval")
+    // http://localhost:6879/sys/evaluatorsetting/addeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    public Map<String,Object> showAddEvalHandler(PsDBBean bean,@RequestParam("sectionId") String sectionId) {
+        return evaluatorSettingBean.showAddEvalHandler(bean,sectionId);
+    }
+
 }
