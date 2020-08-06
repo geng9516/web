@@ -653,9 +653,8 @@ public class EvaluatorSettingBean {
         }
 
         boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
-        if(!hasAuthMonthApprove){
-            map.put("enableMonthlyResult", false);
-        }
+        map.put("enableMonthlyResult", hasAuthMonthApprove);
+        System.out.println(psResult);
         return map;
     }
 
