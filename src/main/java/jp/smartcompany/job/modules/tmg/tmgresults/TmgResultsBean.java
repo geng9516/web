@@ -2050,6 +2050,8 @@ public class TmgResultsBean {
      */
     public Map<String, Object> getTitleData(PsDBBean psDBBean) {
 
+        execReflectionTimePunch(null, psDBBean);
+
         Map<String, Object> monthlyMap = MapUtil.newHashMap();
         // 月次情報表示項目を取得しセット
         List<ItemVO> dispMonthlyItems = this.setDispMonthlyItems(psDBBean);
@@ -2217,6 +2219,8 @@ public class TmgResultsBean {
      * @return 画面表示用データ
      */
     public Map dailyDetail(PsDBBean psDBBean, String action) {
+
+        execReflectionTimePunch(action, psDBBean);
 
         Map<String, Object> dailyMap = MapUtil.newHashMap();
 
