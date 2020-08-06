@@ -591,6 +591,7 @@
           errorMsg: '',
           timerangeType: 1,
           applyEmployRestInfoLoading: false,
+          needRefreshTable: false,
           tableData: [],
           pageValue: {
             amount: 0,
@@ -788,9 +789,13 @@
           }
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
+
           if (forAgencyApply) {
-            // 代理申请点击所属的时候不需要拉取表格数据
+            // 点击所属的时候需要拉取表格数据
             this.getTableData(false, true)
+          } else {
+            // 代理申请则关闭时才拉取
+            this.needRefreshTable = true
           }
           this.getEmplist()
         },
@@ -1166,8 +1171,9 @@
           this.getTableData()
         },
         closeAgentApplyDrawer() {
-          if(this.deptName !== "選んでください") {
+          if(this.deptName !== "選んでください" && this.needRefreshTable) {
             this.getTableData(false, true)
+            this.needRefreshTable = false
           }
         }
       }
