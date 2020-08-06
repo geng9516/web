@@ -645,11 +645,17 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 決裁レベル取得
         PsResult psResult;
         try {
+           referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
+                    TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
         } catch (Exception e) {
            throw new GlobalException(e.getMessage());
         }
-        System.out.println(psResult);
+
+        boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
+        if(!hasAuthMonthApprove){
+            map.put("enableMonthlyResult", false);
+        }
         return map;
     }
 
@@ -669,6 +675,14 @@ public class EvaluatorSettingBean {
             return false;
         }
         return psGroupId.endsWith(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+    }
+
+    private boolean hasAuthority(String sAuthority,EvaluatorSettingParam params){
+        try{
+            return referList.hasAuthority(params.getYYYYMMDD(), sAuthority);
+        }catch(Exception e){
+            return false;
+        }
     }
 
     /**
