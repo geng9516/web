@@ -245,7 +245,7 @@
       <!-- 详细以及承认申请的panel end -->
 
       <!-- 代理申请的 -->
-      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="getTableData(false, true)">
+      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="closeAgentApplyDrawer">
         <Tabs value="name1" :animated="false">
           <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
@@ -1082,13 +1082,6 @@
             })
             checkPassed = false
           }
-          if (!/(\w\W)*jpg|png|jpeg|gif|pdf|excel|spreadsheetml|msword|wordprocessingml(\w\W)*/g.test(files.type)) {
-            this.$Notice.warning({
-              title: 'The file format is incorrect',
-              desc: 'File format of ' + files.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
-            })
-            checkPassed = false
-          }
           if (checkPassed) {
             this.uploadFiles.push(files)
           }
@@ -1172,11 +1165,11 @@
           this.pageValue.curPage = e
           this.getTableData()
         },
-        preMonth() {
-        },
-        nextMonth() {
-        },
-        currentMonth() { },
+        closeAgentApplyDrawer() {
+          if(this.deptName !== "選んでください") {
+            this.getTableData(false, true)
+          }
+        }
       }
     })
   </script>
