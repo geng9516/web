@@ -532,12 +532,48 @@
                     overFlagData: [
                         {
                             name: '超勤実績の警告値(時間)(日次:レベル1)',
-                            time: 8
+                            time: ''
                         },
                         {
-                            name: '超勤実績の警告値(時間)(日次:レベル2)',
-                            time: 45
-                        }
+                            name: '超勤実績の警告値(時間)(月次:黄色)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:オレンジ)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:ピンク)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:赤色)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:黄色)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:オレンジ)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:ピンク)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:赤色)',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の月次警告値超過回数',
+                            time: ''
+                        },
+                        {
+                            name: '超勤実績の月平均時間',
+                            time: ''
+                        },
                     ],
                     restFlagColumns: [
                         {
@@ -705,7 +741,7 @@
                     }
                     const query = {
                                 txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                                targetGroupId:encodeURI(this.gruopNameForm.groupId),
+                                targetGroupId:this.gruopNameForm.groupId,
                                 sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                 psSite:this.referListObject.psSite,
                                 psApp:this.referListObject.psApp
@@ -715,7 +751,7 @@
                                 this.permissionFlagValues = []
                                 const a ={
          sectionId:"",
-         autoStart:data,
+         autoStart:data.autoStart,
          dailyOverTime:"超勤実績の警告値(時間)(日次:レベル1)", // dailyOverTime
          monthlyOverTimeAvg:"超勤実績の月平均時間",   // avgOverTime
          monthlyOverTimeCount:"超勤実績の月次警告値超過回数", // countOverTime
@@ -823,7 +859,7 @@
                             const query = {
                                 txtAction:'ACT_EditGroup_UGrpName',
                                 txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                                targetGroupId:encodeURI(this.gruopNameForm.groupId),
+                                targetGroupId:this.gruopNameForm.groupId,
                                 targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                 groupName: this.gruopNameForm.groupName,
                                 psSite:this.referListObject.psSite,
