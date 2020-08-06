@@ -97,7 +97,8 @@ public class EvaluatorSettingController {
 
     @GetMapping("addeval")
     // http://localhost:6879/sys/evaluatorsetting/addeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
-    public Map<String,Object> showAddEvalHandler(PsDBBean bean,@RequestParam("sectionId") String sectionId) {
+    // [[[201000000000|000000, 総務部, 2222/12/31], [201000000000|000004, testgroup0004, 2222/12/31], [201000000000|000006, testgroup06, 2222/12/31], [201000000000|000001, グループ4, 2222/12/31]], [[TMG_APPROVAL_LEVEL|1, 1], [TMG_APPROVAL_LEVEL|2, 2], [TMG_APPROVAL_LEVEL|3, 3], [TMG_APPROVAL_LEVEL|4, 4], [TMG_APPROVAL_LEVEL|5, 5]]]
+    public Map<String,Object> showAddEvalHandler(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam("sectionId") String sectionId) {
         return evaluatorSettingBean.showAddEvalHandler(bean,sectionId);
     }
 

@@ -204,7 +204,7 @@ public class EvaluatorSettingBean {
         }
         Vector<String> vQuery = new Vector<>();
         vQuery.add(buildSQLForDeleteGroupErrMsg(params));  // エラーメッセージ削除
-        vQuery.add(buildSQLForInsertGroupCheck(params,psDBBean));   // チェックテーブルへグループ名登録
+        vQuery.add(buildSQLForInsertGroupCheck(params));   // チェックテーブルへグループ名登録
         vQuery.add(buildSQLForInsertGroupErrMsg(params));  // エラーメッセージ追加
         vQuery.add(buildSQLForInsertGroupTrigger(params)); // トリガー追加
         vQuery.add(buildSQLForSelectGroupErrMsg(params));  // エラーメッセージ取得
@@ -633,10 +633,12 @@ public class EvaluatorSettingBean {
 
     public Map<String,Object> showAddEvalHandler(PsDBBean bean,String sectionId) {
         Map<String,Object> map = MapUtil.newHashMap();
-        // todo 设置参数
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         configYYYYMMDD(bean,params);
         params.setSection(sectionId);
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setLanguage(bean.getLanguage());
 
         Vector<String> vQuery = new Vector<>();
         vQuery.add(buildSQLForSelectGroupList(params));         // グループ一覧取得
@@ -1528,7 +1530,7 @@ public class EvaluatorSettingBean {
      * チェックテーブルへグループ名を登録するSQLを返す
      * @return String SQL
      */
-    private String buildSQLForInsertGroupCheck(EvaluatorSettingParam evaluaterSettingParam,PsDBBean psDBBean) {
+    private String buildSQLForInsertGroupCheck(EvaluatorSettingParam evaluaterSettingParam) {
 
         // 検索条件に使用するパラメータを準備
         String sDBCustId   = escDBString(evaluaterSettingParam.getCustomerId()); // 顧客コード
@@ -1536,105 +1538,105 @@ public class EvaluatorSettingBean {
         String sDBSecId    = escDBString(evaluaterSettingParam.getSection());    // 組織コード
         String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
 
-
-
         StringBuilder sbSQL = new StringBuilder();
-        sbSQL.append("INSERT INTO TMG_GROUP_CHECK ");
-        sbSQL.append("(");
-        sbSQL.append("TGR_CCUSTOMERID,");
-        sbSQL.append("TGR_CCOMPANYID,");
-        sbSQL.append("TGR_DSTARTDATE,");
-        sbSQL.append("TGR_DENDDATE,");
-        sbSQL.append("TGR_CMODIFIERUSERID,");
-        sbSQL.append("TGR_DMODIFIEDDATE,");
-        sbSQL.append("TGR_CMODIFIERPROGRAMID,");
-        sbSQL.append("TGR_CSECTIONID,");
-        sbSQL.append("TGR_CGROUPID,");
-        sbSQL.append("TGR_CGROUPNAME,");
-        sbSQL.append("TGR_OT_MONTLY_01,");
-        sbSQL.append("TGR_OT_MONTLY_02,");
-        sbSQL.append("TGR_OT_MONTLY_03,");
-        sbSQL.append("TGR_OT_MONTLY_04,");
-        sbSQL.append("TGR_OT_MONTLY_05,");
-        sbSQL.append("TGR_OT_YEARLY_01,");
-        sbSQL.append("TGR_OT_YEARLY_02,");
-        sbSQL.append("TGR_OT_YEARLY_03,");
-        sbSQL.append("TGR_OT_YEARLY_04, ");
-        sbSQL.append("TGR_OT_YEARLY_05,");
-        sbSQL.append("TGR_OT_MONTHLY_COUNT,");
-        sbSQL.append("TGR_HT_MONTLY_01,");
-        sbSQL.append("TGR_HT_MONTLY_02,");
-        sbSQL.append("TGR_HT_MONTLY_03,");
-        sbSQL.append("TGR_HT_MONTLY_04,");
-        sbSQL.append("TGR_HT_MONTLY_05,");
-        sbSQL.append("TGR_OT_DAILY_01,");
-        sbSQL.append("TGR_OT_MONTHLY_AVG");//超勤実績の月平均時間
-        sbSQL.append(") ");
-        sbSQL.append("SELECT ");
-        sbSQL.append("T1.TGR_CCUSTOMERID,");
-        sbSQL.append("T1.TGR_CCOMPANYID,");
+        sbSQL.append(" INSERT INTO TMG_GROUP_CHECK ");
+        sbSQL.append(" ( ");
+        sbSQL.append("     TGR_CCUSTOMERID, ");
+        sbSQL.append("     TGR_CCOMPANYID, ");
+        sbSQL.append("     TGR_DSTARTDATE, ");
+        sbSQL.append("     TGR_DENDDATE, ");
+        sbSQL.append("     TGR_CMODIFIERUSERID, ");
+        sbSQL.append("     TGR_DMODIFIEDDATE, ");
+        sbSQL.append("     TGR_CMODIFIERPROGRAMID, ");
+        sbSQL.append("     TGR_CSECTIONID, ");
+        sbSQL.append("     TGR_CGROUPID, ");
+        sbSQL.append("     TGR_CGROUPNAME, ");
+        sbSQL.append("     TGR_OT_MONTLY_01, ");
+        sbSQL.append("     TGR_OT_MONTLY_02, ");
+        sbSQL.append("     TGR_OT_MONTLY_03, ");
+        sbSQL.append("     TGR_OT_MONTLY_04, ");
+        sbSQL.append("     TGR_OT_MONTLY_05, ");
+        sbSQL.append("     TGR_OT_YEARLY_01, ");
+        sbSQL.append("     TGR_OT_YEARLY_02, ");
+        sbSQL.append("     TGR_OT_YEARLY_03, ");
+        sbSQL.append("     TGR_OT_YEARLY_04, ");
+        sbSQL.append("     TGR_OT_YEARLY_05, ");
+        sbSQL.append("     TGR_OT_MONTHLY_COUNT, ");
+        sbSQL.append("     TGR_HT_MONTLY_01, ");
+        sbSQL.append("     TGR_HT_MONTLY_02, ");
+        sbSQL.append("     TGR_HT_MONTLY_03, ");
+        sbSQL.append("     TGR_HT_MONTLY_04, ");
+        sbSQL.append("     TGR_HT_MONTLY_05, ");
+        sbSQL.append("     TGR_OT_DAILY_01 ");
+        sbSQL.append("     ,TGR_OT_MONTHLY_AVG");//超勤実績の月平均時間
+        sbSQL.append(" ) ");
+        sbSQL.append(" SELECT ");
+        sbSQL.append("     T1.TGR_CCUSTOMERID, ");
+        sbSQL.append("     T1.TGR_CCOMPANYID, ");
+
         if (evaluaterSettingParam.getAction() != null && evaluaterSettingParam.getAction().equals(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
             // 引数で渡すSTARTDATEを改訂日に変更
-            sbSQL.append("TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS STARTDATE, ");
+            sbSQL.append(" TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS STARTDATE, ");
         } else {
-            sbSQL.append(sDBBaseDate + "AS STARTDATE,");
+            sbSQL.append(sDBBaseDate + " AS STARTDATE, ");
         }
-        // 引数で渡すSTARTDATEを改訂日に変更
-        sbSQL.append("TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS ENDDATE,");
-        sbSQL.append(escDBString(evaluaterSettingParam.getEmployee()) + ",");
-        sbSQL.append("SYSDATE,");
-        sbSQL.append(escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ",");
-        sbSQL.append("T1.TGR_CSECTIONID,");
 
-        if (StrUtil.equals(evaluaterSettingParam.getAction(),EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
+        // 引数で渡すSTARTDATEを改訂日に変更
+        sbSQL.append(" TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS ENDDATE, ");
+        sbSQL.append(escDBString(evaluaterSettingParam.getEmployee()) + ", ");
+        sbSQL.append(" SYSDATE, ");
+        sbSQL.append(escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ", ");
+        sbSQL.append(" T1.TGR_CSECTIONID, ");
+
+        if (evaluaterSettingParam.getAction() != null && evaluaterSettingParam.getAction().equals(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
             // 新規 組織グループ追加(新規 組織グループコード採番)
-            sbSQL.append(buildSQL4NextGroupId(sDBSecId, " T1.TGR_CCUSTOMERID ", " T1.TGR_CCOMPANYID ") + ",");
+            sbSQL.append(buildSQL4NextGroupId(sDBSecId, " T1.TGR_CCUSTOMERID ", " T1.TGR_CCOMPANYID ") + ", ");
         } else {
             // 既存 組織グループ編集(既存 組織グループコード適用)
-            sbSQL.append(escDBString(evaluaterSettingParam.getGroup()) + ",");
+            sbSQL.append(escDBString(evaluaterSettingParam.getGroup()) + ", ");
         }
 
-        String groupName = (String)psDBBean.getRequestHash().get("txtGroupName");
-        if (StrUtil.isNotBlank(groupName)) {
-            sbSQL.append(escDBString(groupName)).append(",");
+        if (StrUtil.isNotBlank(evaluaterSettingParam.getGroupName())) {
+            sbSQL.append(escDBString(evaluaterSettingParam.getGroupName()) + ", ");
         } else {
-            sbSQL.append("T1.TGR_CGROUPNAME,");
+            sbSQL.append(" T2.TGR_CGROUPNAME, ");
         }
-        sbSQL.append("T1.TGR_OT_MONTLY_01,");
-        sbSQL.append("T1.TGR_OT_MONTLY_02,");
-        sbSQL.append("T1.TGR_OT_MONTLY_03,");
-        sbSQL.append("T1.TGR_OT_MONTLY_04,");
-        sbSQL.append("T1.TGR_OT_MONTLY_05,");
-        sbSQL.append("T1.TGR_OT_YEARLY_01,");
-        sbSQL.append("T1.TGR_OT_YEARLY_02,");
-        sbSQL.append("T1.TGR_OT_YEARLY_03,");
-        sbSQL.append("T1.TGR_OT_YEARLY_04,");
-        sbSQL.append("T1.TGR_OT_YEARLY_05,");
-        sbSQL.append("T1.TGR_OT_MONTHLY_COUNT,");
-        sbSQL.append("T1.TGR_HT_MONTLY_01,");
-        sbSQL.append("T1.TGR_HT_MONTLY_02,");
-        sbSQL.append("T1.TGR_HT_MONTLY_03,");
-        sbSQL.append("T1.TGR_HT_MONTLY_04,");
-        sbSQL.append("T1.TGR_HT_MONTLY_05,");
-        sbSQL.append("T1.TGR_OT_DAILY_01,");
-        sbSQL.append("T1.TGR_OT_MONTHLY_AVG ");//超勤実績の月平均時間
-        sbSQL.append("FROM TMG_GROUP T1 ");
-        sbSQL.append("WHERE T1.TGR_CCUSTOMERID = " + sDBCustId);
-        sbSQL.append(" AND T1.TGR_CCOMPANYID = " + sDBCompId);
-        sbSQL.append(" AND T1.TGR_CSECTIONID = " + sDBSecId);
-        sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
-        sbSQL.append(" AND T1.TGR_DSTARTDATE <= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_DENDDATE >= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_CCUSTOMERID = " + sDBCustId);
-        sbSQL.append(" AND T1.TGR_CCOMPANYID = " + sDBCompId);
-        sbSQL.append(" AND T1.TGR_CSECTIONID = " + sDBSecId);
+        sbSQL.append("     T2.TGR_OT_MONTLY_01, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_02, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_03, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_04, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_05, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_01, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_02, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_03, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_04, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_05, ");
+        sbSQL.append("     T2.TGR_OT_MONTHLY_COUNT, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_01, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_02, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_03, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_04, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_05, ");
+        sbSQL.append("     T2.TGR_OT_DAILY_01 ");
+        sbSQL.append("     ,T2.TGR_OT_MONTHLY_AVG ");//超勤実績の月平均時間
+        sbSQL.append(" FROM TMG_GROUP T1, ");
+        sbSQL.append("      TMG_GROUP T2 ");
+        sbSQL.append(" WHERE T1.TGR_CCUSTOMERID = " + sDBCustId);
+        sbSQL.append(" AND   T1.TGR_CCOMPANYID  = " + sDBCompId);
+        sbSQL.append(" AND   T1.TGR_CSECTIONID  = " + sDBSecId);
+        sbSQL.append(" AND   T1.TGR_CGROUPID    = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
+        sbSQL.append(" AND   T1.TGR_DSTARTDATE <= " + sDBBaseDate);
+        sbSQL.append(" AND   T1.TGR_DENDDATE   >= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_CCUSTOMERID = " + sDBCustId);
+        sbSQL.append(" AND   T2.TGR_CCOMPANYID  = " + sDBCompId);
+        sbSQL.append(" AND   T2.TGR_CSECTIONID  = " + sDBSecId);
         if (StrUtil.isBlank(evaluaterSettingParam.getGroup())) {
-            sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
+            sbSQL.append(" AND   T2.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
         } else {
-            sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getGroup()));
+            sbSQL.append(" AND   T2.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getGroup()));
         }
-        sbSQL.append(" AND T1.TGR_DSTARTDATE <= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_DENDDATE >= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_DSTARTDATE <= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_DENDDATE   >= " + sDBBaseDate);
         return sbSQL.toString();
     }
 
