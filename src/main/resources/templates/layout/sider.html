@@ -4,7 +4,7 @@
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
-        <li class="nav-item" v-for="item of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
+        <li class="nav-item" v-for="(item,i) of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
             :key="item.menu.pageId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true">
                 <use :xlink:href="`#${item.icon || 'AccessLog41'}`"></use>
@@ -15,17 +15,18 @@
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
         <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.pageId"
-            :class="curMenu === e.menu.pageId ? 'actived-menu' : ''"
-            @click.native="handleMenuGroupChange(e)">
+            :class="curMenu === e.menu.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
             <div style="overflow-x: hidden">
-                <div v-show="curMenu === e.menu.pageId" style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
-                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId"
-                        @click.native="handleSubMenuClick(t, i)">
+                <div v-show="curMenu === e.menu.pageId"
+                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
+                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId">
                         <div>
-                            <svg class="i-svg" aria-hidden="true"
-                                style="width:50px;height:50px;margin-top:12px">
-                                <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
-                            </svg>
+                            <a
+                                :href="`${baseUrl}/${t.url}?menuId=${t.menuId}&moduleIndex=${i + 1}&psSite=${siteId}&psApp=${t.pageId}`">
+                                <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px">
+                                    <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
+                                </svg>
+                            </a>
                         </div>
                         <p class="p">{{ t.jaName }}</p>
                     </menu-item>
@@ -33,7 +34,6 @@
             </div>
         </menu-group>
     </i-menu>
-    <div th:replace="layout/script::common_script"></div>
     <script th:inline="javascript">
         const SIDER = new Vue({
             el: '.navbar-wrap',
@@ -60,33 +60,15 @@
                     var pageId = e.pageId
                     this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}`
                     this.showSider = false
-                    this.switchFrame()
+                    location.href = this.toUrl
                 },
                 handleNavHover() {
                     this.showSider = true
                 },
                 handleNavLeave() {
                     this.showSider = false
-                },
-                switchFrame() {
-                    var that = this
-                    this.http.get('/isAuth').then(function (rs) {
-                         if (rs.data){
-                             document.getElementById('moduleFrame').src = that.toUrl
-                         } else {
-                             that.http.get('/logout').then(function() {
-                                 location.href="/login"
-                             })
-                         }
-                    }).catch(function(e){
-                        Vue.prototype.$Notice.error({
-                            title: 'Error!',
-                            desc: 'Network error',
-                            duration: 6.5
-                        })
-                    })
                 }
-            },
+            }
         })
     </script>
 </nav>

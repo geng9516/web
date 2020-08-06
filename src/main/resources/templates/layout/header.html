@@ -25,4 +25,6 @@
         <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath}">
     </th:block>
     <!--各页面独自引入的CSS End-->
+
+    <script th:replace="/layout/script::common_script"></script>
 </head>
