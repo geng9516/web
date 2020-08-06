@@ -517,62 +517,55 @@
                         ]
                     },
                     // 警告値の設定
-                    permissionFlagValues:[],
+                    permissionFlagValues:{},
                     overFlagColumns: [
                         {
                             title: '超勤実績の警告値の設定',
-                            width: 450,
+                            width: 400,
                             key: 'name'
                         },
                         {
-                            title: '現在値(時間)',
+                            title: '改定値(時間)',
                             slot: 'time'
+                        },
+                        {
+                            title: '現在値(時間)',
+                            key: 'basic'
                         }
                     ],
                     overFlagData: [
                         {
                             name: '超勤実績の警告値(時間)(日次:レベル1)',
-                            time: ''
                         },
                         {
-                            name: '超勤実績の警告値(時間)(月次:黄色)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(月次:レベル1)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(月次:オレンジ)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(月次:レベル2)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(月次:ピンク)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(月次:レベル3)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(月次:赤色)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(月次:レベル4)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(年次:黄色)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(年次:レベル1)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(年次:オレンジ)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(年次:レベル2)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(年次:ピンク)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(年次:レベル3)',
                         },
                         {
-                            name: '超勤実績の警告値(時間)(年次:赤色)',
-                            time: ''
+                            name: '超勤実績の警告値(時間)(年次:レベル4)',
                         },
                         {
                             name: '超勤実績の月次警告値超過回数',
-                            time: ''
                         },
                         {
                             name: '超勤実績の月平均時間',
-                            time: ''
                         },
                     ],
                     restFlagColumns: [
@@ -595,7 +588,26 @@
                             name: '警告値(日数)(月次:レベル2)',
                             time: 45
                         }
-                    ]
+                    ],
+                    // 警告值字段对照表
+                    permisssionFlagTableHelper:{
+                        '超勤実績の警告値(時間)(日次:レベル1)':{key:'dailyOverTime',show:'showDailyOverTime'},
+        '超勤実績の月平均時間':'avgOverTime', // monthlyOverTimeAvg
+         '超勤実績の月次警告値超過回数':{key:'countOverTime',show:'showCountOverTime'},// monthlyOverTimeCount
+        '超勤実績の警告値(時間)(月次:レベル1)':{key:'monthlyOverTimeYellow',show:'showMonthlyOverTime'},
+         '超勤実績の警告値(時間)(月次:レベル2)':{key:'monthlyOverTimeOrange',show:'showMonthlyOverTimeOrange'},
+         '超勤実績の警告値(時間)(月次:レベル3)':{key:'monthlyOverTimePink',show:'showMonthlyOverTimePink'},
+         '超勤実績の警告値(時間)(月次:レベル4)':{key:'monthlyOverTimeRed',show:'showMonthlyOverTimeRed'},
+         '超勤実績の警告値(時間)(年次:レベル1)':{key:'yearlyOverTimeYellow',show:'showYearlyOverTimeYellow'},
+         '超勤実績の警告値(時間)(年次:レベル2)':{key:'yearlyOverTimeOrange',show:'showYearlyOverTimeOrange'},
+         '超勤実績の警告値(時間)(年次:レベル3)':{key:'yearlyOverTimePink',show:'showYearlyOverTimePink'},
+         '超勤実績の警告値(時間)(年次:レベル4)':{key:'yearlyOverTimeRed',show:'showYearlyOverTimeRed'},
+         '警告値(日数)(月次:レベル1)':'monthlyHolidayTimeLevel1',
+         '警告値(日数)(月次:レベル2)':'monthlyHolidayTimeLevel2',
+         '警告値(日数)(月次:レベル3)':'monthlyHolidayTimeLevel3',
+        '警告値(日数)(月次:レベル4)':'monthlyHolidayTimeLevel4',
+         '警告値(日数)(月次:レベル5)':'monthlyHolidayTimeLevel5'
+                    }
                 }
             },
             mounted() {
@@ -752,25 +764,17 @@
                                 const a ={
          sectionId:"",
          autoStart:data.autoStart,
-         dailyOverTime:"超勤実績の警告値(時間)(日次:レベル1)", // dailyOverTime
-         monthlyOverTimeAvg:"超勤実績の月平均時間",   // avgOverTime
-         monthlyOverTimeCount:"超勤実績の月次警告値超過回数", // countOverTime
-         monthlyOverTimeYellow:"超勤実績の警告値(時間)(月次:黄色)",
-         monthlyOverTimeOrange:"超勤実績の警告値(時間)(月次:オレンジ)",
-         monthlyOverTimePink:"超勤実績の警告値(時間)(月次:ピンク)",
-         monthlyOverTimeRed:"超勤実績の警告値(時間)(月次:赤色)",
-         monthlyOverTimeBackUp:"",
-         yearlyOverTimeYellow:"超勤実績の警告値(時間)(年次:黄色)",
-         yearlyOverTimeOrange:"超勤実績の警告値(時間)(年次:オレンジ)",
-         yearlyOverTimePink:"超勤実績の警告値(時間)(年次:ピンク)",
-         yearlyOverTimeRed:"超勤実績の警告値(時間)(年次:赤色)",
-         yearlyOverTimeBackUp:"", // 暂无
-         monthlyHolidayTimeLevel1:"警告値(日数)(月次:レベル1)",
-         monthlyHolidayTimeLevel2:"警告値(日数)(月次:レベル2)",
-         monthlyHolidayTimeLevel3:"警告値(日数)(月次:レベル3)",
-         monthlyHolidayTimeLevel4:"警告値(日数)(月次:レベル4)",
-         monthlyHolidayTimeLevel5:"警告値(日数)(月次:レベル5)"
      }
+     this.overFlagData.forEach(e=>{
+        if(this.permisssionFlagTableHelper[e.name]) {
+
+        }
+         e.basic = data[this.permisssionFlagTableHelper[e.name]].basic
+         if( data[e.name].self !== 'null') {
+             e.time = data[e.name].self
+         }
+     })
+
                                 this.delDeptBtn = data.enableEditGroupName
                                 console.log(data)
                             } catch (error) {
@@ -906,7 +910,7 @@
                 async delGruopName() {
                         const query = {
                                 txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                                targetGroupId:encodeURI(this.gruopNameForm.groupId),
+                                targetGroupId:this.gruopNameForm.groupId,
                                 sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                 psSite:this.referListObject.psSite,
                                 psApp:this.referListObject.psApp
