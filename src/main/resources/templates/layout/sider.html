@@ -13,20 +13,17 @@
         <li class="nav-item"></li>
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
-    <i-menu theme="light" active-name="1" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
+    <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
         <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.pageId"
             :class="curMenu === e.menu.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
             <div style="overflow-x: hidden">
                 <div v-show="curMenu === e.menu.pageId"
                     style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
-                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId">
+                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId" @click.native="handleSubMenuClick(t, i)">
                         <div>
-                            <a
-                                :href="`${baseUrl}/${t.url}?menuId=${t.menuId}&moduleIndex=${i + 1}&psSite=${siteId}&psApp=${t.pageId}`">
-                                <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px">
-                                    <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
-                                </svg>
-                            </a>
+                            <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px">
+                                <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
+                            </svg>
                         </div>
                         <p class="p">{{ t.jaName }}</p>
                     </menu-item>
@@ -41,15 +38,12 @@
                 return {
                     topNavs: [[${ #httpServletRequest.getAttribute('topNavs') }]],
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
-                    curMenu: '',
+                    curPageId: Utils.getUrlParam(location.href, 'psApp'),
+                    curMenu: Utils.getUrlParam(location.href, 'psSite'),
                     toUrl: '',
                     showSider: false,
                     siteId: ''
                 }
-            },
-            mounted() {
-                this.curMenu = this.topNavs[0].menu.pageId
-                this.siteId = this.topNavs[0].menu.pageId
             },
             methods: {
                 handleMenuGroupChange(item) {
