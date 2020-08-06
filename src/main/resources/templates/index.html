@@ -5,7 +5,6 @@
    <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
-    <iframe id="moduleFrame" :src="`${baseUrl}/sys/dashboard`" class="iframe-wrap"></iframe>
     <script type="text/babel">
       const INDEX = new Vue({
           el: '#moduleFrame',

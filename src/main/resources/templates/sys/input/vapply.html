@@ -7,6 +7,8 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
     <main class="content restApply-warp tc">
         <div class="content_body">
             <Row>
@@ -348,7 +350,7 @@
             </Row>
         </div>
     </main>
-    <div th:replace="layout/script::common_script"></div>
+    <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
         const REST_APPLY = new Vue({
             el: '.restApply-warp',

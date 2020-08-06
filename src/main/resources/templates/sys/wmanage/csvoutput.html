@@ -6,6 +6,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main @scroll.passive="handleScroll" class="content tmgLedger-warp" ref="layout">
     <div class="content_body tc">
         <Card :loading = "yearSelectLoading" class="card" title="帳票出力選択">
@@ -149,7 +151,7 @@
     </div>
 </main>
 
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script th:inline="javascript" type="text/babel">
     const DEPT_STATLIST = new Vue({
         el: '.tmgLedger-warp',

@@ -151,6 +151,7 @@ public class TmgNotificationBean {
         param.setToday(TmgUtil.getSysdate());
 
         param.setYear(param.getToday().substring(0, 4));
+
         param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
         //referlist 新规
         if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
@@ -158,7 +159,9 @@ public class TmgNotificationBean {
         }else{
             referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true);
         }
-
+        if(!StrUtil.hasEmpty(year)){
+            param.setYear(year);
+        }
         //基准日取得 入力site为系统日期
         if(!StrUtil.hasEmpty(referList.getRecordDate())&&param.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
             param.setToday(referList.getRecordDate());

@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Map;
 
 /**
@@ -31,8 +32,10 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.dispHandler(psDBBean);
     }
 
+    // グループ作成処理
     @PostMapping("makegroup")
-    // http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup06
+    // 创建组参数url: http://localhost:6879/sys/evaluatorsetting/makegroup?txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup06
+    // 更新组名称url: http://localhost:6879/sys/evaluatorsetting/makegroup?txtAction=ACT_EditGroup_UGrpName&targetGroupId=201000000000|%7C000004&txtDYYYYMMDD=2019/08/02&psSite=TMG_ADMIN&targetSectionId=201000000000&psApp=EvaluaterSetting&groupName=testgroup06
     public GlobalResponse makeGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
                                     @RequestParam(value="targetSectionId",required = false) String targetSectionId,
                                     @RequestParam(value="targetGroupId",required = false) String targetGroupId,
@@ -42,6 +45,7 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.makeGroupHandler(psDBBean,targetSectionId,targetGroupId,lastTargetGroupId,groupName,empId);
     }
 
+    // グループ属性編集画面表示
     @GetMapping("editgroup")
     // http://localhost:6879/sys/evaluatorsetting/editgroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&targetGroupId=201000000000%7C000000&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
     public Map<String,Object> editGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -50,18 +54,52 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.showEditGroupHandler(psDBBean,sectionId,groupId);
     }
 
+    // グループ属性登録処理（夜間連携項目（など））
     @PostMapping("editgroup")
+    // http://localhost:6879/sys/evaluatorsetting/editgroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02
+    /* json参数：
+     * {
+         "sectionId":"",
+         "autoStart":"",
+         "dailyOverTime":"",
+         "monthlyOverTimeAvg":"",
+         "monthlyOverTimeCount":"",
+         "monthlyOverTimeYellow":"",
+         "monthlyOverTimeOrange":"",
+         "monthlyOverTimePink":"",
+         "monthlyOverTimeRed":"",
+         "monthlyOverTimeBackUp":"",
+         "yearlyOverTimeYellow":"",
+         "yearlyOverTimeOrange":"",
+         "yearlyOverTimePink":"",
+         "yearlyOverTimeRed":"",
+         "yearlyOverTimeBackUp":"",
+         "monthlyHolidayTimeLevel1":"",
+         "monthlyHolidayTimeLevel2":"",
+         "monthlyHolidayTimeLevel3":"",
+         "monthlyHolidayTimeLevel4":"",
+         "monthlyHolidayTimeLevel5":""
+     * }
+     * */
     public GlobalResponse editGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
-                                    @RequestBody EditGroupDTO dto) {
+                                    @Valid @RequestBody EditGroupDTO dto) {
         return evaluatorSettingBean.editGroupNameProcHandler(psDBBean,dto);
     }
 
+    // グループ削除処理
     @GetMapping("deletegroup")
     // http://localhost:6879/sys/evaluatorsetting/deletegroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&targetGroupId=201000000000%7C000005&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
     public GlobalResponse deleteGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
                                       @RequestParam(value="targetGroupId") String groupId,
                                       @RequestParam(value="sectionId") String sectionId) {
         return evaluatorSettingBean.deleteGroupHandler(psDBBean,sectionId,groupId);
+    }
+
+    @GetMapping("addeval")
+    // http://localhost:6879/sys/evaluatorsetting/addeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    // [[[201000000000|000000, 総務部, 2222/12/31], [201000000000|000004, testgroup0004, 2222/12/31], [201000000000|000006, testgroup06, 2222/12/31], [201000000000|000001, グループ4, 2222/12/31]], [[TMG_APPROVAL_LEVEL|1, 1], [TMG_APPROVAL_LEVEL|2, 2], [TMG_APPROVAL_LEVEL|3, 3], [TMG_APPROVAL_LEVEL|4, 4], [TMG_APPROVAL_LEVEL|5, 5]]]
+    public Map<String,Object> showAddEvalHandler(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam("sectionId") String sectionId) {
+        return evaluatorSettingBean.showAddEvalHandler(bean,sectionId);
     }
 
 }
