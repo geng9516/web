@@ -207,14 +207,18 @@ const Utils = {
   },
   /**
    * 检测多个日期段是否重叠,为true重叠
-   * @param dateArray [{start:'2012/09/31',end:'2012/10/01'},{start:'2012/10/02',end:'2012/10/28'},{start:'2012/10/27',end:'2012/11/01'}]
+   * 你需要在这之前check 其中之一为空值和end小于start的情况
+   * @param dateArray [{start: Date,end:Date},{start:Date,end:Date}]
    * @returns {boolean}
    */
   multipleDateRangeOverlaps: function (dateArray) {
     let _dateArray = []
     dateArray.forEach(e=>{
-        _dateArray = _dateArray.concat(e.start.replace(/\//g, ''))
-        _dateArray = _dateArray.concat(e.end.replace(/\//g, ''))
+      // 排除两个都为空值
+      if(e.start && e.end) {
+        _dateArray = _dateArray.concat(this.formatDate(e.start, 'yyyymmdd'))
+        _dateArray = _dateArray.concat(this.formatDate(e.end, 'yyyymmdd'))
+      }
     })
     // 被去重了就说明已经有重复的了
     if(_dateArray.length !== new Set([..._dateArray]).size) return true
