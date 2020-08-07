@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg.evaluatersetting;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -11,11 +12,13 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorGroupVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberRightVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgSearchEmpList;
 import jp.smartcompany.job.modules.tmg.util.TmgSearchRangeUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -631,6 +634,10 @@ public class EvaluatorSettingBean {
         return GlobalResponse.error("登録処理失敗しました");
     }
 
+    // 結果セット番号
+    private final int IDX_GROUP_LIST		= 0;	// グループリスト
+    private final int IDX_APPROVAL      = 1;    // 決裁レベル情報
+
     public Map<String,Object> showAddEvalHandler(PsDBBean bean,String sectionId) {
         Map<String,Object> map = MapUtil.newHashMap();
         EvaluatorSettingParam params = new EvaluatorSettingParam();
@@ -644,25 +651,355 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForSelectGroupList(params));         // グループ一覧取得
         vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 決裁レベル取得
         PsResult psResult;
+
+        int groupListCount = 0;
+        int levelCount = 0;
         try {
            referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
                     TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+           groupListCount = bean.getCount(psResult,IDX_GROUP_LIST);
+           levelCount = bean.getCount(psResult,IDX_APPROVAL);
         } catch (Exception e) {
            throw new GlobalException(e.getMessage());
         }
 
         boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
         map.put("enableMonthlyResult", hasAuthMonthApprove);
-        System.out.println(psResult);
+
+        List<Map<String,String>> groupList = CollUtil.newArrayList();
+        for (int i = 0; i < groupListCount; i++) {
+            String sCode  = bean.valueAtColumnRow(psResult,IDX_GROUP_LIST, 0, i);
+            String sName = bean.valueAtColumnRow(psResult,IDX_GROUP_LIST, 1, i);
+            Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
+            groupList.add(item);
+        }
+
+        List<Map<String,String>> levelList = CollUtil.newArrayList();
+        for (int i = 0; i < levelCount; i++) {
+            String sCode  = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
+            String sName = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
+            Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
+            levelList.add(item);
+        }
+
+        map.put("groupList",groupList);
+        map.put("levelList",levelList);
+
         return map;
     }
 
+    public static final String TMG_EVASET_VIEWALL = "TMG_EVASET_VIEWALL";
 
+    public Map<String,Object> showSearchEmpHandler(PsDBBean bean,String sectionId) {
+        Map<String,Object> map = MapUtil.newHashMap();
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(sectionId);
+        params.setSite(bean.getSiteId());
+        params.setAction(EvaluatorSettingConst.ACT_SEARCHEMP_REMPLIST);
+        // システムプロパティ TMG_EVASET_VIEWALL が ON のとき、または管理サイトのときは、全学ツリーから選択
+        boolean isViewAll = "ON".equalsIgnoreCase(scCacheUtil.getSystemProperty(TMG_EVASET_VIEWALL)) || params.isSiteTa();
+        TmgSearchEmpList searchEmpList =
+                new TmgSearchEmpList(bean,                                // beanオブジェクト
+                        "TmgSample",                          // bean名称
+                        params.getSection(),   // 選択組織コード
+                        params.getYYYYMMDD(),  // 基準日
+                        isViewAll,                            // 検索対象範囲設定の条件追加可否
+                        true);
+        map.put("empList", JSONUtil.parseArray(searchEmpList.getJSONArrayForEmpList()));
+        if (isViewAll) {
+            map.put("orgList",JSONUtil.parseArray(searchEmpList.getJSONArrayForOrgTree()));
+        }
+        return map;
+    }
+
+    public GlobalResponse addEvalHandler(PsDBBean bean, AddEvaluatorDTO dto) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        params.setSite(bean.getSiteId());
+        params.setLanguage(bean.getLanguage());
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setSection(dto.getSectionId());
+        String action = (String)bean.getRequestHash().get(EvaluatorSettingConst.REQUEST_KEY_ACTION);
+        if (StrUtil.isNotBlank(action)) {
+            params.setAction(action);
+        } else {
+            params.setAction(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP);
+        }
+        params.setRootGroup(params.getSection() + '|' + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        configYYYYMMDD(bean,params);
+        params.setGroup(dto.getGroupId());
+        if (StrUtil.isBlank(dto.getEmpId())) {
+            params.setEmployee(bean.getUserCode());
+        } else {
+            params.setEmployee(dto.getEmpId());
+        }
+
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForDeleteEvalTrigger(params,bean)); // トリガー削除
+        vQuery.add(buildSQLForDeleteEvalErrMsg(params,bean));  // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteEvalCheck(params,bean));   // エラーチェック削除
+        vQuery.add(buildSQLForInsertEvalCheck(params,dto,bean));   // チェックテーブルへ承認者登録
+        vQuery.add(buildSQLForInsertEvalErrMsg(params,bean));  // エラーメッセージ追加
+        vQuery.add(buildSQLForInsertEvalTrigger(params,bean)); // トリガー追加
+        vQuery.add(buildSQLForSelectEvalErrMsg(params,bean));  // エラーメッセージ取得
+        vQuery.add(buildSQLForDeleteEvalTrigger(params,bean)); // トリガー削除
+        vQuery.add(buildSQLForDeleteEvalErrMsg(params,bean));  // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteEvalCheck(params,bean));   // エラーチェック削除
+
+        Vector<Object> msgList = (Vector<Object>)ajaxBean.exeSQLs(vQuery,bean).getResult().get(0);
+        Vector<Object> msg = (Vector<Object>)msgList.get(0);
+        if (CollUtil.isNotEmpty(msg)) {
+            String errorMsg = (String)msg.get(0);
+            if (StrUtil.equals(errorMsg ,"0")) {
+                return GlobalResponse.ok("追加成功しました");
+            } else {
+                return GlobalResponse.error(errorMsg);
+            }
+        }
+        return GlobalResponse.error("追加失敗しました");
+    }
 
     /*
      * ========================= 内部处理逻辑Start ==================
      */
+
+    /**
+     * エラーメッセージを取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectEvalErrMsg(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        return " SELECT "
+                + "     TMG_F_GET_ERRORMESSAGE("
+                + "E.TER_CERRCODE,"
+                + escDBString(evaluaterSettingParam.getCompanyId())	+ ", "
+                + "TO_DATE(" + escDBString(evaluaterSettingParam.getYYYYMMDD()) + ", " + escDBString(EvaluatorSettingConst.DATE_FORMAT) + "), "
+                + escDBString(evaluaterSettingParam.getLanguage()) + ") "
+                + " FROM "
+                + "     TMG_ERRMSG E "
+                + " WHERE "
+                + "     E.TER_CMODIFIERUSERID    = " + escDBString(bean.getUserCode())
+                + " AND E.TER_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)
+                + " AND E.TER_CCUSTOMERID        = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND E.TER_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId());
+    }
+
+    /**
+     * トリガーに追加するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForInsertEvalTrigger(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+
+        return " INSERT INTO TMG_TRIGGER ( "
+                + " TTR_CCUSTOMERID, "
+                + " TTR_CCOMPANYID, "
+                + " TTR_CEMPLOYEEID, "
+                + " TTR_DSTARTDATE, "
+                + " TTR_DENDDATE, "
+                + " TTR_CMODIFIERUSERID, "
+                + " TTR_DMODIFIEDDATE, "
+                + " TTR_CMODIFIERPROGRAMID, "
+                + " TTR_CPROGRAMID, "
+                + " TTR_CPARAMETER1 "
+                + " ) VALUES ( "
+                + escDBString(evaluaterSettingParam.getCustomerId()) + ", "
+                + escDBString(evaluaterSettingParam.getCompanyId()) + ", "
+                + escDBString(bean.getUserCode()) + ", "
+                + TmgUtil.Cs_MINDATE + ", "
+                + TmgUtil.Cs_MAXDATE + ", "
+                + escDBString(bean.getUserCode()) + ", "
+                + " SYSDATE, "
+                + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL) + ", "
+                + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL) + ", "
+                + escDBString(EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)
+                + " )";
+    }
+
+
+    /**
+     * エラーメッセージを追加するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForInsertEvalErrMsg(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+
+        String sSQL = " INSERT INTO TMG_ERRMSG ( "
+                + " TER_CCUSTOMERID, "
+                + " TER_CCOMPANYID, "
+                + " TER_DSTARTDATE, "
+                + " TER_DENDDATE, "
+                + " TER_CMODIFIERUSERID, "
+                + " TER_DMODIFIEDDATE, "
+                + " TER_CMODIFIERPROGRAMID, "
+                + " TER_CERRCODE, "
+                + " TER_CLANGUAGE "
+                + " ) VALUES ("
+                + escDBString(evaluaterSettingParam.getCustomerId()) + ", "
+                + escDBString(evaluaterSettingParam.getCompanyId()) + ", "
+                + TmgUtil.Cs_MINDATE + ", "
+                + TmgUtil.Cs_MAXDATE + ", "
+                + escDBString(bean.getUserCode()) + ", "
+                + " SYSDATE, "
+                + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL) + ", "
+                + " TMG_F_CHECK_EVALUATER(" + escDBString(bean.getUserCode()) + "," + escDBString(
+                        EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL) + "),"
+                + escDBString(evaluaterSettingParam.getLanguage())
+                + " ) ";
+        return sSQL;
+    }
+
+    /**
+     * チェックテーブルへ承認者を登録するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForInsertEvalCheck(EvaluatorSettingParam evaluaterSettingParam,AddEvaluatorDTO dto,PsDBBean bean) {
+
+        String baseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+
+        String sResults = TmgUtil.Cs_MGD_ONOFF_0;        // 権限：勤怠承認
+        String sNotification = TmgUtil.Cs_MGD_ONOFF_0;   // 権限：休暇承認
+        String sOvertime = TmgUtil.Cs_MGD_ONOFF_0;       // 権限：超過勤務
+        String sSchedule = TmgUtil.Cs_MGD_ONOFF_0;       // 権限：予定作成 #427
+        String sAuthority = TmgUtil.Cs_MGD_ONOFF_0;      // 権限：権限付与
+        String sAdminFlg = TmgUtil.Cs_MGD_ONOFF_0;       // 承認サイトなら0
+        String sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_0; // 権限：月次承認
+        String sApprovalLevel = null;
+
+        if (dto.getDailyResult()) {
+            sResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getNotification()) {
+            sNotification = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getOverTime()) {
+            sOvertime = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getSchedule()) {
+            sSchedule = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getAuthority()) {
+            sAuthority = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getMonthlyResult()) {
+            sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (StrUtil.isNotBlank(dto.getApprovalLevel())) {
+            sApprovalLevel = escDBString(dto.getApprovalLevel());
+        }
+
+        // 管理サイトなら1
+        if (evaluaterSettingParam.isSiteTa()) {
+            sAdminFlg = TmgUtil.Cs_MGD_ONOFF_1;
+        }
+
+        StringBuilder sSQL = new StringBuilder();
+        String sCustId  = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompId  = escDBString(evaluaterSettingParam.getCompanyId());
+        String sEmpId   = escDBString(evaluaterSettingParam.getEmployee());
+        String sSecId   = escDBString(dto.getSectionId());
+        String sGroupId = escDBString(dto.getGroupId());
+
+        sSQL.append(" INSERT INTO TMG_EVALUATER_CHECK(");
+        sSQL.append("     TEV_CCUSTOMERID, ");
+        sSQL.append("     TEV_CCOMPANYID, ");
+        sSQL.append("     TEV_CEMPLOYEEID, ");
+        sSQL.append("     TEV_DSTARTDATE,");
+        sSQL.append("     TEV_DENDDATE, ");
+        sSQL.append("     TEV_CMODIFIERUSERID, ");
+        sSQL.append("     TEV_DMODIFIEDDATE,");
+        sSQL.append("     TEV_CMODIFIERPROGRAMID, ");
+        sSQL.append("     TEV_CSECTIONID, ");
+        sSQL.append("     TEV_CGROUPID, ");
+        sSQL.append("     TEV_CEDITABLEFLG,");
+        sSQL.append("     TEV_CRESULTS, ");
+        sSQL.append("     TEV_CNOTIFICATION, ");
+        sSQL.append("     TEV_COVERTIME, ");
+        sSQL.append("     TEV_CSCHEDULE,");
+        sSQL.append("     TEV_CAUTHORITY, ");
+        sSQL.append("     TEV_CADMINFLG, ");
+        sSQL.append("     TEV_CSECTIONEVALUATER, ");
+        sSQL.append("     TEV_CMONTHLYAPPROVAL, ");
+        sSQL.append("     TEV_CAPPROVAL_LEVEL ");
+        sSQL.append(" )");
+        sSQL.append(" SELECT ");
+        sSQL.append("     G.TGR_CCUSTOMERID,");
+        sSQL.append("     G.TGR_CCOMPANYID,");
+        sSQL.append(      sEmpId + ",");
+        sSQL.append(      SysUtil.transDateNullToDB(dto.getStartDate()) + ",");
+        sSQL.append(      SysUtil.transDateNullToDB(dto.getEndDate())   + ",");
+        sSQL.append(      escDBString(bean.getUserCode())+",");
+        sSQL.append("     SYSDATE,");
+        sSQL.append(      escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)+",");
+        sSQL.append("     G.TGR_CSECTIONID,");
+        sSQL.append("     G.TGR_CGROUPID,");
+        sSQL.append(      escDBString(TmgUtil.Cs_MGD_ONOFF_1)+",");
+        sSQL.append(      escDBString(sResults)+",");
+        sSQL.append(      escDBString(sNotification)+",");
+        sSQL.append(      escDBString(sOvertime)+",");
+        sSQL.append(      escDBString(sSchedule)+",");
+        sSQL.append(      escDBString(sAuthority)+",");
+        sSQL.append(      escDBString(sAdminFlg)+",");
+        sSQL.append(      escDBString(TmgUtil.Cs_MGD_ONOFF_0)+",");
+        sSQL.append(      escDBString(sMonthlyResults)+",");
+        sSQL.append(      sApprovalLevel);
+        sSQL.append(" FROM");
+        sSQL.append("     TMG_GROUP G");
+        sSQL.append(" WHERE");
+        sSQL.append("     G.TGR_CCUSTOMERID = " + sCustId);
+        sSQL.append(" AND G.TGR_CCOMPANYID  = " + sCompId);
+        sSQL.append(" AND G.TGR_CSECTIONID  = " + sSecId);
+        sSQL.append(" AND G.TGR_CGROUPID    = " + sGroupId);
+        sSQL.append(" AND G.TGR_DSTARTDATE <= " + baseDate);
+        sSQL.append(" AND G.TGR_DENDDATE   >= " + baseDate);
+
+        return sSQL.toString();
+    }
+
+    /**
+     * トリガーを削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeleteEvalTrigger(EvaluatorSettingParam params,PsDBBean bean) {
+        return " DELETE FROM "
+                + "     TMG_TRIGGER T "
+                + " WHERE "
+                + "     T.TTR_CMODIFIERUSERID    = " + escDBString(bean.getUserCode())
+                + " AND T.TTR_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)
+                + " AND T.TTR_CCUSTOMERID        = " + escDBString(params.getCustomerId())
+                + " AND T.TTR_CCOMPANYID         = " + escDBString(params.getCompanyId());
+    }
+
+    /**
+     * エラーチェックを削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeleteEvalCheck(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        return " DELETE FROM "
+                + "     TMG_EVALUATER_CHECK E "
+                + " WHERE "
+                + "       E.TEV_CMODIFIERUSERID    = " + escDBString(bean.getUserCode())
+                + " AND   E.TEV_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)
+                + " AND   E.TEV_CCUSTOMERID        = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND   E.TEV_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId());
+    }
+
+
+    /**
+     * エラーメッセージを削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeleteEvalErrMsg(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        return " DELETE FROM "
+                + "     TMG_ERRMSG E "
+                + " WHERE "
+                + "     E.TER_CMODIFIERUSERID    = " + escDBString(bean.getUserCode())
+                + " AND E.TER_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL)
+                + " AND E.TER_CCUSTOMERID        = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND E.TER_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId());
+    }
 
     /**
      * 与えられたグループコードがデフォルトグループかどうかを返します。

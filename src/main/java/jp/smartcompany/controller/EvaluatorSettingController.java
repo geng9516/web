@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,11 +96,42 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.deleteGroupHandler(psDBBean,sectionId,groupId);
     }
 
+    // 承認者追加画面表示
     @GetMapping("addeval")
     // http://localhost:6879/sys/evaluatorsetting/addeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
-    // [[[201000000000|000000, 総務部, 2222/12/31], [201000000000|000004, testgroup0004, 2222/12/31], [201000000000|000006, testgroup06, 2222/12/31], [201000000000|000001, グループ4, 2222/12/31]], [[TMG_APPROVAL_LEVEL|1, 1], [TMG_APPROVAL_LEVEL|2, 2], [TMG_APPROVAL_LEVEL|3, 3], [TMG_APPROVAL_LEVEL|4, 4], [TMG_APPROVAL_LEVEL|5, 5]]]
-    public Map<String,Object> showAddEvalHandler(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam("sectionId") String sectionId) {
+    public Map<String,Object> showAddEval(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam("sectionId") String sectionId) {
         return evaluatorSettingBean.showAddEvalHandler(bean,sectionId);
+    }
+
+    // 承認者追加
+    // http://localhost:6879/sys/evaluatorsetting/addeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02&txtAction=ACT_MakeGroup_UGroup
+    /**
+     *  {
+     *    "empId":"",
+     *    "sectionId":"",
+     *    "groupId":"",
+     *    "approvalLevel":"",
+     *    "dailyResult": true, 勤怠承認
+     *    "monthlyResult": true, 月次承認  // 需要根据返回值来确定是否允许拥有月次承认权限
+     *    "overTime":true, 超過勤務命令
+     *    "schedule": true, 予定作成
+     *    "authority": true, 权限设定
+     *    "notification": true 休暇・休出承認 这个checkbox为true时才能选择承认级别
+     *    "startDate":"",
+     *    "endDate":""
+     *  }
+     */
+    @PostMapping("addeval")
+    public GlobalResponse addEval(@RequestAttribute("BeanName") PsDBBean bean,@RequestBody @Valid AddEvaluatorDTO dto) {
+        dto.validate();
+        return evaluatorSettingBean.addEvalHandler(bean,dto);
+    }
+
+    // 社員検索画面表示
+    @GetMapping("searchemp")
+    // http://localhost:6879/sys/evaluatorsetting/searchemp?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    public Map<String,Object> showSearchEmp(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam(value="sectionId",required = false) String sectionId) {
+        return evaluatorSettingBean.showSearchEmpHandler(bean,sectionId);
     }
 
 }
