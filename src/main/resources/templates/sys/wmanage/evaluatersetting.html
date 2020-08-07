@@ -857,7 +857,7 @@
                     this.permissionFlagValues.sectionId = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
                     this.updatePermissionFlagLoading = true
                     try {
-                        const { data } = await this.http.post(`sys/evaluatorsetting/editgroup?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${this.referListObject.txtYYYYMMDD}`, this.permissionFlagValues)
+                        const { data } = await this.http.post(`sys/evaluatorsetting/editgroup?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, this.permissionFlagValues)
                         this.permissionFlagValues = {}
                         this.handleCickGroup({enableEditGroup: true, groupId: this.groupIdForUpdatePermissionFlag})
                         this.$Message.success('更新完了')
