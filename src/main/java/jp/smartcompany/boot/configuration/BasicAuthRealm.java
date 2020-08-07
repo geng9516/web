@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.util.PsSession;
-import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
@@ -64,6 +63,9 @@ public class BasicAuthRealm extends AuthorizingRealm {
         boolean isValid = authBusiness.checkPassword(mastAccountDO,digestPassword);
         if (isValid) {
           LoginAccountBO loginAccountBO = iMastAccountService.getAccountInfo(username);
+          if (loginAccountBO == null) {
+              throw new UnknownAccountException(ErrorMessage.USER_NOT_EXIST.msg());
+          }
           return new SimpleAuthenticationInfo(loginAccountBO,digestPassword,getName());
         }
         return null;

@@ -6,6 +6,8 @@
 
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
   <main class="content groupsettings-warp">
     <div class="content_head">
       <div class="header">
@@ -80,7 +82,7 @@
       </div>
     </div>
   </main>
-  <div th:replace="layout/script::common_script"></div>
+  <div th:replace="layout/head::header"></div>
   <script type="text/babel" th:inline="javascript">
     const GROUP_SETTINGS = new Vue({
       el: '.groupsettings-warp',

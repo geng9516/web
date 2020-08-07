@@ -6,6 +6,8 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
     <main class="content perms-warp" @scroll.passive="handleScroll" ref="layout">
         <div class="content_head">
             <div class="header">
@@ -64,6 +66,7 @@
             </div>
         </div>
         <div class="content_body">
+            <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
             <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
                 no-data-text="所属を選択して下さい。" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
@@ -124,7 +127,7 @@
                     <span class="input-like-span">{{ deptName }}</span>
                 </i-col>
             </Row>
-            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" class="mt15 mb20">
+            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" :span-method="handleSpanForAdminAdd" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="workConfirm">
                     <Checkbox v-model="row.workConfirm"></Checkbox>
                 </template>
@@ -325,7 +328,7 @@
         <!-- グループ名編集画面表示 end-->
     </main>
 
-    <div th:replace="layout/script::common_script"></div>
+    <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
         const PERM_SETTING = new Vue({
             el: '.perms-warp',
@@ -713,7 +716,17 @@
                     this.PermissionGroupAdd = true
                     this.editGroupNameModal = true
                 },
-                handleEditData() { },
+                handleEditData(row) {
+                    this.PermissionAdminEditer = true
+                    this.permissionAdminAddData = row.validList.map(e=>{
+                        return {
+                            group:row.group,
+                            empId:row.empId,
+                            ...e
+                        }
+                    }).concat({group:row.group, empId:row.empId})
+                    this.permissionAdminAddModal = true
+                 },
                 updateGruopName(name) {
                     this.$refs[name].validate(valid => {
                         if (valid) {
@@ -767,11 +780,11 @@
                         e.whichMemberDuplicate.forEach(t => {
                             for (let j = 0; j < t[1]; j++) {
                                 if (j === 0) {
-                                    if (rowIndex === j + memberHelpCount && columnIndex === 1) {
+                                    if (rowIndex === j + memberHelpCount + t[0] && columnIndex === 1) {
                                         result = [t[1], 1]
                                     }
                                 } else {
-                                    if (rowIndex === j + memberHelpCount && columnIndex === 1) {
+                                    if (rowIndex === j + memberHelpCount + t[0] && columnIndex === 1) {
                                         result = [0, 0]
                                     }
                                 }
@@ -783,6 +796,23 @@
                     })
                     return result
                 },
+                handleSpanForAdminAdd({ rowIndex, columnIndex }) {
+                    // 合并group和承认者
+                    const count  = this.permissionAdminAddData.length
+                    let result = []
+                    for (let i = 0; i < count; i++) {
+                        if (i === 0) {
+                            if (rowIndex === 0 && columnIndex === 0 || rowIndex === 0 && columnIndex === 1) {
+                                result = [count, 1]
+                            }
+                        } else {
+                            if (rowIndex === i && columnIndex === 0 ||rowIndex === i && columnIndex === 1) {
+                                result = [0, 0]
+                            }
+                        }
+                    }
+                    return result
+                }
             }
         })
     </script>

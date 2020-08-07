@@ -153,7 +153,6 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     public int setInsertValues(Vector vecQuery, String sUserid, String sBeandesc, String sCompid, String sCustid, String sSystemCode, String strGUID) {
         int nCount = 0;
         if (vecQuery != null && vecQuery.size() > 0) {
-
             // SQL実行
             Vector vUpdateCnt;
             try {
@@ -164,7 +163,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                 }
             } catch (Exception e) {
                 e.printStackTrace();
-                nCount = Version3CompatibleLogicImpl.UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
+                nCount = UPDATE_ERROR_CODE; // Exception発生時 -2をかえす
             }
         }
         return nCount;

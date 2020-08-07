@@ -7,6 +7,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main class="content monthWorkConfirm-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
@@ -191,7 +193,7 @@
                     <i-col span="8" class="label tc">承認者コメント</i-col>
                     <i-col span="16">
                         <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea"
+                        <i-input v-model="dailyEdit.tdaCbosscommentR" text-align="center;" type="textarea" disabled
                                  readonly></i-input>
                     </i-col>
                 </Row>
@@ -313,7 +315,7 @@
             <Icon size="24" type="md-arrow-round-up"/>
     </span>
 </main>
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const WORK_YEAR_SCHEDULE = new Vue({
         // 特别注意要对上这个class
@@ -347,7 +349,7 @@
                 ],
                 query: {
                     txtAction: 'ACT_DISP_RMONTHLY',
-                    txtDYYYYMM: '2020/04/01',
+                    txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
                     today: '',
                     selHealthStatus:'',
@@ -381,6 +383,7 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                 },
                 workingId: '',
+                today: '',
                 workingIdList: [],
                 businessTrip: '',
                 businessTripList: [],
@@ -657,7 +660,7 @@
                 this.dailyDataList = []
                 try {
                     this.monthlyLoading=true
-                    const {data} = await this.http.get('sys/tmgResults/getTitleData', this.query)
+                    const {data,sysDate} = await this.http.get('sys/tmgResults/getTitleData', this.query)
                     this.bDispKinmujokyoKakunin = data.workHealthChkVO.bdispKinmujokyoKakunin
                     this.bDispKenkojotaiKakunin = data.workHealthChkVO.bdispKenkojotaiKakunin
                     this.bWorkChkStatus = data.workHealthChkVO.bworkChkStatus
@@ -668,7 +671,7 @@
                     this.monthlyTilteMapList = data.monthlyTilteMapList
                     this.monthlyMap = data.monthlyDateMap
                     this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
-
+                    this.today=sysDate
                     this.columns = data.dailyTittleMapList.map(e => {
                         return {
                             ...e,
@@ -1159,8 +1162,8 @@
                 let nHour = new Number();
                 let nMinute = new Number();
                 // 分に変換します
-                nHour = eval(+(moji.split(":")[0] * 60));
-                nMinute = eval(+(moji.split(":")[1]));
+                nHour = eval(+(pHHMM.split(":")[0] * 60));
+                nMinute = eval(+(pHHMM.split(":")[1]));
                 retMinute = eval(nHour + nMinute);
                 return retMinute;
             },
@@ -1175,14 +1178,14 @@
                 return 'select-col sat'
             },
             dayRed(e) {
-                const dayOfWeek = e.TDA_DYYYYMMDD_DY
+                const dayOfWeek = e.TMG_HOLFLG
                 if (!dayOfWeek) {
                     return
                 }
-                if (dayOfWeek.trim() === '土' || dayOfWeek.trim() === '日') {
+                if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                     return 'blue'
                 }
-                if (e.today) {
+                if (e.TDA_DYYYYMMDD === this.today) {
                     return 'brown'
                 }
             },

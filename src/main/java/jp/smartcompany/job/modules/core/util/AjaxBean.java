@@ -37,14 +37,10 @@ public class AjaxBean {
                 if(mode != currentMode) {
                     if(currentMode == SELECT) {
                         PsResult res = psDBBean.getValuesforMultiquery(vecSQL, "AjaxBean");
-                        System.out.println("select");
-                        System.out.println(res.getResult());
                         vecResult.addAll(res.getResult());
                         currentMode = UPDATE;
                     } else {
-                        int count =psDBBean.setInsertValues(vecSQL, "AjaxBean");
-                        System.out.println("update");
-                        System.out.println(count);
+                        psDBBean.setInsertValues(vecSQL, "AjaxBean");
                         currentMode = SELECT;
                     }
                     vecSQL.clear();

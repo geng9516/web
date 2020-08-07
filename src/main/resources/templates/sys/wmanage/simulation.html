@@ -6,6 +6,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <style>
     .label-in-table {
         display: inline-block;
@@ -111,7 +113,7 @@
     <!-- 連携対象マスタを追加するEND -->
 
 </main>
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const GROUP_SETTINGS = new Vue({
         el: '.simulation-warp',

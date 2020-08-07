@@ -1,7 +1,6 @@
 package jp.smartcompany.job.modules.tmg.timepunch;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
@@ -17,9 +16,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.Synchronized;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,9 +34,9 @@ import java.util.List;
  **/
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class TmgTimePunchBean {
-
-    private final Logger logger = LoggerFactory.getLogger(TmgTimePunchBean.class);
+    
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgScheduleService iTmgScheduleService;
     private PsDBBean psDBBean;
@@ -114,7 +111,7 @@ public class TmgTimePunchBean {
      * @param psAction
      */
     private void insertTmgTimePunch(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
-        logger.info("打刻時に打刻データ(未反映)情報に登録する");
+        log.info("打刻時に打刻データ(未反映)情報に登録する");
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
         String ctpTypeid = this.getTptType(psAction);
         iTmgTimepunchService.insertTmgTimePunch(custId, compCode, employeeId, minDate, maxDate, modifierprogramid, ctpTypeid);
@@ -131,7 +128,7 @@ public class TmgTimePunchBean {
      * @param psAction
      */
     private void insertTmgTrgger(String custId, String compCode, String employeeId, String minDate, String maxDate, String psAction) {
-        logger.info("TMG_TRIGGERへINSERTする");
+        log.info("TMG_TRIGGERへINSERTする");
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
         iTmgTimepunchService.insertTmgTrgger(custId, compCode, employeeId, minDate, maxDate, modifierprogramid);
     }
@@ -146,7 +143,7 @@ public class TmgTimePunchBean {
      * @param psAction
      */
     private void deleteTmgTrgger(String custId, String compCode, String employeeId, String psAction) {
-        logger.info("TMG_TRIGGERへDELETEする");
+        log.info("TMG_TRIGGERへDELETEする");
         String modifierprogramid = BEAN_DESC + SEPARATOR_BETWEEN_ACT_PGID + psAction;
         iTmgTimepunchService.deleteTmgTrgger(custId, compCode, employeeId, modifierprogramid);
     }
@@ -179,14 +176,14 @@ public class TmgTimePunchBean {
      * @return
      */
     public ClockResultVO execTimePunch(String employeeId, String custId, String compId, String psAction) {
-        logger.info("打刻タスクが始めます...");
+        log.info("打刻タスクが始めます...");
         ClockResultVO clockResultVO = new ClockResultVO();
         String resultMsg = "";
         String resultCode = "10";
         boolean isPass = true;
         //1、パラメータをチェックする
         if (null == psDBBean) {
-            logger.info("ログインしなかった");
+            log.info("ログインしなかった");
         } else {
             //ログインしたら、psDBBeanからパラメータを取得する
             employeeId = psDBBean.getEmployeeCode();
@@ -197,27 +194,27 @@ public class TmgTimePunchBean {
         if (null == employeeId || "".equals(employeeId)) {
             isPass = false;
             resultMsg = "社員番号が空です";
-            logger.warn(resultMsg);
+            log.warn(resultMsg);
         }
         if (null == custId || "".equals(custId)) {
             isPass = false;
             resultMsg = "顧客番号が空です";
-            logger.warn(resultMsg);
+            log.warn(resultMsg);
         }
         if (null == compId || "".equals(compId)) {
             isPass = false;
             resultMsg = "会社コードが空です";
-            logger.warn(resultMsg);
+            log.warn(resultMsg);
         }
         if (null == psAction || "".equals(psAction)) {
             isPass = false;
             resultMsg = "打刻タイプが空です";
-            logger.warn(resultMsg);
+            log.warn(resultMsg);
         }
         if (!psAction.equals(ACT_EXEC_OPEN) && !psAction.equals(ACT_EXEC_CLOSE)) {
             isPass = false;
             resultMsg = "打刻タイプが不正です";
-            logger.warn(resultMsg);
+            log.warn(resultMsg);
         }
         if (isPass) {
             //2、打刻をしますかとしないか
@@ -234,7 +231,7 @@ public class TmgTimePunchBean {
                     String checkMsgJson = this.getCheckMsg(custId, compId, employeeId);
                     if (null != checkMsgJson && !"".equals(checkMsgJson)) {
                         //結果メッセージはjsonフォマードですから、解析が必要です
-                        logger.info("checkMsgJson:" + checkMsgJson);
+                        log.info("checkMsgJson:" + checkMsgJson);
                         if (JSONUtil.isJson(checkMsgJson)) {
                             JSONObject jsonObject = JSONUtil.parseObj(checkMsgJson);
                             if (null != jsonObject.get("ERRCODE")) {
@@ -266,7 +263,7 @@ public class TmgTimePunchBean {
         clockResultVO.setResultCode(resultCode);
         clockResultVO.setResultMsg(resultMsg);
 
-        logger.info("打刻タスクが終わりました...");
+        log.info("打刻タスクが終わりました...");
         return clockResultVO;
     }
 
@@ -279,7 +276,7 @@ public class TmgTimePunchBean {
     public boolean isNotTimePunch(String custId, String compCode, String employeeId, String gsToday) {
 
         if (null != gsToday) {
-            logger.warn("打刻更新日が取得していない");
+            log.warn("打刻更新日が取得していない");
             return false;
         }
         String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
@@ -298,7 +295,7 @@ public class TmgTimePunchBean {
     public boolean isNotTimePunch(String custId, String compCode, String employeeId) {
         String gsToday = this.getTimePunchday(custId, compCode, employeeId);
         if (null != gsToday) {
-            logger.warn("打刻更新日が取得していない");
+            log.warn("打刻更新日が取得していない");
             return false;
         }
         String ret = iTmgTimepunchService.selectIsTimePunchTarget(custId, compCode, employeeId, gsToday);
@@ -384,7 +381,7 @@ public class TmgTimePunchBean {
             //チェック
             scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
         } else {
-            logger.warn("社員の休憩時間は取得してない");
+            log.warn("社員の休憩時間は取得してない");
         }
         return scheduleInfoDTO;
     }
@@ -421,7 +418,7 @@ public class TmgTimePunchBean {
             npaidRestDaysHour += hour + "時";
             npaidRestDaysHour += min + "分";
         } else {
-            logger.warn("年次休暇残対象が空です");
+            log.warn("年次休暇残対象が空です");
         }
         return npaidRestDaysHour;
     }
@@ -447,7 +444,7 @@ public class TmgTimePunchBean {
                 result = overTime.substring(0, overTime.indexOf(":")) + "時" + overTime.substring(overTime.indexOf(":") + 1, overTime.length()) + "分";
             }
         } else {
-            logger.warn("超過勤務時間が取得してない");
+            log.warn("超過勤務時間が取得してない");
         }
         return result;
     }
@@ -541,7 +538,7 @@ public class TmgTimePunchBean {
                     gsToday = sToday;
                 }
             } else {
-                logger.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました");
+                log.warn("本日の日付情報と、法人情報(TMG_COMPANY)の開始時刻を取得ことが失敗しました");
             }
         } else {
             gsToday = iTmgTimepunchService.selectBaseTimesWithPattern(custId, compCode, employeeId);
@@ -563,7 +560,7 @@ public class TmgTimePunchBean {
         if (null != targetDate) {
             checkMsg = iTmgTimepunchService.selectErrMsg(employeeId, targetDate, this.Cn_PHASE_SET_TIMEPUNCH, custId, compCode);
         } else {
-            logger.warn("打刻更新日を取得しない");
+            log.warn("打刻更新日を取得しない");
         }
         return checkMsg;
     }
@@ -577,12 +574,6 @@ public class TmgTimePunchBean {
      */
     public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId){
        return iTmgTimepunchService.selectClockInfo(custId,compCode,employeeId);
-    }
-
-
-
-    public static void main(String[] args) {
-
     }
 
 }

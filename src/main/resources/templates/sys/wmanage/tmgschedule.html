@@ -7,6 +7,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
@@ -197,7 +199,7 @@
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             勤務予定
-        </div>
+            </div>
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
@@ -209,7 +211,7 @@
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable">
+                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable" @on-change="handleChangeDivision2(row._index,'value')">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
 
@@ -295,6 +297,7 @@
                 <Icon type="logo-buffer"></Icon>
                 適用済
             </div>
+            <div style="position: relative;">
             <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed">
                 <template slot-scope="{ row }" slot="startTime">
                     <i-input v-model="row.twp_dstartdate" disabled ></i-input>
@@ -321,6 +324,7 @@
                 <Icon type="logo-buffer"></Icon>
                 新規
             </div>
+
             <Row class="mt5">
                 <i-col span="6" class="label">適用期間</i-col>
                 <i-col span="4">
@@ -341,7 +345,7 @@
             </Row>
             <i-table border class="mt5" :columns="columns2" :data="tableData2">
                 <template slot-scope="{ row }" slot="workDivision">
-                    <i-select v-model="value2.applyList[row._index].workDivisionId" transfer>
+                    <i-select v-model="value2.applyList[row._index].workDivisionId" transfer @on-change="handleChangeDivision2(row._index,'value2')">
                         <i-option v-for="(item) of workDivisionList" :value="item.mgd_work">{{ item.mgd_workname }}</i-option>
                     </i-select>
                 </template>
@@ -365,6 +369,8 @@
                     </Row>
                 </template>
             </i-table>
+                <Spin size="large" fix v-if="weekPatternloading2"></Spin>
+            </div>
         </Drawer>
 
         <div style="position: relative;">
@@ -408,12 +414,13 @@
             <Icon size="24" type="md-arrow-round-up" />
     </span>
 </main>
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const WORK_YEAR_SCHEDULE = new Vue({
         el: '.workyearschedule-warp',
         data() {
             return {
+                weekPatternloading2:false,
                 weekPatternloading:false,
                 valuebak:[],
                 patternDisabled:false,
@@ -725,7 +732,34 @@
                 e.push({ restOpen: '', restClose: '' })
             },
             handleChangeDivision(e){
-                "TMG_WORK|000"==e?this.patternDisabled=true:this.patternDisabled=false
+                console.log("handleChangeDivision"+e)
+                if("TMG_WORK|000"!=e){
+                    this.pattern.nclose=''
+                    this.pattern.nopen=''
+                    this.pattern.restList=[]
+                }
+
+
+                "TMG_WORK|000"==e ?this.patternDisabled=true:this.patternDisabled=false
+            },
+            handleChangeDivision2(index,name){
+                console.log("handleChangeDivision2"+index)
+
+                if(name=="value" && this.value[index].workId!='TMG_WORK|000'){
+                    this.value[index].nopen=''
+                    this.value[index].nclose=''
+                    this.value[index].restList=[]
+                }
+                if(name== 'value2' && this.value2.applyList[index].workDivisionId!="TMG_WORK|000"){
+                    this.value2.applyList[index].startTime=''
+                    this.value2.applyList[index].endTime=''
+                    this.value2.applyList[index].restStartTime=''
+                    this.value2.applyList[index].restEndTime=''
+                }
+
+
+
+
             },
             handleChangeWorkPattern() {
                 const handleTime = Vue.filter('handleTime');
@@ -839,6 +873,7 @@
                 const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
                 //let data=[{"twp_dstartdate":"2020/08/01","twp_denddate":"2020/08/31","twp_nid":"763"}]
                 this.tableDataUsed=data
+                this.weekPatternloading2=false
             },
             async selectWeekPtn(){
                 const { data } = await this.http.get(`sys/schedule/selectWeekPtn`, this.query)
@@ -881,9 +916,26 @@
                 this.tableDataUsed.splice(index,1)
             },
             async executeMakeWeekPattern(){
-                this.query.content=JSON.stringify(this.value2)
-                await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,this.query)
-                this.$Message.success('登録完了')
+                    if(this.value2.applyStart=='' || this.value2.applyEnd==''){
+                        this.$Message.error("適用期間が選択されていません")
+                        return
+                    }
+                    this.weekPatternloading2=true
+
+                    this.query.content=JSON.stringify(this.value2)
+                    await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,this.query)
+                    this.query.content=''
+                    this.selectTmgWeekPatternList()
+                    this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
+                            let id='TMG_WORK|000'
+                            if(index==0){
+                                id='TMG_WORK|500'
+                            }
+                            if(index==6){
+                                id='TMG_WORK|570'
+                            }
+                            return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
+                        })}
             },
             async postExecuteEditMonthlyUSchedule(){
                 if(this.valueMap.length==0){
@@ -909,8 +961,13 @@
                 this.query.txtBaseDate=txtBaseDate
                 this.query.txtEndDate=txtEndDate
                 this.query.content=JSON.stringify(content)
+                console.log(JSON.stringify(this.query.content))
                 await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
                 this.$Message.success('登録完了')
+                this.query.content=''
+                this.isEditable=false
+                this.getSelectScheduleInfo()
+                this.getSelectIkkaInfo()
 
             },
             async getSelectIkkaInfo() {
@@ -967,7 +1024,7 @@
                 if (!e) {
                     return
                 }
-                if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
+                if (e === 'TMG_HOLFLG|2' || e === 'TMG_HOLFLG|3' || e === 'TMG_HOLFLG|1') {
                     return 'rest-cell week-rest'
                 }
                 if (e.indexOf('休') > -1) {
@@ -988,11 +1045,6 @@
                 await this.getSelectIkkaInfo()
             },
             rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
             },
             toTop() {
                 const animateMachine = requestAnimationFrame(this.toTop)

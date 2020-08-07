@@ -2,4 +2,41 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.HistSuspensionMapper">
 
+    <select id="getHatuRei" resultType="jp.smartcompany.job.modules.tmg.tmgresults.dto.HatuReiDto">
+        select
+             HS_CCUSTOMERID
+            ,HS_CCOMPANYID
+            ,HS_CEMPLOYEEID
+            ,decode(to_char(HS_DSTARTDATE, 'yyyy/mm/dd'), '1900/01/01', '',
+             to_char(HS_DSTARTDATE, 'yyyy/mm/dd')) as HS_DSTARTDATE
+            ,decode(to_char(HS_DENDDATE , 'yyyy/mm/dd'), '2222/12/31', '',
+             to_char(HS_DENDDATE , 'yyyy/mm/dd')) as HS_DENDDATE
+            ,HS_CMODIFIERUSERID
+            ,HS_DMODIFIEDDATE
+            ,HS_CSUSPENSIONTYPE
+            ,TMG_F_GET_MGD(HS_CSUSPENSIONTYPE, trunc(sysdate), HS_CCUSTOMERID,
+             HS_CCOMPANYID, 'ja') as HS_CSUSPENSIONTYPECD
+            ,HS_CREASON
+            ,HS_NNUMBER01
+            ,HS_NNUMBER02
+            ,HS_NNUMBER03
+            ,HS_CCHAR01
+            ,HS_CCHAR02
+            ,HS_CCHAR03
+            ,HS_DDATE01
+            ,HS_DDATE02
+            ,HS_DDATE03
+            ,HS_CCODE01
+            ,HS_CCODE01CD
+            ,HS_CCODE02
+            ,HS_CCODE02CD
+            ,HS_CCODE03
+            ,HS_CCODE03CD
+        from HIST_SUSPENSION s
+        where s.HS_CCUSTOMERID = #{custID}
+        and s.HS_CCOMPANYID = #{compCode}
+        and s.HS_CEMPLOYEEID = #{targetUser}
+        and s.HS_DSTARTDATE <![CDATA[<=]]> #{baseDate}
+        and s.HS_DENDDATE >= #{baseDate}
+    </select>
 </mapper>

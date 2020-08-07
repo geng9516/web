@@ -6,6 +6,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main class="content tmgacquired5daysholiday-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
@@ -214,7 +216,7 @@
     </div>
 </main>
 
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const FIVE_DAYS_HOLIDAY = new Vue({
         el: '.tmgacquired5daysholiday-warp',

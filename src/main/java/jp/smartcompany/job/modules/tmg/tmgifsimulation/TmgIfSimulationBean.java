@@ -1,27 +1,19 @@
 package jp.smartcompany.job.modules.tmg.tmgifsimulation;
 
-import cn.hutool.core.collection.ListUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.SysUtil;
-import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
-import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
-import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.service.ITmgStatusWorktypeSimService;
-import jp.smartcompany.job.modules.core.service.ITmgTriggerService;
-import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.*;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
 import java.util.*;
 
@@ -35,13 +27,13 @@ import static java.util.stream.Collectors.groupingBy;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class TmgIfSimulationBean {
 
     private final String TAG1 = ",";
     private final String TAG2 = "-";
     private final String TAG3 = "|";
     private final int batchNum = 500;
-    private final Logger logger = LoggerFactory.getLogger(TmgIfSimulationBean.class);
     private final ITmgStatusWorktypeSimService iTmgStatusWorktypeSimService;
 
 
@@ -147,7 +139,7 @@ public class TmgIfSimulationBean {
 
             return result;
         } else {
-            logger.warn("メタデータが空です");
+            log.warn("メタデータが空です");
             return null;
         }
 
@@ -177,7 +169,7 @@ public class TmgIfSimulationBean {
                         batchBulk.add(simulationInsertDTO);
                     } else if (i == batchNum * page) {
                         //db 処理
-                        logger.info("insertMastGenericDetail1 。。。。。。");
+                        log.info("insertMastGenericDetail1 。。。。。。");
                         //処理後、batchBulkをリセットする
                         batchBulk.clear();
                         batchBulk = new ArrayList<SimulationInsertDTO>();
@@ -189,24 +181,24 @@ public class TmgIfSimulationBean {
                         batchBulk.add(simulationInsertDTO);
                     } else {
                         //普通の場合、この分岐が空はずです
-                        logger.warn("マスタ対象をmergeする中でバッチ処理分岐のロジックが間違っちゃった");
+                        log.warn("マスタ対象をmergeする中でバッチ処理分岐のロジックが間違っちゃった");
                     }
 
                 }
                 //以上の三目の分岐、残るデータをdbで処理
                 if (batchBulk.size() > 0) {
-                    logger.info("insertMastGenericDetail 2。。。。。。");
+                    log.info("insertMastGenericDetail 2。。。。。。");
 
                     //最後、データをリセット
                     batchBulk.clear();
                 }
                 //db 処理
-                logger.info("updateTmgStatusWorkTypeSim 。。。。。。");
+                log.info("updateTmgStatusWorkTypeSim 。。。。。。");
             } else {
-                logger.error("JSON対象ではありません");
+                log.error("JSON対象ではありません");
             }
         } else {
-            logger.warn("マスタデータが空です");
+            log.warn("マスタデータが空です");
         }
         return null;
     }
@@ -251,12 +243,12 @@ public class TmgIfSimulationBean {
                             simulationInsertDTOList.add(simulationInsertDTO);
                         }
                     } else {
-                        logger.warn("マスタ値が空です");
+                        log.warn("マスタ値が空です");
                     }
                 }
             }
         } else {
-            logger.warn("マスタインサート対象が空です");
+            log.warn("マスタインサート対象が空です");
         }
         return simulationInsertDTOList;
     }
@@ -276,13 +268,13 @@ public class TmgIfSimulationBean {
                     simulationInsertJsonDTO.setConditionColDTOList(conditionColDTOList);
                     return simulationInsertJsonDTO;
                 } else {
-                    logger.error("マスタリストデータが未取得しています");
+                    log.error("マスタリストデータが未取得しています");
                 }
             } else {
-                logger.warn("マスタリスト対象をjsonオブジェクトに変更できない");
+                log.warn("マスタリスト対象をjsonオブジェクトに変更できない");
             }
         } else {
-            logger.error("JSON対象がオブジェクトに変更することが失敗しました");
+            log.error("JSON対象がオブジェクトに変更することが失敗しました");
         }
 
         return null;
@@ -296,11 +288,6 @@ public class TmgIfSimulationBean {
     private String getRandomStr() {
         return DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(6);
     }
-
-    public static void main(String[] args) {
-        System.out.println(DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(4));
-    }
-
 
 }
 

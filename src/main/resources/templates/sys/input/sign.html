@@ -4,8 +4,10 @@
 <head th:replace="layout/header::common_header(title='打刻',cssPaths='/pages/content.min.css,' + '/pages/sign.min.css')">
 </head>
 
-<body>
+<body th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
     <div th:replace="layout/loadingBar::loadingBar"></div>
+    <!-- 菜单导航栏 -->
+    <div th:replace="layout/sider"></div>
     <svg:replace="layout/icons::svg_icons"></svg>
     <main class="content">
         <section class="stamp-warp tc">
@@ -98,7 +100,8 @@
             </div>
         </section>
     </main>
-    <div th:replace="layout/script::common_script(jsPaths='/component/Clock.js')"></div>
+    <script th:src="${baseUrl + '/static/component/Clock.js'}"></script>
+    <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
         const SIGN = new Vue({
             el: '.stamp-warp',

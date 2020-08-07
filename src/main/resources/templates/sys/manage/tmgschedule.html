@@ -7,6 +7,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
@@ -207,11 +209,11 @@
         >
 
             <template slot-scope="{ row }" slot="intDay">
-                <span :class="dayRed(row.tda_nmmday)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
+                <span :class="dayRed(row.holflgCalendar)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable">
+                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
 
@@ -276,7 +278,7 @@
             <Icon size="24" type="md-arrow-round-up" />
         </span>
 </main>
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const WORK_YEAR_SCHEDULE = new Vue({
         el: '.workyearschedule-warp',
@@ -286,7 +288,7 @@
                 valuebak:[],
                 patternDisabled:false,
                 yyyyMMdd:'',
-                pattern:{nclose:"",nopen:"",workId:"",bussinessTripid:"",restList:[]},
+                pattern:{nclose:'',nopen:'',workId:'',bussinessTripid:'',restList:[]},
                 value: [],
                 valueMap:[],
                 selectDisabled:false,
@@ -472,6 +474,7 @@
                 }
             },
             handleSelectApply(){
+                console.log("valueMap"+this.valueMap)
                 if(this.valueMap.length==0){
                     this.$Notice.error({
                         title: '注意',
@@ -481,10 +484,13 @@
                     return
                 }
                 const that = this
-                this.value.forEach(item=>{
-                    Object.keys(item).forEach(function(key) {
+
+                this.valueMap.map(Number).forEach(e=>{
+                    console.log("ee"+e)
+                    let index=--e
+                    Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
-                            item[key]=JSON.parse(JSON.stringify(that.pattern[key]))
+                            that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
                         }
                     })
                 })
@@ -506,10 +512,25 @@
                 e.splice(i, 1)
             },
             handleAddRest(e) {
-                e.push({ restOpen: '', restClose: '' })
+                e.push({ restOpen:'', restClose:''})
             },
             handleChangeDivision(e){
+                if("TMG_WORK|000"!=e){
+                    this.pattern.nclose=''
+                    this.pattern.nopen=''
+                    this.pattern.restList=[]
+                }
                 "TMG_WORK|000"==e?this.patternDisabled=true:this.patternDisabled=false
+            },
+            handleChangeDivision2(index){
+                console.log("handleChangeDivision2"+index)
+
+                if(this.value[index].workId!='TMG_WORK|000'){
+                    this.value[index].nopen=''
+                    this.value[index].nclose=''
+                    this.value[index].restList=[]
+                }
+
             },
             handleChangeWorkPattern() {
                 const handleTime = Vue.filter('handleTime');
@@ -540,14 +561,26 @@
                 this.query.EmployeeCode = e[0].empid
                 this.selectDisabled = true
                 this.wokertypename=e[0].wokertypename
+
+                this.query.sectionid= e[0].secid
+                this.query.language='ja'
+                this.query.groupid='null'
+                this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
+                this.query.custId=e[0].cust
+                this.query.compId=e[0].comp
+
+
                 this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo(e)
+                this.getSelectIkkaInfo()
+
+
 
             },
             async getSelectScheduleInfo() {
                 const handleTime = Vue.filter('handleTime');
                 this.loading=true
                 try {
+
                     const { data } = await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
                     this.selectScheduleInfo=data
                     this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
@@ -563,9 +596,9 @@
                         return {
                             "workId":item.tda_cworkingid_p,
                             "bussinessTripid":item.tda_cbusinesstripid_p,
-                            "nclose":item.tda_nclose_p,
+                            "nclose":item.tda_nclose_p.trim(),
                             "dyyyymmdd":item.tda_ccustomerid,
-                            "nopen":item.tda_nopen_p,
+                            "nopen":item.tda_nopen_p.trim(),
                             "comment":item.tda_ccomment_p,
                             "restList":restList
                         }
@@ -578,6 +611,7 @@
                 }
             },
             async postExecuteEditMonthlyUSchedule(){
+
                 if(this.valueMap.length==0){
                     this.$Notice.error({
                         title: '注意',
@@ -587,6 +621,94 @@
                     return
                 }
                 let postValue=this.valueMap.map(Number).map(i=>this.value[--i])
+
+                const that = this
+                console.log("postValue"+JSON.stringify(postValue))
+                let result=false
+                postValue.some(e=>{
+                    console.log("workId"+e.workId)
+                    console.log("nopen"+e.nopen)
+                    console.log("nclose"+e.nclose)
+                    console.log("restList"+JSON.stringify(e.restList))
+                    let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
+                    console.log("count"+count)
+                    let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
+                    if(e.workId=="TMG_WORK|000"){
+                        if (!e.nopen) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e.nclose) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 終業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=count ){
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間＜終業時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+
+                        let countRest=0;
+                        let checkArr = []
+
+                        if(count >=360 && e.restList.some(e1=>{
+
+                            if (!e1.restOpen) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!e1.restClose) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
+                        })){
+                            result=true
+                            return result
+                        }
+                        console.log("countRest"+countRest)
+                        let cc=count-countRest
+                        if(480>=cc && cc >360 &&  45>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(cc >480 &&  60>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        console.log("checkArr2"+checkArr)
+                        const checkArr2 = new Set([...checkArr])
+                        if (checkArr.length !== checkArr2.size) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                    }
+                })
+
+                if(result){
+                    return
+                }
                 let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
                 let txtEndDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
 
@@ -602,18 +724,15 @@
                 this.query.txtBaseDate=txtBaseDate
                 this.query.txtEndDate=txtEndDate
                 this.query.content=JSON.stringify(content)
+                console.log("postExecuteEditMonthlyUSchedule"+this.query.content)
                 await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
                 this.$Message.success('登録完了')
-
+                this.query.content=''
+                this.isEditable=false
+                this.getSelectScheduleInfo()
+                this.getSelectIkkaInfo()
             },
-            async getSelectIkkaInfo(e) {
-                    this.query.sectionid= e[0].secid
-                    this.query.language='ja'
-                    this.query.groupid='null'
-                    this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
-                    this.query.custId=e[0].cust
-                    this.query.compId=e[0].comp
-
+            async getSelectIkkaInfo() {
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
@@ -681,7 +800,7 @@
                 if (!e) {
                     return
                 }
-                if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
+                if (e === 'TMG_HOLFLG|2' || e === 'TMG_HOLFLG|3' || e === 'TMG_HOLFLG|1') {
                     return 'rest-cell week-rest'
                 }
                 if (e.indexOf('休') > -1) {
@@ -702,11 +821,7 @@
                 await this.getSelectIkkaInfo()
             },
             rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
+
             },
             toTop() {
                 const animateMachine = requestAnimationFrame(this.toTop)

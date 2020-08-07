@@ -61,6 +61,7 @@ public class DbControllerLogicImpl implements DbControllerLogic {
         boolean success = true;
         Statement statement = connection.createStatement();
         for (Object sql : vecQuery) {
+            log.info("【执行sql(executeUpdate):{}】",sql);
             try {
                 int count = statement.executeUpdate((String) sql);
                 vecResult.add(count);

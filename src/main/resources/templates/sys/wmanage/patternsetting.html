@@ -6,6 +6,8 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
 <main class="content patternSetting-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
@@ -176,7 +178,7 @@
 
 </main>
 
-<div th:replace="layout/script::common_script"></div>
+<div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const PERM_STATLIST = new Vue({
         el: '.patternSetting-warp',

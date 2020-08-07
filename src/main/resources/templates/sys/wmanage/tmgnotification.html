@@ -7,6 +7,8 @@
 
 <body>
   <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
   <main class="content restapplyconfirmw-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
       <div class="header">
@@ -236,7 +238,7 @@
       <!-- 详细以及承认申请的panel end -->
 
       <!-- 代理申请的 -->
-      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="getTableData(false, true)">
+      <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="closeAgentApplyDrawer">
         <Tabs value="name1" :animated="false">
           <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
@@ -476,7 +478,7 @@
       <Icon size="24" type="md-arrow-round-up" />
     </span>
   </main>
-  <div th:replace="layout/script::common_script"></div>
+  <div th:replace="layout/head::header"></div>
   <script type="text/babel" th:inline="javascript">
     const REST_APPLY_CONFIRM_W = new Vue({
       el: '.restapplyconfirmw-warp',
@@ -575,6 +577,7 @@
           errorMsg: '',
           timerangeType: 1,
           applyEmployRestInfoLoading: false,
+          needRefreshTable: false,
           tableData: [],
           pageValue: {
             amount: 0,
@@ -757,9 +760,13 @@
           this.deptName = e[0].secnic
           // 点击部署时需要将员工重置为全部
           this.opts.serchEmpId = '全て'
+
           if (forAgencyApply) {
-            // 代理申请点击所属的时候不需要拉取表格数据
+            // 点击所属的时候需要拉取表格数据
             this.getTableData(false, true)
+          } else {
+            // 代理申请则关闭时才拉取
+            this.needRefreshTable = true
           }
           this.getEmplist()
         },
@@ -1051,13 +1058,6 @@
             })
             checkPassed = false
           }
-          if (!/(\w\W)*jpg|png|jpeg|gif|pdf|excel|spreadsheetml|msword|wordprocessingml(\w\W)*/g.test(files.type)) {
-            this.$Notice.warning({
-              title: 'The file format is incorrect',
-              desc: 'File format of ' + files.name + ' is incorrect, please select pdf, csv, png, jpeg, jpg, gif, xlsx/xls or docx/doc.'
-            })
-            checkPassed = false
-          }
           if (checkPassed) {
             this.uploadFiles.push(files)
           }
@@ -1141,11 +1141,12 @@
           this.pageValue.curPage = e
           this.getTableData()
         },
-        preMonth() {
-        },
-        nextMonth() {
-        },
-        currentMonth() { },
+        closeAgentApplyDrawer() {
+          if(this.deptName !== "選んでください" && this.needRefreshTable) {
+            this.getTableData(false, true)
+            this.needRefreshTable = false
+          }
+        }
       }
     })
   </script>

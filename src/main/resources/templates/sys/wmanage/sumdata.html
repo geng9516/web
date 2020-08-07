@@ -6,6 +6,8 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
     <main class="content monthsuminfo-warp">
         <div class="content_head">
             <div class="header">
@@ -165,7 +167,7 @@
             <div slot="footer"></div>
         </Modal>
     </main>
-    <div th:replace="layout/script::common_script"></div>
+    <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
         const MONTH_SUM_INFO = new Vue({
             el: '.monthsuminfo-warp',

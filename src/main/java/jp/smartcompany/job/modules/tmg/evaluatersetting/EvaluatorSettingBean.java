@@ -11,6 +11,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorGroupVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberRightVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberVO;
@@ -107,6 +108,33 @@ public class EvaluatorSettingBean {
     public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_04 = 3;
     public static final int COL_HolidayTimeLimitSelf_HT_MONTLY_05 = 4;
 
+    /** グループ編集画面における、グループ属性テーブル検索結果クエリ番号 */
+    public static final int QUERY_SHOWEDITGROUP_GroupAttribute = 5;
+
+    /** デフォルト所属長の自動設定オン・オフ */
+    public static final int COL_GroupAttribute_AutoSet_Eva  = 0;
+
+    private final int IDX_GROUPNAME = 0; // グループ名称
+
+    public static final int QUERY_SHOWEDITGROUP_OverTimeLimitSelf = 3;
+
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_01     = 0;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_02     = 1;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_03     = 2;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_04     = 3;
+    public static final int COL_OverTimeLimitSelf_OT_MONTLY_05     = 4;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_01     = 5;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_02     = 6;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_03     = 7;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_04     = 8;
+    public static final int COL_OverTimeLimitSelf_OT_YEARLY_05     = 9;
+    public static final int COL_OverTimeLimitSelf_OT_MONTHLY_COUNT = 10;
+    public static final int COL_OverTimeLimitSelf_OT_DAILY_01      = 11;
+    public static final int COL_OverTimeLimitSelf_OT_MONTHLY_AVG      = 12;//超勤実績の月平均時間
+
+    /*
+     * ========================= 暴露给外部的handler ==================
+     */
 
     public Map<String,Object> dispHandler(PsDBBean psDBBean) throws Exception {
         Map<String,Object> result = MapUtil.newHashMap();
@@ -176,7 +204,7 @@ public class EvaluatorSettingBean {
         }
         Vector<String> vQuery = new Vector<>();
         vQuery.add(buildSQLForDeleteGroupErrMsg(params));  // エラーメッセージ削除
-        vQuery.add(buildSQLForInsertGroupCheck(params,psDBBean));   // チェックテーブルへグループ名登録
+        vQuery.add(buildSQLForInsertGroupCheck(params));   // チェックテーブルへグループ名登録
         vQuery.add(buildSQLForInsertGroupErrMsg(params));  // エラーメッセージ追加
         vQuery.add(buildSQLForInsertGroupTrigger(params)); // トリガー追加
         vQuery.add(buildSQLForSelectGroupErrMsg(params));  // エラーメッセージ取得
@@ -200,6 +228,7 @@ public class EvaluatorSettingBean {
      * グループ名編集画面表示の処理をするメソッド
      */
     public Map<String,Object> showEditGroupHandler(PsDBBean psDBBean,String sectionId,String groupId) {
+        Map<String,Object> map = MapUtil.newHashMap(true);
         EvaluatorSettingParam params = new EvaluatorSettingParam();
         params.setSite(psDBBean.getSiteId());
         params.setLanguage(psDBBean.getLanguage());
@@ -214,12 +243,7 @@ public class EvaluatorSettingBean {
         params.setCustomerID(psDBBean.getCustID());
         params.setCompanyId(psDBBean.getCompCode());
         params.setRootGroup(sectionId+"|"+TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
-
         configYYYYMMDD(psDBBean, params);
-        System.out.println(params.getYYYYMMDD());
-        System.out.println(params.getSection());
-        System.out.println(params.getGroup());
-
         // 検索
         Vector<String> vQuery = new Vector<>();
         vQuery.add(buildSQLForSelectGroupName(params));            // グループ名称取得
@@ -240,6 +264,7 @@ public class EvaluatorSettingBean {
          * ==============================
          */
         // 超過勤務制限値編集項目の編集可能項目の有無を確認
+
         boolean bEditOvertimeAnyItem = false;
         if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
                 || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
@@ -274,8 +299,405 @@ public class EvaluatorSettingBean {
         if (bEditGroupName || bEditOvertimeAnyItem || bEditHolidaytimeAnyItem) {
             bEditGroupAnyItem = true;
         }
+        map.put("enableEditGroupName",bEditGroupName);
+        map.put("YYYYMMDD",params.getYYYYMMDD());
+        map.put("enableEditGroupAnyItem",bEditGroupAnyItem);
 
-        return MapUtil.newHashMap();
+        if (bEditGroupName) {
+//            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,EvaluatorSettingConst.COL_ADD_GROUPNAME,0));
+            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,0,0));
+        }
+
+        // デフォルトグループの場合のみ、夜間連携のデフォルト承認者自動設定フラグ入力欄を表示
+        boolean sAutosetChecked = false;
+        if (isDefaultGroup(params.getGroup())){
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0) == null ||
+                    TmgUtil.Cs_MGD_ONOFF_1.equals(psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0)) ){
+                sAutosetChecked = true;
+            }
+        }
+        map.put("autoStart",sAutosetChecked);
+
+        map.put("editOverTimeAnyItem",bEditGroupAnyItem);
+        if (bEditOvertimeAnyItem) {
+
+              // 超勤実績の警告値(時間)(日次:レベル1)
+              Map<String,Object> dailyOverTime = MapUtil.newHashMap();
+              boolean showDailyOverTime = false;
+              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                 showDailyOverTime = true;
+                 String dailyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_DAILY_01,0);
+                 String dailyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_DAILY_01,0);
+                 dailyOverTime.put("self",dailyOverTimeSelf);
+                 dailyOverTime.put("basic",dailyOverTimeBasic);
+              }
+              dailyOverTime.put("showDailyOverTime",showDailyOverTime);
+              map.put("dailyOverTime",dailyOverTime);
+
+              // 超勤実績の警告値(時間)(月次:黄色)
+              Map<String,Object> monthlyOverTimeYellow = MapUtil.newHashMap();
+              boolean showMonthlyOverTimeYellow = false;
+              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                  showMonthlyOverTimeYellow = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_01,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01,0);
+                  monthlyOverTimeYellow.put("self",monthlyOverTimeSelf);
+                  monthlyOverTimeYellow.put("basic",monthlyOverTimeBasic);
+              }
+              monthlyOverTimeYellow.put("showMonthlyOverTime",showMonthlyOverTimeYellow);
+              map.put("monthlyOverTimeYellow",monthlyOverTimeYellow);
+
+            // 超勤実績の警告値(時間)(月次:オレンジ)
+            Map<String,Object> monthlyOverTimeOrange = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeOrange = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeOrange = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_02,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02,0);
+                monthlyOverTimeOrange.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeOrange.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeOrange.put("showMonthlyOverTimeOrange",showMonthlyOverTimeOrange);
+            map.put("monthlyOverTimeOrange",monthlyOverTimeOrange);
+
+            // 超勤実績の警告値(時間)(月次:ピンク)
+            Map<String,Object> monthlyOverTimePink = MapUtil.newHashMap();
+            boolean showMonthlyOverTimePink = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimePink = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_03,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03,0);
+                monthlyOverTimePink.put("self",monthlyOverTimeSelf);
+                monthlyOverTimePink.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimePink.put("showMonthlyOverTimePink",showMonthlyOverTimePink);
+            map.put("monthlyOverTimePink",monthlyOverTimePink);
+
+            // 超勤実績の警告値(時間)(月次:赤色)
+            Map<String,Object> monthlyOverTimeRed = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeRed = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeRed = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_04,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04,0);
+                monthlyOverTimeRed.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeRed.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeRed.put("showMonthlyOverTimeRed",showMonthlyOverTimeRed);
+            map.put("monthlyOverTimeRed",monthlyOverTimeRed);
+
+            // 超勤実績の警告値(時間)(月次:？？)
+            Map<String,Object> monthlyOverTimeBackUp = MapUtil.newHashMap();
+            boolean showMonthlyOverTimeBackUp = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyOverTimeBackUp = true;
+                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_05,0);
+                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05,0);
+                monthlyOverTimeBackUp.put("self",monthlyOverTimeSelf);
+                monthlyOverTimeBackUp.put("basic",monthlyOverTimeBasic);
+            }
+            monthlyOverTimeBackUp.put("showMonthlyOverTimeBackUp",showMonthlyOverTimeBackUp);
+            map.put("monthlyOverTimeBackUp",monthlyOverTimeBackUp);
+
+            // 超勤実績の警告値(時間)(年次:黄色)
+            Map<String,Object> yearlyOverTimeYellow = MapUtil.newHashMap();
+            boolean showYearlyOverTimeYellow= false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeYellow = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_01,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01,0);
+                yearlyOverTimeYellow.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeYellow.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeYellow.put("showYearlyOverTimeYellow",showYearlyOverTimeYellow);
+            map.put("yearlyOverTimeYellow",yearlyOverTimeYellow);
+
+            // 超勤実績の警告値(時間)(年次:オレンジ)
+            Map<String,Object> yearlyOverTimeOrange = MapUtil.newHashMap();
+            boolean showYearlyOverTimeOrange = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeOrange  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_02,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02,0);
+                yearlyOverTimeOrange.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeOrange.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeOrange.put("showYearlyOverTimeOrange",showYearlyOverTimeOrange);
+            map.put("yearlyOverTimeOrange",yearlyOverTimeOrange);
+
+            // 超勤実績の警告値(時間)(年次:ピンク)
+            Map<String,Object> yearlyOverTimePink = MapUtil.newHashMap();
+            boolean showYearlyOverTimePink = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimePink  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_03,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03,0);
+                yearlyOverTimePink.put("self",yearlyOverTimeSelf);
+                yearlyOverTimePink.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimePink.put("showYearlyOverTimePink",showYearlyOverTimePink);
+            map.put("yearlyOverTimePink",yearlyOverTimePink);
+
+            // 超勤実績の警告値(時間)(年次:赤色)
+            Map<String,Object> yearlyOverTimeRed = MapUtil.newHashMap();
+            boolean showYearlyOverTimeRed = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeRed  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_04,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04,0);
+                yearlyOverTimeRed.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeRed.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeRed.put("showYearlyOverTimeRed",showYearlyOverTimeRed);
+            map.put("yearlyOverTimeRed",yearlyOverTimeRed);
+
+            // 超勤実績の警告値(時間)(年次:？？)
+            Map<String,Object> yearlyOverTimeBackUp = MapUtil.newHashMap();
+            boolean showYearlyOverTimeBackUp = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showYearlyOverTimeBackUp  = true;
+                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_05,0);
+                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05,0);
+                yearlyOverTimeBackUp.put("self",yearlyOverTimeSelf);
+                yearlyOverTimeBackUp.put("basic",yearlyOverTimeBasic);
+            }
+            yearlyOverTimeBackUp.put("showYearlyOverTimeBackUp",showYearlyOverTimeBackUp);
+            map.put("yearlyOverTimeBackUp",yearlyOverTimeBackUp);
+
+            // 超勤実績の月次警告値超過回数
+            Map<String,Object> countOverTime = MapUtil.newHashMap();
+            boolean showCountOverTime = false;
+
+            // 超勤実績の月平均時間
+            Map<String,Object> avgOverTime = MapUtil.newHashMap();
+            boolean showAvgOverTime = false;
+
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")) {
+                showCountOverTime  = true;
+                String countSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_COUNT,0);
+                String countBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT,0);
+                countOverTime.put("self",countSelf);
+                countOverTime.put("basic",countBasic);
+
+                showAvgOverTime = true;
+                String avgSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_AVG,0);
+                String avgBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_AVG,0);
+                avgOverTime.put("self",avgSelf);
+                avgOverTime.put("basic",avgBasic);
+            }
+            countOverTime.put("showCountOverTime",showCountOverTime);
+            map.put("countOverTime", countOverTime);
+            avgOverTime.put("showAvgOverTime", showAvgOverTime);
+            map.put("avgOverTime", avgOverTime);
+
+        }
+
+        // ====== 【阪大対応】  休日勤務日数と宿日直回数の警告値の設定項目を追加  ======
+        map.put("editHolidayTimeAnyItem",bEditHolidaytimeAnyItem);
+        if (bEditHolidaytimeAnyItem) {
+
+            // 警告値(日数)(月次:レベル1)
+            Map<String,Object> monthlyHolidayTimeLevel1 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel1 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel1 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_01,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01,0);
+                monthlyHolidayTimeLevel1.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel1.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel1.put("showMonthlyHolidayTimeLevel1",showMonthlyHolidayTimeLevel1 );
+            map.put("monthlyHolidayTimeLevel1",monthlyHolidayTimeLevel1 );
+
+            // 警告値(日数)(月次:レベル2)
+            Map<String,Object> monthlyHolidayTimeLevel2= MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel2 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel2 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_02,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02,0);
+                monthlyHolidayTimeLevel2.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel2.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel2.put("showMonthlyHolidayTimeLevel2",showMonthlyHolidayTimeLevel2);
+            map.put("monthlyHolidayTimeLevel2",monthlyHolidayTimeLevel2);
+
+            // 警告値(日数)(月次:レベル3)
+            Map<String,Object> monthlyHolidayTimeLevel3 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel3 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel3 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_03,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03,0);
+                monthlyHolidayTimeLevel3.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel3.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel3.put("showMonthlyHolidayTimeLevel3",showMonthlyHolidayTimeLevel3);
+            map.put("monthlyHolidayTimeLevel3",monthlyHolidayTimeLevel3);
+
+            // 警告値(日数)(月次:レベル4)
+            Map<String,Object> monthlyHolidayTimeLevel4= MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel4 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel4 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_04,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04,0);
+                monthlyHolidayTimeLevel4.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel4.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel4.put("showMonthlyHolidayTimeLevel4",showMonthlyHolidayTimeLevel4);
+            map.put("monthlyHolidayTimeLevel4",monthlyHolidayTimeLevel4);
+
+            // 警告値(日数)(月次:レベル5)
+            Map<String,Object> monthlyHolidayTimeLevel5 = MapUtil.newHashMap();
+            boolean showMonthlyHolidayTimeLevel5 = false;
+            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+                showMonthlyHolidayTimeLevel5 = true;
+                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_05,0);
+                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05,0);
+                monthlyHolidayTimeLevel5.put("self",holidayTimeSelf);
+                monthlyHolidayTimeLevel5.put("basic",holidayBasic);
+            }
+            monthlyHolidayTimeLevel5.put("showMonthlyHolidayTimeLevel5",showMonthlyHolidayTimeLevel5);
+            map.put("monthlyHolidayTimeLevel5",monthlyHolidayTimeLevel5);
+
+        }
+
+        if (!bEditGroupAnyItem) {
+            map.put("MSG_NO_SELECT_SECTION",SysUtil.getpropertyvalue("ja","MSG_NO_SELECT_SECTION",TmgUtil.class.getName()));
+        }
+        return map;
+    }
+
+    public GlobalResponse deleteGroupHandler(PsDBBean bean,String sectionId,String groupId) {
+        if (StrUtil.endWith(groupId,TmgUtil.Cs_DEFAULT_GROUPSEQUENCE)) {
+            throw new GlobalException("デフォルトグループを削除できません");
+        }
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(sectionId);
+        params.setGroup(groupId);
+        params.setCustomerID(bean.getCustID());
+        params.setCompanyId(bean.getCompCode());
+
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForDeleteGroup(params));        // グループテーブルから、対象グループ削除
+        vQuery.add(buildSQLForDeleteEvaluater(params));    // 承認者テーブルから、対象グループの承認者削除
+        vQuery.add(buildSQLForUpdateMovingEval(params));   // 割付テーブルにて、対象グループの承認者を直下のグループに移動
+        vQuery.add(buildSQLForDeletePattern(params));      // 対象グループに紐付く勤務パターン情報を削除
+        vQuery.add(buildSQLForDeletePatternRest(params));  // 対象グループに紐付く勤務パターン(休憩)情報を削除
+        vQuery.add(buildSQLForDeletePatternApply(params)); // 対象グループに紐付く勤務パターン割付情報を削除
+        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows == 0) {
+            return GlobalResponse.ok("削除成功しました");
+        }
+        return GlobalResponse.error("削除失敗しました");
+    }
+
+    /**
+     * グループ属性登録処理（夜間連携項目（など））
+     */
+    public GlobalResponse editGroupNameProcHandler(PsDBBean psDBBean, EditGroupDTO dto) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        params.setEmployee(psDBBean.getUserCode());
+        params.setAction(EvaluatorSettingConst.ACT_EDITGROUP_UGROUP);
+        params.setCustomerID(psDBBean.getCustID());
+        params.setCompanyId(psDBBean.getCompCode());
+        params.setLanguage(psDBBean.getLanguage());
+        configYYYYMMDD(psDBBean,params);
+
+        Vector<String> vQuery = new Vector<>();
+        // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteGroupErrMsg(params));
+        // チェックテーブルへグループ名登録
+        vQuery.add(buildSQLForInsertGroupAttributeCheck(params,dto));
+        // エラーメッセージ追加
+        vQuery.add(buildSQLForInsertGroupAttributeErrMsg(params));
+        // トリガー追加
+        vQuery.add(buildSQLForInsertGroupTrigger(params));
+        // エラーメッセージ取得
+        vQuery.add(buildSQLForSelectGroupErrMsg(params));
+        // トリガー削除
+        vQuery.add(buildSQLForDeleteGroupTrigger(params));
+        // エラーメッセージ削除
+        vQuery.add(buildSQLForDeleteGroupErrMsg(params));
+        // エラーチェック削除
+        vQuery.add(buildSQLForDeleteGroupAttributeCheck(params));
+        // DB反映
+        int rows = psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows == 0) {
+            return GlobalResponse.ok("登録処理成功しました");
+        }
+        return GlobalResponse.error("登録処理失敗しました");
+    }
+
+    public Map<String,Object> showAddEvalHandler(PsDBBean bean,String sectionId) {
+        Map<String,Object> map = MapUtil.newHashMap();
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(sectionId);
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setLanguage(bean.getLanguage());
+
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForSelectGroupList(params));         // グループ一覧取得
+        vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 決裁レベル取得
+        PsResult psResult;
+        try {
+           referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
+                    TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
+           psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        } catch (Exception e) {
+           throw new GlobalException(e.getMessage());
+        }
+
+        boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
+        map.put("enableMonthlyResult", hasAuthMonthApprove);
+        System.out.println(psResult);
+        return map;
+    }
+
+
+
+    /*
+     * ========================= 内部处理逻辑Start ==================
+     */
+
+    /**
+     * 与えられたグループコードがデフォルトグループかどうかを返します。
+     * @param psGroupId
+     * @return
+     */
+    private boolean isDefaultGroup(String psGroupId){
+        if (psGroupId == null) {
+            return false;
+        }
+        return psGroupId.endsWith(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+    }
+
+    private boolean hasAuthority(String sAuthority,EvaluatorSettingParam params){
+        try{
+            return referList.hasAuthority(params.getYYYYMMDD(), sAuthority);
+        }catch(Exception e){
+            return false;
+        }
+    }
+
+    /**
+     * グループテーブルから、対象グループを削除するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForDeleteGroup(EvaluatorSettingParam params) {
+        return " DELETE FROM "
+                + "     TMG_GROUP T1 "
+                + " WHERE "
+                + "     T1.TGR_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND T1.TGR_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND T1.TGR_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND T1.TGR_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND T1.TGR_DSTARTDATE >= " + "TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + SysUtil.transDateNullToDB(params.getYYYYMMDD()) + ") "
+                + " AND T1.TGR_DENDDATE   <= " + "TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + SysUtil.transDateNullToDB(params.getYYYYMMDD()) + ") ";
     }
 
     private void configYYYYMMDD(PsDBBean psDBBean, EvaluatorSettingParam params) {
@@ -357,10 +779,8 @@ public class EvaluatorSettingBean {
                      }
                  }
 
-                int nGroupNum = -1;				// 表示するグループの番号（最初にカウントアップするので、-1開始）
                 String sGroupName_Group = "";	// 表示するグループID
                 String sGroupName_Eval  = "";	// 承認者の所属するグループID
-                String sEvalEmpDataCnt  = "";	// 承認者の権限設定データ歴数
                 boolean sEmpNameLinkTagFlg;		// 承認者氏名のリンクタグフラグ
                 boolean sEmpNameBoldTagFlg;		// 承認者氏名の太字タグフラグ
 
@@ -374,7 +794,6 @@ public class EvaluatorSettingBean {
                     /* 2007/06/28  H.Kawabata      権限設定の仕様変更 */
                     if(!sGroupName_Group.equals(sGroupName_Eval)) {
                         sGroupName_Group = sGroupName_Eval;	//新しいグループIDをセット
-                        nGroupNum++;	//グループ番号をカウントアップ
 
                         //グループに所属する人の数だけ、セルを結合
                         if (i == 0) { //2008/10/10
@@ -417,8 +836,7 @@ public class EvaluatorSettingBean {
                         vo.setMemberList(memberList);
                     } else {
                         EvaluatorMemberVO memberVO = new EvaluatorMemberVO();
-                        // 承認者氏名欄の縦結合数を取得（ROWPANの値）
-                        sEvalEmpDataCnt = (String)groupEmpDataMap.get(sGroupName_Eval + "_" + sEvalEmpId);
+
                         // 承認者氏名欄の枠は、グループまたは承認者職員番号が変わるタイミングのみで生成する。
                         if (i==0
                                 || !psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1).equals(sGroupName_Eval)
@@ -1125,7 +1543,7 @@ public class EvaluatorSettingBean {
      * チェックテーブルへグループ名を登録するSQLを返す
      * @return String SQL
      */
-    private String buildSQLForInsertGroupCheck(EvaluatorSettingParam evaluaterSettingParam,PsDBBean psDBBean) {
+    private String buildSQLForInsertGroupCheck(EvaluatorSettingParam evaluaterSettingParam) {
 
         // 検索条件に使用するパラメータを準備
         String sDBCustId   = escDBString(evaluaterSettingParam.getCustomerId()); // 顧客コード
@@ -1133,105 +1551,105 @@ public class EvaluatorSettingBean {
         String sDBSecId    = escDBString(evaluaterSettingParam.getSection());    // 組織コード
         String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
 
-
-
         StringBuilder sbSQL = new StringBuilder();
-        sbSQL.append("INSERT INTO TMG_GROUP_CHECK ");
-        sbSQL.append("(");
-        sbSQL.append("TGR_CCUSTOMERID,");
-        sbSQL.append("TGR_CCOMPANYID,");
-        sbSQL.append("TGR_DSTARTDATE,");
-        sbSQL.append("TGR_DENDDATE,");
-        sbSQL.append("TGR_CMODIFIERUSERID,");
-        sbSQL.append("TGR_DMODIFIEDDATE,");
-        sbSQL.append("TGR_CMODIFIERPROGRAMID,");
-        sbSQL.append("TGR_CSECTIONID,");
-        sbSQL.append("TGR_CGROUPID,");
-        sbSQL.append("TGR_CGROUPNAME,");
-        sbSQL.append("TGR_OT_MONTLY_01,");
-        sbSQL.append("TGR_OT_MONTLY_02,");
-        sbSQL.append("TGR_OT_MONTLY_03,");
-        sbSQL.append("TGR_OT_MONTLY_04,");
-        sbSQL.append("TGR_OT_MONTLY_05,");
-        sbSQL.append("TGR_OT_YEARLY_01,");
-        sbSQL.append("TGR_OT_YEARLY_02,");
-        sbSQL.append("TGR_OT_YEARLY_03,");
-        sbSQL.append("TGR_OT_YEARLY_04, ");
-        sbSQL.append("TGR_OT_YEARLY_05,");
-        sbSQL.append("TGR_OT_MONTHLY_COUNT,");
-        sbSQL.append("TGR_HT_MONTLY_01,");
-        sbSQL.append("TGR_HT_MONTLY_02,");
-        sbSQL.append("TGR_HT_MONTLY_03,");
-        sbSQL.append("TGR_HT_MONTLY_04,");
-        sbSQL.append("TGR_HT_MONTLY_05,");
-        sbSQL.append("TGR_OT_DAILY_01,");
-        sbSQL.append("TGR_OT_MONTHLY_AVG");//超勤実績の月平均時間
-        sbSQL.append(") ");
-        sbSQL.append("SELECT ");
-        sbSQL.append("T1.TGR_CCUSTOMERID,");
-        sbSQL.append("T1.TGR_CCOMPANYID,");
+        sbSQL.append(" INSERT INTO TMG_GROUP_CHECK ");
+        sbSQL.append(" ( ");
+        sbSQL.append("     TGR_CCUSTOMERID, ");
+        sbSQL.append("     TGR_CCOMPANYID, ");
+        sbSQL.append("     TGR_DSTARTDATE, ");
+        sbSQL.append("     TGR_DENDDATE, ");
+        sbSQL.append("     TGR_CMODIFIERUSERID, ");
+        sbSQL.append("     TGR_DMODIFIEDDATE, ");
+        sbSQL.append("     TGR_CMODIFIERPROGRAMID, ");
+        sbSQL.append("     TGR_CSECTIONID, ");
+        sbSQL.append("     TGR_CGROUPID, ");
+        sbSQL.append("     TGR_CGROUPNAME, ");
+        sbSQL.append("     TGR_OT_MONTLY_01, ");
+        sbSQL.append("     TGR_OT_MONTLY_02, ");
+        sbSQL.append("     TGR_OT_MONTLY_03, ");
+        sbSQL.append("     TGR_OT_MONTLY_04, ");
+        sbSQL.append("     TGR_OT_MONTLY_05, ");
+        sbSQL.append("     TGR_OT_YEARLY_01, ");
+        sbSQL.append("     TGR_OT_YEARLY_02, ");
+        sbSQL.append("     TGR_OT_YEARLY_03, ");
+        sbSQL.append("     TGR_OT_YEARLY_04, ");
+        sbSQL.append("     TGR_OT_YEARLY_05, ");
+        sbSQL.append("     TGR_OT_MONTHLY_COUNT, ");
+        sbSQL.append("     TGR_HT_MONTLY_01, ");
+        sbSQL.append("     TGR_HT_MONTLY_02, ");
+        sbSQL.append("     TGR_HT_MONTLY_03, ");
+        sbSQL.append("     TGR_HT_MONTLY_04, ");
+        sbSQL.append("     TGR_HT_MONTLY_05, ");
+        sbSQL.append("     TGR_OT_DAILY_01 ");
+        sbSQL.append("     ,TGR_OT_MONTHLY_AVG");//超勤実績の月平均時間
+        sbSQL.append(" ) ");
+        sbSQL.append(" SELECT ");
+        sbSQL.append("     T1.TGR_CCUSTOMERID, ");
+        sbSQL.append("     T1.TGR_CCOMPANYID, ");
+
         if (evaluaterSettingParam.getAction() != null && evaluaterSettingParam.getAction().equals(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
             // 引数で渡すSTARTDATEを改訂日に変更
-            sbSQL.append("TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS STARTDATE, ");
+            sbSQL.append(" TMG_F_GET_ORG_STARTDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS STARTDATE, ");
         } else {
-            sbSQL.append(sDBBaseDate + "AS STARTDATE,");
+            sbSQL.append(sDBBaseDate + " AS STARTDATE, ");
         }
-        // 引数で渡すSTARTDATEを改訂日に変更
-        sbSQL.append("TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS ENDDATE,");
-        sbSQL.append(escDBString(evaluaterSettingParam.getEmployee()) + ",");
-        sbSQL.append("SYSDATE,");
-        sbSQL.append(escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ",");
-        sbSQL.append("T1.TGR_CSECTIONID,");
 
-        if (StrUtil.equals(evaluaterSettingParam.getAction(),EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
+        // 引数で渡すSTARTDATEを改訂日に変更
+        sbSQL.append(" TMG_F_GET_ORG_ENDDATE(T1.TGR_CCUSTOMERID, T1.TGR_CCOMPANYID, T1.TGR_CSECTIONID, " + sDBBaseDate + ") AS ENDDATE, ");
+        sbSQL.append(escDBString(evaluaterSettingParam.getEmployee()) + ", ");
+        sbSQL.append(" SYSDATE, ");
+        sbSQL.append(escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ", ");
+        sbSQL.append(" T1.TGR_CSECTIONID, ");
+
+        if (evaluaterSettingParam.getAction() != null && evaluaterSettingParam.getAction().equals(EvaluatorSettingConst.ACT_MAKEGROUP_CGROUP)) {
             // 新規 組織グループ追加(新規 組織グループコード採番)
-            sbSQL.append(buildSQL4NextGroupId(sDBSecId, " T1.TGR_CCUSTOMERID ", " T1.TGR_CCOMPANYID ") + ",");
+            sbSQL.append(buildSQL4NextGroupId(sDBSecId, " T1.TGR_CCUSTOMERID ", " T1.TGR_CCOMPANYID ") + ", ");
         } else {
             // 既存 組織グループ編集(既存 組織グループコード適用)
-            sbSQL.append(escDBString(evaluaterSettingParam.getGroup()) + ",");
+            sbSQL.append(escDBString(evaluaterSettingParam.getGroup()) + ", ");
         }
 
-        String groupName = (String)psDBBean.getRequestHash().get("txtGroupName");
-        if (StrUtil.isNotBlank(groupName)) {
-            sbSQL.append(escDBString(groupName)).append(",");
+        if (StrUtil.isNotBlank(evaluaterSettingParam.getGroupName())) {
+            sbSQL.append(escDBString(evaluaterSettingParam.getGroupName()) + ", ");
         } else {
-            sbSQL.append("T1.TGR_CGROUPNAME,");
+            sbSQL.append(" T2.TGR_CGROUPNAME, ");
         }
-        sbSQL.append("T1.TGR_OT_MONTLY_01,");
-        sbSQL.append("T1.TGR_OT_MONTLY_02,");
-        sbSQL.append("T1.TGR_OT_MONTLY_03,");
-        sbSQL.append("T1.TGR_OT_MONTLY_04,");
-        sbSQL.append("T1.TGR_OT_MONTLY_05,");
-        sbSQL.append("T1.TGR_OT_YEARLY_01,");
-        sbSQL.append("T1.TGR_OT_YEARLY_02,");
-        sbSQL.append("T1.TGR_OT_YEARLY_03,");
-        sbSQL.append("T1.TGR_OT_YEARLY_04,");
-        sbSQL.append("T1.TGR_OT_YEARLY_05,");
-        sbSQL.append("T1.TGR_OT_MONTHLY_COUNT,");
-        sbSQL.append("T1.TGR_HT_MONTLY_01,");
-        sbSQL.append("T1.TGR_HT_MONTLY_02,");
-        sbSQL.append("T1.TGR_HT_MONTLY_03,");
-        sbSQL.append("T1.TGR_HT_MONTLY_04,");
-        sbSQL.append("T1.TGR_HT_MONTLY_05,");
-        sbSQL.append("T1.TGR_OT_DAILY_01,");
-        sbSQL.append("T1.TGR_OT_MONTHLY_AVG ");//超勤実績の月平均時間
-        sbSQL.append("FROM TMG_GROUP T1 ");
-        sbSQL.append("WHERE T1.TGR_CCUSTOMERID = " + sDBCustId);
-        sbSQL.append(" AND T1.TGR_CCOMPANYID = " + sDBCompId);
-        sbSQL.append(" AND T1.TGR_CSECTIONID = " + sDBSecId);
-        sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
-        sbSQL.append(" AND T1.TGR_DSTARTDATE <= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_DENDDATE >= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_CCUSTOMERID = " + sDBCustId);
-        sbSQL.append(" AND T1.TGR_CCOMPANYID = " + sDBCompId);
-        sbSQL.append(" AND T1.TGR_CSECTIONID = " + sDBSecId);
+        sbSQL.append("     T2.TGR_OT_MONTLY_01, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_02, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_03, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_04, ");
+        sbSQL.append("     T2.TGR_OT_MONTLY_05, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_01, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_02, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_03, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_04, ");
+        sbSQL.append("     T2.TGR_OT_YEARLY_05, ");
+        sbSQL.append("     T2.TGR_OT_MONTHLY_COUNT, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_01, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_02, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_03, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_04, ");
+        sbSQL.append("     T2.TGR_HT_MONTLY_05, ");
+        sbSQL.append("     T2.TGR_OT_DAILY_01 ");
+        sbSQL.append("     ,T2.TGR_OT_MONTHLY_AVG ");//超勤実績の月平均時間
+        sbSQL.append(" FROM TMG_GROUP T1, ");
+        sbSQL.append("      TMG_GROUP T2 ");
+        sbSQL.append(" WHERE T1.TGR_CCUSTOMERID = " + sDBCustId);
+        sbSQL.append(" AND   T1.TGR_CCOMPANYID  = " + sDBCompId);
+        sbSQL.append(" AND   T1.TGR_CSECTIONID  = " + sDBSecId);
+        sbSQL.append(" AND   T1.TGR_CGROUPID    = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
+        sbSQL.append(" AND   T1.TGR_DSTARTDATE <= " + sDBBaseDate);
+        sbSQL.append(" AND   T1.TGR_DENDDATE   >= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_CCUSTOMERID = " + sDBCustId);
+        sbSQL.append(" AND   T2.TGR_CCOMPANYID  = " + sDBCompId);
+        sbSQL.append(" AND   T2.TGR_CSECTIONID  = " + sDBSecId);
         if (StrUtil.isBlank(evaluaterSettingParam.getGroup())) {
-            sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
+            sbSQL.append(" AND   T2.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getSection() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE));
         } else {
-            sbSQL.append(" AND T1.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getGroup()));
+            sbSQL.append(" AND   T2.TGR_CGROUPID = " + escDBString(evaluaterSettingParam.getGroup()));
         }
-        sbSQL.append(" AND T1.TGR_DSTARTDATE <= " + sDBBaseDate);
-        sbSQL.append(" AND T1.TGR_DENDDATE >= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_DSTARTDATE <= " + sDBBaseDate);
+        sbSQL.append(" AND   T2.TGR_DENDDATE   >= " + sDBBaseDate);
         return sbSQL.toString();
     }
 
@@ -1382,11 +1800,6 @@ public class EvaluatorSettingBean {
         return sSQL;
     }
 
-    /**
-     *
-     * @param evaluaterSettingParam
-     * @return
-     */
     private String buildSQLForSelectOverTimeLimit(EvaluatorSettingParam evaluaterSettingParam) {
 
         // 検索条件に使用するパラメータを準備
@@ -1528,13 +1941,10 @@ public class EvaluatorSettingBean {
 
     /**
      * グループ属性テーブルの情報を取得する
-     *
      * @param params
-     * @return
      */
     private String buildSQLForSelectGroupAttribute(EvaluatorSettingParam params) {
-
-        String sSQL = " SELECT "
+        return " SELECT "
                 + "TGRA_CAUTOSET_EVA "
                 + " FROM "
                 + "TMG_GROUP_ATTRIBUTE "
@@ -1545,8 +1955,263 @@ public class EvaluatorSettingBean {
                 + " AND TGRA_CGROUPID    = " + escDBString(params.getGroup())
                 + " AND TGRA_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
                 + " AND TGRA_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
+    }
 
-        return sSQL;
+    /**
+     * 承認者テーブルから、所属する承認者を削除するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForDeleteEvaluater(EvaluatorSettingParam evaluaterSettingParam) {
+        return "DELETE FROM "
+                + "     TMG_EVALUATER E "
+                + " WHERE "
+                + "     E.TEV_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND E.TEV_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND E.TEV_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND E.TEV_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId());
+    }
+
+    /**
+     * 割付テーブルにて、対象グループの承認者を組織直下のグループに移動するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForUpdateMovingEval(EvaluatorSettingParam evaluaterSettingParam) {
+        return " UPDATE "
+                + "     TMG_GROUP_MEMBER M "
+                + " SET "
+                + "     M.TGRM_CGROUPID = " + escDBString(evaluaterSettingParam.getRootGroup())
+                + " WHERE "
+                + "     M.TGRM_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND M.TGRM_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND M.TGRM_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND M.TGRM_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND M.TGRM_DENDDATE   >= " + "TMG_F_GET_ORG_STARTDATE(M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID, M.TGRM_CSECTIONID, " +  SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ") "
+                + " AND M.TGRM_DSTARTDATE <= " + "TMG_F_GET_ORG_ENDDATE(M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID, M.TGRM_CSECTIONID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ") ";
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePattern(EvaluatorSettingParam evaluaterSettingParam) {
+        return " DELETE FROM "
+                + "     TMG_PATTERN "
+                + " WHERE "
+                + "     TPA_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND TPA_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND TPA_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND TPA_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND TPA_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND TPA_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン(休憩)情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePatternRest(EvaluatorSettingParam params) {
+        return " DELETE FROM "
+                + "     TMG_PATTERN_REST "
+                + " WHERE "
+                + "     TPR_CCUSTOMERID = " + escDBString(params.getCustomerId())
+                + " AND TPR_CCOMPANYID  = " + escDBString(params.getCompanyId())
+                + " AND TPR_CSECTIONID  = " + escDBString(params.getSection())
+                + " AND TPR_CGROUPID    = " + escDBString(params.getGroup())
+                + " AND TPR_DSTARTDATE <= " + SysUtil.transDateNullToDB(params.getYYYYMMDD())
+                + " AND TPR_DENDDATE   >= " + SysUtil.transDateNullToDB(params.getYYYYMMDD());
+    }
+
+    /**
+     * 対象グループに紐付く勤務パターン割付情報を削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeletePatternApply(EvaluatorSettingParam evaluaterSettingParam) {
+        return " DELETE FROM "
+                + "     TMG_PATTERN_APPLIES "
+                + " WHERE "
+                + "     TPAA_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND TPAA_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND TPAA_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND TPAA_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup())
+                + " AND TPAA_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+    }
+
+    /**
+     * チェックテーブルへグループ名を登録するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForInsertGroupAttributeCheck(EvaluatorSettingParam evaluaterSettingParam,EditGroupDTO dto) {
+
+        String sCustomerId = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompanyId = escDBString(evaluaterSettingParam.getCompanyId());
+        String sSection = escDBString(dto.getSectionId());
+        String sGroupId = escDBString(dto.getSectionId() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        String sYYYYMMDD = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+
+        // 「デフォルト承認者の自動設定を行う」チェックの処理
+        String sDefaultFlg;
+        if ("1".equals(dto.getAutoStart())) {
+            sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_1;
+        } else {
+            sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_0;
+        }
+
+        String sbSQL = "INSERT INTO TMG_GROUP_ATTRIBUTE_CHECK " +
+                "( " +
+                "TGRA_CCUSTOMERID, " +
+                "TGRA_CCOMPANYID, " +
+                "TGRA_CSECTIONID, " +
+                "TGRA_CGROUPID, " +
+                "TGRA_DSTARTDATE, " +
+                "TGRA_DENDDATE, " +
+                "TGRA_CMODIFIERUSERID, " +
+                "TGRA_DMODIFIEDDATE, " +
+                "TGRA_CAUTOSET_EVA, " +
+                "TGRA_CMODIFIERPROGRAMID, " +
+                "TGRA_OT_MONTLY_01, " +
+                "TGRA_OT_MONTLY_02, " +
+                "TGRA_OT_MONTLY_03, " +
+                "TGRA_OT_MONTLY_04, " +
+                "TGRA_OT_MONTLY_05, " +
+                "TGRA_OT_YEARLY_01, " +
+                "TGRA_OT_YEARLY_02, " +
+                "TGRA_OT_YEARLY_03, " +
+                "TGRA_OT_YEARLY_04, " +
+                "TGRA_OT_YEARLY_05, " +
+                "TGRA_OT_MONTHLY_COUNT, " +
+                "TGRA_HT_MONTLY_01, " +
+                "TGRA_HT_MONTLY_02, " +
+                "TGRA_HT_MONTLY_03, " +
+                "TGRA_HT_MONTLY_04, " +
+                "TGRA_HT_MONTLY_05, " +
+                "TGRA_OT_DAILY_01 " +
+                ",TGRA_OT_MONTHLY_AVG " +//超勤実績の月平均時間
+                ") " +
+                "VALUES ( " +
+                sCustomerId + ", " +
+                sCompanyId + ", " +
+                sSection + ", " +
+                escDBString(evaluaterSettingParam.getGroup()) + ", " +
+                sYYYYMMDD + ", " +
+                "TMG_F_GET_GROUP_ENDDATE(" + sCustomerId + ", " + sCompanyId + ", " + sSection + ", " + sGroupId + ", " + sYYYYMMDD + "), " +
+                escDBString(evaluaterSettingParam.getEmployee()) + ", " +
+                "SYSDATE, " +
+                escDBString(sDefaultFlg) + ", " +
+                escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + ", " +
+                escDBString(dto.getMonthlyOverTimeYellow()) + ", " +
+                escDBString(dto.getMonthlyOverTimeOrange()) + ", " +
+                escDBString(dto.getMonthlyOverTimePink()) + ", " +
+                escDBString(dto.getMonthlyOverTimeRed()) + ", " +
+                escDBString(dto.getMonthlyOverTimeBackUp()) + ", " +
+                escDBString(dto.getYearlyOverTimeYellow()) + ", " +
+                escDBString(dto.getYearlyOverTimeOrange()) + ", " +
+                escDBString(dto.getYearlyOverTimePink()) + ", " +
+                escDBString(dto.getYearlyOverTimeRed()) + ", " +
+                escDBString(dto.getYearlyOverTimeBackUp()) + ", " +
+                escDBString(dto.getMonthlyOverTimeCount()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel1()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel2()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel3()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel4()) + ", " +
+                escDBString(dto.getMonthlyHolidayTimeLevel5()) + ", " +
+                escDBString(dto.getDailyOverTime()) + ", " +
+                escDBString(dto.getMonthlyOverTimeAvg()) + ")";//超勤実績の月平均時間
+        return sbSQL;
+    }
+
+    /**
+     * エラーメッセージを追加するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForInsertGroupAttributeErrMsg(EvaluatorSettingParam params) {
+        return " INSERT INTO TMG_ERRMSG ( "
+                + " TER_CCUSTOMERID, "
+                + " TER_CCOMPANYID, "
+                + " TER_DSTARTDATE, "
+                + " TER_DENDDATE, "
+                + " TER_CMODIFIERUSERID, "
+                + " TER_DMODIFIEDDATE, "
+                + " TER_CMODIFIERPROGRAMID, "
+                + " TER_CERRCODE, "
+                + " TER_CLANGUAGE "
+                + " ) VALUES ( "
+                + escDBString(params.getCustomerId()) + ", "
+                + escDBString(params.getCompanyId()) + ", "
+                + TmgUtil.Cs_MINDATE + ", "
+                + TmgUtil.Cs_MAXDATE + ", "
+                + escDBString(params.getEmployee()) + ", "
+                + "SYSDATE, "
+                + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + params.getAction()) + ", "
+                + "0,"
+                + escDBString(params.getLanguage()) + ") ";
+    }
+
+    /**
+     * エラーチェックを削除するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForDeleteGroupAttributeCheck(EvaluatorSettingParam params) {
+        return " DELETE FROM "
+                + "     TMG_GROUP_ATTRIBUTE_CHECK G "
+                + " WHERE "
+                + "     G.TGRA_CMODIFIERUSERID    = " + escDBString(params.getEmployee())
+                + " AND G.TGRA_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + params.getAction())
+                + " AND G.TGRA_CCUSTOMERID        = " + escDBString(params.getCustomerId())
+                + " AND G.TGRA_CCOMPANYID         = " + escDBString(params.getCompanyId());
+    }
+
+    /**
+     * グループ一覧を取得するSQLを返す（承認者追加画面、メンバー割付画面で用いる）
+     *
+     * @return String SQL
+     */
+    private String buildSQLForSelectGroupList(EvaluatorSettingParam evaluaterSettingParam) {
+        return " SELECT " +
+                "     G.TGR_CGROUPID, " +
+                "     G.TGR_CGROUPNAME, " +
+                "     TO_CHAR(TMG_F_GET_GROUP_ENDDATE(G.TGR_CCUSTOMERID, G.TGR_CCOMPANYID, G.TGR_CSECTIONID, G.TGR_CGROUPID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + "), 'yyyy/mm/dd') as ENDDATE " +
+                " FROM " +
+                "     TMG_GROUP G " +
+                " WHERE " +
+                "     G.TGR_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection()) +
+                " AND G.TGR_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) +
+                " AND G.TGR_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND G.TGR_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId()) +
+                " AND G.TGR_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) +
+                " ORDER BY " +
+                "     G.TGR_CSECTIONID, " +
+                "     DECODE( SUBSTR(G.TGR_CGROUPID,INSTR(G.TGR_CGROUPID,'|') + 1, 6)," + escDBString(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE) + ", '0'||G.TGR_CGROUPNAME, '1'||G.TGR_CGROUPNAME) ";
+    }
+
+    /**
+     * 決裁レベル一覧を取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectApprovalLevelList(EvaluatorSettingParam evaluaterSettingParam){
+        String sBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+        String sCustId   = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompId   = escDBString(evaluaterSettingParam.getCompanyId());
+        String sLangage  = escDBString(evaluaterSettingParam.getLanguage());
+        return " SELECT " +
+                "     MGD_CMASTERCODE," +
+                "     MGD_CGENERICDETAILDESC " +
+                " FROM    " +
+                "     MAST_GENERIC_DETAIL " +
+                " WHERE" +
+                "     MGD_CCUSTOMERID       = " + sCustId +
+                " AND MGD_CCOMPANYID_CK_FK  = " + sCompId +
+                " AND MGD_CGENERICGROUPID   = " + escDBString(TmgUtil.Cs_MG_TMG_APPROVAL_LEVEL) +
+                " AND MGD_CLANGUAGE_CK      = " + sLangage +
+                " AND MGD_DSTART_CK        <= " + sBaseDate +
+                " AND MGD_DEND             >= " + sBaseDate +
+                " ORDER BY" +
+                "     MGD_NSPARENUM1";
     }
 
 }

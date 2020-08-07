@@ -2,11 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.overtimeInstruct.OvertimeInstructBean;
-import jp.smartcompany.job.modules.tmg.paidholiday.PaidholidayBean;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,11 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 @RequestMapping("sys/wmanage")
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SiteWManageController {
-
-    private final PaidholidayBean paidHolidayBean;
-    private final OvertimeInstructBean overtimeInstructBean;
 
     /**
      * 跳转到カレンダー管理界面

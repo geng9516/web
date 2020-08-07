@@ -15,6 +15,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupapppermissionDO;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -23,12 +24,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-//@Controller
-//@RequestMapping("sys/test")
+@Controller
+@RequestMapping("test")
 @Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TestController {
@@ -255,5 +257,38 @@ public class TestController {
         );
         return new PageUtil(page);
     }
+
+    @PostMapping("editgroup")
+    @ResponseBody
+    // http://localhost:6879/sys/evaluatorsetting/editgroup?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02
+    /* json参数：
+     * {
+         "sectionId":"",
+         "autoStart":"",
+         "dailyOverTime":"",
+         "monthlyOverTimeAvg":"",
+         "monthlyOverTimeCount":"",
+         "monthlyOverTimeYellow":"",
+         "monthlyOverTimeOrange":"",
+         "monthlyOverTimePink":"",
+         "monthlyOverTimeRed":"",
+         "monthlyOverTimeBackUp":"",
+         "yearlyOverTimeYellow":"",
+         "yearlyOverTimeOrange":"",
+         "yearlyOverTimePink":"",
+         "yearlyOverTimeRed":"",
+         "yearlyOverTimeBackUp":"",
+         "monthlyHolidayTimeLevel1":"",
+         "monthlyHolidayTimeLevel2":"",
+         "monthlyHolidayTimeLevel3":"",
+         "monthlyHolidayTimeLevel4":"",
+         "monthlyHolidayTimeLevel5":""
+     * }
+     * */
+    public GlobalResponse editGroup(@RequestAttribute("BeanName") PsDBBean psDBBean,
+                                    @Valid @RequestBody EditGroupDTO dto) {
+        return GlobalResponse.ok();
+    }
+
 
 }
