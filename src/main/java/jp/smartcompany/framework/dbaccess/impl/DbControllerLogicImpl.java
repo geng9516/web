@@ -66,6 +66,7 @@ public class DbControllerLogicImpl implements DbControllerLogic {
                 int count = statement.executeUpdate((String) sql);
                 vecResult.add(count);
             } catch (SQLException e) {
+                e.printStackTrace();
                 success = false;
                 connection.rollback();
                 break;

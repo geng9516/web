@@ -628,7 +628,7 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForDeleteGroupAttributeCheck(params));
         // DB反映
         int rows = psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
-        if (rows == 0) {
+        if (rows >0) {
             return GlobalResponse.ok("登録処理成功しました");
         }
         return GlobalResponse.error("登録処理失敗しました");
@@ -761,9 +761,96 @@ public class EvaluatorSettingBean {
         return GlobalResponse.error("追加失敗しました");
     }
 
+    /**
+     * メンバー割付画面表示の処理をするメソッド
+     */
+    public Map<String,Object> showEditMemberHandler(PsDBBean bean,EvaluatorSettingParam evaluaterSettingParam) {
+        Map<String,Object> map = MapUtil.newHashMap();
+        // 検索
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForSelectMember(evaluaterSettingParam));    // メンバー割付情報
+        vQuery.add(buildSQLForSelectGroupList(evaluaterSettingParam)); // グループ一覧（承認者追加画面と共通）
+        PsResult psResult;
+        try {
+            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
+        }
+        System.out.println(psResult);
+        return map;
+    }
+
     /*
      * ========================= 内部处理逻辑Start ==================
      */
+
+    /** メンバー割付 一覧ソート順制御プロパティ値(所属グループ、役職、氏名順) */
+    public static final String SYSTEM_VAL_MEMBER_SORT = "group";
+
+    /**
+     * メンバー割付情報を取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectMember(EvaluatorSettingParam evaluaterSettingParam) {
+
+        String sSQL = " SELECT "
+                + "     M.TGRM_CEMPLOYEEID, "
+                + "     TMG_F_GET_ME_NAME( M.TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ", 0, M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID ) as TGRM_CEMPLOYEEID, "
+                + "     G.TGR_CGROUPID, "
+                + "     G.TGR_CGROUPNAME, "
+                + "     M.TGRM_CBASE_SECTIONID, "
+                + "     M.TGRM_CBASE_GROUPID "
+                + " FROM  ";
+        if (EvaluatorSettingBean.SYSTEM_VAL_MEMBER_SORT.equals(scCacheUtil.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_MEMBER_SORT))) {
+            sSQL += " TMG_GROUP G, TMG_GROUP_MEMBER M, HIST_DESIGNATION ";
+        } else {
+            sSQL += " TMG_GROUP G, TMG_GROUP_MEMBER M ";
+        }
+
+        sSQL += " WHERE  "
+                + "     G.TGR_CSECTIONID   = " + escDBString(evaluaterSettingParam.getSection())
+                + " AND G.TGR_DSTARTDATE  <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND G.TGR_CCOMPANYID   = " + escDBString(evaluaterSettingParam.getCompanyId())
+                + " AND G.TGR_CCUSTOMERID  = " + escDBString(evaluaterSettingParam.getCustomerId())
+                + " AND G.TGR_DENDDATE    >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND M.TGRM_CSECTIONID  = G.TGR_CSECTIONID "
+                + " AND M.TGRM_CGROUPID    = G.TGR_CGROUPID "
+                + " AND M.TGRM_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND M.TGRM_CCOMPANYID  = G.TGR_CCOMPANYID "
+                + " AND M.TGRM_CCUSTOMERID = G.TGR_CCUSTOMERID "
+                + " AND M.TGRM_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD())
+                + " AND TMG_F_IS_MANAGEFLG(M.TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ", " +
+                SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ", "
+                + " M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID) <> " + escDBString(TmgUtil.Cs_MGD_MANAGEFLG_0); // 管理対象者フラグ
+
+        if (EvaluatorSettingBean.SYSTEM_VAL_MEMBER_SORT.equals(scCacheUtil.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_MEMBER_SORT))) {
+            // where句に条件追加
+            sSQL += " AND HD_CCUSTOMERID_CK = M.TGRM_CCUSTOMERID "
+                    + " AND HD_CCOMPANYID_CK  = M.TGRM_CCOMPANYID "
+                    + " AND HD_CEMPLOYEEID_CK = M.TGRM_CEMPLOYEEID "
+                    + " AND HD_DSTARTDATE_CK <= TRUNC(SYSDATE) "
+                    + " AND HD_DENDDATE      >= TRUNC(SYSDATE) "
+                    + " AND HD_CIFKEYORADDITIONALROLE = '0' ";
+
+            sSQL += " ORDER BY "
+                    + " G.TGR_CSECTIONID, "
+                    + " G.TGR_CGROUPID, "
+                    + " TMG_F_GET_MP_WEIGHT(HD_CPOSTID_FK, TRUNC(SYSDATE), M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID), "
+                    + " TMG_F_GET_ME_NAME(M.TGRM_CEMPLOYEEID, TRUNC(SYSDATE), 1, M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID), "
+                    + " M.TGRM_CEMPLOYEEID, "
+                    + " M.TGRM_DSTARTDATE ";
+
+        } else {
+            sSQL += " ORDER BY "
+                    + " G.TGR_CSECTIONID, "
+                    + " DECODE( SUBSTR(G.TGR_CGROUPID,INSTR(G.TGR_CGROUPID,'|')+1,6), " + escDBString(TmgUtil.Cs_DEFAULT_GROUPSEQUENCE) + ", '0'||G.TGR_CGROUPNAME, '1'||G.TGR_CGROUPNAME), "
+                    + " M.TGRM_CEMPLOYEEID, "
+                    + " M.TGRM_DSTARTDATE ";
+        }
+
+        return sSQL;
+    }
 
     /**
      * エラーメッセージを取得するSQLを返す
@@ -2386,7 +2473,7 @@ public class EvaluatorSettingBean {
         String sCustomerId = escDBString(evaluaterSettingParam.getCustomerId());
         String sCompanyId = escDBString(evaluaterSettingParam.getCompanyId());
         String sSection = escDBString(dto.getSectionId());
-        String sGroupId = escDBString(dto.getSectionId() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+        String sGroupId = dto.getSectionId() + "|" + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE;
         String sYYYYMMDD = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
 
         // 「デフォルト承認者の自動設定を行う」チェックの処理
@@ -2397,7 +2484,7 @@ public class EvaluatorSettingBean {
             sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_0;
         }
 
-        String sbSQL = "INSERT INTO TMG_GROUP_ATTRIBUTE_CHECK " +
+        return "INSERT INTO TMG_GROUP_ATTRIBUTE_CHECK " +
                 "( " +
                 "TGRA_CCUSTOMERID, " +
                 "TGRA_CCOMPANYID, " +
@@ -2432,9 +2519,9 @@ public class EvaluatorSettingBean {
                 sCustomerId + ", " +
                 sCompanyId + ", " +
                 sSection + ", " +
-                escDBString(evaluaterSettingParam.getGroup()) + ", " +
+                escDBString(sGroupId) + ", " +
                 sYYYYMMDD + ", " +
-                "TMG_F_GET_GROUP_ENDDATE(" + sCustomerId + ", " + sCompanyId + ", " + sSection + ", " + sGroupId + ", " + sYYYYMMDD + "), " +
+                "TMG_F_GET_GROUP_ENDDATE(" + sCustomerId + ", " + sCompanyId + ", " + sSection + ", " + escDBString(sGroupId) + ", " + sYYYYMMDD + "), " +
                 escDBString(evaluaterSettingParam.getEmployee()) + ", " +
                 "SYSDATE, " +
                 escDBString(sDefaultFlg) + ", " +
@@ -2456,8 +2543,7 @@ public class EvaluatorSettingBean {
                 escDBString(dto.getMonthlyHolidayTimeLevel4()) + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel5()) + ", " +
                 escDBString(dto.getDailyOverTime()) + ", " +
-                escDBString(dto.getMonthlyOverTimeAvg()) + ")";//超勤実績の月平均時間
-        return sbSQL;
+                escDBString(dto.getMonthlyOverTimeAvg()) + ")";
     }
 
     /**
