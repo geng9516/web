@@ -131,7 +131,7 @@
                                         </i-button>
                                     </i-col>
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
-                                        v-if="item.tntfCstatusflg.indexOf('3') > -1 || item.tntfCstatusflg.indexOf('9') > -1">
+                                        v-if="item.tntfCstatusflg.indexOf('3') > -1 || item.tntfCstatusflg.indexOf('9') > -1 || item.tntfCstatusflg.indexOf('0') > -1" >
                                         <!-- 否认或者error则再申请  -->
                                         <i-button  type="primary" ghost style="width: 97%;" size="small" @click="handleReApplybtn(item)">再申請
                                         </i-button>
