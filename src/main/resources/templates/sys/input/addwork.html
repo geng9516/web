@@ -35,7 +35,7 @@
         </div>
     </div>
     <div class="content_body" style="position: relative">
-        <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin && bWorkChkStatus) || (bDispKenkojotaiKakunin && bHealthChkStatus)">
+        <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin) || (bDispKenkojotaiKakunin)">
             <i-col span="12" v-if="bDispKinmujokyoKakunin">
                 <div class="label tc">勤務状況確認</div>
                 <div class="tl">
@@ -682,6 +682,10 @@
                 } catch (error) {
                     return
                 }finally {
+                    console.log(this.bDispKinmujokyoKakunin)
+                    console.log(this.bDispKenkojotaiKakunin)
+                    console.log(this.bWorkChkStatus)
+                    console.log(this.bHealthChkStatus)
                     this.monthlyLoading= false
                 }
             },
@@ -690,6 +694,7 @@
                 this.query.txtDYYYYMM = this.model1
                 await this.http.get('sys/tmgResults/updateWorkChk', this.query)
                 this.bWorkChkStatus = true
+                this.getTitleData()
             },
             async confHealth(){
                 this.query.txtAction='ACT_CONF_HEALTH_ON'
@@ -697,6 +702,7 @@
                 this.query.selHealthStatus= this.selHealthStatus
                 await this.http.get('sys/tmgResults/updateHealthChk', this.query)
                 this.bHealthChkStatus = true
+                this.getTitleData()
 
             },
             //一覧から日次実績をクリックする

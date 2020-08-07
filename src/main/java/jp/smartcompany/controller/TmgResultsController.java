@@ -94,13 +94,15 @@ public class TmgResultsController {
                               @RequestParam("txtDYYYYMM") String txtDYYYYMM) {
         //初期化対象
         tmgResultsBean.setMonth(txtDYYYYMM);
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }
 
         tmgResultsBean.updateStatus(psDBBean, "TMG_ITEMS|WorkStatus", txtAction, null);
     }
 
     /**
-     * 県境状況チェック
+     * 健康状況チェック
      *
      * @param psDBBean   PsDBBean
      * @param txtAction  アクション
@@ -116,7 +118,9 @@ public class TmgResultsController {
 
         //初期化対象
         tmgResultsBean.setMonth(txtDYYYYMM);
-        psDBBean.setTargetUser(psDBBean.getUserCode());
+        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+            psDBBean.setTargetUser(psDBBean.getUserCode());
+        }
 
         tmgResultsBean.updateStatus(psDBBean, "TMG_ITEMS|HealthStatus", txtAction, selHealthStatus);
     }

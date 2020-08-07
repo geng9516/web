@@ -265,7 +265,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
             }
             sql = mon + "," + tue + "," + wed + "," + thu + "," + fri + "," + sat + "," + sun;
         } else {
-            sql = "";
+            sql = " ";
         }
         Long num = baseMapper.toDayofWeek(sql);
         return num;

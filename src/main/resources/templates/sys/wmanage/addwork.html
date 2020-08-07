@@ -111,20 +111,23 @@
 
 
     <div class="content_body" style="position: relative">
-        <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin && bWorkChkStatus) || (bDispKenkojotaiKakunin && bHealthChkStatus)">
-            <i-col span="8" v-if="bDispKinmujokyoKakunin">
+        <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin ) || (bDispKenkojotaiKakunin)">
+            <i-col span="12" v-if="bDispKinmujokyoKakunin">
                 <div class="label tc">勤務状況確認</div>
                 <div class="tl">
                     <div class="person-info">
                         <span class="time tl" style="width: 100%;">{{this.kinmujokyoEnd -2}}～{{this.kinmujokyoEnd}}月の勤務実績に、相違がないことを確認しました。</span>
                     </div>
                     <div class="person-info">
-                        <span class="with-split" style="width: 100%;" v-if="bWorkChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 75%;" v-if="bWorkChkStatus">現在の状況：確認済 </span>
                         <span class="with-split" style="width: 100%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 25%;" v-if="bWorkChkStatus">
+                                <i-button type="primary" ghost size="small" @click="confWork" long>解除</i-button>
+                        </span>
                     </div>
                 </div>
             </i-col>
-            <i-col span="8" v-if="bDispKenkojotaiKakunin">
+            <i-col span="12" v-if="bDispKenkojotaiKakunin">
                 <div class="label tc">健康状態確認</div>
                 <div class="tl">
                     <div class="person-info">
@@ -135,8 +138,11 @@
 
                     </div>
                     <div class="person-info">
-                        <span class="with-split" style="width: 100%;" v-if="bHealthChkStatus">現在の状況：確認済 </span>
+                        <span class="with-split" style="width: 75%;" v-if="bHealthChkStatus">現在の状況：確認済 <i-button type="primary" ghost size="small" @click="confHealth" long>解除</i-button></span>
                         <span class="with-split" style="width: 100%;" v-else>現在の状況：未確認 </span>
+                        <span class="with-split" style="width: 25%;"  v-if="bHealthChkStatus">
+                            <i-button type="primary" ghost size="small" @click="confHealth" long>解除</i-button>
+                        </span>
                         </span>
                     </div>
                 </div>
@@ -868,8 +874,10 @@
                 } catch (error) {
                     return
                 }finally {
-                    console.log(this.countNotApprovalDay)
-                    console.log(this.isConfirm)
+                    console.log(this.bDispKinmujokyoKakunin)
+                    console.log(this.bDispKenkojotaiKakunin)
+                    console.log(this.bWorkChkStatus)
+                    console.log(this.bHealthChkStatus)
                     this.monthlyLoading= false
                     this.updateMonthloading=false
                 }
@@ -910,6 +918,19 @@
                 }finally {
                     this.updateMonthloading=false
                 }
+            },
+            async confWork(){
+                this.query.txtAction='ACT_CONF_WORK_OFF'
+                await this.http.get('sys/tmgResults/updateWorkChk', this.query)
+                this.bWorkChkStatus = true
+                this.getTitleData()
+            },
+            async confHealth(){
+                this.query.txtAction='ACT_CONF_HEALTH_OFF'
+                this.query.selHealthStatus= this.selHealthStatus
+                await this.http.get('sys/tmgResults/updateHealthChk', this.query)
+                this.bHealthChkStatus = true
+                this.getTitleData()
             },
 
 
