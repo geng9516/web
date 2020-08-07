@@ -57,7 +57,6 @@
                     </i-select>
                   </div>
                 </Row>
-                ​
                 <div style="position: relative;">
                   <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                         empty-text="所属データなし"></Tree>
@@ -111,7 +110,7 @@
                 :isShow="isShow"
                 @close="() => (this.isShow = false)"
         ></FormDrawer>
-        <Drawer :title="title" v-model="showDayApply" width="90">
+        <Drawer :title="title" draggable v-model="showDayApply" width="97">
             <Row :gutter="16" class="mb10">
                 <i-col class="tr" offset="11" span="13">
                     <i-button :disabled="!drawApproval" @click="handleSelectAll2(false)" class="mr5" ghost size="large" type="primary">
@@ -669,7 +668,7 @@
             columns2() {
                 let result = []
                 const that = this
-                const r =[30,100,50,55,55,55,55,55,55,250,270,150,200]
+                const r =[40,120,50,55,55,55,55,55,55,250,270,150,200]
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
                         // width: e.mgdNwidth,
@@ -866,6 +865,249 @@
                     }
                 })
             },
+            handleSelector() { },
+            async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                console.log('e2')
+                console.log(e)
+                this.deptDrawShow = false
+
+                this.query.txtAction = 'ACT_DISP_MONTHLY'
+
+                if (this.selectedDeptViewType === 3) {
+                    this.deptName = e[0].label
+                }
+                if (this.selectedDeptViewType === 2) {
+                    this.deptName = e[0].secnic
+                }
+
+                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+
+                //年月リストの取得
+                await this.getDispTmgMonthlyList()
+
+                await this.getTableHead()
+                await this.getTableData()
+
+            },
+            async getEmpList() {
+                try {
+                    this.emplistLoading = true
+                    const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
+                } catch (error) {
+                    return
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            handleClickEmpLeaf(e) {
+                this.deptDrawShow = false
+                // this.getData(true)
+            },
+            showName(e) {
+                const result = e.match(/^[\s\S]+(?=\()/g)
+                return (result && result[0]) || e
+            },
+            async handleClickHead(e) {
+                console.log(e)
+                //テーブルデータ存在しないと、日次一括承認画面へ遷移できません
+                if(this.tableData.length===0) return
+
+                this.query.txtAction = 'ACT_EDIT_DAIRY'
+                this.query.txtDYYYYMMDD = e
+                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
+
+                this.title = "承認状況 " + Utils.formatDate(e, 'yyyy年m月d日')
+
+                this.getReadTmgDaily()
+                this.showDayApply = true
+
+                //選択した職員リストをクリアする
+                this.handleSelectAll2(false)
+                console.log("this.handleClickHead")
+                console.log(this.tableHead2)
+                console.log(this.tableData2)
+            },
+            async getReadTmgDaily() {
+                this.sublistLoading  = true
+                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
+
+                //日別詳細画面のボタンを制御
+                this.drawApproval = data.approval
+
+                this.tableHead2 = data.itemVOList
+                this.tableData2 = data.tmgDailyMapList
+                this.sublistLoading  = false
+            },
+            handleSelectAll(status) {
+                this.$refs.selection.selectAll(status)
+            },
+            //行が選択される場合、トリガーされる
+            tableSelect(selection, row) {
+                console.log("tableSelect")
+                console.log(selection)
+                console.log(row)
+            },
+            //選択した行の状態が変わる場合、トリガーされる
+            tableSelectChange(selection, row) {
+                console.log("tableSelectChange")
+                console.log(selection)
+
+                this.empIds = []
+                for (var i=0;i < selection.length;i++){
+                    this.empIds.push(selection[i].empid)
+                }
+                this.query.txtExecuteEmpId = this.empIds.join(',')
+                console.log(this.query.txtExecuteEmpId)
+
+            },
+
+            //行が選択される場合、トリガーされる
+            tableSelect2(selection, row) {
+                console.log("tableSelect")
+                console.log(selection)
+                console.log(row)
+            },
+            //選択した行の状態が変わる場合、トリガーされる
+            tableSelectChange2(selection, row) {
+                console.log("tableSelectChange2")
+                console.log(selection)
+
+                this.empIds2 = []
+                for (var i=0;i < selection.length;i++){
+                    this.empIds2.push(selection[i].TDA_CEMPLOYEEID)
+                }
+                this.query.txtExecuteEmpId = this.empIds2.join(',')
+                console.log(this.query.txtExecuteEmpId)
+
+            },
+            handleSelectAll2(status) {
+                this.$refs.selection2.selectAll(status)
+            },
+            handleStartMonth(e) {
+                console.log("handleStartMonth")
+                if(e){
+                    this.query.txtDYYYYMM = this.dateFormat(e)
+                    this.getTableHead()
+                    this.getTableData()
+                    this.preNextMonth(e)
+                }
+            },
+            async bulkApproval(e) {
+                this.query.txtAction = 'ACT_MONTHLY_PERMIT'
+                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
+
+                //月次一括承認Loading制御
+                this.bulkApprovalLoading = true
+
+                console.log("bulkApproval")
+                console.log(this.empIds)
+                console.log(this.empIds.length)
+
+                if (this.empIds.length === 0){
+                    this.$Message.error("月次一括承認の対象者が選択されていません")
+                    //月次一括承認Loading制御
+                    this.bulkApprovalLoading = false
+
+                } else {
+                    this.$Modal.confirm({
+                        title: '',
+                        content: 'チェックされた職員の月次就業実績を承認しますか。よろしいでしょうか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            const { data } = await this.http.get('sys/permStatList/executeUpdateTmgMonthly', this.query)
+
+                            //月次承認状況一覧検索処理
+                            await this.getTableData()
+
+                            //月次一括承認Loading制御
+                            this.bulkApprovalLoading = false
+                        },
+                        onCancel: () => {
+                            //選択した職員リストをクリアする
+                            this.handleSelectAll(false)
+
+                            //月次一括承認Loading制御
+                            this.bulkApprovalLoading = false
+                            console.log(this.empIds)
+
+                        }
+                    })
+                }
+            },
+            async bulkApproval2(e) {
+                this.query.txtAction = 'ACT_EDIT_DAIRY'
+                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
+
+                //月次一括承認Loading制御
+                this.bulkApprovalLoading2 = true
+
+                console.log("bulkApproval2")
+                console.log(this.empIds2)
+                console.log(this.empIds2.length)
+
+                if (this.empIds2.length === 0){
+                    this.$Message.error("日次一括承認の対象者が選択されていません")
+                    //日次一括承認Loading制御
+                    this.bulkApprovalLoading2 = false
+
+                } else {
+                    this.$Modal.confirm({
+                        title: '',
+                        content: 'チェックされた職員の日次就業実績を承認しますか。よろしいでしょうか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            const { data } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.query)
+
+                            //日次承認状況一覧検索処理
+                            this.getReadTmgDaily()
+
+                            //月次承認状況一覧検索処理
+                            await this.getTableData()
+
+                            //日次一括承認Loading制御
+                            this.bulkApprovalLoading2 = false
+                        },
+                        onCancel: () => {
+                            //選択した職員リストをクリアする
+                            this.handleSelectAll2(false)
+
+                            //日次一括承認Loading制御
+                            this.bulkApprovalLoading2 = false
+                            console.log(this.empIds2)
+                        }
+                    })
+                }
+            },
+            dateFormat(e) {
+                //YYYY年MM月からYYYY/MM/01へ変換する
+                let yearMMDD = e.replace("年","/")
+                yearMMDD = yearMMDD.replace("月","/")
+                yearMMDD = yearMMDD+"01"
+                return  yearMMDD
+            },
+            async handleDeptViewTypeChange() {
+                await this.getOrgTree()
+                if (this.selectedDeptViewType === 3) {
+                    this.query.txtTmgReferListTreeViewPermSelectedView = 'section'
+                }
+                if (this.selectedDeptViewType === 2) {
+                    this.query.txtTmgReferListTreeViewPermSelectedView = 'group'
+                }
+                console.log("handleDeptViewTypeChange")
+                console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
+                this.$Notice.success({ title: '所属図更新完了' })
+            },
+
             //日次承認画面用
             //一覧から日次実績をクリックする
             async showDay(e1,e2,e3) {
@@ -1059,245 +1301,6 @@
                     this.notapproval=false
                 }
 
-            },
-            handleSelector() { },
-            async handleClickLeaf(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
-
-                console.log('e2')
-                console.log(e)
-                this.deptDrawShow = false
-
-                this.query.txtAction = 'ACT_DISP_MONTHLY'
-
-                if (this.selectedDeptViewType === 3) {
-                    this.deptName = e[0].label
-                }
-                if (this.selectedDeptViewType === 2) {
-                    this.deptName = e[0].secnic
-                }
-
-                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
-                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
-                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-
-
-                //年月リストの取得
-                await this.getDispTmgMonthlyList()
-
-                await this.getTableHead()
-                await this.getTableData()
-
-            },
-            async getEmpList() {
-                try {
-                    this.emplistLoading = true
-                    const { data } = await this.http.get('sys/tree/admin/emplist', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(Utils.convertToData(data))
-                } catch (error) {
-                    return
-                } finally {
-                    this.emplistLoading = false
-                }
-            },
-            handleClickEmpLeaf(e) {
-                this.deptDrawShow = false
-                // this.getData(true)
-            },
-            showName(e) {
-                const result = e.match(/^[\s\S]+(?=\()/g)
-                return (result && result[0]) || e
-            },
-            async handleClickHead(e) {
-                console.log(e)
-                this.query.txtAction = 'ACT_EDIT_DAIRY'
-                this.query.txtDYYYYMMDD = e
-                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
-
-                this.title = "承認状況 " + Utils.formatDate(e, 'yyyy年m月d日')
-
-                this.getReadTmgDaily()
-                this.showDayApply = true
-
-                //選択した職員リストをクリアする
-                this.handleSelectAll2(false)
-                console.log("this.handleClickHead")
-                console.log(this.tableHead2)
-                console.log(this.tableData2)
-            },
-            async getReadTmgDaily() {
-                this.sublistLoading  = true
-                const { data } = await this.http.get('sys/permStatList/getReadTmgDaily', this.query)
-
-                //日別詳細画面のボタンを制御
-                this.drawApproval = data.approval
-
-                this.tableHead2 = data.itemVOList
-                this.tableData2 = data.tmgDailyMapList
-                this.sublistLoading  = false
-            },
-            handleSelectAll(status) {
-                this.$refs.selection.selectAll(status)
-            },
-            //行が選択される場合、トリガーされる
-            tableSelect(selection, row) {
-                console.log("tableSelect")
-                console.log(selection)
-                console.log(row)
-            },
-            //選択した行の状態が変わる場合、トリガーされる
-            tableSelectChange(selection, row) {
-                console.log("tableSelectChange")
-                console.log(selection)
-
-                this.empIds = []
-                for (var i=0;i < selection.length;i++){
-                    this.empIds.push(selection[i].empid)
-                }
-                this.query.txtExecuteEmpId = this.empIds.join(',')
-                console.log(this.query.txtExecuteEmpId)
-
-            },
-
-            //行が選択される場合、トリガーされる
-            tableSelect2(selection, row) {
-                console.log("tableSelect")
-                console.log(selection)
-                console.log(row)
-            },
-            //選択した行の状態が変わる場合、トリガーされる
-            tableSelectChange2(selection, row) {
-                console.log("tableSelectChange2")
-                console.log(selection)
-
-                this.empIds2 = []
-                for (var i=0;i < selection.length;i++){
-                    this.empIds2.push(selection[i].TDA_CEMPLOYEEID)
-                }
-                this.query.txtExecuteEmpId = this.empIds2.join(',')
-                console.log(this.query.txtExecuteEmpId)
-
-            },
-            handleSelectAll2(status) {
-                this.$refs.selection2.selectAll(status)
-            },
-            handleStartMonth(e) {
-                console.log("handleStartMonth")
-                if(e){
-                    this.query.txtDYYYYMM = this.dateFormat(e)
-                    this.getTableHead()
-                    this.getTableData()
-                    this.preNextMonth(e)
-                }
-            },
-            async bulkApproval(e) {
-                this.query.txtAction = 'ACT_MONTHLY_PERMIT'
-                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
-
-                //月次一括承認Loading制御
-                this.bulkApprovalLoading = true
-
-                console.log("bulkApproval")
-                console.log(this.empIds)
-                console.log(this.empIds.length)
-
-                if (this.empIds.length === 0){
-                    this.$Message.error("月次一括承認の対象者が選択されていません")
-                    //月次一括承認Loading制御
-                    this.bulkApprovalLoading = false
-
-                } else {
-                    this.$Modal.confirm({
-                        title: '',
-                        content: 'チェックされた職員の月次就業実績を承認しますか。よろしいでしょうか？',
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: async () => {
-                            const { data } = await this.http.get('sys/permStatList/executeUpdateTmgMonthly', this.query)
-
-                            //月次承認状況一覧検索処理
-                            await this.getTableData()
-
-                            //月次一括承認Loading制御
-                            this.bulkApprovalLoading = false
-                        },
-                        onCancel: () => {
-                            //選択した職員リストをクリアする
-                            this.handleSelectAll(false)
-
-                            //月次一括承認Loading制御
-                            this.bulkApprovalLoading = false
-                            console.log(this.empIds)
-
-                        }
-                    })
-                }
-            },
-            async bulkApproval2(e) {
-                this.query.txtAction = 'ACT_EDIT_DAIRY'
-                this.query.txtCallBeanAction = 'ACT_DISP_MONTHLY'
-
-                //月次一括承認Loading制御
-                this.bulkApprovalLoading2 = true
-
-                console.log("bulkApproval2")
-                console.log(this.empIds2)
-                console.log(this.empIds2.length)
-
-                if (this.empIds2.length === 0){
-                    this.$Message.error("日次一括承認の対象者が選択されていません")
-                    //日次一括承認Loading制御
-                    this.bulkApprovalLoading2 = false
-
-                } else {
-                    this.$Modal.confirm({
-                        title: '',
-                        content: 'チェックされた職員の日次就業実績を承認しますか。よろしいでしょうか？',
-                        okText: 'OK',
-                        cancelText: 'キャンセル',
-                        onOk: async () => {
-                            const { data } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.query)
-
-                            //日次承認状況一覧検索処理
-                            this.getReadTmgDaily()
-
-                            //月次承認状況一覧検索処理
-                            await this.getTableData()
-
-                            //日次一括承認Loading制御
-                            this.bulkApprovalLoading2 = false
-                        },
-                        onCancel: () => {
-                            //選択した職員リストをクリアする
-                            this.handleSelectAll2(false)
-
-                            //日次一括承認Loading制御
-                            this.bulkApprovalLoading2 = false
-                            console.log(this.empIds2)
-                        }
-                    })
-                }
-            },
-            dateFormat(e) {
-                //YYYY年MM月からYYYY/MM/01へ変換する
-                let yearMMDD = e.replace("年","/")
-                yearMMDD = yearMMDD.replace("月","/")
-                yearMMDD = yearMMDD+"01"
-                return  yearMMDD
-            },
-            async handleDeptViewTypeChange() {
-                await this.getOrgTree()
-                if (this.selectedDeptViewType === 3) {
-                    this.query.txtTmgReferListTreeViewPermSelectedView = 'section'
-                }
-                if (this.selectedDeptViewType === 2) {
-                    this.query.txtTmgReferListTreeViewPermSelectedView = 'group'
-                }
-                console.log("handleDeptViewTypeChange")
-                console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
-                this.$Notice.success({ title: '所属図更新完了' })
             },
             handleClose() {
                 this.errorFlag = false
@@ -1586,6 +1589,24 @@
                 if(object) {
                     this.hasPassedTimeCheck = Utils.checkTime(object, value,el)
                 }
+            },
+            getLengthB(moji) {
+                let i, j, cnt = 0;
+                let multiStr = new Array("×", "§", "¨", "°", "±", "´", "¶");
+                for (i = 0; i < moji.length; i++) {
+                    for (j = 0; j < multiStr.length; j++) {
+                        if (multiStr[j].length == 0) {
+                            continue;
+                        }
+                        moji = moji.replace(multiStr[j], "00");
+                    }
+                }
+                // MAC OSの場合、改行コードが「\n」となり、Windowsの改行コード「\r\n」とバイト数が異なるので、
+                moji = moji.split("\r\n").join("\n"); // 一旦「\r\n」 ⇒ 「\n」の変換を行い、改行コードを「\n」に合わせる。
+                // バイト数を求めます。
+                for (i = 0; i < moji.length; i++)
+                    if (escape(moji.charAt(i)).length >= 4) cnt += 2; else cnt++;
+                return cnt;
             },
         }
     })
