@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.patternsetting.dto.TmgPatternDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.TmgIfSimulationBean;
@@ -55,21 +56,63 @@ public class SimulationController {
      */
     @GetMapping("selectExcludecondCtl")
     public List<ConditionColDTO> selectExcludecondCtl(
-            @RequestParam("custId") String custId,
-            @RequestParam("compCode") String compCode,
-            @RequestParam("language") String language) {
-        return tmgIfSimulationBean.selectExcludecondCtl(custId, compCode, language);
+            @RequestParam(value = "custId", required = true) String custId,
+            @RequestParam(value = "compCode", required = true) String compCode,
+            @RequestParam(value = "language", required = true) String language,
+            @RequestParam(value = "psGroupId", required = true) String genericgroupId,
+            @RequestParam(value = "startDate", required = true) String startDate,
+            @RequestParam(value = "endDate", required = true) String endDate) {
+        return tmgIfSimulationBean.selectExcludecondCtl(custId, compCode, language, genericgroupId, startDate, endDate);
     }
 
     /**
-     *　マスタを追加する又は更新する
+     * 　マスタを追加する又は更新する
+     *
      * @param masterResult フォーム
      */
     @PostMapping("simulationMerge")
-    @ResponseBody
-    public void simulationMerge(@RequestParam("masterResult") String masterResult){
-         tmgIfSimulationBean.simulationMerge(masterResult);
+    public GlobalResponse simulationMerge(@RequestParam("masterResult") String masterResult) {
+        return tmgIfSimulationBean.simulationMerge(masterResult);
     }
 
+    /**
+     * 期間時間をチャックする
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @PostMapping("checkPeriodDate")
+    public boolean checkPeriodDate(@RequestParam(value = "custId", required = true) String custId,
+                                   @RequestParam(value = "compCode", required = true) String compCode,
+                                   @RequestParam(value = "language", required = true) String language,
+                                   @RequestParam(value = "psGroupId", required = true) String genericgroupId,
+                                   @RequestParam(value = "startDate", required = true) String startDate,
+                                   @RequestParam(value = "endDate", required = true) String endDate) {
+        return tmgIfSimulationBean.checkPeriodDate(custId, compCode, language, genericgroupId, startDate, endDate);
+    }
 
+    /**
+     * マスタ」データが削除する
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @PostMapping("deleteMastGeneric")
+    public boolean deleteMastGenericDetail(@RequestParam(value = "custId", required = true) String custId,
+                                           @RequestParam(value = "compCode", required = true) String compCode,
+                                           @RequestParam(value = "language", required = true) String language,
+                                           @RequestParam(value = "psGroupId", required = true) String genericgroupId,
+                                           @RequestParam(value = "startDate", required = true) String startDate,
+                                           @RequestParam(value = "endDate", required = true) String endDate){
+        return tmgIfSimulationBean.deleteMastGenericDetail(custId, compCode, language, genericgroupId, startDate, endDate);
+    }
 }

@@ -4,6 +4,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgStatusWorktypeSimDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ConditionColDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDataDTO;
+import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationInsertDTO;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.StatusWorkTypeSimDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -55,5 +56,44 @@ public interface TmgStatusWorktypeSimMapper extends BaseMapper<TmgStatusWorktype
      */
     List<SimulationDataDTO> selectSimulationMaster(HashMap<String, Object> params);
 
+
+    /**
+     * マスタデータを入力する
+     *
+     * @param simulationInsertDTOList
+     * @return
+     */
+    int insertMastGenericDetail(List<SimulationInsertDTO> simulationInsertDTOList);
+
+    /**
+     * 段階導入シミュレーション登録情報に登録する
+     *
+     * @param params
+     * @return
+     */
+    int updateTmgStatusWorkTypeSim(HashMap<String, Object> params);
+
+    /**
+     * 期間のマスタを取得する
+     *
+     * @param params
+     * @return
+     */
+    List<SimulationDataDTO> selectSimulationMasterByDate(HashMap<String, Object> params);
+
+    /**
+     * 名称マスタ詳細情報を削除する
+     *
+     * @param params
+     * @return
+     */
+    int deleteMastGenericDetail(HashMap<String, Object> params);
+
+    /**
+     * 期間時間をチャックする
+     * @param params
+     * @return
+     */
+    int checkPeriodDate(HashMap<String, Object> params);
 
 }

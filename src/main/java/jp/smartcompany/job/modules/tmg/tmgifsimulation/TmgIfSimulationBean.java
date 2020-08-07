@@ -1,19 +1,21 @@
 package jp.smartcompany.job.modules.tmg.tmgifsimulation;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.service.ITmgStatusWorktypeSimService;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.*;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 
@@ -27,13 +29,14 @@ import static java.util.stream.Collectors.groupingBy;
  */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-@Slf4j
 public class TmgIfSimulationBean {
 
     private final String TAG1 = ",";
     private final String TAG2 = "-";
     private final String TAG3 = "|";
-    private final int batchNum = 500;
+    private final int batchNum = 20;
+    private final String BEAN_DESC = "TmgIfSimulationBean";
+    private final Logger logger = LoggerFactory.getLogger(TmgIfSimulationBean.class);
     private final ITmgStatusWorktypeSimService iTmgStatusWorktypeSimService;
 
 
@@ -45,9 +48,15 @@ public class TmgIfSimulationBean {
      * @param language
      * @return
      */
-    public List<ConditionColDTO> selectExcludecondCtl(String custId, String compCode, String language) {
-        List<ConditionColDTO> conditionColDTOList = iTmgStatusWorktypeSimService.selectExcludecondCtl(custId, compCode, language, TmgUtil.Cs_MGD_ONOFF_1);
-        return conditionColDTOList;
+    public List<ConditionColDTO> selectExcludecondCtl(String custId, String compCode, String language, String genericgroupId, String startDate, String endDate) {
+        if (ObjectUtil.isNotNull(startDate) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotNull(endDate) && ObjectUtil.isNotEmpty(endDate)) {
+            //更新
+            return this.selectSimulationMasterByDate(custId, compCode, language, genericgroupId, startDate, endDate);
+        } else {
+            //新規
+            return iTmgStatusWorktypeSimService.selectExcludecondCtl(custId, compCode, language, TmgUtil.Cs_MGD_ONOFF_1);
+        }
+
     }
 
 
@@ -79,10 +88,41 @@ public class TmgIfSimulationBean {
             simulationDTO.setSimulationDataDTOList(this.compareData(collect.get(key), conditionColDTOList));
             results.add(simulationDTO);
         }
-
-
         return results;
     }
+
+    /**
+     * 期間のマスタを取得する
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public List<ConditionColDTO> selectSimulationMasterByDate(String custId, String compCode, String language, String genericgroupId, String startDate, String endDate) {
+        List<SimulationDataDTO> simulationDataDTOList = iTmgStatusWorktypeSimService.selectSimulationMasterByDate(custId, compCode, language, genericgroupId, TmgUtil.Cs_MGD_ONOFF_1, startDate, endDate);
+        List<ConditionColDTO> conditionColDTOList = new ArrayList<ConditionColDTO>();
+        if (null != simulationDataDTOList) {
+            if (simulationDataDTOList.size() > 0) {
+                ConditionColDTO conditionColDTO = null;
+                for (int i = 0; i < simulationDataDTOList.size(); i++) {
+                    SimulationDataDTO simulationDataDTO = simulationDataDTOList.get(i);
+                    conditionColDTO = new ConditionColDTO();
+                    conditionColDTO.setMgd_excludecond_type(simulationDataDTO.getMgd_excludecond_type());
+                    conditionColDTO.setMgd_excludecond_type_name(simulationDataDTO.getMgd_excludecond_type_name());
+                    conditionColDTO.setValue(simulationDataDTO.getExcludecond());
+                    conditionColDTOList.add(conditionColDTO);
+                }
+            }
+        } else {
+            logger.error("期間のマスタを取得することが失敗しました");
+        }
+        return conditionColDTOList;
+    }
+
 
     /**
      * マスタ指標を比べる
@@ -139,7 +179,7 @@ public class TmgIfSimulationBean {
 
             return result;
         } else {
-            log.warn("メタデータが空です");
+            logger.warn("メタデータが空です");
             return null;
         }
 
@@ -151,13 +191,30 @@ public class TmgIfSimulationBean {
      * @param simulationMergeJson
      * @return
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse simulationMerge(String simulationMergeJson) {
-
+        GlobalResponse globalResponse = GlobalResponse.ok("処理しました");
         //先ずは、jsonオブジェクトをチェックする
         if (null != simulationMergeJson && !"".equals(simulationMergeJson)) {
             if (JSONUtil.isJsonObj(simulationMergeJson)) {
                 //次は、json文字を処理する
                 SimulationInsertJsonDTO simulationInsertJsonDTO = this.simulationJsonConvert(simulationMergeJson);
+                String actionCode = "";
+                String modifierProgramId = "";
+                if ("insert".equals(simulationInsertJsonDTO.getOperType())) {
+                    actionCode = "ACT_SIM_INSERT";
+                } else if ("update".equals(simulationInsertJsonDTO.getOperType())) {
+                    actionCode = "ACT_SIM_UPDATE";
+                    //更新の場合、古いデータを削除する
+                    boolean flag = this.deleteMastGenericDetail_notrans(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), simulationInsertJsonDTO.getLanguage(), simulationInsertJsonDTO.getPsGroupId(), simulationInsertJsonDTO.getPsStartDate(), simulationInsertJsonDTO.getPsEndDate());
+                    if (!flag) {
+                        //処理失敗しました
+                        logger.warn("マスタ対象をmergeすることが失敗しました");
+                        globalResponse = GlobalResponse.error("マスタ対象をmergeすることが失敗しました");
+                        return globalResponse;
+                    }
+                }
+                modifierProgramId = BEAN_DESC + "_" + actionCode;
                 //その後、目標対象組み立てる
                 List<SimulationInsertDTO> simulationInsertDTOList = this.getSimulationInsertDTOList(simulationInsertJsonDTO);
                 //バッチ処理
@@ -169,10 +226,10 @@ public class TmgIfSimulationBean {
                         batchBulk.add(simulationInsertDTO);
                     } else if (i == batchNum * page) {
                         //db 処理
-                        log.info("insertMastGenericDetail1 。。。。。。");
+                        logger.info("マスタデータを入力する第" + page + "弾、処理中");
+                        this.insertMastGenericDetail(batchBulk);
                         //処理後、batchBulkをリセットする
                         batchBulk.clear();
-                        batchBulk = new ArrayList<SimulationInsertDTO>();
                         batchBulk.add(simulationInsertDTO);
                         //page 増加になります
                         ++page;
@@ -181,26 +238,101 @@ public class TmgIfSimulationBean {
                         batchBulk.add(simulationInsertDTO);
                     } else {
                         //普通の場合、この分岐が空はずです
-                        log.warn("マスタ対象をmergeする中でバッチ処理分岐のロジックが間違っちゃった");
+                        logger.warn("マスタ対象をmergeする中でバッチ処理分岐のロジックが間違っちゃった");
                     }
-
                 }
                 //以上の三目の分岐、残るデータをdbで処理
                 if (batchBulk.size() > 0) {
-                    log.info("insertMastGenericDetail 2。。。。。。");
-
+                    page = page + 1;
+                    logger.info("マスタデータを入力する第" + page + "弾、処理中");
+                    this.insertMastGenericDetail(batchBulk);
                     //最後、データをリセット
                     batchBulk.clear();
                 }
+                logger.info("データは「" + page + "」ページで処理完了しました");
                 //db 処理
-                log.info("updateTmgStatusWorkTypeSim 。。。。。。");
+                this.updateTmgStatusWorkTypeSim(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), modifierProgramId, simulationInsertJsonDTO.getEmployeId(), TmgUtil.Cs_MGD_TMG_WTSIMSTATUS_010);
+                logger.info("段階導入シミュレーション登録情報に登録しました");
+                globalResponse = GlobalResponse.ok("登録しました");
             } else {
-                log.error("JSON対象ではありません");
+                logger.error("JSON対象ではありません");
+                globalResponse = GlobalResponse.error("JSON対象ではありません");
             }
         } else {
-            log.warn("マスタデータが空です");
+            logger.warn("マスタデータが空です");
+            globalResponse = GlobalResponse.error("マスタデータが空です");
         }
-        return null;
+        return globalResponse;
+    }
+
+    /**
+     * マスタ」データが削除する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean deleteMastGenericDetail(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotEmpty(endDate)) {
+            int count = iTmgStatusWorktypeSimService.deleteMastGenericDetail(custID, compCode, language, genericgroupId, startDate, endDate);
+            logger.info("名称マスタ詳細情報を削除することが完了しました,総計「" + count + "」件");
+            return true;
+        } else {
+            logger.warn("パラメータが不正です");
+            return false;
+        }
+    }
+
+    /**
+     * マスタ」データが削除する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public boolean deleteMastGenericDetail_notrans(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotEmpty(endDate)) {
+            int count = iTmgStatusWorktypeSimService.deleteMastGenericDetail(custID, compCode, language, genericgroupId, startDate, endDate);
+            logger.info("名称マスタ詳細情報を削除することが完了しました,総計「" + count + "」件");
+            return true;
+        } else {
+            logger.warn("パラメータが不正です");
+            return false;
+        }
+    }
+
+
+    /**
+     * マスタデータを入力する
+     *
+     * @param simulationInsertDTOList
+     * @return
+     */
+    private int insertMastGenericDetail(List<SimulationInsertDTO> simulationInsertDTOList) {
+        return iTmgStatusWorktypeSimService.insertMastGenericDetail(simulationInsertDTOList);
+    }
+
+    /**
+     * 段階導入シミュレーション登録情報に登録する
+     *
+     * @param psCustId
+     * @param psCompId
+     * @param psModifierProgramId
+     * @param psModifierUserId
+     * @param psStatus
+     * @return
+     */
+    private int updateTmgStatusWorkTypeSim(String psCustId, String psCompId, String psModifierProgramId, String psModifierUserId, String psStatus) {
+        return iTmgStatusWorktypeSimService.updateTmgStatusWorkTypeSim(psCustId, psCompId, psModifierProgramId, psModifierUserId, psStatus);
     }
 
     /**
@@ -243,12 +375,12 @@ public class TmgIfSimulationBean {
                             simulationInsertDTOList.add(simulationInsertDTO);
                         }
                     } else {
-                        log.warn("マスタ値が空です");
+                        logger.warn("マスタ値が空です");
                     }
                 }
             }
         } else {
-            log.warn("マスタインサート対象が空です");
+            logger.warn("マスタインサート対象が空です");
         }
         return simulationInsertDTOList;
     }
@@ -268,17 +400,42 @@ public class TmgIfSimulationBean {
                     simulationInsertJsonDTO.setConditionColDTOList(conditionColDTOList);
                     return simulationInsertJsonDTO;
                 } else {
-                    log.error("マスタリストデータが未取得しています");
+                    logger.error("マスタリストデータが未取得しています");
                 }
             } else {
-                log.warn("マスタリスト対象をjsonオブジェクトに変更できない");
+                logger.warn("マスタリスト対象をjsonオブジェクトに変更できない");
             }
         } else {
-            log.error("JSON対象がオブジェクトに変更することが失敗しました");
+            logger.error("JSON対象がオブジェクトに変更することが失敗しました");
         }
 
         return null;
     }
+
+    /**
+     * 期間時間をチェックする
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param startDate
+     * @param endDate
+     * @return FALSE: 時間帯不正
+     */
+    public boolean checkPeriodDate(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotEmpty(endDate)) {
+            int count = iTmgStatusWorktypeSimService.checkPeriodDate(custID, compCode, language, genericgroupId, startDate, endDate);
+            if (count == 0) {
+                return true;
+            }
+        } else {
+            logger.warn("パラメータが不正です");
+        }
+
+        return false;
+    }
+
 
     /**
      * 乱数生成
@@ -288,6 +445,11 @@ public class TmgIfSimulationBean {
     private String getRandomStr() {
         return DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(6);
     }
+
+    public static void main(String[] args) {
+        System.out.println(DateUtil.format(new Date(), "HHmmssSSS").toString() + RandomUtil.randomString(4));
+    }
+
 
 }
 
