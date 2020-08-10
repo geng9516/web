@@ -9,6 +9,9 @@ import lombok.ToString;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+/**
+ * @author Xiao Wenpeng
+ */
 @Getter
 @Setter
 @ToString

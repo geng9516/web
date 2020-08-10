@@ -14,6 +14,8 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditMemberDTO;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EditMemberVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorGroupVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberRightVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberVO;
@@ -652,8 +654,8 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 決裁レベル取得
         PsResult psResult;
 
-        int groupListCount = 0;
-        int levelCount = 0;
+        int groupListCount;
+        int levelCount;
         try {
            referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
                     TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
@@ -764,21 +766,81 @@ public class EvaluatorSettingBean {
     /**
      * メンバー割付画面表示の処理をするメソッド
      */
-    public Map<String,Object> showEditMemberHandler(PsDBBean bean,EvaluatorSettingParam evaluaterSettingParam) {
+    public Map<String,Object> showEditMemberHandler(PsDBBean bean,String sectionId) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setAction(EvaluatorSettingConst.ACT_EDITMEMBER_RMEMBER);
+        params.setCustomerID(bean.getCustID());
+        params.setSection(sectionId);
+        params.setCompanyId(bean.getCompCode());
         Map<String,Object> map = MapUtil.newHashMap();
         // 検索
         Vector<String> vQuery = new Vector<>();
-        vQuery.add(buildSQLForSelectMember(evaluaterSettingParam));    // メンバー割付情報
-        vQuery.add(buildSQLForSelectGroupList(evaluaterSettingParam)); // グループ一覧（承認者追加画面と共通）
+        vQuery.add(buildSQLForSelectMember(params));    // メンバー割付情報
+        vQuery.add(buildSQLForSelectGroupList(params)); // グループ一覧（承認者追加画面と共通）
         PsResult psResult;
+        // 結果セット番号
+        int IDX_MEMBER		= 0;	// メンバー情報
+        int IDX_GROUPNAME	= 1;	// グループ一覧
+        map.put("YYYYMMDD",params.getYYYYMMDD());
         try {
             psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            List<EditMemberVO> memberList = CollUtil.newArrayList();
+            for (int i = 0;i< bean.getCount(psResult,IDX_MEMBER);i++) {
+                EditMemberVO vo = new EditMemberVO();
+                vo.setEmpId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
+                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
+                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
+                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPNAME,i));
+                List<Map<String,String>> groupList = CollUtil.newArrayList();
+                // todo 渲染groupList
+                for (int j = 0; j <bean.getCount(psResult,IDX_GROUPNAME);j++) {
+
+                    Map<String,String> item = MapUtil.<String,String>builder()
+                           .put(
+                                 "",""
+                           ).build();
+
+                   groupList.add(item);
+                }
+                vo.setGroupList(groupList);
+                memberList.add(vo);
+            }
+            map.put("memberList",memberList);
         } catch (Exception e) {
             e.printStackTrace();
             throw new GlobalException(e.getMessage());
         }
-        System.out.println(psResult);
         return map;
+    }
+
+    public GlobalResponse editMemberHandler(PsDBBean bean, EditMemberDTO dto) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setSection(dto.getSectionId());
+        params.setGroup(dto.getGroupId());
+        params.setEmployee(dto.getEmpId());
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setAction(EvaluatorSettingConst.ACT_EDITMEMBER_UMEMBER);
+
+        // 検索
+        Vector<String> vQuery = new Vector<>();
+        // 追加・更新時
+        // メンバー割付登録
+        vQuery.add(buildSQLForInsertMemberBackward(params,bean));
+        // メンバー割付既存歴削除
+        vQuery.add(buildSQLForDeleteMember(params));
+        // メンバー割付既存歴更新(開始日)
+        vQuery.add(buildSQLForUpdateMemberWithStartDate(params,bean));
+        // メンバー割付既存歴更新(終了日)
+        vQuery.add(buildSQLForUpdateMemberWithEndDate(params,bean));
+        // メンバー割付登録
+        vQuery.add(buildSQLForInsertMemberForward(params,bean));
+        vQuery.add(buildSQLForDeleteMemberBackward(params,bean));
+
+        bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        return GlobalResponse.ok();
     }
 
     /*
@@ -787,6 +849,169 @@ public class EvaluatorSettingBean {
 
     /** メンバー割付 一覧ソート順制御プロパティ値(所属グループ、役職、氏名順) */
     public static final String SYSTEM_VAL_MEMBER_SORT = "group";
+
+    /**
+     * @return String SQL
+     */
+    private String buildSQLForDeleteMemberBackward(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        return " DELETE FROM TMG_GROUP_MEMBER_CHECK " +
+                " WHERE " +
+                "     TGRM_CCUSTOMERID        = " + escDBString(evaluaterSettingParam.getCustomerId()) +
+                " AND TGRM_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND TGRM_CEMPLOYEEID        = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND TGRM_CMODIFIERUSERID    = " + escDBString(bean.getUserCode()) + " " +
+                " AND TGRM_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction());
+    }
+
+    /**
+     * @return String SQL
+     */
+    private String buildSQLForUpdateMemberWithEndDate(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+
+        String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()); // 検索用基準日
+
+        String sbSQL = " UPDATE " +
+                "     TMG_GROUP_MEMBER " +
+                " SET " +
+                "     TGRM_DSTARTDATE = " +
+                "     LEAST( " +
+                "         TMG_F_GET_GROUP_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CGROUPID, " + sDBBaseDate + "), " +
+                "         TMG_F_GET_DESIG_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CEMPLOYEEID, " + sDBBaseDate + ") " +
+                "     ) + 1,  " +
+                "     TGRM_CMODIFIERUSERID    = " + escDBString(bean.getUserCode()) + ", " +
+                "     TGRM_DMODIFIEDDATE      = SYSDATE, " +
+                "     TGRM_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) +
+                " WHERE " +
+                "     TGRM_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId()) +
+                " AND TGRM_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND TGRM_CEMPLOYEEID = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND TGRM_DSTARTDATE <= " +
+                " LEAST( " +
+                "     TMG_F_GET_GROUP_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CGROUPID, " + sDBBaseDate + "), " +
+                "     TMG_F_GET_DESIG_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CEMPLOYEEID, " + sDBBaseDate + ") " +
+                " ) " +
+                " AND TGRM_DENDDATE >= " +
+                " LEAST( " +
+                "     TMG_F_GET_GROUP_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CGROUPID, " + sDBBaseDate + "), " +
+                "     TMG_F_GET_DESIG_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CEMPLOYEEID, " + sDBBaseDate + ") " +
+                " ) ";
+        return sbSQL;
+    }
+
+    /**
+     *
+     * @param evaluaterSettingParam
+     * @return String SQL
+     */
+    private String buildSQLForInsertMemberForward(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        String sbSQL = " INSERT INTO TMG_GROUP_MEMBER " +
+                " SELECT " +
+                "     TGRM_CCUSTOMERID, " +
+                "     TGRM_CCOMPANYID, " +
+                "     TGRM_CEMPLOYEEID, " +
+                "     TGRM_DSTARTDATE, " +
+                "     TGRM_DENDDATE, " +
+                "     TGRM_CMODIFIERUSERID, " +
+                "     SYSDATE, " +
+                "     TGRM_CMODIFIERPROGRAMID, " +
+                "     TGRM_CSECTIONID, " +
+                "     TGRM_CGROUPID, " +
+                "     TGRM_CCHAR01, " +
+                "     TGRM_CBASE_SECTIONID, " +
+                "     TGRM_CBASE_GROUPID " +
+                " FROM " +
+                "     TMG_GROUP_MEMBER_CHECK " +
+                " WHERE " +
+                "     TGRM_CCUSTOMERID        = " + escDBString(evaluaterSettingParam.getCustomerId()) +
+                " AND TGRM_CCOMPANYID         = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND TGRM_CEMPLOYEEID        = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND TGRM_CMODIFIERUSERID    = " + escDBString(bean.getUserCode()) +
+                " AND TGRM_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction());
+        return sbSQL;
+    }
+
+    /**
+     *
+     * @param evaluaterSettingParam
+     * @return String SQL
+     */
+    private String buildSQLForUpdateMemberWithStartDate(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        StringBuilder sbSQL = new StringBuilder();
+        sbSQL.append(" UPDATE ");
+        sbSQL.append("     TMG_GROUP_MEMBER ");
+        sbSQL.append(" SET ");
+        sbSQL.append("     TGRM_DENDDATE           = " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + " - 1, "); // 開始日の前日
+        sbSQL.append("     TGRM_CMODIFIERUSERID    = " + escDBString(bean.getUserCode()) + ", ");
+        sbSQL.append("     TGRM_DMODIFIEDDATE      = SYSDATE, ");
+        sbSQL.append("     TGRM_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()));
+        sbSQL.append(" WHERE ");
+        sbSQL.append("     TGRM_CCUSTOMERID  = " + escDBString(evaluaterSettingParam.getCustomerId()));
+        sbSQL.append(" AND TGRM_CCOMPANYID   = " + escDBString(evaluaterSettingParam.getCompanyId()));
+        sbSQL.append(" AND TGRM_CEMPLOYEEID  = " + escDBString(evaluaterSettingParam.getEmployee()));
+        sbSQL.append(" AND TGRM_DSTARTDATE  <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        sbSQL.append(" AND TGRM_DENDDATE    >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        return sbSQL.toString();
+    }
+
+    /**
+     * TMG_GROUP_MEMBER の重複歴削除クエリ
+     *
+     * @param evaluaterSettingParam
+     * @return String SQL
+     */
+    private String buildSQLForDeleteMember(EvaluatorSettingParam evaluaterSettingParam) {
+        StringBuffer sbSQL = new StringBuffer();
+        sbSQL.append(" DELETE FROM ");
+        sbSQL.append("     TMG_GROUP_MEMBER ");
+        sbSQL.append(" WHERE ");
+        sbSQL.append("     TGRM_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId()));
+        sbSQL.append(" AND TGRM_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()));
+        sbSQL.append(" AND TGRM_CEMPLOYEEID = " + escDBString(evaluaterSettingParam.getEmployee()));
+        // 指定期間(改定日→LEAST(グループ.終了日, 異動歴.終了日))内に存在する全ての歴を削除
+        sbSQL.append(" AND TGRM_DSTARTDATE >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        sbSQL.append(" AND TGRM_DENDDATE   <=  ");
+        sbSQL.append(" LEAST( ");
+        sbSQL.append("     TMG_F_GET_GROUP_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CGROUPID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + "), ");
+        sbSQL.append("     TMG_F_GET_DESIG_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ") ");
+        sbSQL.append(" ) ");
+        return sbSQL.toString();
+    }
+
+    /**
+     *
+     * @param evaluaterSettingParam
+     * @return String SQL
+     */
+    private String buildSQLForInsertMemberBackward(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
+        StringBuilder sbSQL = new StringBuilder();
+        sbSQL.append(" INSERT INTO TMG_GROUP_MEMBER_CHECK ");
+        sbSQL.append(" SELECT ");
+        sbSQL.append("     TGRM_CCUSTOMERID, ");
+        sbSQL.append("     TGRM_CCOMPANYID, ");
+        sbSQL.append("     TGRM_CEMPLOYEEID, ");
+        sbSQL.append("     TO_DATE(" + escDBString(evaluaterSettingParam.getYYYYMMDD()) + ", " + escDBString(EvaluatorSettingConst.DATE_FORMAT) + ") AS TGRM_DSTARTDATE, ");
+        sbSQL.append("     LEAST( ");
+        sbSQL.append("         TMG_F_GET_GROUP_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CGROUPID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + "), ");
+        sbSQL.append("         TMG_F_GET_DESIG_ENDDATE(TGRM_CCUSTOMERID, TGRM_CCOMPANYID, TGRM_CSECTIONID, TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) +") ");
+        sbSQL.append("     ) AS TGRM_DENDDATE, ");
+        sbSQL.append(      escDBString(bean.getUserCode()) + " AS TGRM_CMODIFIERUSERID, ");
+        sbSQL.append("     SYSDATE, ");
+        sbSQL.append(      escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + evaluaterSettingParam.getAction()) + " AS TGRM_CMODIFIERPROGRAMID, ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getSection()) + ", ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getGroup()) + ", ");
+        sbSQL.append("     TGRM_CCHAR01, ");
+        sbSQL.append("     TGRM_CBASE_SECTIONID, ");
+        sbSQL.append("     TGRM_CBASE_GROUPID ");
+        sbSQL.append(" FROM ");
+        sbSQL.append("     TMG_GROUP_MEMBER ");
+        sbSQL.append(" WHERE ");
+        sbSQL.append("     TGRM_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId()));
+        sbSQL.append(" AND TGRM_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()));
+        sbSQL.append(" AND TGRM_CEMPLOYEEID = " + escDBString(evaluaterSettingParam.getEmployee()));
+        sbSQL.append(" AND TGRM_DSTARTDATE <= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        sbSQL.append(" AND TGRM_DENDDATE   >= " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()));
+        return sbSQL.toString();
+    }
 
     /**
      * メンバー割付情報を取得するSQLを返す
@@ -910,7 +1135,7 @@ public class EvaluatorSettingBean {
      */
     private String buildSQLForInsertEvalErrMsg(EvaluatorSettingParam evaluaterSettingParam,PsDBBean bean) {
 
-        String sSQL = " INSERT INTO TMG_ERRMSG ( "
+        return " INSERT INTO TMG_ERRMSG ( "
                 + " TER_CCUSTOMERID, "
                 + " TER_CCOMPANYID, "
                 + " TER_DSTARTDATE, "
@@ -932,7 +1157,6 @@ public class EvaluatorSettingBean {
                         EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_ADDEVAL_CEVAL) + "),"
                 + escDBString(evaluaterSettingParam.getLanguage())
                 + " ) ";
-        return sSQL;
     }
 
     /**

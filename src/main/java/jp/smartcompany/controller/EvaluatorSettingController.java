@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditMemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -134,6 +135,19 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.showSearchEmpHandler(bean,sectionId);
     }
 
+    // メンバー割付画面
+    // http://localhost:6879/sys/evaluatorsetting/editmember?psSite=TMG_ADMIN&psApp=EvaluaterSetting&sectionId=201000000000&txtDYYYYMMDD=2019/08/02
+    @GetMapping("editmember")
+    public Map<String,Object> showEditMember(@RequestAttribute("BeanName") PsDBBean bean,@RequestParam(value="sectionId") String sectionId) {
+        return evaluatorSettingBean.showEditMemberHandler(bean,sectionId);
+    }
+
+    // ンバー割付処理をするメソッド
+    // http://localhost:6879/sys/evaluatorsetting/editmember?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02
+    @PostMapping("editmember")
+    public Map<String,Object> editMember(@RequestAttribute("BeanName") PsDBBean bean,@Valid @RequestBody EditMemberDTO dto) {
+        return evaluatorSettingBean.editMemberHandler(bean,dto);
+    }
 
 
 }
