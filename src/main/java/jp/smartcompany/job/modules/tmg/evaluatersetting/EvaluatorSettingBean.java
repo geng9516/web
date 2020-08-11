@@ -788,19 +788,16 @@ public class EvaluatorSettingBean {
             List<EditMemberVO> memberList = CollUtil.newArrayList();
             for (int i = 0;i< bean.getCount(psResult,IDX_MEMBER);i++) {
                 EditMemberVO vo = new EditMemberVO();
-                vo.setEmpId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
-                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
-                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
-                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPNAME,i));
+                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
+                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
+                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
                 List<Map<String,String>> groupList = CollUtil.newArrayList();
-                // todo 渲染groupList
                 for (int j = 0; j <bean.getCount(psResult,IDX_GROUPNAME);j++) {
-
                     Map<String,String> item = MapUtil.<String,String>builder()
                            .put(
-                                 "",""
+                                 bean.valueAtColumnRow(psResult,IDX_GROUPNAME,0,j),
+                                 bean.valueAtColumnRow(psResult,IDX_GROUPNAME,1,j)
                            ).build();
-
                    groupList.add(item);
                 }
                 vo.setGroupList(groupList);
@@ -839,13 +836,223 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForInsertMemberForward(params,bean));
         vQuery.add(buildSQLForDeleteMemberBackward(params,bean));
 
-        bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
-        return GlobalResponse.ok();
+        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows >0) {
+            return GlobalResponse.ok("登録処理成功しました");
+        }
+        return GlobalResponse.error("登録処理失敗しました");
     }
+
+    public Map<String,Object> showEditEvalHandler(PsDBBean bean,String sectionId,String groupId,String empId) {
+        EvaluatorSettingParam params = new EvaluatorSettingParam();
+        configYYYYMMDD(bean,params);
+        params.setCompanyId(bean.getCompCode());
+        params.setCustomerID(bean.getCustID());
+        params.setLanguage(bean.getLanguage());
+        params.setGroup(groupId);
+        params.setAction(EvaluatorSettingConst.ACT_EDITEVAL_REVAL);
+
+        params.setSection(sectionId);
+        params.setEmployee(empId);
+
+        Map<String,Object> map = MapUtil.newHashMap();
+        // 検索
+        Vector<String> vQuery = new Vector<>();
+        vQuery.add(buildSQLForSelectEvaluator(params));         // 0 承認者情報取得
+        vQuery.add(buildSQLForSelectApprovalLevelList(params)); // 1 決裁レベル取得
+        vQuery.add(buildSQLForSelectDefaultApproval(params));   // 2 デフォルト決裁レベル取得
+        vQuery.add(buildSQLForSelectDesigTerm(params));         // 3 異動歴の所属期間
+
+        int IDX_EVALUATOR = 0;	// 承認者情報
+        int IDX_APPROVAL = 1;    // 決裁レベル情報
+        int IDX_DEFAULT = 2;    // デフォルト決裁レベル
+
+        PsResult psResult;
+        int evaluatorCount;
+        int levelCount;
+        try {
+            referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
+                    TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
+            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            evaluatorCount = bean.getCount(psResult,IDX_EVALUATOR);
+            levelCount = bean.getCount(psResult,IDX_APPROVAL);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new GlobalException(e.getMessage());
+        }
+
+        // REQUEST:組織グループ
+        params.setRootGroup(referList.getTargetSec() + '|' + TmgUtil.Cs_DEFAULT_GROUPSEQUENCE);
+
+        boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
+        map.put("enableMonthlyResult", hasAuthMonthApprove);
+
+        map.put("groupName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_GROUPNAME,0));
+        map.put("empName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_EMPLOYEENAME,0));
+        map.put("sectionName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_SECTIONNAME,0));
+        map.put("postName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_POSTNAME,0));
+
+        //組織直下のグループ以外の場合、権限付与のチェックボックスをdisableにする
+        boolean enableEditAuthority = StrUtil.equals(params.getRootGroup(),groupId);
+        map.put("enableEditAuthority",enableEditAuthority);
+
+        map.put("defaultLevel",bean.valueAtColumnRow(psResult,IDX_DEFAULT, EvaluatorSettingConst.COL_MGD_DEFAULT_APPLEVEL, 0));
+
+        List<Map<String,Object>> authInfoList = CollUtil.newArrayList();
+        for (int i = 0; i < evaluatorCount; i++) {
+            Map<String,Object> authInfo = MapUtil.newHashMap();
+            // 勤怠承認
+            boolean dailyResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_RESULTS, 0));
+            // 月次承認
+            boolean monthlyDailyResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_MONTHLYRESULTS, 0));
+            // 休暇・休出承認
+            boolean notificationResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_NOTIFICATION, 0));
+            // 超過勤務命令
+            boolean overTime = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_OVERTIME, 0));
+            // 予定作成
+            boolean schedule = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_SCHEDULE, 0));
+            // 権限付与
+            boolean authority = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_AUTHORITY, 0));
+
+            //　レベル
+            String level = bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_APPROVALLEVEL,i);
+
+            String startDate = bean.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_FROM, i);
+            String endDate = bean.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_TO, i);
+
+            authInfo.put("dailyResult",dailyResult);
+            authInfo.put("monthlyDailyResult",monthlyDailyResult);
+            authInfo.put("notificationResult",notificationResult);
+            authInfo.put("overTime",overTime );
+            authInfo.put("schedule",schedule);
+            authInfo.put("authority",authority);
+            authInfo.put("startDate",startDate);
+            authInfo.put("endDate",endDate);
+            authInfo.put("level",level);
+
+            authInfoList.add(authInfo);
+        }
+
+        List<Map<String,String>> levelList = CollUtil.newArrayList();
+        for (int i = 0; i < levelCount; i++) {
+            String sCode  = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
+            String sName = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
+            Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
+            levelList.add(item);
+        }
+        map.put("levelList",levelList);
+        map.put("authInfoList",authInfoList);
+
+        return map;
+    }
+
+
 
     /*
      * ========================= 内部处理逻辑Start ==================
      */
+
+    /**
+     * 異動歴の所属期間を取得するSQLを返す。
+     *
+     * @return String SQL
+     */
+    private String buildSQLForSelectDesigTerm(EvaluatorSettingParam evaluaterSettingParam) {
+
+        String sCustId = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompId = escDBString(evaluaterSettingParam.getCompanyId());
+        String sEmpId  = escDBString(evaluaterSettingParam.getEmployee());
+        String sSecId  = escDBString(evaluaterSettingParam.getSection());
+
+        return " SELECT " +
+                "     TO_CHAR(HD_DSTARTDATE_CK, 'YYYY/MM/DD') as HD_DSTARTDATE_CK, " + // 0 期間開始日
+                "     TO_CHAR(HD_DENDDATE,      'YYYY/MM/DD') as HD_DENDDATE " +       // 1 期間終了日
+                " FROM " +
+                "     HIST_DESIGNATION " +
+                " WHERE " +
+                "     HD_CCUSTOMERID_CK = " + sCustId +
+                " AND HD_CCOMPANYID_CK  = " + sCompId +
+                " AND HD_CEMPLOYEEID_CK = " + sEmpId +
+                " AND HD_CSECTIONID_FK  = " + sSecId +
+                " ORDER BY " +
+                "     HD_DSTARTDATE_CK ";
+    }
+
+
+    /**
+     * デフォルト決裁レベルを取得するSQLを返す
+     * @return String SQL
+     */
+    private String buildSQLForSelectDefaultApproval(EvaluatorSettingParam evaluaterSettingParam){
+
+        String sBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());
+        String sCustId   = escDBString(evaluaterSettingParam.getCustomerId());
+        String sCompId   = escDBString(evaluaterSettingParam.getCompanyId());
+        String sEmpId    = escDBString(evaluaterSettingParam.getEmployee());
+        String sLangage  = escDBString(evaluaterSettingParam.getLanguage());
+
+        return " SELECT " +
+                "     TMG_F_GET_DEFAULT_APPLEVEL( " +
+                "                               " + sEmpId + ", " +
+                "                               " + sBaseDate + ", " +
+                "                               " + sCustId + ", " +
+                "                               " + sCompId + ", " +
+                "                               " + sLangage +
+                "                               ) " +
+                " FROM    " +
+                "     DUAL ";
+    }
+
+    /**
+     * 承認者情報を取得するSQLを返す
+     *
+     * @return String SQL
+     */
+    private String buildSQLForSelectEvaluator(EvaluatorSettingParam evaluaterSettingParam) {
+
+        // 検索条件に使用するパラメータを準備
+        String sDBCustId   = escDBString(evaluaterSettingParam.getCustomerId()); // 顧客コード
+        String sDBCompId   = escDBString(evaluaterSettingParam.getCompanyId());  // 法人コード
+        String sDBGroupId  = escDBString(evaluaterSettingParam.getGroup());      // グループコード
+        String sDBBaseDate = SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD());      // 基準日
+        String sDBLang     = escDBString(evaluaterSettingParam.getLanguage());   // 言語区分
+
+        return " SELECT " +
+                "     TMG_F_GET_ME_NAME(" + escDBString(evaluaterSettingParam.getEmployee()) + ", " + sDBBaseDate + ", 0 ) as TEV_CEMPLOYEEID, " +
+                "     TMG_F_GET_MO(D.HD_CSECTIONID_FK, " + sDBBaseDate + ", 1, D.HD_CCUSTOMERID_CK,D.HD_CCOMPANYID_CK, " + sDBLang + ") as HD_CSECTIONID_FK, " +
+                "     TMG_F_GET_MP(D.HD_CPOSTID_FK, " + sDBBaseDate + ", D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, " + sDBLang + ") as HD_CPOSTID_FK, " +
+                "     E.TEV_CRESULTS, " +
+                "     E.TEV_CNOTIFICATION, " +
+                "     E.TEV_COVERTIME, " +
+                "     E.TEV_CSCHEDULE, " +
+                "     E.TEV_CAUTHORITY, " +
+                "     (SELECT G.TGR_CGROUPNAME FROM TMG_GROUP G " +
+                "      WHERE  G.TGR_CGROUPID  = " + sDBGroupId +
+                "      AND G.TGR_DSTARTDATE  <= " + sDBBaseDate +
+                "      AND G.TGR_CCOMPANYID   = " + sDBCompId +
+                "      AND G.TGR_CCUSTOMERID  = " + sDBCustId +
+                "      AND G.TGR_DENDDATE    >= " + sDBBaseDate + ") as TGR_CGROUPNAME, " +
+                "     E.TEV_CMONTHLYAPPROVAL, " +
+                "     E.TEV_CAPPROVAL_LEVEL, " +
+                "     TO_CHAR(E.TEV_DSTARTDATE, 'yyyy/mm/dd') AS TEV_DSTARTDATE, " +
+                "     TO_CHAR(E.TEV_DENDDATE,   'yyyy/mm/dd') AS TEV_DENDDATE " +
+                " FROM " +
+                "     TMG_EVALUATER E, HIST_DESIGNATION D " +
+                " WHERE " +
+                "     E.TEV_CEMPLOYEEID      = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND E.TEV_CSECTIONID       = " + escDBString(evaluaterSettingParam.getSection()) +
+                " AND E.TEV_CGROUPID         = " + sDBGroupId +
+                " AND E.TEV_CCOMPANYID       = " + sDBCompId +
+                " AND E.TEV_CCUSTOMERID      = " + sDBCustId +
+                " AND D.HD_CCUSTOMERID_CK(+) = E.TEV_CCUSTOMERID " +
+                " AND D.HD_CCOMPANYID_CK(+)  = E.TEV_CCOMPANYID " +
+                " AND D.HD_CEMPLOYEEID_CK(+) = E.TEV_CEMPLOYEEID " +
+                " AND D.HD_DSTARTDATE_CK(+) <= " + sDBBaseDate +
+                " AND D.HD_DENDDATE(+)      >= " + sDBBaseDate +
+                " AND D.HD_CIFKEYORADDITIONALROLE(+) = '0' " +
+                " ORDER BY  " +
+                "     E.TEV_DSTARTDATE ";
+    }
 
     /** メンバー割付 一覧ソート順制御プロパティ値(所属グループ、役職、氏名順) */
     public static final String SYSTEM_VAL_MEMBER_SORT = "group";

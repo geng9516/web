@@ -144,9 +144,27 @@ public class EvaluatorSettingController {
 
     // ンバー割付処理をするメソッド
     // http://localhost:6879/sys/evaluatorsetting/editmember?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02
+    /**
+     *   提交的json体：
+     *   {
+     *      "sectionId":"",
+     *      "groupId":"",
+     *      "empId":""
+     *   }
+     */
     @PostMapping("editmember")
     public Map<String,Object> editMember(@RequestAttribute("BeanName") PsDBBean bean,@Valid @RequestBody EditMemberDTO dto) {
         return evaluatorSettingBean.editMemberHandler(bean,dto);
+    }
+
+    // 承認者編集画面表示
+    // http://localhost:6879/sys/evaluatorsetting/editeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02&sectionId=201000000000&empId=46402406&groupId=201000000000%7C000000
+    @GetMapping("editeval")
+    public Map<String,Object> showEditEval(@RequestAttribute("BeanName") PsDBBean bean,
+                                           @RequestParam("sectionId") String sectionId,
+                                           @RequestParam("groupId") String groupId,
+                                           @RequestParam("empId") String empId) {
+        return evaluatorSettingBean.showEditEvalHandler(bean,sectionId,groupId,empId);
     }
 
 

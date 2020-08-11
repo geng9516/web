@@ -17,7 +17,6 @@ import java.util.List;
 @EqualsAndHashCode(of={"empId","groupId"})
 public class EditMemberVO {
 
-  private String empId;
   private String groupId;
   private String empName;
   private String groupName;
