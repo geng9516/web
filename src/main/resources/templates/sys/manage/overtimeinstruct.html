@@ -773,7 +773,8 @@
                 async getTableDataDaily(e) {
                     this.dailyTableLoading = true
                     this.query.baseDay = e.day
-                    if (new Date(this.sysDate) > new Date(e.day)) {
+
+                    if (new Date(this.sysDate) >= new Date(e.day)) {
                         this.restTimeSetDisable = true
                     } else {
                         this.restTimeSetDisable = false

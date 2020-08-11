@@ -239,7 +239,7 @@
 
       <!-- 代理申请的 -->
       <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="closeAgentApplyDrawer">
-        <Tabs value="name1" :animated="false">
+        <Tabs :value="curTab" :animated="false">
           <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
@@ -669,6 +669,7 @@
           uploadFiles: [],
           deleteFiles: [],
           curClickedEmpId:0,
+          curTab:'name1'
         }
       },
       async mounted() {
@@ -781,6 +782,7 @@
           Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
             this.agencyApplyPanel = false
             this.agencyApplyPanelLoading = false
+            this.curTab='name2'
           })
         },
         async getApplyEmployPersonalInfo(opts) {
