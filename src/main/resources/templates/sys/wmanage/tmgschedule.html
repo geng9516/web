@@ -118,6 +118,11 @@
                     <div class="label">年次休暇残</div>
                     <div class="person-info tc">{{paidHolidayVO.npaidRestDaysHour}}</div>
                 </i-col>
+                <i-col span="4">
+                    <div class="label">発令</div>
+                    <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</span>
+                    </div>
+                </i-col>
             </Row>
 
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
@@ -420,6 +425,8 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                hatuReiName:'',
+                hatuResTimeRange:'',
                 weekPatternloading2:false,
                 weekPatternloading:false,
                 valuebak:[],
@@ -690,6 +697,17 @@
             }
         },
         methods: {
+            async getHatuRei() {
+                try {
+                    const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                    this.hatuReiName=data.name
+                    this.hatuResTimeRange=data.timerange
+                } catch (error) {
+                    return
+                }finally {
+
+                }
+            },
             handleInputChange(i,object,value,el) {
                 if(object) {
                     this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
@@ -711,10 +729,13 @@
                     return
                 }
                 const that = this
-                this.value.forEach(item=>{
-                    Object.keys(item).forEach(function(key) {
+
+                this.valueMap.map(Number).forEach(e=>{
+                    console.log("ee"+e)
+                    let index=--e
+                    Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
-                            item[key]=JSON.parse(JSON.stringify(that.pattern[key]))
+                            that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
                         }
                     })
                 })
@@ -832,6 +853,7 @@
                 this.getSelectIkkaInfo()
                 this.selectWeekPtn()
                 this.selectTmgWeekPatternList()
+                this.getHatuRei()
 
             },
             async getSelectScheduleInfo() {
@@ -947,6 +969,96 @@
                     return
                 }
                 let postValue=this.valueMap.map(Number).map(i=>this.value[--i])
+
+                const that = this
+                console.log("postValue"+JSON.stringify(postValue))
+                let result=false
+                postValue.some(e=>{
+                    console.log("workId"+e.workId)
+                    console.log("nopen"+e.nopen)
+                    console.log("nclose"+e.nclose)
+                    console.log("restList"+JSON.stringify(e.restList))
+                    let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
+                    console.log("count"+count)
+                    let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
+                    if(e.workId=="TMG_WORK|000"){
+                        if (!e.nopen) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e.nclose) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 終業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=count ){
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間＜終業時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+
+                        let countRest=0;
+                        let checkArr = []
+
+                        if(count >=360 && e.restList.some(e1=>{
+
+                            if (!e1.restOpen) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!e1.restClose) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
+                        })){
+                            result=true
+                            return result
+                        }
+                        console.log("countRest"+countRest)
+                        let cc=count-countRest
+                        if(480>=cc && cc >360 &&  45>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(cc >480 &&  60>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        console.log("checkArr2"+checkArr)
+                        const checkArr2 = new Set([...checkArr])
+                        if (checkArr.length !== checkArr2.size) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                    }
+                })
+
+                if(result){
+                    return
+                }
+
+
                 let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
                 let txtEndDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
 
@@ -1037,12 +1149,14 @@
                 this.query.txtEndDate=this.selectScheduleInfo.preEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
+                this.getHatuRei()
             },
             async nextMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.nextStart
                 this.query.txtEndDate=this.selectScheduleInfo.nextEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
+                this.getHatuRei()
             },
             rowClass(row) {
             },
