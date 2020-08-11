@@ -20,8 +20,8 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0"  @click="handleChangeWorkPattern();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
-                <i-button type="success" icon="md-create" size="large" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
+                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0"  @click="handleChangeWorkPattern();disableCheckBox();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="success" icon="md-create" size="large" :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
                 <i-button size="large" v-if=" isEditable" @click="isEditable = !isEditable">キャンセル</i-button>
             </div>
         </div>
@@ -217,15 +217,15 @@
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <i-select v-model="value[row._index].workId" transfer v-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
+                <span v-if=" isEditable && !kubunnList.map(e=>e.MGD_CMASTERCODE).includes(value[row._index].workId)">{{value[row._index].workMM}}</span>
+                <i-select v-model="value[row._index].workId" transfer v-else-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
-
                 <span :class="dayRed(row.tda_cworkingid_mm)" v-else>{{ row.tda_cworkingid_mm }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workFar">
-                <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable">
+                <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable" :disabled="!kubunnList.map(e=>e.MGD_CMASTERCODE).includes(value[row._index].workId)">
                     <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
                 <span  v-else>{{ row.tda_cbusinesstripid_mm=='なし'?'':row.tda_cbusinesstripid_mm }}</span>
@@ -245,10 +245,10 @@
                 <div v-if=" isEditable">
                     <Row :gutter="10" v-for="(item, i) of value[row._index].restList" :key="i" class="mb5">
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restOpen" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restOpen', $event.target)"/>
+                            <i-input v-model="value[row._index].restList[i].restOpen" :disabled="value[row._index].workId!='TMG_WORK|000'" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restOpen', $event.target)"/>
                         </i-col>
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restClose" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restClose', $event.target)"/>
+                            <i-input v-model="value[row._index].restList[i].restClose" :disabled="value[row._index].workId!='TMG_WORK|000'" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restClose', $event.target)"/>
                         </i-col>
                         <i-col span="8" v-show="value[row._index].restList.length > 1">
                             <i-button ghost type="error" @click="handleMinusRest(value[row._index].restList, i)">-</i-button>
@@ -288,6 +288,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                postScheduleLoading:false,
                 hatuReiName:'',
                 hatuResTimeRange:'',
                 wokertypename:'',
@@ -471,12 +472,18 @@
                 } else {
                     return result
                 }
+
             }
         },
         methods: {
+            disableCheckBox(){
+                console.log("")
+
+
+            },
             async getHatuRei() {
                 try {
-                    const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                    const { data } = await this.http.get('sys/schedule/hatuRei', this.referListObject)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -567,6 +574,8 @@
                 this.pattern.nclose=handleTime(nclose)
                 this.pattern.restList=restList
 
+
+
             },
             async handleClickLeaf(e) {
                 this.deptDrawShow = false
@@ -613,6 +622,7 @@
                         })
                         return {
                             "workId":item.tda_cworkingid_p,
+                            "workMM":item.tda_cworkingid_mm,
                             "bussinessTripid":item.tda_cbusinesstripid_p,
                             "nclose":item.tda_nclose_p.trim(),
                             "dyyyymmdd":item.tda_ccustomerid,
@@ -628,7 +638,8 @@
                     this.loading = false
                 }
             },
-            async postExecuteEditMonthlyUSchedule(){
+            postExecuteEditMonthlyUSchedule: Debounce( async function() {
+
 
                 if(this.valueMap.length==0){
                     this.$Notice.error({
@@ -743,14 +754,17 @@
                 this.query.txtEndDate=txtEndDate
                 this.query.content=JSON.stringify(content)
                 console.log("postExecuteEditMonthlyUSchedule"+this.query.content)
+                this.postScheduleLoading=true
                 await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
                 this.$Message.success('登録完了')
                 this.query.content=''
                 this.isEditable=false
                 this.valueMap=[]
+                this.postScheduleLoading=false
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
-            },
+
+            }),
             async getSelectIkkaInfo() {
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
                     this.selectIkkaInfo=data
