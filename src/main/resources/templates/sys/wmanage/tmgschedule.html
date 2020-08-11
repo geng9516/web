@@ -333,14 +333,14 @@
             <Row class="mt5">
                 <i-col span="6" class="label">適用期間</i-col>
                 <i-col span="4">
-                    <date-picker type="date"  class="datepicker-single mb5" placeholder="日付け"
+                    <date-picker type="date"  :value="value2.applyStart" class="datepicker-single mb5" placeholder="日付け"
                                  format="yyyy/MM/dd" @on-change="value2.applyStart = $event"></date-picker>
                 </i-col>
                 <i-col span="1">
                 <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 6px">－</span>
                 </i-col>
                 <i-col span="4">
-                    <date-picker type="date"  class="datepicker-single mb5" placeholder="日付け"
+                    <date-picker type="date"  :value="value2.applyEnd" class="datepicker-single mb5" placeholder="日付け"
                                  format="yyyy/MM/dd" @on-change="value2.applyEnd = $event" ></date-picker>
                 </i-col>
 
@@ -877,9 +877,9 @@
                         return {
                             "workId":item.tda_cworkingid_p,
                             "bussinessTripid":item.tda_cbusinesstripid_p,
-                            "nclose":item.tda_nclose_p,
+                            "nclose":item.tda_nclose_p.trim(),
                             "dyyyymmdd":item.tda_ccustomerid,
-                            "nopen":item.tda_nopen_p,
+                            "nopen":item.tda_nopen_p.trim(),
                             "comment":item.tda_ccomment_p,
                             "restList":restList
                         }
@@ -937,9 +937,79 @@
                 const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, this.query)
                 this.tableDataUsed.splice(index,1)
             },
-            async executeMakeWeekPattern(){
+                async executeMakeWeekPattern(){
                     if(this.value2.applyStart=='' || this.value2.applyEnd==''){
                         this.$Message.error("適用期間が選択されていません")
+                        return
+                    }
+                    let now=new Date()
+                    let nextMonth=new Date(now.getFullYear(), now.getMonth()+1, 1);
+                    let nextMonthStr=Utils.formatDate(nextMonth,"YYYY/MM/DD")
+                    let msg=`は${nextMonthStr}以降を入力してください。`
+                    console.log(this.value2.applyStart)
+                    console.log(nextMonth>new Date(this.value2.applyStart))
+                    if(nextMonth>new Date(this.value2.applyStart)){
+                        this.$Message.error('適用開始日'+msg)
+                        return
+                    }
+
+                    if(nextMonth>new Date(this.value2.applyEnd)){
+                        this.$Message.error('適用終了日'+msg)
+                        return
+                     }
+                    console.log("value2"+JSON.stringify(this.value2))
+                    let result=false
+                    let that=this
+                    this.value2.applyList.some(e=>{
+                        let count=Utils.timeToMinute(e.endTime)-Utils.timeToMinute(e.startTime)
+
+                        console.log("applyList"+JSON.stringify(e))
+                        if(e.workDivisionId=='TMG_WORK|000'){
+                            if (!e.startTime) {
+                                that.$Notice.warning({ title: '注意', desc:'始業時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!e.endTime) {
+                                that.$Notice.warning({ title: '注意', desc:'始業時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(0>=count){
+                                that.$Notice.warning({ title: '注意', desc:'始業時刻は、終業時刻より前の時刻を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(e.restStartTime!='' && e.restEndTime==''){
+                                that.$Notice.warning({ title: '注意', desc:'休憩終了時刻を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(e.restStartTime=='' && e.restEndTime!=''){
+                                that.$Notice.warning({ title: '注意', desc:'休憩開始時刻を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+
+                            if(e.restStartTime=='' && e.restEndTime!=''){
+                                that.$Notice.warning({ title: '注意', desc:'休憩開始時刻を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(e.restStartTime!='' && e.restEndTime!=''){
+                                let count=Utils.timeToMinute(e.restEndTime)-Utils.timeToMinute(e.restStartTime)
+                                if(0>=count){
+                                    that.$Notice.warning({ title: '注意', desc:'休憩開始時刻は、休憩終了時刻より前の時刻を入力してください。', duration: 6.5 })
+                                    result=true
+                                    return result
+                                }
+                            }
+
+                        }
+
+
+                    })
+                    if(result){
                         return
                     }
                     this.weekPatternloading2=true
@@ -1078,6 +1148,7 @@
                 this.$Message.success('登録完了')
                 this.query.content=''
                 this.isEditable=false
+                this.valueMap=[]
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
 
