@@ -270,6 +270,7 @@
         },
         async created() {
             this.getData()
+            this.getStatus()
         },
         computed: {
             tableHeadFixed() {
@@ -570,7 +571,7 @@
                 //状態をリセット
                 this.param_exec.actionCode = 'ACT_SIM_EXEC'
                 //先ずは、状態を取得する
-                await this.getStatus()
+               // await this.getStatus()
                 if (this.execStatus === '実行中') {
                     //タスクは、実行していますので、
                     msg = "試行を取り消します。よろしいですか"
@@ -654,13 +655,46 @@
                 }
                 this.execLoading = false
 
+                var flag = false
+                if (data.CODE === 'TMG_WTSIMSTATUS|020' || data.CODE === 'TMG_WTSIMSTATUS|120') {
+                    flag = false
+                } else {
+                    flag = true
+                }
+
+                /*while (!flag) {
+                    this.sleep(3000)
+                    if (data.CODE === 'TMG_WTSIMSTATUS|020' || data.CODE === 'TMG_WTSIMSTATUS|120') {
+                        flag = false
+                    } else {
+                        flag = true
+                    }
+                    console.log('flag-->',flag)
+                    if(flag){
+                        break
+                    }
+                    await this.getStatus()
+                }
+*/
                 /*if (data.CODE === 'TMG_WTSIMSTATUS|020') {
                     this.timer = setInterval(this.getStatus, 5000)
                 } else {
                     clearInterval(this.timer);
                 }
-*/
+                */
+            },
+            //sleep
+            sleep(numberMillis) {
+                var now = new Date();
+                var exitTime = now.getTime() + numberMillis;
+                while (true) {
+                    now = new Date();
+                    if (now.getTime() > exitTime) {
+                        return;
+                    }
+                }
             }
+
         }
 
     })

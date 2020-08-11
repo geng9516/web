@@ -129,6 +129,20 @@ public class TmgNotificationController {
 
 
     /**
+     * 一括承認
+     *
+     * @return　エラー null 为正常申请
+     */
+    @PostMapping("BulkPermit")
+    @ResponseBody
+    public GlobalResponse BulkPermit(
+            @RequestBody List<String> ntfNoList,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+
+        return tmgNotificationBean.bulkPermit(ntfNoList,psDBBean);
+    }
+
+    /**
      * 差戻し
      *
      * @return　エラー null 为正常申请
