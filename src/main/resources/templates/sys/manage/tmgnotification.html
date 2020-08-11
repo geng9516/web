@@ -22,7 +22,7 @@
           <span style="flex:1"></span>
           <i-button type="primary" ghost size="large" icon="md-nutrition" @click="agencyApplyShow = true">代理申請
           </i-button>
-          <i-button type="primary" size="large" icon="md-done-all" @click="confirm">承認</i-button>
+          <i-button type="primary" size="large" icon="md-done-all" @click="confirm" :loading="confirmLoading">一括承認</i-button>
         </div>
       </div>
       <div class="searchwrap">
@@ -99,7 +99,7 @@
         </Row>
       </div>
       <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
-        :data="tableData" :loading="loading">
+        :data="tableData" :loading="loading" ref="table">
         <template slot-scope="{ row }" slot="dateList">
           <span>{{row.tntfDbegin === row.tntfDend ? row.tntfDbegin :  `${row.tntfDbegin} ～ ${row.tntfDend}`}}</span>
         </template>
@@ -584,6 +584,7 @@
           loading: false,
           detailsLoading: false,
           restInfoLoading: false,
+          confirmLoading: false,
           errorInfo: false,
           agencyApplyPanel: true, // 代理申请第二个panel是否可点
           agencyApplyPanelLoading: false,
@@ -724,7 +725,12 @@
               this.pageValue.curPage = 1
             }
             const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
-            this.tableData = data.list
+            this.tableData = data.list.map(e=>{
+              return {
+                ...e,
+                _disabled: e.tntfCstatusflg !== 'TMG_NTFSTATUS|2'
+              }
+            })
             this.pageValue.amount = data.totalCount
             if (!isInit) this.$Message.success('再表示完了')
             this.amount = data.totalCount || 2
@@ -941,7 +947,18 @@
             cancelAnimationFrame(animateMachine)
           }
         },
-        confirm() { },
+        async confirm() {
+          this.confirmLoading = true
+          try {
+            let OPTS = { ...this.referListObject, ntfNoList:this.$refs.table.getSelection().map(e=>e.tntfCntfNo) }
+            const { data } = await this.http.post('sys/vapply/BulkPermit', OPTS)
+            this.$Message.success('一括承認完了')
+            this.getTableData(false, true)
+          } catch (error) {
+          } finally {
+            this.confirmLoading = false
+          }
+        },
         confirmByPerson() {
           let query = { ...this.referListObject }
           query.action = "ACT_EditPerm_UPermit"
