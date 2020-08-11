@@ -225,22 +225,22 @@ public class TmgNotificationBean {
             nddVo.setDayOfWeek(nlVo.getDayOfWeek());
             nddVo.setFinalApprovelLevel(nlVo.getFinalApprovelLevel());
             nddVo.setTntfCowncomment(nlVo.getTntfCowncomment());
-            //数据取消文本处理
-            if(nddVo.getTntfCstatusflg().equals(STATUS_WITHDRAW)||nddVo.getTntfCstatusflg().equals(STATUS_REJECT)){
-
-            }else if(nddVo.getTntfDbegin().equals(nddVo.getTntfDend())){
-                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel2())&&nddVo.getTntfDcancel2().equals(nddVo.getTntfDbegin())){
-                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
-                }
-            }else{
-                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDbegin())
-                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
-                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
-                }else if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDend())
-                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
-                    nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
-                }
-            }
+//            //数据取消文本处理
+//            if(nddVo.getTntfCstatusflg().equals(STATUS_WITHDRAW)||nddVo.getTntfCstatusflg().equals(STATUS_REJECT)){
+//
+//            }else if(nddVo.getTntfDbegin().equals(nddVo.getTntfDend())){
+//                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel2())&&nddVo.getTntfDcancel2().equals(nddVo.getTntfDbegin())){
+//                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
+//                }
+//            }else{
+//                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDbegin())
+//                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
+//                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
+//                }else if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDend())
+//                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
+//                    nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
+//                }
+//            }
             if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())&&param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
                 param.setNtfNo(nlVo.getTntfCntfNo());
                 //详细数据取得
@@ -491,6 +491,129 @@ public class TmgNotificationBean {
     }
 
 
+    /**
+     * 一括承認
+     * @param ntfNoList
+     * @param psDBBean
+     * @return
+     */
+    public GlobalResponse bulkPermit(List<String> ntfNoList,PsDBBean psDBBean){
+        for(String ntfNo:ntfNoList){
+
+            ParamNotificationListDto param = new ParamNotificationListDto();
+            param.setCompId(psDBBean.getCompCode());
+            param.setCustId(psDBBean.getCustID());
+            param.setAction(ACT_EDITPERM_UPERMIT);
+            param.setUserCode(psDBBean.getUserCode());
+            param.setNtfNo(ntfNo);
+            param.setSiteId(psDBBean.getSiteId());
+            try{
+                // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
+                int deleteErrMsg = deleteErrMsg(param);
+                int deleteNotificationCheck = deleteNotificationnCheck(param);
+
+                permit(ntfNo,psDBBean);
+
+                int insertErrmsg = insertErrMsg(param);
+                String selectErrMsg = selectErrCode(param);
+                if(!selectErrMsg.equals("0") ){
+                    return GlobalResponse.error(selectErrMsg);
+                }else{
+                    int insertTrigger = insertTrigger(param);
+                }
+            }catch (GlobalException e){
+                return GlobalResponse.error(e.getMessage());
+            }finally {
+                deleteTrigger(param);
+                deleteErrMsg(param);
+                deleteNotificationnCheck(param);
+            }
+
+        }
+        return GlobalResponse.ok();
+    }
+
+
+
+
+    private int permit(String ntfNo,PsDBBean psDBBean){
+        //元データを取り
+        QueryWrapper<TmgNotificationDO> queryWrapper = new QueryWrapper<TmgNotificationDO>();
+        queryWrapper.eq("TNTF_CCUSTOMERID", psDBBean.getCustID());
+        queryWrapper.eq("TNTF_CCOMPANYID", psDBBean.getCompCode());
+        queryWrapper.eq("TNTF_CNTFNO", ntfNo);
+        TmgNotificationDO tnDo = iTmgNotificationService.getBaseMapper().selectOne(queryWrapper);
+
+        TmgNotificationCheckDO tncDo = new TmgNotificationCheckDO();
+
+        tncDo.setTntfCcustomerid(tnDo.getTntfCcustomerid());
+        tncDo.setTntfCcompanyid(tnDo.getTntfCcompanyid());
+        tncDo.setTntfCemployeeid(tnDo.getTntfCemployeeid());
+        tncDo.setTntfDstartdate(tnDo.getTntfDstartdate());
+        tncDo.setTntfDenddate(tnDo.getTntfDenddate());
+
+        tncDo.setTntfCmodifieruserid(psDBBean.getUserCode());
+        tncDo.setTntfDmodifieddate(DateTime.now());
+
+        tncDo.setTntfCmodifierprogramid(BEAN_DESC + "_" + ACT_EDITPERM_UPERMIT);
+
+        tncDo.setTntfNseq(tnDo.getTntfNseq());
+        tncDo.setTntfCntfno(tnDo.getTntfCntfno());
+
+        tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
+        tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
+
+        tncDo.setTntfCalteremployeeid(tnDo.getTntfCalteremployeeid());
+        tncDo.setTntfDnotification(tnDo.getTntfDnotification());
+        tncDo.setTntfDbegin(tnDo.getTntfDbegin());
+        tncDo.setTntfDend(tnDo.getTntfDend());
+
+        tncDo.setTntfDcancel(tnDo.getTntfDcancel());
+        tncDo.setTntfDcancelend(tnDo.getTntfDcancelend());
+
+        tncDo.setTntfNtimeOpen(tnDo.getTntfNtimeOpen());
+        tncDo.setTntfNtimeClose(tnDo.getTntfNtimeClose());
+        tncDo.setTntfNtimezoneOpen(tnDo.getTntfNtimezoneOpen());
+        tncDo.setTntfNtimezoneClose(tnDo.getTntfNtimezoneClose());
+        tncDo.setTntfNnoreserved(tnDo.getTntfNnoreserved());
+        tncDo.setTntfNmon(tnDo.getTntfNmon());
+        tncDo.setTntfNtue(tnDo.getTntfNtue());
+        tncDo.setTntfNwed(tnDo.getTntfNwed());
+        tncDo.setTntfNthu(tnDo.getTntfNthu());
+        tncDo.setTntfNfri(tnDo.getTntfNfri());
+        tncDo.setTntfNsat(tnDo.getTntfNsat());
+        tncDo.setTntfNsun(tnDo.getTntfNsun());
+        tncDo.setTntfNdayofweek(tnDo.getTntfNdayofweek());
+        tncDo.setTntfCtype(tnDo.getTntfCtype());
+        tncDo.setTntfCowncomment(tnDo.getTntfCowncomment());
+
+        tncDo.setTntfCboss(psDBBean.getUserCode());
+        tncDo.setTntfDboss(DateTime.now());
+        tncDo.setTntfCcancel(tnDo.getTntfCcancel());
+        tncDo.setTntfCcancelcomment(tnDo.getTntfCcancelcomment());
+
+        tncDo.setTntfDdaikyu(tnDo.getTntfDdaikyu());
+        tncDo.setTntfCsickName(tnDo.getTntfCsickName());
+        tncDo.setTntfCdisaster(tnDo.getTntfCdisaster());
+        tncDo.setTntfDperiodDate(tnDo.getTntfDperiodDate());
+        tncDo.setTntfNuapperAddition(tnDo.getTntfNuapperAddition());
+        tncDo.setTntfCntfnoIm(tnDo.getTntfCntfnoIm());
+        tncDo.setTntfNrestopen(tnDo.getTntfNrestopen());
+        tncDo.setTntfNrestclose(tnDo.getTntfNrestclose());
+        tncDo.setTntfCkanjiname(tnDo.getTntfCkanjiname());
+        tncDo.setTntfCrelation(tnDo.getTntfCrelation());
+        tncDo.setTntfDdateofbirth(tnDo.getTntfDdateofbirth());
+        tncDo.setTntfNnumberOfTarget(tnDo.getTntfNnumberOfTarget());
+        tncDo.setTntfCntfnoMoto(tnDo.getTntfCntfnoMoto());
+
+        tncDo.setTntfCapprovalLevel(tnDo.getTntfCapprovalLevel());
+
+        tncDo.setTntfCsiteid(psDBBean.getSiteId());
+        tncDo.setTntfCntfaction(TmgUtil.Cs_MGD_NTFACTION_6);
+
+         return iTmgNotificationCheckService.getBaseMapper().insert(tncDo);
+
+    }
     /**
      * 新規申請・再申請・代理申請
      */

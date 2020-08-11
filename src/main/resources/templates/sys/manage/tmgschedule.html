@@ -120,8 +120,12 @@
                 <div class="label">年次休暇残</div>
                 <div class="person-info tc">{{paidHolidayVO.npaidRestDaysHour}}</div>
             </i-col>
+                <i-col span="4">
+                    <div class="label">発令</div>
+                    <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</span>
+                    </div>
+                </i-col>
         </Row>
-
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
             <Icon type="logo-buffer"></Icon>
             一括適用
@@ -284,6 +288,8 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                hatuReiName:'',
+                hatuResTimeRange:'',
                 wokertypename:'',
                 valuebak:[],
                 patternDisabled:false,
@@ -468,6 +474,17 @@
             }
         },
         methods: {
+            async getHatuRei() {
+                try {
+                    const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                    this.hatuReiName=data.name
+                    this.hatuResTimeRange=data.timerange
+                } catch (error) {
+                    return
+                }finally {
+
+                }
+            },
             handleInputChange(i,object,value,el) {
                 if(object) {
                     this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
@@ -572,6 +589,7 @@
 
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
+                this.getHatuRei()
 
 
 
@@ -729,6 +747,7 @@
                 this.$Message.success('登録完了')
                 this.query.content=''
                 this.isEditable=false
+                this.valueMap=[]
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
             },
@@ -813,12 +832,14 @@
                 this.query.txtEndDate=this.selectScheduleInfo.preEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
+                this.getHatuRei()
             },
             async nextMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.nextStart
                 this.query.txtEndDate=this.selectScheduleInfo.nextEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
+                this.getHatuRei()
             },
             rowClass(row) {
 
