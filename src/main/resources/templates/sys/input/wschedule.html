@@ -67,8 +67,10 @@
                     </div>
                 </i-col>
                 <i-col span="8" class="no-border-radius">
-                    <div class="work-changed-day">摘要</div>
-                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="tmyComment" />
+                    <div class>
+                        <div class="work-changed-day">摘要</div>
+                        <div class="month-sum">{{ tmyComment }}</div>
+                    </div>
                 </i-col>
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
