@@ -239,13 +239,13 @@
                                     <Divider size="small" style="margin-top:-15px" orientation="left">開始・終了</Divider>
                                     <Row class="mb20">
                                         <i-col span="10">
-                                            <i-input v-model="restApply.timezoneOpen" placeholder="開始時間"/>
+                                            <i-input v-model="restApply.timezoneOpen" @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)" placeholder="開始時間"/>
                                         </i-col>
                                         <i-col span="2">
                                             <p style="padding: 4px;">-</p>
                                         </i-col>
                                         <i-col span="10">
-                                            <i-input v-model="restApply.timezoneClose" placeholder="終了時間"/>
+                                            <i-input v-model="restApply.timezoneClose" @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)" placeholder="終了時間"/>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -357,6 +357,7 @@
             el: '.restApply-warp',
             data() {
                 return {
+                    hasPassedTimeCheck: false,
                     week: [
                         { name: '月', value: 1 },
                         { name: '火', value: 2 },
@@ -835,7 +836,13 @@
                     if(e.url) {
                         window.open(e.url, '_blank')
                     }
-                }
+                },
+                handleInputChange(i,object,value,el) {
+                    // 填完后自动checkbox
+                    if(object) {
+                        this.hasPassedTimeCheck = Utils.checkTime(object, value,el)
+                    }
+                },
             }
         })
     </script>
