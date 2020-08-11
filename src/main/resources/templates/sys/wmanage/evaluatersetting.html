@@ -180,9 +180,9 @@
             </i-table>
             <div class="my-footer tr">
                 <i-button type="text" @click="cancel('','permissionAdminAddModal')">キャンセル</i-button>
-                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="updatePermissionAdmin()">変更
+                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="updatePermissionAdmin()" :loading="updatePermissionFlagLoading">変更
                 </i-button>
-                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="addPermissionAdmin()">登録
+                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="addPermissionAdmin()" :loading="updatePermissionFlagLoading">登録
                 </i-button>
             </div>
             <Spin size="large" fix v-if="groupBtnLoading"></Spin>
@@ -983,7 +983,7 @@
                         this.updatePermissionFlagLoading = false
                     }
                 },
-                addPermissionAdmin() {
+                async addPermissionAdmin() {
                     const dateList = this.permissionAdminValue.map(e => {
                         return {
                             start: e.validStartDate,
@@ -1027,11 +1027,12 @@
                             notification:this.permissionAdminValue[0].restConfirm
                         }
                         try {
-                            const { data } = await this.http.post('sys/evaluatorsetting/addeval', query)
-                            const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}txtAction=ACT_MakeGroup_UGroup`, this.permissionFlagValues)
-
+                            this.updatePermissionFlagLoading = true
+                            const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}txtAction=ACT_MakeGroup_UGroup`, query)
+                            this.$Message.success('追加完了')
                         } catch (error) {
-                            
+                            this.permissionAdminAddModal = false
+                            this.updatePermissionFlagLoading = false
                         }
                     }
 
