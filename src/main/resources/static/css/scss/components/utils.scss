@@ -225,6 +225,7 @@
   border: 1px solid var(--input-border-grey);
 }
 .no-border-radius {
+  border-radius: 0;
   .ivu-select-selection,.ivu-input {
     border-radius: 0;
   }

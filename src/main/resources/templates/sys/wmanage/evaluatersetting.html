@@ -23,7 +23,7 @@
                     </i-button>
                     <i-button type="primary" size="large" v-if="btnMakeGroup" @click="handleClickMakeGroup">グループ作成
                     </i-button>
-                    <i-button type="primary" size="large" v-if="btnEditMember" @click="PermissionMemberAssign = true">
+                    <i-button type="primary" size="large" v-if="btnEditMember" @click="handleClickEditMember">
                         メンバー割付</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
@@ -73,18 +73,13 @@
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
                         :class="row.main ? 'width75' : 'ml30 width75'" style="font-weight: bold;">{{ row.group }}</span>
-                    <i-button type="primary" ghost size="small" :class="row.main ? 'width75' : 'ml30 width75'"
-                        @click="handleCickGroup(row)" v-else>
-                        {{ row.group }}
-                    </i-button>
+                    <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '30px' : '', fontSize: '13px'}" v-else> {{ row.group }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="name">
                     <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}"
                         v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
-                    <i-button type="primary" ghost size="small" long v-if="row.empId && row.enableEmpEdit"
-                        @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
-                        {{ `${row.empId} (${row.name}/${row.postName})`  }}
-                    </i-button>
+                    <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.empId} (${row.name}/${row.postName})` }}</span>
+
                     <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
@@ -234,15 +229,15 @@
             </div>
             <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData">
                 <template slot-scope="{ row }" slot="group">
-                    <i-select v-model="row.newGroup" filterable transfer>
-                        <i-option v-for="(item, i) of data" :value="item.groupId" :key="i">{{ item.groupName }}
+                    <i-select v-model="memberAssignValue[row._index].groupId" transfer>
+                        <i-option v-for="(item, i) of row.groupList" :value="item.value" :key="i">{{ item.name }}
                         </i-option>
                     </i-select>
                 </template>
             </i-table>
             <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel('','PermissionMemberAssign')">キャンセル</i-button>
-                <i-button type="success" size="large" @click="add()">登録</i-button>
+                <i-button type="primary" size="large" @click="updateMemberAssign()" :loading="updatePermissionFlagLoading">変更</i-button>
             </div>
             <Spin size="large" fix v-if="groupBtnLoading"></Spin>
         </Modal>
@@ -339,8 +334,8 @@
                         },
                         {
                             title: '承認者氏名',
-                            width: 260,
-                            align: 'center',
+                            minWidth: 260,
+                            align: 'left',
                             slot: 'name'
                         },
                         {
@@ -408,9 +403,9 @@
                     query: {},
                     empTreeData: [],
                     deptName: '選んでください',
-                    addPermissionAdminInfo:{
-                        name:'承認者検索',
-                        id:''
+                    addPermissionAdminInfo: {
+                        name: '承認者検索',
+                        id: ''
                     },
                     data: [],
                     treeData: [],
@@ -428,7 +423,7 @@
                     updateGruopNameLoading: false,
                     addPermissionAdminGroupDrawer: false,
                     enableMonthlyResult: true,
-                    empDeptLoading : false,
+                    empDeptLoading: false,
                     delDeptBtn: false,
                     groupBtnLoading: false,
                     permissionAdminAddColumns: [
@@ -503,11 +498,11 @@
                         {
                             title: '氏名',
                             align: 'right',
-                            key: 'name'
+                            key: 'empName'
                         },
                         {
                             title: '現グループ',
-                            key: 'group',
+                            key: 'groupName',
                             align: 'left'
                         },
                         {
@@ -529,6 +524,7 @@
                         group: '1',
                         date: '2019年11月01日(金)'
                     },
+                    memberAssignValue:[],
                     ruleValidate: {
                         name: [
                             {
@@ -538,7 +534,7 @@
                             }
                         ]
                     },
-                    levelList:[],
+                    levelList: [],
                     addPermissionAdminGroupList: [
                         {
                             name: 'XX庁',
@@ -735,11 +731,6 @@
                     immediate: true
                 }
             },
-            computed: {
-                columns() {
-                    return []
-                },
-            },
             methods: {
                 handleDatePicker() {
                     this.referListObject.txtYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
@@ -784,19 +775,19 @@
                     this.getEmplist(e[0].secid)
                 },
                 async getEmplist(secid) {
-                  this.emplistLoading = true
-                  const query = {...this.referListObject, sectionId:secid,txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),}
-                  try {
+                    this.emplistLoading = true
+                    const query = { ...this.referListObject, sectionId: secid, txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'), }
+                    try {
                         const { data } = await this.http.get('sys/evaluatorsetting/searchemp', query)
                         this.empTreeData = Utils.convertTreeData(data.empList)
 
-                } catch (error) {
-                } finally {
-                this.emplistLoading = false
-                }
+                    } catch (error) {
+                    } finally {
+                        this.emplistLoading = false
+                    }
                 },
-                handleRestConfirmCheckBox(e,obj) {
-                    if(!e) {
+                handleRestConfirmCheckBox(e, obj) {
+                    if (!e) {
                         console.log(12)
                         obj.level = ''
                     }
@@ -852,7 +843,7 @@
                         // 修改警告值得部分
                         this.PermissionFlagModals = true
                         // 数字输入控件
-                        Object.keys(this.permissionFlagValues).forEach(e=>{
+                        Object.keys(this.permissionFlagValues).forEach(e => {
                             this.permissionFlagValues[e] = null
                         })
                     }
@@ -922,8 +913,8 @@
                 },
                 async handleClickAddAdmin() {
                     this.addPermissionAdminInfo = {
-                        name:'承認者検索',
-                        id:''
+                        name: '承認者検索',
+                        id: ''
                     }
                     this.PermissionAdminEditer = false
                     this.permissionAdminAddData = [{}]
@@ -932,27 +923,27 @@
                     this.permissionAdminValue[0].groupId = this.data[0].groupId
                     this.permissionAdminAddModal = true
                     const query = {
-                                txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                                psSite: this.referListObject.psSite,
-                                psApp: this.referListObject.psApp
-                            }
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
                     this.groupBtnLoading = true
                     try {
                         const { data } = await this.http.get('sys/evaluatorsetting/addeval', query)
                         this.enableMonthlyResult = data.enableMonthlyResult
-                    this.addPermissionAdminGroupList = data.groupList.map(e=>{
-                        return {
-                            groupName:Object.values(e)[0],
-                            groupId:Object.keys(e)[0],
-                        }
-                    })
-                    this.levelList = data.levelList.map(e=>{
-                        return {
-                            name:Object.values(e)[0],
-                            value:Object.keys(e)[0],
-                        }
-                    })
+                        this.addPermissionAdminGroupList = data.groupList.map(e => {
+                            return {
+                                groupName: Object.values(e)[0],
+                                groupId: Object.keys(e)[0],
+                            }
+                        })
+                        this.levelList = data.levelList.map(e => {
+                            return {
+                                name: Object.values(e)[0],
+                                value: Object.keys(e)[0],
+                            }
+                        })
                     } catch (error) {
                     } finally {
                         this.groupBtnLoading = false
@@ -975,7 +966,7 @@
                     this.updatePermissionFlagLoading = true
                     try {
                         const { data } = await this.http.post(`sys/evaluatorsetting/editgroup?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, this.permissionFlagValues)
-                        this.handleCickGroup({enableEditGroup: true, groupId: this.groupIdForUpdatePermissionFlag})
+                        this.handleCickGroup({ enableEditGroup: true, groupId: this.groupIdForUpdatePermissionFlag })
                         this.$Message.success('更新完了')
                     } catch (error) {
 
@@ -1019,18 +1010,19 @@
                             startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
                             endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
                             approvalLevel: this.permissionAdminValue[0].level,
-                            dailyResult:this.permissionAdminValue[0].workConfirm,
-                            monthlyResult:this.permissionAdminValue[0].monthConfirm,
-                            overTime:this.permissionAdminValue[0].overWorkConfirm,
+                            dailyResult: this.permissionAdminValue[0].workConfirm,
+                            monthlyResult: this.permissionAdminValue[0].monthConfirm,
+                            overTime: this.permissionAdminValue[0].overWorkConfirm,
                             schedule: this.permissionAdminValue[0].scheduleCreate,
-                            authority:this.permissionAdminValue[0].permissionGive,
-                            notification:this.permissionAdminValue[0].restConfirm
+                            authority: this.permissionAdminValue[0].permissionGive,
+                            notification: this.permissionAdminValue[0].restConfirm
                         }
                         try {
                             this.updatePermissionFlagLoading = true
                             const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}txtAction=ACT_MakeGroup_UGroup`, query)
                             this.$Message.success('追加完了')
                         } catch (error) {
+                        } finally {
                             this.permissionAdminAddModal = false
                             this.updatePermissionFlagLoading = false
                         }
@@ -1136,6 +1128,55 @@
                     } finally {
                         this.updateGruopNameLoading = false
                     }
+                },
+                // member edit
+                async handleClickEditMember() {
+                    this.PermissionMemberAssign = true
+                    const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    this.groupBtnLoading = true
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/editmember', query)
+                        this.PermissionMemberAssignData = data.memberList.map(e=>{
+                            return {
+                                ...e,
+                                groupList: e.groupList.map(t=>{
+                                    return {
+                                        name: Object.values(t)[0],
+                                        value: Object.keys(t)[0],
+                                    }
+                                })
+                            }
+                        })
+                        this.memberAssignValue = this.PermissionMemberAssignData.map(e=>{
+                            return {
+                                ...e,
+                                empId: e.empName,
+                                sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                groupId:''
+                            }
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
+                    }
+                },
+                async updateMemberAssign() {
+                    const query = this.memberAssignValue.filter(e=> e.groupId)
+                    try {
+                            this.updatePermissionFlagLoading = true
+                            const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
+                            this.$Message.success('変更完了')
+                        } catch (error) {
+                        } finally {
+                            this.permissionAdminAddModal = false
+                            this.updatePermissionFlagLoading = false
+                        }
+                    console.log(query)
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 这里将得到得合并信息进行表格列项合并
