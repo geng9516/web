@@ -8,6 +8,9 @@ import jp.smartcompany.job.modules.tmg.schedule.vo.ModifiedDateVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
+import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.HatuReiVo;
+import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +29,8 @@ public class ScheduleController {
 
     @Autowired
     private TmgScheduleBean tmgScheduleBean;
+    @Autowired
+    private TmgResultsBean tmgResultsBean;
 
     /**
      * 前月時間 と　翌月時間
@@ -290,11 +295,27 @@ public class ScheduleController {
     @GetMapping("deleteWeekPtn")
     @ResponseBody
     public boolean deleteWeekPtn(@RequestParam("txtBaseDate") String txtBaseDate,
-                              @RequestParam("txtEndDate") String txtEndDate,
-                              @RequestParam("twp_nid") String twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                 @RequestParam("txtEndDate") String txtEndDate,
+                                 @RequestParam("twp_nid") String twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
         return tmgScheduleBean.deleteWeekPtn(twp_nid);
     }
+
+    /**
+     * 発令日表示処理
+     * http://localhost:6879/sys/schedule/hatuRei
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("hatuRei")
+    @ResponseBody
+    public HatuReiVo getHatuReiVoInfo(@RequestAttribute("BeanName") PsDBBean psDBBean
+    ) throws Exception {
+
+        tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);
+        return tmgResultsBean.getHatuReiVoInfo(tmgResultsBean.getReferList().getRecordDate(), psDBBean);
+    }
+
 
 }
