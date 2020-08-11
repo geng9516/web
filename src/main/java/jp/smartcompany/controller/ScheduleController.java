@@ -310,8 +310,9 @@ public class ScheduleController {
      */
     @GetMapping("hatuRei")
     @ResponseBody
-    public HatuReiVo getHatuReiVoInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public HatuReiVo getHatuReiVoInfo(@RequestParam("txtBaseDate") String txtBaseDate,@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
+        tmgResultsBean.setMonth(txtBaseDate);
         tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);
         return tmgResultsBean.getHatuReiVoInfo(tmgResultsBean.getReferList().getRecordDate(), psDBBean);
     }
