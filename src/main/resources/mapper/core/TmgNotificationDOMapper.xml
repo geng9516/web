@@ -194,9 +194,9 @@
                     <when test='paramNotificationList.status != null and paramNotificationList.status !=""'>
                         AND TNTF_CSTATUSFLG = '${paramNotificationList.status}'
                         --検索条件・状態・取下か差戻
-                        <if test='paramNotificationList.status == "TMG_NTFSTATUS|0" or paramNotificationList.status == "TMG_NTFSTATUS|3"'>
-                            AND TNTF_CALTEREMPLOYEEID = '${paramNotificationList.userCode}'
-                        </if>
+<!--                        <if test='paramNotificationList.status == "TMG_NTFSTATUS|0" or paramNotificationList.status == "TMG_NTFSTATUS|3"'>-->
+<!--                            AND TNTF_CALTEREMPLOYEEID = '${paramNotificationList.userCode}'-->
+<!--                        </if>-->
                     </when>
 
                     <otherwise>
