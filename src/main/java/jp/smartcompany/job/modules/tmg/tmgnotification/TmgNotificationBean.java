@@ -225,22 +225,22 @@ public class TmgNotificationBean {
             nddVo.setDayOfWeek(nlVo.getDayOfWeek());
             nddVo.setFinalApprovelLevel(nlVo.getFinalApprovelLevel());
             nddVo.setTntfCowncomment(nlVo.getTntfCowncomment());
-            //数据取消文本处理
-            if(nddVo.getTntfCstatusflg().equals(STATUS_WITHDRAW)||nddVo.getTntfCstatusflg().equals(STATUS_REJECT)){
-
-            }else if(nddVo.getTntfDbegin().equals(nddVo.getTntfDend())){
-                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel2())&&nddVo.getTntfDcancel2().equals(nddVo.getTntfDbegin())){
-                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
-                }
-            }else{
-                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDbegin())
-                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
-                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
-                }else if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDend())
-                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
-                    nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
-                }
-            }
+//            //数据取消文本处理
+//            if(nddVo.getTntfCstatusflg().equals(STATUS_WITHDRAW)||nddVo.getTntfCstatusflg().equals(STATUS_REJECT)){
+//
+//            }else if(nddVo.getTntfDbegin().equals(nddVo.getTntfDend())){
+//                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel2())&&nddVo.getTntfDcancel2().equals(nddVo.getTntfDbegin())){
+//                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
+//                }
+//            }else{
+//                if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDbegin())
+//                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
+//                    nddVo.setTntfCstatusflg(STATUS_REJECT);//全取消
+//                }else if(!StrUtil.hasEmpty(nddVo.getTntfDcancel()) && DateUtil.parse(nddVo.getTntfDend())
+//                        .after(DateUtil.parse(nddVo.getTntfDcancel()))){
+//                    nddVo.setTntfDend(nddVo.getTntfDcancel());//部分取消
+//                }
+//            }
             if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())&&param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
                 param.setNtfNo(nlVo.getTntfCntfNo());
                 //详细数据取得
