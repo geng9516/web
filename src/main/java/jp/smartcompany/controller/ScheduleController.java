@@ -289,12 +289,12 @@ public class ScheduleController {
      */
     @GetMapping("deleteWeekPtn")
     @ResponseBody
-    public List<WeekWorkType> deleteWeekPtn(@RequestParam("txtBaseDate") String txtBaseDate,
-                                            @RequestParam("txtEndDate") String txtEndDate,
-                                            @RequestParam("twp_nid") int twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public boolean deleteWeekPtn(@RequestParam("txtBaseDate") String txtBaseDate,
+                              @RequestParam("txtEndDate") String txtEndDate,
+                              @RequestParam("twp_nid") String twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
-        return tmgScheduleBean.selectWeekPtn();
+        return tmgScheduleBean.deleteWeekPtn(twp_nid);
     }
 
 }

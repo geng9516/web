@@ -419,7 +419,7 @@ public class TmgScheduleBean {
     public void setExecuteParameters() {
 
         // 現在日付の1ヶ月前の初日
-         _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
+        _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
         // 現在日付の月初日を取得
         _thisMonthFirstDay = this.getFirstDayOfMonth(getSysdate(), PARAM_THIS_MONTH);
         // 現在日付の月末日を取得
@@ -773,8 +773,8 @@ public class TmgScheduleBean {
         HashMap<String, Object> results0 = this.selectDsipDate(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
         if (null != results0) {
             // 前月シート存在確認
-           // HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
-            String preMonth = this.selectLinkOfNextMonth(_baseDate,_targetUserCode);
+            // HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
+            String preMonth = this.selectLinkOfNextMonth(_baseDate, _targetUserCode);
             if (null != preMonth) {
                 _startDispDate = results0.get("START_DATE").toString();
             }
@@ -1655,11 +1655,13 @@ public class TmgScheduleBean {
     /**
      * 週勤務パターン　を削除する
      */
-    public void deleteWeekPtn(String twp_nid) {
+    public boolean deleteWeekPtn(String twp_nid) {
         if (null != twp_nid && !"".equals(twp_nid)) {
             iTmgScheduleService.deleteWeekPtn(_targetCustCode, _targetCompCode, twp_nid);
+            return true;
         } else {
             logger.error("週勤務パターンコードが空です");
+            return false;
         }
     }
 
