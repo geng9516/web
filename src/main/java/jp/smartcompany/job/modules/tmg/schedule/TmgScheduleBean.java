@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -297,6 +298,7 @@ public class TmgScheduleBean {
     private final String planTypeKey = "CID";
 
     private final String planJSONKey = "JSON";
+    private String _preFirstDayOfSysDate = "";
 
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
@@ -357,6 +359,7 @@ public class TmgScheduleBean {
         _targetUserCode = "";
         _targetCompCode = "";
         _targetCustCode = "";
+        _preFirstDayOfSysDate = "";
 
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         if (null != psDBBean.getEmployeeCode()) {
@@ -380,6 +383,35 @@ public class TmgScheduleBean {
         this.setExecuteParameters();
     }
 
+    /**
+     * 汎用参照リンクオブジェクトを生成します。 _preMonthDate = システム年月日から1ヶ月前の月初のデータ_baseDate = 基準日
+     * この条件でなくてはならない。_preMonthDate <= _baseDate
+     * _baseDateが_preMonthDateより未来の場合は正の数値が返却される。
+     */
+    private void setTmgReferListOfBeforeProcess() {
+
+        if (toDateFormat(_baseDate).after(toDateFormat(_preFirstDayOfSysDate))) {
+            setReferList(_preFirstDayOfSysDate);
+        } else {
+            setReferList(_baseDate);
+        }
+    }
+
+    /**
+     * 日付形式「yyyy/mm/dd」のString型文字列をDate型にキャストします。
+     *
+     * @param strDate
+     * @return
+     */
+    public Date toDateFormat(String strDate) {
+        Date date = null;
+        try {
+            date = new SimpleDateFormat(FORMAT_DATE_TYPE1).parse(strDate);
+        } catch (ParseException e) {
+            System.err.println(e.getMessage());
+        }
+        return date;
+    }
 
     /**
      * 画面から入力された実行条件を判定し設定します。
@@ -387,7 +419,7 @@ public class TmgScheduleBean {
     public void setExecuteParameters() {
 
         // 現在日付の1ヶ月前の初日
-        // _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
+         _preFirstDayOfSysDate = this.getFirstDayOfMonth(getSysdate(), PARAM_PREV_MONTH);
         // 現在日付の月初日を取得
         _thisMonthFirstDay = this.getFirstDayOfMonth(getSysdate(), PARAM_THIS_MONTH);
         // 現在日付の月末日を取得
@@ -396,7 +428,8 @@ public class TmgScheduleBean {
         if (_baseDate == null || _baseDate.length() == 0) {
             _baseDate = getNextFirstDayOfSysDate();
         }
-        this.setReferList(_baseDate);
+        setTmgReferListOfBeforeProcess();
+
         this.setBasicUserInfo();
 
 
@@ -740,14 +773,15 @@ public class TmgScheduleBean {
         HashMap<String, Object> results0 = this.selectDsipDate(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
         if (null != results0) {
             // 前月シート存在確認
-            HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
-            if (null != results1) {
-                _startDispDate = results1.get("PREMONTH").toString();
+           // HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
+            String preMonth = this.selectLinkOfNextMonth(_baseDate,_targetUserCode);
+            if (null != preMonth) {
+                _startDispDate = results0.get("START_DATE").toString();
             }
             // 翌月シート存在確認
             HashMap<String, Object> results2 = this.selectLinkOfNextMonthNextSaturday(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
             if (null != results2) {
-                _endDispDate = results2.get("PREMONTH_LASTDAY").toString();
+                _endDispDate = results0.get("END_DATE").toString();
             }
         }
 
@@ -816,12 +850,12 @@ public class TmgScheduleBean {
      */
     public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate) {
 
-        if (null != startDispDate && !"".equals(startDispDate)) {
+     /*   if (null != startDispDate && !"".equals(startDispDate)) {
             _startDispDate = startDispDate;
         }
         if (null != endDispDate && !"".equals(endDispDate)) {
             _endDispDate = endDispDate;
-        }
+        }*/
 
         String employeeId = _targetUserCode;
 
