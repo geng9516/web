@@ -938,8 +938,12 @@
                 this.tableDataUsed.splice(index,1)
             },
                 async executeMakeWeekPattern(){
-                    if(this.value2.applyStart=='' || this.value2.applyEnd==''){
-                        this.$Message.error("適用期間が選択されていません")
+                    if(!this.value2.applyStart){
+                        this.$Message.error(" 適用開始日が未入力です。")
+                        return
+                    }
+                    if(!this.value2.applyEnd){
+                        this.$Message.error("適用終了日が未入力です。")
                         return
                     }
                     let now=new Date()
