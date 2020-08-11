@@ -870,7 +870,14 @@
 
                     this.selectScheduleInfo=data
                     this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
-                    this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList
+                    this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList.map(item=>{
+                        if(item.tda_nlock_p==1){
+                            item._disabled=true;
+                        }else if(item.tda_nlock_p==0){
+                            item._disabled=false;
+                        }
+                        return item;
+                    })
                     this.yyyyMMdd=this.selectScheduleInfo.period
                     this.value=this.scheduleDataDTOList.map(item=>{
                         let restList=item.timerange_arr.map(r=>{
@@ -1112,6 +1119,29 @@
                             result=true
                             return result
                         }
+
+                        if(360 >=count  && e.restList.some(e1=>{
+
+                            if (e1.restOpen=='' && e1.restClose!='') {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (e1.restOpen!='' && e1.restClose=='') {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(0>Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                        })){
+                            result=true
+                            return result
+                        }
+
                         console.log("countRest"+countRest)
                         let cc=count-countRest
                         if(480>=cc && cc >360 &&  45>countRest){
