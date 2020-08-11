@@ -364,7 +364,8 @@
                     txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
-                    type: 11
+                    type: 11,
+                    txtBaseDate:''
                 },
                 selectedDeptViewType: 3,
                 empDeptLoading: false,  // 組織ツリーloading用
@@ -477,13 +478,14 @@
         },
         methods: {
             disableCheckBox(){
-                console.log("")
-
+                console.log(this.$refs.selection2)
 
             },
             async getHatuRei() {
                 try {
-                    const { data } = await this.http.get('sys/schedule/hatuRei', this.referListObject)
+                    let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                    this.referListObject.txtBaseDate=txtBaseDate
+                    const { data } =  await this.http.get('sys/schedule/hatuRei', this.referListObject)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -596,12 +598,9 @@
                 this.query.compId=e[0].comp
 
 
-                this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
-                this.getHatuRei()
-
-
-
+                await  this.getSelectScheduleInfo()
+                await this.getSelectIkkaInfo()
+                await this.getHatuRei()
             },
             async getSelectScheduleInfo() {
                 const handleTime = Vue.filter('handleTime');
@@ -846,14 +845,14 @@
                 this.query.txtEndDate=this.selectScheduleInfo.preEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
-                this.getHatuRei()
+                await this.getHatuRei()
             },
             async nextMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.nextStart
                 this.query.txtEndDate=this.selectScheduleInfo.nextEnd
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
-                this.getHatuRei()
+                await this.getHatuRei()
             },
             rowClass(row) {
 
