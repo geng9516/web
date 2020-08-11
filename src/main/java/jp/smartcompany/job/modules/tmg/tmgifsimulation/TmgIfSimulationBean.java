@@ -36,6 +36,10 @@ public class TmgIfSimulationBean {
     private final String TAG3 = "|";
     private final int batchNum = 20;
     private final String BEAN_DESC = "TmgIfSimulationBean";
+    private final String GENERICGROUPID = "TMG_EXCLUDE4THW_SIM";
+    private final String ONLINEGROUPID = "TMG_EXCLUDECOND4THW";
+    private final String MINDATE = "1900/01/01";
+    private final String MAXDATE = "2222/12/31";
     private final Logger logger = LoggerFactory.getLogger(TmgIfSimulationBean.class);
     private final ITmgStatusWorktypeSimService iTmgStatusWorktypeSimService;
 
@@ -300,7 +304,7 @@ public class TmgIfSimulationBean {
      * @return
      */
     public boolean deleteMastGenericDetail_notrans(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate) {
-        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(startDate) && ObjectUtil.isNotEmpty(endDate)) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId)) {
             int count = iTmgStatusWorktypeSimService.deleteMastGenericDetail(custID, compCode, language, genericgroupId, startDate, endDate);
             logger.info("名称マスタ詳細情報を削除することが完了しました,総計「" + count + "」件");
             return true;
@@ -332,6 +336,7 @@ public class TmgIfSimulationBean {
      * @return
      */
     private int updateTmgStatusWorkTypeSim(String psCustId, String psCompId, String psModifierProgramId, String psModifierUserId, String psStatus) {
+
         return iTmgStatusWorktypeSimService.updateTmgStatusWorkTypeSim(psCustId, psCompId, psModifierProgramId, psModifierUserId, psStatus);
     }
 
@@ -434,6 +439,145 @@ public class TmgIfSimulationBean {
         }
 
         return false;
+    }
+
+    /**
+     * 確定する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param employeId
+     * @return
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public GlobalResponse dicisionMasterDate(String custID, String compCode, String language, String employeId) {
+
+        //先ずは、既存レコードを削除する
+        boolean flag1 = this.deleteMastGenericDetail_notrans(custID, compCode, language, ONLINEGROUPID, null, null);
+        //次は、データをインサートする
+        boolean flag2 = this.insertOnlineMasterData(custID, compCode, language, GENERICGROUPID, ONLINEGROUPID);
+        //最後、 階導入シミュレーション登録情報に登録する
+        String modifierProgramId = BEAN_DESC + "_" + "ACT_SIM_INSERT";
+        this.updateTmgStatusWorkTypeSim(custID, compCode, modifierProgramId, employeId, TmgUtil.Cs_MGD_TMG_WTSIMSTATUS_010);
+
+        if (flag1 && flag2) {
+            return GlobalResponse.ok("確定完了しました");
+        }
+
+        if (!flag1 || !flag2) {
+            return GlobalResponse.error("確定失敗しました");
+        }
+        return GlobalResponse.error("確定失敗しました");
+    }
+
+
+    /**
+     * 臨時マスタデータをオンラインデータに確定する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param onlinegroupId
+     * @return
+     */
+    private boolean insertOnlineMasterData(String custID, String compCode, String language, String genericgroupId, String onlinegroupId) {
+
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language) && ObjectUtil.isNotEmpty(genericgroupId) && ObjectUtil.isNotEmpty(onlinegroupId)) {
+            int count = iTmgStatusWorktypeSimService.insertOnlineMasterData(custID, compCode, language, genericgroupId, onlinegroupId);
+            logger.info("臨時マスタデータをオンラインデータに確定する数は「" + count + "」です");
+            return true;
+        } else {
+            logger.warn("パラメータが不正です");
+        }
+        return false;
+    }
+
+    /**
+     * TMG_TRIGGERを削除するクエリを返します
+     *
+     * @param psCustId
+     * @param psCompId
+     * @param psUserId
+     * @param psModifierProgramId
+     */
+    private boolean buildSQLForDeleteTmgTrgger(String psCustId, String psCompId, String psUserId, String psModifierProgramId) {
+        if (ObjectUtil.isNotEmpty(psCustId) && ObjectUtil.isNotEmpty(psCompId) && ObjectUtil.isNotEmpty(psUserId) && ObjectUtil.isNotEmpty(psModifierProgramId)) {
+            int count = iTmgStatusWorktypeSimService.buildSQLForDeleteTmgTrgger(psCustId, psCompId, psUserId, psModifierProgramId);
+            logger.info("TMG_TRIGGERを削除するクエリを返する数は「" + count + "」です");
+            return true;
+        } else {
+            logger.warn("パラメータが不正です");
+        }
+        return false;
+    }
+
+    /**
+     * TMG_TRIGGERへINSERTするクエリを返します
+     *
+     * @param custID
+     * @param compCode
+     * @param employeeId
+     * @param minDate
+     * @param maxDate
+     * @param modifierprogramid
+     * @return
+     */
+    private boolean buildSQLForInsertTmgTrgger(String custID, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(employeeId) && ObjectUtil.isNotEmpty(minDate) && ObjectUtil.isNotEmpty(maxDate) && ObjectUtil.isNotEmpty(modifierprogramid)) {
+            int count = iTmgStatusWorktypeSimService.buildSQLForInsertTmgTrgger(custID, compCode, employeeId, minDate, maxDate, modifierprogramid);
+            logger.info("TMG_TRIGGERへINSERTするクエリを返する数は「" + count + "」です");
+            return true;
+        } else {
+            logger.warn("パラメータが不正です");
+        }
+        return false;
+    }
+
+    /**
+     * シミュレーションの実行を行います
+     *
+     * @param custID
+     * @param compCode
+     * @param employeeId
+     * @param actionCode
+     * @return
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean execSim(String custID, String compCode, String employeeId, String actionCode) {
+        String modifierprogramid = BEAN_DESC +"_"+ actionCode;
+        boolean flag1 = this.buildSQLForDeleteTmgTrgger(custID, compCode, employeeId, modifierprogramid);
+        boolean flag2 = this.buildSQLForInsertTmgTrgger(custID, compCode, employeeId, MINDATE, MAXDATE, modifierprogramid);
+        boolean flag3 = this.buildSQLForDeleteTmgTrgger(custID, compCode, employeeId, modifierprogramid);
+        if (flag1 && flag2 && flag3) {
+            logger.info("シミュレーションの実行を行っています");
+            return true;
+        }
+        logger.error("シミュレーションの実行を行うことが失敗しました");
+        return false;
+    }
+
+    /**
+     * 段階導入シュミレーション登録情報を取得する
+     * TMG_WTSIMSTATUS|010	未実行
+     * TMG_WTSIMSTATUS|020	実行中
+     * TMG_WTSIMSTATUS|120	実行中
+     * TMG_WTSIMSTATUS|130	実行済
+     * TMG_WTSIMSTATUS|230	取消済
+     * TMG_WTSIMSTATUS|910	エラー
+     * @param custID
+     * @param compCode
+     * @param language
+     * @return
+     */
+    public HashMap<Object, Object> buildSQLForSelectTmgStatusWorkTypeSim(String custID, String compCode, String language) {
+        if (ObjectUtil.isNotEmpty(custID) && ObjectUtil.isNotEmpty(compCode) && ObjectUtil.isNotEmpty(language)) {
+            return iTmgStatusWorktypeSimService.buildSQLForSelectTmgStatusWorkTypeSim(custID, compCode, language);
+        } else {
+            logger.warn("パラメータが不正です");
+            return null;
+        }
     }
 
 

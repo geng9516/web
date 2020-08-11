@@ -32,23 +32,12 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
      * @param language 言語
      */
     @Override
-    public StatusWorkTypeSimDto buildSQLForSelectTmgStatusWorkTypeSim(String custID, String compCode, String language) {
-        return baseMapper.buildSQLForSelectTmgStatusWorkTypeSim(custID, compCode, language);
-    }
-
-    /**
-     * 段階導入シミュレーション登録情報に登録する
-     *
-     * @param custId    顧客コード
-     * @param compCode  　法人コード
-     * @param userCode  　更新者
-     * @param programId 　更新プログラムID
-     * @param status    　ステータス
-     * @return 件数
-     */
-    @Override
-    public int buildSQLForUpdateTmgStatusWorkTypeSim(String custId, String compCode, String userCode, String programId, String status) {
-        return baseMapper.buildSQLForUpdateTmgStatusWorkTypeSim(custId, compCode, userCode, programId, status);
+    public HashMap<Object, Object> buildSQLForSelectTmgStatusWorkTypeSim(String custID, String compCode, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        return baseMapper.buildSQLForSelectTmgStatusWorkTypeSim(params);
     }
 
     @Override
@@ -124,6 +113,39 @@ public class TmgStatusWorktypeSimServiceImpl extends ServiceImpl<TmgStatusWorkty
         params.put("startDate", startDate);
         params.put("endDate", endDate);
         return baseMapper.checkPeriodDate(params);
+    }
+
+    @Override
+    public int insertOnlineMasterData(String custID, String compCode, String language, String genericgroupId, String onlinegroupId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("language", language);
+        params.put("genericgroupId", genericgroupId);
+        params.put("onlinegroupId", onlinegroupId);
+        return baseMapper.insertOnlineMasterData(params);
+    }
+
+    @Override
+    public int buildSQLForDeleteTmgTrgger(String custID, String compCode, String employeeId, String modifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("modifierprogramid", modifierprogramid);
+        return baseMapper.buildSQLForDeleteTmgTrgger(params);
+    }
+
+    @Override
+    public int buildSQLForInsertTmgTrgger(String custID, String compCode, String employeeId, String minDate, String maxDate, String modifierprogramid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custID);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("minDate", minDate);
+        params.put("maxDate", maxDate);
+        params.put("modifierprogramid", modifierprogramid);
+        return baseMapper.buildSQLForInsertTmgTrgger(params);
     }
 
 

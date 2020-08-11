@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -98,6 +99,7 @@ public class SimulationController {
 
     /**
      * マスタ」データが削除する
+     *
      * @param custId
      * @param compCode
      * @param language
@@ -112,7 +114,57 @@ public class SimulationController {
                                            @RequestParam(value = "language", required = true) String language,
                                            @RequestParam(value = "psGroupId", required = true) String genericgroupId,
                                            @RequestParam(value = "startDate", required = true) String startDate,
-                                           @RequestParam(value = "endDate", required = true) String endDate){
+                                           @RequestParam(value = "endDate", required = true) String endDate) {
         return tmgIfSimulationBean.deleteMastGenericDetail(custId, compCode, language, genericgroupId, startDate, endDate);
     }
+
+    /**
+     * 臨時マスタデータをオンラインデータに確定する
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @param employeId
+     * @return
+     */
+    @PostMapping("dicisionMasterDate")
+    public GlobalResponse dicisionMasterDate(@RequestParam(value = "custId", required = true) String custId,
+                                             @RequestParam(value = "compCode", required = true) String compCode,
+                                             @RequestParam(value = "language", required = true) String language,
+                                             @RequestParam(value = "employeId", required = true) String employeId) {
+        return tmgIfSimulationBean.dicisionMasterDate(custId, compCode, language, employeId);
+    }
+
+    /**
+     * シミュレーションの実行を行います
+     *
+     * @param custId
+     * @param compCode
+     * @param employeId
+     * @param actionCode
+     * @return
+     */
+    @PostMapping("execSim")
+    public boolean execSim(@RequestParam(value = "custId", required = true) String custId,
+                           @RequestParam(value = "compCode", required = true) String compCode,
+                           @RequestParam(value = "employeId", required = true) String employeId,
+                           @RequestParam(value = "actionCode", required = true) String actionCode) {
+        return tmgIfSimulationBean.execSim(custId, compCode, employeId, actionCode);
+    }
+
+    /**
+     * シミュレーションの実行を行います
+     *
+     * @param custId
+     * @param compCode
+     * @param language
+     * @return
+     */
+    @PostMapping("execStatus")
+    public HashMap<Object, Object> execStatus(@RequestParam(value = "custId", required = true) String custId,
+                                              @RequestParam(value = "compCode", required = true) String compCode,
+                                              @RequestParam(value = "language", required = true) String language) {
+        return tmgIfSimulationBean.buildSQLForSelectTmgStatusWorkTypeSim(custId, compCode, language);
+    }
+
 }

@@ -91,9 +91,41 @@ public interface TmgStatusWorktypeSimMapper extends BaseMapper<TmgStatusWorktype
 
     /**
      * 期間時間をチャックする
+     *
      * @param params
      * @return
      */
     int checkPeriodDate(HashMap<String, Object> params);
+
+    /**
+     * 臨時マスタデータをオンラインデータに確定する
+     *
+     * @param params
+     * @return
+     */
+    int insertOnlineMasterData(HashMap<String, Object> params);
+
+    /**
+     * TMG_TRIGGERを削除するクエリを返します
+     *
+     * @param params
+     * @return
+     */
+    int buildSQLForDeleteTmgTrgger(HashMap<String, Object> params);
+
+    /**
+     * TMG_TRIGGERへINSERTするクエリを返します
+     *
+     * @param params
+     * @return
+     */
+    int buildSQLForInsertTmgTrgger(HashMap<String, Object> params);
+
+    /**
+     * シミュレーション状態系
+     * @param params
+     * @return
+     */
+    HashMap<Object,Object> buildSQLForSelectTmgStatusWorkTypeSim(HashMap<String, Object> params);
 
 }

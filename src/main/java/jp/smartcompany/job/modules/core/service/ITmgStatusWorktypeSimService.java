@@ -20,26 +20,6 @@ import java.util.List;
  */
 public interface ITmgStatusWorktypeSimService extends IService<TmgStatusWorktypeSimDO> {
 
-    /**
-     * 段階導入シュミレーション登録情報を取得する
-     *
-     * @param custID   顧客コード
-     * @param compCode 法人コード
-     * @param language 言語
-     */
-    StatusWorkTypeSimDto buildSQLForSelectTmgStatusWorkTypeSim(String custID, String compCode, String language);
-
-    /**
-     * 段階導入シミュレーション登録情報に登録する
-     *
-     * @param custId    顧客コード
-     * @param compCode  　法人コード
-     * @param userCode  　更新者
-     * @param programId 　更新プログラムID
-     * @param status    　ステータス
-     * @return 件数
-     */
-    int buildSQLForUpdateTmgStatusWorkTypeSim(String custId, String compCode, String userCode, String programId, String status);
 
     /**
      * HR連携除外条件区分マスタ情報の件数を取得する
@@ -114,6 +94,7 @@ public interface ITmgStatusWorktypeSimService extends IService<TmgStatusWorktype
 
     /**
      * 期間時間をチャックする
+     *
      * @param custID
      * @param compCode
      * @param language
@@ -124,4 +105,44 @@ public interface ITmgStatusWorktypeSimService extends IService<TmgStatusWorktype
      */
     int checkPeriodDate(String custID, String compCode, String language, String genericgroupId, String startDate, String endDate);
 
+    /**
+     * 臨時マスタデータをオンラインデータに確定する
+     *
+     * @param custID
+     * @param compCode
+     * @param language
+     * @param genericgroupId
+     * @param onlinegroupId
+     * @return
+     */
+    int insertOnlineMasterData(String custID, String compCode, String language, String genericgroupId, String onlinegroupId);
+
+    /**
+     * TMG_TRIGGERを削除するクエリを返します
+     *
+     * @param custID
+     * @param compCode
+     * @param employeeId
+     * @param modifierprogramid
+     * @return
+     */
+    int buildSQLForDeleteTmgTrgger(String custID, String compCode, String employeeId, String modifierprogramid);
+
+    /**
+     * TMG_TRIGGERへINSERTするクエリを返します
+     * @param custID
+     * @param compCode
+     * @param employeeId
+     * @param modifierprogramid
+     * @return
+     */
+    int buildSQLForInsertTmgTrgger(String custID, String compCode, String employeeId,String minDate,String maxDate, String modifierprogramid);
+
+    /**
+     * シミュレーション状態系
+     * @param custID   顧客コード
+     * @param compCode 法人コード
+     * @param language 言語
+     */
+    HashMap<Object,Object> buildSQLForSelectTmgStatusWorkTypeSim(String custID, String compCode,String language);
 }
