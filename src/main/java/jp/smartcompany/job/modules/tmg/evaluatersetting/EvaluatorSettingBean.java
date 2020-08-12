@@ -811,30 +811,37 @@ public class EvaluatorSettingBean {
         return map;
     }
 
-    public GlobalResponse editMemberHandler(PsDBBean bean, EditMemberDTO dto) {
-        EvaluatorSettingParam params = new EvaluatorSettingParam();
-        configYYYYMMDD(bean,params);
-        params.setSection(dto.getSectionId());
-        params.setGroup(dto.getGroupId());
-        params.setEmployee(dto.getEmpId());
-        params.setCompanyId(bean.getCompCode());
-        params.setCustomerID(bean.getCustID());
-        params.setAction(EvaluatorSettingConst.ACT_EDITMEMBER_UMEMBER);
-
+    public GlobalResponse editMemberHandler(PsDBBean bean, List<EditMemberDTO> dtoList) {
         // 検索
         Vector<String> vQuery = new Vector<>();
-        // 追加・更新時
-        // メンバー割付登録
-        vQuery.add(buildSQLForInsertMemberBackward(params,bean));
-        // メンバー割付既存歴削除
-        vQuery.add(buildSQLForDeleteMember(params));
-        // メンバー割付既存歴更新(開始日)
-        vQuery.add(buildSQLForUpdateMemberWithStartDate(params,bean));
-        // メンバー割付既存歴更新(終了日)
-        vQuery.add(buildSQLForUpdateMemberWithEndDate(params,bean));
-        // メンバー割付登録
-        vQuery.add(buildSQLForInsertMemberForward(params,bean));
-        vQuery.add(buildSQLForDeleteMemberBackward(params,bean));
+
+        for (EditMemberDTO dto:dtoList) {
+            if (StrUtil.equals(dto.getGroupId(),dto.getOriginalGroupId())) {
+                continue;
+            }
+            EvaluatorSettingParam params = new EvaluatorSettingParam();
+            configYYYYMMDD(bean, params);
+            params.setSection(dto.getSectionId());
+            params.setCompanyId(bean.getCompCode());
+            params.setCustomerID(bean.getCustID());
+            params.setAction(EvaluatorSettingConst.ACT_EDITMEMBER_UMEMBER);
+
+            params.setGroup(dto.getGroupId());
+            params.setEmployee(dto.getEmpId());
+            // 追加・更新時
+            // メンバー割付登録
+            vQuery.add(buildSQLForInsertMemberBackward(params, bean));
+            // メンバー割付既存歴削除
+            vQuery.add(buildSQLForDeleteMember(params));
+            // メンバー割付既存歴更新(開始日)
+            vQuery.add(buildSQLForUpdateMemberWithStartDate(params, bean));
+            // メンバー割付既存歴更新(終了日)
+            vQuery.add(buildSQLForUpdateMemberWithEndDate(params, bean));
+            // メンバー割付登録
+            vQuery.add(buildSQLForInsertMemberForward(params, bean));
+            vQuery.add(buildSQLForDeleteMemberBackward(params, bean));
+
+        }
 
         int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
         if (rows >0) {

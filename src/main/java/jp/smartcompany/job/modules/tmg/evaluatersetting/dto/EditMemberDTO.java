@@ -20,5 +20,7 @@ public class EditMemberDTO {
   private String groupId;
   @NotBlank
   private String empId;
+  @NotBlank
+  private String originalGroupId;
 
 }

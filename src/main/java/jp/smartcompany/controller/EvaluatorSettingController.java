@@ -8,10 +8,13 @@ import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditMemberDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Map;
+import java.util.List;
 
 /**
  * @author Xiao Wenpeng
@@ -19,6 +22,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("sys/evaluatorsetting")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Validated
 public class EvaluatorSettingController {
 
     private final EvaluatorSettingBean evaluatorSettingBean;
@@ -146,15 +150,17 @@ public class EvaluatorSettingController {
     // http://localhost:6879/sys/evaluatorsetting/editmember?psSite=TMG_ADMIN&psApp=EvaluaterSetting&txtDYYYYMMDD=2019/08/02
     /**
      *   提交的json体：
-     *   {
+     *   [{
      *      "sectionId":"",
      *      "groupId":"",
-     *      "empId":""
-     *   }
+     *      "empId":"",
+     *      "originalGroupId":""
+     *   }]
      */
     @PostMapping("editmember")
-    public Map<String,Object> editMember(@RequestAttribute("BeanName") PsDBBean bean,@Valid @RequestBody EditMemberDTO dto) {
-        return evaluatorSettingBean.editMemberHandler(bean,dto);
+    @Validated
+    public Map<String,Object> editMember(@RequestAttribute("BeanName") PsDBBean bean,@Valid @RequestBody @NotEmpty List<EditMemberDTO> dtoList) {
+        return evaluatorSettingBean.editMemberHandler(bean,dtoList);
     }
 
     // 承認者編集画面表示
