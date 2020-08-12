@@ -560,8 +560,7 @@ public class TmgNotificationBean {
         tncDo.setTntfNseq(tnDo.getTntfNseq());
         tncDo.setTntfCntfno(tnDo.getTntfCntfno());
 
-        tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
-        tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
+        tncDo.setTntfCstatusflg(STATUS_PERM);
 
         tncDo.setTntfCalteremployeeid(tnDo.getTntfCalteremployeeid());
         tncDo.setTntfDnotification(tnDo.getTntfDnotification());
@@ -1478,7 +1477,7 @@ public class TmgNotificationBean {
 
         tncDo.setTntfNseq(tnDo.getTntfNseq());
         tncDo.setTntfCntfno(tnDo.getTntfCntfno());
-        tncDo.setTntfCstatusflg(tnDo.getTntfCstatusflg());
+        tncDo.setTntfCstatusflg(STATUS_PERM);
         tncDo.setTntfCalteremployeeid(tnDo.getTntfCalteremployeeid());
         tncDo.setTntfDnotification(tnDo.getTntfDnotification());
         tncDo.setTntfDbegin(tnDo.getTntfDbegin());
