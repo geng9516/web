@@ -4,6 +4,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditAuthorityDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditMemberDTO;
 import lombok.RequiredArgsConstructor;
@@ -173,5 +174,39 @@ public class EvaluatorSettingController {
         return evaluatorSettingBean.showEditEvalHandler(bean,sectionId,groupId,empId);
     }
 
+    // 承認者編集
+    // http://localhost:6879/sys/evaluatorsetting/editeval?psSite=TMG_ADMIN&psApp=EvaluaterSetting
+    /**
+     *  提交的json体：
+     *  {
+     *      "groupId":"",
+     *      "sectionId":"",
+     *      "empId":"",
+     *      "list": [
+     *           {
+     *               "delete":true,
+     *               "newLine":true,
+     *               "approvalLevel":"",
+     *               "dailyResult":true,
+     *               "monthlyResult":true,
+     *               "overTime":true,
+     *               "schedule":true,
+     *               "authority":true,
+     *               "notification":true,
+     *               "startDate":"",
+     *               "endDate":"",
+     *               // 更新操作以下两个字段需要传入
+     *               "beforeStartDate":"",
+     *               "beforeEndDate":""
+     *           }
+     *      ]
+     *  }
+     */
+    @PostMapping("editEval")
+    @Validated
+    public GlobalResponse editEvalHandler(@RequestAttribute("BeanName") PsDBBean bean, @Valid @RequestBody EditAuthorityDTO authorityDTO) {
+        authorityDTO.validate();
+        return evaluatorSettingBean.editEvalHandler(bean,authorityDTO);
+    }
 
 }

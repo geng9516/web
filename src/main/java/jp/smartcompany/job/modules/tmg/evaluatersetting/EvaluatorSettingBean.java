@@ -12,9 +12,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
-import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.AddEvaluatorDTO;
-import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditGroupDTO;
-import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.EditMemberDTO;
+import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.*;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EditMemberVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorGroupVO;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EvaluatorMemberRightVO;
@@ -953,11 +951,212 @@ public class EvaluatorSettingBean {
         return map;
     }
 
+    public GlobalResponse editEvalHandler(PsDBBean bean, EditAuthorityDTO authorityDTO) {
+        Vector<String> vQuery = new Vector<>();
+        for (EditAuthorityItemDTO dto: authorityDTO.getList()) {
+            EvaluatorSettingParam params = new EvaluatorSettingParam();
+            params.setCompanyId(bean.getCompCode());
+            params.setCustomerID(bean.getCustID());
+            params.setAction(EvaluatorSettingConst.ACT_EDITEVAL_UEVAL);
+            params.setGroup(authorityDTO.getGroupId());
+            params.setSection(authorityDTO.getSectionId());
+            params.setEmployee(authorityDTO.getEmpId());
+            // 削除チェックボックスにチェックが入っている場合は、削除クエリ生成
+            if (dto.getDelete()) {
+                vQuery.add(buildSQLForDeleteEval(params, dto));      // 権限情報削除(DEL)
+                // 削除チェックボックスにチェックが入っていない場合は、更新クエリ生成
+            } else if (dto.getNewLine()) {
+                // 新規登録がある場合、INSERT文を生成する。
+                vQuery.add(buildSQLForInsertAuthority(params,dto,bean));
+            } else {
+                vQuery.add(buildSQLForUpdateAuthority(params, dto, bean)); // 権限情報変更(UPD)
+            }
+        }
+        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        if (rows >0) {
+            return GlobalResponse.ok("変更処理成功しました");
+        }
+        return GlobalResponse.error("変更処理失敗しました");
+    }
 
 
     /*
      * ========================= 内部处理逻辑Start ==================
      */
+
+    /**
+     * 権限情報を登録するSQLを返す
+     *
+     * @param evaluaterSettingParam 権限設定パラメータ
+     */
+    private String buildSQLForInsertAuthority(EvaluatorSettingParam evaluaterSettingParam,EditAuthorityItemDTO dto,PsDBBean bean) {
+        String sResults        = TmgUtil.Cs_MGD_ONOFF_0; // 権限：勤怠承認
+        String sNotification   = TmgUtil.Cs_MGD_ONOFF_0; // 権限：休暇承認
+        String sOvertime       = TmgUtil.Cs_MGD_ONOFF_0; // 権限：超過勤務
+        String sSchedule       = TmgUtil.Cs_MGD_ONOFF_0; // 権限：予定作成 #427
+        String sAuthority      = TmgUtil.Cs_MGD_ONOFF_0; // 権限：権限付与
+        String sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_0; // 権限：月次承認
+        String sApprovalLevel  = null;                   // 決裁レベル
+        String sAdminFlg       = TmgUtil.Cs_MGD_ONOFF_0; // 承認サイトなら0
+
+        if (dto.getDailyResult()) {
+            sResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getNotification()) {
+            sNotification = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getOverTime()) {
+            sOvertime = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getAuthority()) {
+            sAuthority = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getSchedule()) {
+            sSchedule = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getMonthlyResult()) {
+            sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1 ※未設定の場合、"null"文字列が渡ってくるので、"null"文字列時も処理しない。
+        if (StrUtil.isNotBlank(dto.getApprovalLevel())) {
+            sApprovalLevel = escDBString(dto.getApprovalLevel());
+        }
+
+        // 管理サイトなら1
+        if (evaluaterSettingParam.isSiteTa()) {
+            sAdminFlg = TmgUtil.Cs_MGD_ONOFF_1;
+        }
+
+        StringBuilder sbSQL = new StringBuilder();
+
+        sbSQL.append(" INSERT INTO ");
+        sbSQL.append("     TMG_EVALUATER E ");
+        sbSQL.append(" ( ");
+        sbSQL.append("     TEV_CCUSTOMERID, ");
+        sbSQL.append("     TEV_CCOMPANYID,  ");
+        sbSQL.append("     TEV_CEMPLOYEEID, ");
+        sbSQL.append("     TEV_DSTARTDATE,  ");
+        sbSQL.append("     TEV_DENDDATE,    ");
+        sbSQL.append("     TEV_CMODIFIERUSERID,    ");
+        sbSQL.append("     TEV_DMODIFIEDDATE,      ");
+        sbSQL.append("     TEV_CMODIFIERPROGRAMID, ");
+        sbSQL.append("     TEV_CSECTIONID,     ");
+        sbSQL.append("     TEV_CGROUPID,       ");
+        sbSQL.append("     TEV_CEDITABLEFLG,   ");
+        sbSQL.append("     TEV_CRESULTS,       ");
+        sbSQL.append("     TEV_CNOTIFICATION,  ");
+        sbSQL.append("     TEV_COVERTIME,      ");
+        sbSQL.append("     TEV_CSCHEDULE,      ");
+        sbSQL.append("     TEV_CAUTHORITY,     ");
+        sbSQL.append("     TEV_CADMINFLG,      ");
+        sbSQL.append("     TEV_CSECTIONEVALUATER, ");
+        sbSQL.append("     TEV_CMONTHLYAPPROVAL,  ");
+        sbSQL.append("     TEV_CAPPROVAL_LEVEL ");
+        sbSQL.append(" ) VALUES ( ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getCustomerId()) + ", ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getCompanyId())  + ", ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getEmployee())    + ", ");
+        sbSQL.append(      SysUtil.transDateNullToDB(dto.getStartDate())      + ", ");
+        sbSQL.append(      SysUtil.transDateNullToDB(dto.getEndDate())        + ", ");
+        sbSQL.append(      escDBString(bean.getUserCode()) + ", ");
+        sbSQL.append("     SYSDATE, ");
+        sbSQL.append(      escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_EDITEVAL_UEVAL) + ", ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getSection()) + ", ");
+        sbSQL.append(      escDBString(evaluaterSettingParam.getGroup())   + ", ");
+        sbSQL.append(      escDBString(TmgUtil.Cs_MGD_ONOFF_1)             + ",");
+        sbSQL.append(      escDBString(sResults)         + ", ");
+        sbSQL.append(      escDBString(sNotification)    + ", ");
+        sbSQL.append(      escDBString(sOvertime)        + ", ");
+        sbSQL.append(      escDBString(sSchedule)        + ", ");
+        sbSQL.append(      escDBString(sAuthority)       + ", ");
+        sbSQL.append(      escDBString(sAdminFlg)        + ", ");
+        sbSQL.append(      escDBString(TmgUtil.Cs_MGD_ONOFF_0) + ",");
+        sbSQL.append(      escDBString(sMonthlyResults)  + ", ");
+        sbSQL.append(      sApprovalLevel);
+        sbSQL.append(" ) ");
+
+        return sbSQL.toString();
+    }
+
+
+    /**
+     * 権限情報を更新するSQLを返す
+     *
+     * @param evaluaterSettingParam 権限設定パラメータ
+     */
+    private String buildSQLForUpdateAuthority(EvaluatorSettingParam evaluaterSettingParam, EditAuthorityItemDTO dto,PsDBBean bean) {
+
+        String sResults        = TmgUtil.Cs_MGD_ONOFF_0; // 権限：勤怠承認
+        String sNotification   = TmgUtil.Cs_MGD_ONOFF_0; // 権限：休暇承認
+        String sOvertime       = TmgUtil.Cs_MGD_ONOFF_0; // 権限：超過勤務
+        String sSchedule       = TmgUtil.Cs_MGD_ONOFF_0; // 権限：予定作成 #427
+        String sAuthority      = TmgUtil.Cs_MGD_ONOFF_0; // 権限：権限付与
+        String sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_0; // 権限：月次承認
+        String sApprovalLevel  = null;                   // 決裁レベル
+
+        if (dto.getDailyResult()) {
+            sResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getNotification()) {
+            sNotification = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getOverTime()) {
+            sOvertime = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getAuthority()) {
+            sAuthority = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getSchedule()) {
+            sSchedule = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1
+        if (dto.getMonthlyResult()) {
+            sMonthlyResults = TmgUtil.Cs_MGD_ONOFF_1;
+        } // チェックされていれば1 ※未設定の場合、"null"文字列が渡ってくるので、"null"文字列時も処理しない。
+        if (StrUtil.isNotBlank(dto.getApprovalLevel())) {
+            sApprovalLevel = escDBString(dto.getApprovalLevel());
+        }
+
+        return " UPDATE " +
+                "     TMG_EVALUATER E " +
+                " SET " +
+                "     E.TEV_CMODIFIERUSERID    = " + escDBString(bean.getUserCode()) + ", " +
+                "     E.TEV_DMODIFIEDDATE      = SYSDATE, " +
+                "     E.TEV_CMODIFIERPROGRAMID = " + escDBString(EvaluatorSettingConst.BEAN_DESC + "_" + EvaluatorSettingConst.ACT_EDITEVAL_UEVAL) + ", " +
+                "     E.TEV_DSTARTDATE         = " + SysUtil.transDateNullToDB(dto.getStartDate()) + ", " +
+                "     E.TEV_DENDDATE           = " + SysUtil.transDateNullToDB(dto.getEndDate()) + ", " +
+                "     E.TEV_CRESULTS           = " + escDBString(sResults) + ", " +
+                "     E.TEV_CNOTIFICATION      = " + escDBString(sNotification) + ", " +
+                "     E.TEV_COVERTIME          = " + escDBString(sOvertime) + ", " +
+                "     E.TEV_CSCHEDULE          = " + escDBString(sSchedule) + ", " +
+                "     E.TEV_CMONTHLYAPPROVAL   = " + escDBString(sMonthlyResults) + ", " +
+                "     E.TEV_CAUTHORITY         = " + escDBString(sAuthority) + ", " +
+                "     E.TEV_CAPPROVAL_LEVEL    = " + sApprovalLevel +
+                " WHERE " +
+                "     E.TEV_CEMPLOYEEID = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND E.TEV_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection()) +
+                " AND E.TEV_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup()) +
+                " AND E.TEV_DSTARTDATE  = " + SysUtil.transDateNullToDB(dto.getBeforeStartDate()) +
+                " AND E.TEV_DENDDATE    = " + SysUtil.transDateNullToDB(dto.getBeforeEndDate()) +
+                " AND E.TEV_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND E.TEV_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId());
+    }
+
+
+    /**
+     * 承認者を削除するSQLを返す
+     * @param evaluaterSettingParam 権限設定パラメータ
+     */
+    private String buildSQLForDeleteEval(EvaluatorSettingParam evaluaterSettingParam, EditAuthorityItemDTO dto) {
+        return " DELETE FROM " +
+                "     TMG_EVALUATER E " +
+                " WHERE " +
+                "     E.TEV_CEMPLOYEEID = " + escDBString(evaluaterSettingParam.getEmployee()) +
+                " AND E.TEV_CSECTIONID  = " + escDBString(evaluaterSettingParam.getSection()) +
+                " AND E.TEV_CGROUPID    = " + escDBString(evaluaterSettingParam.getGroup()) +
+                " AND E.TEV_DSTARTDATE  = " + SysUtil.transDateNullToDB(dto.getStartDate()) +
+                " AND E.TEV_DENDDATE    = " + SysUtil.transDateNullToDB(dto.getEndDate()) +
+                " AND E.TEV_CCOMPANYID  = " + escDBString(evaluaterSettingParam.getCompanyId()) +
+                " AND E.TEV_CCUSTOMERID = " + escDBString(evaluaterSettingParam.getCustomerId());
+    }
 
     /**
      * 異動歴の所属期間を取得するSQLを返す。
