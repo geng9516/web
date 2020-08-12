@@ -802,11 +802,22 @@
                         }
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
+                        this.getLimit()
                     } catch (error) {
                         return
                     } finally {
                         this.isSearchHistory = false
                         this.loading = false
+                    }
+                },
+                async getLimit() {
+                    try {
+                        const { data } = await this.http.get('sys/overtimeinstruct/limitDisp', this.query)
+                        console.log(data)
+                    } catch (error) {
+                        return
+                    } finally {
+
                     }
                 },
                 async getAvgTableData(e) {

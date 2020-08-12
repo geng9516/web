@@ -94,4 +94,14 @@ public class OvertimeInstructController extends AbstractController {
         UpdateListDto dtos =JSONUtil.parse(updateDtoList).toBean(UpdateListDto.class);
         return overtimeInstructBean.actioneExecuteUpdate(dtos.getUpdateDtoList(),psDBBean);
     }
+
+
+    /**
+     * 凡例
+     */
+    @GetMapping("limitDisp")
+    public DemoLimitVo demoLimit(@RequestParam("baseMonth")String baseMonth
+            , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return overtimeInstructBean.demoDisp(baseMonth,psDBBean);
+    }
 }

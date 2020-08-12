@@ -105,7 +105,14 @@ public class OvertimeInstructBean {
 
 
     // 凡例画面表示
-    public void actionDemoDisp(ModelMap modelMap){
+    public DemoLimitVo demoDisp(String baseMonth,PsDBBean psDBBean) throws Exception {
+
+        //汎用参照コンポーネント。
+        referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseMonth, TmgReferList.TREEVIEW_TYPE_LIST,
+                true, true, false, false, true
+        );
+        overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
+        holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
 
         DemoLimitVo demo=new DemoLimitVo();
 
@@ -137,6 +144,7 @@ public class OvertimeInstructBean {
         demo.setLIMIT_HOL_CNT_LVL4(holidayTimeLimitDtos.getHtMontly04());
         demo.setLIMIT_HOL_CNT_LVL5(holidayTimeLimitDtos.getHtMontly05());
 
+        return demo;
 
     }
 
@@ -168,6 +176,7 @@ public class OvertimeInstructBean {
         }
         overTimeLimitDtos=iTmgGroupAttributeService.selectOverTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
         holidayTimeLimitDtos=iTmgGroupAttributeService.selectHolidayTimeLimit(psDBBean.getCustID(),psDBBean.getCompCode(),referList.getTargetSec(),referList.getTargetGroup());
+
         // 2 表示対象社員の今月分の一日毎の超過勤務実績時間を取得
         List<MonthlyInfoOtVo> monthlyInfoOtVoList = iTmgMonthlyInfoService.selectMonthlyInfoOtr(psDBBean.getCustID(), psDBBean.getCompCode(), referList.getTargetSec(),
                 sDBContentId, baseMonth, psDBBean.getLanguage(), referList.buildSQLForSelectEmployees());
