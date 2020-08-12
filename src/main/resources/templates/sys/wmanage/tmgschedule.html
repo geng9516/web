@@ -319,7 +319,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="action">
-                    <i-button type="error" ghost @click="deleteWeekPtn(row._index)">削除</i-button>
+                    <i-button type="error" ghost :loading="deletePatternLoadding[row._index]" @click="deleteWeekPtn(row._index)">削除</i-button>
                 </template>
             </i-table>
 
@@ -427,6 +427,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                deletePatternLoadding:[],
                 postScheduleLoading:false,
                 hatuReiName:'',
                 hatuResTimeRange:'',
@@ -704,7 +705,7 @@
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
                     this.referListObject.txtBaseDate=txtBaseDate
-                    const { data } = await this.http.get('sys/schedule/hatuRei', this.referListObject)
+                    const { data } = await this.http.get(`sys/schedule/hatuRei`, this.referListObject)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -946,8 +947,10 @@
                     }
             },
             async deleteWeekPtn(index){
+                this.$set(this.deletePatternLoadding,index , true)
                 this.query.twp_nid= this.tableDataUsed[index].twp_nid
                 const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, this.query)
+                this.$set(this.deletePatternLoadding,index , false)
                 this.tableDataUsed.splice(index,1)
             },
                 async executeMakeWeekPattern(){
@@ -1132,11 +1135,19 @@
                                 result=true
                                 return result
                             }
-                            if(0>Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
                                 that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
                                 result=true
                                 return result
                             }
+                            if (e1.restOpen!='' && e1.restClose!=''&&!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
                         })){
                             result=true
                             return result

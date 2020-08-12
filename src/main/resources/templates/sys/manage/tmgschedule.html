@@ -481,7 +481,7 @@
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
                     this.referListObject.txtBaseDate=txtBaseDate
-                    const { data } =  await this.http.get('sys/schedule/hatuRei', this.referListObject)
+                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, this.referListObject)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -614,7 +614,6 @@
                         }
                         return item;
                     })
-                    console.log("xxx"+JSON.stringify(this.scheduleDataDTOList))
                     this.yyyyMMdd=this.selectScheduleInfo.period
                     this.value=this.scheduleDataDTOList.map(item=>{
                         let restList=item.timerange_arr.map(r=>{
@@ -731,11 +730,19 @@
                                 result=true
                                 return result
                             }
-                            if(0>Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
                                 that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
                                 result=true
                                 return result
                             }
+                            if (e1.restOpen!='' && e1.restClose!=''&& !Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
                         })){
                             result=true
                             return result
