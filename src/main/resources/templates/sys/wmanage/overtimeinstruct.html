@@ -105,8 +105,7 @@
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
                 :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
-                    <span @click="toWorkPage"
-                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
+                    <span class="mr10 pt2 pb2 pl10 pr10 row-label-primary">{{ row.empname }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="overtime" v-if="row.overtime">
                     <span :class="showRed(row.overtime)">{{ row.overtime.split('@')[0] }}</span>
@@ -207,8 +206,7 @@
                 </div>
                 <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
-                        <span @click="toWorkPage"
-                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span>
+                        <span class="mr10 pt2 pb2 pl10 pr10 row-label-primary">{{ row.empName }}</span>
                     </template>
 
                     <template slot-scope="{ row }" slot="startTime">
@@ -514,13 +512,54 @@
                         updateRestTimeDtoList: [{}]
                     },
                     sysDate: '',
-                    restTimeSetDisable: false
+                    restTimeSetDisable: false,
+                    // 警告值凡例字段对照表
+                    permisssionFlagKeyValueHelper: {
+                        '超勤実績の警告値(時間)(日次:レベル1)': { key: 'dailyOverTime', show: 'showDailyOverTime' },
+                        '超勤実績の月平均時間': { key: 'avgOverTime', show: 'showAvgOverTime' },
+                        '超勤実績の月次警告値超過回数': { key: 'countOverTime', show: 'showCountOverTime' },
+                        '超勤実績の警告値(時間)(月次:レベル1)': { key: 'monthlyOverTimeYellow', show: 'showMonthlyOverTime' },
+                        '超勤実績の警告値(時間)(月次:レベル2)': { key: 'monthlyOverTimeOrange', show: 'showMonthlyOverTimeOrange' },
+                        '超勤実績の警告値(時間)(月次:レベル3)': { key: 'monthlyOverTimePink', show: 'showMonthlyOverTimePink' },
+                        '超勤実績の警告値(時間)(月次:レベル4)': { key: 'monthlyOverTimeRed', show: 'showMonthlyOverTimeRed' },
+                        '超勤実績の警告値(時間)(年次:レベル1)': { key: 'yearlyOverTimeYellow', show: 'showYearlyOverTimeYellow' },
+                        '超勤実績の警告値(時間)(年次:レベル2)': { key: 'yearlyOverTimeOrange', show: 'showYearlyOverTimeOrange' },
+                        '超勤実績の警告値(時間)(年次:レベル3)': { key: 'yearlyOverTimePink', show: 'showYearlyOverTimePink' },
+                        '超勤実績の警告値(時間)(年次:レベル4)': { key: 'yearlyOverTimeRed', show: 'showYearlyOverTimeRed' },
+                        '警告値(日数)(月次:レベル1)': { key: 'monthlyHolidayTimeLevel1', show: 'showMonthlyHolidayTimeLevel1' },
+                        '警告値(日数)(月次:レベル2)': { key: 'monthlyHolidayTimeLevel2', show: 'showMonthlyHolidayTimeLevel2' },
+                        '警告値(日数)(月次:レベル3)': { key: 'monthlyHolidayTimeLevel3', show: 'showMonthlyHolidayTimeLevel3' },
+                        '警告値(日数)(月次:レベル4)': { key: 'monthlyHolidayTimeLevel4', show: 'showMonthlyHolidayTimeLevel4' },
+                        '警告値(日数)(月次:レベル5)': { key: 'monthlyHolidayTimeLevel5', show: 'showMonthlyHolidayTimeLevel5' }
+                    },
+                    permisssionFlagKeyValueHelper: {
+                        'label_AVERAGE_TIME': { name: '超勤実績の警告値(時間)(日次:レベル1)', desc: '一日の超勤時間の合計を表示します' },
+                        'limit_COUNT': { name: '超勤実績の月次45超過回数(年)', desc: '年内の超勤時間が45時間を超えた月数を表示します' },
+                        'limit_HOL_CNT_LVL1': { name: '休日出勤回数(月次:レベル1)', desc: '月内の休日出勤の回数を表示します' },
+                        'limit_HOL_CNT_LVL2': { name: '休日出勤回数(月次:レベル2)', desc: '' },
+                        'limit_HOL_CNT_LVL3': { name: '休日出勤回数(月次:レベル3)', desc: '' },
+                        'limit_HOL_CNT_LVL4': { name: '休日出勤回数(月次:レベル4)', desc: '' },
+                        'limit_HOL_CNT_LVL5': { name: '休日出勤回数(月次:レベル5)', desc: '' },
+                        'limit_OVERWORK_MONTH_AVG': { name: '超勤実績の月平均時間', desc: '月の超勤実績の平均時間を表示します' },
+                        'limit_OVER_WORK_LVL1': { name: '超勤実績の警告値(時間)(日次:レベル1)', desc: '一日の超勤時間の合計を表示します' },
+                        'limit_SUM_MONTH_LVL1': { name: '警告値(日数)(月次:レベル1)', desc: 'showYearlyOverTimePink' },
+                        'limit_SUM_MONTH_LVL2': { name: '警告値(日数)(月次:レベル2)', desc: 'showYearlyOverTimeRed' },
+                        'limit_SUM_MONTH_LVL3': { name: '警告値(日数)(月次:レベル3)', desc: 'showMonthlyHolidayTimeLevel1' },
+                        'limit_SUM_MONTH_LVL4': { name: '警告値(日数)(月次:レベル4)', desc: 'showMonthlyHolidayTimeLevel2' },
+                        'limit_SUM_MONTH_LVL5': { name: '警告値(日数)(月次:レベル5)', desc: 'showMonthlyHolidayTimeLevel3' },
+                        'limit_SUM_YEAR_LVL1': { name: 'monthlyHolidayTimeLevel4', desc: 'showMonthlyHolidayTimeLevel4' },
+                        'limit_SUM_YEAR_LVL2': { name: 'monthlyHolidayTimeLevel5', desc: 'showMonthlyHolidayTimeLevel5' },
+                        'limit_SUM_YEAR_LVL3': { name: 'monthlyHolidayTimeLevel3', desc: 'showMonthlyHolidayTimeLevel3' },
+                        'limit_SUM_YEAR_LVL4': { name: 'monthlyHolidayTimeLevel4', desc: 'showMonthlyHolidayTimeLevel4' },
+                        'limit_SUM_YEAR_LVL5': { name: 'monthlyHolidayTimeLevel5', desc: 'showMonthlyHolidayTimeLevel5' }
+                    }
                 }
             },
             async mounted() {
                 this.getOrgTree()
                 this.getTableHead()
                 this.getSearchCondition()
+                this.getLimit()
             },
             computed: {
                 columns() {
@@ -802,7 +841,6 @@
                         }
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
-                        this.getLimit()
                     } catch (error) {
                         return
                     } finally {
@@ -813,6 +851,14 @@
                 async getLimit() {
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/limitDisp', this.query)
+                        Object.keys(data).map(e=>{
+                            return {
+                                name: permisssionFlagKeyValueHelper[e].name,
+                                value: data[e],
+                                desc:permisssionFlagKeyValueHelper[e].desc,
+                                color:permisssionFlagKeyValueHelper[e].color,
+                            }
+                        })
                         console.log(data)
                     } catch (error) {
                         return
