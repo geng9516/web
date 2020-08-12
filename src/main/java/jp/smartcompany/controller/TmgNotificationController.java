@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -136,10 +137,10 @@ public class TmgNotificationController {
     @PostMapping("BulkPermit")
     @ResponseBody
     public GlobalResponse BulkPermit(
-            @RequestBody List<String> ntfNoList,
+            @RequestParam("ntfNoList") String ntfNoList,
             @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
-
-        return tmgNotificationBean.bulkPermit(ntfNoList,psDBBean);
+        List<String> list =JSONUtil.parse(ntfNoList).toBean(ArrayList.class);
+        return tmgNotificationBean.bulkPermit(list,psDBBean);
     }
 
     /**
