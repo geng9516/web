@@ -918,7 +918,15 @@
                     }
                     this.PermissionAdminEditer = false
                     this.permissionAdminAddData = [{}]
-                    this.permissionAdminValue = [{}]
+                    this.permissionAdminValue = [
+                        {   workConfirm: false,
+                            monthConfirm: false,
+                            overWorkConfirm: false,
+                            scheduleCreate: false,
+                            permissionGive: false,
+                            restConfirm: false,
+                        }
+                    ]
                     // 承認者追加时，需要默认第一个
                     this.permissionAdminValue[0].groupId = this.data[0].groupId
                     this.permissionAdminAddModal = true
@@ -957,7 +965,12 @@
                             empId: row.empId,
                             ...e
                         }
-                    }).concat({ groupId: row.groupId, empId: row.empId })
+                    }).concat({ groupId: row.groupId, empId: row.empId,workConfirm: false,
+                            monthConfirm: false,
+                            overWorkConfirm: false,
+                            scheduleCreate: false,
+                            permissionGive: false,
+                            restConfirm: false,  })
                     this.permissionAdminValue = [...this.permissionAdminAddData]
                     this.permissionAdminAddModal = true
                 },
@@ -981,7 +994,26 @@
                             end: e.validEndDate
                         }
                     })
+                    if(this.addPermissionAdminInfo.name === '承認者検索') {
+                        this.$Notice.warning({ title: '注意', desc: '承認者を選択してください。', duration: 6.5 })
+                        return
+                    }
 
+                    if(!this.permissionAdminValue[0].workConfirm &&
+                       !this.permissionAdminValue[0].monthConfirm &&
+                       !this.permissionAdminValue[0].overWorkConfirm &&
+                       !this.permissionAdminValue[0].scheduleCreate &&
+                       !this.permissionAdminValue[0].permissionGive &&
+                       !this.permissionAdminValue[0].restConfirm
+                       ) {
+                        this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
+                        return
+                    }
+
+                    if(this.permissionAdminValue[0].restConfirm && !this.permissionAdminValue[0].level) {
+                        this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
+                        return
+                    }
                     const basicCheck = dateList.some(e => {
                         if (!e.start && !e.end) {
                             this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
@@ -1019,11 +1051,13 @@
                         }
                         try {
                             this.updatePermissionFlagLoading = true
-                            const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
+                            await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
                             this.$Message.success('追加完了')
-                        } catch (error) {
-                        } finally {
+                            this.getTableData()
                             this.permissionAdminAddModal = false
+                        } catch (error) {
+                            this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                        } finally {
                             this.updatePermissionFlagLoading = false
                         }
                     }
@@ -1156,8 +1190,8 @@
                             return {
                                 ...e,
                                 empId: e.empName,
-                                sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                                groupId:''
+                                originalGroupId: e.groupId,
+                                sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection
                             }
                         })
                     } catch (error) {
@@ -1166,11 +1200,12 @@
                     }
                 },
                 async updateMemberAssign() {
-                    const query = this.memberAssignValue.filter(e=> e.groupId)
+                    const query = this.memberAssignValue.filter(e=> e.originalGroupId !== e.groupId)
                     try {
                             this.updatePermissionFlagLoading = true
                             const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
                             this.$Message.success('変更完了')
+                            this.handleClickEditMember()
                         } catch (error) {
                         } finally {
                             this.permissionAdminAddModal = false

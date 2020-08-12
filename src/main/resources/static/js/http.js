@@ -11,7 +11,7 @@ axios.interceptors.response.use(
       // VUE.$Spin.hide()
       return response
     }
-    return Promise.reject(JSON.parse(response.data.msg))
+    return Promise.reject(response.data.msg)
   },
   error => {
     Vue.prototype.$Notice.error({
