@@ -72,11 +72,11 @@
                 no-data-text="所属を選択して下さい。" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
-                        :class="row.main ? 'width75' : 'ml30 width75'" style="font-weight: bold;">{{ row.group }}</span>
+                        :class="row.main ? 'width75 tl' : 'ml30 width75 tl'" style="font-weight: bold;">{{ row.group }}</span>
                     <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '30px' : '', fontSize: '13px'}" v-else> {{ row.group }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="name">
-                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}"
+                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" class="tl width100"
                         v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
                     <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.empId} (${row.name}/${row.postName})` }}</span>
 
@@ -161,7 +161,7 @@
 
                 <template slot-scope="{ row }" slot="level">
                     <i-select v-model="permissionAdminValue[row._index].level" transfer :disabled="!permissionAdminValue[row._index].restConfirm" placeholder="">
-                        <i-option v-for="(item, i) of levelList" :value="item.value" :key="i">{{ item.name }}</i-option>
+                        <i-option v-for="(item, i) of levelList" :value="item.value" :key="i" :label="item.name"></i-option>
                     </i-select>
                 </template>
 
@@ -280,7 +280,7 @@
                 </template>
             </i-table>
             <div class="my-footer tr mt20">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
+                <i-button type="text" @click="cancel('','PermissionFlagModals')">キャンセル</i-button>
                 <i-button type="primary" size="large" @click="updatePermissionFlag()" :loading="updatePermissionFlagLoading">変更</i-button>
             </div>
             <Spin size="large" fix v-if="groupBtnLoading"></Spin>
@@ -335,7 +335,7 @@
                         {
                             title: '承認者氏名',
                             minWidth: 260,
-                            align: 'left',
+                            align: 'center',
                             slot: 'name'
                         },
                         {
@@ -957,13 +957,48 @@
                         this.groupBtnLoading = false
                     }
                 },
-                handleEditData(row) {
+                async handleEditData(row) {
                     this.PermissionAdminEditer = true
+                    this.permissionAdminAddModal = true
+
+                    // 和追加以下一致，但需要将决裁level的键值互换，因为需要的是key其实是 xxxxx❘1 这样的,
+                    if(this.levelList.length === 0) {
+                        const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    this.groupBtnLoading = true
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/addeval', query)
+                        this.enableMonthlyResult = data.enableMonthlyResult
+                        this.addPermissionAdminGroupList = data.groupList.map(e => {
+                            return {
+                                groupName: Object.values(e)[0],
+                                groupId: Object.keys(e)[0],
+                            }
+                        })
+                        this.levelList = data.levelList.map(e => {
+                            return {
+                                name: Object.values(e)[0],
+                                value: Object.keys(e)[0],
+                            }
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
+                    }
+                    }
+
+                    // 赋值
+                    const levelListHelper = this.levelList.map(e=> e.value)
                     this.permissionAdminAddData = row.validList.map(e => {
                         return {
                             groupId: row.groupId,
                             empId: row.empId,
-                            ...e
+                            ...e,
+                            level: levelListHelper[e.level - 1]
                         }
                     }).concat({ groupId: row.groupId, empId: row.empId,workConfirm: false,
                             monthConfirm: false,
@@ -972,7 +1007,7 @@
                             permissionGive: false,
                             restConfirm: false,  })
                     this.permissionAdminValue = [...this.permissionAdminAddData]
-                    this.permissionAdminAddModal = true
+                    console.log(this.permissionAdminValue)
                 },
                 async updatePermissionFlag() {
                     this.permissionFlagValues.sectionId = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
