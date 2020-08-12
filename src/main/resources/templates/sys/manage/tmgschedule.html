@@ -509,7 +509,7 @@
 
                 this.valueMap.map(Number).forEach(e=>{
                     console.log("ee"+e)
-                    let index=--e
+                    let index=e
                     Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
                             that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
@@ -518,11 +518,16 @@
                 })
             },
             handleSelectAll(selection){
-
-                this.valueMap=selection.map(item=> {
-                    return item.tda_nmmdd
+                let temp=selection.map(item=> {
+                    return item.tda_ccustomerid
                 })
-                console.log("handleSelectAll"+JSON.stringify(this.valueMap))
+                console.log("valueMap"+JSON.stringify(temp))
+                let that=this
+                this.valueMap=temp.map(e=>{
+                    return that.valuebak.findIndex((e1)=>e1.dyyyymmdd==e)
+                })
+                console.log("valueMap"+JSON.stringify(this.valueMap))
+
             },
             handleSelectAll2(status) {
                 this.$refs.selection2.selectAll(status)
@@ -651,7 +656,7 @@
                     })
                     return
                 }
-                let postValue=this.valueMap.map(Number).map(i=>this.value[--i])
+                let postValue=this.valueMap.map(Number).map(i=>this.value[i])
 
                 const that = this
                 console.log("postValue"+JSON.stringify(postValue))
