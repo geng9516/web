@@ -1189,7 +1189,7 @@
                         this.memberAssignValue = this.PermissionMemberAssignData.map(e=>{
                             return {
                                 ...e,
-                                empId: e.empName,
+                                empId: e.empName.split(' ')[0],
                                 originalGroupId: e.groupId,
                                 sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection
                             }
