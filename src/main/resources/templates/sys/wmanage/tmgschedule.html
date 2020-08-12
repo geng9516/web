@@ -1199,8 +1199,7 @@
                     targetUserId:this.loginEmployee,
                     loginUserId: [[${ session.psSession.loginEmployee }]]
                 }
-                this.query.txtBaseDate=txtBaseDate
-                this.query.txtEndDate=txtEndDate
+
                 this.query.content=JSON.stringify(content)
                 console.log(JSON.stringify(this.query.content))
                 this.postScheduleLoading=true
