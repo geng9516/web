@@ -1019,7 +1019,7 @@
                         }
                         try {
                             this.updatePermissionFlagLoading = true
-                            const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}txtAction=ACT_MakeGroup_UGroup`, query)
+                            const { data } = await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
                             this.$Message.success('追加完了')
                         } catch (error) {
                         } finally {
