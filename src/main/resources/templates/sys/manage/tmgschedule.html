@@ -89,11 +89,11 @@
         <div class="table-top">
             <Row :gutter="16">
                 <Col span="11">
-                <i-button type="text" @click="preMonth" :disabled="!selectDisabled">
+                <i-button type="text" @click="preMonth" :disabled="!selectDisabled || !preMonthDisable">
                     <Icon type="ios-arrow-back"></Icon>
                     前月
                 </i-button>
-                <i-button type="text" @click="nextMonth" :disabled="!selectDisabled">
+                <i-button type="text" @click="nextMonth" :disabled="!selectDisabled || !nextMonthDisable">
                     翌月
                     <Icon type="ios-arrow-forward"></Icon>
                 </i-button >
@@ -288,6 +288,8 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                preMonthDisable:false,
+                nextMonthDisable:false,
                 postScheduleLoading:false,
                 hatuReiName:'',
                 hatuResTimeRange:'',
@@ -620,6 +622,16 @@
                         return item;
                     })
                     this.yyyyMMdd=this.selectScheduleInfo.period
+                    if(this.selectScheduleInfo.nextStart=='' ||this.selectScheduleInfo.nextEnd==''){
+                        this.nextMonthDisable=false
+                    }else{
+                        this.nextMonthDisable=true
+                    }
+                    if(this.selectScheduleInfo.preStart=='' ||this.selectScheduleInfo.preEnd==''){
+                        this.preMonthDisable=false
+                    }else{
+                        this.preMonthDisable=true
+                    }
                     this.value=this.scheduleDataDTOList.map(item=>{
                         let restList=item.timerange_arr.map(r=>{
                             return {
@@ -795,13 +807,21 @@
 
                 this.query.content=JSON.stringify(content)
                 console.log("postExecuteEditMonthlyUSchedule"+this.query.content)
-                this.postScheduleLoading=true
-                await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
-                this.$Message.success('登録完了')
-                this.query.content=''
-                this.isEditable=false
-                this.valueMap=[]
-                this.postScheduleLoading=false
+                try{
+                    this.postScheduleLoading=true
+                    this.loading=true
+                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
+                    this.$Message.success('登録完了')
+                }catch (e) {
+                    return
+                }finally {
+                    this.query.content=''
+                    this.isEditable=false
+                    this.valueMap=[]
+                    this.postScheduleLoading=false
+                    this.loading=false
+                }
+
                 this.getSelectScheduleInfo()
                 this.getSelectIkkaInfo()
 
