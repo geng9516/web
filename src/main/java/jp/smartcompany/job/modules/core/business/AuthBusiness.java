@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
@@ -41,6 +42,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -236,10 +238,7 @@ public class AuthBusiness {
             e.printStackTrace();
             throw new GlobalException("获取用户菜单信息失败");
         } finally {
-            conn.setReadOnly(false);
-            if (conn!=null) {
-                conn.close();
-            }
+            DbUtil.close(conn);
         }
 
 //        List<GroupAppManagerPermissionDTO> tmgPermList = iMastGroupapppermissionService.selectPermissionList(systemId,DateUtil.date(),groupIds, TmgUtil.Cs_SITE_ID_TMG_PERM,null,language);
@@ -343,17 +342,17 @@ public class AuthBusiness {
         for (GroupAppManagerPermissionDTO topMenu : topMenus) {
             // 加载主菜单
             MenuGroupBO menuGroupBO = new MenuGroupBO();
-            MenuBO topMenuDO = new MenuBO();
-            topMenuDO.setPageId(topMenu.getMgpCsite());
-            topMenuDO.setPerms(topMenu.getMgpCobjectid());
-            topMenuDO.setOrderNum(topMenu.getMtrNseq());
-            topMenuDO.setUrl(topMenu.getMtrCurl2());
-            topMenuDO.setJaName(topMenu.getObjectName());
-            topMenuDO.setIcon(topMenu.getMtrIcon());
-            topMenuDO.setType(topMenu.getType());
-            topMenuDO.setCompanyId("01");
-            topMenuDO.setCustomerId("01");
-            menuGroupBO.setMenu(topMenuDO);
+
+            menuGroupBO.setOrderNum(topMenu.getMtrNseq());
+            menuGroupBO.setPageId(topMenu.getMgpCsite());
+            menuGroupBO.setPerms(topMenu.getMgpCobjectid());
+            menuGroupBO.setOrderNum(topMenu.getMtrNseq());
+            menuGroupBO.setUrl(topMenu.getMtrCurl2());
+            menuGroupBO.setJaName(topMenu.getObjectName());
+            menuGroupBO.setIcon(topMenu.getMtrIcon());
+            menuGroupBO.setType(topMenu.getType());
+            menuGroupBO.setCompanyId("01");
+            menuGroupBO.setCustomerId("01");
             // 加载二级导航
             List<GroupAppManagerPermissionDTO> appList = CollUtil.newArrayList();
             if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_INP)) {
@@ -402,7 +401,7 @@ public class AuthBusiness {
 
             menuGroupList.add(menuGroupBO);
         }
-        return menuGroupList;
+        return CollUtil.sort(menuGroupList,Comparator.comparingLong(MenuGroupBO::getOrderNum));
     }
 
     private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {

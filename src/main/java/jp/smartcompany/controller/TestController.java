@@ -214,7 +214,6 @@ public class TestController {
             topMenuDO.setJaName(topMenu.getObjectName());
             topMenuDO.setIcon(topMenu.getMtrIcon());
             topMenuDO.setType(topMenu.getType());
-            menuGroupBO.setMenu(topMenuDO);
             // 加载二级导航
             List<GroupAppManagerPermissionDTO> appList = CollUtil.newArrayList();
             if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_INP)) {

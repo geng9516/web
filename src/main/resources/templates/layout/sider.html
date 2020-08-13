@@ -4,20 +4,20 @@
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
         <!-- 最左侧的图标列，增强交互与一级菜单设有相同事件 -->
-        <li class="nav-item" v-for="(item,i) of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
-            :key="item.menu.pageId" @click="handleMenuGroupChange(item)">
+        <li class="nav-item" v-for="(item,i) of topNavs" :class="curMenu === item.pageId ? 'actived-menu' : ''"
+            :key="item.pageId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true">
-                <use :xlink:href="`#${item.menu.icon || 'AccessLog41'}`"></use>
+                <use :xlink:href="`#${item.icon || 'AccessLog41'}`"></use>
             </svg>
         </li>
         <li class="nav-item"></li>
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
-        <menu-group :title="e.menu.jaName" v-for="e of topNavs" :key="e.menu.pageId"
-            :class="curMenu === e.menu.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
+        <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"
+            :class="curMenu === e.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
             <div style="overflow-x: hidden">
-                <div v-show="curMenu === e.menu.pageId"
+                <div v-show="curMenu === e.pageId"
                     style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
                     <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId" @click.native="handleSubMenuClick(t, i)">
                         <div>
@@ -47,8 +47,8 @@
             },
             methods: {
                 handleMenuGroupChange(item) {
-                    this.siteId = item.menu.pageId
-                    this.curMenu = item.menu.pageId
+                    this.siteId = item.pageId
+                    this.curMenu = item.pageId
                 },
                 handleSubMenuClick(e, i) {
                     var pageId = e.pageId
