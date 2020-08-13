@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Vector;
 import java.util.List;
 
+/**
+ * @author Xiao Wenpeng
+ */
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class EvaluatorSettingBean {

@@ -14,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(of={"empId","groupId"})
+@EqualsAndHashCode(of={"groupId"})
 public class EditMemberVO {
 
   private String groupId;

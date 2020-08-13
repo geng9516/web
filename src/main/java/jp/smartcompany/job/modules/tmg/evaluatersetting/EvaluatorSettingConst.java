@@ -21,6 +21,9 @@
 
 package jp.smartcompany.job.modules.tmg.evaluatersetting;
 
+/**
+ * @author Xiao Wenpeng
+ */
 public interface EvaluatorSettingConst {
 
 	// LOG出力用ディスクリプタ

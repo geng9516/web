@@ -4,6 +4,9 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.ToString;
 
+/**
+ * @author Xiao Wenpeng
+ */
 @ToString
 public class EvaluatorSettingParam {
 

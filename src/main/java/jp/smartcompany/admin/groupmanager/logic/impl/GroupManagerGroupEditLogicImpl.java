@@ -91,6 +91,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     /* ▲2007/10/12 A.SUZUKI 社員選択による定義を追加 */
 
 
+    @Override
     public Map<String,Object> detail(Date searchDate, String systemId, String groupId) throws ParseException {
         PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
         Date maxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
