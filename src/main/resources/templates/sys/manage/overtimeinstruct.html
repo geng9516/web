@@ -100,22 +100,18 @@
 
 
         <div class="content_body">
-            <div class="table-top tr">
-                <Row :gutter="16">
-                    <i-col span="8" class="tr" offset="16">
-                        <i-select v-model="overWorkViewType" @on-change="handleTypeChange">
-                            <i-option :value="1">超過勤務状況[命令時間]</i-option>
-                            <i-option :value="2">超過勤務状況[実績時間]</i-option>
-                            <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
-                        </i-select>
-                    </i-col>
-                </Row>
+            <div class="table-top" style="text-align: right;">
+                <i-button type="primary" ghost @click="permissionFlagModals = true" class="mr10" style="display: inline-block;" :loading="permissionFlagLoading">凡例</i-button>
+                <i-select v-model="overWorkViewType" @on-change="handleTypeChange" style="display: inline-block;width: 350px;">
+                    <i-option :value="1">超過勤務状況[命令時間]</i-option>
+                    <i-option :value="2">超過勤務状況[実績時間]</i-option>
+                    <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
+                </i-select>
             </div>
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
                 :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
-                    <span @click="toWorkPage"
-                        class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empname }}</span>
+                    <span>{{ row.empname }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="overtime" v-if="row.overtime">
                     <span :class="showRed(row.overtime)">{{ row.overtime.split('@')[0] }}</span>
@@ -216,8 +212,7 @@
                 </div>
                 <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
-                        <span @click="toWorkPage"
-                            class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary">{{ row.empName }}</span>
+                        <span>{{ row.empName }}</span>
                     </template>
 
                     <template slot-scope="{ row }" slot="startTime">
@@ -323,9 +318,39 @@
                     </i-col>
                 </Row>
                 <i-table border class="mt20" :columns="monthAverageColumns" :data="monthAverageTable"
-                    :span-method="handleSpan" :loading="averageTableLoading">
+                    :span-method="handleSpan" :loading="averageTableLoading"  :disabled-hover="true">
                 </i-table>
             </Drawer>
+
+            <!-- 凡例 start-->
+            <Modal v-model="permissionFlagModals" class="tc" width="650" title="警告値凡例" footer-hide>
+                <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" :disabled-hover="true">
+                    <template slot-scope="{ row }" slot="value">
+                        <span :class="['pr5', row.color]" style="height: 24px;">{{ row.value}}</span>
+                    </template>
+                </i-table>
+                <Row :gutter="3" class="mt10">
+                    <i-col span="5">
+                        <Alert class="primary-info tc" style="height: 24px;padding: 5px;">色の説明</Alert>
+                    </i-col>
+                    <i-col span="3">
+                        <span class="level1" style="height: 24px;"></span>
+                    </i-col>
+                    <i-col span="3">
+                        <span class="level2" style="height: 24px;"></span>
+                    </i-col>
+                    <i-col span="3">
+                        <span class="level3" style="height: 24px;"></span>
+                    </i-col>
+                    <i-col span="3">
+                        <span class="level4" style="height: 24px;"></span>
+                    </i-col>
+                    <i-col span="3">
+                        <span class="level5" style="height: 24px;"></span>
+                    </i-col>
+                </Row>
+            </Modal>
+            <!-- 凡例 end-->
 
         </div>
     </main>
@@ -523,13 +548,55 @@
                         updateRestTimeDtoList: [{}]
                     },
                     sysDate: '',
-                    restTimeSetDisable: false
+                    restTimeSetDisable: false,
+                    // 凡例字段对照表
+                    permisssionFlagKeyValueHelper: {
+                        'limit_OVERWORK_MONTH_AVG': { name: '超勤実績の月平均時間', desc: '月の超勤実績の平均時間', label:'時', color:'level3' },
+                        'limit_COUNT': { name: '超勤実績の月次警告値超過回数', desc: '年内の超勤時間が45時間を超えた月数', label:'回', color:'level2' },
+                        'limit_OVER_WORK_LVL1': { name: '超勤実績の警告値(時間)(日次:レベル1)', desc: '一日の超勤時間の合計', label:'時', color:'level3' },
+                        'limit_SUM_MONTH_LVL1': { name: '超勤実績の警告値(時間)(月次:レベル1)', desc: '月内の超勤時間の合計', label:'時', color:'level1' },
+                        'limit_SUM_MONTH_LVL2': { name: '超勤実績の警告値(時間)(月次:レベル2)', desc: '-', label:'時', color:'level2'},
+                        'limit_SUM_MONTH_LVL3': { name: '超勤実績の警告値(時間)(月次:レベル3)', desc: '-', label:'時', color:'level3' },
+                        'limit_SUM_MONTH_LVL4': { name: '超勤実績の警告値(時間)(月次:レベル4)', desc: '-', label:'時', color:'level4' },
+                        'limit_SUM_MONTH_LVL5': { name: '超勤実績の警告値(時間)(月次:レベル5)', desc: '-', label:'時', color:'level5' },
+                        'limit_SUM_YEAR_LVL1': { name: '超勤実績の警告値(時間)(年次:レベル1)', desc: '年内の超勤時間の合計', label:'時', color:'level1' },
+                        'limit_SUM_YEAR_LVL2': { name: '超勤実績の警告値(時間)(年次:レベル2)', desc: '-', label:'時', color:'level2' },
+                        'limit_SUM_YEAR_LVL3': { name: '超勤実績の警告値(時間)(年次:レベル3)', desc: '-', label:'時', color:'level3' },
+                        'limit_SUM_YEAR_LVL4': { name: '超勤実績の警告値(時間)(年次:レベル4)', desc: '-', label:'時', color:'level4' },
+                        'limit_SUM_YEAR_LVL5': { name: '超勤実績の警告値(時間)(年次:レベル5)', desc: '-', label:'時', color:'level5' },
+                        'limit_HOL_CNT_LVL1': { name: '休日出勤日数(月次:レベル1)', desc: '月内の休日出勤の回数', label:'日', color:'level1' },
+                        'limit_HOL_CNT_LVL2': { name: '休日出勤日数(月次:レベル2)', desc: '-', label:'日', color:'level2' },
+                        'limit_HOL_CNT_LVL3': { name: '休日出勤日数(月次:レベル3)', desc: '-', label:'日', color:'level3' },
+                        'limit_HOL_CNT_LVL4': { name: '休日出勤日数(月次:レベル4)', desc: '-', label:'日', color:'level4' },
+                        'limit_HOL_CNT_LVL5': { name: '休日出勤日数(月次:レベル5)', desc: '-', label:'日', color:'level5' },
+                    },
+                    permissionFlagLoading: false,
+                    permissionFlagModals: false,
+                    overFlagColumns: [ 
+                        { 
+                            title: '警告値の設定', 
+                            width: 270, 
+                            key: 'name' 
+                        }, 
+                        { 
+                            title: '警告値', 
+                            width: 80,
+                            slot: 'value',
+                            align:'right'
+                        }, 
+                        { 
+                            title: '説明',
+                            key: 'desc' 
+                        },
+                    ], 
+                    overFlagData: []
                 }
             },
-            async mounted() {
+            mounted() {
                 this.getOrgTree()
                 this.getTableHead()
                 this.getSearchCondition()
+                this.getLimit()
             },
             computed: {
                 columns() {
@@ -657,9 +724,6 @@
                 }
             },
             methods: {
-                toWorkPage() {
-
-                },
                 showAverageDraw(e) {
                     this.getAvgTableData(e.empid)
                     this.empName = e.empname
@@ -836,6 +900,7 @@
                         if (this.overWorkViewType === 2) {
                             this.query.action = "ACT_DISP_RMONTHLY"
                         }
+                        this.getLimit()
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
                     } catch (error) {
@@ -844,6 +909,28 @@
                         this.isSearchHistory = false
                         this.loading = false
                         delete this.query.txtTmgReferListTreeViewPermSelectedView
+                    }
+                },
+                async getLimit() {
+                    try {
+                        this.permissionFlagLoading = true
+                        const { data } = await this.http.get('sys/overtimeinstruct/limitDisp', this.query)
+                        let result = []
+                        Object.keys(this.permisssionFlagKeyValueHelper).forEach(e=>{
+                            if(data[e] || data[e] === '0') {
+                                result = result.concat({
+                                name: this.permisssionFlagKeyValueHelper[e].name,
+                                value: `${data[e]} ${this.permisssionFlagKeyValueHelper[e].label}`,
+                                desc: this.permisssionFlagKeyValueHelper[e].desc,
+                                color: this.permisssionFlagKeyValueHelper[e].color,
+                                })
+                            }
+                        })
+                        this.overFlagData = result
+                        console.log(result)
+                    } catch (error) {
+                    } finally {
+                        this.permissionFlagLoading = false
                     }
                 },
                 async getAvgTableData(e) {
