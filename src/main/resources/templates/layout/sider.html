@@ -7,7 +7,7 @@
         <li class="nav-item" v-for="(item,i) of topNavs" :class="curMenu === item.menu.pageId ? 'actived-menu' : ''"
             :key="item.menu.pageId" @click="handleMenuGroupChange(item)">
             <svg class="cursor i-svg" aria-hidden="true">
-                <use :xlink:href="`#${item.icon || 'AccessLog41'}`"></use>
+                <use :xlink:href="`#${item.menu.icon || 'AccessLog41'}`"></use>
             </svg>
         </li>
         <li class="nav-item"></li>
@@ -36,7 +36,7 @@
             el: '.navbar-wrap',
             data() {
                 return {
-                    topNavs: [[${ #httpServletRequest.getAttribute('topNavs') }]],
+                    topNavs: [[${ #session.getAttribute('topNavs') }]],
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
                     curPageId: Utils.getUrlParam(location.href, 'psApp'),
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),

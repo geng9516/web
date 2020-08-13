@@ -102,7 +102,9 @@ public class AuthBusiness {
 
     public void logout() {
         String username = ShiroUtil.getUsername();
-        ContextUtil.getHttpRequest().getSession().removeAttribute(Constant.PS_SESSION);
+        HttpServletRequest request = ContextUtil.getHttpRequest();
+        request.getSession().removeAttribute(Constant.PS_SESSION);
+        request.getSession().removeAttribute(Constant.TOP_NAVS);
         saveLoginInfo(false, username);
         ShiroUtil.getSubject().logout();
     }
