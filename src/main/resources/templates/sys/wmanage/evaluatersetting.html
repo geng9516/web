@@ -1111,7 +1111,7 @@
                     if(basicCheck) return
 
                     console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
-                    if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end))) {
+                    if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
                         if (type === "add") {
                             console.log('可以zhuijia啦~')
                             const query = {
