@@ -1,5 +1,7 @@
 package jp.smartcompany.framework.appcontrol;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
@@ -9,22 +11,11 @@ import java.util.Map;
  * @author Xiao Wenpeng
  */
 @ToString
+@Getter
+@Setter
 public class ScreenInfo extends AbstractInfo {
 
     /** ボタン情報クラス */
-    private Map<String,ButtonInfo> ghButtonInfo;
+    private Map<String,ButtonInfo> buttonInfo;
 
-    /**
-     * @return buttonInfo
-     */
-    public Map<String,ButtonInfo> getButtonInfo() {
-        return ghButtonInfo;
-    }
-
-    /**
-     * @param buttonInfo
-     */
-    public void setButtonInfo(Map<String,ButtonInfo> buttonInfo) {
-        this.ghButtonInfo = buttonInfo;
-    }
 }

@@ -1,5 +1,7 @@
 package jp.smartcompany.framework.appcontrol;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
@@ -9,63 +11,24 @@ import java.util.Map;
  * @author Xiao Wenpeng
  */
 @ToString
+@Getter
+@Setter
 public class TopPageInfo extends AbstractInfo {
 
     /**
      * サイト情報
      */
-    private Map ghSiteInfo;
+    private Map<String,SiteInfo> siteInfo;
 
     /**
      * アプリケーション情報
      */
-    private Map<String,AppInfo> ghAppInfo;
+    private Map<String,AppInfo> appInfo;
 
     /**
      * ダイアログアプリケーション情報
      */
-    private Map ghDlgAppInfo;
+    private Map<String,AppInfo> dlgAppInfo;
 
 
-    /**
-     * @return siteInfo
-     */
-    public Map getSiteInfo() {
-        return ghSiteInfo;
-    }
-
-    /**
-     * @param siteInfo
-     */
-    public void setSiteInfo(Map siteInfo) {
-        ghSiteInfo = siteInfo;
-    }
-
-    /**
-     * @return appInfo
-     */
-    public Map<String,AppInfo> getAppInfo() {
-        return ghAppInfo;
-    }
-
-    /**
-     * @param appInfo
-     */
-    public void setAppInfo(Map<String,AppInfo> appInfo) {
-        this.ghAppInfo = appInfo;
-    }
-
-    /**
-     * @return dlgAppInfo
-     */
-    public Map getDlgAppInfo() {
-        return ghDlgAppInfo;
-    }
-
-    /**
-     * @param dlgAppInfo
-     */
-    public void setDlgAppInfo(Map dlgAppInfo) {
-        ghDlgAppInfo = dlgAppInfo;
-    }
 }

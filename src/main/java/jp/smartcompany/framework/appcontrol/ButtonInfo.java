@@ -1,5 +1,7 @@
 package jp.smartcompany.framework.appcontrol;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 /**
@@ -7,17 +9,11 @@ import lombok.ToString;
  * @author Xiao Wenpeng
  */
 @ToString
+@Getter
+@Setter
 public class ButtonInfo extends AbstractInfo {
 
     /** 実行権限(権限あり：true  権限なし：false) */
-    private boolean gsPermission;
-
-    public boolean isPermission() {
-        return gsPermission;
-    }
-
-    public void setPermission(boolean gsPermission) {
-        this.gsPermission = gsPermission;
-    }
+    private boolean permission;
 
 }
