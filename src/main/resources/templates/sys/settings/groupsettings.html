@@ -147,6 +147,8 @@
       methods: {
         async getData() {
           const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
           this.loading = true
           try {
             const { data } = await this.http.get('sys/groupmanager/groups', OPTS)

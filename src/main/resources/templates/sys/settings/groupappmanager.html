@@ -268,7 +268,10 @@
       },
       methods: {
         async getLegalPersonList() {
-          let OPTS = {}
+          let OPTS = {
+            psSite: Utils.getUrlParam(location.href, 'psSite'),
+            psApp: Utils.getUrlParam(location.href,'psApp')
+          }
           if (this.opts.date) {
             OPTS.searchDate = this.opts.date
           }
@@ -300,6 +303,8 @@
           // 选择法人时，グループ要跟着变
           const OPTS = { ...this.opts }
           OPTS.searchDate = this.opts.date
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
 
           if (this.opts.companyId === '0') {
             delete OPTS.companyId
@@ -310,6 +315,8 @@
         },
         async getTableData() {
           const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
           Object.keys(OPTS).forEach(key => {
             if (OPTS[key] === '0') {
               delete OPTS[key]
