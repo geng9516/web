@@ -625,6 +625,7 @@
               tooltip: true
             }],
           detailDrawShow: false,
+          addPermissionAdminGroupDrawer:false,
           restInfoList: [],
           restTypeListForReview: [],
           selectedRestInfo: {},
@@ -1149,7 +1150,8 @@
           } catch (error) {
             if (error.config || error.response && error.response.status === 500) return
             this.errorInfo = true
-            this.errorMsg = error[Object.keys(error)[0]][0].ERRMSG
+            const _error = JSON.parse(error)
+            this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
           } finally {
             this.applyLoading = false
             this.deleteFiles = []
