@@ -1056,6 +1056,8 @@
                         }
                     }
 
+                    console.log(123)
+
                     const restLevelCheck = this.permissionAdminValue.some((e, i) => {
                         if (!e.workConfirm &&
                             !e.monthConfirm &&
@@ -1078,6 +1080,7 @@
 
                     if (restLevelCheck) return
 
+                    console.log(456)
                     const basicCheck = dateList.some(e => {
                         if (!e.start && !e.end) {
                             if(!updateLastOneBlank) {
@@ -1098,6 +1101,8 @@
                             return true
                         }
                     })
+
+                    console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end)))
                     if (!basicCheck && !Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end))) {
                         if (type === "add") {
                             console.log('可以zhuijia啦~')
@@ -1168,6 +1173,8 @@
                                 this.updatePermissionFlagLoading = false
                             }
                         }
+                    } else {
+                        this.$Notice.warning({ title: '注意', desc: ' 有効期間が重複しています。', duration: 6.5 })
                     }
 
                 },
