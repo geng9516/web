@@ -132,7 +132,8 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="empId">
-                  <span @click="addPermissionAdminGroupDrawer = true" class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary tl">{{ addPermissionAdminInfo.name }}</span>
+                  <span @click="addPermissionAdminGroupDrawer = true" class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary tl" v-if="!PermissionAdminEditer">{{ addPermissionAdminInfo.name }}</span>
+                  <span v-else>{{ addPermissionAdminInfo.name }}</span>
                 </template>
 
                 <template slot-scope="{ row }" slot="workConfirm">
@@ -169,8 +170,8 @@
                     <date-picker v-model="permissionAdminValue[row._index].validStartDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker v-model="permissionAdminValue[row._index].validEndDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>
                 </template>
 
-                <template slot-scope="{ row }" slot="delete" v-if="row._index < permissionAdminAddData.length - 1">
-                    <Checkbox v-model="permissionAdminValue[row._index].isDel"></Checkbox>
+                <template slot-scope="{ row }" slot="delete" v-if="row._index < permissionAdminAddData.length - 1 && PermissionAdminEditer">
+                    <Checkbox v-model="permissionAdminValue[row._index].delete"></Checkbox>
                 </template>
             </i-table>
             <div class="my-footer tr">
@@ -960,7 +961,7 @@
                 async handleEditData(row) {
                     this.PermissionAdminEditer = true
                     this.permissionAdminAddModal = true
-
+                    this.addPermissionAdminInfo.name = row.empId
                     // 和追加以下一致，但需要将决裁level的键值互换，因为需要的是key其实是 xxxxx❘1 这样的,
                     if(this.levelList.length === 0) {
                         const query = {
@@ -1038,7 +1039,24 @@
                         }
                     }
 
-                    this.permissionAdminValue.some(e => {
+                    // 更新时的最后一项权限可以为空
+                    let updateLastOneBlank = false
+                    if (type === "update") {
+                        const lastOne = this.permissionAdminValue[this.permissionAdminValue.length - 1]
+                        if (!lastOne.workConfirm &&
+                            !lastOne.monthConfirm &&
+                            !lastOne.overWorkConfirm &&
+                            !lastOne.scheduleCreate &&
+                            !lastOne.permissionGive &&
+                            !lastOne.restConfirm &&
+                            !lastOne.validStartDate &&
+                            !lastOne.validEndDate
+                            ) {
+                            updateLastOneBlank = true
+                        }
+                    }
+
+                    const restLevelCheck = this.permissionAdminValue.some((e, i) => {
                         if (!e.workConfirm &&
                             !e.monthConfirm &&
                             !e.overWorkConfirm &&
@@ -1046,19 +1064,26 @@
                             !e.permissionGive &&
                             !e.restConfirm
                         ) {
-                            this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
-                            return
+                            if (!updateLastOneBlank) {
+                                this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
+                                return true
+                            }
                         }
 
                         if (e.restConfirm && !e.level) {
                             this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
-                            return
+                            return true
                         }
                     })
+
+                    if (restLevelCheck) return
+
                     const basicCheck = dateList.some(e => {
                         if (!e.start && !e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
-                            return true
+                            if(!updateLastOneBlank) {
+                                this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
+                                return true
+                            }
                         }
                         if (!e.start && e.end) {
                             this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
@@ -1073,8 +1098,7 @@
                             return true
                         }
                     })
-
-                    if (!basicCheck && Utils.multipleDateRangeOverlaps(dateList)) {
+                    if (!basicCheck && !Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end))) {
                         if (type === "add") {
                             console.log('可以zhuijia啦~')
                             const query = {
@@ -1104,31 +1128,37 @@
                             }
                         } else {
                             console.log('可以更新啦~')
-                            const query = {
-                                empId: this.permissionAdminValue[0].empId,
-                                groupId: this.permissionAdminValue[0].groupId,
-                                list: this.permissionAdminValue.map((e, i) => {
-                                    return {
-                                        delete: e.isDel,
+                            let list = []
+                            this.permissionAdminValue.forEach((e, i) => {
+                                if(updateLastOneBlank && i === this.permissionAdminValue.length - 1) {
+                                } else {
+                                    list = list.concat({
+                                        delete: e.delete || false,
                                         newLine: i === this.permissionAdminValue.length - 1,
                                         sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                         startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
                                         endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
-                                        approvalLevel: e.level,
-                                        dailyResult: e.workConfirm,
-                                        monthlyResult: e.monthConfirm,
-                                        overTime: e.overWorkConfirm,
-                                        schedule: e.scheduleCreate,
-                                        authority: e.permissionGive,
-                                        notification: e.restConfirm,
-                                        beforeStartDate: e.beforeStartDate,
-                                        beforeEndDate: e.beforeEndDate
-                                    }
-                                })
+                                        approvalLevel: e.level || '',
+                                        dailyResult: e.workConfirm || false,
+                                        monthlyResult: e.monthConfirm || false,
+                                        overTime: e.overWorkConfirm || false,
+                                        schedule: e.scheduleCreate || false,
+                                        authority: e.permissionGive || false,
+                                        notification: e.restConfirm || false,
+                                        beforeStartDate: e.beforeStartDate || '',
+                                        beforeEndDate: e.beforeEndDate|| ''
+                                    })
+                                }
+                            })
+                            const query = {
+                                empId: this.permissionAdminValue[0].empId,
+                                groupId: this.permissionAdminValue[0].groupId,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                list: list
                             }
                             try {
                                 this.updatePermissionFlagLoading = true
-                                await this.http.post(`sys/evaluatorsetting/editeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
+                                await this.http.post(`sys/evaluatorsetting/editEval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
                                 this.$Message.success('変更完了')
                                 this.getTableData()
                                 this.permissionAdminAddModal = false

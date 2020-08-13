@@ -212,7 +212,7 @@ const Utils = {
    * @returns {boolean}
    */
   multipleDateRangeOverlaps: function (dateArray) {
-    if(dateArray.length === 1) return true
+    if(dateArray.length === 1) return false
     let _dateArray = []
     dateArray.forEach(e=>{
       // 排除两个都为空值
