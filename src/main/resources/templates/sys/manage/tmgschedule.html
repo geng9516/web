@@ -104,12 +104,12 @@
             <Row :gutter="10" class="mt5 mb15 tc">
             <i-col span="4">
                 <div class="label">公休日数</div>
-                <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}</div>
+                <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}日</div>
             </i-col>
             <i-col span="4">
                 <div class>
                     <div class="label">基準日数</div>
-                    <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}</div>
+                    <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}日</div>
                 </div>
             </i-col>
             <i-col span="4">
@@ -207,13 +207,13 @@
             勤務予定
             </div>
 
-            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'"  border :columns="columns"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)"
         >
 
             <template slot-scope="{ row }" slot="intDay">
-                <span :class="dayRed(row.holflgCalendar)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
+                <span :class="dayRed(row)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
@@ -221,7 +221,7 @@
                 <i-select v-model="value[row._index].workId" transfer v-else-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
-                <span :class="dayRed(row.tda_cworkingid_mm)" v-else>{{ row.tda_cworkingid_mm }}</span>
+                <span :class="dayRed(row)" v-else>{{ row.tda_cworkingid_mm }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workFar">
@@ -288,6 +288,7 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 preMonthDisable:false,
                 nextMonthDisable:false,
                 postScheduleLoading:false,
@@ -659,16 +660,17 @@
             },
             postExecuteEditMonthlyUSchedule: Debounce( async function() {
 
-
-                if(this.valueMap.length==0){
-                    this.$Notice.error({
-                        title: '注意',
-                        desc: 'データを選択してください',
-                        duration: 3.5
-                    })
-                    return
-                }
-                let postValue=this.valueMap.map(Number).map(i=>this.value[i])
+                //
+                // if(this.valueMap.length==0){
+                //     this.$Notice.error({
+                //         title: '注意',
+                //         desc: 'データを選択してください',
+                //         duration: 3.5
+                //     })
+                //     return
+                // }
+               // let postValue=this.valueMap.map(Number).map(i=>this.value[i])
+                let postValue=this.value
 
                 const that = this
                 console.log("postValue"+JSON.stringify(postValue))
@@ -891,16 +893,17 @@
                 }
             }, 50),
             dayRed(e) {
-                if (!e) {
+                console.log(e)
+                const dayOfWeek = e.holflgCalendar
+                if (!dayOfWeek) {
                     return
                 }
-                if (e === 'TMG_HOLFLG|2' || e === 'TMG_HOLFLG|3' || e === 'TMG_HOLFLG|1') {
-                    return 'rest-cell week-rest'
+                if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+                    return 'blue'
                 }
-                if (e.indexOf('休') > -1) {
-                    return 'rest-cell year-rest'
+                if (e.tda_ccustomerid == this.today) {
+                    return 'brown'
                 }
-                return 'rest-cell'
             },
             async preMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.preStart
