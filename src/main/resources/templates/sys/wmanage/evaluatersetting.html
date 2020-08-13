@@ -175,9 +175,9 @@
             </i-table>
             <div class="my-footer tr">
                 <i-button type="text" @click="cancel('','permissionAdminAddModal')">キャンセル</i-button>
-                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="updatePermissionAdmin()" :loading="updatePermissionFlagLoading">変更
+                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="addPermissionAdmin('update')" :loading="updatePermissionFlagLoading">変更
                 </i-button>
-                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="addPermissionAdmin()" :loading="updatePermissionFlagLoading">登録
+                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="addPermissionAdmin('add')" :loading="updatePermissionFlagLoading">登録
                 </i-button>
             </div>
             <Spin size="large" fix v-if="groupBtnLoading"></Spin>
@@ -998,7 +998,9 @@
                             groupId: row.groupId,
                             empId: row.empId,
                             ...e,
-                            level: levelListHelper[e.level - 1]
+                            level: levelListHelper[e.level - 1],
+                            beforeStartDate: e.validStartDate,
+                            beforeEndDate: e.validStartDate,
                         }
                     }).concat({ groupId: row.groupId, empId: row.empId,workConfirm: false,
                             monthConfirm: false,
@@ -1022,88 +1024,35 @@
                         this.updatePermissionFlagLoading = false
                     }
                 },
-                async addPermissionAdmin() {
+                async addPermissionAdmin(type) {
                     const dateList = this.permissionAdminValue.map(e => {
                         return {
                             start: e.validStartDate,
                             end: e.validEndDate
                         }
                     })
-                    if(this.addPermissionAdminInfo.name === '承認者検索') {
-                        this.$Notice.warning({ title: '注意', desc: '承認者を選択してください。', duration: 6.5 })
-                        return
-                    }
-
-                    if(!this.permissionAdminValue[0].workConfirm &&
-                       !this.permissionAdminValue[0].monthConfirm &&
-                       !this.permissionAdminValue[0].overWorkConfirm &&
-                       !this.permissionAdminValue[0].scheduleCreate &&
-                       !this.permissionAdminValue[0].permissionGive &&
-                       !this.permissionAdminValue[0].restConfirm
-                       ) {
-                        this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
-                        return
-                    }
-
-                    if(this.permissionAdminValue[0].restConfirm && !this.permissionAdminValue[0].level) {
-                        this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
-                        return
-                    }
-                    const basicCheck = dateList.some(e => {
-                        if (!e.start && !e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
-                            return true
-                        }
-                        if (!e.start && e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
-                            return true
-                        }
-                        if (e.start && !e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '終了日を入力してください。', duration: 6.5 })
-                            return true
-                        }
-                        if (e.start > e.end) {
-                            this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
+                    if (type === "add") {
+                        if (this.addPermissionAdminInfo.name === '承認者検索') {
+                            this.$Notice.warning({ title: '注意', desc: '承認者を選択してください。', duration: 6.5 })
                             return
                         }
-                    })
-
-                    if (!basicCheck && Utils.multipleDateRangeOverlaps(dateList)) {
-                        console.log('可以zhuijia啦~')
-                        const query = {
-                            empId: this.permissionAdminValue[0].empId,
-                            groupId: this.permissionAdminValue[0].groupId,
-                            sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
-                            startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
-                            endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
-                            approvalLevel: this.permissionAdminValue[0].level,
-                            dailyResult: this.permissionAdminValue[0].workConfirm,
-                            monthlyResult: this.permissionAdminValue[0].monthConfirm,
-                            overTime: this.permissionAdminValue[0].overWorkConfirm,
-                            schedule: this.permissionAdminValue[0].scheduleCreate,
-                            authority: this.permissionAdminValue[0].permissionGive,
-                            notification: this.permissionAdminValue[0].restConfirm
-                        }
-                        try {
-                            this.updatePermissionFlagLoading = true
-                            await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
-                            this.$Message.success('追加完了')
-                            this.getTableData()
-                            this.permissionAdminAddModal = false
-                        } catch (error) {
-                            this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
-                        } finally {
-                            this.updatePermissionFlagLoading = false
-                        }
                     }
 
-                },
-                updatePermissionAdmin() {
-                    console.log(this.permissionAdminValue)
-                    const dateList = this.permissionAdminValue.map(e => {
-                        return {
-                            start: e.validStartDate,
-                            end: e.validEndDate
+                    this.permissionAdminValue.some(e => {
+                        if (!e.workConfirm &&
+                            !e.monthConfirm &&
+                            !e.overWorkConfirm &&
+                            !e.scheduleCreate &&
+                            !e.permissionGive &&
+                            !e.restConfirm
+                        ) {
+                            this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
+                            return
+                        }
+
+                        if (e.restConfirm && !e.level) {
+                            this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
+                            return
                         }
                     })
                     const basicCheck = dateList.some(e => {
@@ -1121,12 +1070,76 @@
                         }
                         if (e.start > e.end) {
                             this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
-                            return
+                            return true
                         }
                     })
+
                     if (!basicCheck && Utils.multipleDateRangeOverlaps(dateList)) {
-                        console.log('可以更新啦~')
+                        if (type === "add") {
+                            console.log('可以zhuijia啦~')
+                            const query = {
+                                empId: this.permissionAdminValue[0].empId,
+                                groupId: this.permissionAdminValue[0].groupId,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
+                                endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
+                                approvalLevel: this.permissionAdminValue[0].level,
+                                dailyResult: this.permissionAdminValue[0].workConfirm,
+                                monthlyResult: this.permissionAdminValue[0].monthConfirm,
+                                overTime: this.permissionAdminValue[0].overWorkConfirm,
+                                schedule: this.permissionAdminValue[0].scheduleCreate,
+                                authority: this.permissionAdminValue[0].permissionGive,
+                                notification: this.permissionAdminValue[0].restConfirm
+                            }
+                            try {
+                                this.updatePermissionFlagLoading = true
+                                await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
+                                this.$Message.success('追加完了')
+                                this.getTableData()
+                                this.permissionAdminAddModal = false
+                            } catch (error) {
+                                this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                            } finally {
+                                this.updatePermissionFlagLoading = false
+                            }
+                        } else {
+                            console.log('可以更新啦~')
+                            const query = {
+                                empId: this.permissionAdminValue[0].empId,
+                                groupId: this.permissionAdminValue[0].groupId,
+                                list: this.permissionAdminValue.map((e, i) => {
+                                    return {
+                                        delete: e.isDel,
+                                        newLine: i === this.permissionAdminValue.length - 1,
+                                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                        startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
+                                        endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
+                                        approvalLevel: e.level,
+                                        dailyResult: e.workConfirm,
+                                        monthlyResult: e.monthConfirm,
+                                        overTime: e.overWorkConfirm,
+                                        schedule: e.scheduleCreate,
+                                        authority: e.permissionGive,
+                                        notification: e.restConfirm,
+                                        beforeStartDate: e.beforeStartDate,
+                                        beforeEndDate: e.beforeEndDate
+                                    }
+                                })
+                            }
+                            try {
+                                this.updatePermissionFlagLoading = true
+                                await this.http.post(`sys/evaluatorsetting/editeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
+                                this.$Message.success('変更完了')
+                                this.getTableData()
+                                this.permissionAdminAddModal = false
+                            } catch (error) {
+                                this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                            } finally {
+                                this.updatePermissionFlagLoading = false
+                            }
+                        }
                     }
+
                 },
                 updateGruopName(name) {
                     this.$refs[name].validate(async valid => {
