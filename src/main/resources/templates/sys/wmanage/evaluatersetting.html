@@ -1151,7 +1151,7 @@
                                 }
                             })
                             const query = {
-                                empId: this.permissionAdminValue[0].empId,
+                                empId: this.permissionAdminValue[0].empId.split(' ')[0],
                                 groupId: this.permissionAdminValue[0].groupId,
                                 sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                 list: list
