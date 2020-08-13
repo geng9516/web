@@ -184,6 +184,7 @@ public class PsBuildTargetSql {
             sSiteId = TOP_PAGE;
         }
         appSearchRangeInfoLogic.setPsSite(sSiteId);
+        System.out.println("getApplicationUrl" +getApplicationUrl()+","+psMode);
         appSearchRangeInfoLogic.create(getApplicationUrl(), psMode);
     }
     /**
@@ -199,7 +200,7 @@ public class PsBuildTargetSql {
             sSiteId = TOP_PAGE;
         }
         appSearchRangeInfoLogic.setPsSite(sSiteId);
-        appSearchRangeInfoLogic.create(this.getApplicationUrl(), psDomainCode, psMode);
+        appSearchRangeInfoLogic.create(getApplicationUrl(), psDomainCode, psMode);
     }
     /**
      * 検索対象範囲情報を構築する。
@@ -233,7 +234,7 @@ public class PsBuildTargetSql {
         }
         appSearchRangeInfoLogic.setPsSite(sSiteId);
         appSearchRangeInfoLogic.setPsApp(psAppId);
-        appSearchRangeInfoLogic.create(this.getApplicationUrl(), psDomainCode, psMode);
+        appSearchRangeInfoLogic.create(getApplicationUrl(), psDomainCode, psMode);
     }
 
     /**
@@ -274,7 +275,7 @@ public class PsBuildTargetSql {
      * @return 検索対象範囲適用用From句
      */
     protected String getFromSql() {
-        return this.convertFromListToSql(this.gFromListMap.get(this.getDomain()), this.gWhereListMap.get(this.getDomain()));
+        return convertFromListToSql(gFromListMap.get(getDomain()), gWhereListMap.get(getDomain()));
     }
     /**
      * 検索対象範囲適用用のWhere句を返します。
@@ -282,13 +283,16 @@ public class PsBuildTargetSql {
      * @return 検索対象範囲適用用Where句
      */
     protected String getWhereSql() {
-        return this.replaceTableNameString(
-                this.convertWhereInfoToSql(this.gWhereListMap.get(this.getDomain()), this.gWheresMap.get(this.getDomain())), this.gFromListMap.get(this.getDomain()));
+        return replaceTableNameString(
+                convertWhereInfoToSql(
+                gWhereListMap.get(getDomain()),
+                gWheresMap.get(getDomain())),
+                gFromListMap.get(getDomain())
+        );
     }
     /**
      * 検索対象範囲 退職者フラグ
      * @return 退職者検索対象範囲フラグ
-     * @exception
      */
     protected int getCondRetired() {
         return appSearchRangeInfoLogic.getCondRetired();
@@ -341,12 +345,12 @@ public class PsBuildTargetSql {
             }
             if (this.getDomain().equals(PsConst.DOMAIN_EMPLOYEE)) {
                 appSearchRangeInfoLogic.setPsTargetUser(
-                        (String)request.getParameter(PsConst.PARAM_KEY_USERID));
+                       request.getParameter(PsConst.PARAM_KEY_USERID));
             } else if (this.getDomain().equals(PsConst.DOMAIN_ORGANIZATION)) {
                 appSearchRangeInfoLogic.setPsSelectedComp(
-                        (String)request.getParameter(PsConst.PARAM_KEY_COMP));
+                        request.getParameter(PsConst.PARAM_KEY_COMP));
                 appSearchRangeInfoLogic.setPsSelectedDept(
-                        (String)request.getParameter(PsConst.PARAM_KEY_DEPT));
+                        request.getParameter(PsConst.PARAM_KEY_DEPT));
             }
         }
         // createしてなかったら処理続行
@@ -623,7 +627,7 @@ public class PsBuildTargetSql {
             throw new GlobalException(
                     "psUserColName "+ ERR_NOT_NULL);
         }
-        this.createSearchRange("1");
+        createSearchRange("1");
         int nCondRetired = getCondRetired();
         StringBuilder sb = new StringBuilder();
 

@@ -1,5 +1,7 @@
 package jp.smartcompany.framework.appcontrol;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Map;
@@ -9,41 +11,15 @@ import java.util.Map;
  * @author Xiao Wenpeng
  */
 @ToString
+@Getter
+@Setter
 public class AppInfo extends AbstractInfo{
 
     /** サブアプリケーション情報クラス */
-    private Map<String,SubAppInfo> ghSubAppInfo;
+    private Map<String,SubAppInfo> subAppInfo;
 
     /** 画面情報クラス */
-    private Map<String,ScreenInfo> ghScreenInfo;
+    private Map<String,ScreenInfo> screenInfo;
 
-
-    /**
-     * @return subAppInfo
-     */
-    public Map<String,SubAppInfo> getSubAppInfo() {
-        return ghSubAppInfo;
-    }
-
-    /**
-     * @param subAppInfo
-     */
-    public void setSubAppInfo(Map<String,SubAppInfo> subAppInfo) {
-        this.ghSubAppInfo = subAppInfo;
-    }
-
-    /**
-     * @return screenInfo
-     */
-    public Map<String,ScreenInfo> getScreenInfo() {
-        return ghScreenInfo;
-    }
-
-    /**
-     * @param screenInfo
-     */
-    public void setScreenInfo(Map<String,ScreenInfo> screenInfo) {
-        this.ghScreenInfo = screenInfo;
-    }
 
 }

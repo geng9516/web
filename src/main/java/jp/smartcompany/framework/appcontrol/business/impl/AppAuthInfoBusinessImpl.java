@@ -96,7 +96,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
         // アプリケーションIDのチェック
         appInfo = this.getAppInfo(sSiteId, sAppId);
         if (appInfo != null) {
-            if (appInfo.getAppID().equals(sAppId)) {
+            if (StrUtil.equals(appInfo.getAppId(),sAppId)) {
                 return sAppId;
             }
         }
@@ -105,7 +105,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
         // アプリケーションIDのチェック
         appInfo = this.getAppInfo(sSiteId, sAppId);
         if (appInfo != null) {
-            if (appInfo.getAppID().equals(sAppId)) {
+            if (appInfo.getAppId().equals(sAppId)) {
                 return sAppId;
             }
         }
@@ -312,7 +312,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
             }
 
             // 指定サイトIDに属するサイト情報の場合
-            if (sSiteId.equals(gSiteInfo.getSiteID())) {
+            if (StrUtil.equals(sSiteId,gSiteInfo.getSiteId())) {
                 return gSiteInfo;
             }
         }

@@ -1,5 +1,7 @@
 package jp.smartcompany.framework.appcontrol;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 
 import java.util.LinkedHashMap;
@@ -10,24 +12,11 @@ import java.util.Map;
  * @author Xiao Wenpeng
  */
 @ToString
+@Getter
+@Setter
 public class SubAppInfo extends AbstractInfo {
 
     /** 画面情報クラス */
-    Map<String,ScreenInfo> ghScreenInfo;
-
-
-    /**
-     * @return screenInfo
-     */
-    public Map<String,ScreenInfo> getScreenInfo() {
-        return ghScreenInfo;
-    }
-
-    /**
-     * @param screenInfo
-     */
-    public void setScreenInfo(Map<String,ScreenInfo> screenInfo) {
-        this.ghScreenInfo = screenInfo;
-    }
+    Map<String,ScreenInfo> screenInfo;
 
 }

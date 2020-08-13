@@ -199,7 +199,13 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
             // サイト情報にApp情報mapを設定
             setMapInfo(hmSiteInfo, hTempSite, hmapAppForSite, TYPE_SITE);
             if (MapUtil.isNotEmpty(hTempSite)) {
-                topPageInfo.setSiteInfo(hTempSite);
+                Map<String,SiteInfo> siteInfoList = MapUtil.newHashMap(true);
+                hTempSite.forEach((key,value) -> {
+                    if (value instanceof SiteInfo) {
+                        siteInfoList.put(key, (SiteInfo)value);
+                    }
+                });
+                topPageInfo.setSiteInfo(siteInfoList);
             }
         }
 
@@ -217,7 +223,14 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
             setMapInfo(hmDialogAppInfo, hTempDlgApp, hScreenForDlg, TYPE_DIALOG_APP);
             if (MapUtil.isNotEmpty(hTempDlgApp)) {
                 // ダイアログ情報をトップページへ設定
-                topPageInfo.setDlgAppInfo(hTempDlgApp);
+                Map<String,AppInfo> dlgAppInfoList = MapUtil.newHashMap(true);
+                hTempDlgApp.forEach((key,value) -> {
+                    if (value instanceof AppInfo) {
+                        dlgAppInfoList.put(key, (AppInfo)value);
+                    }
+                });
+
+                topPageInfo.setDlgAppInfo(dlgAppInfoList);
             }
         }
         return topPageInfo;
@@ -238,7 +251,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
         for (String s : hAppForSite.keySet()) {
             for (int nApp = 0; nApp < hAppForSite.size(); nApp++) {
                 AppInfo sApp = (AppInfo) hAppForSite.get(s);
-                if (SITEID_TOP_PAGE.equals(sApp.getSiteID())) {
+                if (SITEID_TOP_PAGE.equals(sApp.getSiteId())) {
                     hAppForTop.put(s, sApp);
                     lDelList.add(s); // 設定済み情報のキーをリストに設定。
                 }
@@ -278,19 +291,19 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     String sValuesKey = null;
                     if (TYPE_SITE.equals(sType)) {
                         // サイト配下のapp情報のサイトID取得
-                        sValuesKey = ((AppInfo) values).getSiteID();
+                        sValuesKey = ((AppInfo) values).getSiteId();
                     } else if (TYPE_DIALOG_APP.equals(sType)) {
                         // ダイアログ配下の画面情報のappID取得
-                        sValuesKey = ((ScreenInfo) values).getAppID();
+                        sValuesKey = ((ScreenInfo) values).getAppId();
                     } else if (APP_FOR_SUB.equals(sType)) {
                         // アプリ配下のサブアプリ情報のappID取得
-                        sValuesKey = ((SubAppInfo) values).getAppID();
+                        sValuesKey = ((SubAppInfo) values).getAppId();
                     } else if (APP_FOR_SCR.equals(sType)) {
                         // アプリ配下の画面情報のappID取得
-                        sValuesKey = ((ScreenInfo) values).getAppID();
+                        sValuesKey = ((ScreenInfo) values).getAppId();
                     } else if (TYPE_SUB_APP.equals(sType)) {
                         // サブアプリ配下の画面情報のsubAppID取得
-                        sValuesKey = ((ScreenInfo) values).getSubAppID();
+                        sValuesKey = ((ScreenInfo) values).getSubAppId();
                     }
                     // IDが同一かチェック
                     if (StrUtil.equals(sValuesKey,sIdKey)) {
@@ -325,7 +338,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     SiteInfo appAuth = (SiteInfo) hmAppAuthJudgment.get(s);
                     Map<String, AppInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_SITE,
-                            appAuth.getSiteID());
+                            appAuth.getSiteId());
                     if (hSubordInfo.size() > 0) {
                         appAuth.setAppInfo(hSubordInfo);        // 配下のmap情報をクラスへ設定
                         hAppAuthInfo.put(s, appAuth); // クラス情報mapへ設定
@@ -336,7 +349,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
                     Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_DIALOG_APP,
-                            appAuth.getAppID());
+                            appAuth.getAppId());
                     if (hSubordInfo.size() > 0) {
                         appAuth.setScreenInfo(hSubordInfo);     // 配下のmap情報をクラスへ設定
                         hAppAuthInfo.put(s, appAuth); // クラス情報mapへ設定
@@ -347,7 +360,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
                     Map<String, SubAppInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             APP_FOR_SUB,
-                            appAuth.getAppID());
+                            appAuth.getAppId());
                     if (hSubordInfo.size() > 0) {
                         appAuth.setSubAppInfo(hSubordInfo);     // 配下のmap情報をクラスへ設定
                         hAppAuthInfo.put(s, appAuth); // クラス情報mapへ設定
@@ -358,7 +371,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     AppInfo appAuth = (AppInfo) hmAppAuthJudgment.get(s);
                     Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             APP_FOR_SCR,
-                            appAuth.getAppID());
+                            appAuth.getAppId());
                     if (hSubordInfo.size() > 0) {
                         appAuth.setScreenInfo(hSubordInfo);     // 配下のmap情報をクラスへ設定
                         hAppAuthInfo.put(s, appAuth); // クラス情報mapへ設定
@@ -369,7 +382,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                     SubAppInfo appAuth = (SubAppInfo) hmAppAuthJudgment.get(s);
                     Map<String, ScreenInfo> hSubordInfo = comparesMapKey(hSubord, s,
                             TYPE_SUB_APP,
-                            appAuth.getSubAppID());
+                            appAuth.getSubAppId());
                     if (hSubordInfo.size() > 0) {
                         appAuth.setScreenInfo(hSubordInfo);     // 配下のmap情報をクラスへ設定
                         hAppAuthInfo.put(s, appAuth); // クラス情報mapへ設定
@@ -416,12 +429,12 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                         // ボタンキーに画面キーが含まれているか
                         if (sButtonKey.contains(s)) {
                             // 画面キーが同一かチェック
-                            if (buttonInfo.getScreenID().equals(screenIte.getScreenID())) {
+                            if (buttonInfo.getScreenId().equals(screenIte.getScreenId())) {
                                 if (sButtonKey.contains(DLG_APP)) {
                                     // ダイアログ用ボタン
                                     hButtonForDlg.put(sButtonKey, buttonInfo);
                                 } else {
-                                    if (StrUtil.isBlank(buttonInfo.getSubAppID())) {
+                                    if (StrUtil.isBlank(buttonInfo.getSubAppId())) {
                                         // App配下
                                         hButtonForApp.put(sButtonKey, buttonInfo);
                                     } else {
@@ -439,7 +452,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                 if (s.contains(DLG_APP)) {
                     screenIte.setButtonInfo(hButtonForDlg); // ダイアログ用
                     hScreenForDlg.put(s, screenIte);     // 画面情報設定：ダイアログ用
-                } else if (StrUtil.isBlank(screenIte.getSubAppID())) {
+                } else if (StrUtil.isBlank(screenIte.getSubAppId())) {
                     screenIte.setButtonInfo(hButtonForApp);    // ボタン情報を画面情報へ設定
                     hScreenForApp.put(s, screenIte);        // 画面情報設定:App配下
                 } else {
@@ -1017,22 +1030,22 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
             absInfo = new SubAppInfo();
         } else if (TYPE_SCREEN.equals(appEntity.getMtrCtype())) {
             absInfo = new ScreenInfo();
-            absInfo.setOnlineHelpURL(appEntity.getMtrConlinehelpurl());
+            absInfo.setOnlineHelpUrl(appEntity.getMtrConlinehelpurl());
             absInfo.setHelpWindowOpen(appEntity.getMtrConlinehelpattr());
         } else {
             absInfo = new ButtonInfo();
         }
-        absInfo.setSiteID(appEntity.getMtrCsiteid());
-        absInfo.setAppID(appEntity.getMtrCappid());
-        absInfo.setSubAppID(appEntity.getMtrCsubappid());
-        absInfo.setScreenID(appEntity.getMtrCscreenid());
-        absInfo.setButtonID(appEntity.getMtrCbuttonid());
+        absInfo.setSiteId(appEntity.getMtrCsiteid());
+        absInfo.setAppId(appEntity.getMtrCappid());
+        absInfo.setSubAppId(appEntity.getMtrCsubappid());
+        absInfo.setScreenId(appEntity.getMtrCscreenid());
+        absInfo.setButtonId(appEntity.getMtrCbuttonid());
         absInfo.setName(appEntity.getMtrObjname());
         absInfo.setVersion(appEntity.getMtrCversion());
         absInfo.setSystem(appEntity.getMtrCsystemid());
-        absInfo.setAppTemplateID(appEntity.getMtrCtemplateid());
-        absInfo.setURL(appEntity.getMtrCurl());
-        absInfo.setImageURL(appEntity.getMtrCimageurl());
+        absInfo.setAppTemplateId(appEntity.getMtrCtemplateid());
+        absInfo.setUrl(appEntity.getMtrCurl());
+        absInfo.setImageUrl(appEntity.getMtrCimageurl());
         absInfo.setSiteDirections(appEntity.getMtrSitecaption());
         absInfo.setType(appEntity.getMtrCtype());
         absInfo.setDefSearchObj(appEntity.getMtrCdefaulttargetuser());
