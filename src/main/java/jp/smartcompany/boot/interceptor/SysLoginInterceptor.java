@@ -52,6 +52,11 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws SQLException {
+
+        response.setHeader("Pragma","no-cache");
+        response.setHeader("Cache-Control","no-cache");
+        response.setDateHeader("Expires",0);
+
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
@@ -83,7 +88,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         if (ShiroUtil.isAuthenticated()) {
             executeLoginSequence(systemList,language);
             if (httpSession.getAttribute(Constant.TOP_NAVS) == null) {
-                loadMenus(request, systemCode, systemList);
+                loadMenus(systemCode, systemList);
             }
         }
         return true;
@@ -401,7 +406,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     }
 
     // 加载系统菜单
-    private void loadMenus(HttpServletRequest request, String systemCode,  List<MastSystemDO> systemList) throws SQLException {
+    private void loadMenus(String systemCode,  List<MastSystemDO> systemList) throws SQLException {
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
         List<LoginGroupBO> groupList = CollUtil.newArrayList();
@@ -415,6 +420,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes);
+        System.out.println(menuGroupList);
         httpSession.setAttribute(Constant.TOP_NAVS,menuGroupList);
     }
 

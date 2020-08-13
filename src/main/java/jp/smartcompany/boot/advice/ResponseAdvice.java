@@ -1,21 +1,19 @@
 package jp.smartcompany.boot.advice;
 
-import cn.hutool.core.date.DateUtil;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.annotation.IgnoreResponseSerializable;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -36,6 +34,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
     @Override
     public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType mediaType, Class aClass, ServerHttpRequest req, ServerHttpResponse res) {
         String now = TmgUtil.getSysdate();
+        HttpHeaders headers = res.getHeaders();
         if (body == null) {
             return GlobalResponse.ok().put("sysDate", now);
         } else if (body instanceof GlobalResponse) {
@@ -45,7 +44,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
             GlobalResponse r= GlobalResponse.ok().put("data", body);
             // 如果返回值为string则要特殊处理
             if(body instanceof String) {
-                res.getHeaders().set("Content-Type",MediaType.APPLICATION_JSON_VALUE);
+                headers.setContentType(MediaType.APPLICATION_JSON);
                 return JSONUtil.toJsonStr(r);
             } else if (body instanceof LinkedHashMap){
                 // 如果返回值是500或者404
