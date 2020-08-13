@@ -614,6 +614,11 @@
                         this.errorMsg = '期間を選んでください。'
                         return
                     }
+                    if (Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+                        return
+                    }
                     if (!this.hasPassedTimeCheck) {
                         this.errorInfo = true
                         this.errorMsg = '時刻をHH:MM形式で入力してください'
