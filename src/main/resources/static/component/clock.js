@@ -7,7 +7,7 @@ const Clock = {
   </div>
   <div class="hour-style">
     <span>{{ timeView.hourMsg.substring(0, 5) }}</span>
-    <span style="font-size:45px;color: rgb(169,169,169)margin-left:-26px">{{ timeView.hourMsg.substring(6, 8) }}</span>
+    <span style="font-size:45px;color: rgb(169,169,169);margin-left:-15px">{{ timeView.hourMsg.substring(6, 8) }}</span>
   </div>
 </div>` ,
   data: function () {

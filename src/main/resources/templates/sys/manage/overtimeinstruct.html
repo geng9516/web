@@ -1041,9 +1041,6 @@
                     this.$refs.selection2.selectAll(status)
                 },
                 handleInputChange(i, object, value, el) {
-                    // 填完后自动checkbox
-                    this.$set(this.tableData3[i], '_checked', false)
-                    this.$set(this.tableData3[i], '_checked', true)
                     if (object) {
                         this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
                     }

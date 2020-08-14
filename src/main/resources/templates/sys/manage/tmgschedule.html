@@ -207,6 +207,7 @@
             勤務予定
             </div>
 
+            <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''"  border :columns="columns"
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)"

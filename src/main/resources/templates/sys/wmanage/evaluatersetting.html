@@ -396,7 +396,7 @@
                         txtTmgReferListTreeViewAdminTargetGroup: '',
                         txtTmgReferListTreeViewAdminTargetEmp: '',
                         txtTmgReferListTreeViewAdminSelectedView: 'section',
-                        txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
+                        txtDYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
@@ -734,7 +734,7 @@
             },
             methods: {
                 handleDatePicker() {
-                    this.referListObject.txtYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
+                    this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
                         this.getTableData()
                         return
