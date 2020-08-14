@@ -1,5 +1,4 @@
-<nav th:fragment="sider" class="navbar-wrap" @mouseenter.stop="handleNavHover()" @mouseleave.stop="handleNavLeave()"
-    xmlns:th="http://www.thymeleaf.org" style="margin-top: 51px;">
+<nav th:fragment="sider" class="navbar-wrap" xmlns:th="http://www.thymeleaf.org" style="margin-top: 51px;">
     <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/sider.min.css`">
     <svg th:replace="layout/icons::svg_icons"></svg>
     <ul class="navbar-nav">
@@ -31,6 +30,8 @@
             </div>
         </menu-group>
     </i-menu>
+    <!-- clickoutside关闭菜单 -->
+    <div style="position: fixed;right: 0;width: calc(100vw - 458px);height: 100vh;" @click="handleClickMenuOutSide" v-show="showSider"></div>
     <script th:inline="javascript">
         const SIDER = new Vue({
             el: '.navbar-wrap',
@@ -45,8 +46,17 @@
                     siteId: Utils.getUrlParam(location.href, 'psSite')
                 }
             },
+            watch: {
+                showSider(newValue) {
+                    // clickoutside关闭菜单时重置高亮的菜单大分类
+                    if(!newValue) {
+                        this.curMenu = Utils.getUrlParam(location.href, 'psSite')
+                    }
+                }
+            },
             methods: {
                 handleMenuGroupChange(item) {
+                    this.showSider = true
                     this.siteId = item.pageId
                     this.curMenu = item.pageId
                 },
@@ -56,10 +66,7 @@
                     this.showSider = false
                     location.href = this.toUrl
                 },
-                handleNavHover() {
-                    this.showSider = true
-                },
-                handleNavLeave() {
+                handleClickMenuOutSide() {
                     this.showSider = false
                 }
             }

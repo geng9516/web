@@ -1,7 +1,7 @@
 <!--
    author: Dellen Shang
 -->
-<i-menu mode="horizontal" theme="light" th:fragment="header" class="header-wrap" xmlns:th="http://www.thymeleaf.org">
+<i-menu mode="horizontal" theme="light" th:fragment="header" class="header-wrap" xmlns:th="http://www.thymeleaf.org" @click.native="handleClickMenuOutSide">
   <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
   <span class="layout-logo"></span>
   <div class="layout-nav">
@@ -37,6 +37,10 @@
           //   return
           // }
           // this.$router.push('/sys/user/profile')
+        },
+        // 点击顶部边栏时也关闭sider
+        handleClickMenuOutSide() {
+          SIDER._data.showSider = false
         }
       },
     })
