@@ -1075,13 +1075,18 @@
                 //     })
                 //     return
                 // }
-                console.log("valueMap"+JSON.stringify(this.valueMap))
-                console.log("value"+JSON.stringify(this.value))
 
                // let postValue=this.valueMap.map(Number).map(i=>this.value[i])
-                let postValue=this.value
+                // let postValue=this.value
 
-                const that = this
+
+                let that=this
+                let postValue= this.value.filter(function(obj) {
+                    return !that.valuebak.some(function(obj2) {
+                        return JSON.stringify(obj) == JSON.stringify(obj2)
+                    });
+                });
+
                 console.log("postValue"+JSON.stringify(postValue))
                 let result=false
                 postValue.some(e=>{
