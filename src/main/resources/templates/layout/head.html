@@ -30,9 +30,7 @@
       },
       methods: {
         logout() {
-          this.http.get('/logout').then(function() {
-            location.href= "/login"
-          })
+          location.href='/logout'
         },
         goProfile() {
           // if (this.$route.path === '/sys/user/profile') {

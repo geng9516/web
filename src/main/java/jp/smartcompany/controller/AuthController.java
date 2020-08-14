@@ -118,11 +118,10 @@ public class AuthController {
      * @return RedirectView
      */
     @GetMapping("logout")
-    @ResponseBody
-    public Boolean logout() {
+    public String logout() {
         authBusiness.logout();
         scCache.clear();
-        return true;
+        return "redirect:/login";
     }
 
     @GetMapping("isAuth")
