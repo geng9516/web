@@ -143,8 +143,8 @@
     </parameterMap>
 
     <resultMap id="selectWeekPtnMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType">
-        <result column="mgd_work" property="mgd_work" />
-        <result column="mgd_workname" property="mgd_workname" />
+        <result column="mgd_work" property="mgd_work"/>
+        <result column="mgd_workname" property="mgd_workname"/>
     </resultMap>
 
 
@@ -328,13 +328,13 @@
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
         and twp_cemployeeid = #{employeeId}
-       <!-- <if test="isAfter == true">
-            and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
-            and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
-        </if>
-        <if test="isAfter == false">
-            and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
-        </if>-->
+        <!-- <if test="isAfter == true">
+             and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
+             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
+         </if>
+         <if test="isAfter == false">
+             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
+         </if>-->
         order by twp_denddate
     </select>
 
@@ -443,17 +443,24 @@
     <!-- エラーチェックを削除する -->
     <delete id="deleteDailyCheck" parameterType="java.util.HashMap">
         delete from tmg_daily_check
-         where tda_ccustomerid = #{custId}
-           and tda_cmodifieruserid = #{employeeId}
-           and tda_ccompanyid = #{compCode}
+        where tda_ccustomerid = #{custId}
+        and tda_cmodifieruserid = #{employeeId}
+        and tda_ccompanyid = #{compCode}
+        <if test="sTargetDate != null">
+            and tda_dyyyymmdd = #{sTargetDate}
+        </if>
+
     </delete>
 
     <!-- エラーチェックを削除する -->
     <delete id="deleteDailyDetailCheck" parameterType="java.util.HashMap">
         delete from tmg_daily_detail_check
-         where tdad_ccustomerid = #{custId}
-           and tdad_ccompanyid = #{compCode}
-           and tdad_cmodifieruserid = #{employeeId}
+        where tdad_ccustomerid = #{custId}
+        and tdad_ccompanyid = #{compCode}
+        and tdad_cmodifieruserid = #{employeeId}
+        <if test="sTargetDate != null">
+            and tdad_dyyyymmdd = #{sTargetDate}
+        </if>
     </delete>
 
     <!-- [勤怠]日別情報を更新する -->
@@ -603,8 +610,8 @@
         ttr_dparameter1 , ttr_cparameter1)
         values
         (#{custId} , #{compCode} , #{employeeId},
-        to_date('1900/01/01', 'yyyy/mm/dd'),  <!--データ開始日-->
-        to_date('2222/12/31', 'yyyy/mm/dd'),  <!--データ終了日-->
+        to_date(#{minDate}, 'yyyy/mm/dd'),  <!--データ開始日-->
+        to_date(#{maxDate}, 'yyyy/mm/dd'),  <!--データ終了日-->
         #{sLoginUserCode} , sysdate ,
         #{tmg_schedule_cmodifierprogramid} ,
         #{tmg_schedule_cmodifierprogramid} , trunc(to_date(#{sTargetDate}), 'dd'), #{act_editmonthly_uschedule})
@@ -661,9 +668,12 @@
     <!-- エラーチェックを削除する -->
     <delete id="deleteDetailCheck" parameterType="java.util.HashMap">
         delete from tmg_daily_detail_check
-             where tdad_ccustomerid = #{custId}
-               and tdad_ccompanyid = #{compCode}
-               and tdad_cmodifieruserid = #{sLoginUserCode}
+        where tdad_ccustomerid = #{custId}
+        and tdad_ccompanyid = #{compCode}
+        and tdad_cmodifieruserid = #{sLoginUserCode}
+        <if test="sTargetDate != null">
+            and tdad_dyyyymmdd = #{sTargetDate}
+        </if>
     </delete>
 
     <!-- 週勤務パターンを取得する -->

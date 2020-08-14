@@ -249,7 +249,7 @@ public class TmgScheduleBean {
     /**
      * 実績クリアの可否
      */
-    private final boolean bClearResult = false;
+    private boolean bClearResult = false;
 
     /**
      * 4週間後
@@ -903,12 +903,12 @@ public class TmgScheduleBean {
             }
         }
         if (weekday == 0) {
-            paidHolidayVO.setDateOfRecordDays("0日");
+            paidHolidayVO.setDateOfRecordDays("0");
         } else {
             paidHolidayVO.setDateOfRecordDays(String.valueOf(weekday));
         }
         if (holiday == 0) {
-            paidHolidayVO.setNationalHolidayDays("0日");
+            paidHolidayVO.setNationalHolidayDays("0");
         } else {
             paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
         }
@@ -1209,6 +1209,16 @@ public class TmgScheduleBean {
     }
 
     /**
+     * 実績クリアの可否を取得します
+     */
+    private void isClearResult() {
+        String sPropnameResult = psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_RESULT);
+        if (sPropnameResult != null && !sPropnameResult.equals("") && sPropnameResult.equals("yes")) {
+            this.bClearResult = true;
+        }
+    }
+
+    /**
      * 予定作成更新処理を行います。
      */
     public void executeEditMonthlyUSchedule(String content) {
@@ -1226,7 +1236,9 @@ public class TmgScheduleBean {
                     monthlyScheduleEmpInfoDTO.setWorkId(monthlyScheduleEmpInfoDTO.getWorkId() == null ? "" : monthlyScheduleEmpInfoDTO.getWorkId());
                 }
                 monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
+                this.isClearResult();
                 this.executeEditMonthlyUSchedule(monthlyUScheduleEditParaDTO);
+                this.triggerOper(monthlyUScheduleEditParaDTO);
             } else {
                 logger.error("JSON対象がオブジェクトに変更することが失敗しました");
             }
@@ -1257,8 +1269,8 @@ public class TmgScheduleBean {
         }
 
         // チェックテーブル削除
-        iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
-        iTmgScheduleService.deleteDailyDetailCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
+        iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,null);
+        iTmgScheduleService.deleteDailyDetailCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,null);
 
         for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
             MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
@@ -1300,13 +1312,39 @@ public class TmgScheduleBean {
                     }
                 }
             }
-            iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),
-                    Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, ACT_EDITMONTHLY_USCHEDULE);
-            iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
-            iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode);
-            iTmgScheduleService.deleteDetailCheck(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId());
+
         }
+
     }
+
+    /**
+     * 前のタスクが終わったら、このタスクを実行するしかない
+     *
+     * @param monthlyUScheduleEditParaDTO
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public void triggerOper(MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO) {
+        if (null == monthlyUScheduleEditParaDTO) {
+            logger.warn("更新データが空です");
+            return;
+        }
+        List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = monthlyUScheduleEditParaDTO.getMonthlyScheduleEmpInfoDTOS();
+        if (null == monthlyScheduleEmpInfoDTOS) {
+            logger.warn("予定データが空です");
+            return;
+        }
+        for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
+            MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
+            logger.info("--->targetDate:" +monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+            iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),
+                    Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, monthlyScheduleEmpInfoDTO.getDyyyymmdd(), ACT_EDITMONTHLY_USCHEDULE);
+            iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
+            iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+            iTmgScheduleService.deleteDetailCheck(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+        }
+
+    }
+
 
     /**
      * 指定された就業区分が就業禁止(有給)または就業禁止(無給)かどうかを判断します。
