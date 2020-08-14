@@ -243,8 +243,7 @@
                 </div>
                 <span class="input-like-span tl pl20" style="border-top:0">
                     {{opts.baseDate}} から
-                    <time-picker format="HH:mm" :steps="[1, 15]" size="small" :value="nowWorkTime"
-                                 class="del-seconds ml15 mr15" style="width: 120px"></time-picker>
+                    <i-input size="small" class="mr10 ml10" style="width: 50px"  v-model="nowWorkTime"></i-input>
                     (週
                     <i-input size="small" class="mr10 ml10" style="width: 50px" v-model="nowWorKDays"></i-input>
                     日) 勤務とする
@@ -464,17 +463,27 @@
             async avgWorkTimeUpload(){
                 let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                console.log("avgWorkTimeUpload "+JSON.stringify(OPTS))
-                const { data } = await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
-
+                try{
+                    await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
+                    this.$Notice.info({title: '登録成功', desc: ""})
+                    this.isShow = false
+                    this.getTableData()
+                }catch (error) {
+                    return
+                }
 
             },
             async avgWorkTimeDelete(){
                 let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                console.log("avgWorkTimeDelete "+JSON.stringify(OPTS))
-                const { data } = await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
-
+                try{
+                    await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
+                    this.$Notice.info({title: '登録成功', desc: ""})
+                    this.isShow = false
+                    this.getTableData()
+                }catch (error) {
+                    return
+                }
             },
             async beginDateDelete(){
 
@@ -486,8 +495,16 @@
                 let params={...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 console.log("beginDateDelete "+JSON.stringify(OPTS))
-                const { data } = await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
-                this.workDaySettingData.splice(index,1)
+                try{
+                    await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
+                    this.$Notice.info({title: '登録成功', desc: ""})
+                    this.isShow = false
+                    this.workDaySettingData.splice(index,1)
+                    this.getTableData()
+                }catch (error) {
+
+                }
+
 
 
             },
@@ -516,19 +533,27 @@
                 }
                 let params={...newValue,...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                const { data } = await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
-                this.workDaySettingData[index].isChecked=false
-                this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
+                try{
+                    await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
+                    this.workDaySettingData[index].isChecked=false
+                    this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
+                    this.isShow = false
+                    this.getTableData()
+                }catch (e) {
+                    return
+                }
 
             },
             async manageFlagUpdate(){
-
-                this.opts.ManageList=JSON.stringify(this.manageValue)
-                this.opts.OverTimesList=JSON.stringify(this.overValue)
-                this.opts.baseDate=Utils.formatDate(this.opts.baseDate)
-                console.log("manageFlagUpdate"+JSON.stringify(this.opts))
-                const { data } = await this.http.postForm('sys/userprofile/manageFlagUpdate', this.opts)
-                this.$Notice.info({title: '登録成功', desc: ""})
+                const OPTS = { ...this.opts,"ManageList":JSON.stringify(this.manageValue),
+                        "OverTimesList":JSON.stringify(this.overValue)}
+                try{
+                    await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
+                    this.$Notice.info({title: '登録成功', desc: ""})
+                    this.getTableData()
+                }catch (error) {
+                    return
+                }
 
             },
             checkBoxChange(e,i,name){
@@ -730,6 +755,13 @@
             handleScroll: Throttle(function (e) {
                 this.contentScrollTop = e.target.scrollTop
             }, 50),
+
+            handleInputChange(i, object, value, el) {
+                // 填完后自动checkbox
+                if (object) {
+                    this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
+                }
+            },
         }
     })
 </script>

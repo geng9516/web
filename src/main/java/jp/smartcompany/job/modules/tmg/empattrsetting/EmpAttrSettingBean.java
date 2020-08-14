@@ -235,11 +235,9 @@ public class EmpAttrSettingBean {
                 .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
-        if(updPaidHolidayAttribute==1&&insertPaidHolidayAttribute==1&&insertTmgTrigger==1){
-            return  GlobalResponse.ok();
-        }else{
-            return  GlobalResponse.error();
-        }
+
+        return  GlobalResponse.ok();
+
     }
 
 
@@ -272,13 +270,8 @@ public class EmpAttrSettingBean {
                 .eq("TTR_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TTR_CCOMPANYID", psDBBean.getCompCode()));
 
-        if(updPaidHolidayAttribute==1&&insertTmgTrigger==1){
-            return  GlobalResponse.ok("平均勤務時間設定が削除されました。");
-        } else if (updPaidHolidayAttribute==0&&insertTmgTrigger==1) {
-            return  GlobalResponse.ok("削除対象の平均勤務時間設定が存在していません");
-        } else {
-            return  GlobalResponse.error();
-        }
+        return  GlobalResponse.ok();
+
     }
 
 
@@ -685,7 +678,7 @@ public class EmpAttrSettingBean {
         teaDo.setTesCmodifieruserid(psDBBean.getUserCode());
         teaDo.setTesDmodifieddate(DateTime.now());
         teaDo.setTesCmodifierprogramid("EmpAttrSetting");
-        teaDo.setTesDenddate(DateUtil.offset(DateUtil.parse(baseDate), DateField.DAY_OF_MONTH, -1));
+        teaDo.setTesDenddate(DateUtil.offset(DateUtil.parse(getFirstDayOfMonth(baseDate)), DateField.DAY_OF_MONTH, -1));
 
         QueryWrapper<TmgEmployeeAttributeDO> queryWrapper = new QueryWrapper<TmgEmployeeAttributeDO>();
         queryWrapper.eq("TES_CCUSTOMERID", psDBBean.getCustID());

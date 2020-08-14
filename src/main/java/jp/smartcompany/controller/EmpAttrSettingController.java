@@ -118,6 +118,7 @@ public class EmpAttrSettingController {
      * @return
      */
     @PostMapping("avgWorkTimeUpload")
+    @ResponseBody
     public GlobalResponse actionModifyAvgWorktime(@RequestParam("empId") String empId,
                                                   @RequestParam("baseDate") String baseDate,
                                                   @RequestParam("params") String params,
@@ -133,6 +134,7 @@ public class EmpAttrSettingController {
      * @return
      */
     @PostMapping("avgWorkTimeDelete")
+    @ResponseBody
     public GlobalResponse actionDeleteAvgWorktime(@RequestParam("empId") String empId,
                                                   @RequestParam("baseDate") String baseDate,
                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
@@ -166,6 +168,7 @@ public class EmpAttrSettingController {
      * @return
      */
     @PostMapping("beginDateUpload")
+    @ResponseBody
     public GlobalResponse actionInsertBeginDate(@RequestParam("empId") String empId,
                                                 @RequestParam("baseDate") String baseDate,
                                                 @RequestParam("params") String params,
@@ -182,6 +185,7 @@ public class EmpAttrSettingController {
      * @return
      */
     @PostMapping("beginDateUpdate")
+    @ResponseBody
     public GlobalResponse actionUpdateBeginDate(@RequestParam("empId") String empId,
                                                 @RequestParam("params") String params,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
@@ -196,6 +200,7 @@ public class EmpAttrSettingController {
      * @return
      */
     @PostMapping("beginDateDelete")
+    @ResponseBody
     public GlobalResponse actionDeleteBeginDate(@RequestParam("empId") String empId,
                                                 @RequestParam("params") String params,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
