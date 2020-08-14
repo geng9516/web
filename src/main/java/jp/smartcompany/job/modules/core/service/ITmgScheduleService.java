@@ -245,7 +245,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param custId
      */
-    void deleteDailyCheck(String employeeId, String compCode, String custId);
+    void deleteDailyCheck(String employeeId, String compCode, String custId,String sTargetDate);
 
     /**
      * エラーチェックを削除する
@@ -254,7 +254,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param custId
      */
-    void deleteDailyDetailCheck(String employeeId, String compCode, String custId);
+    void deleteDailyDetailCheck(String employeeId, String compCode, String custId,String sTargetDate);
 
     /**
      * [勤怠]日別情報を更新する
@@ -353,7 +353,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param sLoginUserCode
      */
-    void deleteDetailCheck(String custId, String compCode, String sLoginUserCode);
+    void deleteDetailCheck(String custId, String compCode, String sLoginUserCode,String sTargetDate);
 
 
     /**

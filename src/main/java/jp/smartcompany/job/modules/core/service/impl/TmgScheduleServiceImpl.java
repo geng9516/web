@@ -222,20 +222,22 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public void deleteDailyCheck(String employeeId, String compCode, String custId) {
+    public void deleteDailyCheck(String employeeId, String compCode, String custId,String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("compCode", compCode);
         params.put("custId", custId);
+        params.put("sTargetDate", sTargetDate);
         baseMapper.deleteDailyCheck(params);
     }
 
     @Override
-    public void deleteDailyDetailCheck(String employeeId, String compCode, String custId) {
+    public void deleteDailyDetailCheck(String employeeId, String compCode, String custId,String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("compCode", compCode);
         params.put("custId", custId);
+        params.put("sTargetDate", sTargetDate);
         baseMapper.deleteDailyDetailCheck(params);
     }
 
@@ -331,11 +333,12 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode) {
+    public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode,String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
         params.put("compCode", compCode);
         params.put("sLoginUserCode", sLoginUserCode);
+        params.put("sTargetDate", sTargetDate);
         baseMapper.deleteDetailCheck(params);
     }
 
