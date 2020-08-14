@@ -58,6 +58,10 @@
       height: 1px;
       border-top: solid 1px rgb(206 ,206, 206);
     }
+    .real-schedule {
+
+    background: rgb(253, 124, 40,.17);
+  }
     </style>
 
     <svg:replace="layout/icons::svg_icons"></svg>
@@ -130,7 +134,7 @@
                         scheduleStartTime: '',
                         scheduleEndTime: ''
                     },
-                    scheduleData: ['9:30-12:00', '13:30-18:30'],
+                    scheduleData: ['0:30-5:30', '13:30-18:30'],
                     scheduleTime:Utils.getNumArray(0, 29).map(e => `0${e}`.slice(-2) + ':00'),
                     checkInLoading: false,
                     checkOutLoading: false
@@ -150,18 +154,19 @@
                 },
                 dynamicSchedule() {
                     const that = this
-                    const topHelper = this.scheduleData[0].split('-')[0].split(':')[0] * 60
+                    const leftHelper = this.scheduleData[0].split('-')[0].split(':')[0] * 60
                     return this.scheduleData.map(e => {
                         const startTime = Utils.timeToMinute(e.split('-')[0])
                         const endTime = Utils.timeToMinute(e.split('-')[1])
-                        const contentHeight = ((endTime - startTime) / 60) * 45
-                        const top = ((startTime - topHelper) / 60) * 45 + 60
+                        const contentWidth = ((endTime - startTime) / 60) * 46
+                        const left = ((startTime - leftHelper) / 60) * 46.5 + 25
                         return {
                             time: e,
                             style: {
-                                height: `${contentHeight}px`,
-                                lineHeight: `${contentHeight}px`,
-                                top: `${top}px`
+                                width: `${contentWidth}px`,
+                                lineHeight: `123px`,
+                                left: `${left}px`,
+                                top:'123px'
                             }
                         }
                     })
