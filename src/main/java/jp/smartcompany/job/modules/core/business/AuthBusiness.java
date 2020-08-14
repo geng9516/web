@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -104,11 +105,13 @@ public class AuthBusiness {
 
     public void logout() {
         String username = ShiroUtil.getUsername();
-        HttpServletRequest request = ContextUtil.getHttpRequest();
-        request.getSession().removeAttribute(Constant.PS_SESSION);
-        request.getSession().removeAttribute(Constant.TOP_NAVS);
         saveLoginInfo(false, username);
-        ShiroUtil.getSubject().logout();
+        HttpSession session = ContextUtil.getHttpRequest().getSession();
+        if (session.getAttribute(Constant.PS_SESSION)!=null) {
+            session.removeAttribute(Constant.PS_SESSION);
+            session.removeAttribute(Constant.TOP_NAVS);
+            ShiroUtil.getSubject().logout();
+        }
     }
 
     // 打卡时验证用户是否登录

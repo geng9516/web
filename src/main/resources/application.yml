@@ -20,7 +20,7 @@ server:
       - application/octet-stream
   servlet:
     session:
-      timeout: 86400
+      timeout: 1800000
     encoding:
       charset: utf-8
       force: on

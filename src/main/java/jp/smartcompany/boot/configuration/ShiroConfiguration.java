@@ -44,10 +44,7 @@ public class ShiroConfiguration {
     @Bean("sessionIdCookie")
     @Primary
     public SimpleCookie sessionIdCookie() {
-        SimpleCookie simpleCookie = new SimpleCookie("sid");
-        simpleCookie.setHttpOnly(true);
-        simpleCookie.setSameSite(Cookie.SameSiteOptions.STRICT);
-        return simpleCookie;
+        return new SimpleCookie("sid");
     }
 
     @Bean("sessionManager")
@@ -58,6 +55,7 @@ public class ShiroConfiguration {
         sessionManager.setSessionIdCookie(sessionIdCookie());
         // 先设为30分钟便于调试
         sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
+        sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
     }
 

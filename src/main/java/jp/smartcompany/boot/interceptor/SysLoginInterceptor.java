@@ -420,7 +420,6 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes);
-        System.out.println(menuGroupList);
         httpSession.setAttribute(Constant.TOP_NAVS,menuGroupList);
     }
 
