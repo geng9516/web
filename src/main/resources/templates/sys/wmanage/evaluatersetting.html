@@ -1029,7 +1029,8 @@
                     const dateList = this.permissionAdminValue.map(e => {
                         return {
                             start: e.validStartDate,
-                            end: e.validEndDate
+                            end: e.validEndDate,
+                            delete: e.delete
                         }
                     })
                     if (type === "add") {
@@ -1056,7 +1057,12 @@
                         }
                     }
 
+                    console.log(123)
+
                     const restLevelCheck = this.permissionAdminValue.some((e, i) => {
+                        if(e.delete) {
+                            return false
+                        }
                         if (!e.workConfirm &&
                             !e.monthConfirm &&
                             !e.overWorkConfirm &&
@@ -1078,7 +1084,11 @@
 
                     if (restLevelCheck) return
 
+                    console.log(456)
                     const basicCheck = dateList.some(e => {
+                        if(e.delete) {
+                            return false
+                        }
                         if (!e.start && !e.end) {
                             if(!updateLastOneBlank) {
                                 this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
@@ -1098,7 +1108,10 @@
                             return true
                         }
                     })
-                    if (!basicCheck && !Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end))) {
+                    if(basicCheck) return
+
+                    console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
+                    if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
                         if (type === "add") {
                             console.log('可以zhuijia啦~')
                             const query = {
@@ -1168,6 +1181,8 @@
                                 this.updatePermissionFlagLoading = false
                             }
                         }
+                    } else {
+                        this.$Notice.warning({ title: '注意', desc: ' 有効期間が重複しています。', duration: 6.5 })
                     }
 
                 },

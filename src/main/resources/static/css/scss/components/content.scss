@@ -7,8 +7,8 @@
 .content {
   max-height: calc(100vh);
   min-width: 1220px;
-  padding: 51px 0 0 50px;
-  background-color: var(--white);
+  max-width: 1920px;
+  padding: 51px 0 0 60px;
   overflow-y: auto;
   .content_head {
     padding: 12px 20px 12px 12px;

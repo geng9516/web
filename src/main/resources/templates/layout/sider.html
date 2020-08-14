@@ -13,15 +13,15 @@
         <li class="nav-item"></li>
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
-    <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:562px">
+    <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:398px">
         <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"
             :class="curMenu === e.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
             <div style="overflow-x: hidden">
                 <div v-show="curMenu === e.pageId"
-                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: -16px;">
+                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: 3px;">
                     <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId" @click.native="handleSubMenuClick(t, i)">
                         <div>
-                            <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px">
+                            <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px;position: relative;top:-3px">
                                 <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
                             </svg>
                         </div>

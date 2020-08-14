@@ -8,97 +8,78 @@
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
+    <style>
+        .content {
+            background-color: var(--orange25);
+            min-height: 100vh;
+        }
+        .orange {
+            color: var(--orange);
+            
+        }
+        .card {
+            border-radius: 5px;
+            height: 163px;
+            background: white;
+        }
+        .title {
+            text-align: left;
+    font-size: 20px;
+    padding: 20px 0 0 18px;
+        }
+        .num {
+            font-size: 80px;
+    position: relative;
+    display: inline-block;
+    margin-top: -18px;
+        }
+        .lp {
+            position: absolute;
+    right: 48px;
+    bottom: 15px;
+    font-size: 35px;
+        }
+    </style>
+
     <svg:replace="layout/icons::svg_icons"></svg>
     <main class="content">
-        <section class="stamp-warp tc">
-            <div class="schedule">
-                <span class="time-title">時間</span>
-                <span class="plan-title">本日の勤務予定</span>
-                <ul class="time-list">
-                    <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
-                </ul>
-                <span :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'"
-                    v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
-                    {{ item.time }}
-                </span>
-            </div>
-            <div class="stamp">
+        <Row class="stamp-warp tc">
+            <i-col span="9">
                 <Clock ref="clock"></Clock>
+                <Row :gutter="16">
+                    <i-col span="12"><i-button style="font-size:20px;border-radius: 23px;height: 50px;border-color:rgb(255,102,0);background: linear-gradient(90deg, rgb(255,157,93), rgb(255,102,0));" type="primary" long>出勤</i-button></i-col>
+                    <i-col span="12" class="mb20"><i-button style="font-size:20px;border-radius: 23px;height: 50px;border-color: rgb(230,222,201);
+                        background: linear-gradient(90deg, rgb(254 222 117), rgb(255 186 0));" type="primary" long>退勤</i-button></i-col>
+                    <i-col span="24"><i-button style="font-size:20px;border-radius: 23px;height: 50px;" type="warning" ghost long>超勤申請</i-button></i-col>
+                </Row>
+            </i-col>
+            <i-col span="15" class="pl20 pt20">
                 <Row>
-                    <i-col span="12" class="pr5">
-                        <i-button long @click="handleStamp('1')"
-                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none"
-                            :loading="checkInLoading" v-if="!this.data.clockOnTime">
-                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: rgb(48,118,242)">
-                                <use xlink:href="#kiwi"></use>
-                            </svg>
-                            <span class="pl5" style="position:relative;top:-13px">出勤</span>
-                        </i-button>
-                        <i-button v-else disabled long
-                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none">
-                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: white">
-                                <use xlink:href="#kiwi"></use>
-                            </svg>
-                            <span class="pl5" style="position:relative;top:-13px">出勤</span>
-                        </i-button>
+                    <i-col span="11" class="card mb20">
+                        <div class="orange title">月間出勤日数</div>
+                        <span class="num">17</span>
+                        <span class="lp" >日</span>
                     </i-col>
-                    <i-col span="12" class="pl5">
-                        <i-button @click="handleStamp('2')"
-                            style="height:80px;font-size:28px;background:rgb(238, 247, 255);border:none" long
-                            :loading="checkOutLoading">
-                            <svg class="i-svg" aria-hidden="true" style="width:32px;height:48px;fill: rgb(48,118,242)">
-                                <use xlink:href="#crow"></use>
-                            </svg>
-                            <span class="pl5" style="position:relative;top:-13px">退勤</span>
-                        </i-button>
+                    <i-col span="11" offset="1"  class="card mb20">
+                        <div class="orange title">有休残日数</div>
+                        <span class="num">5</span>
+                        <span class="lp" >時</span>
                     </i-col>
-                    <i-col span="24" class="mt20">
-                        <i-button long style="height:53px;font-size:18px;background:rgb(238, 247, 255);border:none"
-                            @click="workApply">
-                            <svg class="i-svg" aria-hidden="true" style="width:24px;height:24px;fill: rgb(48,118,242)">
-                                <use xlink:href="#otter"></use>
-                            </svg>
-                            <span class="pl5" style="position:relative;top:-5px">超勤申請</span>
-                        </i-button>
+                    <i-col span="11" class="card">
+                        <div class="orange title">月間実働時間</div>
+                        <span class="num">150</span>
+                        <span class="lp">時</span>
                     </i-col>
-                    <i-col span="24" class="mt20 msg">
-                        <p>
-                            出勤時刻：
-                            <span>{{ data.clockOnTime ? data.clockOnTime.substring(11, 16) : '未打刻' }}</span>
-                        </p>
-                        <p>
-                            退勤時刻：
-                            <span>{{ data.clockOffTime ? data.clockOffTime.substring(11, 16) : '' }}</span>
-                        </p>
+                    <i-col span="11"  offset="1" class="card">
+                        <div class="orange title">残業時間</div>
+                        <span class="num">20</span>
+                        <span class="lp" >時</span>
                     </i-col>
                 </Row>
-            </div>
-            <div class="total">
-                <div class="label">月間出勤日数</div>
-                <div class="total-content mb30">
-                    <span>17</span>
-                    <span style="font-size:20px">日</span>
-                </div>
+            </i-col>
+            </i-col>
+        </Row>
 
-                <div class="label">月間実働時間</div>
-                <div class="total-content mb30">
-                    <span>150</span>
-                    <span style="font-size:20px">時</span>
-                </div>
-
-                <div class="label">残業時間</div>
-                <div class="total-content mb30">
-                    <span>20</span>
-                    <span style="font-size:20px">時</span>
-                </div>
-
-                <div class="label">有休残日数</div>
-                <div class="total-content">
-                    <span>5</span>
-                    <span style="font-size:20px">日</span>
-                </div>
-            </div>
-        </section>
     </main>
     <script th:src="${baseUrl + '/static/component/Clock.js'}"></script>
     <div th:replace="layout/head::header"></div>
@@ -171,8 +152,8 @@
                     //   console.log(e)
                     //   this.data.serverTime = Date.now()
                     // }
-                    localStorage.setItem('Mobile_Sever_Time',Date.now() )
-                    localStorage.setItem('Mobile_Local_Time',Date.now() )
+                    localStorage.setItem('Mobile_Sever_Time', Date.now())
+                    localStorage.setItem('Mobile_Local_Time', Date.now())
                     this.data.serverTime = Date.now()
                     console.log(this.data.serverTime)
                 },

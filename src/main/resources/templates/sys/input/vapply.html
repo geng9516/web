@@ -245,7 +245,7 @@
                                             <p style="padding: 4px;">-</p>
                                         </i-col>
                                         <i-col span="10">
-                                            <i-input v-model="restApply.timezoneClose" @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)" placeholder="終了時間"/>
+                                            <i-input v-model="restApply.timezoneClose" @on-blur="handleInputChange(0,  restApply,'timezoneClose', $event.target)" placeholder="終了時間"/>
                                         </i-col>
                                     </Row>
                                 </section>
@@ -612,6 +612,11 @@
                     if(!this.restApply.begin || !this.restApply.end) {
                         this.errorInfo = true
                         this.errorMsg = '期間を選んでください。'
+                        return
+                    }
+                    if (Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
                         return
                     }
                     if (!this.hasPassedTimeCheck) {

@@ -19,11 +19,22 @@
   --text-green: rgb(58, 180, 6);
   --white: rgb(255, 255, 255);
   --red: rgb(252, 13, 27);
+  --dark-red: rgb(210, 7, 7);
   --green: rgb(82, 196, 26);
-  --orange: rgb(255, 127, 80);
+  --orange: rgb(255,102,0);
+  --orange50: rgb(255,172,118);
+  --orange25: rgb(255,244,238);
   --box-shadow: rgba(0,0,0,.2);
   --light-gold: rgb(255, 250, 207);
   --brown-text: rgb(191, 112, 13);
+
+  /* SIDER */
+  --sider-background: var(--orange);
+  --sider-background-actived:var(--orange50);
+  --sider-memu-background: var(--orange50);
+  --sider-memu-title-background: var(--orange);
+  --sider-memu-item-border-top: var(--orange);
+  --sider-memu-item-border-bottom: var(--dark-red);
   /* header checkin */
   --user-avatar-background: rgb(209, 216, 224);
   --toTopBtn-background: rgba(103, 208, 59, 0.78);
