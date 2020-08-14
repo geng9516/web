@@ -30,6 +30,7 @@ public class GroupManagerController {
     private final GroupManagerGroupEditLogic groupManagerGroupEditLogic;
     private final EmployeeInfoSearchLogic employeeInfoSearchLogic;
 
+    // http://localhost:6879/sys/groupmanager/groups?psSite=Admin
     // グループ定義:閲覧画面リスト
     @GetMapping("groups")
     public Map<String,Object> getValidGroupList(
@@ -40,6 +41,7 @@ public class GroupManagerController {
     }
 
     @GetMapping("detail")
+    // http://localhost:6879/sys/groupmanager/detail?groupId=010000&psSite=Admin
     public Map<String,Object> getGroupDetail(
             @RequestParam(value="searchDate",required = false) Date searchDate,
             @RequestParam(value="systemId",required = false) String systemId,
@@ -52,12 +54,6 @@ public class GroupManagerController {
             systemId="01";
         }
         return groupManagerGroupEditLogic.detail(searchDate,systemId, groupId);
-    }
-
-    @PostMapping("update")
-    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
-        groupManagerGroupEditLogic.update(dto);
-        return "変更成功";
     }
 
     /*******弹窗相关路由*********/
@@ -78,7 +74,10 @@ public class GroupManagerController {
       return employeeInfoSearchLogic.searchEmpList(searchWord,searchWordConve,searchWordEnglish,searchRange,searchFlg,companyId,targetComp,ifKeyorAdditionalRole,targetDept,type);
     }
 
-
-
+    @PostMapping("update")
+    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
+        groupManagerGroupEditLogic.update(dto);
+        return "変更成功";
+    }
 
 }
