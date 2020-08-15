@@ -5,19 +5,19 @@
   align-items: center
 }
 .content {
-  max-height: calc(100vh);
+  min-height: 100vh;
+  max-height: 100vh;
+  background-color: var(--orange25);
   min-width: 1220px;
   max-width: 1920px;
   padding: 51px 0 0 60px;
   overflow-y: auto;
   .content_head {
     padding: 12px 20px 12px 12px;
-    border-bottom: solid 1px var(--border-grey);
-    background: var(--white);
+    // border-bottom: solid 1px var(--border-grey);
   }
   .content_body {
     padding: 15px 20px 20px 12px;
-    background-color: var(--white);
     margin-bottom: 50px;
     .table-top {
       text-align: left;
@@ -41,9 +41,9 @@
     }
   }
   .searchwrap {
-    background-color: var(--searchwrap-background);
+    // background-color: var(--searchwrap-background);
     padding: 8px;
-    margin-top: 15px;
+    // margin-top: 15px;
     @include flex-row(flex-start);
     .ivu-select {
       width: 15%;
@@ -52,6 +52,7 @@
       width: 120px;
       text-align: right;
       padding-right: 10px;
+      border-radius: 3px 0 0 3px;
       background-color: var(--form-label);
       color: var(--white);
     }
@@ -94,10 +95,13 @@
     margin-top: 0;
   }
   .header {
+    margin: 10px;
+    background: rgb(255, 206, 175);
+    border-radius: 5px;
     @include flex-row(center);
     .title1 {
       h1 {
-        font-size: 18px;
+        font-size: 20px;
       }
       i {
         font-size: 30px;

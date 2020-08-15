@@ -25,6 +25,9 @@
   --orange75: rgb(253, 124, 40);
   --orange50: rgb(255,172,118);
   --orange25: rgb(255,244,238);
+  --yellow:rgb(255, 186, 0);
+  --yellow50:rgb(254, 222, 117);
+  --yellow25:rgb(255, 248, 191);
   --box-shadow: rgba(0,0,0,.2);
   --light-gold: rgb(255, 250, 207);
   --brown-text: rgb(191, 112, 13);
@@ -36,19 +39,19 @@
   --sider-memu-title-background: var(--orange);
   --sider-memu-item-border-top: var(--orange);
   --sider-memu-item-border-bottom: var(--dark-red);
+
   /* header checkin */
   --user-avatar-background: rgb(209, 216, 224);
   --toTopBtn-background: rgba(103, 208, 59, 0.78);
   /* content-head */
   --searchwrap-background: rgb(241, 244, 247);
   /*  table */
-  --table-head: rgb(110, 165, 238);
-  --table-head-border: rgb(176, 210, 255);
-  --table-month-label: rgb(227, 235, 243);
+  --table-head: var(--orange75);
+  --table-head-border: var(--orange50);
   --table-th-checkin: rgb(65, 123, 255);
   --table-td-stripe: rgb(248, 248, 249);
   --table-border: rgb(230, 230, 230);
-  --table-td-sat: --light-blue;
+  --table-td-sat: var(--orange25);
   /* 更深得黄 163 */
   --table-td-sun: rgb(255, 255, 206);
   --table-td-hover: rgb(232, 247, 233);
@@ -60,7 +63,7 @@
   --sider-item-border-b: rgb(34, 96, 206);
   --sider-item-border-t: rgb(79, 143, 255);
   /* form */
-  --form-label: rgb(110, 165, 238);
+  --form-label: var(--orange75);
   --form-notice: rgb(0, 185, 177);
   --form-required-star: rgb(48, 118, 242);
   --form-bg-blue: rgb(244, 249, 255);

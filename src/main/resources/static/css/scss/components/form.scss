@@ -88,12 +88,12 @@
 }
 //环境设定的标题样式
 .titlenorm {
-  border-top: solid 1px var(--form-title-border);
-  border-bottom: solid 1px var(--form-title-border);
+  // border-top: solid 1px var(--form-title-border);
+  border-bottom: solid 1px var(--orange75);
   // 低调的灰色
   // background-color: var(--form-title-background);
   // 显眼的绿色
-  background-color: var(--table-td-hover);
+  // background-color: var(--yellow25);
   padding: 6px 10px;
   font-size: 16px;
   font-weight: 600;
@@ -104,10 +104,10 @@
   // }
   i {
     // color: var(--form-title-icon;
-    color: rgb(91, 208, 41);
+    // color: rgb(91, 208, 41);
     font-size: 18px;
-    padding-right: 10px;
-    vertical-align: bottom;
+    padding-right: 5px;
+    // vertical-align: bottom;
   }
 }
 //环境设定的表单

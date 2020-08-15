@@ -174,25 +174,29 @@
   margin-bottom: 5px;
   .label-monthSum {
     display: inline-block;
-    height: 28px;
+    height: 32px;
+    line-height: 24px;
     width: 100px;
     text-align: right;
-    background-color: var(--light-blue);
-    color: var(--primary);
+    background-color: var(--border-grey);
+    border-radius: 3px 0 0 3px;
     padding-top: 5px;
     padding-right: 5px;
   }
   .num {
     display: inline-block;
     width: 90px;
-    height: 28px;
-    line-height: 28px;
+    height: 32px;
+    line-height: 32px;
     text-align: left;
+    margin-left: -5px;
     vertical-align: bottom;
+    background: white;
     border: 1px solid var(--light-input-border-grey);
+    border-radius: 0 3px 3px 0;
     padding: 0 5px;
-    color: #29a5f9;
-    font-weight: 600;
+    // color: #29a5f9;
+    // font-weight: 600;
   }
   .urgent {
     // background-color: var(--light-pink);
@@ -240,7 +244,7 @@
 }
 
 .label {
-  background-color: var(--label-blue);
+  background-color: var(--orange);
   color: var(--white);
   padding: 5px 0;
   font-size: 14px;
