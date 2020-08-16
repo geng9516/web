@@ -5,6 +5,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
+import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.SystemTimerVO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -99,6 +100,41 @@ public class TimepunchController {
         SystemTimerVO systemTimerVO = new SystemTimerVO();
         systemTimerVO.setSysdate(DateUtil.format(new Date(), "yyyy/MM/dd HH:mm:ss"));
         return systemTimerVO;
+    }
+
+    /**
+     * 打刻
+     *
+     * @return
+     */
+    @PostMapping("stamping")
+    @ResponseBody
+    public ClockResultVO stamping(@RequestParam("pAction") String pAction,
+                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        tmgTimePunchBean.setExecuteParameters(null, psDBBean);
+        ClockResultVO clockResultVO = new ClockResultVO();
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+        if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
+            //予定データがない場合、打刻しない
+            clockResultVO.setResultCode("20");
+            clockResultVO.setResultMsg("今日は出勤しない日です");
+        }
+        if ("ACT_EXEC_OPEN".equals(pAction) && null != clockInfoVO.getNopen() && !"".equals(clockInfoVO.getNopen())) {
+            //出勤打刻データがある場合、画面へ返却する
+            clockResultVO.setResultCode("0");
+            clockResultVO.setClockTime(clockInfoVO.getNopen());
+            clockResultVO.setResultMsg("今日はもう出勤打刻しました");
+            return clockResultVO;
+        }
+        //打刻
+        clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getEmployeeCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
+        if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+            clockResultVO.setResultMsg("今日も一日頑張りましょう");
+        }
+        if ("ACT_EXEC_CLOSE".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
+            clockResultVO.setResultMsg("今日も一日お疲れ様でした");
+        }
+        return clockResultVO;
     }
 
 }

@@ -137,6 +137,7 @@
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.postForm('/login', this.login)
                         location.href = "/login";
+                        //location.href = 'sys/input/sign?menuId=1640&moduleIndex=1&psSite=TMG_INP&psApp=TmgTimePunch'
                     } catch (error) {
                         this.loading = false
                         this.clockDisable = false
