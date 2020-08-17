@@ -75,7 +75,7 @@
 
   .ivu-progress-success .ivu-progress-bg,
   .ivu-progress-bg {
-    background: var(--primary-background);
+    background: linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255));
     box-shadow: 1px 1px 4px 0px var(--box-shadow);
   }
   .table-icon {
@@ -218,7 +218,7 @@
   }
   &.ing {
     color: var(--text-green);
-    background-color: var(--table-td-hover);
+    background-color: var(--green25);
     &:after {
       content: '申';
     }
@@ -253,7 +253,7 @@
       height: 15px;
       border-radius: 50%;
       box-shadow: 0 0 0 4px var(--light-blue);
-      background: var(--primary-background);
+      background: linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255));
     }
     &.deny::before {
       background: var(--error-background);
