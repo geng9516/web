@@ -859,7 +859,7 @@
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                         targetGroupId: row.groupId,
-                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
                     }
@@ -933,7 +933,7 @@
                     this.permissionAdminAddModal = true
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
                     }
@@ -966,7 +966,7 @@
                     if(this.levelList.length === 0) {
                         const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
                     }
@@ -1013,7 +1013,7 @@
                     console.log(this.permissionAdminValue)
                 },
                 async updatePermissionFlag() {
-                    this.permissionFlagValues.sectionId = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                    this.permissionFlagValues.sectionId = this.referListObject.txtTmgReferListTreeViewPermTargetSection
                     this.updatePermissionFlagLoading = true
                     try {
                         const { data } = await this.http.post(`sys/evaluatorsetting/editgroup?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, this.permissionFlagValues)
@@ -1117,7 +1117,7 @@
                             const query = {
                                 empId: this.permissionAdminValue[0].empId,
                                 groupId: this.permissionAdminValue[0].groupId,
-                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                 startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
                                 endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
                                 approvalLevel: this.permissionAdminValue[0].level,
@@ -1148,7 +1148,7 @@
                                     list = list.concat({
                                         delete: e.delete || false,
                                         newLine: i === this.permissionAdminValue.length - 1,
-                                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                         startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
                                         endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
                                         approvalLevel: e.level || '',
@@ -1166,7 +1166,7 @@
                             const query = {
                                 empId: this.permissionAdminValue[0].empId.split(' ')[0],
                                 groupId: this.permissionAdminValue[0].groupId,
-                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                 list: list
                             }
                             try {
@@ -1194,7 +1194,7 @@
                                 txtAction: 'ACT_EditGroup_UGrpName',
                                 txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                                 targetGroupId: this.gruopNameForm.groupId,
-                                targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                 groupName: this.gruopNameForm.groupName,
                                 psSite: this.referListObject.psSite,
                                 psApp: this.referListObject.psApp
@@ -1219,7 +1219,7 @@
                         if (valid) {
                             const query = {
                                 txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                                targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                 groupName: this.gruopNameForm.groupName,
                                 psSite: this.referListObject.psSite,
                                 psApp: this.referListObject.psApp
@@ -1241,7 +1241,7 @@
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                         targetGroupId: this.gruopNameForm.groupId,
-                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
                     }
@@ -1261,7 +1261,7 @@
                     this.PermissionMemberAssign = true
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
                     }
@@ -1284,7 +1284,7 @@
                                 ...e,
                                 empId: e.empName.split(' ')[0],
                                 originalGroupId: e.groupId,
-                                sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                                sectionId:this.referListObject.txtTmgReferListTreeViewPermTargetSection
                             }
                         })
                     } catch (error) {
