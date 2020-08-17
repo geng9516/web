@@ -186,18 +186,24 @@
   display: flex;
   flex-direction: column;
 }
+// checkbox改成橘色
+.ivu-checkbox-checked .ivu-checkbox-inner {
+  border-color: var(--orange25);
+  background-color: var(--orange75);
+}
 .row-label-primary {
   display: inline-block;
   padding: 2px 0;
   margin: 2px 0;
-  color: var(--primary);
+  color: var(--orange);
   border: 1px solid var(--primary-border);
   background-color: var(--white);
   border-radius: 3px;
 }
 .primary-info {
-  color: var(--primary);
-  border: var(--primary-border);
+  color: var(--brown-text);
+  border: 1px solid var(--olive);
+  background-color: var(--gold50);
   font-size: 14px;
   text-align: left;
   white-space: pre-line;
