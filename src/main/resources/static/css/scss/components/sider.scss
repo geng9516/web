@@ -58,7 +58,7 @@
     margin: 0 2px 4px;
     border-radius: 5px;
     white-space: nowrap;
-    background-image: linear-gradient(-45deg, rgb(250, 192, 156), rgb(240, 221, 206));
+    background-image: linear-gradient(-45deg, rgb(255, 242, 234), rgb(255, 234, 217));
     transition: fill 0.1s ease-in-out;
     &:before {
       content: '';
@@ -130,7 +130,7 @@
   .navbar-nav {
     display: flex;
     width: 60px;
-    background: var(--sider-background);
+    background: var(--orange60);
     transition: width 200ms ease;
     text-align: left;
     height: calc(100vh - 51px);

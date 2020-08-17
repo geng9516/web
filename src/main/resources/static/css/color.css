@@ -37,10 +37,10 @@
   --brown-text: rgb(191, 112, 13);
 
   /* SIDER */
-  --sider-background: var(--orange);
-  --sider-background-actived:var(--orange50);
-  --sider-memu-background: var(--orange50);
-  --sider-memu-title-background: var(--orange);
+  --sider-background: var(--orange60);
+  --sider-background-actived:var(--orange25);
+  --sider-memu-background: var(--orange25);
+  --sider-memu-title-background: var(--orange50);
   --sider-memu-item-border-top: var(--orange);
   --sider-memu-item-border-bottom: var(--dark-red);
 
