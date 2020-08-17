@@ -551,7 +551,7 @@ public class EmpAttrSettingBean {
         // 削除時・・・削除 [適用開始日 - 適用終了日:勤務開始日]
         else if (params.getAction().equalsIgnoreCase(ACTION_EDITBEGINDATE_D)) {
             sMessage =  WRD_BD_DELETE + SPACE + WRD_BD_BEFORE_BRACKETS + params.getPsOldStartDate() + SPACE + WRD_BD_HYPHEN + SPACE +
-                    params.getPsEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsBeginDate() + WRD_BD_AFTER_BRACKETS;
+                    params.getPsOldEndDate() + SPACE + WRD_BD_COLON + SPACE + params.getPsOldBeginDate() + WRD_BD_AFTER_BRACKETS;
         }
 
         return sMessage;

@@ -1113,6 +1113,7 @@
                             this.updateBtnLoading = true
                             await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
                             this.getTableDataDaily({ day: this.query.baseDay })
+                            this.overWorkViewType=1
                             this.getTableData()
                             this.$Message.success('命令完了')
                         } catch (error) {

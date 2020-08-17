@@ -153,7 +153,7 @@
 
 
     <Modal v-model="isShow" title="個人属性設定" width="850" @on-cancel="cancel" :mask-closable="false" footer-hide
-           draggable>
+           >
         <Row :gutter="10">
             <i-col span="8">
                 <div class="label">所属</div>
@@ -243,9 +243,9 @@
                 </div>
                 <span class="input-like-span tl pl20" style="border-top:0">
                     {{opts.baseDate}} から
-                    <i-input size="small" class="mr10 ml10" style="width: 50px"  v-model="nowWorkTime"></i-input>
+                    <i-input size="small" class="mr10 ml10" style="width: 50px"  v-model="nowWork.nowWorkTime" @on-blur="handleInputChange(0,nowWork,'nowWorkTime',$event.target)"></i-input>
                     (週
-                    <i-input size="small" class="mr10 ml10" style="width: 50px" v-model="nowWorKDays"></i-input>
+                    <i-input size="small" class="mr10 ml10" style="width: 50px" v-model="nowWork.nowWorKDays"></i-input>
                     日) 勤務とする
                 </span>
                 <div class="titlenorm mb10 mt20">
@@ -263,6 +263,7 @@
         el: '.empattrsettinginfo-warp',
         data() {
             return {
+                limitTime:'',
                 searchEmpTreeData: [],        //組織ツリー用
                 searchTypesList: [],     //組織ツリー用
                 searchConditionsList: [],//組織ツリー用
@@ -278,8 +279,10 @@
                     curSize: 50
                 },
                 radioCheckedIndex: 0,
-                nowWorkTime: '',
-                nowWorKDays: '',
+                nowWork: {
+                    nowWorkTime: '',
+                    nowWorKDays: ''
+                },
                 empName: '',
                 workerTypeName: '',
                 isBeginDateEdit: false,
@@ -446,7 +449,8 @@
                 beginDateListBackUp:[],
                 averageTimeData: [],
                 historyData: [],
-                referSettingData: []
+                referSettingData: [],
+                hasPassedTimeCheck:false
             }
         },
         async mounted() {
@@ -461,55 +465,154 @@
                 this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
             },
             async avgWorkTimeUpload(){
-                let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
+                if (this.avgWorkTimeCheck()) {
+                    return
+                }
+                let params={"sAvgWorkingHours":this.nowWork.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWork.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWork.nowWorKDays}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 try{
-                    await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
-                    this.$Notice.info({title: '登録成功', desc: ""})
-                    this.isShow = false
-                    this.getTableData()
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '表示されている内容を登録します。\nなお、登録した内容は翌日から反映されます。\nよろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
+                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.isShow = false
+                            this.getTableData()
+                        }
+                    })
                 }catch (error) {
                     return
                 }
 
             },
+
+            // エラーチェック
+            avgWorkTimeCheck() {
+                if(this.nowWork.nowWorkTime === ""){
+                    this.$Notice.error({desc: "平均勤務時間は入力してください。"})
+                    return true
+                }
+                let hours=+this.nowWork.nowWorkTime.split(":")[0]
+                let mins=+this.nowWork.nowWorkTime.split(":")[1]
+                if (hours*60 + mins > +(this.limitTime)) {
+                    this.$Notice.error({desc: "平均勤務時間は" + this.limitTime +"分以内で入力してください。"})
+                    return true
+                }
+                if (this.nowWork.nowWorKDays > '6' || this.nowWork.nowWorKDays === "" ) {
+                    this.$Notice.error({desc: "週勤務日数は6日以内で入力してください。"})
+                    return true
+                }
+                return false
+            },
             async avgWorkTimeDelete(){
-                let params={"sAvgWorkingHours":this.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWorKDays}
+                let params={"sAvgWorkingHours":this.nowWork.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWork.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWork.nowWorKDays}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 try{
-                    await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
-                    this.$Notice.info({title: '登録成功', desc: ""})
-                    this.isShow = false
-                    this.getTableData()
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '基準日以降の設定内容を削除します。\nなお、削除した内容は翌日から反映されます。\nよろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
+                            this.$Notice.info({title: '取消成功', desc: ""})
+                            this.isShow = false
+                            this.getTableData()
+                        }
+                    })
                 }catch (error) {
                     return
                 }
             },
             async beginDateDelete(){
-
                 let index=this.radioCheckedIndex
                 let oldValue=Array.of(this.workDaySettingData[index]).map(e=>{
-                    return {'action':'',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
+                    return {'action':'ACTION_EDITBEGINDATE_D',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
                 })[0]
 
                 let params={...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 console.log("beginDateDelete "+JSON.stringify(OPTS))
                 try{
-                    await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
-                    this.$Notice.info({title: '登録成功', desc: ""})
-                    this.isShow = false
-                    this.workDaySettingData.splice(index,1)
-                    this.getTableData()
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '選択された行の設定を削除します。よろしいですか？',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
+                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.isShow = false
+                            this.workDaySettingData.splice(index,1)
+                            this.getTableData()
+                        }
+                    })
+
                 }catch (error) {
 
                 }
+            },
+            // エラーチェック
+            beginDateCheck() {
+                let index=this.radioCheckedIndex;
+                let minDate = new Date('1900/1/1');
+                let maxDate = new Date('2222/12/31');
+                if (this.workDaySettingData[index].dend ===""){
+                    this.workDaySettingData[index].dend = '2222/12/31'
+                }
+                if ( this.workDaySettingData[index].beginDate === "" ) {
+                    this.$Notice.error({desc: "勤務開始日を入力してください。"})
+                    return true
+                }
+                if ( this.workDaySettingData[index].dstart === "" ) {
+                    this.$Notice.error({desc: "適用開始日を入力してください。"})
+                    return true
+                }
+                if ( this.workDaySettingData[index].dend === "" ) {
+                    this.$Notice.error({desc: "適用終了日を入力してください。"})
+                    return true
+                }
+                if(this.workDaySettingData[index].dstart > this.workDaySettingData[index].dend){
+                    this.$Notice.error({desc: "適用開始日＜＝適用終了日となるように入力してください。"})
+                    return true
+                }
+                if(new Date(this.workDaySettingData[index].dstart) > maxDate || new Date(this.workDaySettingData[index].dstart) < minDate){
+                    this.$Notice.error({desc: "適用開始日は適切な日付ではありません。\n1900/01/01～2222/12/31の範囲で入力してください。"})
+                    return true
+                }
+                if(new Date(this.workDaySettingData[index].dend) > maxDate || new Date(this.workDaySettingData[index].dend) < minDate){
+                    this.$Notice.error({desc: "適用終了日は適切な日付ではありません。\n1900/01/01～2222/12/31の範囲で入力してください。"})
+                    return true
+                }
+                if(new Date(this.workDaySettingData[index].beginDate) > maxDate || new Date(this.workDaySettingData[index].beginDate) < minDate){
+                    this.$Notice.error({desc: "勤務開始日は適切な日付ではありません。\n1900/01/01～2222/12/31の範囲で入力してください。"})
+                    return true
+                }
+                let check = this.workDaySettingData.some((e) => {
+                    if(e.dstart !="" ){
+                        if( new Date(this.workDaySettingData[index].dstart) > new Date(e.dstart)  && new Date(this.workDaySettingData[index].dstart) < new Date(e.dend)  ){
+                            this.$Notice.error({desc: "入力された適用期間が既に登録されている適用期間と重複しています。\n適用期間が重複しない様に日付を変更してください。"})
+                            return true
+                        }
+                        if(new Date(this.workDaySettingData[index].dend) < new Date(e.dend)   && new Date(this.workDaySettingData[index].dend)  > new Date(e.dstart)  ){
+                            this.$Notice.error({desc: "入力された適用期間が既に登録されている適用期間と重複しています。\n適用期間が重複しない様に日付を変更してください。"})
+                            return true
+                        }
+                    }
+                })
+               if(check){
+                   return true
+               }
 
-
-
+                return false
             },
             async beginDateUploadOrUpdate(){
-
+                if (this.beginDateCheck()) {
+                    return
+                }
                 let index=this.radioCheckedIndex;
 
                 let max=Math.max.apply(null,this.beginDateListBackUp.slice(1).map(e=> new Date(e.dstart)))
@@ -517,28 +620,43 @@
                 let psMaxOldStartDate=Utils.formatDate(new Date(max))
 
                 let tempUrl;
-
-                let newValue=Array.of(this.workDaySettingData[index]).map(e=>{
-                    return {'action':'',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate}
-                })[0]
-
+                let msg;
+                let newValue;
                 let oldValue;
                 if(index==0){
                     tempUrl="beginDateUpload"
+                     newValue=Array.of(this.workDaySettingData[index]).map(e=>{
+                        return {'action':'ACTION_EDITBEGINDATE_C',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate}
+                    })[0]
+                    msg="勤務開始日の設定を新規登録します。よろしいですか？"
                 }else{
                     tempUrl="beginDateUpdate"
+                    msg="選択された行の設定を変更します。よろしいですか？"
+                     newValue=Array.of(this.workDaySettingData[index]).map(e=>{
+                        return {'action':'ACTION_EDITBEGINDATE_U',"psStartDate":e.dstart,"psEndDate":e.dend,'psBeginDate':e.beginDate}
+                    })[0]
                     oldValue=Array.of(this.beginDateListBackUp[index]).map(e=>{
                         return {"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':psMaxOldStartDate}
                     })[0]
                 }
                 let params={...newValue,...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
+
                 try{
-                    await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
-                    this.workDaySettingData[index].isChecked=false
-                    this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
-                    this.isShow = false
-                    this.getTableData()
+                    this.$Modal.confirm({
+                        title: '',
+                        content: msg,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
+                            this.workDaySettingData[index].isChecked=false
+                            this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
+                            this.isShow = false
+                            this.getTableData()
+                        }
+                    })
+
                 }catch (e) {
                     return
                 }
@@ -548,9 +666,18 @@
                 const OPTS = { ...this.opts,"ManageList":JSON.stringify(this.manageValue),
                         "OverTimesList":JSON.stringify(this.overValue)}
                 try{
-                    await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
-                    this.$Notice.info({title: '登録成功', desc: ""})
-                    this.getTableData()
+                    this.$Modal.confirm({
+                        title: '',
+                        content: '表示されている内容を登録します。よろしいですか？\n※登録されるのは現在表示されている項目のみとなります。',
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
+                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.getTableData()
+                        }
+                    })
+
                 }catch (error) {
                     return
                 }
@@ -686,8 +813,9 @@
                 try {
                     const { data } = await this.http.get('sys/userprofile/avgWorkTimeEditDisp', this.opts)
                     this.averageTimeData = data.historyList
-                    this.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
-                    this.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
+                    this.nowWork.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
+                    this.nowWork.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
+                    this.limitTime=data.limitTime
                     this.isShow = true
                     this.isAvgTimeEdit = true
                     this.isBeginDateEdit = false
