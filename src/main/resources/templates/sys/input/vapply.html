@@ -17,7 +17,7 @@
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                             class="mb10 no-border-radius" ref="select">
-                            <i-option value="全て" v-show="this.rotate">全て</i-option>
+                            <i-option value="全て" v-if="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
