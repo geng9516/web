@@ -7,7 +7,6 @@
 .content {
   min-height: 100vh;
   max-height: 100vh;
-  background-color: var(--orange25);
   min-width: 1220px;
   max-width: 1920px;
   padding: 51px 0 0 60px;
@@ -42,7 +41,7 @@
   }
   .searchwrap {
     // background-color: var(--searchwrap-background);
-    padding: 8px;
+    padding: 8px 0 8px 0;
     // margin-top: 15px;
     @include flex-row(flex-start);
     .ivu-select {
@@ -95,8 +94,10 @@
     margin-top: 0;
   }
   .header {
-    margin: 10px;
-    background: rgb(255, 206, 175);
+    margin: 10px 0;
+    color: rgb(175, 102, 10);
+    border: 1px solid rgb(224, 215, 12);
+    background-color: rgb(255, 254, 234);
     border-radius: 5px;
     @include flex-row(center);
     .title1 {
