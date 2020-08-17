@@ -19,11 +19,11 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" size="large" v-if="btnAddEval" @click="permissionAdminAdd = true">承認者追加
+                    <i-button type="primary" v-if="btnAddEval" @click="handleClickAddAdmin">承認者追加
                     </i-button>
-                    <i-button type="primary" size="large" v-if="btnMakeGroup" @click="handleClickMakeGroup">グループ作成
+                    <i-button type="primary" v-if="btnMakeGroup" @click="handleClickMakeGroup">グループ作成
                     </i-button>
-                    <i-button type="primary" size="large" v-if="btnEditMember" @click="PermissionMemberAssign = true">
+                    <i-button type="primary" v-if="btnEditMember" @click="handleClickEditMember">
                         メンバー割付</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
@@ -31,7 +31,8 @@
             <div class="searchwrap">
                 <span class="label">改訂日指定</span>
                 <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
-                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading"></date-picker>
+                    @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading">
+                </date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
@@ -71,19 +72,14 @@
                 no-data-text="所属を選択して下さい。" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
-                        :class="row.main ? 'width75' : 'ml30 width75'" style="font-weight: bold;">{{ row.group }}</span>
-                    <i-button type="primary" ghost size="small" :class="row.main ? 'width75' : 'ml30 width75'"
-                        @click="handleCickGroup(row)" v-else>
-                        {{ row.group }}
-                    </i-button>
+                        :class="row.main ? 'width75 tl' : 'ml30 width75 tl'" style="font-weight: bold;">{{ row.group }}</span>
+                    <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '30px' : '', fontSize: '13px'}" v-else> {{ row.group }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="name">
-                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}"
+                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" class="tl width100"
                         v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
-                    <i-button type="primary" ghost size="small" long v-if="row.empId && row.enableEmpEdit"
-                        @click="handleEditData" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}">
-                        {{ `${row.empId} (${row.name}/${row.postName})`  }}
-                    </i-button>
+                    <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.empId} (${row.name}/${row.postName})` }}</span>
+
                     <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
                 <template slot-scope="{ row }" slot="workConfirm">
@@ -117,8 +113,8 @@
         </div>
 
         <!-- 承認者追加画面 start-->
-        <Modal v-model="permissionAdminAdd" width="1280" class="tc" title="承認者追加" footer-hide :mask-closable="false"
-            @on-cancel="cancel('','permissionAdminAdd')">
+        <Modal v-model="permissionAdminAddModal" width="1280" class="tc" title="承認者追加" footer-hide
+            :mask-closable="false" @on-cancel="cancel('','permissionAdminAddModal')">
             <Row>
                 <i-col span="4">
                     <div class="label">所属</div>
@@ -127,53 +123,88 @@
                     <span class="input-like-span">{{ deptName }}</span>
                 </i-col>
             </Row>
-            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" :span-method="handleSpanForAdminAdd" class="mt15 mb20">
+            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData"
+                :span-method="handleSpanForAdminAdd" class="mt15 mb20">
+                <template slot-scope="{ row }" slot="group">
+                    <i-select v-model="permissionAdminValue[row._index].groupId" transfer>
+                        <i-option v-for="(item, i) of addPermissionAdminGroupList" :key="i" :label="item.groupName" :value="item.groupId"></i-option>
+                    </i-select>
+                </template>
+
+                <template slot-scope="{ row }" slot="empId">
+                  <span @click="addPermissionAdminGroupDrawer = true" class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary tl" v-if="!PermissionAdminEditer">{{ addPermissionAdminInfo.name }}</span>
+                  <span v-else>{{ addPermissionAdminInfo.name }}</span>
+                </template>
+
                 <template slot-scope="{ row }" slot="workConfirm">
-                    <Checkbox v-model="row.workConfirm"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].workConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="monthConfirm">
-                    <Checkbox v-model="row.monthConfirm"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].monthConfirm" :disabled="!enableMonthlyResult"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="overWorkConfirm">
-                    <Checkbox v-model="row.overWorkConfirm"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].overWorkConfirm"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="scheduleCreate">
-                    <Checkbox v-model="row.scheduleCreate"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].scheduleCreate"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="permissionGive">
-                    <Checkbox v-model="row.permissionGive"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].permissionGive"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="restConfirm">
-                    <Checkbox v-model="row.restConfirm"></Checkbox>
+                    <Checkbox v-model="permissionAdminValue[row._index].restConfirm" @on-change="handleRestConfirmCheckBox($event, permissionAdminValue[row._index])"></Checkbox>
                 </template>
 
                 <template slot-scope="{ row }" slot="level">
-                    <i-select transfer>
-                        <i-option v-for="(item, i) of 5" :value="item" :key="i">{{ item }}</i-option>
+                    <i-select v-model="permissionAdminValue[row._index].level" transfer :disabled="!permissionAdminValue[row._index].restConfirm" placeholder="">
+                        <i-option v-for="(item, i) of levelList" :value="item.value" :key="i" :label="item.name"></i-option>
                     </i-select>
                 </template>
 
                 <template slot-scope="{ row }" slot="validPeriod">
-                    <date-picker class="mt10" format="yyyy/MM/dd" type="date" transfer style="width:46%"
-                        placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker format="yyyy/MM/dd" type="date"
-                        transfer style="width:46%" placement="bottom-end"></date-picker>
+                    <date-picker v-model="permissionAdminValue[row._index].validStartDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker v-model="permissionAdminValue[row._index].validEndDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>
                 </template>
 
-                <template slot-scope="{ row }" slot="delete">
-                    <i-button type="error" ghost size="small">削除</i-button>
+                <template slot-scope="{ row }" slot="delete" v-if="row._index < permissionAdminAddData.length - 1 && PermissionAdminEditer">
+                    <Checkbox v-model="permissionAdminValue[row._index].delete"></Checkbox>
                 </template>
             </i-table>
             <div class="my-footer tr">
-                <i-button type="text" @click="cancel('','permissionAdminAdd')">キャンセル</i-button>
-                <i-button type="success" size="large" @click="add()">登録</i-button>
+                <i-button type="text" @click="cancel('','permissionAdminAddModal')">キャンセル</i-button>
+                <i-button v-if="PermissionAdminEditer" type="primary" size="large" @click="addPermissionAdmin('update')" :loading="updatePermissionFlagLoading">変更
+                </i-button>
+                <i-button v-if="!PermissionAdminEditer" type="success" size="large" @click="addPermissionAdmin('add')" :loading="updatePermissionFlagLoading">登録
+                </i-button>
             </div>
+            <Spin size="large" fix v-if="groupBtnLoading"></Spin>
         </Modal>
-        <!-- 承認者追加画面 end-->
+        <!--承認者追加画面  end-->
+
+      <!-- 承認者追加画面的Tree -->
+      <Modal class="tc" title="代理申請" placement="right" width="800" v-model="addPermissionAdminGroupDrawer" style="z-index: 999;">
+        <div class="titlenorm mb5">
+            <Icon type="logo-buffer"></Icon>
+            所属
+          </div>
+          <div style="position: relative;">
+            <Tree class="tree mt2" :data="treeData2" @on-select-change="handleClickLeafForAdminAdd" empty-text="所属データなし"></Tree>
+            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+          </div>
+          <div class="titlenorm mt10 mb5">
+            <Icon type="logo-buffer"></Icon>
+            社員
+          </div>
+          <div style="position: relative;">
+            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし">
+            </Tree>
+            <Spin size="large" fix v-if="emplistLoading"></Spin>
+          </div>
+      </Modal>
 
         <!-- メンバー割付 start-->
         <Modal v-model="PermissionMemberAssign" class="tc" title="メンバー割付" width="650" footer-hide :mask-closable="false"
@@ -189,7 +220,8 @@
                     <div class="label">改訂日</div>
                 </i-col>
                 <i-col span="18">
-                    <span class="input-like-span tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
+                    <span
+                        class="input-like-span tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
                 </i-col>
             </Row>
             <div class="titlenorm mt15">
@@ -198,121 +230,76 @@
             </div>
             <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData">
                 <template slot-scope="{ row }" slot="group">
-                    <i-select v-model="row.newGroup" filterable transfer>
-                        <i-option v-for="(item, i) of data" :value="item.groupId" :key="i">{{ item.groupName }}</i-option>
+                    <i-select v-model="memberAssignValue[row._index].groupId" transfer>
+                        <i-option v-for="(item, i) of row.groupList" :value="item.value" :key="i">{{ item.name }}
+                        </i-option>
                     </i-select>
                 </template>
             </i-table>
             <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel('','PermissionMemberAssign')">キャンセル</i-button>
-                <i-button type="success" size="large" @click="add()">登録</i-button>
+                <i-button type="primary" size="large" @click="updateMemberAssign()" :loading="updatePermissionFlagLoading">変更</i-button>
             </div>
+            <Spin size="large" fix v-if="groupBtnLoading"></Spin>
         </Modal>
         <!-- メンバー割付 end-->
 
-        <!-- 権限変更 start-->
-        <Modal v-model="PermissionEditerModals" width="1280" title="権限変更" footer-hide :mask-closable="false"
+        <!-- 警告値設定 start-->
+        <Modal v-model="PermissionFlagModals" class="tc" width="650" title="警告値設定" footer-hide :mask-closable="false"
             @on-cancel="cancel">
             <Row>
-                <i-col span="4">
-                    <div class="label">所属</div>
+                <i-col span="6">
+                    <div class="label tr" style="padding-right:12px;">所属</div>
                 </i-col>
-                <i-col span="5">
-                    <span class="input-like-span">XX庁</span>
+                <i-col span="18">
+                    <span class="input-like-span mb2 tl">{{ deptName }}</span>
+                </i-col>
+                <i-col span="6">
+                    <div class="label tr" style="padding-right:12px;">改訂日</div>
+                </i-col>
+                <i-col span="18">
+                    <span
+                        class="input-like-span mb2 tl">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
+                </i-col>
+                <i-col span="6">
+                    <div class="label tr" style="padding-right:12px;">夜間連携</div>
+                </i-col>
+                <i-col span="18">
+                    <Checkbox v-model="permissionFlagValues.autoStart" class="input-like-span tl" style="margin-left: 0;">デフォルト承認者の自動設定を行う</Checkbox>
                 </i-col>
             </Row>
-            <!-- <i-table border :columns="columns" :data="data" :loading="loading" class="mt15 mb20">
-                <template slot-scope="{ row }" slot="workConfirm">
-                    <Checkbox v-model="row.workConfirm"></Checkbox>
-                </template>
 
-                <template slot-scope="{ row }" slot="monthConfirm">
-                    <Checkbox v-model="row.monthConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="overWorkConfirm">
-                    <Checkbox v-model="row.overWorkConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="scheduleCreate">
-                    <Checkbox v-model="row.scheduleCreate"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="permissionGive">
-                    <Checkbox v-model="row.permissionGive"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="restConfirm">
-                    <Checkbox v-model="row.restConfirm"></Checkbox>
-                </template>
-
-                <template slot-scope="{ row }" slot="level">
-                    <Select transfer>
-                        <i-option v-for="(item, i) of 5" :value="item" :key="i">{{ item }}</i-option>
-                    </Select>
-                </template>
-
-                <template slot-scope="{ row }" slot="validPeriod">
-                    <date-picker class="mt10" format="yyyy/MM/dd" type="date" transfer style="width:46%"
-                        placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker  format="yyyy/MM/dd" type="date"
-                        transfer style="width:46%" placement="bottom-end"></date-picker>
-                </template>
-
-                <template slot-scope="{ row }" slot="delete">
-                    <i-button type="error" ghost size="small">削除</i-button>
-                </template>
-            </i-table> -->
-
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
-                <i-button type="primary" size="large" @click="update()">変更</i-button>
-            </div>
-        </Modal>
-        <!-- 権限変更 end-->
-
-        <!-- 警告値設定 start-->
-        <Modal v-model="PermissionFlagModals" width="650" title="警告値設定" footer-hide :mask-closable="false"
-            @on-cancel="cancel">
-            <!-- <i-form :label-width="120" ref="localValue" :model="localValue" :rules="ruleValidate">
-                <form-item label="所属">
-                    <span class="input-like-span">{{ localValue.group }}</span>
-                </form-item>
-                <form-item label="改訂日">
-                    <span class="input-like-span">{{ localValue.date }}</span>
-                </form-item>
-                <form-item label="夜間連携">
-                    <Checkbox class="input-like-span">デフォルト承認者の自動設定を行う</Checkbox>
-                </form-item>
-            </i-form> -->
-
-            <!-- <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
+            <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="time">
-                    <i-input v-model="row.time" />
+                    <input-number :max="99999999" :min="0" class="tl" v-model="permissionFlagValues[permisssionFlagKeyValueHelper[row.name]['key']]" />
                 </template>
             </i-table>
 
             <i-table border :columns="restFlagColumns" :data="restFlagData" :loading="loading">
                 <template slot-scope="{ row }" slot="time">
-                    <i-input v-model="row.time" />
+                    <input-number :max="99999999" :min="0" class="tl" v-model="permissionFlagValues[permisssionFlagKeyValueHelper[row.name]['key']]" />
                 </template>
-            </i-table> -->
-            <div class="my-footer">
-                <i-button type="text" @click="cancel">キャンセル</i-button>
-                <i-button type="primary" size="large" @click="update()">変更</i-button>
+            </i-table>
+            <div class="my-footer tr mt20">
+                <i-button type="text" @click="cancel('','PermissionFlagModals')">キャンセル</i-button>
+                <i-button type="primary" size="large" @click="updatePermissionFlag()" :loading="updatePermissionFlagLoading">変更</i-button>
             </div>
+            <Spin size="large" fix v-if="groupBtnLoading"></Spin>
         </Modal>
         <!-- 警告値設定 end-->
 
         <!-- グループ名作成・編集画面表示 start-->
-        <Modal v-model="editGroupNameModal" class="tc" width="450" :title="PermissionGroupAdd ? 'グループ作成' : 'グループ名編集'" footer-hide :mask-closable="false"
-            @on-cancel="cancel('gruopNameForm','editGroupNameModal')">
-            <Alert type="error" class="error-info" style="padding-left: 70px;width: 96%;" v-show="errorFlag">{{ errorMsg }}</Alert>
+        <Modal v-model="editGroupNameModal" class="tc" width="450" :title="PermissionGroupAdd ? 'グループ作成' : 'グループ名編集'"
+            footer-hide :mask-closable="false" @on-cancel="cancel('gruopNameForm','editGroupNameModal')">
+            <Alert type="error" class="error-info" style="padding-left: 70px;width: 96%;" v-show="errorFlag">
+                {{ errorMsg }}</Alert>
             <i-form :label-width="100" ref="gruopNameForm" :model="gruopNameForm" :rules="gruopNameFormValidate">
                 <form-item label="所属">
                     <span class="input-like-span" style="width: 95%;">{{ deptName }}</span>
                 </form-item>
                 <form-item label="改訂日">
-                    <span class="input-like-span" style="width: 95%;">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
+                    <span class="input-like-span"
+                        style="width: 95%;">{{ `${Utils.formatDate(this.curDate, 'yyyy年MM月dd日')}(${weekHelper[new Date(this.curDate).getDay()]})` }}</span>
                 </form-item>
                 <form-item label="グループ名" prop="groupName">
                     <i-input v-model="gruopNameForm.groupName" class="tl" style="width: 95%;"></i-input>
@@ -321,8 +308,13 @@
 
             <div class="my-footer tr mt20">
                 <i-button type="text" @click="cancel('gruopNameForm','editGroupNameModal')">キャンセル</i-button>
-                <i-button v-if="!PermissionGroupAdd" type="primary" size="large" @click="updateGruopName('gruopNameForm')">変更</i-button>
-                <i-button v-if="PermissionGroupAdd" type="success" size="large" @click="add('gruopNameForm')">登録</i-button>
+                <i-button v-if="!PermissionGroupAdd && delDeptBtn" type="error" size="large" @click="delGruopName"
+                    :loading="updateGruopNameLoading">削除</i-button>
+                <i-button v-if="!PermissionGroupAdd" type="primary" size="large"
+                    @click="updateGruopName('gruopNameForm')" :loading="updateGruopNameLoading">変更</i-button>
+                <i-button v-if="PermissionGroupAdd" type="success" size="large" @click="addGruopName('gruopNameForm')"
+                    :loading="addGruopNameLoading">登録</i-button>
+                <Spin size="large" fix v-if="groupBtnLoading"></Spin>
             </div>
         </Modal>
         <!-- グループ名編集画面表示 end-->
@@ -343,7 +335,7 @@
                         },
                         {
                             title: '承認者氏名',
-                            width: 260,
+                            minWidth: 260,
                             align: 'center',
                             slot: 'name'
                         },
@@ -404,7 +396,7 @@
                         txtTmgReferListTreeViewPermTargetGroup: '',
                         txtTmgReferListTreeViewPermTargetEmp: '',
                         txtTmgReferListTreeViewPermSelectedView: 'section',
-                        txtYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
+                        txtDYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
@@ -412,29 +404,41 @@
                     query: {},
                     empTreeData: [],
                     deptName: '選んでください',
+                    addPermissionAdminInfo: {
+                        name: '承認者検索',
+                        id: ''
+                    },
                     data: [],
                     treeData: [],
+                    treeData2: [],
                     weekHelper: ['日', '月', '火', '水', '木', '金', '土'],
                     isSearchHistory: false,
                     deptLoading: false,
                     deptDrawShow: false,
-                    permissionAdminAdd: false,
+                    permissionAdminAddModal: false,
                     PermissionGroupAdd: false,
                     PermissionMemberAssign: false,
-                    PermissionEditerModals: false,
+                    PermissionAdminEditer: false,
                     PermissionFlagModals: false,
+                    addGruopNameLoading: false,
+                    updateGruopNameLoading: false,
+                    addPermissionAdminGroupDrawer: false,
+                    enableMonthlyResult: true,
+                    empDeptLoading: false,
+                    delDeptBtn: false,
+                    groupBtnLoading: false,
                     permissionAdminAddColumns: [
                         {
                             title: 'グループ',
                             width: 170,
                             align: 'right',
-                            key: 'group'
+                            slot: 'group'
                         },
                         {
                             title: '承認者氏名',
-                            width: 200,
+                            minWidth: 200,
                             align: 'center',
-                            key: 'empId'
+                            slot: 'empId'
                         },
                         {
                             title: '権限',
@@ -450,7 +454,7 @@
                                     align: 'center'
                                 },
                                 {
-                                    title: '超過勤務\n命令',
+                                    title: '超過\n勤務\n命令',
                                     slot: 'overWorkConfirm',
                                     align: 'center'
                                 },
@@ -465,12 +469,13 @@
                                     align: 'center'
                                 },
                                 {
-                                    title: '休暇休業\n承認',
+                                    title: '休暇\n休業\n承認',
                                     slot: 'restConfirm',
                                     align: 'center'
                                 },
                                 {
                                     title: '決裁\nレベル',
+                                    width: 70,
                                     slot: 'level',
                                     align: 'center'
                                 }
@@ -478,26 +483,27 @@
                         },
                         {
                             title: '有効期間',
-                            width: 220,
+                            width: 280,
                             slot: 'validPeriod'
                         },
                         {
                             title: '削除',
-                            width: 80,
+                            width: 65,
                             align: 'center',
                             slot: 'delete'
                         }
                     ],
                     permissionAdminAddData: [{}],
+                    permissionAdminValue: [{}],
                     PermissionMemberAssignColumns: [
                         {
                             title: '氏名',
                             align: 'right',
-                            key: 'name'
+                            key: 'empName'
                         },
                         {
                             title: '現グループ',
-                            key: 'group',
+                            key: 'groupName',
                             align: 'left'
                         },
                         {
@@ -519,6 +525,7 @@
                         group: '1',
                         date: '2019年11月01日(金)'
                     },
+                    memberAssignValue:[],
                     ruleValidate: {
                         name: [
                             {
@@ -528,7 +535,8 @@
                             }
                         ]
                     },
-                    groupList: [
+                    levelList: [],
+                    addPermissionAdminGroupList: [
                         {
                             name: 'XX庁',
                             value: '1'
@@ -548,7 +556,7 @@
                             value: '1'
                         }],
                     // グループ名編集画面表示
-                    gruopNameForm: {groupName:''},
+                    gruopNameForm: { groupName: '' },
                     gruopNameFormValidate: {
                         groupName: [
                             {
@@ -557,12 +565,118 @@
                                 trigger: 'blur'
                             }
                         ]
+                    },
+                    // 警告値の設定
+                    permissionFlagValues: {},
+                    updatePermissionFlagLoading: false,
+                    groupIdForUpdatePermissionFlag: '',
+                    overFlagColumns: [
+                        {
+                            title: '超勤実績の警告値の設定',
+                            width: 400,
+                            key: 'name'
+                        },
+                        {
+                            title: '改定値(時間)',
+                            slot: 'time'
+                        },
+                        {
+                            title: '現在値(時間)',
+                            key: 'basic',
+                            align: 'right'
+                        }
+                    ],
+                    overFlagData: [
+                        {
+                            name: '超勤実績の警告値(時間)(日次:レベル1)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:レベル1)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:レベル2)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:レベル3)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(月次:レベル4)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:レベル1)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:レベル2)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:レベル3)',
+                        },
+                        {
+                            name: '超勤実績の警告値(時間)(年次:レベル4)',
+                        },
+                        {
+                            name: '超勤実績の月次警告値超過回数',
+                        },
+                        {
+                            name: '超勤実績の月平均時間',
+                        },
+                    ],
+                    restFlagColumns: [
+                        {
+                            title: '休日勤務日数の警告値の設定',
+                            width: 400,
+                            key: 'name'
+                        },
+                        {
+                            title: '改定値(時間)',
+                            slot: 'time'
+                        },
+                        {
+                            title: '現在値(時間)',
+                            key: 'basic',
+                            align: 'right'
+                        }
+                    ],
+                    restFlagData: [
+                        {
+                            name: '警告値(日数)(月次:レベル1)'
+                        },
+                        {
+                            name: '警告値(日数)(月次:レベル2)'
+                        },
+                        {
+                            name: '警告値(日数)(月次:レベル3)'
+                        },
+                        {
+                            name: '警告値(日数)(月次:レベル4)'
+                        },
+                        {
+                            name: '警告値(日数)(月次:レベル5)'
+                        }
+                    ],
+                    // 警告值字段对照表
+                    permisssionFlagKeyValueHelper: {
+                        '超勤実績の警告値(時間)(日次:レベル1)': { key: 'dailyOverTime', show: 'showDailyOverTime' },
+                        '超勤実績の月平均時間': { key: 'avgOverTime', show: 'showAvgOverTime' }, // monthlyOverTimeAvg
+                        '超勤実績の月次警告値超過回数': { key: 'countOverTime', show: 'showCountOverTime' },// monthlyOverTimeCount
+                        '超勤実績の警告値(時間)(月次:レベル1)': { key: 'monthlyOverTimeYellow', show: 'showMonthlyOverTime' },
+                        '超勤実績の警告値(時間)(月次:レベル2)': { key: 'monthlyOverTimeOrange', show: 'showMonthlyOverTimeOrange' },
+                        '超勤実績の警告値(時間)(月次:レベル3)': { key: 'monthlyOverTimePink', show: 'showMonthlyOverTimePink' },
+                        '超勤実績の警告値(時間)(月次:レベル4)': { key: 'monthlyOverTimeRed', show: 'showMonthlyOverTimeRed' },
+                        '超勤実績の警告値(時間)(年次:レベル1)': { key: 'yearlyOverTimeYellow', show: 'showYearlyOverTimeYellow' },
+                        '超勤実績の警告値(時間)(年次:レベル2)': { key: 'yearlyOverTimeOrange', show: 'showYearlyOverTimeOrange' },
+                        '超勤実績の警告値(時間)(年次:レベル3)': { key: 'yearlyOverTimePink', show: 'showYearlyOverTimePink' },
+                        '超勤実績の警告値(時間)(年次:レベル4)': { key: 'yearlyOverTimeRed', show: 'showYearlyOverTimeRed' },
+                        '警告値(日数)(月次:レベル1)': { key: 'monthlyHolidayTimeLevel1', show: 'showMonthlyHolidayTimeLevel1' },
+                        '警告値(日数)(月次:レベル2)': { key: 'monthlyHolidayTimeLevel2', show: 'showMonthlyHolidayTimeLevel2' },
+                        '警告値(日数)(月次:レベル3)': { key: 'monthlyHolidayTimeLevel3', show: 'showMonthlyHolidayTimeLevel3' },
+                        '警告値(日数)(月次:レベル4)': { key: 'monthlyHolidayTimeLevel4', show: 'showMonthlyHolidayTimeLevel4' },
+                        '警告値(日数)(月次:レベル5)': { key: 'monthlyHolidayTimeLevel5', show: 'showMonthlyHolidayTimeLevel5' }
                     }
                 }
             },
             mounted() {
                 this.getOrgTree()
-                this.getTableData(true)
             },
             watch: {
                 data: {
@@ -588,7 +702,7 @@
                             let whichMemberDuplicate = []
                             if (!e.memberList || e.memberList.length === 0) {
                                 result = result.concat(e)
-                                return { deptOccupy: 1 , isUnset: true }
+                                return { deptOccupy: 1, isUnset: true }
                             } else {
                                 e.memberList.forEach((j, _i) => {
                                     if (!j.validList) {
@@ -618,16 +732,10 @@
                     immediate: true
                 }
             },
-            computed: {
-                columns() {
-                    return []
-                },
-            },
             methods: {
                 handleDatePicker() {
-                    this.referListObject.txtYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
+                    this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
-                        // this.getTableHead()
                         this.getTableData()
                         return
                     }
@@ -639,6 +747,7 @@
                         const { sectionList, recordDate, sysDate } = await this.http.get('sys/tree', this.referListObject)
                         // 转为可用数据
                         this.treeData = Utils.convertTreeData(sectionList)
+                        this.treeData2 = Utils.deepClone(this.treeData)
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                         this.sysDate = sysDate
                     } catch (error) {
@@ -654,18 +763,58 @@
                     await this.getOrgTree()
                     this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
                 },
-                handleClickLeaf(e) {
+                async handleClickLeaf(e) {
                     if (!e[0]) return
                     this.deptDrawShow = false
                     this.deptName = e[0].groupname
                     this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.getTableData()
+                    // this.getEmplist(e[0].secid)
                 },
-                async getTableData(isPermSite) {
+                handleClickLeafForAdminAdd(e) {
+                    if (!e[0]) return
+                    this.getEmplist(e[0].secid)
+                },
+                async getEmplist(secid) {
+                    this.emplistLoading = true
+                    const query = { ...this.referListObject, sectionId: secid, txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'), }
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/searchemp', query)
+                        this.empTreeData = Utils.convertTreeData(data.empList)
+
+                    } catch (error) {
+                    } finally {
+                        this.emplistLoading = false
+                    }
+                },
+                handleRestConfirmCheckBox(e, obj) {
+                    if (!e) {
+                        console.log(12)
+                        obj.level = ''
+                    }
+                },
+                handleClickEmpLeaf(e) {
+                    if (!e[0]) return
+                    console.log(e[0])
+                    // 需要将此条得信息覆盖
+                    this.addPermissionAdminInfo.name = e[0].label
+                    this.addPermissionAdminInfo.id = e[0].empid
+                    const i = this.permissionAdminValue.length - 1
+                    this.permissionAdminValue[i].empId = e[0].empid
+                    this.permissionAdminValue[i].secnic = e[0].secnic
+                    this.$set(this.permissionAdminValue[i], 'validStartDate', e[0].dstart)
+                    this.$set(this.permissionAdminValue[i], 'validEndDate', e[0].dend)
+
+                    // this.permissionAdminValue[i].validStartDate = e[0].dstart
+                    // this.permissionAdminValue[i].validEndDate = e[0].dend
+                    console.log(this.permissionAdminValue)
+                    this.addPermissionAdminGroupDrawer = false
+
+                },
+                async getTableData() {
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
-                        console.log(data)
                         // 操作按钮
                         this.btnAddEval = data.btnAddEval
                         this.btnMakeGroup = data.btnAddEval
@@ -673,10 +822,6 @@
                         this.bottomMessage = data.bottomMessage
                         this.curDate = data.YYYYMMDD
                         this.data = data.list
-                        // 承认site需要一进去就请求
-                        if(isPermSite) {
-                            this.deptName = this.data[0].group
-                        }
                     } catch (error) {
 
                     } finally {
@@ -693,67 +838,491 @@
                     this[isShow] = false
                     this.errorFlag = false
                 },
-                add(name) {
-                    this.$refs[name].validate(valid => {
-                        if (valid) {
-                            console.log('zhuijiagroup')
-                        }
-                    })
-                },
-                handleCickGroup(row) {
-                    console.log(row)
+                async handleCickGroup(row) {
+                    this.groupBtnLoading = true
                     if (row.enableEditGroup) {
+                        // 修改警告值得部分
                         this.PermissionFlagModals = true
+                        // 数字输入控件
+                        Object.keys(this.permissionFlagValues).forEach(e => {
+                            this.permissionFlagValues[e] = null
+                        })
                     }
+
                     if (row.enableEditGroupName) {
                         // 将グループ名作成部分隐藏
                         this.PermissionGroupAdd = false
                         this.editGroupNameModal = true
                         this.gruopNameForm.groupName = row.group
+                        this.gruopNameForm.groupId = row.groupId
+                    }
+                    const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        targetGroupId: row.groupId,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+
+                    // 为了更新警告值后也能取到groupId
+                    this.groupIdForUpdatePermissionFlag = row.groupId
+
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/editgroup', query)
+
+                        if (row.enableEditGroup) {
+                            // 超勤実績の警告値の設定
+                            let v = []
+                            this.overFlagData.forEach(e => {
+                                const showName = this.permisssionFlagKeyValueHelper[e.name].show
+                                const keyName = this.permisssionFlagKeyValueHelper[e.name].key
+                                if (data[keyName][showName]) {
+                                    v = v.concat({
+                                        name: e.name,
+                                        basic: data[keyName].basic
+                                    })
+                                    this.permissionFlagValues[keyName] = data[keyName].self !== 'null' ? data[keyName].self : null
+                                }
+                            })
+                            this.overFlagData = v
+
+                            // 休日勤務日数の警告値の設定
+                            let n = []
+                            this.restFlagData.forEach(e => {
+                                const showName = this.permisssionFlagKeyValueHelper[e.name].show
+                                const keyName = this.permisssionFlagKeyValueHelper[e.name].key
+                                if (data[keyName][showName]) {
+                                    n = n.concat({
+                                        name: e.name,
+                                        basic: data[keyName].basic
+                                    })
+                                    this.permissionFlagValues[keyName] = data[keyName].self !== 'null' ? data[keyName].self : null
+                                }
+                            })
+                            this.restFlagData = n
+                            this.permissionFlagValues.autoStart = data.autoStart
+                        }
+                        this.delDeptBtn = data.enableEditGroupName
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
                     }
                 },
                 handleClickMakeGroup() {
                     this.PermissionGroupAdd = true
                     this.editGroupNameModal = true
                 },
-                handleEditData(row) {
-                    this.PermissionAdminEditer = true
-                    this.permissionAdminAddData = row.validList.map(e=>{
-                        return {
-                            group:row.group,
-                            empId:row.empId,
-                            ...e
+                async handleClickAddAdmin() {
+                    this.addPermissionAdminInfo = {
+                        name: '承認者検索',
+                        id: ''
+                    }
+                    this.PermissionAdminEditer = false
+                    this.permissionAdminAddData = [{}]
+                    this.permissionAdminValue = [
+                        {   workConfirm: false,
+                            monthConfirm: false,
+                            overWorkConfirm: false,
+                            scheduleCreate: false,
+                            permissionGive: false,
+                            restConfirm: false,
                         }
-                    }).concat({group:row.group, empId:row.empId})
+                    ]
+                    // 承認者追加时，需要默认第一个
+                    this.permissionAdminValue[0].groupId = this.data[0].groupId
                     this.permissionAdminAddModal = true
-                 },
+                    const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    this.groupBtnLoading = true
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/addeval', query)
+                        this.enableMonthlyResult = data.enableMonthlyResult
+                        this.addPermissionAdminGroupList = data.groupList.map(e => {
+                            return {
+                                groupName: Object.values(e)[0],
+                                groupId: Object.keys(e)[0],
+                            }
+                        })
+                        this.levelList = data.levelList.map(e => {
+                            return {
+                                name: Object.values(e)[0],
+                                value: Object.keys(e)[0],
+                            }
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
+                    }
+                },
+                async handleEditData(row) {
+                    this.PermissionAdminEditer = true
+                    this.permissionAdminAddModal = true
+                    this.addPermissionAdminInfo.name = row.empId
+                    // 和追加以下一致，但需要将决裁level的键值互换，因为需要的是key其实是 xxxxx❘1 这样的,
+                    if(this.levelList.length === 0) {
+                        const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    this.groupBtnLoading = true
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/addeval', query)
+                        this.enableMonthlyResult = data.enableMonthlyResult
+                        this.addPermissionAdminGroupList = data.groupList.map(e => {
+                            return {
+                                groupName: Object.values(e)[0],
+                                groupId: Object.keys(e)[0],
+                            }
+                        })
+                        this.levelList = data.levelList.map(e => {
+                            return {
+                                name: Object.values(e)[0],
+                                value: Object.keys(e)[0],
+                            }
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
+                    }
+                    }
+
+                    // 赋值
+                    const levelListHelper = this.levelList.map(e=> e.value)
+                    this.permissionAdminAddData = row.validList.map(e => {
+                        return {
+                            groupId: row.groupId,
+                            empId: row.empId,
+                            ...e,
+                            level: levelListHelper[e.level - 1],
+                            beforeStartDate: e.validStartDate,
+                            beforeEndDate: e.validEndDate,
+                        }
+                    }).concat({ groupId: row.groupId, empId: row.empId,workConfirm: false,
+                            monthConfirm: false,
+                            overWorkConfirm: false,
+                            scheduleCreate: false,
+                            permissionGive: false,
+                            restConfirm: false,  })
+                    this.permissionAdminValue = [...this.permissionAdminAddData]
+                    console.log(this.permissionAdminValue)
+                },
+                async updatePermissionFlag() {
+                    this.permissionFlagValues.sectionId = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                    this.updatePermissionFlagLoading = true
+                    try {
+                        const { data } = await this.http.post(`sys/evaluatorsetting/editgroup?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, this.permissionFlagValues)
+                        this.handleCickGroup({ enableEditGroup: true, groupId: this.groupIdForUpdatePermissionFlag })
+                        this.$Message.success('更新完了')
+                    } catch (error) {
+
+                    } finally {
+                        this.updatePermissionFlagLoading = false
+                    }
+                },
+                async addPermissionAdmin(type) {
+                    const dateList = this.permissionAdminValue.map(e => {
+                        return {
+                            start: e.validStartDate,
+                            end: e.validEndDate,
+                            delete: e.delete
+                        }
+                    })
+                    if (type === "add") {
+                        if (this.addPermissionAdminInfo.name === '承認者検索') {
+                            this.$Notice.warning({ title: '注意', desc: '承認者を選択してください。', duration: 6.5 })
+                            return
+                        }
+                    }
+
+                    // 更新时的最后一项权限可以为空
+                    let updateLastOneBlank = false
+                    if (type === "update") {
+                        const lastOne = this.permissionAdminValue[this.permissionAdminValue.length - 1]
+                        if (!lastOne.workConfirm &&
+                            !lastOne.monthConfirm &&
+                            !lastOne.overWorkConfirm &&
+                            !lastOne.scheduleCreate &&
+                            !lastOne.permissionGive &&
+                            !lastOne.restConfirm &&
+                            !lastOne.validStartDate &&
+                            !lastOne.validEndDate
+                            ) {
+                            updateLastOneBlank = true
+                        }
+                    }
+
+                    console.log(123)
+
+                    const restLevelCheck = this.permissionAdminValue.some((e, i) => {
+                        if(e.delete) {
+                            return false
+                        }
+                        if (!e.workConfirm &&
+                            !e.monthConfirm &&
+                            !e.overWorkConfirm &&
+                            !e.scheduleCreate &&
+                            !e.permissionGive &&
+                            !e.restConfirm
+                        ) {
+                            if (!updateLastOneBlank) {
+                                this.$Notice.warning({ title: '注意', desc: '権限を設定してください。', duration: 6.5 })
+                                return true
+                            }
+                        }
+
+                        if (e.restConfirm && !e.level) {
+                            this.$Notice.warning({ title: '注意', desc: '決裁レベルを選択してください。', duration: 6.5 })
+                            return true
+                        }
+                    })
+
+                    if (restLevelCheck) return
+
+                    console.log(456)
+                    const basicCheck = dateList.some(e => {
+                        if(e.delete) {
+                            return false
+                        }
+                        if (!e.start && !e.end) {
+                            if(!updateLastOneBlank) {
+                                this.$Notice.warning({ title: '注意', desc: '開始日（または終了日）を入力してください。', duration: 6.5 })
+                                return true
+                            }
+                        }
+                        if (!e.start && e.end) {
+                            this.$Notice.warning({ title: '注意', desc: '開始日を入力してください。', duration: 6.5 })
+                            return true
+                        }
+                        if (e.start && !e.end) {
+                            this.$Notice.warning({ title: '注意', desc: '終了日を入力してください。', duration: 6.5 })
+                            return true
+                        }
+                        if (e.start > e.end) {
+                            this.$Notice.warning({ title: '注意', desc: '開始日＜終了日となるようにしてください。', duration: 6.5 })
+                            return true
+                        }
+                    })
+                    if(basicCheck) return
+
+                    console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
+                    if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
+                        if (type === "add") {
+                            console.log('可以zhuijia啦~')
+                            const query = {
+                                empId: this.permissionAdminValue[0].empId,
+                                groupId: this.permissionAdminValue[0].groupId,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                startDate: Utils.formatDate(this.permissionAdminValue[0].validStartDate, 'yyyy/mm/dd'),
+                                endDate: Utils.formatDate(this.permissionAdminValue[0].validEndDate, 'yyyy/mm/dd'),
+                                approvalLevel: this.permissionAdminValue[0].level,
+                                dailyResult: this.permissionAdminValue[0].workConfirm,
+                                monthlyResult: this.permissionAdminValue[0].monthConfirm,
+                                overTime: this.permissionAdminValue[0].overWorkConfirm,
+                                schedule: this.permissionAdminValue[0].scheduleCreate,
+                                authority: this.permissionAdminValue[0].permissionGive,
+                                notification: this.permissionAdminValue[0].restConfirm
+                            }
+                            try {
+                                this.updatePermissionFlagLoading = true
+                                await this.http.post(`sys/evaluatorsetting/addeval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}&txtAction=ACT_MakeGroup_UGroup`, query)
+                                this.$Message.success('追加完了')
+                                this.getTableData()
+                                this.permissionAdminAddModal = false
+                            } catch (error) {
+                                this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                            } finally {
+                                this.updatePermissionFlagLoading = false
+                            }
+                        } else {
+                            console.log('可以更新啦~')
+                            let list = []
+                            this.permissionAdminValue.forEach((e, i) => {
+                                if(updateLastOneBlank && i === this.permissionAdminValue.length - 1) {
+                                } else {
+                                    list = list.concat({
+                                        delete: e.delete || false,
+                                        newLine: i === this.permissionAdminValue.length - 1,
+                                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                        startDate: Utils.formatDate(e.validStartDate, 'yyyy/mm/dd'),
+                                        endDate: Utils.formatDate(e.validEndDate, 'yyyy/mm/dd'),
+                                        approvalLevel: e.level || '',
+                                        dailyResult: e.workConfirm || false,
+                                        monthlyResult: e.monthConfirm || false,
+                                        overTime: e.overWorkConfirm || false,
+                                        schedule: e.scheduleCreate || false,
+                                        authority: e.permissionGive || false,
+                                        notification: e.restConfirm || false,
+                                        beforeStartDate: e.beforeStartDate || '',
+                                        beforeEndDate: e.beforeEndDate|| ''
+                                    })
+                                }
+                            })
+                            const query = {
+                                empId: this.permissionAdminValue[0].empId.split(' ')[0],
+                                groupId: this.permissionAdminValue[0].groupId,
+                                sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                list: list
+                            }
+                            try {
+                                this.updatePermissionFlagLoading = true
+                                await this.http.post(`sys/evaluatorsetting/editEval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
+                                this.$Message.success('変更完了')
+                                this.getTableData()
+                                this.permissionAdminAddModal = false
+                            } catch (error) {
+                                this.$Notice.warning({ title: '注意', desc: error, duration: 6.5 })
+                            } finally {
+                                this.updatePermissionFlagLoading = false
+                            }
+                        }
+                    } else {
+                        this.$Notice.warning({ title: '注意', desc: ' 有効期間が重複しています。', duration: 6.5 })
+                    }
+
+                },
                 updateGruopName(name) {
-                    this.$refs[name].validate(valid => {
+                    this.$refs[name].validate(async valid => {
                         if (valid) {
                             this.errorFlag = false
-                            console.log('genggaisuoshuming')
+                            const query = {
+                                txtAction: 'ACT_EditGroup_UGrpName',
+                                txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                                targetGroupId: this.gruopNameForm.groupId,
+                                targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                groupName: this.gruopNameForm.groupName,
+                                psSite: this.referListObject.psSite,
+                                psApp: this.referListObject.psApp
+                            }
+                            try {
+                                this.updateGruopNameLoading = true
+                                const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
+                                this.cancel('gruopNameForm', 'editGroupNameModal')
+                                this.$Message.success('更新完了')
+                                this.getTableData()
+                            } catch (error) {
+                            } finally {
+                                this.updateGruopNameLoading = false
+                            }
                         } else {
                             this.errorFlag = true
                         }
                     })
+                },
+                addGruopName(name) {
+                    this.$refs[name].validate(async valid => {
+                        if (valid) {
+                            const query = {
+                                txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                                targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                                groupName: this.gruopNameForm.groupName,
+                                psSite: this.referListObject.psSite,
+                                psApp: this.referListObject.psApp
+                            }
+                            try {
+                                this.addGruopNameLoading = true
+                                const { data } = await this.http.postForm('sys/evaluatorsetting/makegroup', query)
+                                this.cancel('gruopNameForm', 'editGroupNameModal')
+                                this.$Message.success('追加完了')
+                                this.getTableData()
+                            } catch (error) {
+                            } finally {
+                                this.addGruopNameLoading = false
+                            }
+                        }
+                    })
+                },
+                async delGruopName() {
+                    const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        targetGroupId: this.gruopNameForm.groupId,
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    try {
+                        this.updateGruopNameLoading = true
+                        const { data } = await this.http.get('sys/evaluatorsetting/deletegroup', query)
+                        this.cancel('gruopNameForm', 'editGroupNameModal')
+                        this.$Message.success('削除完了')
+                        this.getTableData()
+                    } catch (error) {
+                    } finally {
+                        this.updateGruopNameLoading = false
+                    }
+                },
+                // member edit
+                async handleClickEditMember() {
+                    this.PermissionMemberAssign = true
+                    const query = {
+                        txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
+                        sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        psSite: this.referListObject.psSite,
+                        psApp: this.referListObject.psApp
+                    }
+                    this.groupBtnLoading = true
+                    try {
+                        const { data } = await this.http.get('sys/evaluatorsetting/editmember', query)
+                        this.PermissionMemberAssignData = data.memberList.map(e=>{
+                            return {
+                                ...e,
+                                groupList: e.groupList.map(t=>{
+                                    return {
+                                        name: Object.values(t)[0],
+                                        value: Object.keys(t)[0],
+                                    }
+                                })
+                            }
+                        })
+                        this.memberAssignValue = this.PermissionMemberAssignData.map(e=>{
+                            return {
+                                ...e,
+                                empId: e.empName.split(' ')[0],
+                                originalGroupId: e.groupId,
+                                sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                            }
+                        })
+                    } catch (error) {
+                    } finally {
+                        this.groupBtnLoading = false
+                    }
+                },
+                async updateMemberAssign() {
+                    const query = this.memberAssignValue.filter(e=> e.originalGroupId !== e.groupId)
+                    try {
+                            this.updatePermissionFlagLoading = true
+                            const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
+                            this.$Message.success('変更完了')
+                            this.handleClickEditMember()
+                        } catch (error) {
+                        } finally {
+                            this.permissionAdminAddModal = false
+                            this.updatePermissionFlagLoading = false
+                        }
+                    console.log(query)
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 这里将得到得合并信息进行表格列项合并
                     let result = []
                     let curColumn = 0
                     this.mergeSpanInfo.forEach(e => {
-                        if(e.isUnset) {
+                        if (e.isUnset) {
                             // 下面判断合并未設定者的row
                             for (let i = 0; i < 9; i++) {
-                              if (i === 0) {
-                                if (rowIndex === curColumn && columnIndex === 1) {
-                                    result = [1, 9]
+                                if (i === 0) {
+                                    if (rowIndex === curColumn && columnIndex === 1) {
+                                        result = [1, 9]
+                                    }
+                                } else {
+                                    if (rowIndex === curColumn && columnIndex === i + 1) {
+                                        result = [0, 0]
+                                    }
                                 }
-                              } else {
-                                if (rowIndex === curColumn && columnIndex === i + 1) {
-                                    result = [0, 0]
-                                }
-                              }
                             }
                             curColumn += 1
                             return
@@ -798,7 +1367,7 @@
                 },
                 handleSpanForAdminAdd({ rowIndex, columnIndex }) {
                     // 合并group和承认者
-                    const count  = this.permissionAdminAddData.length
+                    const count = this.permissionAdminAddData.length
                     let result = []
                     for (let i = 0; i < count; i++) {
                         if (i === 0) {
@@ -806,7 +1375,7 @@
                                 result = [count, 1]
                             }
                         } else {
-                            if (rowIndex === i && columnIndex === 0 ||rowIndex === i && columnIndex === 1) {
+                            if (rowIndex === i && columnIndex === 0 || rowIndex === i && columnIndex === 1) {
                                 result = [0, 0]
                             }
                         }

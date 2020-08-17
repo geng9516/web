@@ -232,10 +232,16 @@
 }
 
 // 树形选择器
+.ivu-tree-title-selected, .ivu-tree-title-selected:hover {
+  background-color: var(--orange50);
+}
+.ivu-tree-title:hover {
+  background-color: rgb(255,213, 185);
+}
 .tree {
   text-align: left;
-  border: 15px solid var(--light-blue);
-  background-color: var(--light-grey);
+  border: 15px solid var(--orange25);
+  background-color: var(--orange25);
   .ivu-tree-title {
     width: calc(100% - 15px);
   }

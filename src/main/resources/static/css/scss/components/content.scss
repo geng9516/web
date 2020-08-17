@@ -85,7 +85,7 @@
     flex: 1;
     @include flex-row(flex-end);
     button {
-      margin: 5px 0 0 5px;
+      margin: 5px;
     }
     &.ivu-btn {
       margin-right: 10px;
