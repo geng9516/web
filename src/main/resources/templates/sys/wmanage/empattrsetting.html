@@ -263,6 +263,8 @@
         el: '.empattrsettinginfo-warp',
         data() {
             return {
+                OverTimeCheck:true,
+                manageCheck:true,
                 limitTime:'',
                 searchEmpTreeData: [],        //組織ツリー用
                 searchTypesList: [],     //組織ツリー用
@@ -518,7 +520,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
-                            this.$Notice.info({title: '取消成功', desc: ""})
+                            this.$Notice.info({title: '削除成功', desc: ""})
                             this.isShow = false
                             this.getTableData()
                         }
@@ -543,7 +545,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
-                            this.$Notice.info({title: '登録成功', desc: ""})
+                            this.$Notice.info({title: '削除成功', desc: ""})
                             this.isShow = false
                             this.workDaySettingData.splice(index,1)
                             this.getTableData()
@@ -695,17 +697,38 @@
             },
             checkOverWorkAlladmin() {
                     let that=this
+                if(this.OverTimeCheck){
                     this.tableData.forEach((e,index) => {
                         that.overValue[index].updaeCheckType=true
                         e.excludeOvertime=true
+
                     })
+                    this.OverTimeCheck=false
+                }else{
+                    this.tableData.forEach((e,index) => {
+                        that.overValue[index].updaeCheckType=false
+                        e.excludeOvertime=false
+                    })
+                    this.OverTimeCheck=true
+                }
+
             },
             checkAlladmin(){
                     let that=this
+                if(this.manageCheck){
                     this.tableData.forEach((e,index) => {
                         that.manageValue[index].updaeCheckType=true
                         e.manageFlg=true
                     })
+                    this.manageCheck=false
+                }else{
+                    this.tableData.forEach((e,index) => {
+                        that.manageValue[index].updaeCheckType=false
+                        e.manageFlg=false
+                    })
+                    this.manageCheck=true
+                }
+
             },
             handleDatePicker() {
                 if (this.deptName !== '選んでください') {
