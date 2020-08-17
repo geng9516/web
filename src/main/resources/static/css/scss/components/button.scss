@@ -51,6 +51,10 @@
   }
 }
 
+.ivu-btn:hover {
+  color: var(--ghost-primary-color);
+  border-color: var(--primary-border);
+}
 // iview的六种类型按钮覆盖
 .ivu-btn-primary {
   border-color: var(--primary-border);
@@ -58,17 +62,22 @@
   box-shadow: 0 2px 8px 0 var(--primary-shadow);
   &:hover {
     background: var(--primary-hover);
+    border-color: var(--primary-border);
+    color: white;
   }
   &:active {
     background: var(--primary-active);
+    border-color: var(--primary-border);
   }
 }
 .ivu-btn-ghost.ivu-btn-primary{
   background: var(--ghost-primary-background);
   border-color: var(--ghost-primary-border);
+  color: var(--ghost-primary-color);
   box-shadow: 0 1px 5px 0 var(--ghost-primary-shadow);
   &:hover {
     background: var(--ghost-primary-hover);
+    color: var(--ghost-primary-color);
   }
   &:active {
     background: var(--ghost-primary-active);
