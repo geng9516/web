@@ -96,11 +96,60 @@
                 </div>
             </div>
             <div style="display:inline-block;position: relative;width:16%;top: -139px;margin-left: -50px;">
-                <Row v-for="(e, i) of yearData" :key="i">
+                <Row v-for="(e, i) of yearData" :key="i"　v-if="!isDisable">
                     <i-col span="18" class="label big">{{i+1}}月 基準日数</i-col>
                     <i-col span="6">
                         <span class="input-like-span">{{e.standarDday}}日</span>
                     </i-col>
+                </Row>
+
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">1月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountJan}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">2月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountFeb}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">3月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountMar}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">4月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountApr}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">5月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountMay}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">6月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountJun}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">7月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountJul}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">8月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountAug}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">9月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountSep}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">10月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountOct}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">11月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountNov}}日</span></i-col>
+                </Row>
+                <Row v-if="isDisable">
+                    <i-col span="18" class="label big">12月 基準日数</i-col>
+                    <i-col span="6"><span class="input-like-span">{{workDayCountDec}}日</span></i-col>
                 </Row>
             </div>
             <Spin size="large" fix v-if="loading"></Spin>
@@ -155,6 +204,118 @@
                     changeMonthList: [],
                     updateLoading:false
                 }
+            },
+            computed: {
+                workDayCountJan(){
+                    let result=0
+                    Object.values(this.yearData[0].dataFlg)
+                    .forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+
+                workDayCountFeb  (){
+                    let result=0
+                    Object.values(this.yearData[1].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountMar  (){
+                    let result=0
+                    Object.values(this.yearData[2].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountApr  (){
+                    let result=0
+                    Object.values(this.yearData[3].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountMay  (){
+                    let result=0
+                    Object.values(this.yearData[4].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountJun  (){
+                    let result=0
+                    Object.values(this.yearData[5].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountJul  (){
+                    let result=0
+                    Object.values(this.yearData[6].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountAug  (){
+                    let result=0
+                    Object.values(this.yearData[7].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountSep  (){
+                    let result=0
+                    Object.values(this.yearData[8].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountOct  (){
+                    let result=0
+                    Object.values(this.yearData[9].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountNov  (){
+                    let result=0
+                    Object.values(this.yearData[10].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
+                workDayCountDec  (){
+                    let result=0
+                    Object.values(this.yearData[11].dataFlg).forEach(e => {
+                        if(e ==='TMG_HOLFLG|0'){
+                            result=result+1
+                        }
+                    })
+                    return result
+                },
             },
             async mounted() {
                 this.getOrgTree()
@@ -259,8 +420,7 @@
                         return
                     } finally {
                         this.loading = false
-                        console.log( this.isEditable)
-                        console.log( this.isDisable)
+                        console.log(this.yearData)
                     }
                 },
                 async handleDeptDateChange(e) {
