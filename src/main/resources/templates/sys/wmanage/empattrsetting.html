@@ -95,7 +95,7 @@
                         <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
                               :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
                     </i-col>
-                    <i-col span="7" offset="5" v-if="isEditable">
+                    <i-col class="tr" span="10" v-if="isEditable" style="margin-left: 8%;">
                         <i-button type="primary" ghost @click="checkAlladmin" class="mr15">
                             管理対象者 一括チェック
                         </i-button>
