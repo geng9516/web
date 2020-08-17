@@ -535,7 +535,6 @@
 
                 let params={...oldValue}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
-                console.log("beginDateDelete "+JSON.stringify(OPTS))
                 try{
                     this.$Modal.confirm({
                         title: '',
@@ -674,6 +673,7 @@
                         onOk: async () => {
                             await this.http.postForm('sys/userprofile/manageFlagUpdate', OPTS)
                             this.$Notice.info({title: '登録成功', desc: ""})
+                            this.isEditable=false
                             this.getTableData()
                         }
                     })
@@ -691,8 +691,6 @@
                     this.manageValue[i].updaeCheckType=e
                     this.tableData[i].manageFlg=e
                 }
-                console.log("checkBoxChange"+JSON.stringify(this.overValue))
-                console.log("checkBoxChange"+JSON.stringify(this.manageValue))
 
             },
             checkOverWorkAlladmin() {
@@ -701,7 +699,6 @@
                         that.overValue[index].updaeCheckType=true
                         e.excludeOvertime=true
                     })
-                console.log("checkOverWorkAlladmin"+JSON.stringify(that.overValue))
             },
             checkAlladmin(){
                     let that=this
@@ -709,7 +706,6 @@
                         that.manageValue[index].updaeCheckType=true
                         e.manageFlg=true
                     })
-                console.log("checkAlladmin"+JSON.stringify(that.manageValue))
             },
             handleDatePicker() {
                 if (this.deptName !== '選んでください') {
