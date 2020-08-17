@@ -163,7 +163,12 @@ const Utils = {
    * @param type Blob type
    */
   downloadFile: function (data, filename, type) {
-    const file = new Blob([`\ufeff${data}`], { type: type })
+    let file = {}
+    if (type.indexOf('pdf')>-1) {
+      file = new Blob([data], { type: type })
+    } else {
+      file = new Blob([`\ufeff${data}`], { type: type })
+    }
     if (window.navigator.msSaveOrOpenBlob) {
       // IE10+
       window.navigator.msSaveOrOpenBlob(file, filename)

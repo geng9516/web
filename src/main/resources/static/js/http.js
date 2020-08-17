@@ -87,14 +87,14 @@ const get = (url, params) => {
   })
 }
 
-const post = (url, params) => {
+const post = (url, params,download) => {
   return new Promise(async (resolve, reject) => {
     try {
       const { data, headers  } = await axios({
         method: 'post',
         url,
-        data: params
-        // responseType: download ? 'blob' : 'json'
+        data: params,
+        responseType: download ? 'arraybuffer' : 'json'
       })
       if(/csv|pdf|octet/g.test(headers['content-type'])) {
         resolve({ data:data, headers: headers})
