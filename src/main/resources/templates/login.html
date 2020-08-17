@@ -8,12 +8,12 @@
 <div class="login">
     <Row>
         <i-col span="16" style="transform: translate(-3%, 3%)">
-            <figure class="hero-warp" style="background-image: url('../static/svg/LoginSvg.svg')"></figure>
+            <figure class="hero-warp" th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/LoginSvg.svg)'}"></figure>
         </i-col>
         <i-col span="8">
             <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
                 <div class="title">
-                    <figure class="logo-warp" style="background-image: url('../static/svg/Logo.svg')"></figure>
+                    <figure class="logo-warp" th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/Logo.svg)'}"></figure>
                     <!--                    <p class="login-time"></p>-->
                     <!--                    <i-time class="login-time" :time="time" :interval="1" type="datetime"></i-time>-->
                     <!--                    <Clock ref="clock"></Clock>-->
