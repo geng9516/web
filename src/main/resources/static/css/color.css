@@ -24,6 +24,7 @@
   --green25: rgb(228, 249, 219);
   --orange: rgb(255,102,0);
   --orange75: rgb(253, 124, 40);
+  --orange60: rgb(255,150, 82);
   --orange50: rgb(255,172,118);
   --orange25: rgb(255,244,238);
   --yellow:rgb(255, 186, 0);
@@ -49,7 +50,7 @@
   /* content-head */
   --searchwrap-background: rgb(241, 244, 247);
   /*  table */
-  --table-head: var(--orange75);
+  --table-head: var(--orange60);
   --table-head-border: var(--orange50);
   --table-th-checkin: rgb(65, 123, 255);
   --table-td-stripe: rgb(248, 248, 249);
@@ -66,7 +67,7 @@
   --sider-item-border-b: rgb(34, 96, 206);
   --sider-item-border-t: rgb(79, 143, 255);
   /* form */
-  --form-label: var(--orange75);
+  --form-label: var(--orange60);
   --form-notice: rgb(0, 185, 177);
   --form-required-star: rgb(48, 118, 242);
   --form-bg-blue: rgb(244, 249, 255);

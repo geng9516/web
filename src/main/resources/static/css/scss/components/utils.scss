@@ -191,12 +191,15 @@
   border-color: var(--orange25);
   background-color: var(--orange75);
 }
+.ivu-checkbox-checked:hover .ivu-checkbox-inner {
+  border-color: var(--orange25);
+}
 .row-label-primary {
   display: inline-block;
   padding: 2px 0;
   margin: 2px 0;
-  color: var(--orange);
-  border: 1px solid var(--primary-border);
+  color: rgb(171, 78, 16);
+  border: 1px solid rgb(220, 200, 187);
   background-color: var(--white);
   border-radius: 3px;
 }
