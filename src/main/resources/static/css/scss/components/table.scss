@@ -30,8 +30,8 @@
     border-right: 1px solid var(--table-head-border);
     // 出勤	外出	戻り	退勤
     &.checkin {
-      background-color: var(--light-blue);
-      color: var(--table-th-checkin);
+      color: rgb(175, 102, 10);
+      background-color: rgb(255, 254, 234);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }
@@ -44,7 +44,7 @@
     }
     // 休息日 如星期六日
     &.rest {
-      background-color: var(--table-td-hover);
+      background-color: var(--green25);
       color: var(--text-green);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
@@ -247,7 +247,7 @@
 }
 
 .label {
-  background-color: var(--orange75);
+  background-color: var(--orange60);
   color: var(--white);
   padding: 5px 0;
   font-size: 14px;
