@@ -76,7 +76,7 @@
                     <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '30px' : '', fontSize: '13px'}" v-else> {{ row.group }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="name">
-                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" class="tl width100"
+                    <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" style="display: inline-block;" class="tl width100"
                         v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
                     <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.empId} (${row.name}/${row.postName})` }}</span>
 
