@@ -51,9 +51,12 @@ public class TmgAcquired5daysholidayServiceImpl extends ServiceImpl<TmgAcquired5
      * @param programId　更新プログラムID
      * @param custID　顧客コード
      * @param compCode　法人コード
+     * @param txtDpaidholidayEnd　修正終期
+     * @param txtNusedaysDays　修正必要日数
+     * @param txtFuyobi　付与日
      */
     @Override
-    public void buildSQLTmgAcquired5daykikanbi(String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String programId, String custID, String compCode){
-        this.baseMapper.buildSQLTmgAcquired5daykikanbi(txtUserCode, kijunbi, txtYear, kijunbiEdit, userCode, programId, custID, compCode);
+    public void buildSQLTmgAcquired5daykikanbi(String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String programId, String custID, String compCode, String txtDpaidholidayEnd , String txtNusedaysDays , String txtFuyobi){
+        this.baseMapper.buildSQLTmgAcquired5daykikanbi(txtUserCode, kijunbi, txtYear, kijunbiEdit, userCode, programId, custID, compCode, txtDpaidholidayEnd, txtNusedaysDays, txtFuyobi);
     }
 }

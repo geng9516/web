@@ -35,5 +35,8 @@ public interface TmgAcquired5daysholidayMapper extends BaseMapper<TmgAcquired5da
                                         @Param("userCode")String userCode,
                                         @Param("programId")String programId,
                                         @Param("custID")String custID,
-                                        @Param("compCode")String compCode);
+                                        @Param("compCode")String compCode,
+                                        @Param("txtDpaidholidayEnd")String txtDpaidholidayEnd,
+                                        @Param("txtNusedaysDays")String txtNusedaysDays,
+                                        @Param("txtFuyobi")String txtFuyobi);
 }

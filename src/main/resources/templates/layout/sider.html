@@ -17,8 +17,8 @@
             :class="curMenu === e.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
             <div style="overflow-x: hidden">
                 <div v-show="curMenu === e.pageId"
-                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: 3px;">
-                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId" @click.native="handleSubMenuClick(t, i)">
+                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: 3px;padding-bottom: 60px;">
+                    <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.pageId + t.menuId" @click.native="handleSubMenuClick(t, i)">
                         <div>
                             <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px;position: relative;top:-3px">
                                 <use :xlink:href="`#${t.icon || 'FiveDaysPaid28'}`"></use>
@@ -39,7 +39,7 @@
                 return {
                     topNavs: [[${ #session.getAttribute('topNavs') }]],
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
-                    curPageId: Utils.getUrlParam(location.href, 'psApp'),
+                    curPageId: Utils.getUrlParam(location.href, 'psApp') + Utils.getUrlParam(location.href, 'menuId'),
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),
                     toUrl: '',
                     showSider: false,
