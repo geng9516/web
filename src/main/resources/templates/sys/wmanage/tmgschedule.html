@@ -409,7 +409,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="rest">
-                    <span>{{row.rest[0]}}-{{row.rest[1]}}</span>
+                    <span>{{row.rest.length==1?'':`${row.rest[0]}-${row.rest[1]}`}}</span>
                 </template>
             </i-table>
             </Modal>
@@ -1008,7 +1008,7 @@
                                 return result
                             }
                             if (!e.endTime) {
-                                that.$Notice.warning({ title: '注意', desc:'始業時間を入力してください。', duration: 6.5 })
+                                that.$Notice.warning({ title: '注意', desc:'終業時間を入力してください。', duration: 6.5 })
                                 result=true
                                 return result
                             }
