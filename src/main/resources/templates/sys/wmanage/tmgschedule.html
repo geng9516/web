@@ -102,12 +102,12 @@
             <Row :gutter="10" class="mt5 mb15 tc">
                 <i-col span="4">
                     <div class="label">公休日数</div>
-                    <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}日</div>
+                    <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays?`${paidHolidayVO.nationalHolidayDays}日`:''}}</div>
                 </i-col>
                 <i-col span="4">
                     <div class>
                         <div class="label">基準日数</div>
-                        <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}日</div>
+                        <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays?`${paidHolidayVO.dateOfRecordDays}日`:''}}</div>
                     </div>
                 </i-col>
                 <i-col span="4">
