@@ -28,14 +28,17 @@ public interface ITmgAcquired5daysholidayService extends IService<TmgAcquired5da
 
     /**
      *修正基準日チェック期間再計算
+     * @param code
+     * @param updateAcquired5DaysVOKijunbi
+     * @param year
      * @param txtUserCode 対象者
      * @param kijunbi　基準日
      * @param txtYear　基準日修正年
      * @param kijunbiEdit　修正基準日
      * @param userCode　更新者
-     * @param programId　更新プログラムID
-     * @param custID　顧客コード
-     * @param compCode　法人コード
+     * @param txtDpaidholidayEnd　修正終期
+     * @param txtNusedaysDays　修正必要日数
+     * @param txtFuyobi　付与日
      */
-    void buildSQLTmgAcquired5daykikanbi(String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String programId, String custID, String compCode);
+    void buildSQLTmgAcquired5daykikanbi(String code, String updateAcquired5DaysVOKijunbi, String year, String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String txtDpaidholidayEnd, String txtNusedaysDays, String txtFuyobi);
 }

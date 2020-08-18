@@ -40,6 +40,7 @@ public class TmgAcquired5DaysHolidayController {
     /**
      * 年5休暇管理一览界面数据获取
      */
+    /**
     @GetMapping("edit")
     @ResponseBody
     public List<Acquired5DaysListVO> edit(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year, String txtUserCode) throws Exception {
@@ -48,7 +49,7 @@ public class TmgAcquired5DaysHolidayController {
 
         return tmgAcquired5DaysHolidayBean.selectList(txtUserCode, psDBBean);
     }
-
+     */
     /**
      * 年5休暇管理詳細
      */

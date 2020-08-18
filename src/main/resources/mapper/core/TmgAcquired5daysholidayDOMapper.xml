@@ -53,9 +53,12 @@
             TO_CHAR(TA.TA_DPAID_HOLIDAY, 'YYYY/MM/DD') AS TA_DYYYYMMDD,  								<!--付与日-->
             NVL(TA.TA_NHOLIDAY_DAYS, 0) AS TA_FUYODAYS,   												<!--付与日数-->
             TO_CHAR(TA.TA_DBASEDATE_START, 'YYYY/MM/DD') AS TA_KIJYUNBI,  								<!--基準日-->
-            TO_CHAR(TA.TA_DBASEDATE_END, 'YYYY/MM/DD') AS TA_KIKANBI,  									<!--チェック期間-->
-            NVL(TP.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  AS SUM_SYUTOKUDAYS,   		<!--一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
-            NVL(TA.TA_NNECESSARY_DAYS, 0)  AS TA_MUSTDAYS,  											<!--必要日数-->
+            <!--TO_CHAR(TA.TA_DBASEDATE_END, 'YYYY/MM/DD') AS TA_KIKANBI,                                   チェック期間-->
+            NVL(to_char(tpf.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),to_char(ta.TA_DBASEDATE_END, 'yyyy/MM/dd')) as TA_KIKANBI,  <!--チェック期間-->
+            <!--NVL(TP.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  AS SUM_SYUTOKUDAYS,                             一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
+            COALESCE(tpf.TPF_NUSEDAYS_FIX,tp.TP_NNECESSARY_DAYS, 0) + NVL(tpf.TPF_NUSEDAYS_AJDUST, 0)  as SUM_SYUTOKUDAYS,   <!--一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
+            <!--NVL(TA.TA_NNECESSARY_DAYS, 0)  AS TA_MUSTDAYS,                                                                   必要日数-->
+            COALESCE(tpf.TPF_NUSEDAYS_DAYS,tpf.TPF_NMUSTDAYS_FIX,ta.TA_NNECESSARY_DAYS, 0)  as TA_MUSTDAYS,                  <!--必要日数-->
             CASE WHEN NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
                 ELSE NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
             END AS TA_LESSDAYS,   																		<!-- 不足日数 = 必要日数 - DB取得日数 - 調整取得日数-->
@@ -76,11 +79,17 @@
             TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'YYYY/MM/DD') AS TPF_KIKANBI,  								<!--修正チェック期間-->
             NVL(TPF.TPF_NUSEDAYS_FIX, 0)  AS TPF_SYUTOKUDAYS,   										<!--修正取得日数-->
             NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) AS TPF_SYUTOKUDAYS_ADJUST,   								<!--調整取得日数-->
-            NVL(TPF.TPF_NMUSTDAYS_FIX, 0)  AS TPF_MUSTDAYS,   										    <!--修正必要日数-->
-            CASE WHEN NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
-                ELSE NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
+            <!--NVL(TPF.TPF_NMUSTDAYS_FIX, 0)  AS TPF_MUSTDAYS,   										    修正必要日数-->
+            COALESCE(tpf.TPF_NUSEDAYS_DAYS,tpf.TPF_NMUSTDAYS_FIX, 0)  as TPF_MUSTDAYS,                  <!--修正必要日数-->
+            <!--CASE WHEN NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
+            ELSE NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
+            END AS TPF_LESSDAYS,   																		    修正不足日数 = 修正必要日数 - 修正取得日数 - 調整取得日数-->
+            CASE WHEN coalesce(tpf.TPF_NUSEDAYS_DAYS, tpf.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
+            ELSE coalesce(tpf.TPF_NUSEDAYS_DAYS, tpf.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
             END AS TPF_LESSDAYS,   																		<!--修正不足日数 = 修正必要日数 - 修正取得日数 - 調整取得日数-->
-            NVL(TP.TP_NNECESSARY_DAYS, 0) AS TP_SYUTOKUDAYS  											<!--編集画面表示取得日数-->
+            NVL(TP.TP_NNECESSARY_DAYS, 0) AS TP_SYUTOKUDAYS,  											<!--編集画面表示取得日数-->
+            TO_CHAR(tpf.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd') as TPF_HOLIDAYENDFIX,  		            <!--修正終期-->
+            TO_CHAR(tpf.TPF_NUSEDAYS_DAYS) as TPF_NUSEDAYSFIX  						                    <!--修正必要日数-->
         FROM
             TMG_ACQUIRED5DAYSHOLIDAY TA
         INNER JOIN (${empsql}) A
@@ -113,7 +122,10 @@
             #{userCode},
             #{programId},
             #{custID},
-            #{compCode}
+            #{compCode},
+            #{txtDpaidholidayEnd, jdbcType=VARCHAR},
+            #{txtNusedaysDays, jdbcType=VARCHAR},
+            #{txtFuyobi, jdbcType=VARCHAR}
         )
     </select>
 </mapper>

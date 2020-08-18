@@ -142,7 +142,7 @@ public class TmgAcquired5DaysHolidayBean {
                 .eq("TPF_CCUSTOMERID", psDBBean.getCustID())
                 .eq("TPF_CCOMPANYID", psDBBean.getCompCode())
                 .eq("TPF_CEMPLOYEEID", updateAcquired5DaysVO.getTxtUserCode())
-                .eq("TPF_NYYYY", updateAcquired5DaysVO.getTxtYear()));
+                .eq("TPF_FUYOBI", updateAcquired5DaysVO.getTxtFuyobi()));
 
 
         String updateFlag = updateAcquired5DaysVO.getTxtUpdateflg();
@@ -168,11 +168,14 @@ public class TmgAcquired5DaysHolidayBean {
             tmgPaiduseinfoFixDO.setTpfNmustdaysFix(null);
             tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Double.parseDouble(updateAcquired5DaysVO.getUsedDaysEdit()));
             tmgPaiduseinfoFixDO.setTpfNusehoursAjdust(null);
+            tmgPaiduseinfoFixDO.setTpfDpaidholidayEnd(DateUtil.parse(updateAcquired5DaysVO.getTxtDpaidholidayEnd()));
+            tmgPaiduseinfoFixDO.setTpfNusedaysDays(Double.parseDouble(updateAcquired5DaysVO.getTxtNusedaysDays()));
+            tmgPaiduseinfoFixDO.setTpfFuyobi(DateUtil.parse(updateAcquired5DaysVO.getTxtFuyobi()));
             iTmgPaiduseinfoFixService.getBaseMapper().insert(tmgPaiduseinfoFixDO);
         }
 
         // クリアボタンを押下時、もしくは 修正基準日が空白の場合、プロシージャは実行しない
-        if ("1".equals(updateFlag) && !StrUtil.isBlank(updateAcquired5DaysVO.getKijunbiEdit())) {
+//        if ("1".equals(updateFlag) && !StrUtil.isBlank(updateAcquired5DaysVO.getKijunbiEdit())) {
             // プロシージャ実行SQLを作成する
             iTmgAcquired5daysholidayService.buildSQLTmgAcquired5daykikanbi(
                     updateAcquired5DaysVO.getTxtUserCode(),
@@ -182,9 +185,12 @@ public class TmgAcquired5DaysHolidayBean {
                     psDBBean.getUserCode(),
                     PROGRAM_ID,
                     psDBBean.getCustID(),
-                    psDBBean.getCompCode()
+                    psDBBean.getCompCode(),
+                    updateAcquired5DaysVO.getTxtDpaidholidayEnd(),
+                    updateAcquired5DaysVO.getTxtNusedaysDays(),
+                    updateAcquired5DaysVO.getTxtFuyobi()
             );
-        }
+//        }
     }
 
     public String baseDate = null;

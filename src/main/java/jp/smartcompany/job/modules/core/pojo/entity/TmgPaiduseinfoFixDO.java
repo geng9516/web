@@ -30,8 +30,8 @@ private static final long serialVersionUID=1L;
         /**
          * 顧客コード
          */
-                @TableId(value = "tpf_ccustomerid", type = IdType.INPUT)
-                private String tpfCcustomerid;
+    @TableId(value = "tpf_ccustomerid", type = IdType.INPUT)
+    private String tpfCcustomerid;
 
         /**
          * 法人コード
@@ -123,5 +123,21 @@ private static final long serialVersionUID=1L;
     @TableField("tpf_nusehours_ajdust")
         private Long tpfNusehoursAjdust;
 
+        /**
+         * 修正終期
+         */
+    @TableField("tpf_dpaid_holiday_end")
+    private Date tpfDpaidholidayEnd;
 
-        }
+        /**
+         * 修正必要日数
+         */
+    @TableField("tpf_nusedays_days")
+    private Double tpfNusedaysDays;
+
+        /**
+         * 年次休暇付与日
+         */
+    @TableField("tpf_fuyobi")
+    private Date tpfFuyobi;
+}
