@@ -62,16 +62,17 @@
             CASE WHEN NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
                 ELSE NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
             END AS TA_LESSDAYS,   																		<!-- 不足日数 = 必要日数 - DB取得日数 - 調整取得日数-->
-            (
-                SELECT
-                    COUNT(TA_CEMPLOYEEID)
-                FROM
-                    TMG_ACQUIRED5DAYSHOLIDAY TTA
-                WHERE
-                    TTA.TA_CEMPLOYEEID = TA.TA_CEMPLOYEEID
-                AND COALESCE(TTA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD')) = COALESCE(TA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD'))
-                AND TO_CHAR(NVL(tta.TA_DBASEDATE_START, tta.TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')
-            ) AS  TA_ROWPAN, 																			<!-- ROWPAN-->
+        <!--(
+            SELECT
+                COUNT(TA_CEMPLOYEEID)
+            FROM
+                TMG_ACQUIRED5DAYSHOLIDAY TTA
+            WHERE
+                TTA.TA_CEMPLOYEEID = TA.TA_CEMPLOYEEID
+            AND COALESCE(TTA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD')) = COALESCE(TA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD'))
+            AND TO_CHAR(NVL(tta.TA_DBASEDATE_START, tta.TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')
+        ) AS  TA_ROWPAN, 																			ROWPAN-->
+            TMG_F_GET_LISTCOUNT5DAY(ta.TA_CEMPLOYEEID,ta.TA_DPAID_HOLIDAY,ta.TA_CCUSTOMERID,ta.TA_CCOMPANYID) as  TA_ROWPAN,        <!--ROWPAN-->
             TA_CDUPLICATEFLG,   																		<!--重複FLG-->
             TO_CHAR(TP.TP_DNTF_SURVEY_START, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_START,   					<!--年休調査期間（開始日）-->
             TO_CHAR(TP.TP_DNTF_SURVEY_END, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_END,  						<!--年休調査期間（終了日）-->
@@ -105,7 +106,8 @@
         ON TA.TA_CCOMPANYID = TPF.TPF_CCOMPANYID
         AND TA.TA_CCUSTOMERID = TPF.TPF_CCUSTOMERID
         AND TA.TA_CEMPLOYEEID = TPF.TPF_CEMPLOYEEID
-        AND TO_CHAR(NVL(TA_DBASEDATE_START, TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TPF.TPF_NYYYY)
+        <!--AND TO_CHAR(NVL(TA_DBASEDATE_START, TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TPF.TPF_NYYYY)-->
+        AND   TO_CHAR(TA_DPAID_HOLIDAY, 'YYYYMMDD') = TO_CHAR(tpf.TPF_FUYOBI, 'YYYYMMDD')
         WHERE
             TO_CHAR(NVL(TA_DBASEDATE_START, TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')
         <if test="userCode != NULL">
