@@ -2,14 +2,14 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head
-        th:replace="layout/header::common_header(title='予定作成',cssPaths='/pages/content.min.css,' + '/pages/workYearSchedule.min.css')">
+        th:replace="layout/header::common_header(title='予定作成',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content tmgschedule-warp" @scroll.passive="handleScroll" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -120,8 +120,7 @@
                 </i-col>
                 <i-col span="4">
                     <div class="label">発令</div>
-                    <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</span>
-                    </div>
+                    <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</div>
                 </i-col>
             </Row>
 
@@ -314,7 +313,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="content">
-                    <i-button type="primary" ghost @click="showWeekHistory = !showWeekHistory;selectWeekPatternInfo(row._index)">参照</i-button>
+                    <i-button type="primary" ghost @click="showWeekHistory=!showWeekHistory;selectWeekPatternInfo(row._index)">参照</i-button>
                 </template>
 
                 <template slot-scope="{ row }" slot="action">
@@ -409,7 +408,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="rest">
-                    <span>{{row.rest.length==1?'':`${row.rest[0]}-${row.rest[1]}`}}</span>
+                    <span>{{row.rest[0].trim().length == 0?'':`${row.rest[0]}-${row.rest[1]}`}}</span>
                 </template>
             </i-table>
             </Modal>
@@ -423,7 +422,7 @@
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
     const WORK_YEAR_SCHEDULE = new Vue({
-        el: '.workyearschedule-warp',
+        el: '.tmgschedule-warp',
         data() {
             return {
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
@@ -622,7 +621,7 @@
             console.log([[${ session }]])
             this.getOrgTree()
             this.getSearchCondition()
-            this.tableData3 = Array(7).fill().map((e,index)=>({"intDay":this.tableData2[index].intDay,"workname":'',"twp_copen":'',"twp_cclose":'',"rest":[]}))
+            this.tableData3 = Array(7).fill().map((e,index)=>({"intDay":this.tableData2[index].intDay,"workname":'',"twp_copen":'',"twp_cclose":'',"rest":['','']}))
 
         },
         computed: {
