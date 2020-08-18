@@ -105,7 +105,7 @@
                 <span v-else> - </span>
             </template>
         </i-table>
-        <Modal v-model="isShow" title="年5日時季指定取得確認" width="950" @on-cancel="cancel" :mask-closable="false"
+        <Modal :mask-closable="false" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1100"
                footer-hide>
             <div>
                 <Row :gutter="10">
@@ -134,7 +134,11 @@
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                </template>
+
+                <template slot="editCheckPeriod" slot-scope="{ row }">
+                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -155,6 +159,10 @@
 
                 <template slot-scope="{ row }" slot="mustDays">
                     <span>{{ row.mustDays  | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot="editMustDays" slot-scope="{ row }">
+                    <i-input @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -165,7 +173,11 @@
 
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeDay($event)" format="yyyy/MM/dd" type="date" transfer ref="editDatepicker"></date-picker>
+                    <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                </template>
+
+                <template slot="editCheckPeriod" slot-scope="{ row }">
+                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -186,6 +198,10 @@
 
                 <template slot-scope="{ row }" slot="mustDays">
                     <span>{{ row.mustDays  | addNumDeci(true)}}</span>
+                </template>
+
+                <template slot="editMustDays" slot-scope="{ row }">
+                    <i-input @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -291,13 +307,13 @@
                     {
                         title: '年次休暇\n付与日',
                         slot: 'vactionGiveDay',
-                        minWidth: 100,
-                        maxWidth: 200,
+                        minWidth: 80,
+                        maxWidth: 100,
                         align: 'center'
                     },
                     {
                         title: '付与\n日数',
-                        width: 70,
+                        width: 60,
                         slot: 'paidDays',
                         align: 'center'
                     },
@@ -307,24 +323,30 @@
                             {
                                 title: '基準日',
                                 key: 'basedDay',
+                                width: 100,
                                 align: 'center'
                             },
                             {
-                                title: '修正基準日',
+                                title: '修正\n基準日',
                                 className: 'checkin',
                                 slot: 'editBasedDay',
-                                width: 140,
                                 align: 'center'
                             },
                             {
-                                title: 'チェック\n期間',
+                                title: 'チェック期間',
                                 key: 'checkPeriod',
+                                align: 'center'
+                            },
+                            {
+                                title: '修正\n期間チェック',
+                                className: 'checkin',
+                                slot: 'editCheckPeriod',
                                 align: 'center'
                             },
                             {
                                 title: '取得\n日数',
                                 slot: 'editTakenDays',
-                                width: 70,
+                                width: 60,
                                 align: 'center'
                             },
                             {
@@ -338,6 +360,13 @@
                                 title: '必要\n日数',
                                 slot: 'mustDays',
                                 width: 70,
+                                align: 'center'
+                            },
+                            {
+                                title: '修正\n必要日数',
+                                className: 'checkin',
+                                slot: 'editMustDays',
+                                width: 100,
                                 align: 'center'
                             },
                             {
@@ -410,6 +439,9 @@
                     kijunbiEdit: '',
                     usedDaysEdit: '',
                     txtUpdateflg: '',
+                    txtDpaidholidayEnd: '',
+                    txtNusedaysDays: '',
+                    txtFuyobi: '',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -502,6 +534,7 @@
 
                 const addNumDeci = Vue.filter('addNumDeci')
                 //事前に
+                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
                 // this.updateAcquired5DaysVO.txtYear = '2020'
@@ -552,6 +585,8 @@
                             editBasedDay:'',    //編集画面用_修正基準日
                             editTakenDays:'',    //編集画面用_取得日数
                             adjustTakenDays:'', //編集画面用_調整取得日数
+                            editCheckPeriod:'', //修正期間チェック
+                            editMustDays:'',    //修正必要日数
                             detailshow:true,
 
                             cemployeeName:e.cemployeeName,
@@ -575,7 +610,9 @@
                             tpfSyutokudays:e.tpfSyutokudays,
                             tpfSyutokudaysAdjust:e.tpfSyutokudaysAdjust,
                             workertypeId:e.workertypeId,
-                            workertypeNm:e.workertypeNm
+                            workertypeNm:e.workertypeNm,
+                            tpfHolidayendfix:e.tpfHolidayendfix,
+                            tpfNusedaysfix:e.tpfNusedaysfix
                         }
                     })
                     let a=[]
@@ -616,6 +653,8 @@
 
                             a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
                             a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                            a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
+                            a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
 
                         } else if (a[i].tpfKijyunbi != null) {
                             a[i].basedDay = a[i].tpfKijyunbi
@@ -627,6 +666,8 @@
                             a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
                             a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
                             a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                            a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
+                            a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
                         }
                     }
                     this.tableData = a
@@ -831,8 +872,16 @@
             blur(e) {
                 this.updateAcquired5DaysVO.usedDaysEdit = e.adjustTakenDays
             },
-            handleChangeDay(e) {
+            blurEditMustDays(e) {
+            console.log("blurEditMustDays")
+            console.log(e)
+                this.updateAcquired5DaysVO.txtNusedaysDays = e.editMustDays
+            },
+            handleChangeBasedDay(e) {
                 this.updateAcquired5DaysVO.kijunbiEdit = e
+            },
+            handleChangeCheckPeriod(e) {
+                this.updateAcquired5DaysVO.txtDpaidholidayEnd = e
             },
             currentTabChanged(name) {
                 console.log("tabPaneClick")

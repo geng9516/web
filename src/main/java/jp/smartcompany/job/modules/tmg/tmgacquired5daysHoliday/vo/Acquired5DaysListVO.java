@@ -1,12 +1,9 @@
 package jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo;
 
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-
-import java.util.Date;
 
 /**
  * 一覧/編集画面検索用VO
@@ -115,10 +112,5 @@ public class Acquired5DaysListVO {
      * 修正必要日数
      */
     private String tpfNusedaysfix ;
-
-    /**
-     * 年次休暇付与日
-     */
-
 
 }
