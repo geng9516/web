@@ -33,11 +33,11 @@
         <div class="table-top">
             <Row :gutter="16">
                 <Col span="11">
-                <i-button type="text" @click="preMonth" :disabled="!selectDisabled">
+                <i-button type="text" @click="preMonth" :disabled="!selectDisabled || !preMonthDisable">
                     <Icon type="ios-arrow-back"></Icon>
                     前月
                 </i-button>
-                <i-button type="text" @click="nextMonth" :disabled="!selectDisabled">
+                <i-button type="text" @click="nextMonth" :disabled="!selectDisabled || !nextMonthDisable">
                     翌月
                     <Icon type="ios-arrow-forward"></Icon>
                 </i-button >
@@ -49,12 +49,12 @@
             <Row :gutter="10" class="mt5 mb15 tc">
             <i-col span="4">
                 <div class="label">公休日数</div>
-                <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}</div>
+                <div class="person-info tc">{{paidHolidayVO.nationalHolidayDays}}日</div>
             </i-col>
             <i-col span="4">
                 <div class>
                     <div class="label">基準日数</div>
-                    <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}</div>
+                    <div class="person-info tc">{{paidHolidayVO.dateOfRecordDays}}日</div>
                 </div>
             </i-col>
             <i-col span="4">
@@ -65,17 +65,21 @@
                 <div class="label">年次休暇残</div>
                 <div class="person-info tc">{{paidHolidayVO.npaidRestDaysHour}}</div>
             </i-col>
+                <i-col span="4">
+                    <div class="label">発令</div>
+                    <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</div>
+                </i-col>
         </Row>
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList" >
 
             <template slot-scope="{ row }" slot="intDay">
-                <span :class="dayRed(row.tda_nmmday)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
+                <span :class="dayRed(row)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <span :class="dayRed(row.tda_cworkingid_mm)">{{ row.tda_cworkingid_mm }}</span>
+                <span :class="dayRed(row)">{{ row.tda_cworkingid_mm }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workFar">
@@ -112,6 +116,11 @@
         el: '.workyearschedule-warp',
         data() {
             return {
+                hatuReiName:'',
+                hatuResTimeRange:'',
+                today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
+                preMonthDisable:false,
+                nextMonthDisable:false,
                 scheduleDataDTOList:[],
                 yyyyMMdd:'',
                 paidHolidayVO:{},
@@ -211,6 +220,17 @@
                     this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
                     this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList
                     this.yyyyMMdd=this.selectScheduleInfo.period
+
+                    if(this.selectScheduleInfo.nextStart=='' ||this.selectScheduleInfo.nextEnd==''){
+                        this.nextMonthDisable=false
+                    }else{
+                        this.nextMonthDisable=true
+                    }
+                    if(this.selectScheduleInfo.preStart=='' ||this.selectScheduleInfo.preEnd==''){
+                        this.preMonthDisable=false
+                    }else{
+                        this.preMonthDisable=true
+                    }
                 } catch (error) {
                     return
                 } finally {
@@ -237,16 +257,17 @@
                 return 'sat'
             },
             dayRed(e) {
-                if (!e) {
+                console.log(e)
+                const dayOfWeek = e.holflgCalendar
+                if (!dayOfWeek) {
                     return
                 }
-                if (e.indexOf('土') > -1 || e.indexOf('日') > -1) {
-                    return 'rest-cell week-rest'
+                if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+                    return 'blue'
                 }
-                if (e.indexOf('休') > -1) {
-                    return 'rest-cell year-rest'
+                if (e.tda_ccustomerid == this.today) {
+                    return 'brown'
                 }
-                return 'rest-cell'
             },
             handleScroll: Throttle(function(e) {
                 this.contentScrollTop = e.target.scrollTop
