@@ -17,6 +17,7 @@ import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.Synchronized;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1269,8 +1270,8 @@ public class TmgScheduleBean {
         }
 
         // チェックテーブル削除
-        iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,null);
-        iTmgScheduleService.deleteDailyDetailCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,null);
+        iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode, null);
+        iTmgScheduleService.deleteDailyDetailCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode, null);
 
         for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
             MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
@@ -1281,7 +1282,7 @@ public class TmgScheduleBean {
             //対象日
             String sTargetDate = monthlyScheduleEmpInfoDTO.getDyyyymmdd();
             boolean bNoWorking = isNoWorkingId(monthlyScheduleEmpInfoDTO.getWorkId());
-
+            logger.info("nopen:" + monthlyScheduleEmpInfoDTO.getNopen() + " ---- nclose:" + monthlyScheduleEmpInfoDTO.getNclose());
             //[勤怠]日別情報を更新する
             iTmgScheduleService.insertTmgDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, bClearResult, Cs_MGD_HOLFLG_0, monthlyScheduleEmpInfoDTO.getWorkId(),
                     monthlyScheduleEmpInfoDTO.getNopen() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNopen(), monthlyScheduleEmpInfoDTO.getNclose() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNclose(), bNoWorking, monthlyScheduleEmpInfoDTO.getBussinessTripid(), monthlyScheduleEmpInfoDTO.getComment(), monthlyUScheduleEditParaDTO.getTargetUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd(), _targetCompCode, _targetCustCode, _loginLanguageCode);
@@ -1295,6 +1296,7 @@ public class TmgScheduleBean {
                 nRestClose = restTimeHashMap.get(_restClose);
                 if (!ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestClose) && !ObjectUtil.isEmpty(nRestClose)) {
                     // TMG_DAILY_DETAIL 休憩時間レコード登録：予定
+                    logger.info("nRestOpen:" + nRestOpen + " ---- nRestClose:" + nRestClose);
                     iTmgScheduleService.insertTmgDailyDetailCheckRest(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
                             Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_PLAN_REST, nRestOpen, nRestClose,
                             NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_PLAN_REST.equals(NOTWORKINGID_RESULT_REST));
@@ -1322,6 +1324,7 @@ public class TmgScheduleBean {
      *
      * @param monthlyUScheduleEditParaDTO
      */
+    @Synchronized
     @Transactional(rollbackFor = GlobalException.class)
     public void triggerOper(MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO) {
         if (null == monthlyUScheduleEditParaDTO) {
@@ -1335,12 +1338,12 @@ public class TmgScheduleBean {
         }
         for (int i = 0; i < monthlyScheduleEmpInfoDTOS.size(); i++) {
             MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = monthlyScheduleEmpInfoDTOS.get(i);
-            logger.info("--->targetDate:" +monthlyScheduleEmpInfoDTO.getDyyyymmdd());
-            iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),
+            logger.info("--->targetDate:" + monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+            iTmgScheduleService.insertTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(),
                     Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, monthlyScheduleEmpInfoDTO.getDyyyymmdd(), ACT_EDITMONTHLY_USCHEDULE);
-            iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
-            iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode,monthlyScheduleEmpInfoDTO.getDyyyymmdd());
-            iTmgScheduleService.deleteDetailCheck(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(),monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+            iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getTargetUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
+            iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), _targetCompCode, _targetCustCode, monthlyScheduleEmpInfoDTO.getDyyyymmdd());
+            iTmgScheduleService.deleteDetailCheck(_targetCustCode, _targetCompCode, monthlyUScheduleEditParaDTO.getLoginUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd());
         }
 
     }
