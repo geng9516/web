@@ -305,11 +305,17 @@
             <div style="position: relative;">
             <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed">
                 <template slot-scope="{ row }" slot="startTime">
-                    <i-input v-model="row.twp_dstartdate" disabled ></i-input>
+                    <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
+                                 format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(row.twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="endTime">
-                    <i-input v-model="row.twp_denddate" disabled></i-input>
+                    <date-picker type="date" :value="row.twp_denddate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_denddate = $event"
+                                 format="yyyy/MM/dd" :transfer="true"></date-picker>
+                </template>
+
+                <template slot-scope="{ row }" slot="update">
+                    <i-button type="primary" ghost :loading="updatePatternLoadding[row._index]" @click="updateWeekPatternInfo(row._index)">登録</i-button>
                 </template>
 
                 <template slot-scope="{ row }" slot="content">
@@ -317,14 +323,11 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="action">
-                    <i-button type="error" ghost :loading="deletePatternLoadding[row._index]" @click="deleteWeekPtn(row._index)">削除</i-button>
+                    <i-button type="error" ghost :loading="deletePatternLoadding[row._index]" @click="deleteWeekPtn(row._index)" :disabled="!(new Date(row.twp_dstartdate)>=nextMonthFirstDay)">削除</i-button>
                 </template>
             </i-table>
 
-            <Alert class="primary-info mt10">
-                既に適用中の勤務パターンは、適用終了日の更新のみ可能です。
-            </Alert>
-
+            <Alert class="primary-info mt10">既に適用中の勤務パターンは、適用終了日の更新のみ可能です。</Alert>
             <div class="titlenorm mb10 mt15">
                 <Icon type="logo-buffer"></Icon>
                 新規
@@ -425,10 +428,12 @@
         el: '.tmgschedule-warp',
         data() {
             return {
+                nextMonthFirstDay:new Date(new Date().getFullYear(), new Date().getMonth()+1, 1),
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 preMonthDisable:false,
                 nextMonthDisable:false,
                 deletePatternLoadding:[],
+                updatePatternLoadding:[],
                 postScheduleLoading:false,
                 hatuReiName:'',
                 hatuResTimeRange:'',
@@ -503,6 +508,12 @@
                     {
                         title: '適用終了日',
                         slot: 'endTime',
+                        align: 'center'
+                    },
+                    {
+                        title: '登録',
+                        slot: 'update',
+                        width: 120,
                         align: 'center'
                     },
                     {
@@ -862,10 +873,10 @@
                 this.query.compId=e[0].comp
 
 
+                this.selectWeekPtn()
+                this.selectTmgWeekPatternList()
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
-                await this.selectWeekPtn()
-                await this.selectTmgWeekPatternList()
                 await this.getHatuRei()
 
             },
@@ -922,15 +933,28 @@
                 }
             },
             async selectTmgWeekPatternList(){
-                const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
-                //let data=[{"twp_dstartdate":"2020/08/01","twp_denddate":"2020/08/31","twp_nid":"763"}]
-                this.tableDataUsed=data
-                this.weekPatternloading2=false
+                this.weekPatternloading2=true
+                try{
+                    const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
+                    this.tableDataUsed=data
+                }catch (e) {
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+                }
+
             },
             async selectWeekPtn(){
-                const { data } = await this.http.get(`sys/schedule/selectWeekPtn`, this.query)
-                //let data=[{"mgd_work":"TMG_WORK|000","mgd_workname":"出勤"},{"mgd_work":"TMG_WORK|500","mgd_workname":"法定休"},{"mgd_work":"TMG_WORK|570","mgd_workname":"所定休"},{"mgd_work":"TMG_WORK|480","mgd_workname":"勤務を要しない日"}]
-                this.workDivisionList=data
+                this.weekPatternloading2=true
+                try{
+                    const { data } = await this.http.get(`sys/schedule/selectWeekPtn`, this.query)
+                    this.workDivisionList=data
+                }catch (e) {
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+                }
+
             },
             async selectWeekPatternInfo(i){
                 this.weekPatternloading = true
@@ -962,6 +986,20 @@
                         this.weekPatternloading = false
                     }
             },
+            async updateWeekPatternInfo(index){
+               console.log("updateWeekPatternInfo"+index)
+
+                let startdate=this.tableDataUsed[index].twp_dstartdate
+                startdate=new Date(startdate)
+                let enddate=this.tableDataUsed[index].twp_denddate
+                enddate=new Date(enddate)
+                if(startdate>enddate){
+                    this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
+                    return
+                }
+                this.$set(this.updatePatternLoadding,index,true)
+                this.$set(this.updatePatternLoadding,index , false)
+            },
             async deleteWeekPtn(index){
                 this.$set(this.deletePatternLoadding,index , true)
                 this.query.twp_nid= this.tableDataUsed[index].twp_nid
@@ -969,7 +1007,7 @@
                 this.$set(this.deletePatternLoadding,index , false)
                 this.tableDataUsed.splice(index,1)
             },
-                async executeMakeWeekPattern(){
+            async executeMakeWeekPattern(){
                     if(!this.value2.applyStart){
                         this.$Message.error(" 適用開始日が未入力です。")
                         return
@@ -978,21 +1016,32 @@
                         this.$Message.error("適用終了日が未入力です。")
                         return
                     }
-                    let now=new Date()
-                    let nextMonth=new Date(now.getFullYear(), now.getMonth()+1, 1);
-                    let nextMonthStr=Utils.formatDate(nextMonth,"YYYY/MM/DD")
+
+                    let dateArr=this.tableDataUsed.map(e=>{
+                        return {"start":e.twp_dstartdate,"end":e.twp_denddate}
+                    })
+                    dateArr.push({"start":this.value2.applyStart,"end":this.value2.applyEnd})
+                    console.log("dateArr"+JSON.stringify(dateArr))
+                    if(Utils.multipleDateRangeOverlaps(dateArr)){
+                        this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
+                        return
+                    }
+
+                    let nextMonthStr=Utils.formatDate(this.nextMonthFirstDay,"YYYY/MM/DD")
                     let msg=`は${nextMonthStr}以降を入力してください。`
-                    console.log(this.value2.applyStart)
-                    console.log(nextMonth>new Date(this.value2.applyStart))
-                    if(nextMonth>new Date(this.value2.applyStart)){
+                    if(this.nextMonthFirstDay>new Date(this.value2.applyStart)){
                         this.$Message.error('適用開始日'+msg)
                         return
                     }
 
-                    if(nextMonth>new Date(this.value2.applyEnd)){
+                    if(this.nextMonthFirstDay>new Date(this.value2.applyEnd)){
                         this.$Message.error('適用終了日'+msg)
                         return
                      }
+                    if(new Date(this.value2.applyStart)>new Date(this.value2.applyEnd)){
+                        this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
+                        return
+                    }
                     console.log("value2"+JSON.stringify(this.value2))
                     let result=false
                     let that=this
@@ -1049,9 +1098,14 @@
                         return
                     }
                     this.weekPatternloading2=true
-
                     this.query.content=JSON.stringify(this.value2)
-                    await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,this.query)
+                    try{
+                        await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,this.query)
+                    }catch (e) {
+                        return
+                    }finally {
+                        this.weekPatternloading2=false
+                    }
                     this.query.content=''
                     this.selectTmgWeekPatternList()
                     this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
@@ -1241,7 +1295,6 @@
             }),
             async getSelectIkkaInfo() {
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
-                    //let data={"workPatternList":[{"CPATTERNID":"TMG_PATTERN|","CPATTERNNAME":"(変更しない)","JSON":{"dutyArray":[],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|08301300","CPATTERNNAME":"(4.50)_08:30-13:00","JSON":{"dutyArray":[{"NCLOSE":"780","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|08301600","CPATTERNNAME":"(6.75)_08:30-16:00","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301615","CPATTERNNAME":"(7.00)_08:30-16:15","JSON":{"dutyArray":[{"NCLOSE":"975","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301630","CPATTERNNAME":"(7.25)_08:30-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301645","CPATTERNNAME":"(7.50)_08:30-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301700","CPATTERNNAME":"(7:75)_08:30-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08301715","CPATTERNNAME":"(8.00)_08:30-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"510","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|08451700","CPATTERNNAME":"(7.50)_08:45-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"525","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001200","CPATTERNNAME":"(3.00)_09:00-12:00","JSON":{"dutyArray":[{"NCLOSE":"720","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09001300","CPATTERNNAME":"(4.00)_09:00-13:00","JSON":{"dutyArray":[{"NCLOSE":"780","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09001330","CPATTERNNAME":"(3.75)_09:00-13:30","JSON":{"dutyArray":[{"NCLOSE":"810","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001400","CPATTERNNAME":"(4.25)_09:00-14:00","JSON":{"dutyArray":[{"NCLOSE":"840","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001445","CPATTERNNAME":"(5.00)_09:00-14:45","JSON":{"dutyArray":[{"NCLOSE":"885","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001500","CPATTERNNAME":"(5.25)_09:00-15:00","JSON":{"dutyArray":[{"NCLOSE":"900","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001545","CPATTERNNAME":"(6.00)_09:00-15:45","JSON":{"dutyArray":[{"NCLOSE":"945","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001600","CPATTERNNAME":"(6.25)_09:00-16:00","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001630","CPATTERNNAME":"(6.75)_09:00-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001645","CPATTERNNAME":"(7.00)_09:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001700","CPATTERNNAME":"(7.25)_09:00-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001715","CPATTERNNAME":"(7.50)_09:00-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09001730","CPATTERNNAME":"(7.75)_09:00-17:30","JSON":{"dutyArray":[{"NCLOSE":"1050","NOPEN":"540","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151215","CPATTERNNAME":"(3.00)_09:15-12:45","JSON":{"dutyArray":[{"NCLOSE":"765","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09151400","CPATTERNNAME":"(4.00)_09:15-14:00","JSON":{"dutyArray":[{"NCLOSE":"840","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151500","CPATTERNNAME":"(5.00)_09:15-15:00","JSON":{"dutyArray":[{"NCLOSE":"900","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151600","CPATTERNNAME":"(6.00)_09:15-1600","JSON":{"dutyArray":[{"NCLOSE":"960","NOPEN":"555","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09151700","CPATTERNNAME":"(7.00)_09:45-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301230","CPATTERNNAME":"(3.00)_09:30-12:30","JSON":{"dutyArray":[{"NCLOSE":"750","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}},{"CPATTERNID":"TMG_PATTERN|09301515","CPATTERNNAME":"(5.00)_09:30-15:15","JSON":{"dutyArray":[{"NCLOSE":"915","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301615","CPATTERNNAME":"(6.00)_09:30-16:15","JSON":{"dutyArray":[{"NCLOSE":"975","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301700","CPATTERNNAME":"(6.75)_09:30-17:00","JSON":{"dutyArray":[{"NCLOSE":"1020","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301715","CPATTERNNAME":"(7.00)_09:30-17:15","JSON":{"dutyArray":[{"NCLOSE":"1035","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301745","CPATTERNNAME":"(7.50)_09:30-17:45","JSON":{"dutyArray":[{"NCLOSE":"1065","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09301800","CPATTERNNAME":"(7.75)_09:30-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"570","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09451630","CPATTERNNAME":"(6.00)_09:45-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|09451800","CPATTERNNAME":"(7.50)_09:45-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"585","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001445","CPATTERNNAME":"(4.00)_10:00-14:45","JSON":{"dutyArray":[{"NCLOSE":"885","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001545","CPATTERNNAME":"(5.00)_10:00-15:45","JSON":{"dutyArray":[{"NCLOSE":"945","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001645","CPATTERNNAME":"(6.00)_10:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10001745","CPATTERNNAME":"(7.00)_10:00-17:45","JSON":{"dutyArray":[{"NCLOSE":"1065","NOPEN":"600","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10151800","CPATTERNNAME":"(7.00)_10:15-18:00","JSON":{"dutyArray":[{"NCLOSE":"1080","NOPEN":"615","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|10451630","CPATTERNNAME":"(5.00)_10:45-16:30","JSON":{"dutyArray":[{"NCLOSE":"990","NOPEN":"645","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|11001645","CPATTERNNAME":"(5.00)_11:00-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"660","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[{"NCLOSE":"765","NOPEN":"720","CTYPE":"REJECT","CID":"TMG_ITEMS|PlanRest"}]}},{"CPATTERNID":"TMG_PATTERN|12451645","CPATTERNNAME":"(4.00)_12:45-16:45","JSON":{"dutyArray":[{"NCLOSE":"1005","NOPEN":"765","CTYPE":"PLAN","CID":"TMG_ITEMS|PlanDuty"}],"restArray":[]}}],"kubunnList":[{"MGD_CMASTERCODE":"TMG_WORK|000","MGD_CGENERICDETAILDESC":"出勤"},{"MGD_CMASTERCODE":"TMG_WORK|480","MGD_CGENERICDETAILDESC":"勤務を要しない日"},{"MGD_CMASTERCODE":"TMG_WORK|500","MGD_CGENERICDETAILDESC":"法定休"},{"MGD_CMASTERCODE":"TMG_WORK|570","MGD_CGENERICDETAILDESC":"所定休"},{"MGD_CMASTERCODE":"TMG_WORK|800","MGD_CGENERICDETAILDESC":"休職（無給）"},{"MGD_CMASTERCODE":"TMG_WORK|801","MGD_CGENERICDETAILDESC":"休職（有給）"},{"MGD_CMASTERCODE":"TMG_WORK|805","MGD_CGENERICDETAILDESC":"停職"},{"MGD_CMASTERCODE":"TMG_WORK|810","MGD_CGENERICDETAILDESC":"育児休業"},{"MGD_CMASTERCODE":"TMG_WORK|811","MGD_CGENERICDETAILDESC":"介護休業"},{"MGD_CMASTERCODE":"TMG_WORK|820","MGD_CGENERICDETAILDESC":"自己啓発休業"}],"syuccyouList":[{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|00","MGD_CGENERICDETAILDESC":"なし"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|01","MGD_CGENERICDETAILDESC":"出張(国内)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|02","MGD_CGENERICDETAILDESC":"出張(海外)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|03","MGD_CGENERICDETAILDESC":"出張(移動日)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|04","MGD_CGENERICDETAILDESC":"研修"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|05","MGD_CGENERICDETAILDESC":"講習"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|06","MGD_CGENERICDETAILDESC":"留学(国内)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|07","MGD_CGENERICDETAILDESC":"留学(海外)"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|08","MGD_CGENERICDETAILDESC":"外勤"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|09","MGD_CGENERICDETAILDESC":"職場外(部署外)勤務"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|10","MGD_CGENERICDETAILDESC":"赴任"},{"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|11","MGD_CGENERICDETAILDESC":"帰住"}]}
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
