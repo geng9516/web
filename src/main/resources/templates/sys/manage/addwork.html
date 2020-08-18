@@ -172,18 +172,17 @@
                 </div>
             </div>
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
-                     @on-row-click="showDay(arguments[0].TDA_DYYYYMMDD)"
                      border :columns="columns"
                      :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
                      no-data-text="勤怠シート未作成">
                 <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
-                    <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DD }}</span>
+                    <span :class="dayRed(row,0)" style="text-decoration: underline" @click="showDay(row.TDA_DYYYYMMDD)" >{{ row.TDA_DYYYYMMDD_DD }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DY">
-                    <span :class="dayRed(row)">{{ row.TDA_DYYYYMMDD_DY }}</span>
+                    <span :class="dayRed(row,0)" style="text-decoration: underline" @click="showDay(row.TDA_DYYYYMMDD)">{{ row.TDA_DYYYYMMDD_DY }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="TDA_CWORKINGID_R_NAME">
-                    <span :class="dayRed(row)">{{ row.TDA_CWORKINGID_R_NAME }}</span>
+                    <span :class="dayRed(row,1)">{{ row.TDA_CWORKINGID_R_NAME }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="TDA_CSTATUSFLG_NAME">
                     <span v-if="row.TDA_CSTATUSFLG_NAME === '待'" class="confirm-sytle ing">待</span>
@@ -874,16 +873,28 @@
                     }
                     return 'select-col sat'
                 },
-                dayRed(e) {
+                dayRed(e,i) {
                     const dayOfWeek = e.TMG_HOLFLG
-                    if (!dayOfWeek) {
-                        return
-                    }
-                    if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
-                        return 'blue'
-                    }
-                    if (e.TDA_DYYYYMMDD === this.today) {
-                        return 'brown'
+                    if(i === 0){
+                        if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
+                            return 'cursor'
+                        }
+                        if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+                            return 'blue cursor'
+                        }
+                        if (e.TDA_DYYYYMMDD === this.today) {
+                            return 'brown cursor'
+                        }
+                    }else{
+                        if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
+                            return
+                        }
+                        if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+                            return 'blue'
+                        }
+                        if (e.TDA_DYYYYMMDD === this.today) {
+                            return 'brown'
+                        }
                     }
                 },
                 async updateMonth(e) {

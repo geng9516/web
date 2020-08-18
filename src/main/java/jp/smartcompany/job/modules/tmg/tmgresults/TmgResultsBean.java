@@ -1352,7 +1352,7 @@ public class TmgResultsBean {
 
         TmgStatus tmgStatus = iTmgDailyService.buildSQLForSelectTmgStatus(psDBBean.getCustID(),
                 psDBBean.getCompCode(),
-                psDBBean.getUserCode(),
+                psDBBean.getTargetUser(),
                 this.getDay());
 
         // 画面編集制御
