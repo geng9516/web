@@ -47,10 +47,9 @@ public class AuthController {
      * 登录API
      */
     @PostMapping("login")
-    @ResponseBody
-    public GlobalResponse login(@RequestParam LoginDTO loginDTO) {
+    public String login(@RequestParam LoginDTO loginDTO) {
         authBusiness.login(loginDTO);
-        return GlobalResponse.data(SuccessMessage.LOGIN.msg());
+        return "redirect:/sys";
     }
 
 
