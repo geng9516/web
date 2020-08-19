@@ -2,7 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import jp.smartcompany.job.NextJobApplication;
+import jp.smartcompany.NextJobApplication;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
@@ -12,8 +12,6 @@ import org.junit.runner.RunWith;
 
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Map;
 
 @SpringBootTest(classes = NextJobApplication.class)
 @RunWith(SpringRunner.class)

@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.tmg.util;
 
-import jp.smartcompany.job.NextJobApplication;
+import jp.smartcompany.NextJobApplication;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;

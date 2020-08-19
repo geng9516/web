@@ -1,8 +1,6 @@
 spring:
-  thymeleaf:
-    cache: on
   datasource:
-    url: jdbc:oracle:thin:@127.0.0.1:1521:nsg
+    url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
     username: tmg_iyaku2
     password: tmg_iyakupass
     driver-class-name: oracle.jdbc.OracleDriver
