@@ -54,30 +54,32 @@
             NVL(TA.TA_NHOLIDAY_DAYS, 0) AS TA_FUYODAYS,   												<!--付与日数-->
             TO_CHAR(TA.TA_DBASEDATE_START, 'YYYY/MM/DD') AS TA_KIJYUNBI,  								<!--基準日-->
             <!--TO_CHAR(TA.TA_DBASEDATE_END, 'YYYY/MM/DD') AS TA_KIKANBI,                                   チェック期間-->
-            NVL(to_char(tpf.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),to_char(ta.TA_DBASEDATE_END, 'yyyy/MM/dd')) as TA_KIKANBI,  <!--チェック期間-->
+            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TA.TA_DBASEDATE_END, 'yyyy/MM/dd')) as TA_KIKANBI,  <!--チェック期間-->
             <!--NVL(TP.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  AS SUM_SYUTOKUDAYS,                             一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
-            COALESCE(tpf.TPF_NUSEDAYS_FIX,tp.TP_NNECESSARY_DAYS, 0) + NVL(tpf.TPF_NUSEDAYS_AJDUST, 0)  as SUM_SYUTOKUDAYS,   <!--一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
+            COALESCE(TPF.TPF_NUSEDAYS_FIX,tp.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  as SUM_SYUTOKUDAYS,   <!--一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
             <!--NVL(TA.TA_NNECESSARY_DAYS, 0)  AS TA_MUSTDAYS,                                                                   必要日数-->
-            COALESCE(tpf.TPF_NUSEDAYS_DAYS,tpf.TPF_NMUSTDAYS_FIX,ta.TA_NNECESSARY_DAYS, 0)  as TA_MUSTDAYS,                  <!--必要日数-->
+            COALESCE(TPF.TPF_NUSEDAYS_DAYS,TPF.TPF_NMUSTDAYS_FIX,ta.TA_NNECESSARY_DAYS, 0)  as TA_MUSTDAYS,                  <!--必要日数-->
             CASE WHEN NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
                 ELSE NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
             END AS TA_LESSDAYS,   																		<!-- 不足日数 = 必要日数 - DB取得日数 - 調整取得日数-->
-        <!--(
+        (
             SELECT
                 COUNT(TA_CEMPLOYEEID)
             FROM
                 TMG_ACQUIRED5DAYSHOLIDAY TTA
             WHERE
                 TTA.TA_CEMPLOYEEID = TA.TA_CEMPLOYEEID
-            AND COALESCE(TTA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD')) = COALESCE(TA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD'))
-            AND TO_CHAR(NVL(tta.TA_DBASEDATE_START, tta.TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')
-        ) AS  TA_ROWPAN, 																			ROWPAN-->
-            TMG_F_GET_LISTCOUNT5DAY(ta.TA_CEMPLOYEEID,ta.TA_DPAID_HOLIDAY,ta.TA_CCUSTOMERID,ta.TA_CCOMPANYID) as  TA_ROWPAN,        <!--ROWPAN-->
+        <!--AND COALESCE(TTA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD')) = COALESCE(TA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD'))
+        AND TO_CHAR(NVL(tta.TA_DBASEDATE_START, tta.TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')-->
+    ) AS  TA_ROWPAN, 																			<!--ROWPAN-->
+        <!--  TMG_F_GET_LISTCOUNT5DAY(ta.TA_CEMPLOYEEID,ta.TA_DPAID_HOLIDAY,ta.TA_CCUSTOMERID,ta.TA_CCOMPANYID) as  TA_ROWPAN,          ROWPAN-->
             TA_CDUPLICATEFLG,   																		<!--重複FLG-->
             TO_CHAR(TP.TP_DNTF_SURVEY_START, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_START,   					<!--年休調査期間（開始日）-->
-            TO_CHAR(TP.TP_DNTF_SURVEY_END, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_END,  						<!--年休調査期間（終了日）-->
+        <!--TO_CHAR(TP.TP_DNTF_SURVEY_END, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_END,  						年休調査期間（終了日）-->
+            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TP.TP_DNTF_SURVEY_END, 'yyyy/MM/dd')) AS TP_DNTF_SURVEY_END, <!--年休調査期間（終了日）-->
             TO_CHAR(TPF.TPF_DPAID_HOLIDAY_FIX, 'YYYY/MM/DD') AS TPF_KIJYUNBI,  							<!--修正基準日-->
-            TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'YYYY/MM/DD') AS TPF_KIKANBI,  								<!--修正チェック期間-->
+        <!--TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'YYYY/MM/DD') AS TPF_KIKANBI,  								修正チェック期間-->
+            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'yyyy/MM/dd')) AS TPF_KIKANBI,  	  <!--修正チェック期間-->
             NVL(TPF.TPF_NUSEDAYS_FIX, 0)  AS TPF_SYUTOKUDAYS,   										<!--修正取得日数-->
             NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) AS TPF_SYUTOKUDAYS_ADJUST,   								<!--調整取得日数-->
             <!--NVL(TPF.TPF_NMUSTDAYS_FIX, 0)  AS TPF_MUSTDAYS,   										    修正必要日数-->
