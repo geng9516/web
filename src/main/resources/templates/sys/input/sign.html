@@ -354,6 +354,7 @@
                     txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
                     today: '',
+                    targetDate:'',
                     selHealthStatus: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
@@ -739,6 +740,7 @@
                     this.query.txtDYYYYMMDD = today
                     this.txtDYYYYMMDD = today
                     this.query.today = today
+                    this.query.targetDate = today
                     this.query.txtDYYYYMM = yyyymm + "/01"
                 }
                 this.isShow = true

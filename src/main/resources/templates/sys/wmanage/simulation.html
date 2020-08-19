@@ -149,7 +149,6 @@
         </div>
     </Drawer>
     <!-- 現在の設定を参照END -->
-
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
@@ -571,7 +570,7 @@
                 //状態をリセット
                 this.param_exec.actionCode = 'ACT_SIM_EXEC'
                 //先ずは、状態を取得する
-               // await this.getStatus()
+                // await this.getStatus()
                 if (this.execStatus === '実行中') {
                     //タスクは、実行していますので、
                     msg = "試行を取り消します。よろしいですか"

@@ -162,6 +162,8 @@ public class TmgResultsController {
         if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
             psDBBean.setTargetUser(psDBBean.getUserCode());
         }
+        tmgResultsBean.setToday(txtDYYYYMMDD);
+        tmgResultsBean.setThisMonth(txtDYYYYMM);
         tmgResultsBean.setMonth(txtDYYYYMM);
         tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP,psDBBean);
         tmgResultsBean.setDay(txtDYYYYMMDD);
