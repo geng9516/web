@@ -238,13 +238,10 @@
                 query_sk: {
                     groupId: '',
                     sectionId: '',
-                    baseDate: '2020/07/20',
+                    baseDate: '',
+                    txtTmgReferListTreeViewRecordDate:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),  //TMG_ADMIN
-                    psApp: Utils.getUrlParam(location.href, 'psApp'),   //PatternSetting
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
-                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: ''
+                    psApp: Utils.getUrlParam(location.href, 'psApp')   //PatternSetting
                 },
                 query_sk_bak: {},
                 edit_flag: false,
@@ -411,7 +408,6 @@
         },
         async mounted() {
             this.getOrgTree()
-            this.referListObject.txtTmgReferListTreeViewRecordDate = new Date()
         },
         computed: {
             tableHeadFixed() {
