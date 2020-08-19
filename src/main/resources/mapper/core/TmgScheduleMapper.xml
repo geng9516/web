@@ -328,6 +328,7 @@
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
         and twp_cemployeeid = #{employeeId}
+        and twp_denddate >=  trunc(sysdate)
         <!-- <if test="isAfter == true">
              and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
              and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
@@ -633,7 +634,7 @@
         #{modifierprogramid} ,
         #{sAction},
         #{sAction},
-        add_months(trunc(sysdate, 'mm'), 1))
+        add_months(trunc(sysdate, 'MM'), 1))
     </insert>
 
 

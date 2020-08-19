@@ -53,7 +53,6 @@ public class ScheduleController {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
         return tmgScheduleBean.selectPaidHolidayInfo(txtBaseDate, txtEndDate);
-
     }
 
     /**
@@ -94,27 +93,6 @@ public class ScheduleController {
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
     }
 
-    /**
-     * 予定作成更新処理を行います
-     * <p>
-     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=46402406&txtBaseDate=&txtEndDate=
-     * http://localhost:6879/sys/schedule/executeEditMonthlyUSchedule?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
-     *
-     * @param txtBaseDate
-     * @param txtEndDate
-     * @param psDBBean
-     * @return
-     */
-    @GetMapping("executeEditMonthlyUScheduleTest")
-    @ResponseBody
-    public HashMap<String, Object> executeEditMonthlyUSchedule_test(@RequestParam("txtBaseDate") String txtBaseDate,
-                                                                    @RequestParam("txtEndDate") String txtEndDate,
-                                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-        // tmgScheduleBean.executeEditMonthlyUSchedule();
-        return null;
-    }
 
     /**
      * 予定作成更新処理を行います
