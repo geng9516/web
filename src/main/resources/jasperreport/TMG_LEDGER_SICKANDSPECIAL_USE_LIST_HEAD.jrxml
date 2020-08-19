@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_SICKANDSPECIAL_USE_LIST_HEAD" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.9090909090909095"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_EMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_FROM" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_TO" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select * from table(TMG_SELECT_LEDGER_4_1($P{PARAM_EMP_ID}, $P{PARAM_TARGET_TERM_FROM}, $P{PARAM_TARGET_TERM_TO}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}))]]>
+	</queryString>
+	<field name="PRINT_DATE" class="java.lang.String"/>
+	<field name="TITLE" class="java.lang.String"/>
+	<field name="START_END_DATE" class="java.lang.String"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="SECTION" class="java.lang.String"/>
+	<field name="POST" class="java.lang.String"/>
+	<field name="WORKTYPE" class="java.lang.String"/>
+	<title>
+		<band height="98" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="-1" y="0" width="802" height="47"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="36" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TITLE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="-1" y="47" width="802" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{START_END_DATE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEE, MMM d, &apos;&apos;yy" isBlankWhenNull="true">
+				<reportElement x="639" y="81" width="162" height="17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["印刷日：" + $F{PRINT_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="54" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="11" width="100" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="100" y="11" width="300" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="400" y="11" width="100" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="500" y="11" width="300" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="26" width="100" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="100" y="26" width="300" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="400" y="26" width="100" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="500" y="26" width="300" height="15"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="11" width="100" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[氏名]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="11" width="100" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[所属]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="26" width="100" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[種別]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="26" width="100" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[職名]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="11" width="300" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="26" width="300" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKTYPE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="500" y="11" width="300" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SECTION}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="500" y="26" width="300" height="15"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{POST}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="30" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="401" height="30"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="401" y="0" width="400" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="401" y="15" width="142" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="543" y="15" width="130" height="15"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="673" y="15" width="128" height="15"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="400" height="30"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[区分]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="0" width="400" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[期間]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="401" y="15" width="142" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[対象期間]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="673" y="15" width="128" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[対象時間帯]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="543" y="15" width="130" height="15"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[対象曜日]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+</jasperReport>

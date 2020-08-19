@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_OVERTIME_LIST_HEAD" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.9090909090909095"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_ORG_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_YYYY" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<parameter name="PARAM_OT100FLG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT * from table(TMG_SELECT_LEDGER_5_1($P{PARAM_ORG_ID}, $P{PARAM_TARGET_YYYY}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}))]]>
+	</queryString>
+	<field name="PRINT_DATE" class="java.lang.String"/>
+	<field name="TITLE" class="java.lang.String"/>
+	<field name="TARGET_YEAR" class="java.lang.String"/>
+	<field name="TARGET_SECTION" class="java.lang.String"/>
+	<title>
+		<band height="75" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="802" height="42"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="28" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAM_OT100FLG}.toString().equals("0") ? $F{TITLE} + $F{TARGET_YEAR} : $F{TITLE} + $F{TARGET_YEAR} + "（法定内超勤を含む）"]]></textFieldExpression>
+			</textField>
+			<textField pattern="EEE, MMM d, &apos;&apos;yy">
+				<reportElement x="640" y="57" width="162" height="17"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["印刷日：" + $F{PRINT_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="20">
+			<rectangle>
+				<reportElement x="0" y="0" width="110" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="110" y="0" width="300" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="110" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isBold="true" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<text><![CDATA[対象組織]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="110" y="0" width="300" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TARGET_SECTION}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+</jasperReport>

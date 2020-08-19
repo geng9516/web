@@ -1,0 +1,1064 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_OVERTIME_LIST_DETAIL" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="2.143588810000007"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PARAM_ORG_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_YYYY" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<parameter name="PARAM_OT100FLG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT * from table(TMG_SELECT_LEDGER_5_2($P{PARAM_ORG_ID}, $P{PARAM_TARGET_YYYY}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}, SYSDATE, $P{PARAM_OT100FLG}))]]>
+	</queryString>
+	<field name="SECTION" class="java.lang.String"/>
+	<field name="NAME" class="java.lang.String"/>
+	<field name="POST" class="java.lang.String"/>
+	<field name="WORKTYPE" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_1" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_2" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_3" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_4" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_5" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_6" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_7" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_8" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_9" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_10" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_11" class="java.math.BigDecimal"/>
+	<field name="OVERTIME_HOURS_12" class="java.math.BigDecimal"/>
+	<field name="OVER45FLG_1" class="java.lang.String"/>
+	<field name="OVER45FLG_2" class="java.lang.String"/>
+	<field name="OVER45FLG_3" class="java.lang.String"/>
+	<field name="OVER45FLG_4" class="java.lang.String"/>
+	<field name="OVER45FLG_5" class="java.lang.String"/>
+	<field name="OVER45FLG_6" class="java.lang.String"/>
+	<field name="OVER45FLG_7" class="java.lang.String"/>
+	<field name="OVER45FLG_8" class="java.lang.String"/>
+	<field name="OVER45FLG_9" class="java.lang.String"/>
+	<field name="OVER45FLG_10" class="java.lang.String"/>
+	<field name="OVER45FLG_11" class="java.lang.String"/>
+	<field name="OVER45FLG_12" class="java.lang.String"/>
+	<field name="SUM_OVERTIME_HOURS" class="java.math.BigDecimal"/>
+	<field name="SUM_OVER45_CNT" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_1" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_2" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_3" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_4" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_5" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_6" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_7" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_8" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_9" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_10" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_11" class="java.math.BigDecimal"/>
+	<field name="THIS_SECTION_FLG_12" class="java.math.BigDecimal"/>
+	<variable name="MINUTE" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[(new BigDecimal(60))]]></variableExpression>
+	</variable>
+	<variable name="HH_1" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_1}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_1" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_1}.subtract($V{HH_1}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_1" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_1} + ":" + String.format("%02d", $V{MI_1}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_2" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_2}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_2" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_2}.subtract($V{HH_2}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_2" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_2} + ":" + String.format("%02d", $V{MI_2}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_3" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_3}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_3" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_3}.subtract($V{HH_3}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_3" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_3} + ":" + String.format("%02d", $V{MI_3}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_4" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_4}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_4" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_4}.subtract($V{HH_4}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_4" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_4} + ":" + String.format("%02d", $V{MI_4}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_5" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_5}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_5" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_5}.subtract($V{HH_5}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_5" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_5} + ":" + String.format("%02d", $V{MI_5}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_6" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_6}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_6" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_6}.subtract($V{HH_6}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_6" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_6} + ":" + String.format("%02d", $V{MI_6}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_7" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_7}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_7" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_7}.subtract($V{HH_7}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_7" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_7} + ":" + String.format("%02d", $V{MI_7}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_8" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_8}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_8" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_8}.subtract($V{HH_8}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_8" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_8} + ":" + String.format("%02d", $V{MI_8}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_9" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_9}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_9" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_9}.subtract($V{HH_9}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_9" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_9} + ":" + String.format("%02d", $V{MI_9}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_10" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_10}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_10" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_10}.subtract($V{HH_10}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_10" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_10} + ":" + String.format("%02d", $V{MI_10}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_11" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_11}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_11" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_11}.subtract($V{HH_11}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_11" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_11} + ":" + String.format("%02d", $V{MI_11}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_12" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_12}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_12" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_12}.subtract($V{HH_12}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_12" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_12} + ":" + String.format("%02d", $V{MI_12}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="HH_SUM" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{SUM_OVERTIME_HOURS}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_SUM" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$F{SUM_OVERTIME_HOURS}.subtract($V{HH_SUM}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_SUM" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_SUM} + ":" + String.format("%02d", $V{MI_SUM}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_1" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_1} != null ? $F{OVERTIME_HOURS_1} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_1" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_1}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_1" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_1}.subtract($V{HH_TOTAL_1}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_1" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_1} + ":" + String.format("%02d", $V{MI_TOTAL_1}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_2" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_2} != null ? $F{OVERTIME_HOURS_2} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_2" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_2}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_2" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_2}.subtract($V{HH_TOTAL_2}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_2" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_2} + ":" + String.format("%02d", $V{MI_TOTAL_2}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_3" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_3} != null ? $F{OVERTIME_HOURS_3} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_3" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_3}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_3" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_3}.subtract($V{HH_TOTAL_3}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_3" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_3} + ":" + String.format("%02d", $V{MI_TOTAL_3}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_4" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_4} != null ? $F{OVERTIME_HOURS_4} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_4" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_4}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_4" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_4}.subtract($V{HH_TOTAL_4}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_4" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_4} + ":" + String.format("%02d", $V{MI_TOTAL_4}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_5" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_5} != null ? $F{OVERTIME_HOURS_5} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_5" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_5}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_5" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_5}.subtract($V{HH_TOTAL_5}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_5" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_5} + ":" + String.format("%02d", $V{MI_TOTAL_5}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_6" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_6} != null ? $F{OVERTIME_HOURS_6} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_6" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_6}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_6" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_6}.subtract($V{HH_TOTAL_6}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_6" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_6} + ":" + String.format("%02d", $V{MI_TOTAL_6}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_7" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_7} != null ? $F{OVERTIME_HOURS_7} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_7" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_7}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_7" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_7}.subtract($V{HH_TOTAL_7}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_7" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_7} + ":" + String.format("%02d", $V{MI_TOTAL_7}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_8" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_8} != null ? $F{OVERTIME_HOURS_8} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_8" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_8}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_8" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_8}.subtract($V{HH_TOTAL_8}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_8" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_8} + ":" + String.format("%02d", $V{MI_TOTAL_8}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_9" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_9} != null ? $F{OVERTIME_HOURS_9} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_9" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_9}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_9" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_9}.subtract($V{HH_TOTAL_9}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_9" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_9} + ":" + String.format("%02d", $V{MI_TOTAL_9}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_10" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_10} != null ? $F{OVERTIME_HOURS_10} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_10" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_10}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_10" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_10}.subtract($V{HH_TOTAL_10}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_10" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_10} + ":" + String.format("%02d", $V{MI_TOTAL_10}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_11" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_11} != null ? $F{OVERTIME_HOURS_11} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_11" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_11}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_11" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_11}.subtract($V{HH_TOTAL_11}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_11" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_11} + ":" + String.format("%02d", $V{MI_TOTAL_11}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_12" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVERTIME_HOURS_12} != null ? $F{OVERTIME_HOURS_12} : new BigDecimal(0)]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_12" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_12}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_12" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_12}.subtract($V{HH_TOTAL_12}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_12" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_12} + ":" + String.format("%02d", $V{MI_TOTAL_12}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="TOTAL_SUM" class="java.math.BigDecimal" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{SUM_OVERTIME_HOURS}]]></variableExpression>
+	</variable>
+	<variable name="HH_TOTAL_SUM" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_SUM}.divide($V{MINUTE}, 0, BigDecimal.ROUND_DOWN)]]></variableExpression>
+	</variable>
+	<variable name="MI_TOTAL_SUM" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[$V{TOTAL_SUM}.subtract($V{HH_TOTAL_SUM}.multiply($V{MINUTE}))]]></variableExpression>
+	</variable>
+	<variable name="HHMI_TOTAL_SUM" class="java.lang.String">
+		<variableExpression><![CDATA[$V{HH_TOTAL_SUM} + ":" + String.format("%02d", $V{MI_TOTAL_SUM}.intValue())]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_1" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_1}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_2" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_2}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_3" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_3}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_4" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_4}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_5" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_5}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_6" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_6}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_7" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_7}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_8" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_8}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_9" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_9}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_10" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_10}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_11" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_11}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_12" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{OVER45FLG_12}.equals( "1" ) ? 1 : 0]]></variableExpression>
+	</variable>
+	<variable name="CNT_OVER45_SUM" class="java.lang.Integer" resetType="Group" resetGroup="SECTION" calculation="Sum">
+		<variableExpression><![CDATA[$F{SUM_OVER45_CNT}]]></variableExpression>
+	</variable>
+	<group name="SECTION">
+		<groupExpression><![CDATA[$F{SECTION}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<staticText>
+					<reportElement x="0" y="13" width="40" height="20"/>
+					<textElement textAlignment="Center" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+						<paragraph leftIndent="3"/>
+					</textElement>
+					<text><![CDATA[部署：]]></text>
+				</staticText>
+				<textField isBlankWhenNull="true">
+					<reportElement x="40" y="13" width="259" height="20"/>
+					<textElement verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{SECTION}]]></textFieldExpression>
+				</textField>
+				<subreport>
+					<reportElement x="0" y="33" width="803" height="17"/>
+					<subreportParameter name="PARAM_LANG">
+						<subreportParameterExpression><![CDATA[$P{PARAM_LANG}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="PARAM_TARGET_YYYY">
+						<subreportParameterExpression><![CDATA[$P{PARAM_TARGET_YYYY}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="PARAM_ORG_ID">
+						<subreportParameterExpression><![CDATA[$P{PARAM_ORG_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="PARAM_COMP_ID">
+						<subreportParameterExpression><![CDATA[$P{PARAM_COMP_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="PARAM_CUST_ID">
+						<subreportParameterExpression><![CDATA[$P{PARAM_CUST_ID}]]></subreportParameterExpression>
+					</subreportParameter>
+					<subreportParameter name="SUBREPORT_DIR">
+						<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+					</subreportParameter>
+					<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+					<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TMG_LEDGER_OVERTIME_LIST_GROUP_HEAD.jasper"]]></subreportExpression>
+				</subreport>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="44">
+				<rectangle>
+					<reportElement x="0" y="4" width="288" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="288" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="323" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="358" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="393" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="428" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="463" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="498" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="533" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="568" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="603" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="638" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="673" y="4" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="708" y="4" width="45" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="0" y="24" width="288" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="288" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="323" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="358" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="393" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="428" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="463" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="498" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="533" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="568" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="603" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="638" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="673" y="24" width="35" height="20"/>
+				</rectangle>
+				<rectangle>
+					<reportElement x="708" y="24" width="45" height="20"/>
+				</rectangle>
+				<textField>
+					<reportElement x="288" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="323" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_2}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="358" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_3}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="393" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_4}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="428" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_5}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="463" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_6}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="498" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_7}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="533" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_8}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="568" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_9}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="603" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_10}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="638" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_11}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="673" y="4" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_12}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="708" y="4" width="45" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{HHMI_TOTAL_SUM}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="288" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_1}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="323" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_2}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="358" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_3}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="393" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_4}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="428" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_5}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="463" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_6}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="498" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_7}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="533" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_8}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="568" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_9}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="603" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_10}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="638" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_11}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="673" y="24" width="35" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_12}]]></textFieldExpression>
+				</textField>
+				<textField>
+					<reportElement x="708" y="24" width="45" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{CNT_OVER45_SUM}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="4" width="288" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" isBold="true" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<text><![CDATA[合計]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="0" y="24" width="288" height="20"/>
+					<textElement textAlignment="Right" verticalAlignment="Middle">
+						<font fontName="ＭＳ ゴシック" size="10" isBold="true" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+						<paragraph rightIndent="3"/>
+					</textElement>
+					<text><![CDATA[45超(人)]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="-1" width="110" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="110" y="-1" width="89" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="199" y="-1" width="89" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="288" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="323" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="358" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="393" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="428" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="463" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="498" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="533" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="568" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="603" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="638" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="673" y="-1" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="708" y="-1" width="45" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="753" y="-1" width="50" height="20"/>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="-1" width="110" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NAME}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="110" y="-1" width="89" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{POST}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="199" y="-1" width="89" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKTYPE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement x="288" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_1}.intValue() >= 0 && $F{THIS_SECTION_FLG_1}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="false" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="323" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_2}.intValue() >= 0 && $F{THIS_SECTION_FLG_2}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="358" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_3}.intValue() >= 0 && $F{THIS_SECTION_FLG_3}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="393" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_4}.intValue() >= 0 && $F{THIS_SECTION_FLG_4}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_4}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="428" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_5}.intValue() >= 0 && $F{THIS_SECTION_FLG_5}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_5}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="463" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_6}.intValue() >= 0 && $F{THIS_SECTION_FLG_6}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_6}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="498" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_7}.intValue() >= 0 && $F{THIS_SECTION_FLG_7}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_7}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="533" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_8}.intValue() >= 0 && $F{THIS_SECTION_FLG_8}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_8}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="568" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_9}.intValue() >= 0 && $F{THIS_SECTION_FLG_9}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_9}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="603" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_10}.intValue() >= 0 && $F{THIS_SECTION_FLG_10}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_10}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="638" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_11}.intValue() >= 0 && $F{THIS_SECTION_FLG_11}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_11}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="673" y="-1" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_12}.intValue() >= 0 && $F{THIS_SECTION_FLG_12}.intValue() == 1 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_12}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="708" y="-1" width="45" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_SUM}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="753" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_OVER45_CNT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement x="288" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_1}.intValue() >= 0 && $F{THIS_SECTION_FLG_1}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="323" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_2}.intValue() >= 0 && $F{THIS_SECTION_FLG_2}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="358" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_3}.intValue() >= 0 && $F{THIS_SECTION_FLG_3}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="393" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_4}.intValue() >= 0 && $F{THIS_SECTION_FLG_4}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_4}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="428" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_5}.intValue() >= 0 && $F{THIS_SECTION_FLG_5}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_5}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="463" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_6}.intValue() >= 0 && $F{THIS_SECTION_FLG_6}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_6}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="498" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_7}.intValue() >= 0 && $F{THIS_SECTION_FLG_7}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_7}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="533" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_8}.intValue() >= 0 && $F{THIS_SECTION_FLG_8}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_8}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="568" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_9}.intValue() >= 0 && $F{THIS_SECTION_FLG_9}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_9}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="603" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_10}.intValue() >= 0 && $F{THIS_SECTION_FLG_10}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_10}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="638" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_11}.intValue() >= 0 && $F{THIS_SECTION_FLG_11}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_11}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="673" y="0" width="35" height="20">
+					<printWhenExpression><![CDATA[$F{OVERTIME_HOURS_12}.intValue() >= 0 && $F{THIS_SECTION_FLG_12}.intValue() == 0 ? true : false]]></printWhenExpression>
+				</reportElement>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isItalic="true" pdfFontName="HeiseiMin-W3,Italic" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{HHMI_12}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_PAIDHOLIDAY_USE_LIST_DETAIL" pageWidth="595" pageHeight="842" columnWidth="595" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.3310000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_EMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_FROM" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_TO" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select * from table(TMG_SELECT_LEDGER_3_2($P{PARAM_EMP_ID}, $P{PARAM_TARGET_TERM_FROM}, $P{PARAM_TARGET_TERM_TO}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}))]]>
+	</queryString>
+	<field name="DYYYYMMDD" class="java.lang.String"/>
+	<field name="CONTENT" class="java.lang.String"/>
+	<field name="PAID_ADD_DAYS" class="java.lang.String"/>
+	<field name="PAID_ADD_HOURS" class="java.lang.String"/>
+	<field name="PAID_USED_DAYS" class="java.lang.String"/>
+	<field name="PAID_USED_HOURS" class="java.lang.String"/>
+	<field name="PAID_REST_DAYS" class="java.lang.String"/>
+	<field name="PAID_REST_HOURS" class="java.lang.String"/>
+	<field name="HOURS_PER_DATE" class="java.lang.String"/>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="-1" width="69" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="69" y="-1" width="119" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="188" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="238" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="288" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="338" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="388" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="438" y="-1" width="50" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="488" y="-1" width="67" height="20"/>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="0" y="-1" width="69" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{DYYYYMMDD}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="69" y="-1" width="119" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{CONTENT}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="188" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_ADD_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="238" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_ADD_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="288" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_USED_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="338" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_USED_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="388" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_REST_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="438" y="-1" width="50" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_REST_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="488" y="-1" width="67" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{HOURS_PER_DATE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

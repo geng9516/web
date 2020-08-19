@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_OVERTIME_LIST" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="802" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String">
+		<defaultValueExpression><![CDATA["C:\\Documents and Settings\\X02031\\デスクトップ\\yamaguchi\\07_東北大学関連\\Ticket対応\\tmd#636 【V1.2 - No.7】各種帳票のパッケージ化\\PDFフォーム\\"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PARAM_ORG_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_YYYY" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<parameter name="PARAM_OT100FLG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select 1 from dual]]>
+	</queryString>
+	<field name="1" class="java.math.BigDecimal"/>
+	<title>
+		<band height="79" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="79"/>
+				<subreportParameter name="PARAM_LANG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_LANG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_TARGET_YYYY">
+					<subreportParameterExpression><![CDATA[$P{PARAM_TARGET_YYYY}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_ORG_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_ORG_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_COMP_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_COMP_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_CUST_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_CUST_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_OT100FLG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_OT100FLG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TMG_LEDGER_OVERTIME_LIST_HEAD.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<detail>
+		<band height="125" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="125"/>
+				<subreportParameter name="PARAM_LANG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_LANG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_ORG_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_ORG_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_TARGET_YYYY">
+					<subreportParameterExpression><![CDATA[$P{PARAM_TARGET_YYYY}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_COMP_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_COMP_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_CUST_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_CUST_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_OT100FLG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_OT100FLG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TMG_LEDGER_OVERTIME_LIST_DETAIL.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</detail>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="802" height="42"/>
+				<subreportParameter name="PARAM_LANG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_LANG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_ORG_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_ORG_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_TARGET_YYYY">
+					<subreportParameterExpression><![CDATA[$P{PARAM_TARGET_YYYY}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_COMP_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_COMP_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="SUBREPORT_DIR">
+					<subreportParameterExpression><![CDATA[$P{SUBREPORT_DIR}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_CUST_ID">
+					<subreportParameterExpression><![CDATA[$P{PARAM_CUST_ID}]]></subreportParameterExpression>
+				</subreportParameter>
+				<subreportParameter name="PARAM_OT100FLG">
+					<subreportParameterExpression><![CDATA[$P{PARAM_OT100FLG}]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression><![CDATA[$P{SUBREPORT_DIR} + "TMG_LEDGER_OVERTIME_LIST_SUMMARY.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</summary>
+</jasperReport>

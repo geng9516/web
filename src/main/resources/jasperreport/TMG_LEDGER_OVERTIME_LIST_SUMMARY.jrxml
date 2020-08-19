@@ -1,0 +1,361 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_OVERTIME_LIST_SUMMARY" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.1000000000000012"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_ORG_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_YYYY" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<parameter name="PARAM_OT100FLG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT * from table(TMG_SELECT_LEDGER_5_3($P{PARAM_ORG_ID}, $P{PARAM_TARGET_YYYY}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}, $P{PARAM_OT100FLG}))]]>
+	</queryString>
+	<field name="OVERTIME_HOURS_1" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_2" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_3" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_4" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_5" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_6" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_7" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_8" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_9" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_10" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_11" class="java.lang.String"/>
+	<field name="OVERTIME_HOURS_12" class="java.lang.String"/>
+	<field name="SUM_OVERTIME_HOURS" class="java.lang.String"/>
+	<field name="SUM_OVER45_CNT" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_1" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_2" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_3" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_4" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_5" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_6" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_7" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_8" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_9" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_10" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_11" class="java.math.BigDecimal"/>
+	<field name="OVER45_NOP_12" class="java.math.BigDecimal"/>
+	<field name="SUM_OVER45_NOP" class="java.math.BigDecimal"/>
+	<field name="SUM_OVER45_NOP_CNT" class="java.math.BigDecimal"/>
+	<summary>
+		<band height="59" splitType="Stretch">
+			<rectangle>
+				<reportElement x="1" y="17" width="753" height="40"/>
+				<graphicElement>
+					<pen lineWidth="3.0"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="17" width="288" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="289" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="324" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="359" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="394" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="429" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="464" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="499" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="534" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="569" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="604" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="639" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="674" y="17" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="709" y="17" width="45" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="37" width="288" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="289" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="324" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="359" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="394" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="429" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="464" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="499" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="534" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="569" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="604" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="639" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="674" y="37" width="35" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="709" y="37" width="45" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="1" y="17" width="288" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isBold="true" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<text><![CDATA[総合計]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="37" width="288" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" isBold="true" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<text><![CDATA[合計　45超(人)]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="289" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="324" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="359" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_4}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="429" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_5}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="464" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_6}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="499" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_7}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="534" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_8}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="569" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_9}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="604" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_10}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_11}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="674" y="17" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVERTIME_HOURS_12}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="709" y="17" width="45" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_OVERTIME_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="289" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_1}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="324" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_2}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="359" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_3}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="394" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_4}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="429" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_5}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="464" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_6}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="499" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_7}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="534" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_8}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="569" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_9}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="604" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_10}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="639" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_11}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="674" y="37" width="35" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{OVER45_NOP_12}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="709" y="37" width="45" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="10" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_OVER45_NOP}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

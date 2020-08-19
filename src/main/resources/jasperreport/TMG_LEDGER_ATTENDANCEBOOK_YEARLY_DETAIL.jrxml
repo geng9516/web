@@ -1,0 +1,1170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_ATTENDANCEBOOK_YEARLY_DETAIL" pageWidth="842" pageHeight="595" orientation="Landscape" whenNoDataType="AllSectionsNoDetail" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.9090909090909113"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_EMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<parameter name="PARAM_ATDBOOK_TERM_FROM" class="java.lang.String"/>
+	<parameter name="PARAM_ATDBOOK_TERM_TO" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT * FROM TABLE(TMG_SELECT_LEDGER_1_2($P{PARAM_EMP_ID}, $P{PARAM_ATDBOOK_TERM_FROM}, $P{PARAM_ATDBOOK_TERM_TO}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}))]]>
+	</queryString>
+	<field name="MONTH" class="java.math.BigDecimal"/>
+	<field name="WORKTYPEID01" class="java.lang.String"/>
+	<field name="WORKTYPEID02" class="java.lang.String"/>
+	<field name="WORKTYPEID03" class="java.lang.String"/>
+	<field name="WORKTYPEID04" class="java.lang.String"/>
+	<field name="WORKTYPEID05" class="java.lang.String"/>
+	<field name="WORKTYPEID06" class="java.lang.String"/>
+	<field name="WORKTYPEID07" class="java.lang.String"/>
+	<field name="WORKTYPEID08" class="java.lang.String"/>
+	<field name="WORKTYPEID09" class="java.lang.String"/>
+	<field name="WORKTYPEID10" class="java.lang.String"/>
+	<field name="WORKTYPEID11" class="java.lang.String"/>
+	<field name="WORKTYPEID12" class="java.lang.String"/>
+	<field name="WORKTYPEID13" class="java.lang.String"/>
+	<field name="WORKTYPEID14" class="java.lang.String"/>
+	<field name="WORKTYPEID15" class="java.lang.String"/>
+	<field name="WORKTYPEID16" class="java.lang.String"/>
+	<field name="WORKTYPEID17" class="java.lang.String"/>
+	<field name="WORKTYPEID18" class="java.lang.String"/>
+	<field name="WORKTYPEID19" class="java.lang.String"/>
+	<field name="WORKTYPEID20" class="java.lang.String"/>
+	<field name="WORKTYPEID21" class="java.lang.String"/>
+	<field name="WORKTYPEID22" class="java.lang.String"/>
+	<field name="WORKTYPEID23" class="java.lang.String"/>
+	<field name="WORKTYPEID24" class="java.lang.String"/>
+	<field name="WORKTYPEID25" class="java.lang.String"/>
+	<field name="WORKTYPEID26" class="java.lang.String"/>
+	<field name="WORKTYPEID27" class="java.lang.String"/>
+	<field name="WORKTYPEID28" class="java.lang.String"/>
+	<field name="WORKTYPEID29" class="java.lang.String"/>
+	<field name="WORKTYPEID30" class="java.lang.String"/>
+	<field name="WORKTYPEID31" class="java.lang.String"/>
+	<field name="WORKCONTENT01" class="java.lang.String"/>
+	<field name="WORKCONTENT02" class="java.lang.String"/>
+	<field name="WORKCONTENT03" class="java.lang.String"/>
+	<field name="WORKCONTENT04" class="java.lang.String"/>
+	<field name="WORKCONTENT05" class="java.lang.String"/>
+	<field name="WORKCONTENT06" class="java.lang.String"/>
+	<field name="WORKCONTENT07" class="java.lang.String"/>
+	<field name="WORKCONTENT08" class="java.lang.String"/>
+	<field name="WORKCONTENT09" class="java.lang.String"/>
+	<field name="WORKCONTENT10" class="java.lang.String"/>
+	<field name="WORKCONTENT11" class="java.lang.String"/>
+	<field name="WORKCONTENT12" class="java.lang.String"/>
+	<field name="WORKCONTENT13" class="java.lang.String"/>
+	<field name="WORKCONTENT14" class="java.lang.String"/>
+	<field name="WORKCONTENT15" class="java.lang.String"/>
+	<field name="WORKCONTENT16" class="java.lang.String"/>
+	<field name="WORKCONTENT17" class="java.lang.String"/>
+	<field name="WORKCONTENT18" class="java.lang.String"/>
+	<field name="WORKCONTENT19" class="java.lang.String"/>
+	<field name="WORKCONTENT20" class="java.lang.String"/>
+	<field name="WORKCONTENT21" class="java.lang.String"/>
+	<field name="WORKCONTENT22" class="java.lang.String"/>
+	<field name="WORKCONTENT23" class="java.lang.String"/>
+	<field name="WORKCONTENT24" class="java.lang.String"/>
+	<field name="WORKCONTENT25" class="java.lang.String"/>
+	<field name="WORKCONTENT26" class="java.lang.String"/>
+	<field name="WORKCONTENT27" class="java.lang.String"/>
+	<field name="WORKCONTENT28" class="java.lang.String"/>
+	<field name="WORKCONTENT29" class="java.lang.String"/>
+	<field name="WORKCONTENT30" class="java.lang.String"/>
+	<field name="WORKCONTENT31" class="java.lang.String"/>
+	<field name="SUM_WORKING_HOURS" class="java.lang.String"/>
+	<field name="SUM_PAID_USED_DAYS" class="java.lang.String"/>
+	<field name="SUM_PAID_USED_HOURS" class="java.lang.String"/>
+	<field name="PAID_REST_DAYS" class="java.lang.String"/>
+	<field name="PAID_REST_HOURS" class="java.lang.String"/>
+	<field name="SUM_ITEM1_USED_DAYS" class="java.lang.String"/>
+	<field name="SUM_ITEM1_USED_HOURS" class="java.lang.String"/>
+	<field name="SUM_ITEM2_USED_DAYS" class="java.lang.String"/>
+	<field name="SUM_ITEM2_USED_HOURS" class="java.lang.String"/>
+	<field name="SUM_ITEM3_USED_DAYS" class="java.lang.String"/>
+	<field name="SUM_ITEM3_USED_HOURS" class="java.lang.String"/>
+	<detail>
+		<band height="26" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="20" height="26"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID01}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="40" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID02}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="60" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID03}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="80" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID04}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="100" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID05}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="120" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID06}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="140" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID07}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="160" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID08}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="180" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID09}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="200" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID10}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="220" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID11}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="240" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID12}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="260" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID13}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="280" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID14}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="300" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID15}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="320" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID16}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="340" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID17}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="360" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID18}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="380" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID19}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="400" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID20}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="420" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID21}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="440" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID22}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="460" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID23}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="480" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID24}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="500" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID25}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="520" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID26}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="540" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID27}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="560" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID28}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="580" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID29}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="600" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID30}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="620" y="0" width="20" height="26" backcolor="#FF5050">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID31}.equals("1") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID01}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="40" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID02}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="60" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID03}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="80" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID04}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="100" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID05}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="120" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID06}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="140" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID07}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="160" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID08}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="180" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID09}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="200" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID10}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="220" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID11}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="240" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID12}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="260" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID13}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="280" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID14}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="300" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID15}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="320" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID16}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="340" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID17}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="360" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID18}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="380" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID19}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="400" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID20}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="420" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID21}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="440" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID22}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="460" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID23}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="480" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID24}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="500" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID25}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="520" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID26}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="540" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID27}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="560" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID28}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="580" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID29}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="600" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID30}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="620" y="0" width="20" height="26" backcolor="#AFEEEE">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID31}.equals("2") ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="20" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID01} == null ? true : $F{WORKTYPEID01}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="40" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID02} == null ? true : $F{WORKTYPEID02}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="60" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID03} == null ? true : $F{WORKTYPEID03}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="80" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID04} == null ? true : $F{WORKTYPEID04}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="100" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID05} == null ? true : $F{WORKTYPEID05}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="120" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID06} == null ? true : $F{WORKTYPEID06}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="140" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID07} == null ? true : $F{WORKTYPEID07}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="160" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID08} == null ? true : $F{WORKTYPEID08}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="180" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID09} == null ? true : $F{WORKTYPEID09}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="200" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID10} == null ? true : $F{WORKTYPEID10}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="220" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID11} == null ? true : $F{WORKTYPEID11}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="240" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID12} == null ? true : $F{WORKTYPEID12}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="260" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID13} == null ? true : $F{WORKTYPEID13}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="280" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID14} == null ? true : $F{WORKTYPEID14}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="300" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID15} == null ? true : $F{WORKTYPEID15}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="320" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID16} == null ? true : $F{WORKTYPEID16}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="340" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID17} == null ? true : $F{WORKTYPEID17}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="360" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID18} == null ? true : $F{WORKTYPEID18}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="380" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID19} == null ? true : $F{WORKTYPEID19}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="400" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID20} == null ? true : $F{WORKTYPEID20}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="420" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID21} == null ? true : $F{WORKTYPEID21}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="440" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID22} == null ? true : $F{WORKTYPEID22}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="460" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID23} == null ? true : $F{WORKTYPEID23}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="480" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID24} == null ? true : $F{WORKTYPEID24}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="500" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID25} == null ? true : $F{WORKTYPEID25}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="520" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID26} == null ? true : $F{WORKTYPEID26}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="540" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID27} == null ? true : $F{WORKTYPEID27}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="560" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID28} == null ? true : $F{WORKTYPEID28}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="580" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID29} == null ? true : $F{WORKTYPEID29}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="600" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID30} == null ? true : $F{WORKTYPEID30}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="620" y="0" width="20" height="26" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID31} == null ? true : $F{WORKTYPEID31}.equals("0") ? true : false]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="640" y="0" width="39" height="26" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="679" y="0" width="26" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="679" y="13" width="26" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="705" y="0" width="25" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="705" y="13" width="25" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="730" y="0" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="730" y="13" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="754" y="0" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="754" y="13" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="778" y="0" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="778" y="13" width="24" height="13" backcolor="#F0FFF0">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 == 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="640" y="0" width="39" height="26" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="679" y="0" width="26" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="679" y="13" width="26" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="705" y="0" width="25" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="705" y="13" width="25" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="730" y="0" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="730" y="13" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="754" y="0" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="754" y="13" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="778" y="0" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="778" y="13" width="24" height="13" backcolor="#F0F0FF">
+					<printWhenExpression><![CDATA[$F{MONTH}.intValue() % 2 != 0 ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="20" height="26"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="8" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{MONTH} + "月"]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="20" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT01}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="40" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT02}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="60" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT03}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="80" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT04}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="100" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT05}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="120" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT06}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="140" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT07}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="160" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT08}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="180" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT09}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="200" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT10}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="220" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT11}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="240" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT12}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="260" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT13}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="280" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT14}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="300" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT15}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="320" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT16}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="340" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT17}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="360" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT18}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="380" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT19}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="400" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT20}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="420" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT21}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="440" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT22}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="460" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT23}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="480" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT24}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="500" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT25}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="520" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT26}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="540" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT27}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="560" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT28}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="580" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT29}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="600" y="0" width="20" height="26"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT30}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="620" y="0" width="20" height="26" backcolor="#FFFFFF"/>
+				<textElement>
+					<font fontName="ＭＳ ゴシック" size="5" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="2" spacingBefore="2"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{WORKCONTENT31}.replace("<br>","\r\n")]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="640" y="0" width="39" height="26"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_WORKING_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="679" y="0" width="26" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_PAID_USED_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="679" y="13" width="26" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_PAID_USED_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="705" y="0" width="25" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_REST_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="705" y="13" width="25" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{PAID_REST_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="730" y="0" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM1_USED_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="730" y="13" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM1_USED_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="754" y="0" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM2_USED_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="754" y="13" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM2_USED_HOURS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="778" y="0" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM3_USED_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="778" y="13" width="24" height="13"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" size="7" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{SUM_ITEM3_USED_HOURS}]]></textFieldExpression>
+			</textField>
+			<line direction="BottomUp">
+				<reportElement x="20" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID01} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="40" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID02} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="60" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID03} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="80" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID04} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="100" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID05} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="120" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID06} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="140" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID07} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="160" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID08} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="180" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID09} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="200" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID10} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="220" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID11} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="240" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID12} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="260" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID13} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="280" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID14} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="300" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID15} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="320" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID16} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="340" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID17} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="360" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID18} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="380" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID19} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="400" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID20} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="420" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID21} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="440" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID22} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="460" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID23} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="480" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID24} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="500" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID25} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="520" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID26} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="540" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID27} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="560" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID28} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="580" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID29} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement x="600" y="0" width="20" height="26">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID30} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+			<line direction="BottomUp">
+				<reportElement isPrintRepeatedValues="false" x="620" y="0" width="20" height="26" isPrintWhenDetailOverflows="true" backcolor="#FFFFFF">
+					<printWhenExpression><![CDATA[$F{WORKTYPEID31} == null ? Boolean.TRUE : Boolean.FALSE]]></printWhenExpression>
+				</reportElement>
+			</line>
+		</band>
+	</detail>
+</jasperReport>

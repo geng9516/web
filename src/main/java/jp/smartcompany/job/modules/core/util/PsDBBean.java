@@ -714,4 +714,22 @@ public class PsDBBean {
         return 0;
     }
 
+    public String toDBString(String sString) {
+        return PsUtil.getPsUtil().transStringNullToDB(sString);
+    }
+
+    public String toDBDate(String sDate) {
+        return PsUtil.getPsUtil().transDateNullToDB(sDate);
+    }
+
+    public String getReqParm(String sKey) {
+        Object oVal = null;
+
+        oVal = this.requestHash.get(sKey);
+        if (oVal == null) {
+            return null;
+        }
+        return oVal.toString();
+    }
+
 }

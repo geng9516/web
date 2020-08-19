@@ -82,6 +82,7 @@
                   placeholder="対象年度"
                   transfer
                   v-model="curYear"
+                  @on-change="handleTargetYear($event)"
           >
             <i-option :key="index" :label="item.disp" :value="item.disp"v-for="(item, index) of yearSelect" ></i-option>
           </i-select>
@@ -95,6 +96,7 @@
                   style="width: 450px"
                   transfer
                   v-model="curMonth"
+                  @on-change="handleStartMonth($event)"
           >
             <i-option :key="index" :label="item" :value="index + 1" v-for="(item, index) of monthSelect"></i-option>
           </i-select>
@@ -108,6 +110,7 @@
                   style="width: 450px"
                   transfer
                   v-model="curYearMonth"
+                  @on-change="handleTargetYearMonth($event)"
           >
             <i-option :key="index" :label="item.disp" :value="item.disp"v-for="(item, index) of yearMonthSelect" ></i-option>
           </i-select>
@@ -115,15 +118,15 @@
 
         <span v-if="curFileTypeInfo.mgdOutputTermType=='TERM'">
           <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
-          <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-          <date-picker format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
+          <date-picker @on-change="handleTermFromDateChange" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
+          <date-picker @on-change="handleTermToDateChange" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
         </span>
 
         <span v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'ORG'">
           <Divider class="mb10" orientation="left" size="small">法定内超勤を含める</Divider>
-          <radio-group :value="1" class="mt10 mb10">
+          <radio-group :value="1" @on-change="changeModel" class="mt10 mb10">
             <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
-            <Radio :label="2" class="custom-radio" style="padding:8px 100px;">いいえ</Radio>
+            <Radio :label="0" class="custom-radio" style="padding:8px 100px;">いいえ</Radio>
           </radio-group>
         </span>
             <i-button
@@ -181,24 +184,35 @@
                 curYear: '',
                 curFileType: '0',
                 fileTypes: [],
-                deptName: '選んでください',   //所属名称
-                empName: '選んでください',   //所属名称
+                deptName: '選んでください',   //対象部署
+                empName: '選んでください',    //対象職員
+                selectDeptNameFlg: false,       //対象部署選択フラグ
+                selectEmpNameFlg: false,        //対象職員フラグ
                 deptDrawShow: false,         //組織ツリー用
                 treeData: [],                //組織ツリー用
                 empTreeData: [],             //組織ツリー用
                 emplistLoading: false,       //職員番号ローディング用動画
-                query: {
-                    txtAction: 'ACT_DISP_MONTHLY',
-                    txtDYYYYMM: '',
-                    txtDYYYYMMDD: '',
-                    txtTmgReferListTreeViewRecordDate: '',
-                    txtTmgReferListTreeViewAdminTargetSection: '',
-                    txtCEMPLOYEEID: '',
-                    sectionid: '',
-                    txtExecuteEmpId: '',
+                ledgerParamVO: {
+                    txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
+                    txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
+                    txtEmp: '',
+                    hidEmpId: '',
+                    txtOrg: '',
+                    hidOrgId: '',
+                    txtYYYY: '',
+                    txtYYYYMM: '',
+                    txtTermFrom: '',
+                    txtTermTo: '',
+                    txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
+                    txtIncludeOt100Flg: '',
+                    psSecurityDate: '',
+                    selLedgerSheet: '',
+                    selYear: '',
+                    selMonth: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
-                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
                 },
+                query: {},
                 isSearchHistory: false,
                 searchLevel: [],
                 errorInfo: false,
@@ -220,35 +234,11 @@
             }
         },
         methods: {
-            async getWorkDateList() {
-                this.query.txtAction = 'ACT_Disp_RList'
-                const { data } = await this.http.get('sys/tmgLedger/workDateList', this.query)
-                this.dispMonthlyList = data
-
-                if (data.length > 0){
-                    this.model1 = data[0].val
-
-                    let result = this.model1.replace("年","/")
-                    result = result.replace("月","/")
-                    result = result + "01"
-                    this.query.txtTDA_DYYYYMM = result
-                    this.query.txtDYYYYMM = result
-
-                    //年月リストを取得する時に、活性化にする
-                    this.selectDisabled = true
-                }
-
-                //年月リスト.lengthがゼロ場合、非活性化にする
-                if (data.length === 0){
-                    this.model1 = ''
-                    this.selectDisabled = false
-                }
-            },
             async getIniDispPara() {
-
                 this.yearSelectLoading = true
 
                 const { data } = await this.http.get('sys/tmgLedger/iniDisp', this.query)
+
                 this.fileTypes = data.ledgerSheetVo
                 this.yearMonthSelect = data.listBoxMonthVo
                 this.yearSelect = data.listBoxYearVo
@@ -256,12 +246,24 @@
                 console.log("getIniDispPara_ledgerSheetVo")
                 console.log(this.fileTypes)
 
+                //デフォルトの帳票種別を設定する
+                if (this.fileTypes.length > 0){
+                    this.ledgerParamVO.selLedgerSheet = this.fileTypes[0].mgdLedgerSheetId
+                    this.ledgerParamVO.txtLedgerSheetId = this.fileTypes[0].mgdLedgerSheetId
+                }
 
+                //デフォルトの対象年月を設定する
                 if (this.yearMonthSelect.length > 0){
                     this.curYearMonth = this.yearMonthSelect[0].disp
+                    this.ledgerParamVO.selMonth = this.yearMonthSelect[0].disp + "01"
+                    this.ledgerParamVO.txtYYYYMM = this.yearMonthSelect[0].disp + "01"
                 }
+
+                //デフォルトの対象年度を設定する
                 if (this.yearSelect.length > 0){
                     this.curYear = this.yearSelect[0].disp
+                    this.ledgerParamVO.selYear = this.yearSelect[0].disp
+                    this.ledgerParamVO.txtYYYY = this.yearSelect[0].disp
                 }
                 this.yearSelectLoading = false
 
@@ -272,6 +274,7 @@
                     // 先将数据转为标准格式，再转为可用数据
                     this.treeData = Utils.convertTreeData(orgList)
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                    this.ledgerParamVO.psSecurityDate = recordDate
                 } catch (error) {
                     return
                 } finally {
@@ -336,10 +339,9 @@
                 console.log('handleClickLeafDept')
                 console.log(e)
                 this.deptDrawShow = false
-                // this.query.txtAction = 'ACT_Disp_RList'
                 this.deptName = e[0].secnic
-                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
-                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.selectDeptNameFlg =true
+                this.ledgerParamVO.hidOrgId = e[0].secid
             },
             async handleClickLeafDeptEmp(e) {
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
@@ -360,7 +362,11 @@
                 console.log("handleClickEmpLeaf")
                 console.log(e)
                 this.deptDrawShow = false
+
+                this.ledgerParamVO.hidEmpId = e[0].empid
                 this.empName = e[0].empname
+
+                this.selectEmpNameFlg=true
                 // this.getData(true)
             },
 
@@ -391,21 +397,35 @@
                 Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
             },
             async downLoadByPdf() {
-                if (!this.localValue.deptId) {
-                    this.errorInfo = true
-                    // return (this.errorMsg = '対象職員を選んでください。')
-                    this.$Message.error({
-                        background: true,
-                        closable: true,
-                        duration: 0,
-                        content: '対象職員或は対象部署を選んでください。'
-                    });
-                }
-                const year = this.utils.formatDate(this.localValue.year, 'YYYY')
+                console.log(this.empName)
+                if (this.curFileTypeInfo.mgdOutputTargetType=='EMP'){
+                    if (!this.selectEmpNameFlg) {
+                        this.errorInfo = true
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象職員を選んでください。'
+                        });
+                        return
+                    }
+                } else if (this.curFileTypeInfo.mgdOutputTargetType=='ORG'){
+                    if (!this.selectDeptNameFlg) {
+                        this.errorInfo = true
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象部署を選んでください。'
+                        });
+                        return
+                    }
+                   }
                 try {
-                    this.empolyeeLoading = true
-                    await this.api.output('paidVactionByEmployee', { deptId: this.localValue.deptId, year, isOutput: false })
-                    window.open(`${this.domain}/io/vacation/apply/user?deptId=${this.localValue.deptId}&year=${year}&isOutput=true`,'_blank')
+                    const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
+                    console.log(headers)
+                    console.log(data)
+                    Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                 } catch (e) {
                     return
                 } finally {
@@ -414,7 +434,33 @@
                 }
             },
             handleRestType(e) {
-                // this.deptName = 'を選んでください。'
+              console.log("handleRestType")
+              console.log(e)
+                this.ledgerParamVO.txtLedgerSheetId = this.curFileTypeInfo.mgdLedgerSheetId
+                this.ledgerParamVO.selLedgerSheet = this.curFileTypeInfo.mgdLedgerSheetId
+            },
+            handleTargetYear: Debounce(async function (e) {
+                this.ledgerParamVO.txtYYYY = e
+                this.ledgerParamVO.selYear = e
+
+            }),
+            handleTargetYearMonth: Debounce(async function (e) {
+                this.ledgerParamVO.txtYYYYMM = e + "/01"
+                this.ledgerParamVO.selMonth = e + "/01"
+            }),
+            handleStartMonth: Debounce(async function (e) {
+                this.ledgerParamVO.txtAtdBookTermFrom = e
+            }),
+            async handleTermFromDateChange(e) {
+                this.ledgerParamVO.txtTermFrom = e
+            },
+            async handleTermToDateChange(e) {
+                this.ledgerParamVO.txtTermTo = e
+            },
+            changeModel(e) {
+                console.log("changeModel")
+                console.log(e)
+                this.ledgerParamVO.txtIncludeOt100Flg = e
             },
         }
     })

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://jasperreports.sourceforge.net/jasperreports" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="TMG_LEDGER_SICKANDSPECIAL_USE_LIST_DETAIL" pageWidth="842" pageHeight="595" orientation="Landscape" columnWidth="842" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="0.9090909090909095"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PARAM_EMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_FROM" class="java.lang.String"/>
+	<parameter name="PARAM_TARGET_TERM_TO" class="java.lang.String"/>
+	<parameter name="PARAM_CUST_ID" class="java.lang.String"/>
+	<parameter name="PARAM_COMP_ID" class="java.lang.String"/>
+	<parameter name="PARAM_LANG" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[select * from table(TMG_SELECT_LEDGER_4_2($P{PARAM_EMP_ID}, $P{PARAM_TARGET_TERM_FROM}, $P{PARAM_TARGET_TERM_TO}, $P{PARAM_CUST_ID}, $P{PARAM_COMP_ID}, $P{PARAM_LANG}))]]>
+	</queryString>
+	<field name="NOTIFICATION_NAME" class="java.lang.String"/>
+	<field name="BEGIN_DATE" class="java.lang.String"/>
+	<field name="END_DATE" class="java.lang.String"/>
+	<field name="TARGET_DAYS" class="java.lang.String"/>
+	<field name="BEGIN_TIME" class="java.lang.String"/>
+	<field name="END_TIME" class="java.lang.String"/>
+	<detail>
+		<band height="20" splitType="Stretch">
+			<rectangle>
+				<reportElement x="0" y="0" width="401" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="401" y="0" width="142" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="543" y="0" width="130" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="673" y="0" width="128" height="20"/>
+			</rectangle>
+			<textField>
+				<reportElement x="0" y="0" width="401" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+					<paragraph leftIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{NOTIFICATION_NAME}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="401" y="0" width="142" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{END_DATE} == null ? $F{BEGIN_DATE} : !$F{BEGIN_DATE}.equals( $F{END_DATE} )  ? $F{BEGIN_DATE} + " - " + $F{END_DATE} : $F{BEGIN_DATE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="543" y="0" width="130" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{TARGET_DAYS}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="673" y="0" width="128" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="ＭＳ ゴシック" pdfFontName="HeiseiMin-W3" pdfEncoding="UniJIS-UCS2-HW-H" isPdfEmbedded="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{BEGIN_TIME} != null ? $F{BEGIN_TIME} + " - " + $F{END_TIME} : ""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>
