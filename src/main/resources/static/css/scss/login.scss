@@ -1,6 +1,29 @@
 body {
   background: rgb(247, 247, 247);
 }
+.left-part {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100vh;
+  background: var(--login-left-part-bg);
+  .top-logo {
+    height: 130px;
+    width: 130px;
+    background-repeat: no-repeat;
+    margin: 0 auto 5px;
+  }
+  .btm-logo{
+    height: 130px;
+    width: 360px;
+    background-repeat: no-repeat;
+    margin: 0 auto;
+  }
+}
+.right-part {
+  height: 100vh;
+  background: var(--login-right-part-bg)
+}
 .login {
   max-width: 1920px;
   height: 100vh;
@@ -11,38 +34,29 @@ body {
     min-height: 470px;
     background-repeat: no-repeat;
     margin-left: 60px;
-    @media (max-width: 1500px) {
-      position: relative;
-      top: 30px;
-    }
   }
   .login-warp {
     width: 520px;
-    transform: translateY(18%) scale(0.8);
+    margin: 15% auto 0;
+    transform: scale(0.8);
     overflow: hidden;
     background: var(--white);
     border-radius: 20px;
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
     @media (min-height: 800px) {
-      transform: translateY(22%) scale(0.9);
-    }
-    @media (max-width: 1500px) {
-      position: relative;
-      right: 60px;
+      transform: scale(0.9);
     }
     @media (max-height: 700px) {
       transform: scale(0.6);
       top: -30px;
     }
     .title {
-      background: linear-gradient(90deg, rgb(255, 248, 185), rgb(255, 211, 62));
-      padding: 20px;
+      padding: 20px 34px 10px;
+      border-bottom: 1px solid lightgrey;
       .logo-warp {
-        width: 382px;
+        width: 360px;
         height: 51px;
         background-repeat: no-repeat;
         background-size: 91%;
-        margin: 10px 10px 0 25px;
       }
     }
     .login-content {

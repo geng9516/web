@@ -8,6 +8,10 @@
   top: 0px;
   width: 100vw;
   box-shadow: 0 1px 3px rgba(0,0,0,.2);
+  .head-logo {
+    position: absolute;width: 179px;left: 30px;height: 50px;
+    fill:var(--login-svg-fill);
+  }
   .ivu-dropdown {
     position: absolute;
     right: 0;

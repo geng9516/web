@@ -27,6 +27,7 @@
   --orange60: rgb(255,150, 82);
   --orange50: rgb(255,172,118);
   --orange25: rgb(255,244,238);
+  --orange-g: radial-gradient(#f39c61, #FF6600);
   --yellow:rgb(255, 186, 0);
   --yellow50:rgb(254, 222, 117);
   --yellow25:rgb(255, 248, 191);
@@ -36,6 +37,10 @@
   --light-gold: rgb(255, 250, 207);
   --brown-text: rgb(191, 112, 13);
 
+  /* login */
+  --login-left-part-bg: var(--orange-g);
+  --login-right-part-bg: var(--orange25);
+  --login-svg-fill: var(--orange);
   /* SIDER */
   --sider-background: var(--orange60);
   --sider-background-actived:var(--orange25);

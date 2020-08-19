@@ -341,4 +341,12 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     int buildSQLForSelectInsertTmgWeekPatternCheck(HashMap<String, Object> params);
 
+    /**
+     * 　週勤務パターンを更新する
+     *
+     * @param params
+     * @return
+     */
+    int updateWeekPattern(HashMap<String, Object> params);
+
 }

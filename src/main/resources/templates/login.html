@@ -5,20 +5,23 @@
 
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
-<div class="login">
+<svg th:replace="layout/logos::svg_logos"></svg>
+<div class="login" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
     <Row>
-        <i-col span="16" style="transform: translate(-3%, 3%)">
-            <figure class="hero-warp"
-                    th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/LoginSvg.svg)'}"></figure>
+        <i-col span="12" class="left-part">
+            <svg class="top-logo">
+                <use xlink:href="#smart-company-top"></use>
+              </svg>
+              <svg class="btm-logo">
+                <use xlink:href="#smart-company-btm"></use>
+              </svg>
         </i-col>
-        <i-col span="8">
+        <i-col span="12" class="right-part">
             <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow" method="post" action="/login">
                 <div class="title">
-                    <figure class="logo-warp"
-                            th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/Logo.svg)'}"></figure>
-                    <!--                    <p class="login-time"></p>-->
-                    <!--                    <i-time class="login-time" :time="time" :interval="1" type="datetime"></i-time>-->
-                    <!--                    <Clock ref="clock"></Clock>-->
+                    <svg class="logo-warp">
+                        <use xlink:href="#logo"></use>
+                      </svg>
                 </div>
                 <div class="login-content">
                     <p class="login-label">アカウント</p>
@@ -38,7 +41,7 @@
                         </i-col>
                     </Row>
                     <form-item class="login-btn">
-                       <i-button @click="loging" type="submit" size="large" :loading="loading" :disabled="clockDisable" 　long>
+                       <i-button @click="loging" type="primary" size="large" :loading="loading" :disabled="clockDisable" long>
                            ログイン
                        </i-button>
                     </form-item>
@@ -130,14 +133,12 @@
                 }
                 return isPass
             },
-            loging: Debounce(async function () {
+            loging: Debounce(function () {
                 const isPass = this.formCheck()
                 if (isPass) {
                     this.loading = true
                     this.clockDisable = true
                     try {
-                        // await this.http.postForm('/login', this.login)
-                        // location.href = "/login"
                         this.$refs.login.$el.submit()
                     } catch (error) {
                         console.log(error)
