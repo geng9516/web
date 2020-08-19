@@ -320,6 +320,7 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
 
     /**
      * 週勤務パターン画面に勤務区分リスト
+     *
      * @param params
      * @return
      */
@@ -327,8 +328,17 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
 
     /**
      * 週勤務パターンを削除する
+     *
      * @param params
      */
     void deleteWeekPtn(HashMap<String, Object> params);
+
+    /**
+     * [勤怠]週次勤務パターン（エラーチェック用）抽出登録
+     *
+     * @param params
+     * @return
+     */
+    int buildSQLForSelectInsertTmgWeekPatternCheck(HashMap<String, Object> params);
 
 }

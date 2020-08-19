@@ -222,7 +222,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public void deleteDailyCheck(String employeeId, String compCode, String custId,String sTargetDate) {
+    public void deleteDailyCheck(String employeeId, String compCode, String custId, String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("compCode", compCode);
@@ -232,7 +232,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public void deleteDailyDetailCheck(String employeeId, String compCode, String custId,String sTargetDate) {
+    public void deleteDailyDetailCheck(String employeeId, String compCode, String custId, String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("compCode", compCode);
@@ -333,7 +333,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode,String sTargetDate) {
+    public void deleteDetailCheck(String custId, String compCode, String sLoginUserCode, String sTargetDate) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
         params.put("compCode", compCode);
@@ -483,6 +483,20 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("compCode", compCode);
         params.put("twp_nid", twp_nid);
         baseMapper.deleteWeekPtn(params);
+    }
+
+    @Override
+    public int buildSQLForSelectInsertTmgWeekPatternCheck(String custId, String compCode, String employeeId, String modifieruserid, String modifierprogramid, String twp_dstartdate, String twp_denddate, String twp_nid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("modifieruserid", modifieruserid);
+        params.put("modifierprogramid", modifierprogramid);
+        params.put("twp_dstartdate", twp_dstartdate);
+        params.put("twp_denddate", twp_denddate);
+        params.put("twp_nid", twp_nid);
+        return baseMapper.buildSQLForSelectInsertTmgWeekPatternCheck(params);
     }
 
 }

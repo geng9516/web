@@ -328,7 +328,7 @@
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
         and twp_cemployeeid = #{employeeId}
-        and twp_denddate >=  trunc(sysdate)
+        and twp_denddate >= trunc(sysdate)
         <!-- <if test="isAfter == true">
              and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
              and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
@@ -1320,5 +1320,126 @@
     <delete id="deleteWeekPtn" parameterType="java.util.HashMap">
         delete from tmg_week_pattern p  where p.twp_ccustomerid =#{custId} and p.twp_ccompanyid = #{compCode} and p.twp_nid = #{twp_nid}
     </delete>
+
+    <!--  [勤怠]週次勤務パターン（エラーチェック用）抽出登録 -->
+    <insert id="buildSQLForSelectInsertTmgWeekPatternCheck" parameterType="java.util.HashMap">
+        insert into tmg_week_pattern_check
+        (twp_nid , twp_ccustomerid , twp_ccompanyid , twp_cemployeeid ,
+        twp_dstartdate , twp_denddate , twp_cmodifieruserid ,
+        twp_dmodifieddate , twp_cmodifierprogramid , twp_copen1 ,
+        twp_cclose1 , twp_crestopen1 , twp_crestclose1 , twp_cholflg1 ,
+        twp_copen2 , twp_cclose2 , twp_crestopen2 , twp_crestclose2 ,
+        twp_cholflg2 , twp_copen3 , twp_cclose3 , twp_crestopen3 ,
+        twp_crestclose3 , twp_cholflg3 , twp_copen4 , twp_cclose4 ,
+        twp_crestopen4 , twp_crestclose4 , twp_cholflg4 , twp_copen5 ,
+        twp_cclose5 , twp_crestopen5 , twp_crestclose5 , twp_cholflg5 ,
+        twp_copen6 , twp_cclose6 , twp_crestopen6 , twp_crestclose6 ,
+        twp_cholflg6 , twp_copen7 , twp_cclose7 , twp_crestopen7 ,
+        twp_crestclose7 , twp_cholflg7)
+        select tmg_week_pattern_seq.nextval
+        ,twp_ccustomerid
+        ,twp_ccompanyid
+        ,twp_cemployeeid
+        ,twp_dstartdate
+        ,twp_denddate
+        ,twp_cmodifieruserid
+        ,sysdate
+        ,twp_cmodifierprogramid
+        ,twp_copen1
+        ,twp_cclose1
+        ,twp_crestopen1
+        ,twp_crestclose1
+        ,twp_cholflg1
+        ,twp_copen2
+        ,twp_cclose2
+        ,twp_crestopen2
+        ,twp_crestclose2
+        ,twp_cholflg2
+        ,twp_copen3
+        ,twp_cclose3
+        ,twp_crestopen3
+        ,twp_crestclose3
+        ,twp_cholflg3
+        ,twp_copen4
+        ,twp_cclose4
+        ,twp_crestopen4
+        ,twp_crestclose4
+        ,twp_cholflg4
+        ,twp_copen5
+        ,twp_cclose5
+        ,twp_crestopen5
+        ,twp_crestclose5
+        ,twp_cholflg5
+        ,twp_copen6
+        ,twp_cclose6
+        ,twp_crestopen6
+        ,twp_crestclose6
+        ,twp_cholflg6
+        ,twp_copen7
+        ,twp_cclose7
+        ,twp_crestopen7
+        ,twp_crestclose7
+        ,twp_cholflg7
+        from tmg_week_pattern
+        where twp_ccustomerid = #{custId}
+        and twp_ccompanyid = #{compCode}
+        and twp_cemployeeid = #{employeeId}
+        <if test="twp_nid != null">
+            and twp_nid != #{twp_nid}
+        </if>
+        <if test="twp_nid != null">
+            union
+            select tmg_week_pattern_seq.nextval
+            ,twp_ccustomerid
+            ,twp_ccompanyid
+            ,twp_cemployeeid
+            ,#{twp_dstartdate} as twp_dstartdate
+            ,#{twp_denddate} as twp_denddate
+            ,#{modifieruserid}
+            ,sysdate
+            ,#{modifierprogramid}
+            ,twp_copen1
+            ,twp_cclose1
+            ,twp_crestopen1
+            ,twp_crestclose1
+            ,twp_cholflg1
+            ,twp_copen2
+            ,twp_cclose2
+            ,twp_crestopen2
+            ,twp_crestclose2
+            ,twp_cholflg2
+            ,twp_copen3
+            ,twp_cclose3
+            ,twp_crestopen3
+            ,twp_crestclose3
+            ,twp_cholflg3
+            ,twp_copen4
+            ,twp_cclose4
+            ,twp_crestopen4
+            ,twp_crestclose4
+            ,twp_cholflg4
+            ,twp_copen5
+            ,twp_cclose5
+            ,twp_crestopen5
+            ,twp_crestclose5
+            ,twp_cholflg5
+            ,twp_copen6
+            ,twp_cclose6
+            ,twp_crestopen6
+            ,twp_crestclose6
+            ,twp_cholflg6
+            ,twp_copen7
+            ,twp_cclose7
+            ,twp_crestopen7
+            ,twp_crestclose7
+            ,twp_cholflg7
+            from tmg_week_pattern
+            where twp_ccustomerid = #{custId}
+            and twp_ccompanyid = #{compCode}
+            and twp_cemployeeid = #{employeeId}
+            and twp_nid = #{twp_nid}
+        </if>
+    </insert>
+
 
 </mapper>

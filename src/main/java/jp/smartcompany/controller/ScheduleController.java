@@ -188,17 +188,38 @@ public class ScheduleController {
      */
     @PostMapping("executeMakeWeekPattern")
     @ResponseBody
-    public void executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
-                                             @RequestParam("txtEndDate") String txtEndDate,
-                                             @RequestParam("content") String content,
-                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public boolean executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
+                                                @RequestParam("txtEndDate") String txtEndDate,
+                                                @RequestParam("content") String content,
+                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
-        tmgScheduleBean.executeMakeWeekPattern_UWPtn(content);
+        return tmgScheduleBean.executeMakeWeekPattern_UWPtn(content);
     }
 
     /**
-     * 週勤務パターン登録画面　登録処理
+     * 週勤務パターンの適用時間を更新する
+     *
+     * @param twp_dstartdate 　--> 適用開始時間
+     * @param twp_denddate   　-->　適用終了時間
+     * @param twp_nid        　-->　週勤務パターン　ユニークなid
+     * @param psDBBean       　-->　psDBBean　txtACTIONが必要です
+     * @return
+     */
+    @PostMapping("executeUpdateWeekPattern")
+    @ResponseBody
+    public boolean executeUpdateWeekPattern(@RequestParam("twp_dstartdate") String twp_dstartdate,
+                                            @RequestParam("twp_denddate") String twp_denddate,
+                                            @RequestParam("twp_nid") String twp_nid,
+                                            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(twp_dstartdate, twp_denddate, psDBBean);
+        return tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid);
+    }
+
+
+    /**
+     * 対象ユーザー情報
      * http://localhost:6879/sys/schedule/selectTargetUserDetail
      *
      * @param psDBBean
@@ -283,12 +304,13 @@ public class ScheduleController {
     /**
      * 発令日表示処理
      * http://localhost:6879/sys/schedule/hatuRei
+     *
      * @param psDBBean
      * @return
      */
     @GetMapping("hatuRei")
     @ResponseBody
-    public HatuReiVo getHatuReiVoInfo(@RequestParam("txtBaseDate") String txtBaseDate,@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public HatuReiVo getHatuReiVoInfo(@RequestParam("txtBaseDate") String txtBaseDate, @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
         tmgResultsBean.setThisMonth(txtBaseDate);
         tmgResultsBean.setReferList(TmgReferList.TREEVIEW_TYPE_EMP, psDBBean);

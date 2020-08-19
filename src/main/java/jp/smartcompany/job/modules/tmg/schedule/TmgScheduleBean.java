@@ -1485,12 +1485,62 @@ public class TmgScheduleBean {
     }
 
     /**
+     * 週勤務パターンの適用時間を更新する
+     *
+     * @param twp_dstartdate
+     * @param twp_denddate
+     * @param twp_nid
+     * @return
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean executeMakeWeekPattern_UWPtn(String twp_dstartdate, String twp_denddate, String twp_nid) {
+        if (null == twp_dstartdate || null == twp_denddate || null == twp_nid || "".equals(twp_dstartdate) || "".equals(twp_denddate) || "".equals(twp_nid)) {
+            logger.error("パラメータが不正です");
+            return false;
+        }
+        /**
+         * eg:ACT_MakeWeekPattern_UWPtn
+         */
+        String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
+        //初期化modifiedProgramId
+        if (null == actionParam || "".equals(actionParam)) {
+            actionParam = "ACT_MakeWeekPattern_UWPtn";
+        }
+        /**
+         * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
+         */
+        String modifierprogramid = "TmgSchedule_" + actionParam;
+        String _errCode = "0";
+        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        //既存レコードをインサート
+        iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, twp_dstartdate, twp_denddate, twp_nid);
+
+        //エラーメッセージに追加する
+        iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
+        //エラーメッセージ取得
+        String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        if (!_errCode.equals(errCode)) {
+            logger.error("週勤務パターン登録の際は、エラーが発生しました!");
+            return false;
+        }
+        iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
+        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        return true;
+    }
+
+
+    /**
      * 週勤務パターン登録画面　登録処理
      *
      * @param content
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void executeMakeWeekPattern_UWPtn(String content) {
+    public boolean executeMakeWeekPattern_UWPtn(String content) {
+        boolean flag = true;
         List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
         if (JSONUtil.isJsonObj(content)) {
             JSONObject jsonObject = JSONUtil.parseObj(content);
@@ -1560,10 +1610,12 @@ public class TmgScheduleBean {
                         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
 
                     } else {
+                        flag = false;
                         logger.error("週勤務パターンリストを取得失敗しました");
                     }
 
                 } else {
+                    flag = false;
                     logger.error("JSON対象がオブジェクトに変更することが失敗しました");
                 }
 
@@ -1594,6 +1646,9 @@ public class TmgScheduleBean {
                         iTmgScheduleService.insertTmgWeekPatternCheck(tmgWeekPatternCheckDTO);
                     }
                 }
+                //logger.info("_targetUserCode--->" + _targetUserCode);
+                //既存レコードをインサート
+                iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, null, null, null);
 
                 //エラーメッセージに追加する
                 iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
@@ -1601,7 +1656,7 @@ public class TmgScheduleBean {
                 String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
                 if (!_errCode.equals(errCode)) {
                     logger.error("週勤務パターン登録の際は、エラーが発生しました!");
-                    return;
+                    return false;
                 }
                 iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
                 iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
@@ -1609,9 +1664,12 @@ public class TmgScheduleBean {
                 iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
             }
         } else {
+            flag = false;
             logger.error("JSON対象ではありません");
         }
+        return flag;
     }
+
 
     /**
      * TmgMonthlyの更新日取得(予定確認画面)

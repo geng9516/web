@@ -245,7 +245,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param custId
      */
-    void deleteDailyCheck(String employeeId, String compCode, String custId,String sTargetDate);
+    void deleteDailyCheck(String employeeId, String compCode, String custId, String sTargetDate);
 
     /**
      * エラーチェックを削除する
@@ -254,7 +254,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param custId
      */
-    void deleteDailyDetailCheck(String employeeId, String compCode, String custId,String sTargetDate);
+    void deleteDailyDetailCheck(String employeeId, String compCode, String custId, String sTargetDate);
 
     /**
      * [勤怠]日別情報を更新する
@@ -353,7 +353,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param compCode
      * @param sLoginUserCode
      */
-    void deleteDetailCheck(String custId, String compCode, String sLoginUserCode,String sTargetDate);
+    void deleteDetailCheck(String custId, String compCode, String sLoginUserCode, String sTargetDate);
 
 
     /**
@@ -484,9 +484,26 @@ public interface ITmgScheduleService extends IService<Object> {
 
     /**
      * 週勤務パターンを削除する
+     *
      * @param custId
      * @param compCode
      * @param twp_nid
      */
     void deleteWeekPtn(String custId, String compCode, String twp_nid);
+
+    /**
+     * [勤怠]週次勤務パターン（エラーチェック用）抽出登録
+     *
+     * @param custId            　　　必要
+     * @param compCode          　　　必要
+     * @param employeeId        　　　必要
+     * @param modifieruserid    　　　非必要
+     * @param modifierprogramid 　　　非必要
+     * @param twp_dstartdate    　　　非必要
+     * @param twp_denddate      　　　非必要
+     * @param twp_nid           　　　非必要
+     * @return
+     */
+    int buildSQLForSelectInsertTmgWeekPatternCheck(String custId, String compCode, String employeeId, String modifieruserid, String modifierprogramid, String twp_dstartdate, String twp_denddate, String twp_nid);
+
 }
