@@ -9,7 +9,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content monthWorkConfirm-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content monthWorkConfirm-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -310,9 +310,7 @@
             <Spin size="large" fix v-if="dailyloading"></Spin>
         </div>
     </Drawer>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up"/>
-    </span>
+    <back-top></back-top>
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
@@ -324,7 +322,6 @@
                 monthlyLoading:false,
                 dailyloading:false,
                 contentScrollTop: 0,
-                isScroll: false,
                 selectDisabled: false,   　//年月選択可否制御
                 dispMonthlyList: [],       //年月リスト
                 model1: '',
@@ -563,9 +560,11 @@
         },
         async mounted() {
             this.init()
-        },
-        created() {
-        },
+            window.addEventListener('scroll',this.handleScroll,true)
+            },
+            beforeDestroy() {
+                window.removeEventListener("mousedown",this.handleScroll,true)
+            },
         computed: {
             tableHeadFixed() {
                 if (this.contentScrollTop > 310) return true
@@ -575,20 +574,8 @@
         methods: {
 
             handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
             async init() {
 
                 try {
