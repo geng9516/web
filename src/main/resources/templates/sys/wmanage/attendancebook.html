@@ -9,7 +9,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content workyearschedule-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content workyearschedule-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -186,9 +186,7 @@
             </template>
         </i-table>
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up" />
-        </span>
+    <back-top></back-top>
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
@@ -233,7 +231,6 @@
                 fromYYYYMM: '',       　  //出勤簿の表示開始年月
                 toYYYYMM: '',             //出勤簿の表示終了年月
                 contentScrollTop: 0,
-                isScroll: false,
                 titleStartMonth: '',    //デフォルト開始月
                 data: [],
                 emplistLoading: false,  //職員番号ローディング用動画
@@ -267,10 +264,12 @@
             }
         },
         async mounted() {
-
             this.getOrgTree()
             this.getSearchCondition()
-
+            window.addEventListener('scroll',this.handleScroll,true)
+            },
+        beforeDestroy() {
+            window.removeEventListener("mousedown",this.handleScroll,true)
         },
         computed: {
             tableHeadFixed() {
@@ -520,20 +519,8 @@
             },
 
             handleScroll: Throttle(function(e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
             async　preYear() {
                 this.showPre = false
                 this.query.year = Utils.formatDate(this.existsAttendanceBook.lastYear, 'yyyy')

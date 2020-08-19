@@ -1,22 +1,9 @@
 package jp.smartcompany.framework;
 
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
-import jp.smartcompany.controller.PermStatListController;
-import jp.smartcompany.job.NextJobApplication;
-import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo;
-import jp.smartcompany.job.modules.tmg.tmgresults.vo.DispMonthlyVO;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
-import org.junit.Before;
-import org.junit.Test;
+import jp.smartcompany.NextJobApplication;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.List;
-import java.util.Map;
 
 
 @SpringBootTest(classes = NextJobApplication.class)

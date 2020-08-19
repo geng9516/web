@@ -1081,12 +1081,32 @@ public class TmgScheduleBean {
     /**
      * [区分][出張][勤務パターン]
      *
+     * @param baseDate
+     * @return
+     */
+    public HashMap<String, Object> selectIkkaInfo(String baseDate) {
+        if (null != psDBBean) {
+            String groupid = psDBBean.getGroupID();
+            String sectionid = psDBBean.getRequestHash().get("sectionid") == null ? "" : psDBBean.getRequestHash().get("sectionid").toString();
+            String custId = _targetCustCode;
+            String compId = _targetCompCode;
+            String language = _loginLanguageCode;
+            return this.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
+        } else {
+            logger.error("psDBBean 対象が空です");
+            return null;
+        }
+    }
+
+    /**
+     * [区分][出張][勤務パターン]
+     *
      * @return
      */
     public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid, String baseDate, String custId, String compId, String language) {
         if ("".equals(baseDate) || null == baseDate) {
+            baseDate = getSysdate();
             logger.warn("baseDateが空です");
-            return null;
         }
         if ("".equals(custId) || null == custId) {
             logger.warn("custIdが空です");
@@ -1498,37 +1518,11 @@ public class TmgScheduleBean {
             logger.error("パラメータが不正です");
             return false;
         }
-        /**
-         * eg:ACT_MakeWeekPattern_UWPtn
-         */
-        String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
-        //初期化modifiedProgramId
-        if (null == actionParam || "".equals(actionParam)) {
-            actionParam = "ACT_MakeWeekPattern_UWPtn";
-        }
-        /**
-         * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
-         */
-        String modifierprogramid = "TmgSchedule_" + actionParam;
-        String _errCode = "0";
-        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        //既存レコードをインサート
-        iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, twp_dstartdate, twp_denddate, twp_nid);
-
-        //エラーメッセージに追加する
-        iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
-        //エラーメッセージ取得
-        String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        if (!_errCode.equals(errCode)) {
-            logger.error("週勤務パターン登録の際は、エラーが発生しました!");
+        int count = iTmgScheduleService.updateWeekPattern(twp_dstartdate, twp_denddate, twp_nid, _loginUserCode);
+        logger.info("週勤務パターン更新件数:" + count);
+        if (count != 1) {
             return false;
         }
-        iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
-        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         return true;
     }
 

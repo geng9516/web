@@ -681,6 +681,7 @@
         },
         async mounted() {
             this.getOrgTree()
+            this.getSearchCondition()
         },
         created() {
         },
@@ -796,6 +797,11 @@
                 } else {
                     await this.getTitleData()
                 }
+            },
+            async getSearchCondition() {
+                const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList= Object.keys(data.searchConditions).map(e=> { return { name:data.searchConditions[e], value:e }})
+                this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
             },
 //月次一覧画面用
             // 勤務年月一覧取得

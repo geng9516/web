@@ -1389,7 +1389,7 @@
         </if>
         <if test="twp_nid != null">
             union
-            select #{twp_nid}
+            select tmg_week_pattern_seq.nextval
             ,twp_ccustomerid
             ,twp_ccompanyid
             ,twp_cemployeeid
@@ -1440,6 +1440,15 @@
             and twp_nid = #{twp_nid}
         </if>
     </insert>
+    <!-- 勤務パターンを更新する -->
+    <update id="updateWeekPattern" parameterType="java.util.HashMap">
+        update tmg_week_pattern p
+           set p.twp_dstartdate = #{twp_dstartdate},
+            p.twp_denddate = #{twp_denddate},
+            p.twp_cmodifieruserid = #{modifieruserid}
+         where p.twp_nid = #{twp_nid}
+    </update>
+
 
 
 </mapper>

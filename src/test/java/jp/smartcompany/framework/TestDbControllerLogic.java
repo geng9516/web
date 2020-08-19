@@ -5,7 +5,7 @@ import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
-import jp.smartcompany.job.NextJobApplication;
+import jp.smartcompany.NextJobApplication;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import java.util.List;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.SQLException;
 import java.util.Vector;
 

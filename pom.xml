@@ -10,10 +10,10 @@
     </parent>
 
     <groupId>jp.smartcompany</groupId>
-    <artifactId>job</artifactId>
+    <artifactId>web-work</artifactId>
     <version>1.0.0</version>
     <packaging>war</packaging>
-    <name>next-job</name>
+    <name>web-work</name>
     <description>Web就業システム</description>
 
     <properties>
@@ -22,23 +22,12 @@
         <shiro-spring.version>1.6.0</shiro-spring.version>
         <hutool.version>5.4.0</hutool.version>
         <poi.version>4.1.2</poi.version>
-        <itext.version>7.1.11</itext.version>
         <servlet.version>4.0.1</servlet.version>
         <jdom.version>2.0.6</jdom.version>
         <thymeleaf.shiro.version>2.0.0</thymeleaf.shiro.version>
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>${servlet.version}</version>
-            <scope>provided</scope>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.springframework.boot</groupId>-->
-<!--            <artifactId>spring-boot-starter-actuator</artifactId>-->
-<!--        </dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -58,6 +47,12 @@
             <artifactId>thymeleaf-extras-shiro</artifactId>
             <version>${thymeleaf.shiro.version}</version>
         </dependency>
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <version>6.4.0</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -67,12 +62,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-tomcat</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -163,21 +152,6 @@
             <version>${poi.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>kernel</artifactId>
-            <version>${itext.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>io</artifactId>
-            <version>${itext.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>layout</artifactId>
-            <version>${itext.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jdom</groupId>
             <artifactId>jdom2</artifactId>
             <version>${jdom.version}</version>
@@ -194,16 +168,6 @@
         <dependency>
             <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jasperreports</groupId>
-            <artifactId>jasperreports</artifactId>
-            <version>6.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.lesper</groupId>
-            <artifactId>iTextAsian</artifactId>
-            <version>2.0</version>
         </dependency>
     </dependencies>
 
@@ -234,13 +198,13 @@
 
         <resources>
             <resource>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
                 <directory>src/main/java</directory>
                 <includes>
                     <include>**/*.properties</include>
                 </includes>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
             </resource>
         </resources>
 

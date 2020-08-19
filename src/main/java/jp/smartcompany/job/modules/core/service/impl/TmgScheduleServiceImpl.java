@@ -499,4 +499,14 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.buildSQLForSelectInsertTmgWeekPatternCheck(params);
     }
 
+    @Override
+    public int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid,String modifieruserid) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("twp_dstartdate", twp_dstartdate);
+        params.put("twp_denddate", twp_denddate);
+        params.put("twp_nid", twp_nid);
+        params.put("modifieruserid", modifieruserid);
+        return baseMapper.updateWeekPattern(params);
+    }
+
 }

@@ -194,6 +194,9 @@ public class TmgNotificationBean {
         if(psDBBean.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
             param.setEmployeeListSql(referList.buildSQLForSelectEmployees());
         }
+        //if(!isNtfTermUseCond(psDBBean)){
+        param.setIsNtfTermUseCond(1);
+        //}
         //数据取得
         List<NotificationListVo> notificationListVoList = iTmgNotificationService.selectNotificationList(param);
         //数据处理
@@ -1959,6 +1962,23 @@ public class TmgNotificationBean {
 
     }
 
+//
+//    /**
+//     * 廃棄
+//     * 承認一覧画面表示対象となる申請範囲が条件指定かどうかを判定します。
+//     * @return boolean 判定結果（true：条件指定、false：条件指定以外（年度毎））
+//     */
+//    public boolean isNtfTermUseCond(PsDBBean psDBBean) {
+//        Boolean bNtfTermCondition = null;
+//        // 申請期間指定範囲の表示設定の場合、trueを返す。
+//        if (bNtfTermCondition == null) {
+//            bNtfTermCondition = "direct".equals(psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_NTF_TERM_CONDITION).toLowerCase());
+//        }
+//
+//        return bNtfTermCondition;
+//    }
+
+
 
 //    /**
 //     * エラーメッセージ(更新)に追加する
@@ -2476,21 +2496,6 @@ public class TmgNotificationBean {
 //            param.setNtfTermEnd(sEnd);
 //        }
 //
-//    }
-
-//    /**
-//     * 廃棄
-//     * 承認一覧画面表示対象となる申請範囲が条件指定かどうかを判定します。
-//     * @return boolean 判定結果（true：条件指定、false：条件指定以外（年度毎））
-//     */
-//    public boolean isNtfTermUseCond() {
-//        Boolean bNtfTermCondition = null;
-//        // 申請期間指定範囲の表示設定の場合、trueを返す。
-//        if (bNtfTermCondition == null) {
-//            bNtfTermCondition = "direct".equals(psDBBean.getSystemProperty(TmgUtil.Cs_CYC_PROPNAME_NTF_TERM_CONDITION).toLowerCase());
-//        }
-//
-//        return bNtfTermCondition;
 //    }
 
 

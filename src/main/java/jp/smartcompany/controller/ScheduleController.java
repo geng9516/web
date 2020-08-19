@@ -80,9 +80,9 @@ public class ScheduleController {
      * @param language
      * @return
      */
-    @GetMapping("selectIkkaInfo")
+    @GetMapping("selectIkkaInfo2")
     @ResponseBody
-    public HashMap<String, Object> selectIkkaInfo(
+    public HashMap<String, Object> selectIkkaInfo2(
             @RequestParam("sectionid") String sectionid,
             @RequestParam("groupid") String groupid,
             @RequestParam("baseDate") String baseDate,
@@ -90,9 +90,28 @@ public class ScheduleController {
             @RequestParam("compId") String compId,
             @RequestParam("language") String language) {
         //初期化
+
         return tmgScheduleBean.selectIkkaInfo(sectionid, groupid, baseDate, custId, compId, language);
     }
 
+
+    /**
+     * [区分][出張][勤務パターン]
+     * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=46402406&txtBaseDate=&txtEndDate=
+     * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
+     *
+     * @param baseDate
+     * @return
+     */
+    @GetMapping("selectIkkaInfo")
+    @ResponseBody
+    public HashMap<String, Object> selectIkkaInfo(
+            @RequestParam("baseDate") String baseDate,
+            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //初期化
+        tmgScheduleBean.setExecuteParameters(baseDate, null, psDBBean);
+        return tmgScheduleBean.selectIkkaInfo(baseDate);
+    }
 
     /**
      * 予定作成更新処理を行います
@@ -203,7 +222,7 @@ public class ScheduleController {
      * @param twp_dstartdate 　--> 適用開始時間
      * @param twp_denddate   　-->　適用終了時間
      * @param twp_nid        　-->　週勤務パターン　ユニークなid
-     * @param psDBBean       　-->　psDBBean　txtACTIONが必要です
+     //* @param psDBBean       　-->　psDBBean　txtACTIONが必要です
      * @return
      */
     @PostMapping("executeUpdateWeekPattern")

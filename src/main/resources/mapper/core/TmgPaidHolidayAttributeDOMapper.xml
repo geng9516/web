@@ -223,7 +223,7 @@
             A.TPHA_CCUSTOMERID = #{customerId}
         AND A.TPHA_CCOMPANYID = #{companyId}
         AND A.TPHA_CEMPLOYEEID = #{employeeId}
-        AND A.TPHA_DSTARTDATE <![CDATA[>=]]> TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
+        AND A.TPHA_DSTARTDATE <![CDATA[<=]]> TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
         AND A.TPHA_DENDDATE >= TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
         ;
     </select>

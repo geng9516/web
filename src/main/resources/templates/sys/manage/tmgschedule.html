@@ -28,14 +28,15 @@
         <div class="searchwrap">
             <!-- 共通組織図画面 start-->
             <span style="display:flex;width: calc(15% + 200px);">
-                    <span class="label">所属</span>
-                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
+                <span class="label">所属</span>
+                <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
                               style="width: calc(100% - 120px);border-radius:0">
                         {{ deptName }}
                     </i-button>
-
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
-                            v-model="deptDrawShow">
+               <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                       :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                <tab-pane label="ツリー" name="organisationTree">
                         <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
                             所属
@@ -55,6 +56,13 @@
                             </i-select>
                             </div>
                         </Row>
+                        <div style="position: relative;">
+                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                  empty-text="所属データなし"></Tree>
+                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                        </div>
+                </tab-pane>
+                <tab-pane label="検索" name="organisationSearch">
                         <Row class="tl mb2" :gutter="8">
                             <i-col span="15">
                                 <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">
@@ -70,15 +78,20 @@
                                 <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" @click="searchOrgTree">検索</i-button>
                             </i-col>
                         </Row>
-
+                        <div class="titlenorm mt15">
+                            <Icon type="logo-buffer"></Icon>
+                            社員
+                        </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                  empty-text="所属データなし"></Tree>
+                            <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                                  empty-text="社員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
-                    </Drawer>
-                <!-- 共通組織図画面 end-->
-                </span>
+                </tab-pane>
+               </Tabs>
+                </Drawer>
+            </span>
+            <!-- 共通組織図画面 end-->
             <span class="label">氏名</span>
             <span class="input-like-span width15 mr30">{{ kanjiName }}</span>
             <span class="label">種別</span>
@@ -287,6 +300,7 @@
         el: '.tmgschedule-warp',
         data() {
             return {
+                isSearchHistory: false,
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 preMonthDisable:false,
                 nextMonthDisable:false,
@@ -370,6 +384,7 @@
                     txtBaseDate:''
                 },
                 selectedDeptViewType: 3,
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
                 empDeptLoading: false,  // 組織ツリーloading用
                 deptDrawShow: false,    //組織ツリー用
                 treeData:[],            //組織ツリー用
@@ -377,6 +392,7 @@
                 searchConditionsList: [],//組織ツリー用
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
+
                 query: {
                     EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -384,14 +400,8 @@
                     txtBaseDate:'',
                     txtEndDate:'',
                     content:{},
-
-                    //
                     sectionid:'',
                     groupid:'',
-                    baseDate:'',
-                    custId:'',
-                    compId:'',
-                    language:'',
                 },
             }
         },
@@ -482,8 +492,8 @@
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    this.referListObject.txtBaseDate=txtBaseDate
-                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, this.referListObject)
+                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
+                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -583,8 +593,12 @@
 
             },
             async handleClickLeaf(e) {
+                if(!e[0]) return
+                if(e[0].children) return
+
                 this.deptDrawShow = false
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
                 this.kanjiName = e[0].empname
@@ -594,11 +608,8 @@
                 this.wokertypename=e[0].wokertypename
 
                 this.query.sectionid= e[0].secid
-                this.query.language='ja'
-                this.query.groupid='null'
-                this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
-                this.query.custId=e[0].cust
-                this.query.compId=e[0].comp
+                this.query.groupid=e[0].groupid
+
 
 
                 await  this.getSelectScheduleInfo()
@@ -837,7 +848,9 @@
 
             }),
             async getSelectIkkaInfo() {
-                    const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, this.query)
+                const query = {...this.query,baseDate:'' }
+
+                const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`,query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
@@ -884,7 +897,7 @@
                 this.empDeptLoading = true
                 try {
                     const { data } = await this.http.get('sys/tree/search', this.referListObject)
-                    this.treeData = Utils.convertTreeData(data)
+                    this.empTreeData = Utils.convertTreeData(data)
                     this.$Notice.success({ title:'所属図更新完了' })
                 } catch (error) {
                     return
@@ -935,6 +948,13 @@
                 this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
                 if (this.$refs.layout.scrollTop === 0) {
                     cancelAnimationFrame(animateMachine)
+                }
+            },
+            currentTabChanged(name) {
+                if (name=="organisationTree") {
+                    this.query.hidSelectTab='0'
+                } else if (name=="organisationSearch") {
+                    this.query.hidSelectTab='1'
                 }
             },
 

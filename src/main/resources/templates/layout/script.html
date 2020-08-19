@@ -8,6 +8,11 @@
   <script th:src="${baseUrl + '/static/libs/browser.min.js'}"></script>
   <!--支持ES6余下语法，如Promise-->
   <script th:src="${baseUrl + '/static/libs/browser-polyfill.min.js' }"></script>
+  <!--全局引入baseURL-->
+  <script th:inline="javascript" type="text/javascript">
+    var BASE_URL = [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]]
+  </script>
+
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
   <script th:src="${baseUrl + '/static/libs/iview.min.js'}"></script>
   <script th:src="${baseUrl + '/static/libs/ja-JP.js'}"></script>
