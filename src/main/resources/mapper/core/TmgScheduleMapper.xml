@@ -1389,7 +1389,7 @@
         </if>
         <if test="twp_nid != null">
             union
-            select tmg_week_pattern_seq.nextval
+            select #{twp_nid}
             ,twp_ccustomerid
             ,twp_ccompanyid
             ,twp_cemployeeid
