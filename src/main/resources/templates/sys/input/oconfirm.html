@@ -9,7 +9,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content oconfirm-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content oconfirm-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -106,9 +106,7 @@
             <Spin size="large" fix v-if="loading"></Spin>
         </div>
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up" />
-        </span>
+    <back-top></back-top>
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
@@ -138,13 +136,16 @@
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                },
-                isScroll: false,
+                }
             }
         },
         async mounted() {
             console.log([[${ session }]])
             this.getSelectScheduleInfo()
+            window.addEventListener('scroll',this.handleScroll,true)
+            },
+        beforeDestroy() {
+            window.removeEventListener("mousedown",this.handleScroll,true)
         },
         computed: {
             tableHeadFixed() {
@@ -270,21 +271,8 @@
                 }
             },
             handleScroll: Throttle(function(e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
-            }, 50),
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
-
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50)
         }
     })
 </script>
