@@ -1,4 +1,4 @@
-package jp.smartcompany.job;
+package jp.smartcompany;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;

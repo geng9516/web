@@ -2,7 +2,7 @@ package jp.smartcompany.framework;
 
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.framework.compatible.business.Version3CompatibleLogic;
-import jp.smartcompany.job.NextJobApplication;
+import jp.smartcompany.NextJobApplication;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import org.junit.Before;
 import org.junit.Test;

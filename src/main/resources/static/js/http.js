@@ -1,5 +1,5 @@
 // import axios from 'axios'
-axios.defaults.baseURL = 'http://localhost:6879/'
+axios.defaults.baseURL = BASE_URL
 // 请求需要携带cookie时
 // axios.defaults.withCredentials = true
 

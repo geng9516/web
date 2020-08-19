@@ -1,5 +1,4 @@
 server:
-  port: 6879
   tomcat:
     uri-encoding: UTF-8
     threads:
@@ -24,10 +23,6 @@ server:
     encoding:
       charset: utf-8
       force: on
-#management:
-#  endpoint:
-#    health:
-#      show-details: always
 spring:
   profiles:
     active: test
@@ -49,38 +44,9 @@ spring:
       enabled: on
   mvc:
     throw-exception-if-no-handler-found: on
-#  datasource:
-#    type: com.alibaba.druid.pool.DruidDataSource
-#    druid:
-#      initial-size: 20
-#      max-active: 400
-#      min-idle: 80
-#      max-wait: 60000
-#      pool-prepared-statements: true
-#      max-pool-prepared-statement-per-connection-size: 80
-#      time-between-eviction-runs-millis: 60000
-#      min-evictable-idle-time-millis: 300000
-#      #Oracle需要打开注释
-#      validation-query: SELECT 1 FROM DUAL
-#      test-while-idle: false
-#      test-on-borrow: false
-#      test-on-return: false
-#      stat-view-servlet:
-#        enabled: true
-#        url-pattern: /druid/*
-#        #login-username: admin
-#        #login-password: admin
-#      filter:
-#        stat:
-#          log-slow-sql: true
-#          slow-sql-millis: 5000
-#          merge-sql: false
-#        wall:
-#          config:
-#            multi-statement-allow: true
   datasource:
     hikari:
-      poolName: next-job-pool
+      poolName: web-work-pool
       # 自动提交从池中返回的连接
       auto-commit: on
       # 连接最大等待毫秒数

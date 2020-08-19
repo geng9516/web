@@ -8,7 +8,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content patternSetting-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content patternSetting-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -113,9 +113,7 @@
         </i-table>
 
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up"/>
-    </span>
+    <back-top></back-top>
     <!-- 勤務パターンSTART -->
     <template>
       <span>
@@ -201,7 +199,6 @@
                     date: '2019年11月01日(金)'
                 },
                 curDate: new Date(),
-                isScroll: false,
                 contentScrollTop: 0,
                 btn_sk_show: false,
                 btn_sk_commit_show: true,
@@ -408,6 +405,10 @@
         },
         async mounted() {
             this.getOrgTree()
+            window.addEventListener('scroll',this.handleScroll,true)
+            },
+        beforeDestroy() {
+            window.removeEventListener("mousedown",this.handleScroll,true)
         },
         computed: {
             tableHeadFixed() {
@@ -482,12 +483,7 @@
                 return 'sat'
             },
             handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
 
             convertTreeData(treeData = []) {
@@ -966,14 +962,6 @@
                 const {data} = await this.http.get('sys/patternSetting/selectTmgPattern', this.query_ykjtPattern)
                 this.ykjtPatternList = data
                 this.ykjtPatternModel = 'ykjtPatternModel'
-            },
-            //画面のトップに表示する
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
             },
             //　ファイルタイプをチェック
             handleFormatError(file) {

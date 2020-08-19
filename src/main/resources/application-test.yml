@@ -1,6 +1,4 @@
 spring:
-  thymeleaf:
-    cache: off
   datasource:
     url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
     username: tmg_iyaku2
@@ -16,3 +14,5 @@ logging:
     jp.smartcompany.job.modules.core.service: debug
     jp.smartcompany.job.modules.core.mapper: debug
     jp.smartcompany.job.modules.tmg: debug
+server:
+  port: 6879
