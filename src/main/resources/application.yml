@@ -25,7 +25,7 @@ server:
       force: on
 spring:
   profiles:
-    active: prod
+    active: test
   jackson:
     default-property-inclusion: ALWAYS
     time-zone: GMT+9
