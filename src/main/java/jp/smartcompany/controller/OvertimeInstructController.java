@@ -13,6 +13,7 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -78,7 +79,7 @@ public class OvertimeInstructController extends AbstractController {
      * 超過勤務编辑画面
      */
     @GetMapping("editData")
-    public List<DailyOverTimeVo> getEditdata(@RequestParam("baseDay")String baseDay,
+    public EditDailyDispVo getEditdata(@RequestParam("baseDay")String baseDay,
                                     @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
          return overtimeInstructBean.actionExecuteEdit(baseDay,psDBBean);
     }
@@ -104,4 +105,5 @@ public class OvertimeInstructController extends AbstractController {
             , @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         return overtimeInstructBean.demoDisp(baseMonth,psDBBean);
     }
+
 }
