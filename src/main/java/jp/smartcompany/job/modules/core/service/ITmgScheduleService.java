@@ -506,4 +506,16 @@ public interface ITmgScheduleService extends IService<Object> {
      */
     int buildSQLForSelectInsertTmgWeekPatternCheck(String custId, String compCode, String employeeId, String modifieruserid, String modifierprogramid, String twp_dstartdate, String twp_denddate, String twp_nid);
 
+    /**
+     * 週勤務パターンを更新する
+     *
+     * @param twp_dstartdate
+     * @param twp_denddate
+     * @param twp_nid
+     * @param modifieruserid
+     * @return
+     */
+    int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid,String modifieruserid);
+
+
 }
