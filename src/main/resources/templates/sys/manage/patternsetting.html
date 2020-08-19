@@ -19,13 +19,13 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" class="ivu-btn ivu-btn-success ivu-btn-large" @click="mergePattern(null)" size="large" :loading="bulkApprovalLoading" disabled v-if="addPatternShow===false">+
+                <i-button type="success" @click="mergePattern(null)" :loading="bulkApprovalLoading" disabled v-if="addPatternShow===false">+
                     新規
                 </i-button>
-                <i-button type="primary" class="ivu-btn ivu-btn-success ivu-btn-large" @click="mergePattern(null)" size="large" :loading="bulkApprovalLoading" v-else>+ 新規</i-button>
+                <i-button type="success" 　@click="mergePattern(null)" :loading="bulkApprovalLoading" v-else>+ 新規</i-button>
                 <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select" style="margin-top: 8px">
-                    <i-button type="warning" class="ivu-btn ivu-btn-warning ivu-btn-large ivu-btn-ghost" disabled v-if="addPatternShow===false">CSVファイル取込</i-button>
-                    <i-button type="warning" class="ivu-btn ivu-btn-warning ivu-btn-large ivu-btn-ghost" v-else>CSVファイル取込</i-button>
+                    <i-button type="warning" ghost　disabled v-if="addPatternShow===false">CSVファイル取込</i-button>
+                    <i-button type="warning" ghost v-else>CSVファイル取込</i-button>
                 </Upload>
                 <div v-if="file !== null">ファイル: {{ file.name }}
                     <i-button type="text" @click="upload" :loading="loadingStatus">{{ loadingStatus ? 'アップロード中...' : 'アップロード' }}</i-button>
@@ -73,10 +73,8 @@
                 <i-button type="button" class="ivu-btn ivu-btn-default" disabled v-if="btn_sk_show===false"><span>照会</span></i-button>
                 <i-button type="button" class="ivu-btn ivu-btn-default" @click="selectTmgPatternApplies" v-else><span>照会</span></i-button>
                 <Drawer class="tc" :title="deptName" placement="right" width="700" :closable="true" :mask-closable="!isSearchHistory" v-model="empDrawShow">
-                    <div class="ivu-table ivu-table-default ivu-table-border">
                       <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="データなし">
                       </i-table>
-                    </div>
                 </Drawer>
             </span>
             <span style="flex:1"></span>
@@ -121,7 +119,7 @@
     <!-- 勤務パターンSTART -->
     <template>
       <span>
-        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel" >
+        <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
             <form-item label="所属" prop="deptName" class="ivu-form ivu-form-label-right">
@@ -519,7 +517,7 @@
             // 改訂日を変更すると　所属リストを更新する
             async handleDatePicker() {
                 //console.log(this.curDate)
-                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate,'YYYY/MM/DD')
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate(this.curDate, 'YYYY/MM/DD')
 
                 this.isSearchHistory = true
                 await this.getOrgTree()
