@@ -1,9 +1,9 @@
-package jp.smartcompany.job.modules.tmg.tmgledger;
+package jp.smartcompany.job.modules.tmg.util;
 
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsUtil;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRExporterParameter;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -36,7 +36,7 @@ public class TmgPdfReportUtil {
     public static final String SUBREPORT_DIR	= "SUBREPORT_DIR";
 
     /** プロパティファイルパス */
-    public static final String PATH_PROPERTIES  = "ps.c01.tmg.util.TmgPdfReportUtil";
+    public static final String PATH_PROPERTIES  = "jp.smartcompany.job.modules.tmg.util.TmgPdfReportUtil";
 
     /** プロパティKey */
     public static final String PROP_NO_DATA_MGD_LEDGER    = "ERROR_NO_DATA_MGD_LEDGER";
@@ -137,7 +137,7 @@ public class TmgPdfReportUtil {
                 if (!fileJasper.isFile()) {
 
                     // エラーメッセージ：～が存在しません。帳票定義の存在を確認して下さい。
-                    String sErrMsg = PsUtil.getPsUtil().getpropertyvalue(this.gsLang, PROP_NO_FILE_JASPER, PATH_PROPERTIES);
+                    String sErrMsg = SysUtil.getpropertyvalue(this.gsLang, PROP_NO_FILE_JASPER, PATH_PROPERTIES);
                     throw new JRException(fileJasper.getName() + sErrMsg);
                 }
 
@@ -352,7 +352,7 @@ public class TmgPdfReportUtil {
      */
     private String getPropMsg(String psPropKey) {
 
-        return  PsUtil.getPsUtil().getpropertyvalue(this.gsLang, psPropKey, PATH_PROPERTIES);
+        return  SysUtil.getpropertyvalue(this.gsLang, psPropKey, PATH_PROPERTIES);
     }
 
     /**

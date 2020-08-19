@@ -130,7 +130,7 @@
           </radio-group>
         </span>
             <i-button
-                    :loading="empolyeeLoading"
+                    :loading="pdfDownloadLoading"
                     @click="downLoadByPdf"
                     class="mt30 mr10"
                     ghost
@@ -141,7 +141,7 @@
             </i-button>
 
             <i-button
-                    :loading="empolyeeLoading"
+                    :loading="csvDownloadLoading"
                     @click="downLoadByPdf"
                     class="mt30"
                     ghost
@@ -219,7 +219,9 @@
                 errorMsg: '',
                 deptLoading: false,
                 empolyeeLoading: false,
-                empolyeeList: []
+                empolyeeList: [],
+                pdfDownloadLoading: false,
+                csvDownloadLoading: false
             }
         },
          created() {
@@ -392,10 +394,6 @@
                 yearMMDD = yearMMDD+"01"
                 return  yearMMDD
             },
-            async download() {
-                const { data, headers } = await this.http.get('sys/tmgLedger/executeDownloadDownload', this.query)
-                Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
-            },
             async downLoadByPdf() {
                 console.log(this.empName)
                 if (this.curFileTypeInfo.mgdOutputTargetType=='EMP'){
@@ -405,7 +403,7 @@
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '対象職員を選んでください。'
+                            content: '対象職員が未選択です、職員を指定して下さい。'
                         });
                         return
                     }
@@ -416,21 +414,21 @@
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '対象部署を選んでください。'
+                            content: '対象部署が未選択です、部署を指定して下さい。'
                         });
                         return
                     }
                    }
                 try {
+                    this.pdfDownloadLoading = true
                     const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
-                    console.log(headers)
-                    console.log(data)
                     Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                 } catch (e) {
+                    this.pdfDownloadLoading = false
                     return
                 } finally {
                     this.errorInfo = false
-                    this.empolyeeLoading = false
+                    this.pdfDownloadLoading = false
                 }
             },
             handleRestType(e) {
