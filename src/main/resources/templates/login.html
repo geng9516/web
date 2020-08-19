@@ -15,14 +15,13 @@
               <svg class="btm-logo">
                 <use xlink:href="#smart-company-btm"></use>
               </svg>
-            <!-- <figure th:style="${'background-image: url('+ baseUrl + '/static/svg/SmartCompany_Logo_ON'}"></figure>
-            <figure th:style="${'background-image: url('+ baseUrl + '/static/svg/SmartCompany_SVG.svg)'}"></figure> -->
-
         </i-col>
         <i-col span="12" class="right-part">
             <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow" method="post" action="/login">
                 <div class="title">
-                    <figure class="logo-warp" th:style="${'background-image: url('+ baseUrl + '/static/svg/Logo.svg)'}"></figure>
+                    <svg class="logo-warp">
+                        <use xlink:href="#logo"></use>
+                      </svg>
                 </div>
                 <div class="login-content">
                     <p class="login-label">アカウント</p>

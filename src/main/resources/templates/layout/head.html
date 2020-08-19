@@ -3,9 +3,12 @@
      <footer class="footer">Smart Public WorkManager Ver.1.0.0 Copyright© 株式会社日進サイエンティア</footer>
 -->
 <div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org">
+  <svg th:replace="layout/logos::svg_logos"></svg>
 <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
   <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
-  <figure class="head-logo" th:style="${'position: relative;width: 179px;left: 30px;top: 12px;height: 50px;background-repeat: no-repeat;background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/Logo.svg)'}"></figure>
+  <svg class="head-logo">
+    <use xlink:href="#logo"></use>
+  </svg>
   <dropdown trigger="hover" class="layout-Dropdown">
     <a>
       <avatar style="background-color: #87d068;margin-left:10px;">USER</avatar>
