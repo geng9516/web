@@ -400,14 +400,8 @@
                     txtBaseDate:'',
                     txtEndDate:'',
                     content:{},
-
-                    //
                     sectionid:'',
                     groupid:'',
-                    baseDate:'',
-                    custId:'',
-                    compId:'',
-                    language:'',
                 },
             }
         },
@@ -498,8 +492,8 @@
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    this.referListObject.txtBaseDate=txtBaseDate
-                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, this.referListObject)
+                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
+                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
@@ -599,8 +593,12 @@
 
             },
             async handleClickLeaf(e) {
+                if(!e[0]) return
+                if(e[0].children) return
+
                 this.deptDrawShow = false
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
                 this.kanjiName = e[0].empname
@@ -610,11 +608,8 @@
                 this.wokertypename=e[0].wokertypename
 
                 this.query.sectionid= e[0].secid
-                this.query.language='ja'
-                this.query.groupid='null'
-                this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
-                this.query.custId=e[0].cust
-                this.query.compId=e[0].comp
+                this.query.groupid=e[0].groupid
+
 
 
                 await  this.getSelectScheduleInfo()
@@ -853,7 +848,9 @@
 
             }),
             async getSelectIkkaInfo() {
-                    const { data } = await this.http.get(`sys/schedule/selectIkkaInfo2`, this.query)
+                const query = {...this.query,baseDate:'' }
+
+                const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`,query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList

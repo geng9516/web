@@ -634,15 +634,7 @@
                     txtBaseDate:'',
                     txtEndDate:'',
                     content:{},
-
-
-
                     sectionid:'',
-                    groupid:'',
-                    baseDate:'',
-                    custId:'',
-                    compId:'',
-                    language:'',
                 },
                 updateWeekPtnParam:{
                     txtACTION:'',
@@ -741,14 +733,13 @@
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    this.referListObject.txtBaseDate=txtBaseDate
-                    const { data } = await this.http.get(`sys/schedule/hatuRei`, this.referListObject)
+                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
+                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange
                 } catch (error) {
                     return
                 }finally {
-
                 }
             },
             handleInputChange(i,object,value,el) {
@@ -879,7 +870,6 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-
                 this.deptDrawShow = false
 
                 this.loginEmployee = e[0].empid
@@ -888,15 +878,7 @@
                 this.kanjiName = e[0].empname
                 this.selectDisabled = true
                 this.wokertypename=e[0].wokertypename
-
-
                 this.query.sectionid= e[0].secid
-                this.query.language='ja'
-                this.query.groupid='null'
-                this.query.baseDate=Utils.formatDate(Date.now(),'YYYY/MM/DD')
-                this.query.custId=e[0].cust
-                this.query.compId=e[0].comp
-
 
                 this.selectWeekPtn()
                 this.selectTmgWeekPatternList()
@@ -1351,8 +1333,8 @@
 
             }),
             async getSelectIkkaInfo() {
-
-                    const { data } = await this.http.get(`sys/schedule/selectIkkaInfo2`, this.query)
+                    const query = {...this.query,baseDate:'' }
+                    const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
