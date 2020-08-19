@@ -1,10 +1,37 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
-  <head th:replace="layout/header::common_header(title='index')"></head>
+  <head th:replace="layout/header::common_header(title='index',cssPaths='/pages/content.min.css')"></head>
   <body>
    <div th:replace="layout/loadingBar::loadingBar"></div>
     <!-- 菜单导航栏 -->
     <div th:replace="layout/sider"></div>
+    <main class="content">
+      <canvas id="live2dcanvas" width="150" height="300"></canvas>
+      <img style="position: absolute; top: 30%; left: 50%; width: 500px; transform: translate(-50%,-30%);" src="http://imgsrc.baidu.com/forum/pic/item/07189616fdfaaf51927dfa66825494eef11f7a54.jpg"><img>
+    </main>
+    <style>
+      #live2dcanvas{
+        position: fixed;
+        width: 150px;
+        height: 300px;
+        opacity:1;
+        right: 100px;
+        z-index: 999;
+        pointer-events: none;
+        bottom: -0;
+      }
+    </style>
+    <script type="text/javascript">
+    const loadScript = function loadScript(c,b){var a=document.createElement("script");a.type="text/javascript";"undefined"!=typeof b&&(a.readyState?a.onreadystatechange=function(){if("loaded"==a.readyState||"complete"==a.readyState)a.onreadystatechange=null,b()}:a.onload=function(){b()});a.src=c;document.body.appendChild(a)};
+    (function(){
+      if((typeof(device) != 'undefined') && (device.mobile())){
+        document.getElementById("live2dcanvas").style.width = '75px';
+        document.getElementById("live2dcanvas").style.height = '150px';
+      }else
+        if (typeof(device) === 'undefined') console.error('Cannot find current-device script.');
+      loadScript("./static/js/live2d/script.js", function(){loadlive2d("live2dcanvas", "./static/js/live2d/assets/hijiki.model.json", 0.5);});
+    })();
+    </script>
     <script type="text/babel">
       const INDEX = new Vue({
           el: '#moduleFrame',

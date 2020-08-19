@@ -21,6 +21,8 @@
   <script th:src="${baseUrl + '/static/js/http.js'}"></script>
   <script th:src="${baseUrl + '/static/js/filter.js'}"></script>
   <script th:src="${baseUrl + '/static/js/utils.js'}"></script>
+  <script th:src="${baseUrl + '/static/js/live2d/device.min.js'}"></script>
+  <script th:src="${baseUrl + '/static/js/live2d/script.js'}"></script>
   <!--默认资源 End-->
   <th:block th:if="jsPaths!=null">
     <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath}"></script>
