@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -1195,9 +1196,35 @@ public class TmgResultsBean {
 
         monthlyMap.put("countNotApprovalDay", countNotApprovalDay);
 
+
+        boolean isMonthlyApproval = isMonthlyApproval(psDBBean.getTargetUser(),getMonth(),psDBBean.getSiteId());
+        monthlyMap.put("isMonthlyApproval", isMonthlyApproval);
         return monthlyMap;
     }
+    /**
+     * 承認権限(月次)があるかどうか
+     * @param   sEmp  社員番号
+     *          String  日付
+     * @return  boolean true:権限有り/false:なし
+     * @throws
+     */
+    public boolean isMonthlyApproval( String sEmp, String sDate ,String siteId) {
 
+        // 承認サイトのみ判定を行う
+        if( !TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) ) {
+            return true;
+        }
+
+        try {
+            Calendar cal = new GregorianCalendar(Integer.parseInt(getMonth().substring(0, 4)),
+                    Integer.parseInt(getMonth().substring(5, 7)) - 1, 1);
+            return referList.hasAuthorityAtEmployee(sDate,
+                    getMonth().substring(0, 8) + new DecimalFormat("00").format((double) cal.getActualMaximum(Calendar.DAY_OF_MONTH)),
+                    sEmp, TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL );
+        } catch (Exception e) {
+            return false;
+        }
+    }
     /**
      * 勤務・健康状況の確認/解除を行うメソッド
      *

@@ -151,6 +151,7 @@
                     </i-col>
                 </Row>
 
+                <div v-if="hasAuthority">
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
                     一括適用
@@ -194,7 +195,7 @@
                         </i-button>
                     </template>
                 </i-table>
-
+                </div>
                 <!-- 一括適用table end -->
 
                 <!-- 超过勤务命令的详细table start-->
@@ -202,7 +203,7 @@
                     <Icon type="logo-buffer"></Icon>
                     超過勤務命令
                 </div>
-                <div class="tr mb10">
+                <div class="tr mb10" v-if="hasAuthority">
                     <i-button type="primary" class="mr5" ghost @click="handleSelectAll(false)">
                         クリア
                     </i-button>
@@ -259,7 +260,7 @@
                                 class="confirm-sytle ing">待</span>
                             <span
                                 v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('5') > -1"
-                                class="confirm-sytle">済</span>
+                                class="confirm-sytle">確</span>
                             <span
                                 v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
                                 class="confirm-sytle">命</span>
@@ -377,6 +378,7 @@
                     columnsActionData: [{}],   //一括日别编辑表数据
                     value: [],//一括日别编辑表更新用数据
                     tableData3: [],   //日别编辑表数据
+                    hasAuthority:false,
                     overWorkViewType: 2,
                     treeData: [],            //組織ツリー用
                     curDate: new Date(),
@@ -507,11 +509,6 @@
                             title: '備考',
                             minWidth: 70,
                             slot: 'remark',
-                            align: 'center'
-                        },
-                        {
-                            type: 'selection',
-                            width: 60,
                             align: 'center'
                         }
                     ],
@@ -845,8 +842,18 @@
                     }
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
-                        this.tableData3 = data
-                        this.value = data.map(e => {
+                        this.tableData3 = data.dailyOverTimeVoList
+                        this.hasAuthority = data.hasAuthority
+                        if(this.hasAuthority){
+                            this.columns3=this.columns3.concat(
+                                {
+                                type: 'selection',
+                                width: 60,
+                                align: 'center'
+                                }
+                            )
+                        }
+                        this.value = data.dailyOverTimeVoList.map(e => {
                             const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
                                 return {
                                     sNOpen: t.tdadNopen,

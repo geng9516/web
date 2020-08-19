@@ -394,7 +394,7 @@ public class OvertimeInstructBean {
     }
 
     // 日別情報編集画面
-    public List<DailyOverTimeVo> actionExecuteEdit(String baseDate,PsDBBean psDBBean) throws Exception {
+    public EditDailyDispVo actionExecuteEdit(String baseDate,PsDBBean psDBBean) throws Exception {
         //汎用参照コンポーネント。
         referList = new TmgReferList(psDBBean, "OvertimeInstruct", baseDate.substring(0,7)+"/01", TmgReferList.TREEVIEW_TYPE_LIST,
                 true, true, false, false, true
@@ -446,7 +446,11 @@ public class OvertimeInstructBean {
             vo.setMessage(dailyVo.getTdaCmessage());
             dailyOverTimeVos.add(vo);
         }
-        return dailyOverTimeVos;
+
+        EditDailyDispVo vo = new EditDailyDispVo();
+        vo.setDailyOverTimeVoList(dailyOverTimeVos);
+        vo.setHasAuthority(referList.hasAuthority(baseDate, TmgUtil.Cs_AUTHORITY_OVERTIME));
+        return vo;
     }
 
 
