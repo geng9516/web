@@ -792,11 +792,20 @@
 
                         this.dispMonthlyList = data.monthLy
 
-
                         if (data.monthLy.length > 0) {
-                            this.model1 = this.dispMonthlyList[0].code
-                            this.query.txtDYYYYMM = this.model1
+                            let check　= false
+                            check =  this.dispMonthlyList.map(e =>{
 
+                                if(this.query.txtDYYYYMM === e.code){
+                                    return true
+                                }
+                            })
+                            if(!check || this.query.txtDYYYYMM ===''){
+                                this.model1 = this.dispMonthlyList[0].code
+                                this.query.txtDYYYYMM = this.model1
+                            }else{
+                                this.model1 = this.query.txtDYYYYMM
+                            }
                             //年月リストを取得する時に、活性化にする
                             this.selectDisabled = true
                         }
@@ -860,10 +869,6 @@
                     } catch (error) {
                         return
                     }finally {
-                        console.log(this.bDispKinmujokyoKakunin)
-                        console.log(this.bDispKenkojotaiKakunin)
-                        console.log(this.bWorkChkStatus)
-                        console.log(this.bHealthChkStatus)
                         this.monthlyLoading= false
                         this.updateMonthloading=false
                     }
