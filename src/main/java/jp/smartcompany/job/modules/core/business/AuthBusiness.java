@@ -98,6 +98,7 @@ public class AuthBusiness {
 
     public void login(LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
+        System.out.println("++--");
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);

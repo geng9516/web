@@ -94,6 +94,8 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/stamping","anon");
         filterChainDefinitionMap.put("/login", "anon");
         filterChainDefinitionMap.put("/logout", "anon");
+
+        filterChainDefinitionMap.put("/index","user");
         filterChainDefinitionMap.put("/sys/**", "user");
 
         //登录
