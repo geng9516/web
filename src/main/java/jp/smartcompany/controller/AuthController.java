@@ -53,6 +53,21 @@ public class AuthController {
         return GlobalResponse.data(SuccessMessage.LOGIN.msg());
     }
 
+
+    /**
+     * 跳转到登ホームページ
+     *
+     * @return String
+     */
+    @GetMapping("index")
+    public String toIndex() {
+        if (ShiroUtil.isAuthenticated()) {
+            return "redirect:/sys/input/sign?menuId=1640&moduleIndex=1&psSite=TMG_INP&psApp=TmgTimePunch";
+        }
+        return "login";
+    }
+
+
     /**
      * 打刻
      * 　実は、項目暗号化が必要です（encode  md5+salt　等）けど、

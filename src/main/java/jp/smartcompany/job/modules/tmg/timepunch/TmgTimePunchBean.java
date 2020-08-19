@@ -17,14 +17,14 @@ import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 陳毅力
@@ -36,7 +36,7 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @Slf4j
 public class TmgTimePunchBean {
-    
+    private final Logger logger = LoggerFactory.getLogger(TmgTimePunchBean.class);
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgScheduleService iTmgScheduleService;
     private PsDBBean psDBBean;
@@ -386,6 +386,95 @@ public class TmgTimePunchBean {
         return scheduleInfoDTO;
     }
 
+    /**
+     * 予定データのフォマードを変更する
+     *
+     * @param scheduleInfoDTO
+     * @return
+     */
+    public Object[] scheduleInfoConverse(ScheduleInfoDTO scheduleInfoDTO) {
+        if (null != scheduleInfoDTO) {
+            if (null != scheduleInfoDTO.getTda_nopen_p() && !"".equals(scheduleInfoDTO.getTda_nopen_p())
+                    && null != scheduleInfoDTO.getTda_nclose_p() && !"".equals(scheduleInfoDTO.getTda_nclose_p())) {
+                Vector vector = new Vector();
+                //出勤時間
+                String tda_nopen_p = scheduleInfoDTO.getTda_nopen_p();
+                vector.add(Integer.parseInt(tda_nopen_p));
+                //退勤時間
+                String tda_nclose_p = scheduleInfoDTO.getTda_nclose_p();
+                vector.add(Integer.parseInt(tda_nclose_p));
+                //休憩時間
+                Object[] restTimes = scheduleInfoDTO.getTimerange_arr();
+                JSONObject jsonObject = null;
+                for (Object rest : restTimes) {
+                    jsonObject = JSONUtil.parseObj(rest);
+                    if (null != jsonObject.get("NOPEN") && null != jsonObject.get("NCLOSE")) {
+                        vector.add(Integer.parseInt(jsonObject.get("NOPEN").toString()));
+                        vector.add(Integer.parseInt(jsonObject.get("NCLOSE").toString()));
+                    }
+                }
+                //並び順
+                List<Integer> result_sorted = (List<Integer>) vector.stream().sorted().collect(Collectors.toList());
+                //時間フォーマットに変更する
+                List<String> result_conver = new ArrayList<String>();
+                for (int i = 0; i < result_sorted.size(); i++) {
+                    Integer o = result_sorted.get(i);
+                    result_conver.add(this.formatMinuteToDispTime(o));
+                }
+                //最終のデータに変更する
+                Object[] result = this.scheduleDataResult(result_conver);
+                return result;
+            } else {
+                logger.warn("出勤予定時間又は退勤予定時間が空です");
+                return null;
+            }
+        } else {
+            logger.warn("予定データが空です");
+            return null;
+        }
+    }
+
+    /**
+     * 分数を表示形式時刻(**:**)に変換します
+     *
+     * @param minute 分数
+     * @return String 表示形式時刻
+     */
+    private String formatMinuteToDispTime(int minute) {
+        // 時間数と分数を求める
+        int hour = (minute - (minute % 60)) / 60;
+        int min = minute % 60;
+        String sDispTime = new String("00" + min);
+        return hour + ":" + (sDispTime.substring(sDispTime.length() - 2));
+    }
+
+    /**
+     * list --> String[]
+     *
+     * @param result_conver 　並び順後データ
+     * @return
+     */
+    private Object[] scheduleDataResult(List<String> result_conver) {
+        Vector<String> vector = new Vector<String>();
+        StringBuffer sb = new StringBuffer();
+        if (null != result_conver) {
+            for (int i = 1; i <= result_conver.size(); i++) {
+                String o = result_conver.get(i - 1);
+                if (i % 2 != 0) {
+                    //奇数なると、容器まで追加する
+                    vector.add(o + "-" + result_conver.get(i));
+                } else {
+                    //偶数なると、スキップする
+                    continue;
+                }
+            }
+            Object[] result = vector.toArray();
+            return result;
+        } else {
+            logger.warn("予定データが空です");
+            return null;
+        }
+    }
 
     /**
      * 年次休暇残
@@ -567,13 +656,14 @@ public class TmgTimePunchBean {
 
     /**
      * 打刻と予定データを取得する
+     *
      * @param custId
      * @param compCode
      * @param employeeId
      * @return
      */
-    public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId){
-       return iTmgTimepunchService.selectClockInfo(custId,compCode,employeeId);
+    public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId) {
+        return iTmgTimepunchService.selectClockInfo(custId, compCode, employeeId);
     }
 
 }

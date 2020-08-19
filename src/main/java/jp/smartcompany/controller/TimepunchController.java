@@ -68,11 +68,13 @@ public class TimepunchController {
      * @param psDBBean
      * @return
      */
-    @GetMapping("selectScheduleInfo")
-    public ScheduleInfoDTO selectScheduleInfo(@RequestParam("targetDate") String targetDate,
-                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    @PostMapping("selectScheduleInfo")
+    public Object[] selectScheduleInfo(@RequestParam("targetDate") String targetDate,
+                                       @RequestAttribute("BeanName") PsDBBean psDBBean) {
         tmgTimePunchBean.setExecuteParameters(targetDate, psDBBean);
-        return tmgTimePunchBean.selectScheduleInfo(targetDate);
+        ScheduleInfoDTO scheduleInfoDTO = tmgTimePunchBean.selectScheduleInfo(targetDate);
+        Object[] scheduleData = tmgTimePunchBean.scheduleInfoConverse(scheduleInfoDTO);
+        return scheduleData;
     }
 
     /**
@@ -82,7 +84,7 @@ public class TimepunchController {
      * @param psDBBean
      * @return
      */
-    @GetMapping("selectDutyAndRelaxDate")
+    @PostMapping("selectDutyAndRelaxDate")
     public DutyAndRelaxDateDTO getDutyAndRelaxDate(@RequestParam("targetDate") String targetDate,
                                                    @RequestAttribute("BeanName") PsDBBean psDBBean) {
         tmgTimePunchBean.setExecuteParameters(targetDate, psDBBean);
@@ -136,5 +138,18 @@ public class TimepunchController {
         }
         return clockResultVO;
     }
+
+    /**
+     * 打刻情報
+     *
+     * @return
+     */
+    @PostMapping("clockInfo")
+    @ResponseBody
+    public ClockInfoVO clockInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+        return clockInfoVO;
+    }
+
 
 }

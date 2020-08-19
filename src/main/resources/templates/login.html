@@ -8,12 +8,14 @@
 <div class="login">
     <Row>
         <i-col span="16" style="transform: translate(-3%, 3%)">
-            <figure class="hero-warp" th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/LoginSvg.svg)'}"></figure>
+            <figure class="hero-warp"
+                    th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/LoginSvg.svg)'}"></figure>
         </i-col>
         <i-col span="8">
             <i-form ref="login" :model="login" :rules="ruleValidate" class="login-warp no-shadow">
                 <div class="title">
-                    <figure class="logo-warp" th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/Logo.svg)'}"></figure>
+                    <figure class="logo-warp"
+                            th:style="${'background-image: url('+ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() + '/static/svg/Logo.svg)'}"></figure>
                     <!--                    <p class="login-time"></p>-->
                     <!--                    <i-time class="login-time" :time="time" :interval="1" type="datetime"></i-time>-->
                     <!--                    <Clock ref="clock"></Clock>-->
@@ -36,7 +38,7 @@
                         </i-col>
                     </Row>
                     <form-item class="login-btn">
-                        <i-button @click="loging" type="primary" size="large" :loading="loading" :disabled="clockDisable"　long>
+                        <i-button @click="loging" type="primary" size="large" :loading="loading" :disabled="clockDisable" 　long>
                             ログイン
                         </i-button>
                     </form-item>
@@ -61,7 +63,7 @@
                 loading: false,
                 clocking: false,
                 exiting: false,
-                clockDisable:false,
+                clockDisable: false,
                 clockBtn: {
                     clock: '出勤',
                     exit: '退勤'
@@ -136,8 +138,8 @@
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.postForm('/login', this.login)
-                        location.href = "/login";
-                        //location.href = 'sys/input/sign?menuId=1640&moduleIndex=1&psSite=TMG_INP&psApp=TmgTimePunch'
+                        // location.href = "/login";
+                        location.href = "/index"
                     } catch (error) {
                         this.loading = false
                         this.clockDisable = false
