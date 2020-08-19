@@ -557,7 +557,7 @@
                     }
                     try{
                         const { data, headers } = await this.http.get('sys/sumdate/downloadFile', this.opts)
-                        Utils.downloadFile(data,decodeURI(headers['content-disposition'].split('filename="')[1].slice(0, -1),"UTF-8"),'text/csv')
+                        Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
                     } catch (error) {
                         console.log(error)
                         return
