@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml" />
+
+    <!-- 开发、测试环境 -->
+    <springProfile name="dev,test">
+
+        <logger level="TRACE" name="jp.smartcompany" additivity="false">
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="WARN">
+            <appender-ref ref="CONSOLE" />
+        </root>
+
+    </springProfile>
+
+    <!-- 生产环境-->
+    <springProfile name="prod">
+
+        <property name="LOG_FILE" value="office-next.log"/>
+        <property name="LOG_FILE_MAX_HISTORY" value="60"/>
+        <property name="LOG_FILE_MAX_SIZE" value="10GB"/>
+        <include resource="org/springframework/boot/logging/logback/file-appender.xml" />
+
+        <logger name="jp.smartcompany" level="INFO" additivity="false">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+
+        <root level="WARN" additivity="false">
+            <appender-ref ref="FILE"/>
+            <appender-ref ref="CONSOLE"/>
+        </root>
+
+    </springProfile>
+
+</configuration>

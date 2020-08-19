@@ -9,10 +9,5 @@ spring:
 #    username: NTMG
 #    password: NTMGPASS
 #    driver-class-name: oracle.jdbc.OracleDriver
-logging:
-  level:
-    jp.smartcompany.job.modules.core.service: debug
-    jp.smartcompany.job.modules.core.mapper: debug
-    jp.smartcompany.job.modules.tmg: debug
 server:
   port: 6879
