@@ -425,10 +425,12 @@
                     Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                 } catch (e) {
                     this.pdfDownloadLoading = false
+                    this.isSearchHistory = false
                     return
                 } finally {
                     this.errorInfo = false
                     this.pdfDownloadLoading = false
+                    this.isSearchHistory = false
                 }
             },
             handleRestType(e) {
