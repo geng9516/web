@@ -354,7 +354,9 @@
                 this.empName = e[0].empname
 
                 this.selectEmpNameFlg=true
-                // this.getData(true)
+
+                //組織図のロック解除
+                this.isSearchHistory = false
             },
 
             async getEmpList() {
