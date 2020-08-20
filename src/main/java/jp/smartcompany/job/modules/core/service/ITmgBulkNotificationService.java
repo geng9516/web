@@ -2,6 +2,10 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNotificationDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgBulkNotificationService extends IService<TmgBulkNotificationDO> {
 
-        }
+    List<HistoryDto> selectHistoryList(String custID, String compCode, String language);
+
+
+    String selectNextSeq();
+
+    DetailDataVo selectDetail(String seq, String language);
+}

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.SectionRankDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -106,4 +107,8 @@ public interface MastOrganisationMapper extends BaseMapper<MastOrganisationDO> {
              @Param("sExists") String sExists
      );
 
+    List<SectionRankDto> selectSectionRankDto(@Param("custID")String custID,
+                                              @Param("compCode")String compCode,
+                                              @Param("language")String language,
+                                              @Param("sectionId")String sectionId);
 }

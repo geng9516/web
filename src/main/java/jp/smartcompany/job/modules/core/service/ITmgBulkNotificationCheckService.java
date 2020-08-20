@@ -13,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgBulkNotificationCheckService extends IService<TmgBulkNotificationCheckDO> {
 
-        }
+    String checkBulkNtf(String seq, String custID, String compCode);
+}

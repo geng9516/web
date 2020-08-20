@@ -15,6 +15,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.SectionRankDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
@@ -357,4 +358,8 @@ public class MastOrganisationServiceImpl extends ServiceImpl<MastOrganisationMap
         return baseMapper.selectSelCompOrgTreeList(psCustomerId,psLanguage,psCompanyId,startDate,endDate,exists);
     }
 
+    @Override
+    public List<SectionRankDto> selectSectionRankDto(String custID, String compCode, String language,String sectionId){
+        return baseMapper.selectSectionRankDto( custID,  compCode,  language, sectionId);
+    }
 }

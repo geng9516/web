@@ -12,6 +12,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
@@ -492,4 +493,8 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
 
 
     String selectMasterCode(String custId, String compId,String baseDate,String masterCode);
+
+    String selectBulkTimeRange(String custID, String compCode, String baseDate);
+
+    NewBulkdropDownVo selectBulkdropDown(String custID, String compCode, String baseDate);
 }

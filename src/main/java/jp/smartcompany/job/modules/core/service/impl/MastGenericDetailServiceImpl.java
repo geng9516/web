@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
 import jp.smartcompany.job.modules.tmg.paidholiday.dto.TmgTermRow;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
@@ -874,5 +875,15 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     @Override
     public  String selectMasterCode(String custId, String compId,String baseDate,String masterCode){
         return baseMapper.selectMasterCode( custId, compId, baseDate, masterCode);
+    }
+
+    @Override
+    public String selectBulkTimeRange(String custID, String compCode, String baseDate){
+        return baseMapper.selectBulkTimeRange( custID, compCode, baseDate);
+    }
+
+    @Override
+    public NewBulkdropDownVo selectBulkdropDown(String custID, String compCode, String baseDate){
+        return baseMapper.selectBulkdropDown( custID, compCode, baseDate);
     }
 }

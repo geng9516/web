@@ -443,4 +443,23 @@ public class SiteWManageController {
         return "sys/wmanage/evaluatersetting";
     }
 
+
+    /**
+     * 跳转到休暇・休業登録界面
+     *
+     * @param moduleIndex
+     * @param menuId
+     * @param modelMap
+     * @return
+     */
+    @GetMapping("tmgbulknotification")
+    public String toTmgBulkNotification( @RequestAttribute("BeanName") PsDBBean psDBBean,
+                                @RequestParam("moduleIndex") Integer moduleIndex,
+                                @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+
+        modelMap.addAttribute("moduleIndex", moduleIndex)
+                .addAttribute("menuId", menuId);
+        return "sys/wmanage/tmgbulknotification";
+    }
+
 }

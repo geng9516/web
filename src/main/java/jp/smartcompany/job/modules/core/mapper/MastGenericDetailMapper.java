@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.MoDLTypeVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo;
 import jp.smartcompany.job.modules.tmg.deptstatlist.dto.DispItemsDto;
 import jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.ExcludecondCtlDto;
 import jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto;
@@ -337,5 +338,13 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                             @Param("compId")String compId,
                             @Param("baseDate")String baseDate,
                             @Param("masterCode")String masterCode);
+
+    String selectBulkTimeRange(@Param("custID")String custID,
+                               @Param("compCode")String compCode,
+                               @Param("baseDate")String baseDate);
+
+    NewBulkdropDownVo selectBulkdropDown(@Param("custID")String custID,
+                                         @Param("compCode")String compCode,
+                                         @Param("baseDate")String baseDate);
 }
 

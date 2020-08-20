@@ -364,5 +364,40 @@
             </if>
         ORDER BY MO.MO_NSEQ,MO.MO_CCOMPANYID_CK_FK,MO.MO_CSECTIONID_CK
     </select>
+    <select id="selectSectionRankDto"
+            resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.SectionRankDto">
+        SELECT
+            MO_CSECTIONID_CK
+            ,RANK() OVER(ORDER BY MO_NLEVEL, MO_CSECTIONID_CK) RANK
+        FROM
+            (SELECT
+                DISTINCT MO_NLEVEL
+                ,MO_NSEQ
+                ,MO_CSECTIONID_CK
+                ,MO_CSECTIONNAME
+                ,MO_CPARENTID
+            FROM
+                (SELECT
+                     o.MO_NLEVEL
+                    ,o.MO_NSEQ
+                    ,o.MO_CSECTIONID_CK
+                    ,o.MO_CSECTIONNAME
+                    ,o.MO_CPARENTID
+                FROM
+                    MAST_ORGANISATION o
+                WHERE
+                    MO_CCUSTOMERID_CK_FK = #{custID}
+                AND MO_CCOMPANYID_CK_FK = #{compCode}
+                AND MO_CLANGUAGE = #{language}
+                AND MO_DSTART <![CDATA[ <= ]]> SYSDATE
+                AND MO_DEND >= SYSDATE
+                AND MO_CSECTIONID_CK IN (${sectionId})
+                )
+            START WITH
+            MO_CSECTIONID_CK in (${sectionId}) CONNECT BY
+            MO_CSECTIONID_CK = PRIOR MO_CPARENTID
+            ORDER SIBLINGS BY MO_NSEQ, MO_CSECTIONID_CK)
+
+    </select>
 
 </mapper>
