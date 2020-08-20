@@ -21,7 +21,7 @@
                <Divider class="mb10" orientation="left" size="default">対象職員</Divider>
                 <p @click="deptDrawShow = true" class="csv-p pb5">{{ empName }}</p>
                <!-- 共通組織図画面 start-->
-                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right" title="所属を選択してください"
+                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right" title="所属職員を選択してください"
                      v-model="deptDrawShow" width="700">
                       <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -38,10 +38,10 @@
                               ref="tree"></Tree>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
-                            社員
+                            職員
                         </div>
                         <div style="position: relative;">
-                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="社員データなし"></Tree>
+                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="職員データなし"></Tree>
                             <Spin fix size="large" v-if="emplistLoading"></Spin>
                         </div>
                     </Drawer>
