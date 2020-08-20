@@ -204,9 +204,9 @@
   border-radius: 3px;
 }
 .primary-info {
-  color: var(--brown-text);
-  border: 1px solid var(--olive);
-  background-color: var(--gold50);
+  color: var(--primary-info);
+  border: 1px solid var(--primary-info-border);
+  background-color: var(---primary-info-bg);
   font-size: 14px;
   text-align: left;
   white-space: pre-line;
@@ -242,15 +242,15 @@
 
 // 树形选择器
 .ivu-tree-title-selected, .ivu-tree-title-selected:hover {
-  background-color: rgb(255,213, 185);
+  background-color: var(--tree-hover);
 }
 .ivu-tree-title:hover {
-  background-color: rgb(255,213, 185);
+  background-color: var(--tree-select);
 }
 .tree {
   text-align: left;
-  border: 15px solid rgb(249, 233, 224);
-  background-color: var(--orange25);
+  border: 15px solid var(--tree-border);
+  background-color: var(--tree-bg);
   .ivu-tree-title {
     width: calc(100% - 15px);
   }
@@ -290,13 +290,14 @@
   bottom: 19px;
   color: white;
   cursor: pointer;
+
   z-index: 100;
 }
 .ivu-spin-fix {
-  background-color: rgba(255, 255, 255, .7);
+  background-color: var(--spin-bg);
 }
 .ivu-spin-dot {
-  background-color: var(--orange);
+  background-color: var(--spin);
 }
 .footer {
   position: relative;
