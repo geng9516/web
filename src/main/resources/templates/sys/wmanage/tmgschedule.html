@@ -20,10 +20,10 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 " @click="showWeek = !showWeek">週勤務パターン編集</i-button>
-                <i-button type="primary" size="large" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 "  @click="handleChangeWorkPattern();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
-                <i-button type="success" icon="md-create" size="large" :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
-                <i-button size="large" v-if=" isEditable" @click="isEditable = !isEditable;handleSelectAll2(false)">キャンセル</i-button>
+                <i-button type="primary"  icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 " @click="showWeek = !showWeek">週勤務パターン編集</i-button>
+                <i-button type="primary"  icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 "  @click="handleChangeWorkPattern();isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="success" icon="md-create"  :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
+                <i-button  v-if=" isEditable" @click="isEditable = !isEditable;handleSelectAll2(false)">キャンセル</i-button>
             </div>
         </div>
         <div class="searchwrap">
@@ -146,7 +146,7 @@
 
             <Row v-if=" isEditable" class="mb10">
             <i-col span="3">
-                <div class="label">勤務パターン</div>
+                <div class="label tc">勤務パターン</div>
             </i-col>
             <i-col span="6">
                 <i-select class="no-border-radius"  :disabled="!patternDisabled" v-model="workPatternSelected" @on-change="handleChangeWorkPattern()">
@@ -222,7 +222,7 @@
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
-                 ref="selection2"  @on-selection-change="handleSelectAll($event)"
+                 ref="selection2"  @on-selection-change="handleSelectAll($event)" no-data-text="所属から職員を選んでください"
         >
 
             <template slot-scope="{ row }" slot="intDay">
@@ -293,21 +293,21 @@
         </div>
         <Drawer title="週勤務パターン 編集" width="800" v-model="showWeek" draggable>
             <Row>
-                <i-col span="6" class="label">所属</i-col>
+                <i-col span="6" class="label tc">所属</i-col>
                 <i-col span="9">
                 <span class="input-like-span">{{deptName}}</span>
                 </i-col>
             </Row>
 
             <Row>
-                <i-col span="6" class="label">氏名</i-col>
+                <i-col span="6" class="label tc">氏名</i-col>
                 <i-col span="9">
                 <span class="input-like-span">{{kanjiName}}</span>
                 </i-col>
             </Row>
 
             <Row>
-                <i-col span="6" class="label">種別</i-col>
+                <i-col span="6" class="label tc">種別</i-col>
                 <i-col span="9">
                 <span class="input-like-span">{{wokertypename}}</span>
                 </i-col>
@@ -318,7 +318,7 @@
                 適用済
             </div>
             <div style="position: relative;">
-            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed">
+            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="所属から職員を選んでください">
                 <template slot-scope="{ row }" slot="startTime">
                     <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
                                  format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(row.twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
@@ -349,7 +349,7 @@
             </div>
 
             <Row class="mt5">
-                <i-col span="6" class="label">適用期間</i-col>
+                <i-col span="6" class="label tc">適用期間</i-col>
                 <i-col span="4">
                     <date-picker type="date"  :value="value2.applyStart" class="datepicker-single mb5" placeholder="日付け"
                                  format="yyyy/MM/dd" @on-change="value2.applyStart = $event"></date-picker>
@@ -573,6 +573,7 @@
                     {
                         title: '休憩',
                         slot: 'restTime',
+                        className: 'checkin',
                         align: 'center'
                     },
                     {
@@ -630,7 +631,7 @@
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                    content:{},
+                    content:'',
                     sectionid:'',
                 },
                 updateWeekPtnParam:{
@@ -700,7 +701,7 @@
                     {
                         title: '休憩',
                         minWidth: 300,
-                        className: 'urgent change-line',
+                        className: 'checkin',
                         slot: 'restTimeList',
                         align: 'center'
                     },
@@ -1333,7 +1334,7 @@
 
             }),
             async getSelectIkkaInfo() {
-                    const query = {...this.query,baseDate:'' }
+                    const query = {...this.query,baseDateIkka:'' }
                     const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
