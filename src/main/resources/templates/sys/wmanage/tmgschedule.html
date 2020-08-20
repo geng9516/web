@@ -31,7 +31,7 @@
             <span style="display:flex;width: calc(15% + 200px);">
                 <span class="label">所属</span>
                 <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                              style="width: calc(100% - 120px);border-radius:0">
+                              style="width: calc(100% - 120px);border-radius:0;border: 1px dashed var(--dept-select);color: var(--dept-select);">
                         {{ deptName }}
                     </i-button>
                 <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
