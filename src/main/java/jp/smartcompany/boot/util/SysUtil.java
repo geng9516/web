@@ -3,6 +3,7 @@ package jp.smartcompany.boot.util;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 
@@ -151,7 +152,7 @@ public class SysUtil {
      * @return Date
      * @throws ParseException 変換出来なかった場合
      */
-    public static Date transStringToDate(String psDate) throws ParseException {
+    public static Date transStringToDate(String psDate)  {
 
         if (psDate == null) {
             return null;
@@ -172,7 +173,7 @@ public class SysUtil {
                 }
             }
         } catch (ParseException e) {
-            throw e;
+            throw new GlobalException(e.getMessage());
         }
         return null;
 

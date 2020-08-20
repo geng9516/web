@@ -93,20 +93,10 @@ public class PsSearchCompanyUtil {
             Date dSysDate = new Date();
             // 時分秒を削除
             String sSysDate = SysUtil.transDateToString(dSysDate);
-            try {
-                dSysDate = SysUtil.transStringToDate(sSysDate);
-            }
-            catch(ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
+            dSysDate = SysUtil.transStringToDate(sSysDate);
             return dSysDate;
         }
-        try {
-            dSearchDate = SysUtil.transStringToDate(gsPsSearchDate);
-        } catch (ParseException e) {
-            throw new GlobalException(PsConst.PARAM_KEY_SEARCHDATE+"-"+"yyyy/MM/dd");
-        }
+        dSearchDate = SysUtil.transStringToDate(gsPsSearchDate);
         return dSearchDate;
     }
 

@@ -2039,11 +2039,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      * @return Date 基準日
      */
     private Date getPsSecurityDate4DateType(){
-        try {
-            return SysUtil.transStringToDate(this.getPsSecurityDateNoSQL());
-        } catch (ParseException e) {
-            return new Date();
-        }
+      return SysUtil.transStringToDate(this.getPsSecurityDateNoSQL());
     }
 
     /**

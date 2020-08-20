@@ -3,6 +3,7 @@ package jp.smartcompany.controller;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
+import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerLogic;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
@@ -29,6 +30,7 @@ public class GroupManagerController {
     private final GroupManagerLogic groupManagerLogic;
     private final GroupManagerGroupEditLogic groupManagerGroupEditLogic;
     private final EmployeeInfoSearchLogic employeeInfoSearchLogic;
+    private final GroupManagerDateEditLogic groupManagerDateEditLogic;
 
     // http://localhost:6879/sys/groupmanager/groups?psSite=Admin
     // グループ定義:閲覧画面リスト
@@ -78,6 +80,21 @@ public class GroupManagerController {
     public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
         groupManagerGroupEditLogic.update(dto);
         return "変更成功";
+    }
+
+    /**
+     * ===========================================
+     * GroupManagerDateEditAction 整理接口
+     * ===========================================
+      */
+
+    // グループ定義 一覧(指定基準日)画面にて表示する情報を取得します。
+    // http:localhost:6879/sys/groupmanager/editlist?psSite=Admin
+    @GetMapping("editlist")
+    public Map<String,Object> editList(
+            @RequestParam(value="searchDate",required = false) String searchDate,
+            @RequestParam(value="systemId",required = false) String systemId) {
+        return groupManagerDateEditLogic.editListHandler(searchDate,systemId);
     }
 
 }

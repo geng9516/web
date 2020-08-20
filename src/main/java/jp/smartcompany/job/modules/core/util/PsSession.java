@@ -15,7 +15,6 @@ import lombok.ToString;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
-import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -63,25 +62,20 @@ public class PsSession implements Serializable {
     private PsEmpRelationCache loginEmpRelationCache;
 
     public List<Designation> getLoginDesignation(String psDate) {
-        try {
-            Date tdate = SysUtil.transStringToDate(psDate);
-            Date sysDate = SysUtil.transStringToDate(SysUtil.getSysdate("yyyy/MM/dd"));
-            if (tdate.equals(sysDate)) {
-                return getLoginDesignation();
-            }
-            if ((this.designationCache != null) && (this.designationCache.containsKey(psDate))) {
-                return this.designationCache.get(psDate);
-            }
-            if (this.designationCache == null) {
-                this.designationCache = new PsDesignationCache(16);
-            }
-            List<Designation> designationList = getLoginDesignationSessionInfo(psDate);
-            this.designationCache.put(psDate, designationList);
-            return designationList;
-        } catch (ParseException e) {
-            e.printStackTrace();
+        Date tdate = SysUtil.transStringToDate(psDate);
+        Date sysDate = SysUtil.transStringToDate(SysUtil.getSysdate("yyyy/MM/dd"));
+        if (tdate.equals(sysDate)) {
+            return getLoginDesignation();
         }
-        return null;
+        if ((this.designationCache != null) && (this.designationCache.containsKey(psDate))) {
+            return this.designationCache.get(psDate);
+        }
+        if (this.designationCache == null) {
+            this.designationCache = new PsDesignationCache(16);
+        }
+        List<Designation> designationList = getLoginDesignationSessionInfo(psDate);
+        this.designationCache.put(psDate, designationList);
+        return designationList;
     }
 
     List<Designation> getLoginDesignationSessionInfo(String psDate) {

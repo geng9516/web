@@ -680,14 +680,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      */
     @Override
     public String getLowerSectionListForSQL(String sCustID, String sCompID, String sSection, String sCreterialDate) {
-        String sLowerSectionList = "";
-        try {
             return iMastOrganisationService.getSubSection(sCustID,
                     sCompID, sSection,
                     SysUtil.transStringToDate(sCreterialDate)).toString();
-        } catch (ParseException e) {
-        }
-        return sLowerSectionList;
     }
 
     /**
@@ -700,15 +695,9 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      */
     @Override
     public String getUpperSectionListForSQL(String sCustID, String sCompID, String sSection, String sCreterialDate) {
-        String sUpperSectionList = "";
-        try {
-            sUpperSectionList = iMastOrganisationService.selectHighSection(
+        return iMastOrganisationService.selectHighSection(
                             sCustID, sCompID, sSection,
                             SysUtil.transStringToDate(sCreterialDate)).toString();
-            return sUpperSectionList;
-        } catch (ParseException e) {
-            return sUpperSectionList;
-        }
     }
 
     /**
