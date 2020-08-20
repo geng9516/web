@@ -337,6 +337,15 @@ public class TmgScheduleBean {
     }
 
     /**
+     * PsDBBean初期化
+     *
+     * @param psDBBean
+     */
+    public void setExecuteParameters(PsDBBean psDBBean) {
+        this.psDBBean = psDBBean;
+    }
+
+    /**
      * 画面から入力された実行条件を判定し設定します。
      *
      * @param txtBaseDate 2020/03/15
@@ -762,6 +771,7 @@ public class TmgScheduleBean {
 
         // 表示開始日
         _startDispDate = _baseDate;
+        System.out.println("764-->" + _startDispDate);
         // 表示終了日
         _endDispDate = _endDate;
 
@@ -773,11 +783,17 @@ public class TmgScheduleBean {
         // 週単位でチェックする人は表示開始終了日を取得
         HashMap<String, Object> results0 = this.selectDsipDate(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
         if (null != results0) {
+            System.out.println("results0  size:" + results0.size());
+        } else {
+            System.out.println("results0 is empty");
+        }
+        if (null != results0) {
             // 前月シート存在確認
             // HashMap<String, Object> results1 = this.selectLinkOfPreMonth(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
             String preMonth = this.selectLinkOfNextMonth(_baseDate, _targetUserCode);
             if (null != preMonth) {
                 _startDispDate = results0.get("START_DATE").toString();
+                System.out.println("781-->" + _startDispDate);
             }
             // 翌月シート存在確認
             HashMap<String, Object> results2 = this.selectLinkOfNextMonthNextSaturday(_targetUserCode, _baseDate, _targetCustCode, _targetCompCode);
@@ -862,7 +878,7 @@ public class TmgScheduleBean {
 
         ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
         PaidHolidayVO paidHolidayVO = new PaidHolidayVO();
-
+        System.out.println("*******" + _startDispDate + "~" + _endDispDate);
         //eg: 2020年3月15日～2020年4月11日
         String period = "";
         if (null != _startDispDate && !"".equals(_startDispDate)) {
