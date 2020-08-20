@@ -19,7 +19,7 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" @click="bulkApproval" size="large" :disabled="!approval" :loading="bulkApprovalLoading">月次一括承認</i-button>
+                    <i-button type="primary" @click="bulkApproval" :disabled="!approval" :loading="bulkApprovalLoading">月次一括承認</i-button>
                     <!-- <div style="height:40px;margin:2px"></div> -->
                 </div>
             </div>
@@ -105,13 +105,13 @@
             <Drawer :title="title" draggable v-model="showDayApply" width="97">
                 <Row :gutter="16" class="mb10">
                     <i-col class="tr" offset="11" span="13">
-                    <i-button type="primary" size="large" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(false)">
+                    <i-button type="primary" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(false)">
                         選択状態をクリア
                     </i-button>
-                    <i-button type="primary" size="large" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(true)">
+                    <i-button type="primary" class="mr5" :disabled="!drawApproval" ghost @click="handleSelectAll2(true)">
                         承認対象者を全選択
                     </i-button>
-                    <i-button type="primary" size="large"  :disabled="!drawApproval" :loading="bulkApprovalLoading2" class="tr" @click="bulkApproval2">一括承認</i-button>
+                    <i-button type="primary" :disabled="!drawApproval" :loading="bulkApprovalLoading2" class="tr" @click="bulkApproval2">一括承認</i-button>
                     </i-col>
                 </Row>
                 <i-table border :columns="columns2" :loading="sublistLoading" :data="tableData2" @on-select="tableSelect2" @on-selection-change="tableSelectChange2" ref="selection2">

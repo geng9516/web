@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.SectionRankDto;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO;
 
 import java.util.Date;
@@ -63,10 +64,6 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * <div>指定した組織の上位組織リストを返却する。</div>
      *
      * @author t-abe
-     * @param customerId 顧客コード
-     * @param compnyId 法人コード
-     * @param sectionId 組織コード
-     * @param searchDate 検索基準日
      * @return 上位組織情報
      */
     List<String> selectHighSection(String psCustID, String psCompCode, String psTargetDept, Date pdSearchDate);
@@ -212,10 +209,6 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
 
     /**
      * 取得結果を返却.
-     * @param psCustomerId 顧客コード
-     * @param psLanguage 言語区分
-     * @param psCompanyId 法人コード
-     * @param pdSearchDate 検索基準日
      * @return String
      **/
     List<OrgTreeDTO> selectOrgList(
@@ -235,7 +228,6 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
      * @param psCustomerId 顧客コード
      * @param psLanguage 言語区分
      * @param psCompanyId 法人コード
-     * @param searchDate 検索基準日
      * @param exists 検索条件範囲
      * @return String
      **/
@@ -247,4 +239,5 @@ public interface IMastOrganisationService extends IService<MastOrganisationDO> {
             String endDate,
             String exists);
 
+    List<SectionRankDto> selectSectionRankDto(String custID, String compCode, String language,String sectionId);
 }

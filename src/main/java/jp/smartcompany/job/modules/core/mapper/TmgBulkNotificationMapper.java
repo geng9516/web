@@ -2,7 +2,12 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNotificationDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +21,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgBulkNotificationMapper extends BaseMapper<TmgBulkNotificationDO> {
 
-        }
+    List<HistoryDto> selectHistoryList(@Param("custID") String custID,
+                                       @Param("compCode")String compCode,
+                                       @Param("language")String language);
+
+    String selectNextSeq();
+
+    DetailDataVo selectDetail(@Param("seq") String seq,@Param("language") String language);
+}

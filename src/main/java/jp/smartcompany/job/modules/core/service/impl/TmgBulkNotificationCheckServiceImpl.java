@@ -16,5 +16,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
         public class TmgBulkNotificationCheckServiceImpl extends ServiceImpl<TmgBulkNotificationCheckMapper, TmgBulkNotificationCheckDO> implements ITmgBulkNotificationCheckService {
-
+        @Override
+        public String checkBulkNtf(String seq, String custID, String compCode){
+                return baseMapper.checkBulkNtf( seq,  custID,  compCode);
+        }
         }

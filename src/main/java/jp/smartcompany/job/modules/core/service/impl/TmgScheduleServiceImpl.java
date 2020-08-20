@@ -31,6 +31,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
 
     @Override
     public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
+        System.out.println("dStart:"+dStart+" dEnd："+dEnd);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("ctpye_plan", ctpye_plan);
         params.put("employeeId", employeeId);

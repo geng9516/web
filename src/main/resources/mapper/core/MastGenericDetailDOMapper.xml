@@ -911,4 +911,35 @@
         AND MGD_DSTART_CK <![CDATA[<=]]> #{baseDate}
         AND MGD_DEND >= #{baseDate}
     </select>
+    <select id="selectBulkTimeRange" resultType="java.lang.String">
+        SELECT
+                TMG_F_CONV_MIN2HHMI(A.MGD_NSPARENUM1, 0) || ' - ' ||
+                TMG_F_CONV_MIN2HHMI(A.MGD_NSPARENUM2, 0)
+                as MGD_NSPARENUM1
+        FROM
+            MAST_GENERIC_DETAIL A
+        WHERE A.MGD_CCUSTOMERID = #{custID}
+        AND A.MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND A.MGD_CGENERICGROUPID = 'TMG_USETIME4BULKNTF'
+        AND A.MGD_CLANGUAGE_CK = 'ja'
+        AND A.MGD_DSTART_CK <![CDATA[<=]]> TO_DATE(#{baseDate})
+        AND A.MGD_DEND >= TO_DATE(#{baseDate})
+        ORDER BY A.MGD_NSPARENUM1
+    </select>
+    <select id="selectBulkdropDown"
+            resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo">
+        SELECT
+            A.MGD_CMASTERCODE as  ID
+            ,A.MGD_CGENERICDETAILDESC as  NAME
+        FROM
+            MAST_GENERIC_DETAIL A
+        WHERE
+            A.MGD_CCUSTOMERID = #{custID}
+        AND A.MGD_CCOMPANYID_CK_FK = #{compCode}
+        AND A.MGD_CGENERICGROUPID = 'TMG_BULKNTFTYPE'
+        AND A.MGD_CLANGUAGE_CK = 'ja'
+        AND A.MGD_DSTART_CK <![CDATA[<=]]> TO_DATE(#{baseDate})
+        AND A.MGD_DEND >= TO_DATE(#{baseDate})
+        ORDER BY A.MGD_NSPARENUM1
+    </select>
 </mapper>

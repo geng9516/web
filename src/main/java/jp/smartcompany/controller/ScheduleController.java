@@ -50,6 +50,7 @@ public class ScheduleController {
     public ScheduleInfoVO selectScheduleInfo(@RequestParam("txtBaseDate") String txtBaseDate,
                                              @RequestParam("txtEndDate") String txtEndDate,
                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
+      //  System.out.println("controller-->selectScheduleInfo");
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
         return tmgScheduleBean.selectPaidHolidayInfo(txtBaseDate, txtEndDate);
@@ -100,17 +101,18 @@ public class ScheduleController {
      * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=46402406&txtBaseDate=&txtEndDate=
      * http://localhost:6879/sys/schedule/selectIkkaInfo?employeeId=C1000015&txtBaseDate=&txtEndDate= (変形労働制)
      *
-     * @param baseDate
+     * @param baseDateIkka
      * @return
      */
     @GetMapping("selectIkkaInfo")
     @ResponseBody
     public HashMap<String, Object> selectIkkaInfo(
-            @RequestParam("baseDate") String baseDate,
+            @RequestParam("baseDateIkka") String baseDateIkka,
             @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //  System.out.println("controller-->selectIkkaInfo");
         //初期化
-        tmgScheduleBean.setExecuteParameters(baseDate, null, psDBBean);
-        return tmgScheduleBean.selectIkkaInfo(baseDate);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
+        return tmgScheduleBean.selectIkkaInfo(baseDateIkka);
     }
 
     /**
@@ -131,8 +133,9 @@ public class ScheduleController {
                                                                @RequestParam("txtEndDate") String txtEndDate,
                                                                @RequestParam("content") String content,
                                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->executeEditMonthlyUSchedule");
         //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         tmgScheduleBean.executeEditMonthlyUSchedule(content);
         return null;
     }
@@ -154,8 +157,9 @@ public class ScheduleController {
                                                @RequestParam("txtEndDate") String txtEndDate,
                                                @RequestParam("twp_nid") int twp_nid,
                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->selectCsvReference");
         //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectCsvReference(twp_nid);
     }
 
@@ -173,8 +177,9 @@ public class ScheduleController {
     public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("txtBaseDate") String txtBaseDate,
                                                          @RequestParam("txtEndDate") String txtEndDate,
                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->selectCsvReferenceList");
         //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectCsvReference();
     }
 
@@ -192,6 +197,7 @@ public class ScheduleController {
     public List<TmgWeekPatternDTO> selectTmgWeekPattern(@RequestParam("txtBaseDate") String txtBaseDate,
                                                         @RequestParam("txtEndDate") String txtEndDate,
                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->selectTmgWeekPattern");
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
         return tmgScheduleBean.selectTmgWeekPattern();
@@ -211,8 +217,9 @@ public class ScheduleController {
                                                 @RequestParam("txtEndDate") String txtEndDate,
                                                 @RequestParam("content") String content,
                                                 @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->executeMakeWeekPattern_UWPtn");
         //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.executeMakeWeekPattern_UWPtn(content);
     }
 
@@ -231,8 +238,9 @@ public class ScheduleController {
                                             @RequestParam("twp_denddate") String twp_denddate,
                                             @RequestParam("twp_nid") String twp_nid,
                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //    System.out.println("controller-->executeUpdateWeekPattern");
         //初期化
-        tmgScheduleBean.setExecuteParameters(twp_dstartdate, twp_denddate, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid);
     }
 
@@ -246,8 +254,9 @@ public class ScheduleController {
     @GetMapping("selectTargetUserDetail")
     @ResponseBody
     public TargetUserDetailDTO selectTargetUserDetail(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        System.out.println("controller-->selectTargetUserDetail");
         //初期化
-        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectTargetUserDetail();
     }
 
@@ -262,6 +271,8 @@ public class ScheduleController {
     @ResponseBody
     public ModifiedDateVO selectMonthlyModifiedDate(@RequestParam("txtBaseDate") String txtBaseDate,
                                                     @RequestAttribute("BeanName") PsDBBean psDBBean) {
+
+        //  System.out.println("controller-->selectMonthlyModifiedDate");
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
         ModifiedDateVO modifiedDateVO = new ModifiedDateVO();
@@ -280,6 +291,7 @@ public class ScheduleController {
     @ResponseBody
     public boolean updateSchedulePermStatus(@RequestParam("txtBaseDate") String txtBaseDate,
                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //    System.out.println("controller-->updateSchedulePermStatus");
         //初期化
         tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
         return tmgScheduleBean.updateSchedulePermStatus();
@@ -295,8 +307,9 @@ public class ScheduleController {
     @GetMapping("selectWeekPtn")
     @ResponseBody
     public List<WeekWorkType> selectWeekPtn(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //    System.out.println("controller-->selectWeekPtn");
         //初期化
-        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectWeekPtn();
     }
 
@@ -315,8 +328,9 @@ public class ScheduleController {
     public boolean deleteWeekPtn(@RequestParam("txtBaseDate") String txtBaseDate,
                                  @RequestParam("txtEndDate") String txtEndDate,
                                  @RequestParam("twp_nid") String twp_nid, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        //   System.out.println("controller-->deleteWeekPtn");
         //初期化
-        tmgScheduleBean.setExecuteParameters(null, null, psDBBean);
+        tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.deleteWeekPtn(twp_nid);
     }
 

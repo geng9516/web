@@ -64,7 +64,7 @@
             統計情報
         </div>
         <div >
-            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <i-table :show-header="tableHead2.length > 0" :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="EMPNAME"><span>{{ row.EMPNAME }}</span></template>
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
             </i-table>
@@ -147,7 +147,7 @@
         },
         computed: {
             tableHeadFixed() {
-                if (this.contentScrollTop > 215) return true
+                if (this.contentScrollTop > 200) return true
                 else return false
             },
             columns() {
