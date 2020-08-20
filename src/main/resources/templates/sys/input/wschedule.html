@@ -7,6 +7,18 @@
 
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
+    <style>
+        .need-turnline-top:empty {
+            display: block;
+            position: relative;
+            height: 21px;
+        }
+        .need-turnline-btm:empty {
+            display: block;
+            position: relative;
+            height: 27px;
+        }
+    </style>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
     <main class="content workyearschedule-warp" ref="layout">
@@ -89,8 +101,8 @@
                 <!-- 循环slotList -->
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
                     <span :class="dayRed(row[item])" v-if="!row.needTurnLine">{{ row[item] | turnLine }}</span>
-                    <div class="mb-2" v-if="row.needTurnLine">{{ row[item].split(TURN_LINE_STR)[0] }}</div>
-                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2">{{ row[item].split(TURN_LINE_STR)[1] }}</div>
+                    <div class="mb-2 need-turnline-top" v-if="row.needTurnLine">{{ row[item].split(TURN_LINE_STR)[0].trim() }}</div>
+                    <div v-if="row.needTurnLine" class="divi-hour-line mb-2 need-turnline-btm">{{ row[item].split(TURN_LINE_STR)[1].trim() }}</div>
                   </template>
             </i-table>
 
