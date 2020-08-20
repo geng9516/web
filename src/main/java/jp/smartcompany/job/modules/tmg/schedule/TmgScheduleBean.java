@@ -1302,7 +1302,7 @@ public class TmgScheduleBean {
             //対象日
             String sTargetDate = monthlyScheduleEmpInfoDTO.getDyyyymmdd();
             boolean bNoWorking = isNoWorkingId(monthlyScheduleEmpInfoDTO.getWorkId());
-            logger.info("nopen:" + monthlyScheduleEmpInfoDTO.getNopen() + " ---- nclose:" + monthlyScheduleEmpInfoDTO.getNclose());
+            //logger.info("nopen:" + monthlyScheduleEmpInfoDTO.getNopen() + " ---- nclose:" + monthlyScheduleEmpInfoDTO.getNclose());
             //[勤怠]日別情報を更新する
             iTmgScheduleService.insertTmgDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, bClearResult, Cs_MGD_HOLFLG_0, monthlyScheduleEmpInfoDTO.getWorkId(),
                     monthlyScheduleEmpInfoDTO.getNopen() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNopen(), monthlyScheduleEmpInfoDTO.getNclose() == "" ? "NULL" : monthlyScheduleEmpInfoDTO.getNclose(), bNoWorking, monthlyScheduleEmpInfoDTO.getBussinessTripid(), monthlyScheduleEmpInfoDTO.getComment(), monthlyUScheduleEditParaDTO.getTargetUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd(), _targetCompCode, _targetCustCode, _loginLanguageCode);

@@ -554,6 +554,7 @@
         and tda_nlock_p = 0
 
     </insert>
+
     <!-- 日次詳細情報登録（休憩時間：予定） -->
     <insert id="insertTmgDailyDetailCheckRest" parameterType="java.util.HashMap">
         insert into tmg_daily_detail_check
