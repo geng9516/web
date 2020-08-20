@@ -251,7 +251,7 @@
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
             </Row>
-            <div style="position: relative;">
+            <div style="position: relative;max-height: 500px;overflow-y: scroll;">
               <Tree class="tree mt2" :data="treeData" @on-select-change="(e) => {handleClickLeaf(e, false)}" ref="tree"
                 empty-text="所属データなし"></Tree>
               <Spin size="large" fix v-if="empDeptLoading"></Spin>
