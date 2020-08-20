@@ -560,11 +560,11 @@
         },
         async mounted() {
             this.init()
-            window.addEventListener('scroll',this.handleScroll,true)
-            },
-            beforeDestroy() {
-                window.removeEventListener("mousedown",this.handleScroll,true)
-            },
+             window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+        },
         computed: {
             tableHeadFixed() {
                 if (this.contentScrollTop > 310) return true

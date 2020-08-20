@@ -151,10 +151,10 @@
             async mounted() {
                 console.log([[${ session }]])
                 this.getData(true)
-                window.addEventListener('scroll',this.handleScroll,true)
+                window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             beforeDestroy() {
-                window.removeEventListener("mousedown",this.handleScroll,true)
+                window.removeEventListener('scroll',this.handleScroll,{ passive: true })
             },
             computed: {
                 tableHeadFixed() {

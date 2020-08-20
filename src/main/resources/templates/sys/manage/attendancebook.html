@@ -266,10 +266,10 @@
             async mounted() {
                 this.getOrgTree()
                 this.getSearchCondition()
-                window.addEventListener('scroll',this.handleScroll,true)
+                 window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             beforeDestroy() {
-                window.removeEventListener("mousedown",this.handleScroll,true)
+                window.removeEventListener('scroll',this.handleScroll,{ passive: true })
             },
             computed: {
                 tableHeadFixed() {
