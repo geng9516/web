@@ -58,7 +58,7 @@
     margin: 0 2px 4px;
     border-radius: 5px;
     white-space: nowrap;
-    background-image: var(--sider-memu-icon-bg);
+    background: var(--sider-memu-icon-bg);
     transition: fill 0.1s ease-in-out;
     &:before {
       content: '';
@@ -96,7 +96,7 @@
       }
       .i-svg {
         // TODO: 这里时强行变橘色， 需要提供橘色图标
-        filter: invert(100%) sepia() saturate(23) hue-rotate(0deg);
+        filter: var(--filter-svg-icon);
       }
     }
     .p {
@@ -117,13 +117,13 @@
   }
     > .i-svg {
     // TODO: 这里时强行变橘色， 需要提供橘色图标
-    filter: invert(100%) sepia() saturate(23) hue-rotate(0deg) !important;
+    filter: var(--filter-svg-icon) !important;
   }
 }
 .ivu-menu-item-selected {
   .i-svg {
     // TODO: 这里时强行变橘色， 需要提供橘色图标
-    filter: invert(100%) sepia() saturate(23) hue-rotate(0deg) !important;
+    filter: var(--filter-svg-icon) !important;
   }
 }
 .navbar-wrap {

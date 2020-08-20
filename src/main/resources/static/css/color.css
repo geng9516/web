@@ -39,6 +39,7 @@
   /* 蓝色系 */
   --blue25:rgb(233, 243, 255);
   --blue15:rgb(244, 250, 255);
+  --filter-svg-icon:invert(100%) sepia() saturate(23) hue-rotate(0deg);
 
   /* login */
   --theme-mark: var(--orange60);
@@ -68,6 +69,7 @@
   --table-td-stripe: rgb(248, 248, 249);
   --table-border: rgb(230, 230, 230);
   --table-td-sat: var(--orange25);
+
   /* 更深得黄 163 */
   --table-td-sun: rgb(255, 255, 206);
   --table-td-hover: var(--light-gold);
