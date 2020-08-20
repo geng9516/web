@@ -89,11 +89,11 @@
                 </template>
 
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="confirm-sytle ing" v-if="row[item] === '未'">未</span>
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="confirm-sytle undo" v-if="row[item] === 'エ'">エ</span>
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="confirm-sytle ing" v-if="row[item] === '待'">待</span>
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="confirm-sytle" v-if="row[item] === '済'">済</span>
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="confirm-sytle" v-if="row[item] === '確'">確</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle ing" v-if="row[item] === '未'">未</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle undo" v-if="row[item] === 'エ'">エ</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle ing" v-if="row[item] === '待'">待</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle" v-if="row[item] === '済'">済</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle" v-if="row[item] === '確'">確</span>
                 </template>
             </i-table>
             <FormDrawer
