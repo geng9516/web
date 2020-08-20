@@ -85,11 +85,11 @@
                         </Row>
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
-                            社員
+                            職員
                         </div>
                         <div style="position: relative;">
                             <Tree class="tree mt2" :data="empTreeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                  empty-text="社員データなし"></Tree>
+                                  empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                 </tab-pane>
@@ -155,7 +155,7 @@
                 <Icon type="logo-buffer"></Icon>
                 月出勤情報統計
             </div>
-            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属組織ツリーから、表示する社員を選択して下さい。" border :columns="columns"
+            <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="columns" border no-data-text="所属組織ツリーから、表示する職員を選択して下さい。"
                      :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
                 <template slot-scope="{ row }" slot="intDay">
                     <div style="position: relative;">
