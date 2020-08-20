@@ -1215,6 +1215,12 @@
 
                 })
             },
+            delNotWork(row) {
+                this.detailNonDutyVOList = this.detailNonDutyVOList.filter(e => e.tdadSeq !== row.tdadSeq)
+            },
+            delOverWork(row) {
+                this.detailOverhoursVOList = this.detailOverhoursVOList.filter(e => e.tdadSeq !== row.tdadSeq)
+            }
         }
     })
 </script>
