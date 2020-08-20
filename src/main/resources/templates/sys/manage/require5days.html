@@ -8,7 +8,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content tmgacquired5daysholiday-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content tmgacquired5daysholiday-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -229,6 +229,7 @@
                     </i-table>
                 </span>
         </Modal>
+        <back-top></back-top>
     </div>
 </main>
 
@@ -480,6 +481,10 @@
         async mounted() {
             this.getOrgTree()
             this.getSearchCondition()
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
         },
         computed: {
             tableHeadFixed() {
@@ -745,23 +750,11 @@
                 await this.getTableData()
             },
             handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             showDay: Debounce(function () {
                 this.isShow = true
             }),
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
             convertTreeData(treeData = []) {
                 return treeData.map(e => {
                     const children = e.child || e.children

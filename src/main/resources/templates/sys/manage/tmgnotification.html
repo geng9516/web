@@ -9,7 +9,7 @@
   <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-  <main class="content restapplyconfirm-warp" @scroll.passive="handleScroll" ref="layout">
+  <main class="content restapplyconfirm-warp" ref="layout">
     <div class="content_head">
       <div class="header">
         <div class="title1">
@@ -488,9 +488,7 @@
         </Tabs>
       </Drawer>
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-      <Icon size="24" type="md-arrow-round-up" />
-    </span>
+    <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
   <script type="text/babel" th:inline="javascript">
@@ -681,7 +679,6 @@
             ],
           },
           contentScrollTop: 0,
-          isScroll: false,
           uploadFiles: [],
           deleteFiles: [],
           curClickedEmpId: 0,
@@ -692,6 +689,10 @@
         this.getOrgTree()
         this.getStatusList()
         this.getRestTypeForReview()
+        window.addEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
       },
       computed: {
         tableHeadFixed() {
@@ -935,20 +936,8 @@
           this.getTableData(false, true)
         },
         handleScroll: Throttle(function (e) {
-          this.contentScrollTop = e.target.scrollTop
-          if (e.target.scrollTop > 200) {
-            this.isScroll = true
-          } else {
-            this.isScroll = false
-          }
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
         }, 50),
-        toTop() {
-          const animateMachine = requestAnimationFrame(this.toTop)
-          this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-          if (this.$refs.layout.scrollTop === 0) {
-            cancelAnimationFrame(animateMachine)
-          }
-        },
         async confirm() {
           this.confirmLoading = true
           try {

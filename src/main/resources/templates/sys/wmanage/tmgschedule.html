@@ -9,7 +9,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main class="content tmgschedule-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content tmgschedule-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -433,9 +433,7 @@
 
         </div>
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up" />
-    </span>
+    <back-top></back-top>
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
@@ -601,7 +599,6 @@
                 contentScrollTop: 0,
                 kanjiName: '',　         　 //選択した職員の氏名
                 loginEmployee: '',          //選択した職員の職員番号
-                isScroll: false,
                 data: [],
                 referListObject: {       //組織ツリー共通
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
@@ -650,7 +647,10 @@
             this.getOrgTree()
             this.getSearchCondition()
             this.tableData3 = Array(7).fill().map((e,index)=>({"intDay":this.tableData2[index].intDay,"workname":'',"twp_copen":'',"twp_cclose":'',"rest":['','']}))
-
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
         },
         computed: {
             curSelectedWorkPattern() {
@@ -1376,12 +1376,7 @@
             }),
 
             handleScroll: Throttle(function(e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             dayRed(e) {
                 console.log(e)
@@ -1411,13 +1406,6 @@
                 await this.getHatuRei()
             },
             rowClass(row) {
-            },
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
             },
             currentTabChanged(name) {
                 if (name=="organisationTree") {

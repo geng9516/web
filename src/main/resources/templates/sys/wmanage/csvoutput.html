@@ -8,7 +8,7 @@
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
-<main @scroll.passive="handleScroll" class="content tmgLedger-warp" ref="layout">
+<main class="content tmgLedger-warp" ref="layout">
     <div class="content_body tc">
         <Card :loading = "yearSelectLoading" class="card" title="帳票出力選択">
             <!--            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>-->
@@ -296,24 +296,9 @@
                 }
                 return 'sat'
             },
-            handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
-            }, 50),
             showDay: Debounce(function () {
                 this.isShow = true
             }),
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
             convertTreeData(treeData = []) {
                 return treeData.map(e => {
                     const children = e.child || e.children

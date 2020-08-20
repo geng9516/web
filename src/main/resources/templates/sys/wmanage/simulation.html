@@ -21,7 +21,7 @@
         padding-right: 5px;
     }
 </style>
-<main class="content simulation-warp" @scroll.passive="handleScroll" ref="layout">
+<main class="content simulation-warp" ref="layout">
     <div class="content_head">
         <div class="header">
             <div class="title1">
@@ -84,9 +84,7 @@
 
         </i-table>
     </div>
-    <span class="toTopBtn" @click="toTop" v-show="isScroll">
-            <Icon size="24" type="md-arrow-round-up"/>
-    </span>
+    <back-top></back-top>
     <!-- 連携対象マスタを追加するSTART -->
     <span>
         <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
@@ -163,7 +161,6 @@
                 execBtn_name: '実行開始',
                 tableLoading: false,
                 tableData_online_load: false,
-                isScroll: false,
                 decision: true,
                 exec: false,
                 compare: true,
@@ -270,6 +267,10 @@
         async created() {
             this.getData()
             this.getStatus()
+            window.addEventListener('scroll',this.handleScroll,{ passive: true })
+        },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
         },
         computed: {
             tableHeadFixed() {
@@ -307,22 +308,9 @@
                     this.tableData_online_load = false
                 }
             },
-            //画面のトップに表示する
-            toTop() {
-                const animateMachine = requestAnimationFrame(this.toTop)
-                this.$refs.layout.scrollTop = this.$refs.layout.scrollTop - this.$refs.layout.scrollTop / 5
-                if (this.$refs.layout.scrollTop === 0) {
-                    cancelAnimationFrame(animateMachine)
-                }
-            },
             //マウスホイールイベント
             handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.scrollTop
-                if (e.target.scrollTop > 200) {
-                    this.isScroll = true
-                } else {
-                    this.isScroll = false
-                }
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             // 新規と編集画面を開く
             async mergeMaster(row) {
