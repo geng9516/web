@@ -35,7 +35,7 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
     }
 
     @Override
-    public AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd,String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language) {
+    public AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd, String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language) {
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("dyyyymmdd", dyyyymmdd);
         params.put("month", month);
@@ -122,4 +122,19 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
         params.put("custId", custId);
         return baseMapper.selectExistsAttendanceBook(params);
     }
+
+    @Override
+    public List<String> selectWorkTime(String sqlStr, String employeeId, String monthStartDate, String monthEndDate, String compCode, String custId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("sqlStr", sqlStr);
+        params.put("employeeId", employeeId);
+        params.put("monthStartDate", monthStartDate);
+        params.put("monthEndDate", monthEndDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectWorkTime(params);
+
+    }
+
+
 }

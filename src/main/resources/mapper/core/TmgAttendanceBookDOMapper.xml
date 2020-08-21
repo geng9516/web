@@ -377,8 +377,25 @@
          where tmy_cemployeeid = #{employeeId}
            and tmy_nyyyy = to_number(tmg_f_get_the_year(to_date(#{yearLastDay},'yyyy/mm/dd'), #{custId}, #{compCode}))
            and tmy_ccompanyid = #{compCode}
-           and tmy_ccustomerid = #{custId};
+           and tmy_ccustomerid = #{custId}
     </select>
+
+    <!-- 月間実働時間 -->
+    <select id="selectWorkTime" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select ${sqlStr} as work_time
+        from tmg_attendance_book,
+        tmg_monthly
+        where tma_cemployeeid = #{employeeId}
+        and tma_ccompanyid = #{compCode}
+        and tma_dyyyymm <![CDATA[>=]]> to_date(#{monthStartDate}, 'yyyy/mm/dd')
+        and tma_dyyyymm <![CDATA[<=]]> to_date(#{monthEndDate}, 'yyyy/mm/dd')
+        and tma_ccustomerid = #{custId}
+        and tmo_ccustomerid = tma_ccustomerid
+        and tmo_ccompanyid = tma_ccompanyid
+        and tmo_cemployeeid = tma_cemployeeid
+        and trunc(tmo_dyyyymm) = trunc(tma_dyyyymm)
+    </select>
+
 
     <!-- 出勤簿月単位集計項目 データ部取得クエリ構築 -->
     <select id="selectTotalDataQueryList" parameterType="java.util.HashMap" resultMap="selectTotalDataQueryListMap">

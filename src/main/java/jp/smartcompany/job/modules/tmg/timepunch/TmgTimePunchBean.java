@@ -7,6 +7,7 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.tmg.attendanceBook.AttendanceBookBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.NpaidRestDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.BaseTimesDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
@@ -39,6 +40,7 @@ public class TmgTimePunchBean {
     private final Logger logger = LoggerFactory.getLogger(TmgTimePunchBean.class);
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgScheduleService iTmgScheduleService;
+    private final AttendanceBookBean attendanceBookBean;
     private PsDBBean psDBBean;
     private final String Cs_MINDATE = "1900/01/01";
     private final String Cs_MAXDATE = "2222/12/31";
@@ -340,13 +342,15 @@ public class TmgTimePunchBean {
                 dutyAndRelaxDateDTO.setDutyDates(dutyDays);
             }
             //出勤時間
-            if (null != result.get(DUTYHOURS_KEY)) {
+           /* if (null != result.get(DUTYHOURS_KEY)) {
                 String dutyHours = result.get(DUTYHOURS_KEY).toString();
                 if (dutyHours.indexOf(":") > 0) {
                     dutyAndRelaxDateDTO.setDutyHours(dutyHours.substring(0, dutyHours.indexOf(":")) + "時" + dutyHours.substring(dutyHours.indexOf(":") + 1, dutyHours.length()) + "分");
                 }
-            }
+            }*/
         }
+        String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
+        dutyAndRelaxDateDTO.setDutyHours(dutyHours);
 
         // 2.超過勤務時間
         String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);

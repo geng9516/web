@@ -92,4 +92,13 @@ public interface TmgAttendanceBookMapper extends BaseMapper<TmgAttendanceBookDO>
      * @return
      */
     AttendanceExistsVO selectExistsAttendanceBook(HashMap<String, Object> params);
+
+    /**
+     * 月間実働時間
+     *
+     * @param params
+     * @return
+     */
+    List<String> selectWorkTime(HashMap<String, Object> params);
+
 }

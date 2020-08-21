@@ -43,7 +43,7 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
      * @param language       ja
      * @return
      */
-    AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd,String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language);
+    AttendanceDateInfoDTO selectTargetDateInfo(String dyyyymmdd, String month, String firstDayOfYear, String employeeId, String compCode, String custId, String language);
 
 
     /**
@@ -124,12 +124,27 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
 
     /**
      * 対象社員の出勤簿情報が存在する年度情報を検索する
+     *
      * @param baseDate
      * @param employeeId
      * @param compCode
      * @param custId
      * @return
      */
-    AttendanceExistsVO selectExistsAttendanceBook(String baseDate,String employeeId, String compCode, String custId);
+    AttendanceExistsVO selectExistsAttendanceBook(String baseDate, String employeeId, String compCode, String custId);
+
+    /**
+     * 月間実働時間
+     *
+     * @param sqlStr
+     * @param employeeId
+     * @param monthStartDate
+     * @param monthEndDate
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    List<String> selectWorkTime(String sqlStr, String employeeId, String monthStartDate, String monthEndDate, String compCode, String custId);
+
 
 }
