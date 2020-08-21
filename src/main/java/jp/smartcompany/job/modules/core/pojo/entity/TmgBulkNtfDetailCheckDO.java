@@ -29,7 +29,7 @@ private static final long serialVersionUID=1L;
         /**
          * id    tmg_bulk_notification_check.tbn_ntbn
          */
-                @TableId(value = "tbnd_ntbnid_fk", type = IdType.AUTO)
+                @TableId("tbnd_ntbnid_fk")
                 private Long tbndNtbnidFk;
 
         /**

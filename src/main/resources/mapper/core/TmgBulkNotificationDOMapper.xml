@@ -65,7 +65,7 @@
                 TMG_BULK_NOTIFICATION_LOG B
              WHERE B.TBNL_NTBNID = #{seq,jdbcType=BIGINT}
                AND B.TBNL_CERRCODE != '0') AS CNT_ERR
-            ,A.TBN_CSTATUS
+            ,A.TBN_CSTATUS as TBN_CSTATUSID
             ,(SELECT
                 count(1)
               FROM

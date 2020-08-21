@@ -64,11 +64,11 @@ public class TmgBulkNotificationBean {
 
 
     /**
-     * 新規登録画面表示処理を実行します
+     * 新規登録画面表示処理を実行します(一括登録区分取得)
      */
-    public NewBulkdropDownVo execRMakeBulkNtf(String baseDate, PsDBBean psDBBean){
-        NewBulkdropDownVo vo  = iMastGenericDetailService.selectBulkdropDown(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate);
-        return  vo;
+    public List<NewBulkdropDownVo> execRMakeBulkNtf(String baseDate, PsDBBean psDBBean){
+        List<NewBulkdropDownVo> vos  = iMastGenericDetailService.selectBulkdropDown(psDBBean.getCustID(),psDBBean.getCompCode(),baseDate);
+        return  vos;
     }
 
     /**
@@ -93,8 +93,9 @@ public class TmgBulkNotificationBean {
             String errMsg=selectErrMsg(action ,psDBBean);
             if(errMsg.equals("0")){
                 insertTrigger(uploadDto.getSeq(),action,psDBBean);
+                return GlobalResponse.ok("0");
             }else {
-                GlobalResponse.error(errMsg);
+                return GlobalResponse.ok(errMsg);
             }
         }
         catch (GlobalException e){
@@ -105,8 +106,6 @@ public class TmgBulkNotificationBean {
             deleteBulkNtfDetailCheck(uploadDto.getSeq());
             deleteBulkNotificationCheck(action,psDBBean);
         }
-
-        return GlobalResponse.ok();
     }
 
 
@@ -196,7 +195,7 @@ public class TmgBulkNotificationBean {
     private int deleteBulkNtfDetailCheck(String bulkNtfId) {
         Map TBC = new HashMap();
         TBC.put("TBND_NTBNID_FK", bulkNtfId);
-        return iTmgBulkNtfDetailService.getBaseMapper().deleteByMap(TBC);
+        return iTmgBulkNtfDetailCheckService.getBaseMapper().deleteByMap(TBC);
     }
 
     /**
@@ -223,6 +222,7 @@ public class TmgBulkNotificationBean {
         for (SectionRankDto dto : sectionList) {
             if (dto.getRank().equals("1")) {
                 section=dto.getMoCsectionidCk();
+                break;
             }
         }
         TmgBulkNotificationCheckDO tbncDo = new TmgBulkNotificationCheckDO();
