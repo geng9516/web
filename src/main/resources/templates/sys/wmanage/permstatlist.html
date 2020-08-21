@@ -1306,8 +1306,9 @@
                         const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                         if(msg === '0'){
                             this.updateDailyLoading = false
-                            this.isShow = false
-                            this.getTitleData()
+                            this.showAddWork = false
+                            await this.getTableHead()
+                            await this.getTableData()
                             return
                         }
                         this.errMsg = JSON.parse(msg)
@@ -1369,8 +1370,9 @@
                         const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                         if (msg === '0') {
                             this.updateDailyLoading = false
-                            this.isShow = false
-                            this.getTitleData()
+                            this.showAddWork = false
+                            await this.getTableHead()
+                            await this.getTableData()
                             return
                         }
                         this.errMsg = JSON.parse(msg)
@@ -1585,6 +1587,20 @@
                     for (i = 0; i < moji.length; i++)
                         if (escape(moji.charAt(i)).length >= 4) cnt += 2; else cnt++;
                     return cnt;
+                },
+                toMinuteFromHHcMI60(pHHMM) {
+                    // 何もパラメータが渡されなかった場合、そのまま返す
+                    if (pHHMM === '') {
+                        return '';
+                    }
+                    let retMinute;
+                    let nHour = new Number();
+                    let nMinute = new Number();
+                    // 分に変換します
+                    nHour = eval(+(pHHMM.split(":")[0] * 60));
+                    nMinute = eval(+(pHHMM.split(":")[1]));
+                    retMinute = eval(nHour + nMinute);
+                    return retMinute;
                 },
             }
         })
