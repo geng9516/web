@@ -182,14 +182,12 @@ public class ScheduleController {
      * http://localhost:6879/sys/schedule/selectTmgWeekPatternList?employeeId=29042924&txtBaseDate=&txtEndDate=
      *
      * @param txtBaseDate
-     * @param txtEndDate
      * @param psDBBean
      * @return
      */
     @GetMapping("selectTmgWeekPatternList")
     @ResponseBody
     public List<TmgWeekPatternDTO> selectTmgWeekPattern(@RequestParam("txtBaseDate") String txtBaseDate,
-                                                        @RequestParam("txtEndDate") String txtEndDate,
                                                         @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //   System.out.println("controller-->selectTmgWeekPattern");
         return tmgScheduleBean.selectTmgWeekPattern(txtBaseDate, psDBBean);

@@ -1441,8 +1441,9 @@ public class TmgScheduleBean {
     public List<TmgWeekPatternDTO> selectTmgWeekPattern(String baseDate, PsDBBean psDBBean) {
 
         if (null == baseDate || "".equals(baseDate)) {
-            logger.error("週次勤務パターン-->baseDate パラメータが空です");
-            return null;
+            baseDate = DateUtil.now();
+            logger.warn("週次勤務パターン-->baseDate パラメータが空です");
+          //  return null;
         }
 
         // 本日
