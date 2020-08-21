@@ -30,8 +30,8 @@
     border-right: 1px solid var(--table-head-border);
     // 出勤	外出	戻り	退勤
     &.checkin {
-      color: rgb(175, 102, 10);
-      background-color: rgb(255, 254, 234);
+      color: var(--table-checkin);
+      background-color: var(--table-checkin-bg);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }

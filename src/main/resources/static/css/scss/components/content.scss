@@ -100,6 +100,7 @@
     border-radius: 5px;
     @include flex-row(center);
     .title1 {
+      padding: 4px 0;
       h1 {
         font-size: 20px;
       }

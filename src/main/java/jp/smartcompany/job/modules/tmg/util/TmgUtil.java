@@ -1,13 +1,15 @@
 package jp.smartcompany.job.modules.tmg.util;
 
-import jp.smartcompany.boot.util.SysUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import cn.hutool.core.date.DateUtil;
+import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsResult;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Vector;
 
 /**
  * @author Xiao Wenpeng
@@ -2016,4 +2018,214 @@ public class TmgUtil {
         HHmi= (date/60) + "時" + (date%60) + "分";
         return HHmi;
     }
+
+    /**
+     * フレックスかどうかを判定
+     *
+     * @param bean PsDBBean
+     * @param custId 顧客コード
+     * @param compCode 法人コード
+     * @param employeeCode 社員番号
+     * @param date 日付
+     *
+     * @return true:フレックス対象者
+     */
+    @SuppressWarnings("unchecked")
+    public static Boolean isFlex(PsDBBean bean
+            , String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("SELECT ");
+        sb.append(buildSQLForSelectFlex(bean.escDBString(custId)
+                , bean.escDBString(compCode)
+                , bean.escDBString(employeeCode)
+                , date));
+        sb.append("  FROM DUAL");
+
+        Vector vecQuery = new Vector();
+        vecQuery.add(sb.toString());
+
+        PsResult psResult = null;
+        String flexWork = null;
+
+        try {
+            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            flexWork = valueAtColumnRowFromPsResult(bean
+                    , psResult
+                    , 0
+                    , 0
+                    , 0);
+        } catch(Exception e) {
+            psResult = null;
+        }
+
+        // 裁量労働対象者判定
+        String flexWorkTrue = "1";
+
+        if (flexWorkTrue.equals(flexWork)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * フレックス制か判断するSELECTクエリを返します
+     *
+     * @param custId 顧客コード
+     * @param compCode 法人コード
+     * @param employeeCode 社員番号
+     * @param date 日付
+     *
+     * @return SELECT文
+     */
+    private static String buildSQLForSelectFlex(String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append(" TMG_F_IS_FLEX("+ custId);
+        sql.append("  , "+ compCode);
+        sql.append("  , "+ employeeCode);
+        sql.append("  , "+ date + ") ");
+
+        return sql.toString();
+    }
+
+    /**
+     * 月間勤務時間に対して、足りない時間数を取得
+     *
+     * @param bean PsDBBean
+     * @param custId 顧客コード
+     * @param compCode 法人コード
+     * @param employeeCode 社員番号
+     * @param date 日付
+     *
+     * @return int:時間数
+     */
+    public static String getNeedTime4Flex(PsDBBean bean
+            , String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("SELECT ");
+        sb.append(buildSQLForSelectNeedTime4Flex(bean.escDBString(custId)
+                , bean.escDBString(compCode)
+                , bean.escDBString(employeeCode)
+                , date));
+        sb.append("  FROM DUAL");
+
+        Vector vecQuery = new Vector();
+        vecQuery.add(sb.toString());
+
+        PsResult psResult = null;
+        String needTime4Flex = null;
+
+        try {
+            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            needTime4Flex = valueAtColumnRowFromPsResult(bean
+                    , psResult
+                    , 0
+                    , 0
+                    , 0);
+        } catch(Exception e) {
+            psResult = null;
+        }
+
+        return needTime4Flex;
+    }
+
+    /**
+     * 検索結果からデータを取り出す
+     * @param bean
+     * @param psResult
+     * @param qry
+     * @param col
+     * @param row
+     * @return
+     */
+    public static String valueAtColumnRowFromPsResult(PsDBBean bean, PsResult psResult, int qry, int col, int row){
+        String retval = "";
+        Vector vQrys;
+        Vector vRows;
+        Vector vCols;
+        if(bean == null || psResult == null || qry < 0 || col < 0 || row < 0){
+            retval = "";
+            return retval;
+        }
+
+        vQrys = psResult.getResult();
+
+        if(vQrys.size() <= qry){
+            retval = "";
+            return retval;
+        }
+        try{
+            vRows = (Vector)psResult.getResult().get(qry);
+        }catch (Exception e) {
+            e.printStackTrace();
+            retval = "";
+            return retval;
+        }
+
+        if(vRows.size() <= row){
+            retval = "";
+            return retval;
+        }
+        try{
+            vCols = (Vector)vRows.get(row);
+        }catch (Exception e) {
+            e.printStackTrace();
+            retval = "";
+            return retval;
+        }
+
+        if(vCols.size() <= col){
+            retval = "";
+            return retval;
+        }
+        try{
+            retval = String.valueOf(vCols.get(col));
+        }catch (Exception e) {
+            e.printStackTrace();
+            retval = "";
+            return retval;
+        }
+        if(retval == null){
+            retval = "";
+        }
+        return retval;
+    }
+
+    /**
+     * 月間勤務時間に対して、足りない時間数を取得
+     *
+     * @param custId 顧客コード
+     * @param compCode 法人コード
+     * @param employeeCode 社員番号
+     * @param date 日付
+     *
+     * @return SELECT文
+     */
+    private static String buildSQLForSelectNeedTime4Flex(String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append(" TMG_F_CONV_MIN2HHMI(TMG_4CALC_GET_NEED_TIME("+ employeeCode);
+        sql.append("  , "+ date);
+        sql.append("  , "+ custId);
+        sql.append("  , "+ compCode + ")) ");
+
+        return sql.toString();
+    }
+
 }

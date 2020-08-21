@@ -384,13 +384,13 @@
               <form-item label="開始・終了" v-show="selectedRestInfo.timeZone">
                 <Row>
                   <i-col span="11">
-                    <i-input v-model="restApply.timezoneOpen" placeholder="開始時間" />
+                    <i-input v-model="restApply.timezoneOpen" @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)" placeholder="開始時間" />
                   </i-col>
                   <i-col span="2">
                     <p class="tc" style="padding: 4px;">-</p>
                   </i-col>
                   <i-col span="11">
-                    <i-input v-model="restApply.timezoneClose" placeholder="終了時間" />
+                    <i-input v-model="restApply.timezoneClose" @on-blur="handleInputChange(0,  restApply,'timezoneClose', $event.target)" placeholder="終了時間" />
                   </i-col>
                 </Row>
               </form-item>
@@ -496,6 +496,7 @@
       el: '.restapplyconfirm-warp',
       data() {
         return {
+          hasPassedTimeCheck: true,
           agencyApplyShow: false,
           columns: [
             {
@@ -1076,7 +1077,19 @@
         handleRestType(e) {
           // 选择不同的休假时，判断显示不同的项目
           if (!e || e === '全て') {
-            return (this.selectedRestInfo = {})
+            this.restApply = {
+              useVacation: false,
+              restTypeId: '全て',
+              weekSelected: [],
+              noreserved: 1,
+              _dateList: ''
+            }
+            this.errorInfo = false
+            this.$refs.datepicker.handleClear()
+            this.uploadFiles = []
+            this.hasPassedTimeCheck = true
+            this.selectedRestInfo = {}
+            return
           }
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
           console.log(this.selectedRestInfo)
@@ -1141,6 +1154,28 @@
             this.errorMsg = '期間を選んでください。'
             return
           }
+          if (this.restApply.timezoneOpen || this.restApply.timezoneClose) {
+            if (this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
+              this.errorInfo = true
+              this.errorMsg = '終了時間を入力してください'
+              return
+            }
+            if (!this.restApply.timezoneOpen && this.restApply.timezoneClose) {
+              this.errorInfo = true
+              this.errorMsg = '開始時間を入力してください。'
+              return
+            }
+            if (this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+              this.errorInfo = true
+              this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+              return
+            }
+          }
+          if (!this.hasPassedTimeCheck) {
+            this.errorInfo = true
+            this.errorMsg = '時刻をHH:MM形式で入力してください'
+            return
+          }
           this.deleteFiles = [...new Set(this.deleteFiles)]
           try {
             this.applyLoading = true
@@ -1185,6 +1220,11 @@
           if(this.deptName !== "選んでください" && this.needRefreshTable) {
             this.getTableData(false, true)
             this.needRefreshTable = false
+          }
+        },
+        handleInputChange(i, object, value, el) {
+          if (object) {
+            this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
           }
         }
       }
