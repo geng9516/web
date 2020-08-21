@@ -188,8 +188,8 @@
 }
 // checkbox改成橘色
 .ivu-checkbox-checked .ivu-checkbox-inner {
-  border-color: var(--orange25);
-  background-color: var(--orange75);
+  border-color: var(--checkbox-border);
+  background-color: var(--checkbox-bg);
 }
 .ivu-checkbox-checked:hover .ivu-checkbox-inner {
   border-color: var(--orange25);
@@ -198,15 +198,15 @@
   display: inline-block;
   padding: 2px 0;
   margin: 2px 0;
-  color: rgb(171, 78, 16);
-  border: 1px solid rgb(220, 200, 187);
+  color: var(--row-label-primary);
+  border: 1px solid var(--row-label-primary-border);
   background-color: var(--white);
   border-radius: 3px;
 }
 .primary-info {
   color: var(--primary-info);
-  border: 1px solid var(--primary-info-border);
-  background-color: var(---primary-info-bg);
+  border: var(--primary-info-border);
+  background-color: var(--primary-info-bg);
   font-size: 14px;
   text-align: left;
   white-space: pre-line;
