@@ -110,7 +110,7 @@
                 :isShow="isShow"
                 @close="() => (this.isShow = false)"
         ></FormDrawer>
-        <Drawer :title="title" draggable v-model="showDayApply" width="97">
+        <Drawer :title="title" v-model="showDayApply" width="97">
             <Row :gutter="16" class="mb10">
                 <i-col class="tr" offset="11" span="13">
                     <i-button :disabled="!drawApproval" @click="handleSelectAll2(false)" class="mr5" ghost type="primary">
@@ -146,7 +146,7 @@
                             </i-button>
                         </i-col>
                         <i-col span="1">
-                            <i-button :loading="updateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
+                            <i-button :loading="returnUpdateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
                                 差戻
                             </i-button>
                         </i-col>
@@ -444,6 +444,7 @@
                 },
                 showAddWork: false,
                 updateDailyLoading: false,
+                returnUpdateDailyLoading: false,
                 notapproval:false,
                 errorFlag: false,
                 errorMsg: '',//错误信息
@@ -668,7 +669,7 @@
             columns2() {
                 let result = []
                 const that = this
-                const r =[40,120,50,55,55,55,55,55,55,250,270,150,200]
+                const r =[40,120,50,55,55,55,55,55,55,250,250,150,200]
                 this.tableHead2.forEach((e, i) => {
                     result = result.concat({
                         // width: e.mgdNwidth,
@@ -1044,7 +1045,7 @@
                 console.log(this.empIds2.length)
 
                 if (this.empIds2.length === 0){
-                    this.$Message.error("日次一括承認の対象者が選択されていません")
+                    this.$Message.warning("日次一括承認の対象者が選択されていません")
                     //日次一括承認Loading制御
                     this.bulkApprovalLoading2 = false
 
@@ -1055,7 +1056,7 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
-                            const { data } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.query)
+                            const { code,msg } = await this.http.get('sys/permStatList/executeUpdateTmgDaily', this.query)
 
                             //日次承認状況一覧検索処理
                             this.getReadTmgDaily()
@@ -1065,6 +1066,15 @@
 
                             //日次一括承認Loading制御
                             this.bulkApprovalLoading2 = false
+
+                            if(code === 0){
+                                this.$Message.success({
+                                    background: true,
+                                    closable: true,
+                                    duration: 6,
+                                    content: '一括承認が正しく実施されました。'
+                                });
+                            }
                         },
                         onCancel: () => {
                             //選択した職員リストをクリアする
@@ -1367,7 +1377,7 @@
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }
-                this.updateDailyLoading = true
+                this.returnUpdateDailyLoading = true
                 this.tmgResultsDto.txtDYYYYMMDD = this.queryAddWork.txtDYYYYMMDD
                 this.tmgResultsDto.txtAction = 'ACT_REMANDS'
                 this.tmgResultsDto.workingId = this.workingId
@@ -1397,7 +1407,7 @@
                 try{
                     const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                     if (msg === '0') {
-                        this.updateDailyLoading = false
+                        this.returnUpdateDailyLoading = false
                         this.isShow = false
                         this.getTitleData()
                         return
@@ -1423,7 +1433,7 @@
                 }catch (error) {
                     return
                 }finally {
-                    this.updateDailyLoading = false
+                    this.returnUpdateDailyLoading = false
                 }
             },
             // 就業区分の切り替え表示制御
