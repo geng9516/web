@@ -12,7 +12,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import jp.smartcompany.job.modules.core.mapper.MastGroupMapper;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -169,5 +168,16 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
             qw.eq("MG_CCUSTOMERID",customerId).eq("MG_CSYSTEMID_CK_FK",systemId)
                     .eq("MG_CGROUPID_PK",groupId);
             return count(qw);
+        }
+
+        /**
+         * グループ全体の優先順位を更新
+         * (グループが削除された場合のみ)
+         */
+        @Override
+        public int updateGroupPrionityLevel (String searchDate,
+                                      String custId,
+                                      String systemId) {
+            return baseMapper.updateGroupPrionityLevel(searchDate,custId,systemId);
         }
 }

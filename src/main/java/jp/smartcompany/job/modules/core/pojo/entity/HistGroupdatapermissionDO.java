@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 import java.util.Date;
@@ -23,6 +24,7 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("hist_groupdatapermission")
+@KeySequence("HIST_GROUPDATAPERMISSION_SEQ")
 public class HistGroupdatapermissionDO implements Serializable {
 
 private static final long serialVersionUID=1L;
@@ -30,7 +32,7 @@ private static final long serialVersionUID=1L;
         /**
          * idカラム
          */
-                @TableId(value = "hgp_id", type = IdType.AUTO)
+                @TableId(value = "hgp_id")
                 private Long hgpId;
 
         /**

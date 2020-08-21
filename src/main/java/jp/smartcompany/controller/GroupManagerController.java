@@ -2,6 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
@@ -96,5 +97,15 @@ public class GroupManagerController {
             @RequestParam(value="systemId",required = false) String systemId) {
         return groupManagerDateEditLogic.editListHandler(searchDate,systemId);
     }
+
+    @PostMapping("delete")
+    public String delete(@RequestBody GroupManagerDeleteDTO dto) {
+        return groupManagerDateEditLogic.deleteHandler(dto);
+    }
+
+//    @PostMapping("update")
+//    public String changeSort() {
+
+//    }
 
 }

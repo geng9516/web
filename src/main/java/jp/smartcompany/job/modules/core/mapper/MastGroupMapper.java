@@ -114,4 +114,12 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
                 @Param("searchDate") String searchDate,
                 @Param("companyList") List<String> companyList
         );
+
+        /**
+         * グループ全体の優先順位を更新
+         * (グループが削除された場合のみ)
+         */
+        int updateGroupPrionityLevel (@Param("searchDate") String searchDate,
+                                      @Param("custId") String custId,
+                                      @Param("systemId") String systemId);
 }

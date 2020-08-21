@@ -3,6 +3,8 @@ package jp.smartcompany.admin.groupmanager.logic.impl;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
@@ -10,16 +12,19 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SysDateUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
-import jp.smartcompany.job.modules.core.service.IMastGroupService;
+import jp.smartcompany.job.modules.core.pojo.entity.*;
+import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -33,14 +38,22 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
     private final ScCacheUtil cacheUtil;
     private final PsSearchCompanyUtil searchCompanyUtil;
     private final IMastGroupService iMastGroupService;
+    private final IMastGroupdefinitionsService iMastGroupdefinitionsService;
+    private final IHistGroupdefinitionsService iHistGroupdefinitionsService;
+    private final IMastGroupsectionpostmappingService iMastGroupsectionpostmappingService;
+    private final IMastGroupbasesectionService iMastGroupbasesectionService;
+    private final IHistGroupdatapermissionService iHistGroupdatapermissionService;
+    private final IMastGroupapppermissionService iMastGroupapppermissionService;
+    private final IMastPermissionService iMastPermissionService;
 
     /** システムプロパティ(グループ判定モード) */
     private static final String KEY_GROUP_CHECK_MODE = "GroupCheckMode";
 
     @Override
     public Map<String,Object> editListHandler(String searchDate,String systemId) {
+        Date now = DateUtil.date();
         if (searchDate == null) {
-            searchDate = SysUtil.transDateToString(DateUtil.date());
+            searchDate = SysUtil.transDateToString(now);
         }
         // システムプロパティより、グループ判定モードを取得
         String checkMode = cacheUtil.getSystemProperty(KEY_GROUP_CHECK_MODE);
@@ -66,34 +79,87 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         Map<String,Object> map = MapUtil.newHashMap();
         map.put("historyDate",historyDate);
         map.put("groupList",validGroupList);
-
-        // 現在有効な日付(複数件数が、返却されることは想定していない)
-        GroupManagerModifiedDateDTO dateDTO = historyDate.get(0);
-        String sValidDate = transStringFormat(dateDTO.getValiddate());
-        // 今回改定日，改定日を指定フォーマットに変換して詰め替え
-        String applyDate = SysUtil.transDateToString(dateDTO.getMgDstartdate());
-        String previousDate = transStringFormat(dateDTO.getPreviousdate());
-        String nextDate = transStringFormat(dateDTO.getNextdate());
-
-//        // 最新改定日よりシステム日付が小さい場合
-//        if (pdModifiedDate != null && pdSysdate.compareTo(pdModifiedDate) < 0) {
-//            // 「現在有効な歴の開始日」を今回改定日に設定
-//            this.groupManagerModifiedDateDto.setModifiedDate(
-//                    PsV4Util.transDateToString(
-//                            lGroupManagerModifiedDateDtoDate.get(0).getMgDstartdate()));
-//        } else {
-//            // 「システム日付」を今回改定日に設定
-//            this.groupManagerModifiedDateDto.setModifiedDate(
-//                    PsV4Util.transDateToString(pdSysdate));
-//        }
-//
-//        // 最新改定日を指定
-//        HashMap<String, Object> hmVariables = new HashMap<String, Object>();
-//        hmVariables.put(GroupManagerModifiedDateLogicImpl.MAXDATE, sValidDate);
-//        this.groupManagerModifiedDateDto.setJsVariables(hmVariables);
-//        this.groupManagerModifiedDateDto.setMindate(sValidDate);
-
         return map;
+    }
+
+    @Transactional(rollbackFor = GlobalException.class)
+    @Override
+    public String deleteHandler(GroupManagerDeleteDTO dto) {
+        QueryWrapper<MastGroupDO> qw = SysUtil.query();
+        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        qw.eq("MG_CCUSTOMERID",session.getLoginCustomer())
+          .eq("MG_CSYSTEMID_CK_FK",dto.getSystemId())
+          .in("MG_CGROUPID_PK",dto.getGroupIds())
+          .le("MG_DSTARTDATE",dto.getSearchDate())
+          .ge("MG_DENDDATE",dto.getSearchDate());
+        iMastGroupService.remove(qw);
+        nestedMastDelete(dto.getGroupIds(),dto.getSystemId(),session.getLoginCustomer(),session.getLoginCompany());
+        iMastGroupService.updateGroupPrionityLevel(dto.getSearchDate(),session.getLoginCustomer(),dto.getSystemId());
+        return "グループを削除しました";
+    }
+
+    public void nestedMastDelete(List<String> groupIds,String systemId,String custId,String companyId) {
+        // グループ条件定義マスタ削除
+        List<MastGroupdefinitionsDO> definitionList = iMastGroupdefinitionsService
+                .list(
+                        SysUtil.<MastGroupdefinitionsDO>query()
+                        .eq("MGP_CCUSTOMERID_CK_FK",custId)
+                        .eq("MGP_CSYSTEMID_CK",systemId)
+                        .in("MGP_CGROUPID_CK_FK",groupIds)
+                );
+        iMastGroupdefinitionsService.removeByIds(definitionList);
+        // グループ条件定義マスタ(条件式)削除
+        List<HistGroupdefinitionsDO> histGroupdefinitionsList = iHistGroupdefinitionsService
+                .list(
+                        SysUtil.<HistGroupdefinitionsDO>query()
+                                .eq("HGD_CCUSTOMERID",custId)
+                                .eq("MHGD_CSYSTEMID",systemId)
+                                .in("HGD_CGROUPID",groupIds)
+                );
+       iHistGroupdefinitionsService.removeByIds(histGroupdefinitionsList);
+        // グループ条件定義マスタ(組織,役職)削除
+       List<MastGroupsectionpostmappingDO> mastGroupsectionpostmappingList =iMastGroupsectionpostmappingService
+               .list(
+                       SysUtil.<MastGroupsectionpostmappingDO>query()
+                               .eq("MAG_CCUSTOMERID_CK_FK",custId)
+                               .eq("MAG_CSYSTEMID_CK",systemId)
+                               .in("MAG_CGROUPID_FK",groupIds)
+               );
+       iMastGroupsectionpostmappingService.removeByIds(mastGroupsectionpostmappingList);
+        // グループ別基点組織定義マスタ削除
+       List<MastGroupbasesectionDO> mastGroupbasesectionList = iMastGroupbasesectionService
+               .list(
+                       SysUtil.<MastGroupbasesectionDO>query()
+                               .eq("MGBS_CCUSTOMERID",custId)
+                               .eq("MGBS_CSYSTEMID",systemId)
+                               .in("MGBS_CGROUPID",groupIds)
+               );
+       iMastGroupbasesectionService.removeByIds(mastGroupbasesectionList);
+        // グループ別アプリケーション検索対象範囲設定マスタ削除
+        List<HistGroupdatapermissionDO> groupdatapermissionList = iHistGroupdatapermissionService
+                .list(
+                        SysUtil.<HistGroupdatapermissionDO>query()
+                                .eq("HGP_CCUSTOMERID",custId)
+                                .eq("HGP_CSYSTEMID",systemId)
+                                .in("HGP_CGROUPID",groupIds)
+                );
+        iHistGroupdatapermissionService.removeByIds(groupdatapermissionList);
+        // グループ別アプリケーション権限マスタ削除
+        List<MastGroupapppermissionDO> appPermissionList = iMastGroupapppermissionService.list(
+                SysUtil.<MastGroupapppermissionDO>query()
+                        .eq("MGP_CCOMPANYID",companyId)
+                        .eq("MGP_CSYSTEMID",systemId)
+                        .in("MGP_CGROUPID",groupIds)
+        );
+        iMastGroupapppermissionService.removeByIds(appPermissionList);
+        // 機密設定マスタ削除
+        List<MastPermissionDO> permissionList = iMastPermissionService.list(
+                SysUtil.<MastPermissionDO>query()
+                        .eq("MP_CCUSTOMERID",companyId)
+                        .eq("MP_CSYSTEMID",systemId)
+                        .in("MP_CGROUPID",groupIds)
+        );
+        iMastPermissionService.removeByIds(permissionList);
     }
 
     /**
@@ -103,7 +169,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
      * @param   psDate 日付文字列
      * @return  String(yyyy/MM/dd)
      */
-    public String transStringFormat(String psDate)  {
+    private String transStringFormat(String psDate)  {
         String sFormat = "yyyy/MM/dd";
 
         if (psDate == null

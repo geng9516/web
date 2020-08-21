@@ -46,6 +46,8 @@ public class SqlParameter2NullInterceptor implements Interceptor {
             // 防止系统函数也被填充null值
             originalSql=originalSql.replaceAll("ROW_NUMBER\\s*\\(\\s*NULL\\s*\\)","ROW_NUMBER()");
             originalSql=originalSql.replaceAll("ROW_NUMBER\\s*\\(\\s*null\\s*\\)","ROW_NUMBER()");
+            originalSql=originalSql.replaceAll("RANK\\s*\\(\\s*NULL\\s*\\)","RANK()");
+            originalSql=originalSql.replaceAll("RANK\\s*\\(\\s*null\\s*\\)","RANK()");
             metaObject.setValue("delegate.boundSql.sql", originalSql);
         }
         return invocation.proceed();

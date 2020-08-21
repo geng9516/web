@@ -116,4 +116,11 @@ public interface IMastGroupService extends IService<MastGroupDO> {
 
         int selectGroupExists(String customerId,String systemId,String groupId);
 
+        /**
+         * グループ全体の優先順位を更新
+         * (グループが削除された場合のみ)
+         */
+        int updateGroupPrionityLevel(String searchDate,
+                                      String custId,
+                                      String systemId);
 }
