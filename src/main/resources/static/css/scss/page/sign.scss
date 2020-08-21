@@ -14,10 +14,10 @@
       width: 60px;
       height: 39px;
       border-radius: 5px 0 0 0;
-      border-bottom: 1px solid var(--orange50);
+      border-bottom: 1px solid var(--card-plan-title-border-b);
       line-height: 40px;
       font-size: 15px;
-      background-color: var(--orange60);
+      background-color: var(--card-plan-bg);
     }
     .plan-title {
       writing-mode: tb;
@@ -27,7 +27,7 @@
       font-size: 15px;
       border-radius: 0 0 0 5px;
       letter-spacing: 10px;
-      background-color: var(--orange60);
+      background-color: var(--card-plan-bg);
     }
   }
   .time-list {
@@ -35,7 +35,7 @@
     position: relative;
     border-radius: 0 5px 5px 0;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-    color: var(--orange);
+    color: var(--card-title);
     background: var(--white);
     overflow-y: hidden;
     .li {
@@ -75,7 +75,7 @@
     width: 150px;
     font-size: 14px;
     letter-spacing: 2px;
-    background: rgba(253, 124, 40,.17);
+    background: var(--real-schedule-bg);
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
     transition: all 1s;
     border-radius: 8px;
@@ -98,7 +98,7 @@
   z-index: 0;
   position: relative;
   padding: 20px;
-  background-color: var(--orange25);
+  background-color: var(--login-right-part-bg);
   &:after {
     right: 10px;
     left: auto;
@@ -143,6 +143,18 @@
   min-width: 1200px;
   max-width: 1728px;
   margin: 10px auto;
+  .gowork-btn {
+    font-size:20px;border-radius: 23px;height: 50px;;
+  }
+  .offwork-btn{
+    font-size:20px;border-radius: 23px;height: 50px;
+    border-color: var(--offwork-btn-border);
+    color: var(--offwork-btn);
+    background: var(--offwork-btn-bg);
+  }
+  .addwork-btn {
+    font-size:20px;border-radius: 23px;height: 50px;background-color: white;
+  }
 }
 .card {
   border-radius: 5px;

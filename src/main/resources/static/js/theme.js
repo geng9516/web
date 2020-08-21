@@ -38,6 +38,13 @@ var THEME_CONFIG  = {
     // 打卡页
     '--card-title': 'var(--orange)',
     '--card-date-bg': 'linear-gradient(90deg, rgb(255, 157, 93), rgb(255, 102, 0))',
+    '--card-plan-bg': 'var(--orange60)',
+    '--card-plan-title-border-b': 'var(--orange60)',
+    '--real-schedule': 'var(--orange)',
+    '--real-schedule-bg': 'rgba(253, 124, 40,.17)',
+    '--offwork-btn-border': 'rgb(230,222,201)',
+    '--offwork-btn': 'white',
+    '--offwork-btn-bg': 'linear-gradient(90deg, rgb(254, 222, 117), rgb(255, 186, 0))',
     // 按钮
     '--primary-border': 'var(--orange)',
     '--primary-background': 'linear-gradient(90deg, rgb(255,157,93), rgb(255,102,0))',
@@ -46,6 +53,11 @@ var THEME_CONFIG  = {
     '--ghost-primary-color': 'var(--orange)',
     '--ghost-primary-hover': 'linear-gradient(-45deg, var(--orange25), var(--white))',
     '--ghost-primary-active': 'linear-gradient(-45deg, var(--orange25), var(--white))',
+    // 小标题样式
+    '--titlenorm-border-t': 'none',
+    '--titlenorm-border-b': 'var(--orange75)',
+    '--titlenorm-bg': 'unset',
+    '--titlenorm-i': 'unset',
     // checkbox
     '--checkbox-border': 'var(--orange25)',
     '--checkbox-bg': 'var(--orange75)',
@@ -89,6 +101,13 @@ var THEME_CONFIG  = {
     // 打卡页
     '--card-title': 'var(--primary)',
     '--card-date-bg': 'linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255))',
+    '--card-plan-bg': 'var(--label-blue)',
+    '--card-plan-title-border-b': 'var(--blue25)',
+    '--real-schedule': 'var(--primary)',
+    '--real-schedule-bg': 'rgba(45, 140, 240,.17)',
+    '--offwork-btn-border': 'var(--ghost-primary-border)',
+    '--offwork-btn': 'var(--primary)',
+    '--offwork-btn-bg': 'white',
     // 按钮
     '--primary-border': 'rgb(53, 173, 255)',
     '--primary-background': 'linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255))',
@@ -97,6 +116,11 @@ var THEME_CONFIG  = {
     '--ghost-primary-color': 'var(--primary)',
     '--ghost-primary-hover': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
     '--ghost-primary-active': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
+    // 小标题样式
+    '--titlenorm-border-t': '1px solid var(--form-title-border)',
+    '--titlenorm-border-b': 'var(--form-title-border)',
+    '--titlenorm-bg': 'var(--table-td-hover)',
+    '--titlenorm-i': 'rgb(91, 208, 41)',
     // checkbox
     '--checkbox-border': 'var(--primary)',
     '--checkbox-bg': 'var(--primary-border)',

@@ -14,18 +14,16 @@
             <Clock ref="clock"></Clock>
             <Row :gutter="16" style="padding: 0 20px;">
                 <i-col span="12">
-                    <i-button style="font-size:20px;border-radius: 23px;height: 50px;border-color:rgb(255,102,0);background: linear-gradient(90deg, rgb(255,157,93), rgb(255,102,0));" type="primary"
-                              @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable" long>{{ clockBtn.clock }}
+                    <i-button class="gowork-btn" type="primary" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable" long>{{ clockBtn.clock }}
                     </i-button>
                 </i-col>
                 <i-col span="12" class="mb20">
-                    <i-button style="font-size:20px;border-radius: 23px;height: 50px;border-color: rgb(230,222,201);
-                        background: linear-gradient(90deg, rgb(254 222 117), rgb(255 186 0));" type="primary" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{
+                    <i-button class="offwork-btn" type="primary" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{
                         clockBtn.exit }}
                     </i-button>
                 </i-col>
                 <i-col span="24">
-                    <i-button style="font-size:20px;border-radius: 23px;height: 50px;background-color: white;" type="warning" @click="showDay(null)" ghost long>超勤申請</i-button>
+                    <i-button class="addwork-btn" type="primary" ghost @click="showDay(null)" long>超勤申請</i-button>
                 </i-col>
             </Row>
         </i-col>
@@ -597,7 +595,7 @@
                             left: `${left}px`,
                             top: '35%',
                             textDecoration: 'none',
-                            color: contentWidth > 100 ? 'rgb(255, 102, 0)' : 'transparent'
+                            color: contentWidth > 100 ? 'var(--real-schedule)' : 'transparent'
                         }
                     }
                 })

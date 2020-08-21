@@ -88,12 +88,12 @@
 }
 //环境设定的标题样式
 .titlenorm {
-  // border-top: solid 1px var(--form-title-border);
-  border-bottom: solid 1px var(--orange75);
+  border-top: var(--titlenorm-border-t);
+  border-bottom: solid 1px var(--titlenorm-border-b);
   // 低调的灰色
   // background-color: var(--form-title-background);
   // 显眼的绿色
-  // background-color: var(--yellow25);
+  background-color: var(--titlenorm-bg);
   padding: 6px 10px;
   font-size: 16px;
   font-weight: 600;
@@ -103,8 +103,7 @@
   //   margin-right: 68px;
   // }
   i {
-    // color: var(--form-title-icon;
-    // color: rgb(91, 208, 41);
+    color: var(--titlenorm-i);
     font-size: 18px;
     padding-right: 5px;
     // vertical-align: bottom;
