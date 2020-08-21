@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.interceptor;
 
-import cn.hutool.core.util.ReUtil;
 import com.baomidou.mybatisplus.core.toolkit.PluginUtils;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
@@ -40,14 +39,8 @@ public class SqlParameter2NullInterceptor implements Interceptor {
             BoundSql boundSql = (BoundSql)metaObject.getValue("delegate.boundSql");
             String originalSql = boundSql.getSql();
             originalSql=originalSql.replaceAll("(,\\s*,)",",null,");
-            originalSql=originalSql.replaceAll("\\(\\)","(null)");
             originalSql=originalSql.replaceAll("(\\(\\s*,)","(null,");
             originalSql=originalSql.replaceAll("(,\\s*\\))",",null)");
-            // 防止系统函数也被填充null值
-            originalSql=originalSql.replaceAll("ROW_NUMBER\\s*\\(\\s*NULL\\s*\\)","ROW_NUMBER()");
-            originalSql=originalSql.replaceAll("ROW_NUMBER\\s*\\(\\s*null\\s*\\)","ROW_NUMBER()");
-            originalSql=originalSql.replaceAll("RANK\\s*\\(\\s*NULL\\s*\\)","RANK()");
-            originalSql=originalSql.replaceAll("RANK\\s*\\(\\s*null\\s*\\)","RANK()");
             metaObject.setValue("delegate.boundSql.sql", originalSql);
         }
         return invocation.proceed();

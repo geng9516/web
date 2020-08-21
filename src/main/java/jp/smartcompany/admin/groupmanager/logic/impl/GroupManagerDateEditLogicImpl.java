@@ -162,22 +162,4 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         iMastPermissionService.removeByIds(permissionList);
     }
 
-    /**
-     * 日付文字列を指定フォーマット(yyyy/MM/dd)に変換する。
-     * nullまたはフォーマットの文字数に満たない場合は場合は、nullを返す
-     *
-     * @param   psDate 日付文字列
-     * @return  String(yyyy/MM/dd)
-     */
-    private String transStringFormat(String psDate)  {
-        String sFormat = "yyyy/MM/dd";
-
-        if (psDate == null
-                || sFormat.length() > psDate.length()) {
-            return null;
-        }
-
-        return psDate.substring(0, sFormat.length()).replace("-", "/");
-    }
-
 }
