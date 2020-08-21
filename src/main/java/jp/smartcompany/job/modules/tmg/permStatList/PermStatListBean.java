@@ -519,8 +519,22 @@ public class PermStatListBean {
      * @param psEndDay     対象期間終了日
      * @return String(表示しない ： disabled 、 表示する ： 空白)
      */
-    public String getEnableCheckBox(String psDailyCount, String psEmployeeId, String psStatus, String psStartDay, String psEndDay) {
-
+    public String getEnableCheckBox(PsDBBean psDBBean,String psDailyCount, String psEmployeeId, String psStatus, String psStartDay, String psEndDay) {
+        if (isFlex( psDBBean,psDBBean.getCustID()
+                , psDBBean.getTargetComp()
+                , psEmployeeId
+                , psDBBean.toDBDate(psEndDay)
+        ) ){
+            if(!getNeedTime4Flex(
+                    psDBBean,
+                    psDBBean.getCustID()
+                    , psDBBean.getTargetComp()
+                    , psEmployeeId
+                    , psDBBean.toDBDate(psEndDay)
+            ).equals("0:00")){
+                return DISABLED;
+            }
+        }
         if (CsApprovedDailyCount.equals(psDailyCount) && !TmgUtil.Cs_MGD_DATASTATUS_5.equals(psStatus) &&
                 existsDispMonthlyApproval(psEmployeeId, psStartDay, psEndDay)) {
             return "";
@@ -529,6 +543,51 @@ public class PermStatListBean {
         return DISABLED;
     }
 
+    // フレックス対象者の判定
+    private Boolean judgeFlex = false;
+    // フレックス対象者の判定
+    private String needTime4Flex = null;
+
+    /**
+     * フレックス対象者getter
+     *
+     * @return 状態
+     */
+    public boolean isFlex(
+            PsDBBean psDBBean,
+            String custId
+            , String compCode
+            , String employeeCode
+            , String baseDate
+    ) {
+        judgeFlex = TmgUtil.isFlex(psDBBean
+                , custId
+                , compCode
+                , employeeCode
+                , baseDate);
+
+        return judgeFlex.booleanValue();
+    }
+    /**
+     * 月間勤務時間に対して、足りない時間数を取得
+     *
+     * @return 状態
+     */
+    public String getNeedTime4Flex(
+            PsDBBean psDBBean,
+            String custId
+            , String compCode
+            , String employeeCode
+            , String baseDate
+    ) {
+        needTime4Flex = TmgUtil.getNeedTime4Flex(psDBBean
+                , custId
+                , compCode
+                , employeeCode
+                , baseDate);
+
+        return needTime4Flex;
+    }
 
     private final String CsApprovedDailyCount = "0";
 
@@ -1102,7 +1161,7 @@ public class PermStatListBean {
         for (TmgMonthlyInfoVO tmgMonthlyInfoVO : tmgMonthlyInfoVOList) {
 
             // チェックボックスの表示状態を取得（disabledかどうか）
-            String sChkBoxStatus = this.getEnableCheckBox(tmgMonthlyInfoVO.getDailyCount(),
+            String sChkBoxStatus = this.getEnableCheckBox(psDBBean,tmgMonthlyInfoVO.getDailyCount(),
                     tmgMonthlyInfoVO.getEmpid(),
                     tmgMonthlyInfoVO.getTmoCstatusflg(),
                     getReqDYYYYMM(),
