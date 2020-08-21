@@ -107,7 +107,7 @@ public class GroupManagerController {
     }
 
     // グループ全体の優先順位を更新
-    @PostMapping("update")
+    @PostMapping("sort")
     public String changeSort(@Valid @NotEmpty @RequestBody List<String> groupIds) {
         return groupManagerDateEditLogic.sortHandler(groupIds,null);
     }
