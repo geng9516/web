@@ -317,6 +317,11 @@
   z-index: 3;
   line-height: 10px;
 }
+.white-avatar {
+  .ivu-avatar-string {
+    color: white;
+  }
+}
 // 通用class
 .red {
   color: var(--red);

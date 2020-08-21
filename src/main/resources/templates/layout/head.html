@@ -14,7 +14,7 @@
 
     <dropdown trigger="hover">
       <a>
-        <avatar style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
+        <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
       </a>
       <dropdown-menu slot="list">
         <dropdown-item @click.native="goProfile">
@@ -26,7 +26,7 @@
 
     <dropdown trigger="hover" style="margin-right: 5px;">
       <a>
-        <avatar style="background-color: var(--theme-mark)">テーマ</avatar>
+        <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
       <dropdown-menu slot="list">
         <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item"

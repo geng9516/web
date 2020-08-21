@@ -617,12 +617,12 @@
                     if(this.restApply.timezoneOpen || this.restApply.timezoneClose) {
                         if(this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
                             this.errorInfo = true
-                            this.errorMsg = '開始時間を入力してください'
+                            this.errorMsg = '終了時間を入力してください'
                             return
                         }
                         if(!this.restApply.timezoneOpen && this.restApply.timezoneClose) {
                             this.errorInfo = true
-                            this.errorMsg = '終了時間を入力してください。'
+                            this.errorMsg = '開始時間を入力してください。'
                             return
                         }
                         if(this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
