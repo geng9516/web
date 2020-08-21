@@ -661,5 +661,58 @@ public class AttendanceBookBean {
 
     }
 
+    /**
+     * 月間実働時間
+     *
+     * @param sqlStr
+     * @param employeeId
+     * @param monthStartDate
+     * @param monthEndDate
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    private List<String> selectWorkTime(String sqlStr, String employeeId, String monthStartDate, String monthEndDate, String compCode, String custId) {
+        if (ObjectUtil.isEmpty(sqlStr) || ObjectUtil.isEmpty(employeeId) || ObjectUtil.isEmpty(monthStartDate) || ObjectUtil.isEmpty(monthEndDate) || ObjectUtil.isEmpty(compCode) || ObjectUtil.isEmpty(custId)) {
+            logger.error("月間実働時間　パラメータが不正です");
+            return null;
+        }
+        return iTmgAttendanceBookService.selectWorkTime(sqlStr, employeeId, monthStartDate, monthEndDate, compCode, custId);
+    }
+
+    /**
+     * 月間実働時間
+     *
+     * @param psDBBean
+     * @return
+     */
+    public String selectWorkTime(PsDBBean psDBBean) {
+        if (null == psDBBean) {
+            logger.error("PsDBBean が空です");
+            return null;
+        }
+        //sql を取得する
+        String sqlStr = "";
+        List<MastGenericDetailDTO> mastGenericDetailDTOList = iTmgAttendanceBookService.selectTotalDataQueryList(Cs_MGD_DISPATTENDANCEITEMS, DISP_LINE_5);
+        if (null != mastGenericDetailDTOList) {
+            sqlStr = mastGenericDetailDTOList.get(0).getMgd_csparechar1();
+        }
+        String monthStartDate = DateUtil.format(new Date(), "yyyy/MM") + "/01";
+        String monthEndDate = DateUtil.endOfMonth(new Date()).toString("yyyy/MM/dd");
+        List<String> results = this.selectWorkTime(sqlStr, psDBBean.getEmployeeCode(), monthStartDate, monthEndDate, psDBBean.getCompCode(), psDBBean.getCustID());
+        StringBuffer sb = new StringBuffer();
+        if (null != results) {
+            String workTime = results.get(0);
+            //フォマードを変更する
+            // 42.30  --> 42時30分
+            sb.append(workTime.substring(0, workTime.indexOf("."))).append("時");
+            String minute = workTime.substring(workTime.indexOf(".") + 1, workTime.length());
+            sb.append(minute).append("分");
+            logger.info("月間実働時間" + sb.toString());
+            return sb.toString();
+        } else {
+            return "";
+        }
+    }
 
 }
