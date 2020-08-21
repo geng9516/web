@@ -247,6 +247,9 @@
 .ivu-tree-title:hover {
   background-color: var(--tree-select);
 }
+.ivu-tree-children {
+  padding-bottom: 8px;
+}
 .tree {
   text-align: left;
   border: 15px solid var(--tree-border);
