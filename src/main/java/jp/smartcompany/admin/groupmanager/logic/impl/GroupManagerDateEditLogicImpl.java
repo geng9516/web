@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupmanager.logic.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,12 +8,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerSortDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
-import jp.smartcompany.boot.util.SysDateUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
@@ -86,16 +87,42 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
     @Override
     public String deleteHandler(GroupManagerDeleteDTO dto) {
         QueryWrapper<MastGroupDO> qw = SysUtil.query();
+        String date = SysUtil.transDateToString(DateUtil.date());
         PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        if (StrUtil.isBlank(dto.getSystemId())){
+            dto.setSystemId("01");
+        }
         qw.eq("MG_CCUSTOMERID",session.getLoginCustomer())
           .eq("MG_CSYSTEMID_CK_FK",dto.getSystemId())
           .in("MG_CGROUPID_PK",dto.getGroupIds())
-          .le("MG_DSTARTDATE",dto.getSearchDate())
-          .ge("MG_DENDDATE",dto.getSearchDate());
+          .le("MG_DSTARTDATE",date)
+          .ge("MG_DENDDATE",date);
         iMastGroupService.remove(qw);
         nestedMastDelete(dto.getGroupIds(),dto.getSystemId(),session.getLoginCustomer(),session.getLoginCompany());
-        iMastGroupService.updateGroupPrionityLevel(dto.getSearchDate(),session.getLoginCustomer(),dto.getSystemId());
+        iMastGroupService.updateGroupPrionityLevel(date,session.getLoginCustomer(),dto.getSystemId());
         return "グループを削除しました";
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public String sortHandler(List<String> groupIds,String systemId) {
+        if (StrUtil.isBlank(systemId)) {
+            systemId = "01";
+        }
+        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        List<GroupManagerSortDTO> sortList = CollUtil.newArrayList();
+        String now = SysUtil.transDateToString(DateUtil.date());
+        for (int i = 0; i < groupIds.size(); i++) {
+             GroupManagerSortDTO sortDTO=new GroupManagerSortDTO();
+             sortDTO.setGroupId(groupIds.get(i));
+             sortDTO.setCustId(session.getLoginCustomer());
+             sortDTO.setSearchDate(now);
+             sortDTO.setSort(i);
+             sortDTO.setSystemId(systemId);
+             sortList.add(sortDTO);
+        }
+        iMastGroupService.updateGroupSort(sortList);
+        return "順位を変更しました";
     }
 
     public void nestedMastDelete(List<String> groupIds,String systemId,String custId,String companyId) {

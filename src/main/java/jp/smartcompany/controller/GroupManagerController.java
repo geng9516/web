@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
@@ -98,14 +100,16 @@ public class GroupManagerController {
         return groupManagerDateEditLogic.editListHandler(searchDate,systemId);
     }
 
+    // 指定されたグループを削除
     @PostMapping("delete")
-    public String delete(@RequestBody GroupManagerDeleteDTO dto) {
+    public String delete(@Valid @RequestBody GroupManagerDeleteDTO dto) {
         return groupManagerDateEditLogic.deleteHandler(dto);
     }
 
-//    @PostMapping("update")
-//    public String changeSort() {
-//
-//    }
+    // グループ全体の優先順位を更新
+    @PostMapping("update")
+    public String changeSort(@Valid @NotEmpty @RequestBody List<String> groupIds) {
+        return groupManagerDateEditLogic.sortHandler(groupIds,null);
+    }
 
 }

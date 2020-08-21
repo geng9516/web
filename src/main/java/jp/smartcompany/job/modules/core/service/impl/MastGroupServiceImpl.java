@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerSortDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
@@ -179,5 +180,13 @@ public class MastGroupServiceImpl extends ServiceImpl<MastGroupMapper, MastGroup
                                       String custId,
                                       String systemId) {
             return baseMapper.updateGroupPrionityLevel(searchDate,custId,systemId);
+        }
+
+        /**
+          * 指定されたグループの画面入力情報(順序)を更新
+          */
+        @Override
+        public int updateGroupSort(List<GroupManagerSortDTO> list) {
+            return baseMapper.updateGroupSort(list);
         }
 }

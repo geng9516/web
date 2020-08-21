@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerSortDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -119,7 +120,13 @@ public interface MastGroupMapper extends BaseMapper<MastGroupDO> {
          * グループ全体の優先順位を更新
          * (グループが削除された場合のみ)
          */
-        int updateGroupPrionityLevel (@Param("searchDate") String searchDate,
+        int updateGroupPrionityLevel(@Param("searchDate") String searchDate,
                                       @Param("custId") String custId,
                                       @Param("systemId") String systemId);
+
+        /**
+         * 指定されたグループの画面入力情報(順序)を更新
+         * (順序変更が行われている場合のみ)
+         */
+        int updateGroupSort(List<GroupManagerSortDTO> list);
 }

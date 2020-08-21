@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.service;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerGroupListDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerModifiedDateDTO;
+import jp.smartcompany.admin.groupmanager.dto.GroupManagerSortDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.DBMastGroupBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupDO;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -123,4 +124,9 @@ public interface IMastGroupService extends IService<MastGroupDO> {
         int updateGroupPrionityLevel(String searchDate,
                                       String custId,
                                       String systemId);
+
+        /**
+         * 指定されたグループの画面入力情報(順序)を更新
+         */
+        int updateGroupSort(List<GroupManagerSortDTO> list);
 }
