@@ -250,8 +250,9 @@
 .ivu-tree-title:hover {
   background-color: var(--tree-select);
 }
+// 只有一条信息时的位置纠正
 .ivu-tree-children {
-  padding-bottom: 8px;
+  padding-bottom: 8px !important;
 }
 .tree {
   text-align: left;
