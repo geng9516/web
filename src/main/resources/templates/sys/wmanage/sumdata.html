@@ -100,16 +100,12 @@
         </div>
 
 
-        <Drawer title="未承認者状況" width="37" v-model="notAprEmp">
+        <Drawer title="未承認者状況" class="tc" width="37" v-model="notAprEmp">
             <Alert class="primary-info lb tl">月次承認が行われていない職員が存在します。
                 月次締めを実行するには、全職員の月次承認を行ってください</Alert>
-            <div class="table-top">
-                <Row :gutter="16">
-                    <i-col span="13" offset="11" class="tr">
-                        <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
-                            :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" />
-                    </i-col>
-                </Row>
+            <div class="tr mb10">
+                <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
+                :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" />
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
@@ -119,15 +115,11 @@
             </i-table>
         </Drawer>
 
-        <Drawer title="締め未完了部局" width="37" v-model="notAppSec">
+        <Drawer title="締め未完了部局" class="tc" width="37" v-model="notAppSec">
             <Alert class="primary-info lb tl">月次締めが行われていない部局が存在します。</Alert>
-            <div class="table-top">
-                <Row>
-                    <i-col span="24" class="tr">
-                        <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
-                              :page-size="pageValueSec.curSize"   ref="Page" />
-                    </i-col>
-                </Row>
+            <div class="tr mb10">
+                <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
+                :page-size="pageValueSec.curSize"   ref="Page" />
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
@@ -137,34 +129,33 @@
             </i-table>
         </Drawer>
 
-        <Modal title="データダウンロード" width="605" v-model="downloadLink">
+        <Modal title="データダウンロード" class="tc" width="605" v-model="downloadLink">
             <Alert class="primary-info lb tl">下記の就業種別名称を押下すると、
                 集計結果CSVファイルをダウンロードします。</Alert>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
                 月次集計データダウンロード：{{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}
             </div>
-            <div class="tr">
-            <checkbox type="primary" ghost size="small" v-model="opts.checkValue">ダブルクオート（"）で値を囲む</checkbox><br/>
-            <div v-for="(item, i) in downloadBtn" :key="i">
-                <i-button type="primary" class="mt2" @click="downloadFile(item.mgdCdltypeid)">{{item.mgdCdltypename}}</i-button>
+            <checkbox class="input-like-span tr" style="margin: 0; padding-right: 10px;" size="small" v-model="opts.checkValue">ダブルクオート（"）で値を囲む</checkbox>
             </div>
+            <div slot="footer">
+                <span v-for="(item, i) in downloadBtn" :key="i" class="mr10">
+                    <i-button type="primary" icon="md-download" ghost class="mt2" @click="downloadFile(item.mgdCdltypeid)">{{item.mgdCdltypename}}</i-button>
+                </span>
             </div>
-            <div slot="footer"></div>
         </Modal>
 
-        <Modal title="集計処理" width="605" v-model="totalLink" @on-visible-change="handleModalClose">
+        <Modal class="tc" title="集計処理" width="605" v-model="totalLink">
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
                 月次集計データ作成：{{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}
             </div>
-            <div class="tr">
-                <i-button type="primary" class="mt2" @click="totalStart"　:disabled="totalDisabled">実行</i-button>
-            </div>
-            <Alert class="primary-info lb tl">{{ message }}</Alert>
             <i-table border :columns="totalCol" :data="totalData" no-data-text="無">
             </i-table>
-            <div slot="footer"></div>
+            <Alert class="primary-info tl mt10">{{ message }}</Alert>
+            <div slot="footer">
+                <i-button icon="ios-build" type="primary" class="mt2" @click="totalStart" :loading="totalLoading">実行</i-button>
+            </div>
         </Modal>
     </main>
     <div th:replace="layout/head::header"></div>
@@ -174,8 +165,7 @@
             data() {
                 return {
                     downloadBtn:[],
-                    totalDisabled:true,
-                    totalUpdated:false,
+                    totalLoading:false,
                     message:'',
                     loadingEmp:false,
                     loadingSEC:false,
@@ -333,7 +323,6 @@
                     } else {
                         this.loading = true
                     }
-                    this.totalUpdated=false
                     this.optsDisp.year=Utils.formatDate(this.curDate,'yyyy').concat('/01/01')
                     try {
                         const { data } = await this.http.get('sys/sumdate/monthlyOutputDisp', this.optsDisp)
@@ -495,8 +484,7 @@
                 async total(e) {
                     this.opts.baseDate = e.concat('/01')
                     try {
-                        this.message = '月次集計処理完了後、以下の職員に完了通知メールが配信されます。'
-                        this.totalDisabled = false
+                        this.message = '月次集計処理完了後、以上の職員に完了通知メールが配信されます。'
                         this.totalLink = true;
                         const {data} = await this.http.get('sys/sumdate/totalDisp', this.opts)
                         this.totalData = data
@@ -511,25 +499,19 @@
                         content: Utils.formatDate(this.opts.baseDate,'YYYY年MM月')+'の就業集計処理を実行します。\nよろしいですか？',
                         onOk: async () => {
                             try {
+                                this.totalLoading=true
                                 const { msg } = await this.http.postForm('sys/sumdate/totalStart', this.opts)
-                                this.message='処理番号'+msg+'で月次集計処理を受け付けました。\n月次集計処理完了後、完了通知メールが配信されます。'
-                                this.totalDisabled=true
-                                this.totalUpdated=true
+                                this.$Notice.info({ title:'月次集計処理中', desc:'処理番号'+msg+'で月次集計処理を受け付けました。\n月次集計処理完了後、完了通知メールが配信されます。', duration:0 })
                             } catch (error) {
                                 console.log(error)
                                 return
                             } finally {
-                                this.loading = false
+                                this.totalLoading= false
+                                this.totalLink = false
+                                this.getData()
                             }
                         }
                     })
-                },
-                handleModalClose(e) {
-                    if(!e) {
-                        if(this.totalUpdated){
-                            this.getData()
-                        }
-                    }
                 },
                 totalError(e) {
                     this.opts.baseDate = e.concat('/01')

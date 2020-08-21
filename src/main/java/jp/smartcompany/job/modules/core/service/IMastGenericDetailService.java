@@ -496,5 +496,5 @@ public interface IMastGenericDetailService extends IService<MastGenericDetailDO>
 
     String selectBulkTimeRange(String custID, String compCode, String baseDate);
 
-    NewBulkdropDownVo selectBulkdropDown(String custID, String compCode, String baseDate);
+    List<NewBulkdropDownVo> selectBulkdropDown(String custID, String compCode, String baseDate);
 }

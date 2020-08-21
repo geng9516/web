@@ -14,6 +14,9 @@
   max-height: 380px;
   text-align: left;
 }
+.head-dropdown .ivu-select-dropdown {
+  padding: 0;
+}
 
 .ivu-input, .ivu-tooltip-inner {
   font-size: 14px;
@@ -69,7 +72,7 @@
 }
 // this.var(--Modal.confirm警告框样式
 .ivu-modal-confirm-body {
-  padding: 25px 0 0 40px;
+  padding: 15px 0 0 40px;
   text-align: left;
 }
 .ivu-btn-small {

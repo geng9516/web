@@ -343,7 +343,7 @@ public interface MastGenericDetailMapper extends BaseMapper<MastGenericDetailDO>
                                @Param("compCode")String compCode,
                                @Param("baseDate")String baseDate);
 
-    NewBulkdropDownVo selectBulkdropDown(@Param("custID")String custID,
+    List<NewBulkdropDownVo> selectBulkdropDown(@Param("custID")String custID,
                                          @Param("compCode")String compCode,
                                          @Param("baseDate")String baseDate);
 }

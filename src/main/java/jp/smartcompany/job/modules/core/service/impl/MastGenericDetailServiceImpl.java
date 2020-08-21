@@ -883,7 +883,7 @@ public class MastGenericDetailServiceImpl extends ServiceImpl<MastGenericDetailM
     }
 
     @Override
-    public NewBulkdropDownVo selectBulkdropDown(String custID, String compCode, String baseDate){
+    public  List<NewBulkdropDownVo> selectBulkdropDown(String custID, String compCode, String baseDate){
         return baseMapper.selectBulkdropDown( custID, compCode, baseDate);
     }
 }

@@ -51,3 +51,18 @@
   height: 35px;
   line-height: 36px;
 }
+
+.company {
+  color: white;
+  background: rgb(93, 93, 93);
+  font-size: 16px;padding: 5px 10px;
+}
+.group-info {
+  padding: 0 10px;
+  height: 43px;
+  border-bottom: 1px solid rgb(210, 210, 210);
+}
+.group-info-wrap {
+  border: 5px solid var(--tree-border);
+  background: var(--tree-bg);
+}

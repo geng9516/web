@@ -30,7 +30,7 @@ private static final long serialVersionUID=1L;
         /**
          * id
          */
-                @TableId(value = "tbn_ntbnid", type = IdType.AUTO)
+                @TableId("tbn_ntbnid")
                 private Long tbnNtbnid;
 
         /**

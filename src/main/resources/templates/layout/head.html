@@ -10,26 +10,29 @@
       <use xlink:href="#logo"></use>
     </svg>
     <!-- 注意这里是row-reverse，要反着方 -->
-    <span style="padding-right: 30px; font-weight: bold; font-size: 16px;">{{ session.psSession.loginKanjiName }}</span>
-
-    <dropdown trigger="hover">
+    <dropdown class="head-dropdown" trigger="hover" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
+        <span style="position: relative;  top: 3px; font-size: 16px; font-weight: bold; margin-left: 5px; padding-right: 30px;">{{ session.psSession.loginKanjiName }}</span>
       </a>
       <dropdown-menu slot="list">
-        <dropdown-item @click.native="goProfile">
-          {{ session.psSession.loginKanjiName }}
-        </dropdown-item>
+        <ul v-for="(item, i) of groupList" :key="i">
+          <div class="tc company">{{item[0].systemName}}</div>
+          <div class="group-info-wrap">
+            <li class="group-info" v-for="(t, j) of item" :key="j">{{ t.groupName }}</li>
+          </div>
+        </ul>
+        <dropdown-item style="border-bottom: 1px solid #d2d2d2;">パスワード変更</dropdown-item>
         <dropdown-item @click.native="logout">ログアウト</dropdown-item>
       </dropdown-menu>
     </dropdown>
 
-    <dropdown trigger="hover" style="margin-right: 5px;">
+    <dropdown class="head-dropdown" trigger="hover" style="margin-right: 5px;" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
       <dropdown-menu slot="list">
-        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item"
+        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item" style="border-bottom: 1px solid #d2d2d2;"
           @click.native="Changetheme(item)">
           {{ item }}
         </dropdown-item>
@@ -45,6 +48,11 @@
           baseUrl: SIDER._data.baseUrl,
           session: [[${ session }]],
           themeList: ['デフォルト', 'クラシック', 'ナイト']
+        }
+      },
+      computed: {
+        groupList() {
+          return Object.keys(this.session.psSession.loginGroups).map(e=> this.session.psSession.loginGroups[e])
         }
       },
       methods: {
