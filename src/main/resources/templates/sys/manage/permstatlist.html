@@ -1343,8 +1343,9 @@
                     const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                     if (msg === '0') {
                         this.updateDailyLoading = false
-                        this.isShow = false
-                        this.getTitleData()
+                        this.showAddWork = false
+                        await this.getTableHead()
+                        await this.getTableData()
                         return
                     }
                     this.errMsg = JSON.parse(msg)
@@ -1408,8 +1409,9 @@
                     const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                     if (msg === '0') {
                         this.returnUpdateDailyLoading = false
-                        this.isShow = false
-                        this.getTitleData()
+                        this.showAddWork = false
+                        await this.getTableHead()
+                        await this.getTableData()
                         return
                     }
                     this.errMsg = JSON.parse(msg)
