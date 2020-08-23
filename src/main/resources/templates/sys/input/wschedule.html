@@ -63,7 +63,7 @@
                     <!-- 共通年選択 end-->
 
                     <i-col span="13" class="tr">
-                        <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
+                        <i-button type="primary" class="mr5" ghost icon="md-paper" @click="pdfDownload">PDFダウンロード</i-button>
                     </i-col>
                 </Row>
             </div>
@@ -157,7 +157,27 @@
                     titleStartMonth: '',     //デフォルト開始月
                     tableDataSum:[],         //月出勤情報統計
                     preDisabled: true,      //年度選択制御
-                    nextDisabled: true      //年度選択制御
+                    nextDisabled: true,      //年度選択制御
+                    ledgerParamVO: {
+                        txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
+                        txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
+                        txtEmp: '',
+                        hidEmpId: [[${ session.psSession.loginEmployee }]],　 //組織ツリーで選択した職員番号
+                        txtOrg: '',
+                        hidOrgId: '',
+                        txtYYYY: '',
+                        txtYYYYMM: '',
+                        txtTermFrom: '',
+                        txtTermTo: '',
+                        txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
+                        txtIncludeOt100Flg: '',
+                        psSecurityDate: '',
+                        selLedgerSheet: 'ATTENDANCEBK_YEARLY',
+                        selYear: '',
+                        selMonth: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    },
                 }
             },
             async mounted() {
@@ -274,6 +294,9 @@
                     this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
 
+                    this.ledgerParamVO.txtAtdBookTermFrom = +this.defaultDate.mgd_ndefault_month
+                    this.ledgerParamVO.txtYYYY = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
+                    this.ledgerParamVO.txtYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy/mm') + "/01"
                 },
                 async getqueryDate() {
                     this.loading = true
@@ -284,6 +307,10 @@
                     this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
                     this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
+
+                    this.ledgerParamVO.txtAtdBookTermFrom = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
+                    this.ledgerParamVO.txtYYYY = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
+                    this.ledgerParamVO.txtYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy/mm') + "/01"
                 },
                 async getExistsAttendanceBook() {
                     this.loading = true
@@ -372,6 +399,10 @@
                     this.showPre = true
                     this.query.year = Utils.formatDate(this.existsAttendanceBook.currentYear, 'yyyy')
                     this.getData()
+                },
+                async　pdfDownload() {
+                    const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
+                    Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                 }
             }
         })
