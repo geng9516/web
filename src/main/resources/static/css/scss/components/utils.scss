@@ -251,7 +251,7 @@
   background-color: var(--tree-select);
 }
 // 只有一条信息时的位置纠正
-.ivu-tree-children {
+.ivu-tree-children:last-child {
   padding-bottom: 8px !important;
 }
 .tree {
