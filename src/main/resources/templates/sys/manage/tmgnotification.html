@@ -469,7 +469,7 @@
               <form-item label="">
                 <ul class="ivu-upload-list tl mb10">
                   <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
-                    <span>
+                    <span @click="applyCardDownloadFile(item)">
                       <Icon
                         :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document'">
                       </Icon> {{ item.name }}
@@ -1220,6 +1220,12 @@
           if(this.deptName !== "選んでください" && this.needRefreshTable) {
             this.getTableData(false, true)
             this.needRefreshTable = false
+          }
+        },
+        applyCardDownloadFile(e) {
+          console.log(e)
+          if(e.url) {
+            window.open(e.url, '_blank')
           }
         },
         handleInputChange(i, object, value, el) {

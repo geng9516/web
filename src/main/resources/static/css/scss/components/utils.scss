@@ -250,14 +250,11 @@
 .ivu-tree-title:hover {
   background-color: var(--tree-select);
 }
-// 只有一条信息时的位置纠正
-.ivu-tree-children:last-child {
-  padding-bottom: 8px !important;
-}
 .tree {
   text-align: left;
   border: 15px solid var(--tree-border);
   background-color: var(--tree-bg);
+  padding-bottom: 8px;
   .ivu-tree-title {
     width: calc(100% - 15px);
   }

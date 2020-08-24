@@ -127,7 +127,7 @@ var THEME_CONFIG  = {
     '--titlenorm-i': 'rgb(91, 208, 41)',
     // checkbox
     '--checkbox-border': 'var(--primary)',
-    '--checkbox-bg': 'var(--primary-border)',
+    '--checkbox-bg': 'var(--primary)',
   }
 }
 
