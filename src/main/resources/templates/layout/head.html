@@ -10,7 +10,7 @@
       <use xlink:href="#logo"></use>
     </svg>
     <!-- 注意这里是row-reverse，要反着方 -->
-    <dropdown class="head-dropdown" trigger="hover" placement="bottom-start">
+    <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
         <span style="position: relative;  top: 3px; font-size: 16px; font-weight: bold; margin-left: 5px; padding-right: 30px;">{{ session.psSession.loginKanjiName }}</span>
@@ -27,7 +27,7 @@
       </dropdown-menu>
     </dropdown>
 
-    <dropdown class="head-dropdown" trigger="hover" style="margin-right: 5px;" placement="bottom-start">
+    <dropdown class="head-dropdown" trigger="click" style="margin-right: 5px;" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
