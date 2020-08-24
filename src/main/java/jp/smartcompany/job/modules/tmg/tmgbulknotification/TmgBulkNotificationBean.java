@@ -3,7 +3,6 @@ package jp.smartcompany.job.modules.tmg.tmgbulknotification;
 
 import cn.hutool.core.date.DateTime;
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
@@ -19,6 +18,7 @@ import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.UploadDto;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.BulkDispVo;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.ErrorDetailVo;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +46,7 @@ public class TmgBulkNotificationBean {
     public final ITmgTriggerService iTmgTriggerService;
     public final ITmgErrmsgService iTmgErrmsgService;
     public final IMastOrganisationService iMastOrganisationService;
+    public final ITmgBulkNotificationLogService iTmgBulkNotificationLogService;
     /** ディスクリプタ */
     public static final String BEAN_DESC              = "TmgBulkNotification";
 
@@ -144,7 +145,9 @@ public class TmgBulkNotificationBean {
 
 
 
-
+    public List<ErrorDetailVo> execRErrorList(String seq){
+        return iTmgBulkNotificationLogService.selectErrorList(seq);
+    }
 
 
 

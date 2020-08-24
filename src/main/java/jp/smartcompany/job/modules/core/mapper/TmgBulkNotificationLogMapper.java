@@ -2,7 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNotificationLogDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.ErrorDetailVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +20,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgBulkNotificationLogMapper extends BaseMapper<TmgBulkNotificationLogDO> {
 
-        }
+    List<ErrorDetailVo> selectErrorList(@Param("seq") String seq);
+}

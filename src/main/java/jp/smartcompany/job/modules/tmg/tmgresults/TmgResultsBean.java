@@ -113,7 +113,6 @@ public class TmgResultsBean {
     private final ITmgDailyActionlogService iTmgDailyActionlogService;
 
     private final IHistSuspensionService iHistSuspensionService;
-
     /**
      * TmgReferList
      */
@@ -1709,6 +1708,18 @@ public class TmgResultsBean {
             return null;
         }
 
+    }
+
+
+
+    private String getFlextime(String baseDate,PsDBBean psDBBean){
+        String needTime4Flex = TmgUtil.getNeedTime4Flex(psDBBean
+                , psDBBean.getCustID()
+                , psDBBean.getCompCode()
+                , psDBBean.getTargetUser()
+                , baseDate);
+
+        return needTime4Flex;
     }
 
 ///**

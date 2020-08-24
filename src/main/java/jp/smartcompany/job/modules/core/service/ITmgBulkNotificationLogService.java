@@ -2,6 +2,9 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNotificationLogDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.ErrorDetailVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgBulkNotificationLogService extends IService<TmgBulkNotificationLogDO> {
 
-        }
+    List<ErrorDetailVo> selectErrorList(String seq);
+}

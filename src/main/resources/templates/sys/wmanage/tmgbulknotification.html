@@ -51,11 +51,16 @@
 
 
 
-                <Modal v-model="isShow" title="一括登録内容詳細" width="500"  :mask-closable="false" footer-hide>
+                <Drawer v-model="isShow" title="一括登録内容詳細" width="500"  :mask-closable="false" footer-hide mask-closable>
                     <div  class="tr">
                         <i-button type="primary" @click="bulkNtfCancel(detailInfo.tbnNtbnid)" v-if="cancelBotton">取消
                         </i-button>
                     </div>
+                    <Alert class="error-info" type="error" v-show="detailInfo.tbnCstatusid === 'TMG_BULKNTFSTATUS|910'">
+                        反映処理中に想定外のエラーが発生しました。
+                        システム管理者までお問合せください。
+                    </Alert>
+
                     <div class="titlenorm mb10">
                         <Icon type="logo-buffer"></Icon>
                         休暇・休業一括登録
@@ -103,11 +108,29 @@
                         <Row :gutter="24">
                             <i-col span="24">
                                 <div class="label">反映エラー</div>
-                                <div class="person-info">{{ detailInfo.cntErr }}</div>
+                                <div class="person-info">
+                                    {{ detailInfo.cntErr }}
+                                    <i-button   @click="errDetail(detailInfo.tbnNtbnid)" v-if="detailInfo.cntErr !='0'">詳細
+                                    </i-button>
+                                </div>
                             </i-col>
                         </Row>
-                </Modal>
-
+                </Drawer>
+                <Drawer :closable="false"  class="tc" placement="right" title="反映エラー職員一覧"
+                        v-model="errDetailShow" width="700">
+                    <i-table border :columns="columns2" :data="tableData2" :loading="loading"
+                             no-data-text="休暇休業一括登録データがない" :disabled-hover="true">
+                        <template slot-scope="{ row }" slot="tgrmCsectionid">
+                            <span> {{ row.tgrmCsectionid }}</span>
+                        </template>
+                        <template slot-scope="{ row }" slot="tbnlCemployeeid">
+                            <span> {{ row.tbnlCemployeeid }}</span>
+                        </template>
+                        <template slot-scope="{ row }" slot="tbnlCerrcode">
+                            <span> {{ row.tbnlCerrcode }}</span>
+                        </template>
+                    </i-table>
+                </Drawer>
 
 
             </div>
@@ -174,6 +197,7 @@
             el: '.tmgbulknotification-warp',
             data() {
                 return {
+                    errDetailShow:false,
                     referListObject: {
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -213,7 +237,28 @@
                             slot: 'tbnCstatus'
                         }
                     ],
+                    columns2: [
+                        {
+                            title: '部署',
+                            width: 150,
+                            align: 'center',
+                            slot: 'tgrmCsectionid'
+                        },
+                        {
+                            title: '氏名',
+                            minWidth: 150,
+                            align: 'center',
+                            slot: 'tbnlCemployeeid'
+                        },
+                        {
+                            title: '反映エラーの原因',
+                            width: 400,
+                            align: 'center',
+                            slot: 'tbnlCerrcode'
+                        }
+                    ],
                     tableData:[],
+                    tableData2:[],
                     ntfTypeList:[],
                     ntfType:'', //一括登録区分
                     fromDate:'', //対象期間
@@ -393,6 +438,21 @@
                         this.deptName = this.deptName.substring(0,this.deptName.lastIndexOf(','))
                     }
                     this.deptId = this.deptId.substring(0,this.deptId.lastIndexOf(','))
+                },
+                async errDetail(e){
+                    if (!e) {
+                        return
+                    }
+                    this.opts.ntfId = e
+                    try {
+                        const {data} = await this.http.get('sys/tmgbulknotification/errorDetail', this.opts)
+                        this.tableData2=data
+                        this.errDetailShow=true
+                    } catch (error) {
+                        return
+                    } finally {
+
+                    }
                 }
             }
         })
