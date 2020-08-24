@@ -107,9 +107,23 @@ public class GroupManagerController {
     }
 
     // グループ全体の優先順位を更新
+    // 因为现在只针对一个系统，所以暂时先不传入systemId，让systemId默认为01
     @PostMapping("sort")
     public String changeSort(@Valid @NotEmpty @RequestBody List<String> groupIds) {
         return groupManagerDateEditLogic.sortHandler(groupIds,null);
     }
 
+    /**
+     * ===========================================
+     * GroupManagerHistoryEditAction 整理接口
+     * ===========================================
+     */
+    @GetMapping("historylist")
+    public Map<String,Object> editHistoryList(
+            @RequestParam("systemId") String systemId,
+            @RequestParam("groupId") String groupId) {
+        return null;
+    }
+
 }
+
