@@ -34,7 +34,7 @@
                 <i-table border :columns="columns" :data="tableData" :loading="loading"
                          no-data-text="休暇休業一括登録データがない" :disabled-hover="true">
                     <template slot-scope="{ row }" slot="tbnCbulkntftype">
-                        <span  @click="handleCickNtfType(row.tbnNtbnid)" > {{ row.tbnCbulkntftype }}</span>
+                        <span  @click="handleCickNtfType(row.tbnNtbnid)" style="text-decoration: underline"> {{ row.tbnCbulkntftype }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="moCsectionname">
                         <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
