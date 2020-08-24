@@ -334,7 +334,7 @@
               代理申請
             </div>
             <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
-            <i-form label-position="right" :label-width="100" :rules="ruleValidate" class="classical tl">
+            <i-form label-position="right" :label-width="120" :rules="ruleValidate" class="classical tl">
               <form-item label="申請区分" prop="restTypeId">
                 <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                   class="mb5 no-border-radius" ref="select" transfer>
@@ -359,11 +359,11 @@
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5" placeholder="日付け"
+                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付け"
                   format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
+                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付け"
                   format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
