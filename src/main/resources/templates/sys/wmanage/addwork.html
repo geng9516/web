@@ -911,25 +911,27 @@
             dayRed(e,i) {
                 const dayOfWeek = e.TMG_HOLFLG
                 if(i === 0){
+                    if (e.TDA_DYYYYMMDD === this.today) {
+                        return 'brown cursor'
+                    }
                     if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
                         return 'cursor'
                     }
                     if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                         return 'blue cursor'
                     }
-                    if (e.TDA_DYYYYMMDD === this.today) {
-                        return 'brown cursor'
-                    }
+
                 }else{
+                    if (e.TDA_DYYYYMMDD === this.today) {
+                        return 'brown'
+                    }
                     if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
                         return
                     }
                     if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                         return 'blue'
                     }
-                    if (e.TDA_DYYYYMMDD === this.today) {
-                        return 'brown'
-                    }
+
                 }
             },
             async updateMonth(e) {

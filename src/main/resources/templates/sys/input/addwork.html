@@ -555,7 +555,7 @@
                 bWorkChkStatus:false,
                 bHealthChkStatus:false,
                 kinmujokyoEnd:0,
-                workData:[]
+                workData:[],
             }
         },
         async mounted() {
@@ -653,7 +653,6 @@
                     this.bHealthChkStatus = data.workHealthChkVO.bhealthChkStatus
                     this.kinmujokyoEnd = data.workHealthChkVO.kinmujokyoEnd
                     this.selHealthStatus = data.workHealthChkVO.selHealthStatus
-
                     this.monthlyTilteMapList = data.monthlyTilteMapList
                     this.monthlyMap = data.monthlyDateMap
                     this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
@@ -1172,25 +1171,28 @@
             dayRed(e,i) {
                 const dayOfWeek = e.TMG_HOLFLG
                 if(i === 0){
+                    if (e.TDA_DYYYYMMDD === this.today) {
+                        return 'brown cursor'
+                    }
+
                     if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
                         return 'cursor'
                     }
                     if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                         return 'blue cursor'
                     }
-                    if (e.TDA_DYYYYMMDD === this.today) {
-                        return 'brown cursor'
-                    }
+
                 }else{
+                    if (e.TDA_DYYYYMMDD === this.today) {
+                        return 'brown'
+                    }
                     if (dayOfWeek.trim() === 'TMG_HOLFLG|0') {
                         return
                     }
                     if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
                         return 'blue'
                     }
-                    if (e.TDA_DYYYYMMDD === this.today) {
-                        return 'brown'
-                    }
+
                 }
             },
             handleInputChange(i,object,value,el) {

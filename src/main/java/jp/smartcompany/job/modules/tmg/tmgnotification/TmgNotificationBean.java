@@ -747,7 +747,7 @@ public class TmgNotificationBean {
     private void deleteFiles(String ntfNo, String[] deleteFiles, String path) {
         if (deleteFiles.length > 0) {
             for (int i = 0; i < deleteFiles.length; i++) {
-                File file = new File(path+ntfNo+"/"+deleteFiles[i]);
+                File file = new File(path+ntfNo.replace('|','-')+"\\"+deleteFiles[i].replace('|','-'));
                 // 判断目录或文件是否存在
                 if (file.exists()) {  // 不存在返回 false
                     file.delete();
@@ -939,11 +939,13 @@ public class TmgNotificationBean {
             for (int i = 0; i < uploadFiles.length; i++) {
                 MultipartFile uploadFile = uploadFiles[i];
                 //根据上传的文件番号，进行分类保存
+                ntfNo=ntfNo.replace('|','-');
                 File folder = new File(path + ntfNo);
-                if (!folder.isDirectory()) {
-                    folder.mkdirs();
-                }
+
                 try {
+                    if (!folder.isDirectory()) {
+                        folder.mkdirs();
+                    }
                     //保存文件
                     uploadFile.transferTo(new File(folder, uploadFile.getOriginalFilename()));
                     //生成上传文件的访问路径
@@ -978,7 +980,7 @@ public class TmgNotificationBean {
             tnafDo.setTnafCntfno(param.getNtfNo());
             tnafDo.setTnafCfilename(uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafNseq(Long.valueOf(seq)+i);
-            tnafDo.setTnafFilepath(path+param.getNtfNo()+"/"+uploadFiles[i].getOriginalFilename());
+            tnafDo.setTnafFilepath(path+param.getNtfNo().replace('|','-')+"\\"+uploadFiles[i].getOriginalFilename());
             tnafDo.setTnafCmodifieruserid(param.getUserCode());
             tnafDo.setTnafDmodifieddate(DateTime.now());
             iTmgNtfAttachedfileService.getBaseMapper().insert(tnafDo);
