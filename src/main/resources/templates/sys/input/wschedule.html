@@ -63,7 +63,7 @@
                     <!-- 共通年選択 end-->
 
                     <i-col span="13" class="tr">
-                        <i-button type="primary" class="mr5" ghost icon="md-paper" @click="pdfDownload">PDFダウンロード</i-button>
+                        <i-button type="primary" class="mr5" ghost icon="md-paper" @click="pdfDownload" :loading="pdfDownloadLoading">PDFダウンロード</i-button>
                     </i-col>
                 </Row>
             </div>
@@ -136,6 +136,7 @@
                     queryHolidayInfo: {},   //年次休暇付与日数 年次休暇付与日
                     tableHead: [],          //月出勤情報統計と月出勤情報明細のテーブルヘッダー
                     loading: false,　       //ローディングアクション
+                    pdfDownloadLoading: false,//PDFダウンロードローディングアクション
                     tableData: [],          //月出勤情報統計と月出勤情報明細のテーブルデータ
                     showPre: true,
                     index: 0,
@@ -401,8 +402,10 @@
                     this.getData()
                 },
                 async　pdfDownload() {
+                    this.pdfDownloadLoading = true
                     const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
                     Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
+                    this.pdfDownloadLoading = false
                 }
             }
         })
