@@ -135,28 +135,26 @@
                 </template>
             </i-table>
         </Drawer>
+
+        <!--日次就業実績-->
         <Drawer :mask-closable="false" :title="title" @on-close="handleClose()" v-model="showAddWork" width="850">
             <div style="position: relative">
                 <Alert class="error-info" type="error" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <Row class="mb15 tr">
                     <div v-if="!bFixed">
-                        <i-col  offset="16" span="6">
-                            <i-button :loading="updateDailyLoading" @click="updateDaily"  ghost type="primary">
+                        <div class="tr mb10">
+                            <i-button icon="md-done-all" :loading="updateDailyLoading" @click="updateDaily"  ghost type="primary">
                                 承認
                             </i-button>
-                        </i-col>
-                        <i-col span="1">
-                            <i-button :loading="returnUpdateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
+                            <i-button icon="md-hand" :loading="returnUpdateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
                                 差戻
                             </i-button>
-                        </i-col>
+                        </div>
                     </div>
                     <div v-else>
-                        <i-col  offset="16" span="7">
                             <i-button disabled>
                                 承認
                             </i-button>
-                        </i-col>
                     </div>
                 </Row>
                 <div class="titlenorm mb10">
@@ -352,6 +350,7 @@
                 </i-table>
                 <Spin fix size="large" v-if="dailyloading"></Spin>
             </div>
+            <div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 999999;" v-if="sovlingLoading"></div>
         </Drawer>
     </div>
 </main>
@@ -445,6 +444,7 @@
                 showAddWork: false,
                 updateDailyLoading: false,
                 returnUpdateDailyLoading: false,
+                sovlingLoading:false,
                 notapproval:false,
                 errorFlag: false,
                 errorMsg: '',//错误信息
@@ -1116,6 +1116,8 @@
                 console.log(this.model1)
                 console.log(e2.substr(18))
 
+                //画面操作不可の制御
+                this.sovlingLoading = false
                 //月次承認状態
                 this.tmoCstatusflg = e3
 
@@ -1308,6 +1310,7 @@
             },
             //承認
             async updateDaily() {
+                this.sovlingLoading=true
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }
@@ -1375,6 +1378,7 @@
             },
             //差戻
             async updateRemandsStatus() {
+                this.sovlingLoading=true
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }

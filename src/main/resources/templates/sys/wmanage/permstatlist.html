@@ -127,231 +127,226 @@
                     </template>
                 </i-table>
             </Drawer>
-        </div>
 
-        <!--日次就業実績-->
-        <Drawer :mask-closable="false" :title="title" @on-close="handleClose()" v-model="showAddWork" width="850">
-            <div style="position: relative">
-                <Alert type="primary-info" v-if="query.txtAction === 'ACT_EDITPERM_EDIT'">締め済データの編集中</Alert>
-                <Alert class="error-info" type="error" v-show="errorFlag">{{ errorMsg }}</Alert>
-                <Row class="mb15 tr">
-                    <div v-if="!bFixed">
-                        <i-col  offset="16" span="6">
-                            <i-button :loading="updateDailyLoading" @click="updateDaily"  ghost type="primary">
+            <!--日次就業実績-->
+            <Drawer :mask-closable="false" :title="title" @on-close="handleClose()" v-model="showAddWork" width="850">
+                <div style="position: relative">
+                    <Alert type="primary-info" v-if="query.txtAction === 'ACT_EDITPERM_EDIT'">締め済データの編集中</Alert>
+                    <Alert class="error-info" type="error" v-show="errorFlag">{{ errorMsg }}</Alert>
+                    <Row class="mb15 tr">
+                        <div v-if="!bFixed">
+                            <i-button icon="md-done-all" :loading="updateDailyLoading" @click="updateDaily"  ghost type="primary">
                                 承認
                             </i-button>
-                        </i-col>
-                        <i-col span="1">
-                            <i-button :loading="returnUpdateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
+                            <i-button icon="md-hand" :loading="returnUpdateDailyLoading" @click="updateRemandsStatus"  ghost type="error" v-if="notapproval">
                                 差戻
                             </i-button>
-                        </i-col>
-                    </div>
-                    <div v-else>
-                        <i-col  offset="16" span="7">
+                        </div>
+                        <div v-else>
                             <i-button disabled>
                                 承認
                             </i-button>
-                            <i-button @click="edit" ghost  type="primary" v-if="isShowFixedMonthlyEditButton" >
+                            <i-button icon="md-create" @click="edit" ghost  type="primary" v-if="isShowFixedMonthlyEditButton" >
                                 締め済データの編集
                             </i-button>
-                        </i-col>
-                    </div>
-                </Row>
-                <div class="titlenorm mb10">
-                    <Icon type="logo-buffer"></Icon>
-                    就業実績
-                </div>
-                <div style="position: relative;">
-                    <Row>
-                        <i-col class="label tc" span="8">就業区分</i-col>
-                        <i-col class="no-border-radius" span="8">
-                            <i-select @on-change="changeWorkingID" class="mr30" v-if="!bHoliday && !bFixed"
-                                      v-model="workingId">
-                                <i-option :key="index" :label="item.mgdCgenericdetaildesc"
-                                          v-for="(item, index) of workingIdList" 　:value="item.mgdCmastercode">
-                                </i-option>
-                            </i-select>
-                            <p align="center" v-else>{{dailyEdit.tdaCworkingidRName}}</p>
-                        </i-col>
+                        </div>
                     </Row>
-                    <Row>
-                        <i-col class="label tc" span="8">出張</i-col>
-                        <i-col class="no-border-radius" span="8" v-if="!bDisable">
-                            <i-select @on-change="" class="mr30" v-if="(!bHoliday && !bFixed)" v-model="businessTrip">
-                                <i-option :key="index" :label="item.mgdCgenericdetaildesc"
-                                          v-for="(item, index) of businessTripList" 　:value="item.mgdCmastercode">
-                                </i-option>
-                            </i-select>
-                            <p align="center" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
-                        </i-col>
-                        <i-col class="no-border-radius" span="8" v-else>
-                            <i-select @on-change="" class="mr30" disabled v-if="(!bHoliday && !bFixed)"
-                                      v-model="businessTrip">
-                                <i-option :key="index" :label="item.mgdCgenericdetaildesc"
-                                          v-for="(item, index) of businessTripList" 　:value="item.mgdCmastercode">
-                                </i-option>
-                            </i-select>
-                            <p align="center" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
-                        </i-col>
-                    </Row>
-                    <i-table :columns="columnsWork" :data="workData">
-                        <template slot="workStart" slot-scope="{ row, index }">
-                            <div v-if="row.isInput && bFixed" >
-                                <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)" class="tc" v-if="!isCommonDiscretionaryLabor" v-model="workData[index].workStart"></i-input>
-                                <span v-else>{{ row.workStart | toTime }}</span>
-                            </div>
-                            <div  v-else-if="row.isInput" >
-                                <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)" class="tc" v-model="workData[index].workStart"></i-input>
-                            </div>
-                            <span v-else>{{ row.workStart | toTime }}</span>
-                        </template>
-                        <template slot="workEnd" slot-scope="{ row, index }">
-                            <div v-if="row.isInput && bFixed" >
-                                <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)" class="tc"  v-if="!isCommonDiscretionaryLabor" v-model="workData[index].workEnd"></i-input>
-                                <span v-else>{{ row.workEnd | toTime }}</span>
-                            </div>
-                            <div  v-else-if="row.isInput" >
-                                <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)" class="tc" v-model="workData[index].workEnd"></i-input>
-                            </div>
-                            <span v-else>{{ row.workEnd | toTime }}</span>
-                        </template>
-
-                    </i-table>
-
-
-                    <Row>
-                        <i-col class="label tc" span="8">本人コメント</i-col>
-                        <i-col span="16">
-                            <i-input disabled readonly text-align="center;" type="textarea"
-                                     v-model="dailyEdit.tdaCowncommentR"></i-input>
-                        </i-col>
-                    </Row>
-                    <Row class="mb5">
-                        <i-col class="label tc" span="8">承認者コメント</i-col>
-                        <i-col span="16">
-                            <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                            <i-input text-align="center;" type="textarea" v-if="!bFixed"
-                                     v-model="dailyEdit.tdaCbosscommentR" ></i-input>
-                            <i-input readonly text-align="center;" type="textarea"
-                                     v-else v-model="dailyEdit.tdaCbosscommentR"></i-input>
-                        </i-col>
-                    </Row>
-                </div>
-
-
-                <!-- 非勤務 -->
-                <div class="titlenorm mb10">
-                    <Icon type="logo-buffer"></Icon>
-                    非勤務
-                </div>
-                <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
-                    <i-col offset="15" span="6">
-                        <i-select @on-change="" class="mr30" v-if="!bDisable" v-model="categoryNonduty">
-                            <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryNondutyList"
-                                      　:value="item.itemCode">
-                            </i-option>
-                        </i-select>
-                        <i-select @on-change="" class="mr30" disabled v-else v-model="categoryNonduty">
-                            <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryNondutyList"
-                                      　:value="item.itemCode">
-                            </i-option>
-                        </i-select>
-                    </i-col>
-                    <i-col span="3">
-                        <i-button @click="addNotWork" ghost type="primary" v-if="!bDisable">追加</i-button>
-                        <i-button disabled v-else>追加</i-button>
-                    </i-col>
-                </Row>
-                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
-                         no-data-text="">
-                    <template slot="tdadNopen" slot-scope="{ row, index }">
-                        <i-input @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailNonDutyVOList[index].tdadNopen"></i-input>
-                        <span v-else>{{  row.tdadNopen | toTime  }}</span>
-                    </template>
-
-                    <template slot="tdadNclose" slot-scope="{ row, index }">
-                        <i-input @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNclose', $event.target)" v-if="!bFixed " v-model="detailNonDutyVOList[index].tdadNclose"></i-input>
-                        <span v-else>{{ row.tdadNclose | toTime }}</span>
-                    </template>
-
-                    <template slot="tdadCsparechar1" slot-scope="{ row ,index}">
-                        <i-input :autosize="{ maxRows: 3 }" type="textarea"
-                                 v-if="row.tdadCnotworkid !== 'TMG_ITEMS|ResultRest' && !bFixed "
-                                 v-model="detailNonDutyVOList[index].tdadCsparechar1"></i-input>
-                        <span v-else>{{ row.tdadCsparechar1 | toTime }}</span>
-                    </template>
-
-                    <template slot="tdadNdeleteflg" slot-scope="{ row }" v-if="!bFixed">
-                        <i-button @click="delNotWork(row)" class="width100" ghost size="small" type="error">削除</i-button>
-                    </template>
-                </i-table>
-
-                <div v-if="!isDiscretion">
-                    <!-- 超過勤務 -->
                     <div class="titlenorm mb10">
                         <Icon type="logo-buffer"></Icon>
-                        超過勤務
+                        就業実績
                     </div>
-                    <Row class="mb15 tr" v-if="!bHoliday && !bFixed ">
+                    <div style="position: relative;">
+                        <Row>
+                            <i-col class="label tc" span="8">就業区分</i-col>
+                            <i-col class="no-border-radius" span="8">
+                                <i-select @on-change="changeWorkingID" class="mr30" v-if="!bHoliday && !bFixed"
+                                          v-model="workingId">
+                                    <i-option :key="index" :label="item.mgdCgenericdetaildesc"
+                                              v-for="(item, index) of workingIdList" 　:value="item.mgdCmastercode">
+                                    </i-option>
+                                </i-select>
+                                <p align="center" v-else>{{dailyEdit.tdaCworkingidRName}}</p>
+                            </i-col>
+                        </Row>
+                        <Row>
+                            <i-col class="label tc" span="8">出張</i-col>
+                            <i-col class="no-border-radius" span="8" v-if="!bDisable">
+                                <i-select @on-change="" class="mr30" v-if="(!bHoliday && !bFixed)" v-model="businessTrip">
+                                    <i-option :key="index" :label="item.mgdCgenericdetaildesc"
+                                              v-for="(item, index) of businessTripList" 　:value="item.mgdCmastercode">
+                                    </i-option>
+                                </i-select>
+                                <p align="center" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
+                            </i-col>
+                            <i-col class="no-border-radius" span="8" v-else>
+                                <i-select @on-change="" class="mr30" disabled v-if="(!bHoliday && !bFixed)"
+                                          v-model="businessTrip">
+                                    <i-option :key="index" :label="item.mgdCgenericdetaildesc"
+                                              v-for="(item, index) of businessTripList" 　:value="item.mgdCmastercode">
+                                    </i-option>
+                                </i-select>
+                                <p align="center" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
+                            </i-col>
+                        </Row>
+                        <i-table :columns="columnsWork" :data="workData">
+                            <template slot="workStart" slot-scope="{ row, index }">
+                                <div v-if="row.isInput && bFixed" >
+                                    <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)" class="tc" v-if="!isCommonDiscretionaryLabor" v-model="workData[index].workStart"></i-input>
+                                    <span v-else>{{ row.workStart | toTime }}</span>
+                                </div>
+                                <div  v-else-if="row.isInput" >
+                                    <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)" class="tc" v-model="workData[index].workStart"></i-input>
+                                </div>
+                                <span v-else>{{ row.workStart | toTime }}</span>
+                            </template>
+                            <template slot="workEnd" slot-scope="{ row, index }">
+                                <div v-if="row.isInput && bFixed" >
+                                    <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)" class="tc"  v-if="!isCommonDiscretionaryLabor" v-model="workData[index].workEnd"></i-input>
+                                    <span v-else>{{ row.workEnd | toTime }}</span>
+                                </div>
+                                <div  v-else-if="row.isInput" >
+                                    <i-input :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)" class="tc" v-model="workData[index].workEnd"></i-input>
+                                </div>
+                                <span v-else>{{ row.workEnd | toTime }}</span>
+                            </template>
 
+                        </i-table>
+
+
+                        <Row>
+                            <i-col class="label tc" span="8">本人コメント</i-col>
+                            <i-col span="16">
+                                <i-input disabled readonly text-align="center;" type="textarea"
+                                         v-model="dailyEdit.tdaCowncommentR"></i-input>
+                            </i-col>
+                        </Row>
+                        <Row class="mb5">
+                            <i-col class="label tc" span="8">承認者コメント</i-col>
+                            <i-col span="16">
+                                <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                                <i-input text-align="center;" type="textarea" v-if="!bFixed"
+                                         v-model="dailyEdit.tdaCbosscommentR" ></i-input>
+                                <i-input readonly text-align="center;" type="textarea"
+                                         v-else v-model="dailyEdit.tdaCbosscommentR"></i-input>
+                            </i-col>
+                        </Row>
+                    </div>
+
+
+                    <!-- 非勤務 -->
+                    <div class="titlenorm mb10">
+                        <Icon type="logo-buffer"></Icon>
+                        非勤務
+                    </div>
+                    <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                         <i-col offset="15" span="6">
-                            <i-select @on-change="" class="mr30" v-if="!bDisable" v-model="categoryOverhours">
-                                <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryOverhoursList"
+                            <i-select @on-change="" class="mr30" v-if="!bDisable" v-model="categoryNonduty">
+                                <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryNondutyList"
                                           　:value="item.itemCode">
                                 </i-option>
                             </i-select>
-                            <i-select @on-change="" class="mr30" disabled v-else v-model="categoryOverhours">
-                                <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryOverhoursList"
+                            <i-select @on-change="" class="mr30" disabled v-else v-model="categoryNonduty">
+                                <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryNondutyList"
                                           　:value="item.itemCode">
                                 </i-option>
                             </i-select>
                         </i-col>
-
                         <i-col span="3">
-                            <i-button @click="addOverWork" ghost type="primary" v-if="!bDisable">追加</i-button>
+                            <i-button @click="addNotWork" ghost type="primary" v-if="!bDisable">追加</i-button>
                             <i-button disabled v-else>追加</i-button>
                         </i-col>
-                        <!--                <i-col span="4">-->
-                        <!--                    <i-button type="primary" ghost v-if="!bDisable">時刻補完</i-button>-->
-                        <!--                    <i-button type="primary" ghost disabled v-else>時刻補完</i-button>-->
-                        <!--                </i-col>-->
                     </Row>
-
-                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                    <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
                              no-data-text="">
-                        <template slot="tdadNopen" slot-scope="{ row ,index }">
-                            <i-input @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailOverhoursVOList[index].tdadNopen"></i-input>
-                            <span v-else>{{ row.tdadNopen | toTime }}</span>
+                        <template slot="tdadNopen" slot-scope="{ row, index }">
+                            <i-input @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailNonDutyVOList[index].tdadNopen"></i-input>
+                            <span v-else>{{  row.tdadNopen | toTime  }}</span>
                         </template>
 
-                        <template slot="tdadNclose" slot-scope="{ row ,index}">
-                            <i-input @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNclose', $event.target)" v-if=" !bFixed" v-model="detailOverhoursVOList[index].tdadNclose"></i-input>
+                        <template slot="tdadNclose" slot-scope="{ row, index }">
+                            <i-input @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNclose', $event.target)" v-if="!bFixed " v-model="detailNonDutyVOList[index].tdadNclose"></i-input>
                             <span v-else>{{ row.tdadNclose | toTime }}</span>
                         </template>
 
                         <template slot="tdadCsparechar1" slot-scope="{ row ,index}">
                             <i-input :autosize="{ maxRows: 3 }" type="textarea"
-                                     v-if="!bFixed"
-                                     v-model="detailOverhoursVOList[index].tdadCsparechar1"></i-input>
-                            <span v-else>{{ row.tdadCsparechar1}}</span>
+                                     v-if="row.tdadCnotworkid !== 'TMG_ITEMS|ResultRest' && !bFixed "
+                                     v-model="detailNonDutyVOList[index].tdadCsparechar1"></i-input>
+                            <span v-else>{{ row.tdadCsparechar1 | toTime }}</span>
                         </template>
 
-                        <template slot="tdadNdeleteflg" slot-scope="{ row ,index}" v-if="!bFixed">
-                            <i-button @click="delOverWork(row)" class="width100" ghost size="small" type="error">削除</i-button>
+                        <template slot="tdadNdeleteflg" slot-scope="{ row }" v-if="!bFixed">
+                            <i-button @click="delNotWork(row)" class="width100" ghost size="small" type="error">削除</i-button>
                         </template>
                     </i-table>
-                </div>
 
-                <div class="titlenorm mb10">
-                    <Icon type="logo-buffer"></Icon>
-                    更新履歴
+                    <div v-if="!isDiscretion">
+                        <!-- 超過勤務 -->
+                        <div class="titlenorm mb10">
+                            <Icon type="logo-buffer"></Icon>
+                            超過勤務
+                        </div>
+                        <Row class="mb15 tr" v-if="!bHoliday && !bFixed ">
+
+                            <i-col offset="15" span="6">
+                                <i-select @on-change="" class="mr30" v-if="!bDisable" v-model="categoryOverhours">
+                                    <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryOverhoursList"
+                                              　:value="item.itemCode">
+                                    </i-option>
+                                </i-select>
+                                <i-select @on-change="" class="mr30" disabled v-else v-model="categoryOverhours">
+                                    <i-option :key="index" :label="item.itemName" v-for="(item, index) of categoryOverhoursList"
+                                              　:value="item.itemCode">
+                                    </i-option>
+                                </i-select>
+                            </i-col>
+
+                            <i-col span="3">
+                                <i-button @click="addOverWork" ghost type="primary" v-if="!bDisable">追加</i-button>
+                                <i-button disabled v-else>追加</i-button>
+                            </i-col>
+                            <!--                <i-col span="4">-->
+                            <!--                    <i-button type="primary" ghost v-if="!bDisable">時刻補完</i-button>-->
+                            <!--                    <i-button type="primary" ghost disabled v-else>時刻補完</i-button>-->
+                            <!--                </i-col>-->
+                        </Row>
+
+                        <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                                 no-data-text="">
+                            <template slot="tdadNopen" slot-scope="{ row ,index }">
+                                <i-input @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailOverhoursVOList[index].tdadNopen"></i-input>
+                                <span v-else>{{ row.tdadNopen | toTime }}</span>
+                            </template>
+
+                            <template slot="tdadNclose" slot-scope="{ row ,index}">
+                                <i-input @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNclose', $event.target)" v-if=" !bFixed" v-model="detailOverhoursVOList[index].tdadNclose"></i-input>
+                                <span v-else>{{ row.tdadNclose | toTime }}</span>
+                            </template>
+
+                            <template slot="tdadCsparechar1" slot-scope="{ row ,index}">
+                                <i-input :autosize="{ maxRows: 3 }" type="textarea"
+                                         v-if="!bFixed"
+                                         v-model="detailOverhoursVOList[index].tdadCsparechar1"></i-input>
+                                <span v-else>{{ row.tdadCsparechar1}}</span>
+                            </template>
+
+                            <template slot="tdadNdeleteflg" slot-scope="{ row ,index}" v-if="!bFixed">
+                                <i-button @click="delOverWork(row)" class="width100" ghost size="small" type="error">削除</i-button>
+                            </template>
+                        </i-table>
+                    </div>
+
+                    <div class="titlenorm mb10">
+                        <Icon type="logo-buffer"></Icon>
+                        更新履歴
+                    </div>
+                    <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
+                    </i-table>
+                    <Spin fix size="large" v-if="dailyloading"></Spin>
                 </div>
-                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
-                </i-table>
-                <Spin fix size="large" v-if="dailyloading"></Spin>
-            </div>
-        </Drawer>
+                <div style="position: fixed;top: 0;bottom: 0;left: 0;right: 0;z-index: 999999;" v-if="sovlingLoading"></div>
+            </Drawer>
+        </div>
         <back-top></back-top>
     </main>
 
@@ -437,6 +432,7 @@
                     showAddWork: false,
                     updateDailyLoading: false,
                     returnUpdateDailyLoading: false,
+                    sovlingLoading: false,
                     notapproval:false,
                     errorFlag: false,
                     errorMsg: '',//错误信息
@@ -1089,6 +1085,8 @@
                     console.log(this.model1)
                     console.log(e2.substr(18))
 
+                    //画面操作不可の制御
+                    this.sovlingLoading = false
                     //月次承認状態
                     this.tmoCstatusflg = e3
 
@@ -1280,6 +1278,7 @@
                 },
                 //承認
                 async updateDaily() {
+                    this.sovlingLoading=true
                     if (!this.errorCheck(this.workingId)) {
                         return
                     }
@@ -1347,6 +1346,7 @@
                 },
                 //差戻
                 async updateRemandsStatus() {
+                    this.sovlingLoading=true
                     if (!this.errorCheck(this.workingId)) {
                         return
                     }
