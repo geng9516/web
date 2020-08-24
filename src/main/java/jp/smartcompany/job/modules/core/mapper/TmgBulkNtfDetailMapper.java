@@ -2,7 +2,11 @@ package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNtfDetailDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.SectionDetailVo;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +20,8 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface TmgBulkNtfDetailMapper extends BaseMapper<TmgBulkNtfDetailDO> {
 
-        }
+    List<SectionDetailVo> selectSectionList(@Param("seq") String seq,
+                                            @Param("custID") String custID,
+                                            @Param("compID") String compID,
+                                            @Param("lang") String lang);
+}

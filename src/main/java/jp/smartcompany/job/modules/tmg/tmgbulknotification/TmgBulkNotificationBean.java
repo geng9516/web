@@ -15,10 +15,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.SectionRankDto;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.UploadDto;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.BulkDispVo;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.ErrorDetailVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -149,7 +146,9 @@ public class TmgBulkNotificationBean {
         return iTmgBulkNotificationLogService.selectErrorList(seq);
     }
 
-
+    public List<SectionDetailVo> execRTargetSecList(String seq,PsDBBean psDBBean){
+        return iTmgBulkNtfDetailService.selectSectionList(seq,psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage());
+    }
 
 
 

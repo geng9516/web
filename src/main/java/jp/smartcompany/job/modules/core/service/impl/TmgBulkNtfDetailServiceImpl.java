@@ -4,7 +4,10 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNtfDetailDO;
 import jp.smartcompany.job.modules.core.mapper.TmgBulkNtfDetailMapper;
 import jp.smartcompany.job.modules.core.service.ITmgBulkNtfDetailService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.SectionDetailVo;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * <p>
@@ -17,4 +20,8 @@ import org.springframework.stereotype.Repository;
 @Repository
         public class TmgBulkNtfDetailServiceImpl extends ServiceImpl<TmgBulkNtfDetailMapper, TmgBulkNtfDetailDO> implements ITmgBulkNtfDetailService {
 
+        @Override
+        public List<SectionDetailVo> selectSectionList(String seq,String custID,String compID,String lang){
+                return baseMapper.selectSectionList(seq,custID, compID, lang);
+        }
         }

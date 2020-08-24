@@ -2,6 +2,9 @@ package jp.smartcompany.job.modules.core.service;
 
 import jp.smartcompany.job.modules.core.pojo.entity.TmgBulkNtfDetailDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.SectionDetailVo;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface ITmgBulkNtfDetailService extends IService<TmgBulkNtfDetailDO> {
 
-        }
+    List<SectionDetailVo> selectSectionList(String seq,String custID,String compID,String lang);
+}

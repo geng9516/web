@@ -37,7 +37,10 @@
                         <span  @click="handleCickNtfType(row.tbnNtbnid)" > {{ row.tbnCbulkntftype }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="moCsectionname">
-                        <span> {{ row.moCsectionname }}</span>
+                        <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
+                        <span v-else> {{ row.moCsectionname }}
+                         <p @click="SectionDetailShow(row.tbnNtbnid)" class="csv-p pb5">[全て表示]</p>
+                        </span>
                     </template>
                     <template slot-scope="{ row }" slot="tbnDbegin">
                         <span> {{ row.tbnDbegin }}</span>
@@ -74,7 +77,13 @@
                         <Row :gutter="24">
                             <i-col span="24">
                                 <div class="label">対象部署</div>
-                                <div class="person-info">{{ detailInfo.tbnCsectionid }}</div>
+                                <div class="person-info">
+                                    <span v-if="detailInfo.tbndCount==='1'"> {{ detailInfo.tbnCsectionid }}</span>
+                                    <span v-else> {{ detailInfo.tbnCsectionid }}
+                                    <p @click="SectionDetailShow(detailInfo.tbnNtbnid)" class="csv-p pb5">[全て表示]</p>
+                                    </span>
+                                </div>
+                        </span>
                             </i-col>
                         </Row>
                         <Row :gutter="24">
@@ -131,7 +140,18 @@
                         </template>
                     </i-table>
                 </Drawer>
-
+                <Drawer :closable="false"  class="tc" placement="right" title="反映エラー職員一覧"
+                        v-model="sectionDetailShow">
+                    <div class="titlenorm mb10">
+                        <Icon type="logo-buffer"></Icon>
+                        対象部署
+                    </div>
+                    <Row v-for="e of sectionList">
+                        <i-col>
+                            {{e.moCsectionname}}
+                        </i-col>
+                    </Row>
+                </Drawer>
 
             </div>
             <div v-else>
@@ -198,6 +218,7 @@
             data() {
                 return {
                     errDetailShow:false,
+                    sectionDetailShow:false,
                     referListObject: {
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -284,7 +305,8 @@
                         bulkNtfId:'',
                         beginDate:'',
                         endDate:'',
-                    }
+                    },
+                    sectionList:{},
                 }
             },
             async mounted() {
@@ -448,6 +470,22 @@
                         const {data} = await this.http.get('sys/tmgbulknotification/errorDetail', this.opts)
                         this.tableData2=data
                         this.errDetailShow=true
+                    } catch (error) {
+                        return
+                    } finally {
+
+                    }
+                },
+                async SectionDetailShow(e){
+                    if (!e) {
+                        return
+                    }
+                    this.opts.ntfId = e
+                    try {
+                        const {data} = await this.http.get('sys/tmgbulknotification/sectionDetail', this.opts)
+                        console.log()
+                        this.sectionDetailShow=true
+                        this.sectionList=data
                     } catch (error) {
                         return
                     } finally {

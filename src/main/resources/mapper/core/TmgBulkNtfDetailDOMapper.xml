@@ -2,4 +2,32 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.TmgBulkNtfDetailMapper">
 
+    <select id="selectSectionList"
+            resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.SectionDetailVo">
+        SELECT DISTINCT MO_NLEVEL
+        ,MO_NSEQ
+        ,MO_CSECTIONID_CK
+        ,MO_CSECTIONNAME
+        ,MO_CPARENTID
+        FROM (SELECT o.MO_NLEVEL
+        ,o.MO_NSEQ
+        ,o.MO_CSECTIONID_CK
+        ,o.MO_CSECTIONNAME
+        ,o.MO_CPARENTID
+        FROM MAST_ORGANISATION o
+        WHERE MO_CCUSTOMERID_CK_FK = #{custID}
+        AND MO_CCOMPANYID_CK_FK = #{compID}
+        AND MO_CLANGUAGE = #{lang}
+        AND MO_DSTART <![CDATA[<=]]> SYSDATE
+        AND MO_DEND >= SYSDATE
+        AND MO_CSECTIONID_CK IN (SELECT TBND_CSECTIONID
+        FROM TMG_BULK_NTF_DETAIL
+        WHERE TBND_NTBNID_FK = #{seq})) START WITH MO_CSECTIONID_CK in (
+        SELECT TBND_CSECTIONID
+        FROM TMG_BULK_NTF_DETAIL
+        WHERE TBND_NTBNID_FK = #{seq}) CONNECT BY MO_CSECTIONID_CK = PRIOR
+        MO_CPARENTID
+        ORDER SIBLINGS BY MO_NSEQ, MO_CSECTIONID_CK
+
+    </select>
 </mapper>

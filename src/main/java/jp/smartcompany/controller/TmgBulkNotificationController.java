@@ -6,9 +6,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.empattrsetting.vo.TmgLedgeDispVo;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.TmgBulkNotificationBean;
 import jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.UploadDto;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.BulkDispVo;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.DetailDataVo;
-import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.NewBulkdropDownVo;
+import jp.smartcompany.job.modules.tmg.tmgbulknotification.vo.*;
 import jp.smartcompany.job.modules.tmg.tmgledger.TmgLedgerBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -74,4 +72,24 @@ public class TmgBulkNotificationController {
         return tmgBulkNotificationBean.execUCancel(seq,psDBBean);
     }
 
+
+    /**
+     * エラー詳細
+     */
+    @GetMapping("errorDetail")
+    @ResponseBody
+    public List<ErrorDetailVo> execRErrorList(@RequestParam("ntfId") String seq,
+                                           @RequestAttribute("BeanName") PsDBBean psDBBean){
+        return tmgBulkNotificationBean.execRErrorList(seq);
+    }
+
+    /**
+     * 部署詳細
+     */
+    @GetMapping("sectionDetail")
+    @ResponseBody
+    public List<SectionDetailVo> execRTargetSecList(@RequestParam("ntfId") String seq,
+                                                    @RequestAttribute("BeanName") PsDBBean psDBBean){
+        return tmgBulkNotificationBean.execRTargetSecList(seq,psDBBean);
+    }
 }
