@@ -23,7 +23,7 @@
                     <i-button type="text" class="pr15" style="height: 40px;line-height: 45px;font-size: 16px;font-weight: bold;" :loading="monthlyLoading">
                         {{ `月次承認状況： ${isConfirm==='TMG_DATASTATUS|5' ? '承認済' : '未承認'}` }}
                     </i-button>
-                    <i-button type="primary" ghost  icon="md-nutrition" v-if="countNotApprovalDay ==='0' && isConfirm !== 'TMG_DATASTATUS|5'"  @click="updateMonth('approval')" :loading="updateMonthloading">承認</i-button>
+                    <i-button type="primary" ghost  icon="md-nutrition" v-if="countNotApprovalDay ==='0' && isConfirm !== 'TMG_DATASTATUS|5' && flexTime ==='0.00'"  @click="updateMonth('approval')" :loading="updateMonthloading">承認</i-button>
                     <i-button  icon="md-nutrition" disabled v-else-if="isConfirm !== 'TMG_DATASTATUS|5'">承認</i-button>
                     <i-button type="error"  icon="md-done-all" v-if="isConfirm === 'TMG_DATASTATUS|5'" @click="updateMonth('cancel')" :loading="updateMonthloading">解除</i-button>
                 </div>
@@ -112,6 +112,7 @@
 
 
         <div class="content_body" style="position: relative">
+            <Alert type="error" class="error-info" v-show="flexTime !='0:00' && dailyDataList != '' && countNotApprovalDay ==='0' && isConfirm != 'TMG_DATASTATUS|5'  ">月の勤務実績が「 {{ flexTime }}  時間」不足しています、勤務実績をご確認ください。</Alert>
             <Row :gutter="10" class="mb10" v-if="(bDispKinmujokyoKakunin ) || (bDispKenkojotaiKakunin )">
                 <i-col span="12" v-if="bDispKinmujokyoKakunin">
                     <div class="label tc">勤務状況確認</div>
@@ -451,6 +452,7 @@
                     searchConditionsList: [],//組織ツリー用
                     empTreeData: [],        //組織ツリー用
         //月次テーブル 使用参数
+                    flexTime:'', //flex対応
                     bDispKinmujokyoKakunin:false,  //勤務欄表示
                     bDispKenkojotaiKakunin:false,　//健康欄表示
                     hatuReiDisp:false, //発令
@@ -862,6 +864,7 @@
                         this.countNotApprovalDay=data.countNotApprovalDay
                         this.monthlyTilteMapList = data.monthlyTilteMapList
                         this.monthlyMap = data.monthlyDateMap
+                        this.flexTime=data.flexTime
                         this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
                         this.today=sysDate
                         this.columns = data.dailyTittleMapList.map(e => {

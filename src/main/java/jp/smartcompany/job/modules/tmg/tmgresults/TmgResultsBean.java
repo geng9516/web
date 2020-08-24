@@ -1198,6 +1198,9 @@ public class TmgResultsBean {
 
         boolean isMonthlyApproval = isMonthlyApproval(psDBBean.getTargetUser(),getMonth(),psDBBean.getSiteId());
         monthlyMap.put("isMonthlyApproval", isMonthlyApproval);
+
+        String  flexTime =getFlextime(getMonth(),psDBBean);
+        monthlyMap.put("flexTime", flexTime);
         return monthlyMap;
     }
     /**
@@ -1713,12 +1716,20 @@ public class TmgResultsBean {
 
 
     private String getFlextime(String baseDate,PsDBBean psDBBean){
-        String needTime4Flex = TmgUtil.getNeedTime4Flex(psDBBean
+        String needTime4Flex =null;
+        if(TmgUtil.isFlex(psDBBean
                 , psDBBean.getCustID()
                 , psDBBean.getCompCode()
                 , psDBBean.getTargetUser()
-                , baseDate);
-
+                , psDBBean.toDBDate(baseDate))){
+            needTime4Flex=TmgUtil.getNeedTime4Flex(psDBBean
+                    , psDBBean.getCustID()
+                    , psDBBean.getCompCode()
+                    , psDBBean.getTargetUser()
+                    , psDBBean.toDBDate(baseDate));
+        }else{
+            needTime4Flex="0:00";
+        }
         return needTime4Flex;
     }
 
