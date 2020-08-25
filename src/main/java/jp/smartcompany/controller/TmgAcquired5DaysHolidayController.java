@@ -38,19 +38,6 @@ public class TmgAcquired5DaysHolidayController {
     }
 
     /**
-     * 年5休暇管理一览界面数据获取
-     */
-    /**
-    @GetMapping("edit")
-    @ResponseBody
-    public List<Acquired5DaysListVO> edit(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year, String txtUserCode) throws Exception {
-
-        tmgAcquired5DaysHolidayBean.execute(psDBBean, recordDate, year);
-
-        return tmgAcquired5DaysHolidayBean.selectList(txtUserCode, psDBBean);
-    }
-     */
-    /**
      * 年5休暇管理詳細
      */
     @GetMapping("showDisp")
@@ -64,8 +51,8 @@ public class TmgAcquired5DaysHolidayController {
      * 年5日有給指定
      */
     @PostMapping(value = "update", produces = "application/json;charset=UTF-8")
-    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean, @RequestBody UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
-        tmgAcquired5DaysHolidayBean.execute(psDBBean, updateAcquired5DaysVO.getRecordDate(), updateAcquired5DaysVO.getTxtYear());
+    public void update(@RequestAttribute("BeanName") PsDBBean psDBBean,String year, @RequestBody UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
+        tmgAcquired5DaysHolidayBean.execute(psDBBean, updateAcquired5DaysVO.getRecordDate(), year);
         tmgAcquired5DaysHolidayBean.update(psDBBean,updateAcquired5DaysVO);
     }
 }

@@ -162,16 +162,11 @@ public class TmgAcquired5DaysHolidayBean {
             tmgPaiduseinfoFixDO.setTpfDmodifierdate(DateTime.now());
             tmgPaiduseinfoFixDO.setTpfCmodifierprogramid(PROGRAM_ID);
             tmgPaiduseinfoFixDO.setTpfCemployeeid(updateAcquired5DaysVO.getTxtUserCode());
-//            tmgPaiduseinfoFixDO.setTpfDpaidHoliday(DateUtil.parse(updateAcquired5DaysVO.getKijunbi()));
-//            tmgPaiduseinfoFixDO.setTpfNyyyy(Long.parseLong(updateAcquired5DaysVO.getTxtYear()));
             tmgPaiduseinfoFixDO.setTpfDpaidHolidayFix(DateUtil.parse(updateAcquired5DaysVO.getKijunbiEdit()));
             tmgPaiduseinfoFixDO.setTpfDkikanbiFix(DateUtil.parse(updateAcquired5DaysVO.getDkikanbiFix()));
-//            tmgPaiduseinfoFixDO.setTpfNusedaysFix(null);
-            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(Double.parseDouble(updateAcquired5DaysVO.getTxtNusedaysDays()));
+            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(Double.parseDouble(updateAcquired5DaysVO.getDkikanbiFix()));
             tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Double.parseDouble(updateAcquired5DaysVO.getUsedDaysEdit()));
-//            tmgPaiduseinfoFixDO.setTpfNusehoursAjdust(null);
-//            tmgPaiduseinfoFixDO.setTpfDpaidholidayEnd(DateUtil.parse(updateAcquired5DaysVO.getTxtDpaidholidayEnd()));
-//            tmgPaiduseinfoFixDO.setTpfNusedaysDays(Double.parseDouble(updateAcquired5DaysVO.getTxtNusedaysDays()));
+
             tmgPaiduseinfoFixDO.setTpfFuyobi(DateUtil.parse(updateAcquired5DaysVO.getTxtFuyobi()));
             iTmgPaiduseinfoFixService.getBaseMapper().insert(tmgPaiduseinfoFixDO);
         }
