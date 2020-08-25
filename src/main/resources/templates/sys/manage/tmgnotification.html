@@ -225,7 +225,7 @@
             v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
             <span class="input-like-span" style="border-radius: 5px;">
               <i-button v-for="(item, i) of detailsData.tmgNtfAttachedfileDoList" :key="i"
-                @click="()=>window.open(e.tnafFilepath, '_blank')" class="no-border-radius mr5" type="primary"
+                @click="()=>window.open(`http:////${item.tnafFilepath.slice(2)}`, '_blank')" class="no-border-radius mr5" type="primary"
                 size="small" ghost>{{ item.tnafCfilename }}</i-button>
             </span>
           </form-item>

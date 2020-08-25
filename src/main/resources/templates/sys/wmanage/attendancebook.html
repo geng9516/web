@@ -127,7 +127,7 @@
                 <!-- 共通年選択 end-->
 
                 <i-col span="13" class="tr">
-                    <i-button type="primary" class="mr5" ghost icon="md-paper">印刷</i-button>
+                    <i-button type="primary" :disabled="!tableData.length > 0" class="mr5" ghost icon="md-paper" @click="pdfDownload" :loading="pdfDownloadLoading">PDFダウンロード</i-button>
                 </i-col>
             </Row>
         </div>
@@ -215,6 +215,7 @@
                 queryHolidayInfo: {},       //年次休暇付与日数 年次休暇付与日
                 tableHead: [],              //月出勤情報統計と月出勤情報明細のテーブルヘッダー
                 loading: false,             //ローディングアクション-->
+                pdfDownloadLoading: false,  //PDFダウンロードローディングアクション
                 tableData: [],              //月出勤情報統計と月出勤情報明細のテーブルデータ
                 showPre: true,
                 isSearchHistory: false,
@@ -273,6 +274,26 @@
                 searchConditionsList: [],//組織ツリー用
                 empDeptLoading: false,  // 組織ツリーloading用
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
+                ledgerParamVO: {
+                    txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
+                    txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
+                    txtEmp: '',
+                    hidEmpId: '',　 //組織ツリーで選択した職員番号
+                    txtOrg: '',
+                    hidOrgId: '',
+                    txtYYYY: '',
+                    txtYYYYMM: '',
+                    txtTermFrom: '',
+                    txtTermTo: '',
+                    txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
+                    txtIncludeOt100Flg: '',
+                    psSecurityDate: '',
+                    selLedgerSheet: 'ATTENDANCEBK_YEARLY',
+                    selYear: '',
+                    selMonth: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                },
             }
         },
         async mounted() {
@@ -394,6 +415,9 @@
                 this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
                 this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
 
+                this.ledgerParamVO.txtAtdBookTermFrom = +this.defaultDate.mgd_ndefault_month
+                this.ledgerParamVO.txtYYYY = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
+                this.ledgerParamVO.txtYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy/mm') + "/01"
             },
             async getqueryDate() {
                 this.loading = true
@@ -404,6 +428,10 @@
                 this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
                 this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
                 this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
+
+                this.ledgerParamVO.txtAtdBookTermFrom = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
+                this.ledgerParamVO.txtYYYY = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
+                this.ledgerParamVO.txtYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy/mm') + "/01"
             },
             async getExistsAttendanceBook() {
                 const { data } = await this.http.get(`sys/attendanceBook/selectExistsAttendanceBook`, this.query)
@@ -595,6 +623,7 @@
                 this.kanjiName = e[0].empname
                 this.selectDisabled = true
                 this.remarksDisabled = true
+                this.ledgerParamVO.hidEmpId = e[0].empid
                 this.getData(true)
             },
             showName(e) {
@@ -636,6 +665,12 @@
                     this.query.hidSelectTab='1'
                 }
             },
+            async　pdfDownload() {
+                this.pdfDownloadLoading = true
+                const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
+                Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
+                this.pdfDownloadLoading = false
+            }
         }
     })
 </script>
