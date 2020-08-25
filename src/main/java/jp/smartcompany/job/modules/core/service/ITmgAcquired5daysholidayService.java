@@ -40,5 +40,5 @@ public interface ITmgAcquired5daysholidayService extends IService<TmgAcquired5da
      * @param txtNusedaysDays　修正必要日数
      * @param txtFuyobi　付与日
      */
-    void buildSQLTmgAcquired5daykikanbi(String code, String updateAcquired5DaysVOKijunbi, String year, String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String txtDpaidholidayEnd, String txtNusedaysDays, String txtFuyobi);
+//    void buildSQLTmgAcquired5daykikanbi(String code, String updateAcquired5DaysVOKijunbi, String year, String txtUserCode, String kijunbi, String txtYear, String kijunbiEdit, String userCode, String txtDpaidholidayEnd, String txtNusedaysDays, String txtFuyobi);
 }

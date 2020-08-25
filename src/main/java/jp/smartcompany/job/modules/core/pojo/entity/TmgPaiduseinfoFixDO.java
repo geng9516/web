@@ -76,16 +76,10 @@ private static final long serialVersionUID=1L;
         private String tpfCemployeeid;
 
         /**
-         * 基準日
+         * 年次休暇付与日
          */
-    @TableField("tpf_dpaid_holiday")
-        private Date tpfDpaidHoliday;
-
-        /**
-         * 基準日修正年
-         */
-    @TableField("tpf_nyyyy")
-        private Long tpfNyyyy;
+    @TableField("tpf_fuyobi")
+        private Date tpfFuyobi;
 
         /**
          * 修正基準日
@@ -100,44 +94,48 @@ private static final long serialVersionUID=1L;
         private Date tpfDkikanbiFix;
 
         /**
-         * 修正取得日数
-         */
-    @TableField("tpf_nusedays_fix")
-        private Double tpfNusedaysFix;
-
-        /**
-         * 修正必要日数
-         */
-    @TableField("tpf_nmustdays_fix")
-        private Double tpfNmustdaysFix;
-
-        /**
          * 調整取得日数
          */
     @TableField("tpf_nusedays_ajdust")
         private Double tpfNusedaysAjdust;
 
         /**
-         * 調整取得時間数
-         */
-    @TableField("tpf_nusehours_ajdust")
-        private Long tpfNusehoursAjdust;
-
-        /**
-         * 修正終期
-         */
-    @TableField("tpf_dpaid_holiday_end")
-    private Date tpfDpaidholidayEnd;
-
-        /**
          * 修正必要日数
          */
-    @TableField("tpf_nusedays_days")
-    private Double tpfNusedaysDays;
+    @TableField("tpf_nmustdays_fix")
+        private Double tpfNmustdaysFix;
+//        /**
+//         * 修正取得日数
+//         */
+//    @TableField("tpf_nusedays_fix")
+//        private Double tpfNusedaysFix;
+//        /**
+//         * 基準日
+//         */
+//    @TableField("tpf_dpaid_holiday")
+//        private Date tpfDpaidHoliday;
+//        /**
+//         * 基準日修正年
+//         */
+//    @TableField("tpf_nyyyy")
+//        private Long tpfNyyyy;
+//        /**
+//         * 調整取得時間数
+//         */
+//    @TableField("tpf_nusehours_ajdust")
+//        private Long tpfNusehoursAjdust;
+//
+//        /**
+//         * 修正終期
+//         */
+//    @TableField("tpf_dpaid_holiday_end")
+//     private Date tpfDpaidholidayEnd;
+//
+//        /**
+//         * 修正必要日数
+//         */
+//    @TableField("tpf_nusedays_days")
+//        private Double tpfNusedaysDays;
 
-        /**
-         * 年次休暇付与日
-         */
-    @TableField("tpf_fuyobi")
-    private Date tpfFuyobi;
+
 }
