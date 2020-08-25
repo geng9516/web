@@ -1280,6 +1280,7 @@
                 async updateDaily() {
                     this.sovlingLoading=true
                     if (!this.errorCheck(this.workingId)) {
+                        this.sovlingLoading = false
                         return
                     }
                     this.updateDailyLoading = true
@@ -1336,11 +1337,14 @@
 
                         })
                         if (check) {
+                            this.sovlingLoading = false
                             return false
                         }
                     }catch(errror){
+                        this.sovlingLoading = false
                         retrun
                     }finally {
+                        this.sovlingLoading = false
                         this.updateDailyLoading = false
                     }
                 },
@@ -1348,6 +1352,7 @@
                 async updateRemandsStatus() {
                     this.sovlingLoading=true
                     if (!this.errorCheck(this.workingId)) {
+                        this.sovlingLoading = false
                         return
                     }
                     this.returnUpdateDailyLoading = true
@@ -1401,10 +1406,14 @@
 
                         })
                         if (check) {
+                            this.sovlingLoading = false
                             return false
                         }
-                    }catch(error){return}
-                    finally {
+                    }catch (error) {
+                        this.sovlingLoading = false
+                        return
+                    }finally {
+                        this.sovlingLoading = false
                         this.returnUpdateDailyLoading = false
                     }
                 },
