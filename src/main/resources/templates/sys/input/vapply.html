@@ -112,7 +112,7 @@
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(e.tnafFilepath, '_blank')">{{ e.tnafCfilename }}</div>
+                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="downloadFile(e.tnafFilepath)">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -870,6 +870,15 @@
                     if(e.url) {
                         window.open(e.url, '_blank')
                     }
+                },
+                 downloadFile(e) {
+                    if (!e) {
+                        return
+                    }
+                    //var path = e.replace(/\\/g,'\\\\')
+                    // window.location.href='/sys/vapply/download?url='+path
+                     this.http.get('sys/vapply/download', {url:e.replace(/\\/g,'\\\\')})
+
                 },
                 handleInputChange(i,object,value,el) {
                     if(object) {

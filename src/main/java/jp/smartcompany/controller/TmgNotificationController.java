@@ -10,12 +10,18 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.TmgNotificationBean;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +40,9 @@ public class TmgNotificationController {
     private TmgNotificationBean tmgNotificationBean;
     @Autowired
     private HttpServletRequest request;
+
+
+
 
     /**
          * 申請ステータス
@@ -190,5 +199,34 @@ public class TmgNotificationController {
     @GetMapping("EmployInfo")
     public EmployeeDetailVo getEmpInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
         return tmgNotificationBean.getEmpInfo(psDBBean);
+    }
+
+
+    @GetMapping("download")
+    public void downloadFileAction(@RequestParam("url") String url,HttpServletResponse response) {
+
+        HttpServletRequest request=ContextUtil.getHttpRequest();
+        response.setCharacterEncoding(request.getCharacterEncoding());
+        response.setContentType("application/octet-stream");
+        FileInputStream fis = null;
+        try {
+            File file = new File(url);
+            fis = new FileInputStream(file);
+            response.setHeader("Content-Disposition", "attachment; filename="+file.getName());
+            IOUtils.copy(fis,response.getOutputStream());
+            response.flushBuffer();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
