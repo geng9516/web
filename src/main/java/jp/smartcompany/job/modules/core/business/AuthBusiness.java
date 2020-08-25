@@ -98,7 +98,6 @@ public class AuthBusiness {
 
     public void login(LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
-        System.out.println("++--");
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
@@ -502,7 +501,7 @@ public class AuthBusiness {
             // 当前时间大于密码设定日时密码过期
             if (oSetDay.before(now)) {
                 //認証エラー（パスワード期間切れ）
-                throw new ExpiredCredentialsException("パスワード期間切れ");
+                throw new ExpiredCredentialsException("このパスワードは有効期限を過ぎました。新しいパスワードを登録してください");
             }
         });
     }

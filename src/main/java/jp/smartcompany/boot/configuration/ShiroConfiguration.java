@@ -90,6 +90,7 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/error","anon");
         filterChainDefinitionMap.put("/stamping","anon");
         filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/expirePassword","anon");
 
         filterChainDefinitionMap.put("/logout", "user");
         filterChainDefinitionMap.put("/index","user");
@@ -97,8 +98,7 @@ public class ShiroConfiguration {
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");
-        //首页
-        shiroFilterFactoryBean.setSuccessUrl("/");
+
         //错误页面，认证不通过跳转
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

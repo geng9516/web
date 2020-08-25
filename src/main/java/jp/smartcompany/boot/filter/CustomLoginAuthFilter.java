@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import lombok.SneakyThrows;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.ExpiredCredentialsException;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
@@ -16,6 +17,7 @@ import org.springframework.http.MediaType;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author Xiao Wenpeng
@@ -51,10 +53,15 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
     @SneakyThrows
     @Override
     public boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        WebUtils.toHttp(response).setContentType(MediaType.APPLICATION_JSON_VALUE);
-        WebUtils.toHttp(response).setCharacterEncoding("UTF-8");
-        WebUtils.toHttp(response).setStatus(HttpStatus.FORBIDDEN.value());
-        WebUtils.toHttp(response).getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.FORBIDDEN.value(),e.getMessage())));
+        HttpServletResponse resp = WebUtils.toHttp(response);
+        resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        resp.setCharacterEncoding("UTF-8");
+        request.setAttribute("username",token.getPrincipal());
+        int status = HttpStatus.SEE_OTHER.value();
+        if (e instanceof ExpiredCredentialsException) {
+            status = HttpStatus.FORBIDDEN.value();
+        }
+        response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status, e.getMessage())));
         return false;
     }
 }

@@ -136,10 +136,10 @@ public class AuthController {
         return "redirect:/login";
     }
 
-    @GetMapping("isAuth")
-    @ResponseBody
-    public Boolean isLogin() {
-        return ShiroUtil.isAuthenticated();
+    @GetMapping("expirePassword")
+    public String expirePassword() {
+        return "expirePassword";
     }
+
 
 }
