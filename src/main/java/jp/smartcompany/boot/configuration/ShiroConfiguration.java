@@ -51,7 +51,7 @@ public class ShiroConfiguration {
     public SessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         sessionManager.setSessionIdCookie(sessionIdCookie());
-        // 先设为30分钟便于调试
+        // 先设为30分钟便于调试 1000 * 60 * 30
         sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
@@ -90,6 +90,7 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/error","anon");
         filterChainDefinitionMap.put("/stamping","anon");
         filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/expirePassword","anon");
 
         filterChainDefinitionMap.put("/logout", "user");
         filterChainDefinitionMap.put("/index","user");
@@ -97,8 +98,7 @@ public class ShiroConfiguration {
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");
-        //首页
-        shiroFilterFactoryBean.setSuccessUrl("/");
+
         //错误页面，认证不通过跳转
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);

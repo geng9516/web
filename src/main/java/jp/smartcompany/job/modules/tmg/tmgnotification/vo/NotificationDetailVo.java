@@ -133,4 +133,6 @@ public class NotificationDetailVo {
     private List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = new ArrayList<TmgNtfAttachedfileDO>();
     //  申請ログ
     private List<NtfActionLogVo> tmgNtfactionlogDOList = new ArrayList<NtfActionLogVo>();
+
+    private TypeChildrenVo ntfTypeValue;
 }
