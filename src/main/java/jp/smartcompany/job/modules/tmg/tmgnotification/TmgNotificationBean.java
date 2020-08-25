@@ -296,6 +296,36 @@ public class TmgNotificationBean {
         // 7 申請ログ
         notificationDetailVo.setTmgNtfactionlogDOList(iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo()));
 
+
+        TypeChildrenVo tc =new TypeChildrenVo();
+        String viewflg="";
+        int viewType=0;
+        viewType = Integer.valueOf(notificationDetailVo.getTntfCtypeN2());
+        for(int i=0;i<14;i++){
+            viewflg  += (viewType%2);
+            viewType = viewType/2;
+        }
+        if (viewflg.length()==14){
+            byte[] bytes;
+            bytes=viewflg.getBytes();
+            if (bytes[0]=='1'){ tc.setTransfer(true); }//振替先・元
+            if (bytes[1]=='1'){ tc.setTimeZone(true); }//時間帯
+            if (bytes[2]=='1'){ tc.setWorkTime(true); }//始業・終業
+            if (bytes[3]=='1'){ tc.setSickName(true); }//傷病名
+            if (bytes[4]=='1'){ tc.setSickApply(true); }//労災申請有無
+            if (bytes[5]=='1'){ tc.setPeriod(true); }//起算日
+            if (bytes[6]=='1'){ tc.setAddDate(true); }//加算日数
+            if (bytes[7]=='1'){ tc.setLabel(true); }//勤務時間ラベル
+            if (bytes[8]=='1'){ tc.setRestTime(true); }//休憩時間
+            if (bytes[9]=='1'){ tc.setName(true); }//氏名
+            if (bytes[10]=='1'){ tc.setRelation(true); }//続柄
+            if (bytes[11]=='1'){ tc.setBirthday(true); }//生年月日
+            if (bytes[12]=='1'){ tc.setDaysOfWeek(true); }//曜日
+            if (bytes[13]=='1'){ tc.setTargetNumber(true); }//対象者の人数
+        }
+
+        notificationDetailVo.setNtfTypeValue(tc);
+
         return notificationDetailVo;
     }
 
