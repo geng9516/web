@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -54,9 +55,10 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
     @Override
     public boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
         HttpServletResponse resp = WebUtils.toHttp(response);
+        HttpServletRequest req = WebUtils.toHttp(request);
         resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
         resp.setCharacterEncoding("UTF-8");
-        request.setAttribute("username",token.getPrincipal());
+        req.getSession().setAttribute("passwordExpiredUser",token.getPrincipal());
         int status = HttpStatus.SEE_OTHER.value();
         if (e instanceof ExpiredCredentialsException) {
             status = HttpStatus.FORBIDDEN.value();

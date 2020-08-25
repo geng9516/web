@@ -141,5 +141,10 @@ public class AuthController {
         return "expirePassword";
     }
 
+    @PostMapping
+    public String changeExpirePassword() {
+        authBusiness.changeExpirePassword();
+        return "redirect:/sys";
+    }
 
 }

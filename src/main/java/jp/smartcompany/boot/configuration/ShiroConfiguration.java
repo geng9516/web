@@ -51,7 +51,7 @@ public class ShiroConfiguration {
     public SessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         sessionManager.setSessionIdCookie(sessionIdCookie());
-        // 先设为30分钟便于调试
+        // 先设为30分钟便于调试 1000 * 60 * 30
         sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
