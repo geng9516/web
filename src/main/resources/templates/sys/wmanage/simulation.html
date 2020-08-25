@@ -64,7 +64,8 @@
 
                 <template slot-scope="{ row }" slot="operator">
                     <i-button type="primary" ghost size="small" icon="md-create" style="margin-right: 5px" @click="mergeMaster(row)">編集</i-button>
-                    <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash" @click="deleteMaster(row)">削除</i-button>
+                    <i-button class="collapse-btn" type="error" disabled ghost size="small" icon="md-trash" v-if="dataCount===1" >削除</i-button>
+                    <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash" @click="deleteMaster(row)" v-if="dataCount!=1">削除</i-button>
                     <i-button class="collapse-btn mt10" type="primary" ghost icon="md-add" style="width: 128px" v-if="row._index+1 == dataCount" @click="mergeMaster(null)">追加</i-button>
                 </template>
 
@@ -290,8 +291,14 @@
                 },
                 //マスタデータを削除する
                 async deleteMaster(row) {
-                    console.log("delete:" + row)
+                   // console.log("delete:" + row)
                     if (row) {
+                        console.log("this.dataCount:",this.dataCount)
+                        if(this.dataCount == 1){
+                            //最後のデータの場合、削除できない
+                            this.$Notice.info({ title: '最後のデータの場合、削除できない', desc: "" })
+                            return
+                        }
                         this.query.startDate = row.startTime
                         this.query.endDate = row.endTime
                         this.$Modal.confirm({

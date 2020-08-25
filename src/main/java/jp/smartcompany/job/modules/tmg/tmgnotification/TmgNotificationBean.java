@@ -1116,7 +1116,7 @@ public class TmgNotificationBean {
         }
         //シーケンス
         tncDo.setTntfNseq(Long.parseLong(param.getSeq()));
-        tncDo.setTntfCntfno(param.getUserCode() + "|" + param.getSeq());
+        tncDo.setTntfCntfno(param.getTargetUser() + "|" + param.getSeq());
 
 
         if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY)) {// 新規申請
