@@ -210,7 +210,7 @@ public class TmgIfSimulationBean {
                 } else if ("update".equals(simulationInsertJsonDTO.getOperType())) {
                     actionCode = "ACT_SIM_UPDATE";
                     //更新の場合、古いデータを削除する
-                    boolean flag = this.deleteMastGenericDetail_notrans(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), simulationInsertJsonDTO.getLanguage(), simulationInsertJsonDTO.getPsGroupId(), simulationInsertJsonDTO.getPsStartDate(), simulationInsertJsonDTO.getPsEndDate());
+                    boolean flag = this.deleteMastGenericDetail_notrans(simulationInsertJsonDTO.getCustId(), simulationInsertJsonDTO.getCompCode(), simulationInsertJsonDTO.getLanguage(), simulationInsertJsonDTO.getPsGroupId(), simulationInsertJsonDTO.getStartDate(), simulationInsertJsonDTO.getEndDate());
                     if (!flag) {
                         //処理失敗しました
                         logger.warn("マスタ対象をmergeすることが失敗しました");
@@ -546,7 +546,7 @@ public class TmgIfSimulationBean {
      */
     @Transactional(rollbackFor = GlobalException.class)
     public boolean execSim(String custID, String compCode, String employeeId, String actionCode) {
-        String modifierprogramid = BEAN_DESC +"_"+ actionCode;
+        String modifierprogramid = BEAN_DESC + "_" + actionCode;
         boolean flag1 = this.buildSQLForDeleteTmgTrgger(custID, compCode, employeeId, modifierprogramid);
         boolean flag2 = this.buildSQLForInsertTmgTrgger(custID, compCode, employeeId, MINDATE, MAXDATE, modifierprogramid);
         boolean flag3 = this.buildSQLForDeleteTmgTrgger(custID, compCode, employeeId, modifierprogramid);
@@ -566,6 +566,7 @@ public class TmgIfSimulationBean {
      * TMG_WTSIMSTATUS|130	実行済
      * TMG_WTSIMSTATUS|230	取消済
      * TMG_WTSIMSTATUS|910	エラー
+     *
      * @param custID
      * @param compCode
      * @param language

@@ -17,6 +17,8 @@ import java.util.List;
 @ToString
 public class SimulationInsertJsonDTO {
 
+    private String startDate;
+    private String endDate;
     private String psStartDate;
     private String psEndDate;
     private String employeId;

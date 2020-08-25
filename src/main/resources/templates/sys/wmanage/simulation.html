@@ -5,82 +5,84 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
-    <!-- 菜单导航栏 -->
-    <div th:replace="layout/sider"></div>
-    <style>
-        .label-in-table {
-            display: inline-block;
-            min-height: 32px;
-            margin-bottom: 2px;
-            width: 100%;
-            text-align: right;
-            background-color: #e9f3ff;
-            color: #2d8cf0;
-            padding-top: 5px;
-            padding-right: 5px;
-        }
-    </style>
-    <main class="content simulation-warp" ref="layout">
-        <div class="content_head">
-            <div class="header">
-                <div class="title1">
-                    <h1>
-                        <Icon type="i-emeer colored"></Icon>
-                        {{ `連携対象者マスタ設定 ` }}
-                    </h1>
-                </div>
-                <div class="btnbox">
-                    <span style="flex:1"></span>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold;" v-if="execStatus === '未実行'">状態：{{execStatus}}　</p>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold;" v-if="execStatus === '検索中...'">{{execStatus}}　</p>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold; color: green" v-if="execStatus === '実行済'">状態：{{execStatus}}　</p>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold; color: cornflowerblue" v-if="execStatus === '実行中'">状態：{{execStatus}}　</p>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold; color: indianred " v-if="execStatus === '取消済'">状態：{{execStatus}}　</p>
-                    <p class="pr15" style=" font-size: 16px; font-weight: bold; color: red" v-if="execStatus === 'エラー'">状態：{{execStatus}}　</p>
-                    <i-button type="primary" ghost icon="ios-power" @click="execMasterData(null)" :loading="execLoading" :disabled="!exec">{{execBtn_name}}</i-button>
-                    <i-button type="primary" icon="ios-checkmark-circle-outline" @click="decisionMaster(null)" :disabled="!decision">確定</i-button>
-                    <i-button type="primary" icon="ios-browsers-outline" @click="compareMaster(null)" :disabled="!compare">{{compareBtn_name}}</i-button>
-                    <i-button type="primary" icon="ios-book" @click="readMaster(null)">{{readBtn_name}}</i-button>
-                </div>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<!-- 菜单导航栏 -->
+<div th:replace="layout/sider"></div>
+<style>
+    .label-in-table {
+        display: inline-block;
+        min-height: 32px;
+        margin-bottom: 2px;
+        width: 100%;
+        text-align: right;
+        background-color: #e9f3ff;
+        color: #2d8cf0;
+        padding-top: 5px;
+        padding-right: 5px;
+    }
+</style>
+<main class="content simulation-warp" ref="layout">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `連携対象者マスタ設定 ` }}
+                </h1>
+            </div>
+            <div class="btnbox">
+                <span style="flex:1"></span>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold;" v-if="execStatus === '未実行'">状態：{{execStatus}}　</p>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold;" v-if="execStatus === '検索中...'">{{execStatus}}　</p>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold; color: green" v-if="execStatus === '実行済'">状態：{{execStatus}}　</p>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold; color: cornflowerblue" v-if="execStatus === '実行中'">状態：{{execStatus}}　</p>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold; color: indianred " v-if="execStatus === '取消済'">状態：{{execStatus}}　</p>
+                <p class="pr15" style=" font-size: 16px; font-weight: bold; color: red" v-if="execStatus === 'エラー'">状態：{{execStatus}}　</p>
+                <i-button type="primary" ghost icon="ios-power" @click="execMasterData(null)" :loading="execLoading" :disabled="!exec">{{execBtn_name}}</i-button>
+                <i-button type="primary" icon="ios-checkmark-circle-outline" @click="decisionMaster(null)" :disabled="!decision">確定</i-button>
+                <i-button type="primary" icon="ios-browsers-outline" @click="compareMaster(null)" :disabled="!compare">{{compareBtn_name}}</i-button>
+                <i-button type="primary" icon="ios-book" @click="readMaster(null)">{{readBtn_name}}</i-button>
             </div>
         </div>
-        <div class="content_body">
-            <div class="titlenorm mb10">
-                <Icon type="logo-buffer"></Icon>
-                {{iconTitle}}
-            </div>
-            <i-table border :columns="columns" :loading="loading" :data="tableData" disabled-hover>
-                <template slot-scope="{ row }" slot="date">
-                    <span>{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
-                </template>
-
-                <template slot-scope="{ row }" slot="master">
-                    <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
-                        <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
-                        <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
-                    </div>
-                </template>
-
-                <template slot-scope="{ row }" slot="operator">
-                    <i-button type="primary" ghost size="small" icon="md-create" style="margin-right: 5px" @click="mergeMaster(row)">編集</i-button>
-                    <i-button class="collapse-btn" type="error" disabled ghost size="small" icon="md-trash" v-if="dataCount===1" >削除</i-button>
-                    <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash" @click="deleteMaster(row)" v-if="dataCount!=1">削除</i-button>
-                    <i-button class="collapse-btn mt10" type="primary" ghost icon="md-add" style="width: 128px" v-if="row._index+1 == dataCount" @click="mergeMaster(null)">追加</i-button>
-                </template>
-
-            </i-table>
+    </div>
+    <div class="content_body">
+        <div class="titlenorm mb10">
+            <Icon type="logo-buffer"></Icon>
+            {{iconTitle}}
         </div>
-        <back-top></back-top>
-        <!-- 連携対象マスタを追加するSTART -->
-        <span>
+        <i-table border :columns="columns" :loading="loading" :data="tableData" disabled-hover>
+            <template slot-scope="{ row }" slot="date">
+                <span>{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="master">
+                <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
+                    <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
+                    <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
+                </div>
+            </template>
+
+            <template slot-scope="{ row }" slot="operator">
+                <i-button type="primary" ghost size="small" icon="md-create" style="margin-right: 5px" @click="mergeMaster(row)">編集</i-button>
+                <i-button class="collapse-btn" type="error" disabled ghost size="small" icon="md-trash" v-if="dataCount===1">削除</i-button>
+                <i-button class="collapse-btn" type="error" ghost size="small" icon="md-trash" @click="deleteMaster(row)" v-if="dataCount!=1">削除</i-button>
+                <i-button class="collapse-btn mt10" type="primary" ghost icon="md-add" style="width: 128px" v-if="row._index+1 == dataCount" @click="mergeMaster(null)">追加</i-button>
+            </template>
+
+        </i-table>
+    </div>
+    <back-top></back-top>
+    <!-- 連携対象マスタを追加するSTART -->
+    <span>
             <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <i-form :label-width="120" ref="localValue" :model="localValue">
 
                     <form-item label="期間" prop="period">
-                        <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" 　placeholder="開始時間" v-model="masterResult.psStartDate"></date-picker> ～
-                        <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" placeholder="終了時間" v-model="masterResult.psEndDate"></date-picker>
+                        <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" 　placeholder="開始時間"
+                                     v-model="masterResult.psStartDate"></date-picker> ～
+                        <date-picker class="mar" type="date" :editable="false" :clearable="false" format="yyyy/MM/dd" style="width: 47%" placeholder="終了時間"
+                                     v-model="masterResult.psEndDate"></date-picker>
                     </form-item>
 
                     <form-item :label="item.mgd_excludecond_type_name" :pop="item.mgd_excludecond_type_name" v-for="(item, i) of masterList" :key="i">
@@ -97,415 +99,232 @@
                 </div>
             </Modal>
         </span>
-        <!-- 連携対象マスタを追加するEND -->
-        <!-- 現在の設定を参照START -->
-        <Drawer class="tc" title="現在のマスタ設定" placement="right" width="70%" height="100%" :closable="true"
+    <!-- 連携対象マスタを追加するEND -->
+    <!-- 現在の設定を参照START -->
+    <Drawer class="tc" title="現在のマスタ設定" placement="right" width="70%" height="100%" :closable="true"
             :mask-closable="true" v-model="onlineMasterDrawer" draggable>
-            <div class="titlenorm mt15">
-                <Icon type="logo-buffer"></Icon>
-                現在のマスタデータリスト
-            </div>
-            <div class="ivu-table ivu-table-default ivu-table-border">
-                <i-table :columns="columns_online" :data="tableData_online" border :loading="tableData_online_load" no-data-text="データなし">
-                    <template slot-scope="{ row }" slot="date_online">
-                        <span>{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
-                    </template>
-                    <template slot-scope="{ row }" slot="master_online">
-                        <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
-                            <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
-                            <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
-                        </div>
-                    </template>
-                </i-table>
-            </div>
-        </Drawer>
-        <!-- 現在の設定を参照END -->
-    </main>
-    <div th:replace="layout/head::header"></div>
-    <script type="text/babel" th:inline="javascript">
-        const GROUP_SETTINGS = new Vue({
-            el: '.simulation-warp',
-            data() {
-                return {
-                    timer: '',
-                    loading: true,
-                    execLoading: false,
-                    execStatus: '未実行',
-                    execBtn_name: '実行開始',
-                    tableLoading: false,
-                    tableData_online_load: false,
-                    decision: true,
-                    exec: false,
-                    compare: true,
-                    curDate: new Date(),
-                    pageTitle: '連携対象マスタ追加',
-                    errorFlag: false,
-                    errorMsg: '',
-                    isShow: false,
-                    onlineMasterDrawer: false,
-                    btn_sk_commit_show: true,
-                    localValue: {
-                        name: '',
-                        group: '1',
-                        date: '2019年11月01日(金)'
+        <div class="titlenorm mt15">
+            <Icon type="logo-buffer"></Icon>
+            現在のマスタデータリスト
+        </div>
+        <div class="ivu-table ivu-table-default ivu-table-border">
+            <i-table :columns="columns_online" :data="tableData_online" border :loading="tableData_online_load" no-data-text="データなし">
+                <template slot-scope="{ row }" slot="date_online">
+                    <span>{{ `${Utils.formatDate(row.startTime, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.endTime, 'yyyy/mm/dd')}` }}</span>
+                </template>
+                <template slot-scope="{ row }" slot="master_online">
+                    <div v-for="(item, i) of row.simulationDataDTOList" :key="i" style="display: flex; align-items: stretch;">
+                        <span class="label-in-table tr" style="display: inline-block;width: 20%;">{{ item.mgd_excludecond_type_name }}</span>
+                        <span class="input-like-span tl" style="width: 80%;margin-bottom: 3px;">{{ item.excludecond }}</span>
+                    </div>
+                </template>
+            </i-table>
+        </div>
+    </Drawer>
+    <!-- 現在の設定を参照END -->
+</main>
+<div th:replace="layout/head::header"></div>
+<script type="text/babel" th:inline="javascript">
+    const GROUP_SETTINGS = new Vue({
+        el: '.simulation-warp',
+        data() {
+            return {
+                timer: '',
+                loading: true,
+                execLoading: false,
+                execStatus: '未実行',
+                execBtn_name: '実行開始',
+                tableLoading: false,
+                tableData_online_load: false,
+                decision: true,
+                exec: false,
+                compare: true,
+                curDate: new Date(),
+                pageTitle: '連携対象マスタ追加',
+                errorFlag: false,
+                errorMsg: '',
+                isShow: false,
+                onlineMasterDrawer: false,
+                btn_sk_commit_show: true,
+                localValue: {
+                    name: '',
+                    group: '1',
+                    date: '2019年11月01日(金)'
+                },
+                opts: {
+                    systemId: '01',
+                    date: ''
+                },
+                iconTitle: '臨時のマスタデータリスト',
+                readBtn_name: '現在の設定を読み込む',
+                compareBtn_name: '現在の設定を参照',
+                groupId: 'TMG_EXCLUDE4THW_SIM',
+                execCode: 'TMG_WTSIMSTATUS|010',
+                query: {
+                    custId: [[${ session.psSession.loginCustomer }]],
+                    compCode: [[${ session.psSession.loginCompany }]],
+                    language: [[${ session.psSession.language }]],
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    psGroupId: 'TMG_EXCLUDE4THW_SIM',
+                    startDate: '',
+                    endDate: ''
+                },
+                query_online: {
+                    custId: [[${ session.psSession.loginCustomer }]],
+                    compCode: [[${ session.psSession.loginCompany }]],
+                    language: [[${ session.psSession.language }]],
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    psGroupId: 'TMG_EXCLUDECOND4THW',
+                    startDate: '',
+                    endDate: ''
+                },
+                param_exec: {
+                    custId: [[${ session.psSession.loginCustomer }]],
+                    compCode: [[${ session.psSession.loginCompany }]],
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    language: [[${ session.psSession.language }]],
+                    actionCode: 'ACT_SIM_EXEC'
+                },
+                columns: [
+                    {
+                        title: '期間',
+                        align: 'center',
+                        slot: 'date',
+                        width: 250
                     },
-                    opts: {
-                        systemId: '01',
-                        date: ''
+                    {
+                        title: '条件',
+                        align: 'center',
+                        slot: 'master'
                     },
-                    iconTitle: '臨時のマスタデータリスト',
-                    readBtn_name: '現在の設定を読み込む',
-                    compareBtn_name: '現在の設定を参照',
-                    groupId: 'TMG_EXCLUDE4THW_SIM',
-                    execCode: 'TMG_WTSIMSTATUS|010',
-                    query: {
-                        custId: [[${ session.psSession.loginCustomer }]],
-                        compCode: [[${ session.psSession.loginCompany }]],
-                        language: [[${ session.psSession.language }]],
-                        employeId: [[${ session.psSession.loginEmployee }]],
-                        psGroupId: 'TMG_EXCLUDE4THW_SIM',
-                        startDate: '',
-                        endDate: ''
-                    },
-                    query_online: {
-                        custId: [[${ session.psSession.loginCustomer }]],
-                        compCode: [[${ session.psSession.loginCompany }]],
-                        language: [[${ session.psSession.language }]],
-                        employeId: [[${ session.psSession.loginEmployee }]],
-                        psGroupId: 'TMG_EXCLUDECOND4THW',
-                        startDate: '',
-                        endDate: ''
-                    },
-                    param_exec: {
-                        custId: [[${ session.psSession.loginCustomer }]],
-                        compCode: [[${ session.psSession.loginCompany }]],
-                        employeId: [[${ session.psSession.loginEmployee }]],
-                        language: [[${ session.psSession.language }]],
-                        actionCode: 'ACT_SIM_EXEC'
-                    },
-                    columns: [
-                        {
-                            title: '期間',
-                            align: 'center',
-                            slot: 'date',
-                            width: 250
-                        },
-                        {
-                            title: '条件',
-                            align: 'center',
-                            slot: 'master'
-                        },
-                        {
-                            title: '操作',
-                            slot: 'operator',
-                            align: 'center',
-                            width: 200
-                        }
+                    {
+                        title: '操作',
+                        slot: 'operator',
+                        align: 'center',
+                        width: 200
+                    }
 
-                    ],
-                    columns_online: [
-                        {
-                            title: '期間',
-                            align: 'center',
-                            slot: 'date_online',
-                            width: 250
-                        },
-                        {
-                            title: '条件',
-                            align: 'center',
-                            slot: 'master_online'
-                        }
-
-                    ],
-                    tableData: [{}],
-                    tableData_online: [{}],
-                    masterList: [{}],
-                    masterResult: {
-                        psStartDate: '',
-                        psEndDate: '',
-                        employeId: [[${ session.psSession.loginEmployee }]],
-                        custId: [[${ session.psSession.loginCustomer }]],
-                        compCode: [[${ session.psSession.loginCompany }]],
-                        language: [[${ session.psSession.language }]],
-                        psGroupId: 'TMG_EXCLUDE4THW_SIM',
-                        operType: '',
-                        masterList: [{}]
+                ],
+                columns_online: [
+                    {
+                        title: '期間',
+                        align: 'center',
+                        slot: 'date_online',
+                        width: 250
                     },
-                    masterResult_copy: {},
-                    dataCount: 0
+                    {
+                        title: '条件',
+                        align: 'center',
+                        slot: 'master_online'
+                    }
 
+                ],
+                tableData: [{}],
+                tableData_online: [{}],
+                masterList: [{}],
+                masterResult: {
+                    startDate: '',
+                    endDate: '',
+                    psStartDate: '',
+                    psEndDate: '',
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    custId: [[${ session.psSession.loginCustomer }]],
+                    compCode: [[${ session.psSession.loginCompany }]],
+                    language: [[${ session.psSession.language }]],
+                    psGroupId: 'TMG_EXCLUDE4THW_SIM',
+                    operType: '',
+                    masterList: [{}]
+                },
+                masterResult_copy: {},
+                dataCount: 0
+
+            }
+        },
+        async created() {
+            this.getData()
+            this.getStatus()
+        },
+        methods: {
+            //マスタデータリスト
+            async getData() {
+                const OPTS = {...this.opts}
+                this.loading = true
+                try {
+                    const {data} = await this.http.get('sys/simulation/selectSimulationMasterList', this.query)
+                    this.dataCount = data.length;
+                    this.tableData = data
+                } catch (error) {
+
+                } finally {
+                    this.loading = false
                 }
             },
-            async created() {
-                this.getData()
-                this.getStatus()
+            //マスタデータリスト
+            async getData_online() {
+                const OPTS = {...this.opts}
+                this.tableData_online_load = true
+                try {
+                    const {data} = await this.http.get('sys/simulation/selectSimulationMasterList', this.query_online)
+                    this.tableData_online = data
+                } catch (error) {
+
+                } finally {
+                    this.tableData_online_load = false
+                }
             },
-            methods: {
-                //マスタデータリスト
-                async getData() {
-                    const OPTS = { ...this.opts }
-                    this.loading = true
-                    try {
-                        const { data } = await this.http.get('sys/simulation/selectSimulationMasterList', this.query)
-                        this.dataCount = data.length;
-                        this.tableData = data
-                    } catch (error) {
+            // 新規と編集画面を開く
+            async mergeMaster(row) {
+                console.log(row)
+                if (!row) {
+                    this.masterResult.operType = 'insert'
+                } else {
+                    this.masterResult.operType = 'update'
+                    this.query.startDate = row.startTime
+                    this.query.endDate = row.endTime
+                    this.masterResult.psStartDate = row.startTime
+                    this.masterResult.psEndDate = row.endTime
+                    this.masterResult.startDate = row.startTime
+                    this.masterResult.endDate = row.endTime
+                }
+                console.log(this.masterResult)
+                this.isShow = true
+                this.tableLoading = true
+                const {data} = await this.http.get('sys/simulation/selectExcludecondCtl', this.query)
+                this.tableLoading = false
+                this.masterList = data
+                this.masterResult.masterList = data
+                this.masterResult_copy = Utils.deepClone(this.masterResult)
 
-                    } finally {
-                        this.loading = false
-                    }
-                },
-                //マスタデータリスト
-                async getData_online() {
-                    const OPTS = { ...this.opts }
-                    this.tableData_online_load = true
-                    try {
-                        const { data } = await this.http.get('sys/simulation/selectSimulationMasterList', this.query_online)
-                        this.tableData_online = data
-                    } catch (error) {
-
-                    } finally {
-                        this.tableData_online_load = false
-                    }
-                },
-                // 新規と編集画面を開く
-                async mergeMaster(row) {
-                    if (!row) {
-                        this.masterResult.operType = 'insert'
-                    } else {
-                        this.masterResult.operType = 'update'
-                        this.query.startDate = row.startTime
-                        this.query.endDate = row.endTime
-                        this.masterResult.psStartDate = row.startTime
-                        this.masterResult.psEndDate = row.endTime
-
-                    }
-                    this.isShow = true
-                    this.tableLoading = true
-                    const { data } = await this.http.get('sys/simulation/selectExcludecondCtl', this.query)
-                    this.tableLoading = false
-                    this.masterList = data
-                    this.masterResult.masterList = data
-                    this.masterResult_copy = Utils.deepClone(this.masterResult)
-
-                },
-                //マスタデータを削除する
-                async deleteMaster(row) {
-                   // console.log("delete:" + row)
-                    if (row) {
-                        console.log("this.dataCount:",this.dataCount)
-                        if(this.dataCount == 1){
-                            //最後のデータの場合、削除できない
-                            this.$Notice.info({ title: '最後のデータの場合、削除できない', desc: "" })
-                            return
-                        }
-                        this.query.startDate = row.startTime
-                        this.query.endDate = row.endTime
-                        this.$Modal.confirm({
-                            title: '操作確認',
-                            content: '選択したマスタデータを削除します。よろしいでしょうか？',
-                            okText: '削除',
-                            cancelText: '戻る',
-                            onOk: async () => {
-                                try {
-                                    const { data } = await this.http.postForm('sys/simulation/deleteMastGeneric', this.query)
-                                    if (data) {
-                                        this.$Notice.info({ title: 'マスタデータを削除完了しました', desc: "" })
-                                        this.getData()
-                                    } else {
-                                        this.$Notice.error({ title: 'マスタデータを削除失敗しました', desc: "" })
-                                    }
-
-                                } catch (error) {
-                                    this.$Notice.error({ title: 'マスタデータを削除失敗しました', desc: "" })
-                                    return
-                                }
-                            },
-                            onCancel: () => {
-                            }
-                        })
-
-                    }
-                },
-                // 入力チェック
-                async masterCheck(item, e) {
-                    this.masterList.forEach(e1 => {
-                        if (item.mgd_excludecond_type === e1.mgd_excludecond_type) {
-                            e1.value = e.value
-                        }
-                    })
-                    this.masterResult.masterList = this.masterList
-                },
-                //時間チェック
-                periodCheck_isNull() {
-                    this.hiddenAlert()
-                    var startDate = this.masterResult.psStartDate;
-                    var endDate = this.masterResult.psEndDate;
-                    if (!startDate) {
-                        this.showAlert('開始時間を入力してください')
-                        return false
-                    }
-                    if (!endDate) {
-                        this.showAlert('終了時間を入力してください')
-                        return false
-                    }
-                    return true
-                },
-                //時間帯をチェックする
-                async periodCheck_isRight() {
-                    if (this.masterResult.operType = 'update') {
-                        //更新の場合,暫くチェックしない
-                        //更新すると、時間帯をチェックすることが難しくなる
-                        return true
-                    }
-                    const { data } = await this.http.postForm('sys/simulation/checkPeriodDate', this.query)
-                    if (!data) {
-                        this.showAlert('時間帯は既存レコードに含まれたが、入力直してください')
-                        return false
-                    }
-                    return true
-                },
-                //マスタデータをチェックする
-                masterDataCheck() {
-                    this.hiddenAlert()
-                    var i = 0;
-                    this.masterList.forEach(e1 => {
-                        if (e1.value) {
-                            i++;
-                        }
-                    })
-                    if (i === 0) {
-                        this.showAlert('マスタデータがまだ入力していない、先ずは、入力してください')
-                        return false
-                    }
-                    return true;
-                },
-                //更新したかしなかったか
-                masterDataCheck_update() {
-                    var masterResult_copy_json = JSON.stringify(this.masterResult_copy)
-                    var masterResult_json = JSON.stringify(this.masterResult)
-                    if (masterResult_copy_json === masterResult_json) {
-                        this.showAlert('データがまだ更新してない、登録できない')
-                        return false
-                    }
-                    return true
-                },
-                //登録
-                async handleSubmit(name) {
-                    if (!this.masterDataCheck_update()) {
+            },
+            //マスタデータを削除する
+            async deleteMaster(row) {
+                // console.log("delete:" + row)
+                if (row) {
+                    console.log("this.dataCount:", this.dataCount)
+                    if (this.dataCount == 1) {
+                        //最後のデータの場合、削除できない
+                        this.$Notice.info({title: '最後のデータの場合、削除できない', desc: ""})
                         return
                     }
-                    if (!this.periodCheck_isNull()) {
-                        return
-                    }
-                    this.masterResult.psStartDate = Utils.formatDate(this.masterResult.psStartDate, "YYYY/MM/DD")
-                    this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
-                    this.query.startDate = this.masterResult.psStartDate
-                    this.query.endDate = this.masterResult.psEndDate
-                    const isRight = await this.periodCheck_isRight()
-                    if (!isRight) {
-                        return
-                    }
-                    if (!this.masterDataCheck()) {
-                        return
-                    }
-                    var masterResult = JSON.stringify(this.masterResult)
-                    const { data } = await this.http.postForm('sys/simulation/simulationMerge', { "masterResult": masterResult })
-                    //操作結果確認する
-                    if (this.masterResult.operType === 'insert') {
-                        this.$Notice.info({ title: 'マスタデータが追加されました', desc: "" })
-                    } else {
-                        this.$Notice.info({ title: 'マスタデータが更新完了しました', desc: "" })
-                    }
-
-                    //操作画面を閉める
-                    this.cancel()
-                    //データリスト画面をリロード
-                    this.getData()
-                },
-                //新規又は更新する画面をキャンセルする
-                cancel(i) {
-                    //全部データを初期化
-                    this.hiddenAlert()
-                    this.$refs.localValue.resetFields()
-                    this.masterResult.psStartDate = ''
-                    this.masterResult.psEndDate = ''
-                    this.masterResult.operType = ''
-                    this.masterResult.masterList = [{}]
-                    this.query.startDate = ''
-                    this.query.endDate = ''
-                    //画面を閉じる
-                    this.isShow = false
-                },
-                //データ検証アラームを表示する
-                showAlert(msg) {
-                    this.errorFlag = true
-                    this.errorMsg = msg
-                },
-                //データ検証アラームを非表示する
-                hiddenAlert() {
-                    this.errorFlag = false
-                    this.errorMsg = ''
-                },
-                //　現在　/　臨時の設定を読み込む
-                readMaster() {
-                    var btn_name = ''
-                    if (this.groupId === 'TMG_EXCLUDECOND4THW') {
-                        //現在の設定-->臨時の設定TMG_EXCLUDE4THW_SIM
-                        this.decision = true
-                        this.compare = true
-                        this.exec = false
-                        this.groupId = 'TMG_EXCLUDE4THW_SIM'
-                        this.query.psGroupId = 'TMG_EXCLUDE4THW_SIM'
-                        this.masterResult.psGroupId = 'TMG_EXCLUDE4THW_SIM'
-                        btn_name = '現在の設定を読み込む'
-                        this.iconTitle = '臨時のマスタデータリスト'
-
-                    } else if (this.groupId = 'TMG_EXCLUDE4THW_SIM') {
-                        //臨時の設定-->現在の設定TMG_EXCLUDECOND4THW
-                        this.decision = false
-                        this.compare = false
-                        this.exec = true
-                        this.groupId = 'TMG_EXCLUDECOND4THW'
-                        this.query.psGroupId = 'TMG_EXCLUDECOND4THW'
-                        this.masterResult.psGroupId = 'TMG_EXCLUDECOND4THW'
-                        btn_name = '臨時の設定を読み込む'
-                        this.iconTitle = '現在のマスタデータリスト'
-                    } else {
-                        //nothing
-                    }
-                    this.readBtn_name = btn_name
-                    this.getData()
-                },
-                // 現在 / 臨時の設定を参照
-                async compareMaster() {
-                    this.onlineMasterDrawer = true
-                    await this.getData_online()
-                },
-                //確定マスタデータ
-                async decisionMaster() {
-                    //先ずは、操作確認を提示する
+                    this.query.startDate = row.startTime
+                    this.query.endDate = row.endTime
                     this.$Modal.confirm({
                         title: '操作確認',
-                        content: 'データを確定します。よろしいでしょうか？',
-                        okText: '確定',
+                        content: '選択したマスタデータを削除します。よろしいでしょうか？',
+                        okText: '削除',
                         cancelText: '戻る',
                         onOk: async () => {
                             try {
-                                const { data } = await this.http.postForm('sys/simulation/dicisionMasterDate', this.query)
-                                console.log("確定結果", data)
-                                this.$Notice.info({ title: 'マスタデータを確定完了しました', desc: "" })
-                                /*if (data) {
+                                const {data} = await this.http.postForm('sys/simulation/deleteMastGeneric', this.query)
+                                if (data) {
                                     this.$Notice.info({title: 'マスタデータを削除完了しました', desc: ""})
                                     this.getData()
                                 } else {
                                     this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
                                 }
-                                 */
-                                //現在のデータページへ遷移する
-                                this.readMaster()
+
                             } catch (error) {
-                                this.$Notice.error({ title: 'マスタデータを確定失敗しました', desc: "" })
+                                this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
                                 return
                             }
                         },
@@ -513,141 +332,329 @@
                         }
                     })
 
-                },
-                //シミュレーションの実行を行います
-                async execMasterData() {
-                    var msg = ""
-                    //状態をリセット
-                    this.param_exec.actionCode = 'ACT_SIM_EXEC'
-                    //先ずは、状態を取得する
-                    // await this.getStatus()
-                    if (this.execStatus === '実行中') {
-                        //タスクは、実行していますので、
-                        msg = "試行を取り消します。よろしいですか"
-                        this.param_exec.actionCode = 'ACT_SIM_CANCEL'
-                    } else if (this.execStatus === 'エラー') {
-                        msg = "もう一度行います。よろしいですか？"
-                    } else if (this.execStatus === '実行済') {
-                        msg = "一時保存された設定を元に対象者の抽出を行います。よろしいですか？ \n結果は、自由条件検索にてご確認ください。"
-                    } else if (this.execStatus === '未実行') {
-                        msg = "一時保存された設定を元に対象者の抽出を行います。よろしいですか？ \n結果は、自由条件検索にてご確認ください。"
+                }
+            },
+            // 入力チェック
+            async masterCheck(item, e) {
+                this.masterList.forEach(e1 => {
+                    if (item.mgd_excludecond_type === e1.mgd_excludecond_type) {
+                        e1.value = e.value
                     }
+                })
+                this.masterResult.masterList = this.masterList
+            },
+            //時間チェック
+            periodCheck_isNull() {
+                this.hiddenAlert()
+                var startDate = this.masterResult.psStartDate;
+                var endDate = this.masterResult.psEndDate;
+                if (!startDate) {
+                    this.showAlert('開始時間を入力してください')
+                    return false
+                }
+                if (!endDate) {
+                    this.showAlert('終了時間を入力してください')
+                    return false
+                }
+                return true
+            },
+            //時間帯をチェックする
+            async periodCheck_isRight() {
+                if (this.masterResult.operType = 'update') {
+                    //更新の場合,暫くチェックしない
+                    //更新すると、時間帯をチェックすることが難しくなる
+                    return true
+                }
+                const {data} = await this.http.postForm('sys/simulation/checkPeriodDate', this.query)
+                if (!data) {
+                    this.showAlert('時間帯は既存レコードに含まれたが、入力直してください')
+                    return false
+                }
+                return true
+            },
+            //マスタデータをチェックする
+            masterDataCheck() {
+                this.hiddenAlert()
+                var i = 0;
+                this.masterList.forEach(e1 => {
+                    if (e1.value) {
+                        i++;
+                    }
+                })
+                if (i === 0) {
+                    this.showAlert('マスタデータがまだ入力していない、先ずは、入力してください')
+                    return false
+                }
+                return true;
+            },
+            //更新したかしなかったか
+            masterDataCheck_update() {
+                var masterResult_copy_json = JSON.stringify(this.masterResult_copy)
+                var masterResult_json = JSON.stringify(this.masterResult)
+                if (masterResult_copy_json === masterResult_json) {
+                    this.showAlert('データがまだ更新してない、登録できない')
+                    return false
+                }
+                return true
+            },
+            //登録
+            async handleSubmit(name) {
+                if (!this.masterDataCheck_update()) {
+                    return
+                }
+                if (!this.periodCheck_isNull()) {
+                    return
+                }
+                this.masterResult.psStartDate = Utils.formatDate(this.masterResult.psStartDate, "YYYY/MM/DD")
+                this.masterResult.psEndDate = Utils.formatDate(this.masterResult.psEndDate, "YYYY/MM/DD")
+                this.query.startDate = this.masterResult.psStartDate
+                this.query.endDate = this.masterResult.psEndDate
+                const isRight = await this.periodCheck_isRight()
+                if (!isRight) {
+                    return
+                }
+                if (!this.masterDataCheck()) {
+                    return
+                }
+                var masterResult = JSON.stringify(this.masterResult)
+                const {data} = await this.http.postForm('sys/simulation/simulationMerge', {"masterResult": masterResult})
+                //操作結果確認する
+                if (this.masterResult.operType === 'insert') {
+                    this.$Notice.info({title: 'マスタデータが追加されました', desc: ""})
+                } else {
+                    this.$Notice.info({title: 'マスタデータが更新完了しました', desc: ""})
+                }
 
-                    //先ずは、操作確認を提示する
-                    this.$Modal.confirm({
-                        title: '操作確認',
-                        content: msg,
-                        okText: '確定',
-                        cancelText: '戻る',
-                        onOk: async () => {
-                            this.execBtn_name = '実行取消'
-                            try {
-                                const { data } = await this.http.postForm('sys/simulation/execSim', this.param_exec)
-                                if (data) {
-                                    this.$Notice.info({ title: '操作結果', desc: "タスクは今行っています、少々お待ちください" })
-                                } else {
-                                    this.$Notice.error({ title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください" })
-                                }
-                            } catch (error) {
-                                this.$Notice.error({ title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください" })
-                                return
+                //操作画面を閉める
+                this.cancel()
+                //データリスト画面をリロード
+                this.getData()
+            },
+            //新規又は更新する画面をキャンセルする
+            cancel(i) {
+                //全部データを初期化
+                this.hiddenAlert()
+                this.$refs.localValue.resetFields()
+                this.masterResult.psStartDate = ''
+                this.masterResult.psEndDate = ''
+                this.masterResult.operType = ''
+                this.masterResult.masterList = [{}]
+                this.query.startDate = ''
+                this.query.endDate = ''
+                //画面を閉じる
+                this.isShow = false
+            },
+            //データ検証アラームを表示する
+            showAlert(msg) {
+                this.errorFlag = true
+                this.errorMsg = msg
+            },
+            //データ検証アラームを非表示する
+            hiddenAlert() {
+                this.errorFlag = false
+                this.errorMsg = ''
+            },
+            //　現在　/　臨時の設定を読み込む
+            readMaster() {
+                var btn_name = ''
+                if (this.groupId === 'TMG_EXCLUDECOND4THW') {
+                    //現在の設定-->臨時の設定TMG_EXCLUDE4THW_SIM
+                    this.decision = true
+                    this.compare = true
+                    this.exec = false
+                    this.groupId = 'TMG_EXCLUDE4THW_SIM'
+                    this.query.psGroupId = 'TMG_EXCLUDE4THW_SIM'
+                    this.masterResult.psGroupId = 'TMG_EXCLUDE4THW_SIM'
+                    btn_name = '現在の設定を読み込む'
+                    this.iconTitle = '臨時のマスタデータリスト'
+
+                } else if (this.groupId = 'TMG_EXCLUDE4THW_SIM') {
+                    //臨時の設定-->現在の設定TMG_EXCLUDECOND4THW
+                    this.decision = false
+                    this.compare = false
+                    this.exec = true
+                    this.groupId = 'TMG_EXCLUDECOND4THW'
+                    this.query.psGroupId = 'TMG_EXCLUDECOND4THW'
+                    this.masterResult.psGroupId = 'TMG_EXCLUDECOND4THW'
+                    btn_name = '臨時の設定を読み込む'
+                    this.iconTitle = '現在のマスタデータリスト'
+                } else {
+                    //nothing
+                }
+                this.readBtn_name = btn_name
+                this.getData()
+            },
+            // 現在 / 臨時の設定を参照
+            async compareMaster() {
+                this.onlineMasterDrawer = true
+                await this.getData_online()
+            },
+            //確定マスタデータ
+            async decisionMaster() {
+                //先ずは、操作確認を提示する
+                this.$Modal.confirm({
+                    title: '操作確認',
+                    content: 'データを確定します。よろしいでしょうか？',
+                    okText: '確定',
+                    cancelText: '戻る',
+                    onOk: async () => {
+                        try {
+                            const {data} = await this.http.postForm('sys/simulation/dicisionMasterDate', this.query)
+                            console.log("確定結果", data)
+                            this.$Notice.info({title: 'マスタデータを確定完了しました', desc: ""})
+                            /*if (data) {
+                                this.$Notice.info({title: 'マスタデータを削除完了しました', desc: ""})
+                                this.getData()
+                            } else {
+                                this.$Notice.error({title: 'マスタデータを削除失敗しました', desc: ""})
                             }
-
-                            this.getStatus()
-
-                        },
-                        onCancel: () => {
+                             */
+                            //現在のデータページへ遷移する
+                            this.readMaster()
+                        } catch (error) {
+                            this.$Notice.error({title: 'マスタデータを確定失敗しました', desc: ""})
+                            return
                         }
-                    })
-
-                },
-                //シミュレーション状態系を取得する
-                async getStatus() {
-                    //TMG_WTSIMSTATUS|010	未実行
-                    //TMG_WTSIMSTATUS|020	実行中
-                    //TMG_WTSIMSTATUS|120	実行中
-                    //TMG_WTSIMSTATUS|130	実行済
-                    //TMG_WTSIMSTATUS|230	取消済
-                    //TMG_WTSIMSTATUS|910	エラー
-                    this.execLoading = true
-                    this.execStatus = '検索中...'
-                    const { data } = await this.http.postForm('sys/simulation/execStatus', this.param_exec)
-                    console.log("status-->", data.CODE)
-                    if (data.CODE === 'TMG_WTSIMSTATUS|010') {
-                        //未実行
-                        this.execStatus = '未実行'
-                        this.execBtn_name = '実行開始'
-                    } else if (data.CODE === 'TMG_WTSIMSTATUS|020') {
-                        //実行中
-                        this.execStatus = '実行中'
-                        this.decision = false
-                    } else if (data.CODE === 'TMG_WTSIMSTATUS|120') {
-                        //実行中
-                        this.execStatus = '実行中'
-                        this.decision = false
-                    } else if (data.CODE === 'TMG_WTSIMSTATUS|130') {
-                        //実行済
-                        this.execStatus = '実行済'
-                        this.execBtn_name = '実行開始'
-                    } else if (data.CODE === 'TMG_WTSIMSTATUS|230') {
-                        //取消済
-                        this.execStatus = '実行済'
-                        this.execBtn_name = '実行開始'
-                    } else if (data.CODE === 'TMG_WTSIMSTATUS|910') {
-                        //エラー
-                        this.execStatus = 'エラー'
-                        this.execBtn_name = '実行開始'
-                    } else {
-                        //未認識
-                        this.execStatus = 'その他'
-                        this.execBtn_name = '実行開始'
+                    },
+                    onCancel: () => {
                     }
-                    this.execLoading = false
+                })
 
-                    var flag = false
+            },
+            //シミュレーションの実行を行います
+            async execMasterData() {
+                var msg = ""
+                //状態をリセット
+                this.param_exec.actionCode = 'ACT_SIM_EXEC'
+                //先ずは、状態を取得する
+                // await this.getStatus()
+                if (this.execStatus === '実行中') {
+                    //タスクは、実行していますので、
+                    msg = "試行を取り消します。よろしいですか"
+                    this.param_exec.actionCode = 'ACT_SIM_CANCEL'
+                } else if (this.execStatus === 'エラー') {
+                    msg = "もう一度行います。よろしいですか？"
+                } else if (this.execStatus === '実行済') {
+                    msg = "一時保存された設定を元に対象者の抽出を行います。よろしいですか？ \n結果は、自由条件検索にてご確認ください。"
+                } else if (this.execStatus === '未実行') {
+                    msg = "一時保存された設定を元に対象者の抽出を行います。よろしいですか？ \n結果は、自由条件検索にてご確認ください。"
+                }
+
+                //先ずは、操作確認を提示する
+                this.$Modal.confirm({
+                    title: '操作確認',
+                    content: msg,
+                    okText: '確定',
+                    cancelText: '戻る',
+                    onOk: async () => {
+                        this.execBtn_name = '実行取消'
+                        try {
+                            const {data} = await this.http.postForm('sys/simulation/execSim', this.param_exec)
+                            if (data) {
+                                this.$Notice.info({title: '操作結果', desc: "タスクは今行っています、少々お待ちください"})
+                            } else {
+                                this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください"})
+                            }
+                        } catch (error) {
+                            this.$Notice.error({title: '操作結果', desc: "シミュレーションの実行を行うことが失敗しました、もう一度やり直してください"})
+                            return
+                        }
+
+                        this.getStatus()
+
+                    },
+                    onCancel: () => {
+                    }
+                })
+
+            },
+            //シミュレーション状態系を取得する
+            async getStatus() {
+                //TMG_WTSIMSTATUS|010	未実行
+                //TMG_WTSIMSTATUS|020	実行中
+                //TMG_WTSIMSTATUS|120	実行中
+                //TMG_WTSIMSTATUS|130	実行済
+                //TMG_WTSIMSTATUS|230	取消済
+                //TMG_WTSIMSTATUS|910	エラー
+                this.execLoading = true
+                this.execStatus = '検索中...'
+                const {data} = await this.http.postForm('sys/simulation/execStatus', this.param_exec)
+                console.log("status-->", data.CODE)
+                if (data.CODE === 'TMG_WTSIMSTATUS|010') {
+                    //未実行
+                    this.execStatus = '未実行'
+                    this.execBtn_name = '実行開始'
+                } else if (data.CODE === 'TMG_WTSIMSTATUS|020') {
+                    //実行中
+                    this.execStatus = '実行中'
+                    this.decision = false
+                } else if (data.CODE === 'TMG_WTSIMSTATUS|120') {
+                    //実行中
+                    this.execStatus = '実行中'
+                    this.decision = false
+                } else if (data.CODE === 'TMG_WTSIMSTATUS|130') {
+                    //実行済
+                    this.execStatus = '実行済'
+                    this.execBtn_name = '実行開始'
+                } else if (data.CODE === 'TMG_WTSIMSTATUS|230') {
+                    //取消済
+                    this.execStatus = '実行済'
+                    this.execBtn_name = '実行開始'
+                } else if (data.CODE === 'TMG_WTSIMSTATUS|910') {
+                    //エラー
+                    this.execStatus = 'エラー'
+                    this.execBtn_name = '実行開始'
+                } else {
+                    //未認識
+                    this.execStatus = 'その他'
+                    this.execBtn_name = '実行開始'
+                }
+                this.execLoading = false
+
+                var flag = false
+                if (data.CODE === 'TMG_WTSIMSTATUS|020' || data.CODE === 'TMG_WTSIMSTATUS|120') {
+                    flag = false
+                } else {
+                    flag = true
+                }
+
+                /*while (!flag) {
+                    this.sleep(3000)
                     if (data.CODE === 'TMG_WTSIMSTATUS|020' || data.CODE === 'TMG_WTSIMSTATUS|120') {
                         flag = false
                     } else {
                         flag = true
                     }
-
-                    /*while (!flag) {
-                        this.sleep(3000)
-                        if (data.CODE === 'TMG_WTSIMSTATUS|020' || data.CODE === 'TMG_WTSIMSTATUS|120') {
-                            flag = false
-                        } else {
-                            flag = true
-                        }
-                        console.log('flag-->',flag)
-                        if(flag){
-                            break
-                        }
-                        await this.getStatus()
+                    console.log('flag-->',flag)
+                    if(flag){
+                        break
                     }
-    */
-                    /*if (data.CODE === 'TMG_WTSIMSTATUS|020') {
-                        this.timer = setInterval(this.getStatus, 5000)
-                    } else {
-                        clearInterval(this.timer);
-                    }
-                    */
-                },
-                //sleep
-                sleep(numberMillis) {
-                    var now = new Date();
-                    var exitTime = now.getTime() + numberMillis;
-                    while (true) {
-                        now = new Date();
-                        if (now.getTime() > exitTime) {
-                            return;
-                        }
+                    await this.getStatus()
+                }
+*/
+                /*if (data.CODE === 'TMG_WTSIMSTATUS|020') {
+                    this.timer = setInterval(this.getStatus, 5000)
+                } else {
+                    clearInterval(this.timer);
+                }
+                */
+            },
+            //sleep
+            sleep(numberMillis) {
+                var now = new Date();
+                var exitTime = now.getTime() + numberMillis;
+                while (true) {
+                    now = new Date();
+                    if (now.getTime() > exitTime) {
+                        return;
                     }
                 }
-
             }
 
-        })
-    </script>
+        }
+
+    })
+</script>
 </body>
 
 </html>
