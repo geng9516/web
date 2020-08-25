@@ -189,8 +189,11 @@
           <form-item label="最終決裁レベル">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>
           </form-item>
-          <form-item label="対象期間">
+          <form-item label="対象期間-日">
             <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyDayShow(detailsData) }}</span>
+          </form-item>
+          <form-item label="対象期間-時" v-if="handleApplyHourShow(detailsData)">
+            <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyHourShow(detailsData) }}</span>
           </form-item>
           <form-item label="曜日">
             <span class="input-like-span" v-if="detailsData.tntfNnoreserved === 1"
@@ -218,9 +221,18 @@
           <form-item label="申請事由等">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
-          <form-item label="承認者コメント">
-            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
+
+          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1">
+            <i-input class="tl" type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"></i-input>
           </form-item>
+
+          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('5') > -1">
+            <span class="input-like-span"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
+          </form-item>
+          <form-item label="取消者コメント" v-if="detailsStatus.indexOf('5') > -1">
+            <i-input  class="tl"  type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCcancelcomment" ></i-input>
+          </form-item>
+
           <form-item label="添付ファイル"
             v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
             <span class="input-like-span" style="border-radius: 5px;">
@@ -457,8 +469,12 @@
               </form-item>
 
               <form-item label="申請事由等">
-                <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }"
+                <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }"
                   placeholder="文字の長さは１００位以内になっております。"></i-input>
+              </form-item>
+              <form-item label="承認者コメント">
+                <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }"
+                         placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
 
               <form-item label="添付ファイル">
@@ -897,13 +913,25 @@
           if (e.tntfDbegin === e.tntfDend) {
             result = result.concat(e.tntfDbegin)
           } else {
-            result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
+            if(e.ntfTypeValue.transfer){
+              result = result.concat(`出勤にする休日:${e.tntfDbegin} ～ 振休日とする出勤日:${e.tntfDend}`)
+            }else{
+              result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
+            }
+
           }
-          if (e.tntfNtimeOpenHhmi) {
-            result = result.concat(`${e.tntfNtimeOpenHhmi} ～ ${e.tntfNtimeCloseHhmi}`)
+          return result
+        },
+        handleApplyHourShow(e) {
+          let result = ''
+          if (e.tntfNtimezoneOpenHhmi) {
+            result = result.concat(`${e.tntfNtimezoneOpenHhmi} ～ ${e.tntfNtimezoneCloseHhmi}`)
           }
           if (e.tntfNtimeOpen) {
-            result = result.concat(`${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
+            result = result.concat(`始業後${e.tntfNtimeOpen}分 ～ 終業前${e.tntfNtimeClose}分`)
+          }
+          if (e.tntfNrestopen) {
+            result = result.concat(`休憩時間:${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
           }
           return result
         },
@@ -1032,7 +1060,8 @@
           query.tntfDend = this.detailsData.tntfDend
           // comment
           query.owncomment = this.detailsData.tntfCowncomment
-
+          query.bosscomment = this.detailsData.tntfCbosscomment
+          query.cancelcomment = this.detailsData.tntfCcancelcomment
           // 起算日
           query.txtPeriod = this.detailsData.tntfDperiodDate
 
