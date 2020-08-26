@@ -26,6 +26,10 @@ body {
   min-height: 720px;
   background: var(--login-right-part-bg)
 }
+.ivu-input-suffix i {
+  font-size: 20px;
+  line-height: 48px;
+}
 .login {
   max-width: 1920px;
   min-width: 1280px;
