@@ -59,9 +59,9 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
         resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
         resp.setCharacterEncoding("UTF-8");
         req.getSession().setAttribute("passwordExpiredUser",token.getPrincipal());
-        int status = HttpStatus.SEE_OTHER.value();
+        int status = HttpStatus.FORBIDDEN.value();
         if (e instanceof ExpiredCredentialsException) {
-            status = HttpStatus.FORBIDDEN.value();
+            status = HttpStatus.SEE_OTHER.value();
         }
         resp.setStatus(status);
         response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status, e.getMessage())));
