@@ -1114,7 +1114,6 @@
                     console.log(Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete)))
                     if (!Utils.multipleDateRangeOverlaps(dateList.filter(e=> e.start && e.end && !e.delete))) {
                         if (type === "add") {
-                            console.log('可以zhuijia啦~')
                             const query = {
                                 empId: this.permissionAdminValue[0].empId,
                                 groupId: this.permissionAdminValue[0].groupId,
@@ -1141,7 +1140,6 @@
                                 this.updatePermissionFlagLoading = false
                             }
                         } else {
-                            console.log('可以更新啦~')
                             let list = []
                             this.permissionAdminValue.forEach((e, i) => {
                                 if(updateLastOneBlank && i === this.permissionAdminValue.length - 1) {

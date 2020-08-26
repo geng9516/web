@@ -227,7 +227,7 @@
           </form-item>
 
           <form-item label="承認者コメント" v-else>
-            <span class="input-like-span"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
+            <span class="input-like-span tl"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
           </form-item>
 
           <form-item label="添付ファイル"
@@ -362,8 +362,8 @@
                 </span>
               </form-item>
               <form-item label="日付け" v-show="!selectedRestInfo.transfer">
-                <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100"
-                  :value="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付け"
+                <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100 tl"
+                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付け"
                   ref="datepicker" transfer></date-picker>
               </form-item>
               <!-- 有振休 -->
@@ -466,11 +466,11 @@
               </form-item>
 
               <form-item label="申請事由等">
-                <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }"
+                <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100" class="tl"
                   placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
               <form-item label="承認者コメント">
-                <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }"
+                <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100" class="tl"
                          placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
 
@@ -1229,6 +1229,8 @@
             this.agencyApplyShow = false
             this.getTableData(false, true)
             this.uploadFiles = []
+            this.$refs.select.clearSingleSelect()
+            this.curTab='name1'
           } catch (error) {
             if (error.config || error.response && error.response.status === 500) return
             this.errorInfo = true

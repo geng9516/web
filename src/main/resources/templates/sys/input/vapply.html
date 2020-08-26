@@ -65,7 +65,7 @@
                             申請へ
                         </i-button>
                         <date-picker type="year" :open="openDatePicker" format="yyyy" style="position: absolute;left: -600px;" v-model="curYear" @on-change="handleDatePicker" slot="extra">
-                            <a href="javascript:void(0)" @click="openDatePicker = !openDatePicker">
+                            <a @click="openDatePicker = !openDatePicker">
                                 <Icon type="ios-calendar-outline"></Icon>
                                 <span>{{ opts.year }}</span>
                             </a>
@@ -122,7 +122,7 @@
                                     <i-col span="15" style="font-weight:bold;margin-left: 4.5%" class="description">
                                         <span>{{ handleTypeNameShow(item) }}</span>
                                     </i-col>
-                                    <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
+                                    <i-col span="4" style="position: absolute;right: 42px;top: -5px;" class="description"
                                         v-if="item.tntfCstatusflg.indexOf('2') > -1">
                                         <!-- 承认中可以自行取消 -->
                                         <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item, index)" :loading="cacelBtnLoading[index]">取り消し
@@ -203,9 +203,8 @@
                                     </Row>
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
-                                            class="datepicker-single" :value="restApply._dateList"
+                                            class="datepicker-single" v-model="restApply._dateList"
                                             @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
-
                                     </Row>
                                 </section>
                                 <!-- 有振休 -->
@@ -540,7 +539,7 @@
                             restTypeId: '全て',
                             weekSelected: [],
                             noreserved:1,
-                            _dateList:''
+                            _dateList: this.timerangeType === 2 ? ['', ''] : ''
                         }
                         this.errorInfo = false
                         this.$refs.datepicker.handleClear()
@@ -652,7 +651,7 @@
                             restTypeId: '全て',
                             weekSelected: [],
                             noreserved:1,
-                            _dateList:''
+                            _dateList: this.timerangeType === 2 ? ['', ''] : ''
                         }
                         this.$refs.datepicker.handleClear()
                         this.rotate = !this.rotate
@@ -872,17 +871,8 @@
                 applyCardDownloadFile(e) {
                     console.log(e)
                     if(e.url) {
-                        window.open(e.url, '_blank')
+                        window.open(`http:////${e.url.slice(2)}`, '_blank')
                     }
-                },
-                 downloadFile(e) {
-                    if (!e) {
-                        return
-                    }
-                    //var path = e.replace(/\\/g,'\\\\')
-                    // window.location.href='/sys/vapply/download?url='+path
-                     this.http.get('sys/vapply/download', {url:e.replace(/\\/g,'\\\\')})
-
                 },
                 handleInputChange(i,object,value,el) {
                     if(object) {
