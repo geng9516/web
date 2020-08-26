@@ -1160,17 +1160,15 @@
                 this.tmgResultsDto.holiday = null
                 this.tmgResultsDto.txtTdaNopenR = ''
                 this.tmgResultsDto.txtTdaNcloseR = ''
-                this.tmgResultsDto.txtTdaCbosscommentR = ''
+                this.tmgResultsDto.txtTdaCbosscommentR = this.dailyEdit.tdaCbosscommentR
                 this.tmgResultsDto.hasAuthority = ''
                 this.tmgResultsDto.nonDutyList = []
                 this.tmgResultsDto.overHoursList = []
                 this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewAdminTargetEmp
                 this.tmgResultsDto.holiday = this.bHoliday
                 if (!this.bDisable) {
-
                     this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
                     this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
-                    this.tmgResultsDto.txtTdaCbosscommentR = this.dailyEdit.tdaCbosscommentR
                     this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
                     this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
                     if (this.bFixed || this.bHoliday) {
@@ -1179,37 +1177,45 @@
                         this.tmgResultsDto.hasAuthority = true
                     }
                 }
-                try {
-                    const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                    if(msg === '0'){
-                        this.updateDailyLoading = false
-                        this.isShow = false
-                        this.getTitleData()
-                        return
-                    }
-                    this.errMsg = JSON.parse(msg)
-                    let errMsg20
-                    let check = Object.keys(this.errMsg).some(e => {
-                        if (e === 'ERRTYPE_10') {
-                            this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
-                            return true
-                        }
-                        if (e === 'ERRTYPE_20') {
-                            this.errMsg.ERRTYPE_20.forEach(e20 => {
-                                errMsg20 = errMsg20 + e20.ERRMSG + '/n'
-                            })
-                            this.$Notice.error({desc: errMsg20})
-                        }
+                this.$Modal.confirm({
+                    title: 'この内容で承認します。よろしいですか？',
+                    width: 490,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        try {
+                            const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                            if(msg === '0'){
+                                this.updateDailyLoading = false
+                                this.isShow = false
+                                this.getTitleData()
+                                return
+                            }
+                            this.errMsg = JSON.parse(msg)
+                            let errMsg20
+                            let check = Object.keys(this.errMsg).some(e => {
+                                if (e === 'ERRTYPE_10') {
+                                    this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
+                                    return true
+                                }
+                                if (e === 'ERRTYPE_20') {
+                                    this.errMsg.ERRTYPE_20.forEach(e20 => {
+                                        errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                                    })
+                                    this.$Notice.error({desc: errMsg20})
+                                }
 
-                    })
-                    if (check) {
-                        return false
+                            })
+                            if (check) {
+                                return false
+                            }
+                        }catch(errror){
+                            retrun
+                        }finally {
+                            this.updateDailyLoading = false
+                        }
                     }
-                }catch(errror){
-                    retrun
-                }finally {
-                    this.updateDailyLoading = false
-                }
+                })
             },
             //差戻
             async updateRemandsStatus() {
