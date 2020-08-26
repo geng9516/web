@@ -1049,6 +1049,7 @@
                 }
 
                 if (this.dailyEdit.tdaCowncommentR !== null && this.getLengthB(this.dailyEdit.tdaCowncommentR) > 100) {
+                    this.$Notice.error({desc: "本人コメント考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                     return false;
                 }
 

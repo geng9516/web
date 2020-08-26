@@ -1196,67 +1196,42 @@
                 },
                 //差戻
                 async updateRemandsStatus() {
-                    if (!this.errorCheck(this.workingId)) {
-                        return
-                    }
-                    this.updateDailyLoading = true
-                    this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
-                    this.tmgResultsDto.txtAction = 'ACT_REMANDS'
-                    this.tmgResultsDto.workingId = this.workingId
-                    this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
-                    this.tmgResultsDto.holiday = null
-                    this.tmgResultsDto.txtTdaNopenR = ''
-                    this.tmgResultsDto.txtTdaNcloseR = ''
-                    this.tmgResultsDto.tdaCowncommentR = ''
-                    this.tmgResultsDto.hasAuthority = ''
-                    this.tmgResultsDto.nonDutyList = []
-                    this.tmgResultsDto.overHoursList = []
-                    this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
-                    if (!this.bDisable) {
-                        this.tmgResultsDto.holiday = this.bHoliday
 
-                        this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
-                        this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
-                        this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
-                        this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
-                        this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
-                        if (this.bFixed || this.bHoliday) {
-                            this.tmgResultsDto.hasAuthority = false
-                        } else {
-                            this.tmgResultsDto.hasAuthority = true
-                        }
-                    }
-                    try{
-                        const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
-                        if (msg === '0') {
-                            this.updateDailyLoading = false
-                            this.isShow = false
-                            this.getTitleData()
-                            return
-                        }
-                        this.errMsg = JSON.parse(msg)
-                        let errMsg20
-                        let check = Object.keys(this.errMsg).some(e => {
-                            if (e === 'ERRTYPE_10') {
-                                this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
-                                return true
-                            }
-                            if (e === 'ERRTYPE_20') {
-                                this.errMsg.ERRTYPE_20.forEach(e20 => {
-                                    errMsg20 = errMsg20 + e20.ERRMSG + '/n'
-                                })
-                                this.$Notice.error({desc: errMsg20})
-                            }
 
-                        })
-                        if (check) {
-                            return false
+                    this.$Modal.confirm({
+                        title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n※今回、入力した内容は、承認者コメントのみ保存されます',
+                        width: 490,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            this.updateDailyLoading = true
+                            this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
+                            this.tmgResultsDto.txtAction = 'ACT_REMANDS'
+                            this.tmgResultsDto.workingId = this.workingId
+                            this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
+                            this.tmgResultsDto.holiday = this.bHoliday
+                            this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
+                            this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+                            this.tmgResultsDto.txtTdaCbosscommentR = this.dailyEdit.tdaCbosscommentR
+                            if (this.bFixed || this.bHoliday) {
+                                this.tmgResultsDto.hasAuthority = false
+                            } else {
+                                this.tmgResultsDto.hasAuthority = true
+                            }
+                            this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
+                            try{
+                                const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+                                this.updateDailyLoading = false
+                                this.isShow = false
+                                this.getTitleData()
+                                return
+                            }catch (error) {
+                                return
+                            }finally {
+                                this.updateDailyLoading = false
+                            }
                         }
-                    }catch (error) {
-                        return
-                    }finally {
-                        this.updateDailyLoading = false
-                    }
+                    })
                 },
                 // 就業区分の切り替え表示制御
                 changeWorkingID(workingid) {
@@ -1305,8 +1280,8 @@
                         return false;
                     }
 
-                    if (this.dailyEdit.tdaCowncommentR !== null && this.getLengthB(this.dailyEdit.tdaCowncommentR) > 100) {
-
+                    if (this.dailyEdit.tdaCbosscommentR !== null && this.getLengthB(this.dailyEdit.tdaCbosscommentR) > 100) {
+                        this.$Notice.error({desc: "承認者コメント考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。"})
                         return false;
                     }
 
