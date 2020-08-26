@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.CoreError;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
+import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
@@ -43,6 +44,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -98,10 +100,37 @@ public class AuthBusiness {
 
     public void login(LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
-        System.out.println("++--");
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
         Subject subject = SecurityUtils.getSubject();
         subject.login(token);
+    }
+
+    public void changeExpirePassword(ChangePasswordDTO dto) {
+        // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
+        List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
+        if (CollUtil.isNotEmpty(lMastPasswordList)) {
+            MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
+            Date dDate = DateUtil.date();
+
+            if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
+                // 当日：複数回パスワード変更対応用パスワードマスタ 更新
+                MastPasswordDO oEntity = setData(dto.getUsername(), dto.getNewPassword());
+                oEntity.setMapId(passwordEntity.getMapId());
+                oEntity.setVersionno(passwordEntity.getVersionno());
+                iMastPasswordService.updateById(oEntity);
+            } else {
+                // パスワードマスタ 更新（履歴No +1）
+//                mastPasswordUpdateDao.updateHistory(sLoginUser);
+//                // パスワードマスタ 新規登録
+//                this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
+            }
+        } else {
+//            // パスワードマスタ 更新（履歴No +1）
+//            this.mastPasswordUpdateDao.updateHistory(sLoginUser);
+//
+//            // パスワードマスタ 新規登録
+//            this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
+        }
     }
 
     public void logout() {
@@ -408,30 +437,6 @@ public class AuthBusiness {
         return CollUtil.sort(menuGroupList,Comparator.comparingLong(MenuGroupBO::getOrderNum));
     }
 
-    private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {
-        tmgPermEntityList.forEach(entity -> {
-                GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
-                dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
-                dto.setPermission((String)entity.get("PERMISSION"));
-                dto.setMtrIcon((String)entity.get("MTR_ICON"));
-                dto.setMtrCurl2((String)entity.get("MTR_CURL2"));
-                dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
-                if (entity.get("MG_NWEIGHTAGE")!=null) {
-                    dto.setMgNweightage(((BigDecimal) entity.get("MG_NWEIGHTAGE")).longValue());
-                }
-                dto.setType((String)entity.get("TYPE"));
-                dto.setObjectName((String)entity.get("OBJECTNAME"));
-                dto.setMgpCscreen((String)entity.get("MGP_CSCREEN"));
-                dto.setMgpCbutton((String)entity.get("MGP_CBUTTON"));
-                dto.setMgpCsubapp((String)entity.get("MGP_CSUBAPP"));
-                dto.setMgpCapp((String)entity.get("MGP_CAPP"));
-                dto.setMgpCsite((String)entity.get("MGP_CSITE"));
-                dto.setMgpCobjectid((String)entity.get("MGP_COBJECTID"));
-                dto.setMgpCgroupid((String)entity.get("MGP_CGROUPID"));
-                tmgPermList.add(dto);
-        });
-    }
-
     public Set<String> getAllUserPerms(String systemId, String language, List<String> groupIds) {
         Set<String> perms =(Set<String>)lruCache.get(LOGIN_PERMISSIONS);
         if (CollUtil.isEmpty(perms)) {
@@ -454,6 +459,48 @@ public class AuthBusiness {
             lruCache.put(LOGIN_PERMISSIONS,perms);
         }
         return perms;
+    }
+
+    /**
+     * 登録データをEntityへ設定する.
+     * @param sUserid ユーザID
+     * @param sPassword パスワード
+     * @return パスワード変更処理用Entity
+     */
+    private MastPasswordDO setData(final String sUserid, final String sPassword) {
+        Date dDate = DateUtil.date();
+        MastPasswordDO passwdEntity = new MastPasswordDO();
+        passwdEntity.setMapCuserid(sUserid);                         // ユーザID
+        passwdEntity.setMapNhistory(0L);              // 履歴No
+        passwdEntity.setMapCpassword(sPassword);                     // パスワード
+        passwdEntity.setMapDpwddate(dDate); // パスワード設定日
+        passwdEntity.setMapCmodifieruserid(sUserid);                       // 更新者
+        passwdEntity.setMapDmodifieddate(dDate);  // 更新日
+        return passwdEntity;
+    }
+
+    private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {
+        tmgPermEntityList.forEach(entity -> {
+                GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
+                dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
+                dto.setPermission((String)entity.get("PERMISSION"));
+                dto.setMtrIcon((String)entity.get("MTR_ICON"));
+                dto.setMtrCurl2((String)entity.get("MTR_CURL2"));
+                dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
+                if (entity.get("MG_NWEIGHTAGE")!=null) {
+                    dto.setMgNweightage(((BigDecimal) entity.get("MG_NWEIGHTAGE")).longValue());
+                }
+                dto.setType((String)entity.get("TYPE"));
+                dto.setObjectName((String)entity.get("OBJECTNAME"));
+                dto.setMgpCscreen((String)entity.get("MGP_CSCREEN"));
+                dto.setMgpCbutton((String)entity.get("MGP_CBUTTON"));
+                dto.setMgpCsubapp((String)entity.get("MGP_CSUBAPP"));
+                dto.setMgpCapp((String)entity.get("MGP_CAPP"));
+                dto.setMgpCsite((String)entity.get("MGP_CSITE"));
+                dto.setMgpCobjectid((String)entity.get("MGP_COBJECTID"));
+                dto.setMgpCgroupid((String)entity.get("MGP_CGROUPID"));
+                tmgPermList.add(dto);
+        });
     }
 
     /**
@@ -502,7 +549,7 @@ public class AuthBusiness {
             // 当前时间大于密码设定日时密码过期
             if (oSetDay.before(now)) {
                 //認証エラー（パスワード期間切れ）
-                throw new ExpiredCredentialsException("パスワード期間切れ");
+                throw new ExpiredCredentialsException("このパスワードは有効期限を過ぎました。新しいパスワードを登録してください");
             }
         });
     }

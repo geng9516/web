@@ -112,7 +112,7 @@
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="downloadFile(e.tnafFilepath)">{{ e.tnafCfilename }}</div>
+                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(`http:////${e.tnafFilepath.slice(2)}`, '_blank')">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -138,10 +138,9 @@
                                 <Row>
                                     <i-col span="20" style="margin-left: 4.5%" class="description light-grey">{{ item.tntfCowncomment }}</i-col>
                                 </Row>
-                                <!-- todo: 需要根据状态判断 -->
-                                <Row v-if="item.status === 2">
+                                <Row v-if="item.tntfCbosscomment">
                                     <i-col span="20" style="margin-left: 4.5%" class="description">
-                                        {{ `承認者コメント：${item.tntfCcancelcomment || item.tntfCbosscomment}` }}</i-col>
+                                        {{ `承認者コメント：${item.tntfCbosscomment}` }}</i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
@@ -605,6 +604,11 @@
                     if(!this.restApply.typeNew) {
                         this.errorInfo = true
                         this.errorMsg = '申請区分を選んでください。'
+                        return
+                    }
+                    if(!this.restApply.owncomment) {
+                        this.errorInfo = true
+                        this.errorMsg = '申請事由等を入力してください。'
                         return
                     }
                     if(!this.restApply.begin || !this.restApply.end) {

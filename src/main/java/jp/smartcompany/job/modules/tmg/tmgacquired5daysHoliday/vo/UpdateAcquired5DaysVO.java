@@ -24,17 +24,13 @@ public class UpdateAcquired5DaysVO {
      */
     private String txtUserCode;
     /**
-     * 対象年度
-     */
-    private String txtYear;
-    /**
-     * 基準日
-     */
-    private String kijunbi;
-    /**
      * 修正基準日
      */
     private String kijunbiEdit;
+    /**
+     * 修正チェック期間
+     */
+    private String dkikanbiFix;
     /**
      * 調整取得日数
      */
@@ -45,15 +41,24 @@ public class UpdateAcquired5DaysVO {
      */
     private String txtUpdateflg;
     /**
-     * 修正終期
-     */
-    private String txtDpaidholidayEnd;
-    /**
-     * 修正必要日数
-     */
-    private String txtNusedaysDays;
-    /**
      * 年次休暇付与日
      */
     private String txtFuyobi;
+//    /**
+//     * 対象年度
+//     */
+//    private String txtYear;
+//    /**
+//     * 基準日
+//     */
+//    private String kijunbi;
+//    /**
+//     * 修正終期
+//     */
+//    private String txtDpaidholidayEnd;
+//    /**
+//     * 修正必要日数
+//     */
+//    private String txtNusedaysDays;
+
 }

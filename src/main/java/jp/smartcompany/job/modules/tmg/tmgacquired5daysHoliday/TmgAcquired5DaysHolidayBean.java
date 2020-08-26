@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.UpdateAcquired
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,7 +89,15 @@ public class TmgAcquired5DaysHolidayBean {
         String empsql = referList.buildSQLForSelectEmployees();
 
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
-
+        // 重複Flg判断
+        for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
+            if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
+                    && Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
+                    && DateUtil.betweenMonth(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaDyyyymmdd3()),DateUtil.parse(acquired5DaysVOList.get(i).getTaDyyyymmdd3()),true)<12
+            ){
+                acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
+            }
+        }
         return acquired5DaysVOList;
     }
 
@@ -107,7 +114,6 @@ public class TmgAcquired5DaysHolidayBean {
         String dispUserCode;
         if (txtUserCode != null && !txtUserCode.equals("")) {
             dispUserCode = txtUserCode;
-
         } else {
             dispUserCode = referList.getTargetEmployee();
         }
@@ -119,7 +125,6 @@ public class TmgAcquired5DaysHolidayBean {
             searchStart = kijunbi;
         }
         if (StrUtil.isBlank(searchEnd) || "null".equals(searchEnd)) {
-
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
             searchEnd = sdf.format(new Date());
         }
@@ -144,7 +149,6 @@ public class TmgAcquired5DaysHolidayBean {
                 .eq("TPF_CEMPLOYEEID", updateAcquired5DaysVO.getTxtUserCode())
                 .eq("TPF_FUYOBI", updateAcquired5DaysVO.getTxtFuyobi()));
 
-
         String updateFlag = updateAcquired5DaysVO.getTxtUpdateflg();
 
         // クリアボタンを押下時に、編集データを保存しない
@@ -160,16 +164,11 @@ public class TmgAcquired5DaysHolidayBean {
             tmgPaiduseinfoFixDO.setTpfDmodifierdate(DateTime.now());
             tmgPaiduseinfoFixDO.setTpfCmodifierprogramid(PROGRAM_ID);
             tmgPaiduseinfoFixDO.setTpfCemployeeid(updateAcquired5DaysVO.getTxtUserCode());
-            tmgPaiduseinfoFixDO.setTpfDpaidHoliday(DateUtil.parse(updateAcquired5DaysVO.getKijunbi()));
-            tmgPaiduseinfoFixDO.setTpfNyyyy(Long.parseLong(updateAcquired5DaysVO.getTxtYear()));
             tmgPaiduseinfoFixDO.setTpfDpaidHolidayFix(DateUtil.parse(updateAcquired5DaysVO.getKijunbiEdit()));
-            tmgPaiduseinfoFixDO.setTpfDkikanbiFix(null);
-            tmgPaiduseinfoFixDO.setTpfNusedaysFix(null);
-            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(null);
+            tmgPaiduseinfoFixDO.setTpfDkikanbiFix(DateUtil.parse(updateAcquired5DaysVO.getDkikanbiFix()));
+            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(Double.parseDouble(updateAcquired5DaysVO.getDkikanbiFix()));
             tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Double.parseDouble(updateAcquired5DaysVO.getUsedDaysEdit()));
-            tmgPaiduseinfoFixDO.setTpfNusehoursAjdust(null);
-            tmgPaiduseinfoFixDO.setTpfDpaidholidayEnd(DateUtil.parse(updateAcquired5DaysVO.getTxtDpaidholidayEnd()));
-            tmgPaiduseinfoFixDO.setTpfNusedaysDays(Double.parseDouble(updateAcquired5DaysVO.getTxtNusedaysDays()));
+
             tmgPaiduseinfoFixDO.setTpfFuyobi(DateUtil.parse(updateAcquired5DaysVO.getTxtFuyobi()));
             iTmgPaiduseinfoFixService.getBaseMapper().insert(tmgPaiduseinfoFixDO);
         }
@@ -177,19 +176,19 @@ public class TmgAcquired5DaysHolidayBean {
         // クリアボタンを押下時、もしくは 修正基準日が空白の場合、プロシージャは実行しない
 //        if ("1".equals(updateFlag) && !StrUtil.isBlank(updateAcquired5DaysVO.getKijunbiEdit())) {
             // プロシージャ実行SQLを作成する
-            iTmgAcquired5daysholidayService.buildSQLTmgAcquired5daykikanbi(
-                    updateAcquired5DaysVO.getTxtUserCode(),
-                    updateAcquired5DaysVO.getKijunbi(),
-                    updateAcquired5DaysVO.getTxtYear(),
-                    updateAcquired5DaysVO.getKijunbiEdit(),
-                    psDBBean.getUserCode(),
-                    PROGRAM_ID,
-                    psDBBean.getCustID(),
-                    psDBBean.getCompCode(),
-                    updateAcquired5DaysVO.getTxtDpaidholidayEnd(),
-                    updateAcquired5DaysVO.getTxtNusedaysDays(),
-                    updateAcquired5DaysVO.getTxtFuyobi()
-            );
+//            iTmgAcquired5daysholidayService.buildSQLTmgAcquired5daykikanbi(
+//                    updateAcquired5DaysVO.getTxtUserCode(),
+//                    updateAcquired5DaysVO.getKijunbi(),
+//                    updateAcquired5DaysVO.getTxtYear(),
+//                    updateAcquired5DaysVO.getKijunbiEdit(),
+//                    psDBBean.getUserCode(),
+//                    PROGRAM_ID,
+//                    psDBBean.getCustID(),
+//                    psDBBean.getCompCode(),
+//                    updateAcquired5DaysVO.getTxtDpaidholidayEnd(),
+//                    updateAcquired5DaysVO.getTxtNusedaysDays(),
+//                    updateAcquired5DaysVO.getTxtFuyobi()
+//            );
 //        }
     }
 
@@ -213,6 +212,7 @@ public class TmgAcquired5DaysHolidayBean {
             // 取得出来なかったらDBより取得
             setYear(getThisYear());
         }
+
 
         baseDate = String.valueOf(this.getYear()) + recordDate.substring(4);
 

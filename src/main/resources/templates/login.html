@@ -141,7 +141,7 @@
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
                         await this.http.postForm('/login', this.login)
-                        location.href = "/login"
+                        location.href = '/login'
                         // 以防不备时的原生提交，应给form加上method, action以及password和username加上name就好
                         // this.$refs.login.$el.submit()
                     } catch (error) {

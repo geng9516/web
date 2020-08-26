@@ -25,7 +25,7 @@
                 <i-button icon="ios-cloud-upload-outline" v-if="!addPatternShow" disabled>
                     CSVファイル取込
                 </i-button>
-                <i-button type="success" icon="md-create"　@click="mergePattern(null)"  :loading="bulkApprovalLoading" v-if="addPatternShow">新規</i-button>
+                <i-button type="success" icon="md-create" 　@click="mergePattern(null)" :loading="bulkApprovalLoading" v-if="addPatternShow">新規</i-button>
                 <i-button type="primary" ghost icon="ios-cloud-upload-outline" v-if="addPatternShow" @click="csvuploadModal = true">
                     CSVファイル取込
                 </i-button>
@@ -158,8 +158,8 @@
           </i-form>
           <div style="text-align: right">
                   <i-button class="ivu-btn ivu-btn-text" type="text" @click="cancel">キャンセル</i-button>
-                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
-                  <i-button class="ivu-btn ivu-btn-success ivu-btn-large" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
+                  <i-button class="ivu-btn" type="success" disabled v-if="btn_sk_commit_show===false">登録</i-button>
+                  <i-button class="ivu-btn" type="success" @click="handleSubmit('localValue')" 　v-else>登録</i-button>
           </div>
           <Spin size="large" fix v-if="mergePatternLoading"></Spin>
         </Modal>
@@ -178,8 +178,9 @@
             ファイル: <span class="blue">{{ file.name }}</span>
         </div>
         <div slot="footer">
-                <i-button type="text" @click="uploadCancel">キャンセル</i-button>
-                <i-button icon="md-arrow-round-up" type="primary" @click="upload" :loading="loadingStatus">アップロード</i-button>
+            <i-button type="text" @click="uploadCancel">キャンセル</i-button>
+            <i-button icon="md-arrow-round-up" type="primary" @click="upload" :loading="loadingStatus" v-if="file != null">アップロード</i-button>
+            <i-button icon="md-arrow-round-up" type="primary" disabled :loading="loadingStatus" v-if="file === null">アップロード</i-button>
         </div>
     </Modal>
     <!-- CSVファイル取込END -->
@@ -191,8 +192,8 @@
         el: '.patternSetting-warp',
         data() {
             return {
-                mergePatternLoading:false,
-                csvuploadModal:false,
+                mergePatternLoading: false,
+                csvuploadModal: false,
                 file: null,
                 loadingStatus: false,
                 errorFlag: false,
@@ -414,10 +415,10 @@
         },
         async mounted() {
             this.getOrgTree()
-            window.addEventListener('scroll',this.handleScroll,{ passive: true })
-            },
+            window.addEventListener('scroll', this.handleScroll, {passive: true})
+        },
         beforeDestroy() {
-            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+            window.removeEventListener('scroll', this.handleScroll, {passive: true})
         },
         computed: {
             tableHeadFixed() {
@@ -680,11 +681,11 @@
             valid_length(title, msg) {
                 this.hiddenAlert()
                 if (msg.length < 5) {
-                    this.showAlert(title + '最小サイズが5Bです')
+                    this.showAlert(title + 'は半角英数記号文字を5桁以上に入力してください')
                     return false
                 }
                 if (msg.length > 50) {
-                    this.showAlert(title + '最大サイズが50Bです')
+                    this.showAlert(title + 'は半角英数記号文字を50桁以下に入力してください')
                     return false
                 }
                 return true

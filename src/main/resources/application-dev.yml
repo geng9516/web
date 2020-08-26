@@ -1,8 +1,8 @@
 spring:
-  thymeleaf:
-    cache: off
   datasource:
-    url: dbc:oracle:thin:@127.0.0.1:1521:nsg
-    username: tmg_iyaku2
-    password: tmg_iyakupass
+    url: jdbc:oracle:thin:@192.168.20.160:1521/TMG
+    username: SPWM
+    password: SPWMPASS
     driver-class-name: oracle.jdbc.OracleDriver
+server:
+  port: 6879

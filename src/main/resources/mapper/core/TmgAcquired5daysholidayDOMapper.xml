@@ -4,132 +4,112 @@
 
     <select id="buildSQLforList"
             resultType="jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.Acquired5DaysListVO">
-        SELECT
-            TA.TA_CEMPLOYEEID,  																		<!-- 社員番号-->
-            (
-                SELECT
-                    E.ME_CKANJINAME
-                FROM
-                    MAST_EMPLOYEES E
-                WHERE
-                    E.ME_CCUSTOMERID_CK	= TA.TA_CCUSTOMERID
-                AND E.ME_CCOMPANYID		= TA.TA_CCOMPANYID
-                AND E.ME_CEMPLOYEEID_CK	= TA.TA_CEMPLOYEEID
-                AND E.ME_DSTARTDATE = (
-                    SELECT
-                        MAX(EE.ME_DSTARTDATE)
-                    FROM
-                        MAST_EMPLOYEES EE
-                    WHERE
-                        EE.ME_CCUSTOMERID_CK	= E.ME_CCUSTOMERID_CK
-                    AND EE.ME_CCOMPANYID		= E.ME_CCOMPANYID
-                    AND EE.ME_CEMPLOYEEID_CK	= E.ME_CEMPLOYEEID_CK
-                )
-            ) AS CEMPLOYEE_NAME, 																					<!--社員名-->
-            (
-                SELECT
-                    E.TEM_CWORKTYPEID
-                FROM
-                    TMG_EMPLOYEES E
-                WHERE
-                    E.TEM_CCUSTOMERID = TA.TA_CCUSTOMERID
-                AND E.TEM_CCOMPANYID = TA.TA_CCOMPANYID
-                AND E.TEM_CEMPLOYEEID = TA.TA_CEMPLOYEEID
-                AND E.TEM_DSTARTDATE <![CDATA[<=]]> #{basedate}
-                AND E.TEM_DENDDATE >= #{basedate}
-            )  AS WORKERTYPE_ID, 																		<!--所属ID-->
-            (
-                SELECT
-                    TMG_F_GET_MGD(E.TEM_CWORKTYPEID, #{basedate},  TA.TA_CCUSTOMERID, TA.TA_CCOMPANYID, 'ja')
-                FROM
-                    TMG_EMPLOYEES E
-                WHERE
-                    E.TEM_CCUSTOMERID = TA.TA_CCUSTOMERID
-                AND E.TEM_CCOMPANYID = TA.TA_CCOMPANYID
-                AND E.TEM_CEMPLOYEEID = TA.TA_CEMPLOYEEID
-                AND E.TEM_DSTARTDATE <![CDATA[<=]]> #{basedate}
-                AND E.TEM_DENDDATE >= #{basedate}
-            ) AS WORKERTYPE_NM, 																		<!--所属名-->
-            TO_CHAR(TA.TA_DPAID_HOLIDAY, 'YYYY/MM/DD') AS TA_DYYYYMMDD,  								<!--付与日-->
-            NVL(TA.TA_NHOLIDAY_DAYS, 0) AS TA_FUYODAYS,   												<!--付与日数-->
-            TO_CHAR(TA.TA_DBASEDATE_START, 'YYYY/MM/DD') AS TA_KIJYUNBI,  								<!--基準日-->
-            <!--TO_CHAR(TA.TA_DBASEDATE_END, 'YYYY/MM/DD') AS TA_KIKANBI,                                   チェック期間-->
-            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TA.TA_DBASEDATE_END, 'yyyy/MM/dd')) as TA_KIKANBI,  <!--チェック期間-->
-            <!--NVL(TP.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  AS SUM_SYUTOKUDAYS,                             一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
-            COALESCE(TPF.TPF_NUSEDAYS_FIX,tp.TP_NNECESSARY_DAYS, 0) + NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)  as SUM_SYUTOKUDAYS,   <!--一覧画面表示取得日数 = DB取得日数 + 調整取得日数-->
-            <!--NVL(TA.TA_NNECESSARY_DAYS, 0)  AS TA_MUSTDAYS,                                                                   必要日数-->
-            COALESCE(TPF.TPF_NUSEDAYS_DAYS,TPF.TPF_NMUSTDAYS_FIX,ta.TA_NNECESSARY_DAYS, 0)  as TA_MUSTDAYS,                  <!--必要日数-->
-            CASE WHEN NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
-                ELSE NVL(TA.TA_NNECESSARY_DAYS, 0) - NVL(TP.TP_NNECESSARY_DAYS, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
-            END AS TA_LESSDAYS,   																		<!-- 不足日数 = 必要日数 - DB取得日数 - 調整取得日数-->
-        (
-            SELECT
-                COUNT(TA_CEMPLOYEEID)
-            FROM
-                TMG_ACQUIRED5DAYSHOLIDAY TTA
-            WHERE
-                TTA.TA_CEMPLOYEEID = TA.TA_CEMPLOYEEID
-        <!--AND COALESCE(TTA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD')) = COALESCE(TA.TA_DBASEDATE_START,TO_DATE(('1900-01-01'),'YYYY/MM/DD'))
-        AND TO_CHAR(NVL(tta.TA_DBASEDATE_START, tta.TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')-->
-    ) AS  TA_ROWPAN, 																			<!--ROWPAN-->
-        <!--  TMG_F_GET_LISTCOUNT5DAY(ta.TA_CEMPLOYEEID,ta.TA_DPAID_HOLIDAY,ta.TA_CCUSTOMERID,ta.TA_CCOMPANYID) as  TA_ROWPAN,          ROWPAN-->
-            TA_CDUPLICATEFLG,   																		<!--重複FLG-->
-            TO_CHAR(TP.TP_DNTF_SURVEY_START, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_START,   					<!--年休調査期間（開始日）-->
-        <!--TO_CHAR(TP.TP_DNTF_SURVEY_END, 'YYYY/MM/DD')  AS TP_DNTF_SURVEY_END,  						年休調査期間（終了日）-->
-            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TP.TP_DNTF_SURVEY_END, 'yyyy/MM/dd')) AS TP_DNTF_SURVEY_END, <!--年休調査期間（終了日）-->
-            TO_CHAR(TPF.TPF_DPAID_HOLIDAY_FIX, 'YYYY/MM/DD') AS TPF_KIJYUNBI,  							<!--修正基準日-->
-        <!--TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'YYYY/MM/DD') AS TPF_KIKANBI,  								修正チェック期間-->
-            NVL(TO_CHAR(TPF.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd'),TO_CHAR(TPF.TPF_DKIKANBI_FIX, 'yyyy/MM/dd')) AS TPF_KIKANBI,  	  <!--修正チェック期間-->
-            NVL(TPF.TPF_NUSEDAYS_FIX, 0)  AS TPF_SYUTOKUDAYS,   										<!--修正取得日数-->
-            NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) AS TPF_SYUTOKUDAYS_ADJUST,   								<!--調整取得日数-->
-            <!--NVL(TPF.TPF_NMUSTDAYS_FIX, 0)  AS TPF_MUSTDAYS,   										    修正必要日数-->
-            COALESCE(tpf.TPF_NUSEDAYS_DAYS,tpf.TPF_NMUSTDAYS_FIX, 0)  as TPF_MUSTDAYS,                  <!--修正必要日数-->
-            <!--CASE WHEN NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
-            ELSE NVL(TPF.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
-            END AS TPF_LESSDAYS,   																		    修正不足日数 = 修正必要日数 - 修正取得日数 - 調整取得日数-->
-            CASE WHEN coalesce(tpf.TPF_NUSEDAYS_DAYS, tpf.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0) <![CDATA[<=]]> 0 THEN 0
-            ELSE coalesce(tpf.TPF_NUSEDAYS_DAYS, tpf.TPF_NMUSTDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_FIX, 0) - NVL(TPF.TPF_NUSEDAYS_AJDUST, 0)
-            END AS TPF_LESSDAYS,   																		<!--修正不足日数 = 修正必要日数 - 修正取得日数 - 調整取得日数-->
-            NVL(TP.TP_NNECESSARY_DAYS, 0) AS TP_SYUTOKUDAYS,  											<!--編集画面表示取得日数-->
-            TO_CHAR(tpf.TPF_DPAID_HOLIDAY_END, 'yyyy/MM/dd') AS TPF_HOLIDAYENDFIX,  		            <!--修正終期-->
-            TO_CHAR(tpf.TPF_NUSEDAYS_DAYS) AS TPF_NUSEDAYSFIX  						                    <!--修正必要日数-->
+        select  TA.TPH_CEMPLOYEEID AS CEMPLOYEEID_0,  <!-- 社員番号-->
+        (SELECT
+        E.me_ckanjiname
         FROM
-            TMG_ACQUIRED5DAYSHOLIDAY TA
-        INNER JOIN (${empsql}) A
-        ON A.EMPID = TA.TA_CEMPLOYEEID
-        AND A.CUST = TA.TA_CCUSTOMERID
-        AND A.COMP = TA.TA_CCOMPANYID
-        LEFT JOIN TMG_PAIDUSEINFO TP
-        ON  TA.TA_CCUSTOMERID = TP.TP_CCUSTOMERID
-        AND TA.TA_CCOMPANYID = TP.TP_CCOMPANYID
-        AND TA.TA_CEMPLOYEEID = TP.TP_CEMPLOYEEID
-        AND TRUNC(TA.TA_DBASEDATE_START) = TRUNC(TP.TP_DBASEDATE_START)
-        LEFT JOIN TMG_PAIDUSEINFO_FIX TPF
-        ON TA.TA_CCOMPANYID = TPF.TPF_CCOMPANYID
-        AND TA.TA_CCUSTOMERID = TPF.TPF_CCUSTOMERID
-        AND TA.TA_CEMPLOYEEID = TPF.TPF_CEMPLOYEEID
-        <!--AND TO_CHAR(NVL(TA_DBASEDATE_START, TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TPF.TPF_NYYYY)-->
-        AND   TO_CHAR(TA_DPAID_HOLIDAY, 'YYYYMMDD') = TO_CHAR(tpf.TPF_FUYOBI, 'YYYYMMDD')
+        MAST_EMPLOYEES E
         WHERE
-            TO_CHAR(NVL(TA_DBASEDATE_START, TA_DPAID_HOLIDAY), 'YYYY') = TO_CHAR(TO_DATE(#{basedate}) , 'YYYY')
-        <if test="userCode != NULL">
-            AND TA.TA_CEMPLOYEEID = #{userCode}
-        </if>
-        ORDER BY TA.TA_CEMPLOYEEID,  TA.TA_DPAID_HOLIDAY
-    </select>
-    <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">
-        CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(
-            #{txtUserCode},
-            #{kijunbi, jdbcType=VARCHAR},
-            #{txtYear, jdbcType=VARCHAR},
-            #{kijunbiEdit,jdbcType=VARCHAR},
-            #{userCode},
-            #{programId},
-            #{custID},
-            #{compCode},
-            #{txtDpaidholidayEnd, jdbcType=VARCHAR},
-            #{txtNusedaysDays, jdbcType=VARCHAR},
-            #{txtFuyobi, jdbcType=VARCHAR}
+        E.ME_CCUSTOMERID_CK	= TA.TPH_CCUSTOMERID
+        AND E.ME_CCOMPANYID		= TA.TPH_CCOMPANYID
+        AND E.ME_CEMPLOYEEID_CK	= TA.TPH_CEMPLOYEEID
+        AND E.ME_DSTARTDATE = (
+        SELECT
+        MAX(EE.ME_DSTARTDATE)
+        FROM
+        MAST_EMPLOYEES EE
+        WHERE
+        EE.ME_CCUSTOMERID_CK	= E.ME_CCUSTOMERID_CK
+        AND EE.ME_CCOMPANYID		= E.ME_CCOMPANYID
+        AND EE.ME_CEMPLOYEEID_CK	= E.ME_CEMPLOYEEID_CK
         )
+        ) AS CEMPLOYEE_NAME_1,	<!--社員名-->
+        (
+        SELECT
+        TMG_F_GET_MGD(E.TEM_CWORKTYPEID, TA.TPH_DYYYYMMDD,  TA.TPH_CCUSTOMERID, TA.TPH_CCOMPANYID, 'ja')
+        FROM
+        TMG_EMPLOYEES E
+        WHERE
+        E.TEM_CCUSTOMERID = TA.TPH_CCUSTOMERID
+        AND E.TEM_CCOMPANYID = TA.TPH_CCOMPANYID
+        AND E.TEM_CEMPLOYEEID = TA.TPH_CEMPLOYEEID
+        AND E.TEM_DSTARTDATE <![CDATA[<=]]> TA.TPH_DYYYYMMDD
+        AND E.TEM_DENDDATE >=   TA.TPH_DYYYYMMDD
+        )  AS WORKERTYPE_NM_2, <!--所属名-->
+        TO_CHAR(TA.TPH_DYYYYMMDD,'yyyymmdd')  AS TA_DYYYYMMDD_3,<!--付与日-->
+        TA.TPH_NINVEST + TA.TPH_NADJUST  AS TA_FUYODAYS_4,<!--付与日数-->
+        TO_CHAR(NVL((select TPF.TPF_DPAID_HOLIDAY_FIX from TMG_PAIDUSEINFO_FIX TPF
+        where TPF_FUYOBI =TA.TPH_DYYYYMMDD),TA.TPH_DYYYYMMDD),'yyyymmdd') AS TA_KIJYUNBI_5,<!--基準日-->
+        TO_CHAR(NVL((select TPF.TPF_DKIKANBI_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),
+        (last_day(add_months(TA.TPH_DYYYYMMDD,11)))),'yyyymmdd') AS TA_KIKANBI_6,<!--チェック期間-->
+        (select TMG_F_GET_USEDAYS4ACQUIRED5DAY(TA.TPH_CCUSTOMERID,TA.TPH_CCOMPANYID, TA.TPH_CEMPLOYEEID,(NVL((select TPF.TPF_DPAID_HOLIDAY_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),TA.TPH_DYYYYMMDD)),
+        (NVL((select TPF.TPF_DKIKANBI_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),(last_day(add_months(TA.TPH_DYYYYMMDD,11)))))).CNT_DAY from dual) AS SUM_SYUTOKUDAYS_7,<!--取得日数-->
+        ceil(MONTHS_BETWEEN((NVL((select TPF.TPF_DKIKANBI_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),(last_day(add_months(TA.TPH_DYYYYMMDD,11))))),
+        (NVL((select TPF.TPF_DPAID_HOLIDAY_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),TA.TPH_DYYYYMMDD)))/12 *5)AS TA_MUSTDAYS_8,<!--必要日数-->
+        (greatest(ceil(MONTHS_BETWEEN((NVL((select TPF.TPF_DKIKANBI_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),(last_day(add_months(TA.TPH_DYYYYMMDD,11))))),
+        (NVL((select TPF.TPF_DPAID_HOLIDAY_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),TA.TPH_DYYYYMMDD)))/12 *5)-(select count(*) from TMG_DAILY where TDA_CWORKINGID_R = 'TMG_WORK|010'
+        and TDA_DYYYYMMDD >=(NVL((select TPF.TPF_DPAID_HOLIDAY_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),TA.TPH_DYYYYMMDD))
+        and TDA_DYYYYMMDD <![CDATA[<=]]> (NVL((select TPF.TPF_DKIKANBI_FIX from TMG_PAIDUSEINFO_FIX TPF where TPF_FUYOBI =TA.TPH_DYYYYMMDD),(last_day(add_months(TA.TPH_DYYYYMMDD,11)))))
+        and TDA_CEMPLOYEEID = TA.TPH_CEMPLOYEEID),0)) AS TA_LESSDAYS_9,<!--不足日数-->
+        (b.COUNT) AS ta_rowpan_10, <!--rowpan-->
+        (select  TPF.TPF_DPAID_HOLIDAY_FIX
+        from    TMG_PAIDUSEINFO_FIX TPF
+        where   TPF.TPF_CCUSTOMERID = TA.TPH_CEMPLOYEEID
+        and     TPF.TPF_FUYOBI=TA.TPH_DYYYYMMDD) AS TPF_DPAID_HOLIDAY_FIX_11,<!--修正基準日-->
+        (select  TPF.TPF_DKIKANBI_FIX
+        from    TMG_PAIDUSEINFO_FIX TPF
+        where   TPF.TPF_CCUSTOMERID = TA.TPH_CEMPLOYEEID
+        and     TPF.TPF_FUYOBI=TA.TPH_DYYYYMMDD) AS TPF_DKIKANBI_FIX_12,  <!--修正チェック期間-->
+        (select  TPF.TPF_NUSEDAYS_AJDUST
+        from    TMG_PAIDUSEINFO_FIX TPF
+        where   TPF.TPF_CCUSTOMERID = TA.TPH_CEMPLOYEEID
+        and     TPF.TPF_FUYOBI=TA.TPH_DYYYYMMDD) AS TPF_NUSEDAYS_AJDUST_13,  <!--調整取得日数-->
+        (select  TPF.TPF_NMUSTDAYS_FIX
+        from    TMG_PAIDUSEINFO_FIX TPF
+        where   TPF.TPF_CCUSTOMERID = TA.TPH_CEMPLOYEEID
+        and     TPF.TPF_FUYOBI=TA.TPH_DYYYYMMDD) AS TPF_NMUSTDAYS_FIX_14  <!--修正必要日数-->
+        FROM TMG_PAID_HOLIDAY TA
+        INNER JOIN (${empsql}) A
+        ON A.EMPID = TA.TPH_CEMPLOYEEID
+        AND A.CUST = TA.TPH_CCUSTOMERID
+        AND A.COMP = TA.TPH_CCOMPANYID
+        INNER JOIN (select count(TPH_CEMPLOYEEID) as count ,TPH_CEMPLOYEEID as CEMPLOYEEID
+        FROM TMG_PAID_HOLIDAY TA
+        where TA.TPH_DYYYYMMDD >= '2019/04/01'
+        AND TA.TPH_DYYYYMMDD <![CDATA[<=]]> SYSDATE
+        AND TA.TPH_DYYYYMMDD >= (add_months(SYSDATE, - (select MGD_NSPARENUM1
+        FROM MAST_GENERIC_DETAIL
+        WHERE MGD_CCUSTOMERID = TA.TPH_CCUSTOMERID
+        AND MGD_CCOMPANYID_CK_FK = TA.TPH_CCOMPANYID
+        AND MGD_CGENERICGROUPID = 'TMG_ACQUIRED5DAY_PRE') * 12))
+        AND TA.TPH_DYYYYMMDD >= ' 20190401'
+        group by TPH_CEMPLOYEEID
+        ) b
+        on A.EMPID = b.CEMPLOYEEID
+        where TA.TPH_DYYYYMMDD <![CDATA[<=]]>SYSDATE
+        AND TA.TPH_DYYYYMMDD >=(add_months(SYSDATE,-(select MGD_NSPARENUM1
+        FROM MAST_GENERIC_DETAIL
+        WHERE MGD_CCUSTOMERID = TA.TPH_CCUSTOMERID
+        AND MGD_CCOMPANYID_CK_FK = TA.TPH_CCOMPANYID
+        AND MGD_CGENERICGROUPID = 'TMG_ACQUIRED5DAY_PRE')*12))
+        AND TA.TPH_DYYYYMMDD >='20190401'
+        <if test="userCode != NULL">
+            AND TPH_CEMPLOYEEID = #{userCode}
+        </if>
     </select>
+<!--    <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">-->
+<!--        CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(-->
+<!--            #{txtUserCode},-->
+<!--            #{kijunbi, jdbcType=VARCHAR},-->
+<!--            #{txtYear, jdbcType=VARCHAR},-->
+<!--            #{kijunbiEdit,jdbcType=VARCHAR},-->
+<!--            #{userCode},-->
+<!--            #{programId},-->
+<!--            #{custID},-->
+<!--            #{compCode},-->
+<!--            #{txtDpaidholidayEnd, jdbcType=VARCHAR},-->
+<!--            #{txtNusedaysDays, jdbcType=VARCHAR},-->
+<!--            #{txtFuyobi, jdbcType=VARCHAR}-->
+<!--        )-->
+<!--    </select>-->
 </mapper>

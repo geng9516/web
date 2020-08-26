@@ -203,7 +203,7 @@ public class TmgNotificationController {
 
 
     @GetMapping("download")
-    public void downloadFileAction(@RequestParam("url") String url,HttpServletResponse response) {
+    public void downloadFileAction(String url,HttpServletResponse response) {
 
         HttpServletRequest request=ContextUtil.getHttpRequest();
         response.setCharacterEncoding(request.getCharacterEncoding());

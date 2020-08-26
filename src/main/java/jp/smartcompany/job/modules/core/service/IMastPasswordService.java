@@ -23,4 +23,12 @@ public interface IMastPasswordService extends IService<MastPasswordDO> {
          */
         List<MastPasswordDO> getUpdateDateByUsernamePassword(String userId,String password);
 
+        /**
+         * パスワード変更処理（パスワードマスタ）検索処理.
+         * @param  username ユーザＩＤ
+         * @param  passwordHisCnt パスワード履歴保持件数
+         * @return パスワードマスタ検索結果
+         */
+        List<MastPasswordDO> selectSinglePassword(String username, String passwordHisCnt);
+
 }

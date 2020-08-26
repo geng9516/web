@@ -4,6 +4,7 @@ import cn.hutool.cache.impl.LRUCache;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
+import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.boot.util.ShiroUtil;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
@@ -136,10 +137,15 @@ public class AuthController {
         return "redirect:/login";
     }
 
-    @GetMapping("isAuth")
-    @ResponseBody
-    public Boolean isLogin() {
-        return ShiroUtil.isAuthenticated();
+    @GetMapping("expirePassword")
+    public String expirePassword() {
+        return "expirePassword";
+    }
+
+    @PostMapping
+    public String changeExpirePassword(ChangePasswordDTO dto) {
+        authBusiness.changeExpirePassword(dto);
+        return "redirect:/sys";
     }
 
 }
