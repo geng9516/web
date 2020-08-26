@@ -1012,9 +1012,9 @@
                     return
                 }
 
-                let nextMonthStr=Utils.formatDate(this.nextMonthFirstDay,"YYYY/MM/DD")
-                let msg=`適用終了日は${nextMonthStr}以降を入力してください。`
-                if(this.nextMonthFirstDay>new Date(enddate)){
+                let curDate=Utils.formatDate(new Date(),"YYYY/MM/DD")
+                let msg=`適用終了日は${curDate}以降を入力してください。`
+                if(new Date()>new Date(enddate)){
                     this.$Message.error(msg)
                     return
                 }
