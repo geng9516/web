@@ -213,7 +213,8 @@
           </form-item>
 
           <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1">
-            <i-input class="tl" type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"></i-input>
+            <i-input class="tl" type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"
+                     :maxlength="100" placeholder="文字の長さは１００位以内になっております。"></i-input>
           </form-item>
 
           <form-item label="承認者コメント" v-else>
@@ -449,12 +450,12 @@
               </form-item>
 
               <form-item label="申請事由等">
-                <i-input class="tl" v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 5 }"
+                <i-input class="tl" v-model="restApply.owncomment" type="textarea" :maxlength="100"  :autosize="{ minRows: 5 }"
                   placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
 
               <form-item label="承認者コメント">
-                <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }"
+                <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100"
                          placeholder="文字の長さは１００位以内になっております。"></i-input>
               </form-item>
 
