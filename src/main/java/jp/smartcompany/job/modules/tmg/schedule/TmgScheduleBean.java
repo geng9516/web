@@ -7,6 +7,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -1556,8 +1557,9 @@ public class TmgScheduleBean {
      * @param content
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public boolean executeMakeWeekPattern_UWPtn(String content, PsDBBean psDBBean) {
+    public GlobalResponse executeMakeWeekPattern_UWPtn(String content, PsDBBean psDBBean) {
         boolean flag = true;
+        GlobalResponse globalResponse = GlobalResponse.ok();
         List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
         String _targetCustCode = psDBBean.getCustID();
         String _targetCompCode = psDBBean.getCompCode();
@@ -1633,12 +1635,16 @@ public class TmgScheduleBean {
 
                     } else {
                         flag = false;
+                        globalResponse = GlobalResponse.error("週勤務パターンリストを取得失敗しました");
                         logger.error("週勤務パターンリストを取得失敗しました");
+                        return globalResponse;
                     }
 
                 } else {
                     flag = false;
+                    globalResponse = GlobalResponse.error("JSON対象がオブジェクトに変更することが失敗しました");
                     logger.error("JSON対象がオブジェクトに変更することが失敗しました");
+                    return globalResponse;
                 }
 
                 String _errCode = "0";
@@ -1678,7 +1684,16 @@ public class TmgScheduleBean {
                 String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
                 if (!_errCode.equals(errCode)) {
                     logger.error("週勤務パターン登録の際は、エラーが発生しました!");
-                    return false;
+                    JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
+                    Iterator it = jsonObject_err.values().iterator();
+                    String errMsg = "";
+                    while(it.hasNext()){
+                        JSONArray value = (JSONArray)it.next();
+                        jsonObject_err = (JSONObject)value.get(0);
+                        errMsg = jsonObject_err.get("ERRMSG")==null?"":jsonObject_err.get("ERRMSG").toString();
+                    }
+                    globalResponse = GlobalResponse.error(errMsg);
+                    return globalResponse;
                 }
                 iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
                 iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
@@ -1687,9 +1702,10 @@ public class TmgScheduleBean {
             }
         } else {
             flag = false;
+            globalResponse = GlobalResponse.error("JSON対象ではありません");
             logger.error("JSON対象ではありません");
         }
-        return flag;
+        return globalResponse;
     }
 
 
