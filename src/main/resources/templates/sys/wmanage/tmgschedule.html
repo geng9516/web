@@ -512,6 +512,7 @@
                 tableData3:[],
                 showWeekHistory: false,
                 tableDataUsed: [],
+                tableDataUsedbak: [],
                 columnsUsed: [
                     {
                         title: '適用開始日',
@@ -626,12 +627,10 @@
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
                     EmployeeCode:'',
-                    twp_nid:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                    content:'',
                     sectionid:'',
                 },
                 updateWeekPtnParam:{
@@ -772,7 +771,6 @@
                 const that = this
 
                 this.valueMap.map(Number).forEach(e=>{
-                    console.log("ee"+e)
                     let index=e
                     Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
@@ -877,6 +875,7 @@
                 this.sectionName = e[0].secnic
                 this.query.EmployeeCode = e[0].empid
                 this.kanjiName = e[0].empname
+                this.deptName = e[0].secnic
                 this.selectDisabled = true
                 this.wokertypename=e[0].wokertypename
                 this.query.sectionid= e[0].secid
@@ -889,6 +888,8 @@
 
             },
             async getSelectScheduleInfo() {
+                this.nextMonthDisable=false
+                this.preMonthDisable=false
                 const handleTime = Vue.filter('handleTime');
                 this.loading=true
                 try {
@@ -904,6 +905,7 @@
                         }
                         return item;
                     })
+                    console.log("scheduleDataDTOList "+JSON.stringify(this.scheduleDataDTOList))
                     this.yyyyMMdd=this.selectScheduleInfo.period
                     if(this.selectScheduleInfo.nextStart=='' ||this.selectScheduleInfo.nextEnd==''){
                         this.nextMonthDisable=false
@@ -945,6 +947,7 @@
                 try{
                     const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
                     this.tableDataUsed=data
+                    this.tableDataUsedbak=JSON.parse(JSON.stringify(data))
                 }catch (e) {
                     return
                 }finally {
@@ -967,8 +970,8 @@
             async selectWeekPatternInfo(i){
                 this.weekPatternloading = true
                 try{
-                        this.query.twp_nid= this.tableDataUsed[i].twp_nid
-                        const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, this.query)
+                        const query ={...this.query,twp_nid:this.tableDataUsed[i].twp_nid}
+                        const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, query)
                         this.applyStartTime=data.twp_dstartdate
                         this.applyEndTime=data.twp_denddate
                         let index=-1;
@@ -995,6 +998,11 @@
                     }
             },
             async updateWeekPatternInfo(index){
+
+                if(JSON.stringify(this.tableDataUsed[index])==JSON.stringify(this.tableDataUsedbak[index])){
+                    this.$Message.error("データは変更されません")
+                    return
+                }
                console.log("updateWeekPatternInfo"+index)
                 let startdate=this.tableDataUsed[index].twp_dstartdate
                 let enddate=this.tableDataUsed[index].twp_denddate
@@ -1003,6 +1011,14 @@
                     this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
                     return
                 }
+
+                let curDate=Utils.formatDate(new Date(),"YYYY/MM/DD")
+                let msg=`適用終了日は${curDate}以降を入力してください。`
+                if(new Date()>new Date(enddate)){
+                    this.$Message.error(msg)
+                    return
+                }
+
                 this.weekPatternloading2=true
                 try{
                     this.updateWeekPtnParam.txtACTION='ACT_MakeWeekPattern_UWPtn'
@@ -1010,6 +1026,9 @@
                     this.updateWeekPtnParam.twp_denddate=enddate
                     this.updateWeekPtnParam.twp_nid=nid
                     const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, this.updateWeekPtnParam)
+                    if(data){
+                        this.$Message.success('更新完了')
+                    }
                     this.selectTmgWeekPatternList()
                 }catch (e) {
                     return
@@ -1021,9 +1040,9 @@
             },
             async deleteWeekPtn(index){
                 this.weekPatternloading2=true
-                this.query.twp_nid= this.tableDataUsed[index].twp_nid
+                const query ={...this.query,twp_nid:this.tableDataUsed[index].twp_nid}
                 try{
-                    const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, this.query)
+                    const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, query)
                 }catch(e){
                     return
                 }finally {
@@ -1134,19 +1153,20 @@
 
 
                     })
+                    console.log("result"+result)
                     if(result){
                         return
                     }
                     this.weekPatternloading2=true
-                    this.query.content=JSON.stringify(this.value2)
+                    const query={...this.query,content:JSON.stringify(this.value2) }
+
                     try{
-                        await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,this.query)
+                        await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,query)
                     }catch (e) {
-                        return
+                        this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
                     }finally {
                         this.weekPatternloading2=false
                     }
-                    this.query.content=''
                     this.selectTmgWeekPatternList()
                     this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
                             let id='TMG_WORK|000'
@@ -1311,17 +1331,20 @@
                     loginUserId: [[${ session.psSession.loginEmployee }]]
                 }
 
-                this.query.content=JSON.stringify(content)
-                console.log(JSON.stringify(this.query.content))
+
+
+
+                const query = {...this.query,content:JSON.stringify(content) }
+
+                console.log(JSON.stringify(query))
                 try{
                     this.postScheduleLoading=true
                     this.loading=true
-                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
+                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
                     this.$Message.success('登録完了')
                 }catch (e) {
                     return
                 }finally {
-                    this.query.content=''
                     this.isEditable=false
                     this.valueMap=[]
                     this.postScheduleLoading=false
