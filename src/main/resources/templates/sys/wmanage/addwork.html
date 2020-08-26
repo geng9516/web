@@ -27,7 +27,8 @@
 
                 <i-button type="primary" ghost icon="md-nutrition" v-if="countNotApprovalDay ==='0' && isConfirm !== 'TMG_DATASTATUS|5' && flexTime ==='0:00'"  @click="updateMonth('approval')" :loading="updateMonthloading">承認</i-button>
                 <i-button icon="md-nutrition" disabled v-else-if="isConfirm !== 'TMG_DATASTATUS|5'">承認</i-button>
-                <i-button type="error" icon="md-done-all" v-if="isConfirm === 'TMG_DATASTATUS|5'" @click="updateMonth('cancel')" :loading="updateMonthloading">解除</i-button>
+                <i-button type="error" icon="md-done-all" v-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed !=1 " @click="updateMonth('cancel')" :loading="updateMonthloading">解除</i-button>
+                <i-button type="error" icon="md-done-all"  disabled v-else-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed ===1 ">解除</i-button>
             </div>
         </div>
         <div class="searchwrap">
@@ -446,6 +447,7 @@
                 kanjiName: '',
                 monthlyLoading:false, //承认状态刷新
                 isConfirm: '', // 承認ステータス
+                isFixed:'', //月次確定情報
                 isSearchHistory: false, //是否允许点击遮罩层关闭
                 selectedDeptViewType: 3, //类型选择
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
@@ -883,6 +885,7 @@
                     this.monthlyMap = data.monthlyDateMap
                     this.flexTime=data.flexTime
                     this.isConfirm = data.monthlyDateMap.TMO_CSTATUSFLG
+                    this.isFixed = data.monthlyDateMap.FIXED
                     this.today=sysDate
                     this.columns = data.dailyTittleMapList.map(e => {
                         return {

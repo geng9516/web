@@ -163,7 +163,7 @@
         SELECT
             to_char(TMO_DYYYYMM, 'yyyy/MM/dd') TMO_DYYYYMM,      <!-- 年月 -->
             TMO_CSTATUSFLG,                                      <!-- ステータスフラグ -->
-            TMG_F_IS_FIXED_MONTHLY(TMO_CEMPLOYEEID, TMO_DYYYYMM, TMO_CCUSTOMERID, TMO_CCOMPANYID) <!-- 月次確定判定情報-->
+            TMG_F_IS_FIXED_MONTHLY(TMO_CEMPLOYEEID, TMO_DYYYYMM, TMO_CCUSTOMERID, TMO_CCOMPANYID) FIXED<!-- 月次確定判定情報-->
         <!-- 表示項目のselect句を取得し、joinでカンマ結合する -->
         <foreach collection="list" item="params" index ="index" open="," separator =","  close="">
             ${params}
