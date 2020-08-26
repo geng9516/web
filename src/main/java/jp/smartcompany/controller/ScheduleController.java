@@ -1,5 +1,6 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
@@ -203,10 +204,10 @@ public class ScheduleController {
      */
     @PostMapping("executeMakeWeekPattern")
     @ResponseBody
-    public boolean executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
-                                                @RequestParam("txtEndDate") String txtEndDate,
-                                                @RequestParam("content") String content,
-                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public GlobalResponse executeMakeWeekPattern_UWPtn(@RequestParam("txtBaseDate") String txtBaseDate,
+                                                       @RequestParam("txtEndDate") String txtEndDate,
+                                                       @RequestParam("content") String content,
+                                                       @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //   System.out.println("controller-->executeMakeWeekPattern_UWPtn");
         return tmgScheduleBean.executeMakeWeekPattern_UWPtn(content, psDBBean);
     }

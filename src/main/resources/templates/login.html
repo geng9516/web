@@ -6,7 +6,7 @@
 <body>
 <div th:replace="layout/loadingBar::loadingBar"></div>
 <svg th:replace="layout/logos::svg_logos"></svg>
-<div class="login" th:with="baseUrl = ${#httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath()}">
+<div class="login">
     <Row>
         <i-col span="12" class="left-part">
             <svg class="top-logo">
@@ -22,6 +22,7 @@
                     <svg class="logo-warp">
                         <use xlink:href="#logo"></use>
                       </svg>
+                      <div class="tr" style="ont-size: 16px;">公的機関向け就業管理システム</div>
                 </div>
                 <div class="login-content">
                     <p class="login-label">アカウント</p>
@@ -145,7 +146,11 @@
                         // 以防不备时的原生提交，应给form加上method, action以及password和username加上name就好
                         // this.$refs.login.$el.submit()
                     } catch (error) {
+                        // 账户过期
                         console.log(error)
+                        if(error.status === 303) {
+                            location.href = '/expirePassword'
+                        }
                         this.loading = false
                         this.clockDisable = false
                     }
