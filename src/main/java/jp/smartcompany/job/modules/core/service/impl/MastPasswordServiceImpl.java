@@ -29,4 +29,9 @@ public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, Mas
                 return list(qw);
         }
 
+        @Override
+        public List<MastPasswordDO> selectSinglePassword(String username, String passwordHisCnt) {
+                return baseMapper.selectSinglePassword(username,passwordHisCnt);
+        }
+
 }

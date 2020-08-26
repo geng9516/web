@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.CoreError;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
+import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
@@ -43,6 +44,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -103,45 +105,32 @@ public class AuthBusiness {
         subject.login(token);
     }
 
-    public void changeExpirePassword() {
-//        // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
-//        List<MastPasswordEntity> lMastPasswordList =
-//                this.changePasswordDao.select(sLoginUser, "1");
-//
-//        if (lMastPasswordList.size() > 0) {
-//            MastPasswordEntity passwordEntity = (MastPasswordEntity) lMastPasswordList.get(0);
-//            Date dDate = new Date();
-//            String sTodate = PsV4Util.transDateToString(dDate);
-//            Timestamp tDate = null;
-//            try {
-//                tDate = PsV4Util.transStringToTimestamp(sTodate);
-//            } catch (ParseException e) {
-//                throw new AppParameterInvalidException(
-//                        ChangePasswordLogicImpl.ERR_SYSTEM_DATE,
-//                        ChangePasswordLogicImpl.DATE_FORMAT);
-//            }
-//
-//            if (tDate.equals(passwordEntity.getMapDpwddate())) {
-//
-//                // 当日：複数回パスワード変更対応用パスワードマスタ 更新
-//                MastPasswordEntity oEntity = this.setData(sLoginUser, sPassword);
-//                oEntity.setMapId(passwordEntity.getMapId());
-//                oEntity.setVersionNo(passwordEntity.getVersionNo());
-//                this.changePasswordDao.updatePassword(oEntity);
-//            } else {
-//                // パスワードマスタ 更新（履歴No +1）
-//                this.mastPasswordUpdateDao.updateHistory(sLoginUser);
-//
+    public void changeExpirePassword(ChangePasswordDTO dto) {
+        // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
+        List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
+        if (CollUtil.isNotEmpty(lMastPasswordList)) {
+            MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
+            Date dDate = DateUtil.date();
+
+            if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
+                // 当日：複数回パスワード変更対応用パスワードマスタ 更新
+                MastPasswordDO oEntity = setData(dto.getUsername(), dto.getNewPassword());
+                oEntity.setMapId(passwordEntity.getMapId());
+                oEntity.setVersionno(passwordEntity.getVersionno());
+                iMastPasswordService.updateById(oEntity);
+            } else {
+                // パスワードマスタ 更新（履歴No +1）
+//                mastPasswordUpdateDao.updateHistory(sLoginUser);
 //                // パスワードマスタ 新規登録
 //                this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
-//            }
-//        } else {
+            }
+        } else {
 //            // パスワードマスタ 更新（履歴No +1）
 //            this.mastPasswordUpdateDao.updateHistory(sLoginUser);
 //
 //            // パスワードマスタ 新規登録
 //            this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
-//        }
+        }
     }
 
     public void logout() {
@@ -470,6 +459,24 @@ public class AuthBusiness {
             lruCache.put(LOGIN_PERMISSIONS,perms);
         }
         return perms;
+    }
+
+    /**
+     * 登録データをEntityへ設定する.
+     * @param sUserid ユーザID
+     * @param sPassword パスワード
+     * @return パスワード変更処理用Entity
+     */
+    private MastPasswordDO setData(final String sUserid, final String sPassword) {
+        Date dDate = DateUtil.date();
+        MastPasswordDO passwdEntity = new MastPasswordDO();
+        passwdEntity.setMapCuserid(sUserid);                         // ユーザID
+        passwdEntity.setMapNhistory(0L);              // 履歴No
+        passwdEntity.setMapCpassword(sPassword);                     // パスワード
+        passwdEntity.setMapDpwddate(dDate); // パスワード設定日
+        passwdEntity.setMapCmodifieruserid(sUserid);                       // 更新者
+        passwdEntity.setMapDmodifieddate(dDate);  // 更新日
+        return passwdEntity;
     }
 
     private void convertDbData(List<GroupAppManagerPermissionDTO> tmgPermList, List<Entity> tmgPermEntityList) {

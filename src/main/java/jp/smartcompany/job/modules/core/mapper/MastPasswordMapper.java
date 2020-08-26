@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.core.mapper;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +19,6 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface MastPasswordMapper extends BaseMapper<MastPasswordDO> {
 
-        }
+   List<MastPasswordDO> selectSinglePassword(@Param("username") String username,@Param("hisCnt") String passwordHisCnt);
+
+}
