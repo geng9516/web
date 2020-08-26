@@ -138,10 +138,9 @@
                                 <Row>
                                     <i-col span="20" style="margin-left: 4.5%" class="description light-grey">{{ item.tntfCowncomment }}</i-col>
                                 </Row>
-                                <!-- todo: 需要根据状态判断 -->
-                                <Row v-if="item.status === 2">
+                                <Row v-if="item.tntfCbosscomment">
                                     <i-col span="20" style="margin-left: 4.5%" class="description">
-                                        {{ `承認者コメント：${item.tntfCcancelcomment || item.tntfCbosscomment}` }}</i-col>
+                                        {{ `承認者コメント：${item.tntfCbosscomment}` }}</i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">

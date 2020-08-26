@@ -212,15 +212,12 @@
             <span class="input-like-span tl" style="border-radius: 5px;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
 
-          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1">
+          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1">
             <i-input class="tl" type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"></i-input>
           </form-item>
 
-          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('5') > -1">
+          <form-item label="承認者コメント" v-else>
             <span class="input-like-span"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
-          </form-item>
-          <form-item label="取消者コメント" v-if="detailsStatus.indexOf('5') > -1">
-            <i-input  class="tl"  type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCcancelcomment" ></i-input>
           </form-item>
 
           <form-item label="添付ファイル"
@@ -1020,7 +1017,7 @@
           // comment
           query.owncomment = this.detailsData.tntfCowncomment
           query.bosscomment = this.detailsData.tntfCbosscomment
-          query.cancelcomment = this.detailsData.tntfCcancelcomment
+          //query.cancelcomment = this.detailsData.tntfCcancelcomment
           // 起算日
           query.txtPeriod = this.detailsData.tntfDperiodDate
 
