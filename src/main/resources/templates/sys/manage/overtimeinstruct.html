@@ -158,28 +158,28 @@
                 <!-- 一括適用table start -->
                 <i-table border :columns="columnsAction" :data="columnsActionData">
                     <template slot-scope="{ row }" slot="startTime">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen"
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen" class="tl"
                             @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNOpen', $event.target)" />
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose"
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sNClose" class="tl"
                             @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNClose', $event.target)" />
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100"
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl"
                             :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime" v-if="!restTimeSetDisable">
                         <Row :gutter="10">
                             <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen"
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" class="tl"
                                     @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestOpen', $event.target)" />
                             </i-col>
                             <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose"
+                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" class="tl"
                                     @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestClose', $event.target)" />
                             </i-col>
                         </Row>
@@ -217,7 +217,7 @@
 
                     <template slot-scope="{ row }" slot="startTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen"
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl"
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)">
                             </i-input>
                         </div>
@@ -225,7 +225,7 @@
 
                     <template slot-scope="{ row }" slot="endTime">
                         <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose"
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl"
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)">
                             </i-input>
                         </div>
@@ -269,13 +269,13 @@
                             class="mb2">
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
                                 <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"
-                                    :disabled="restTimeSetDisable"
+                                    :disabled="restTimeSetDisable" class="tl"
                                     @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestOpen', $event.target)">
                                 </i-input>
                             </i-col>
                             <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
                                 <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"
-                                    :disabled="restTimeSetDisable"
+                                    :disabled="restTimeSetDisable" class="tl"
                                     @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestClose', $event.target)">
                                 </i-input>
                             </i-col>
