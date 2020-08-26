@@ -13,10 +13,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @author Xiao Wenpeng
@@ -35,11 +32,14 @@ public class AuthController {
      * @return String
      */
     @GetMapping("login")
-    public String toLogin() {
+    public String toLogin(@RequestAttribute("isMobile")Boolean isMobile) {
         if (ShiroUtil.isAuthenticated()) {
             return "redirect:/sys";
         }
-        return "login";
+        if (!isMobile) {
+            return "login";
+        }
+        return "mobile/login";
     }
 
     /**
