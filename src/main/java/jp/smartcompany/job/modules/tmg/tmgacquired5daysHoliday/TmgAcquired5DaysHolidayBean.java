@@ -13,7 +13,6 @@ import jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.UpdateAcquired
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
-import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -90,9 +89,12 @@ public class TmgAcquired5DaysHolidayBean {
         String empsql = referList.buildSQLForSelectEmployees();
 
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
-        for (int i = 0; i < acquired5DaysVOList.size() ; i++) {
-            if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())){
-                acquired5DaysVOList.get(i).setTaCduplicateflg("1");
+        // 重複Flg判断
+        for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
+            if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
+                    && Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
+                    && DateUtil.betweenMonth(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaDyyyymmdd3()),DateUtil.parse(acquired5DaysVOList.get(i).getTaDyyyymmdd3()),true)<12
+            ){
                 acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
             }
         }
