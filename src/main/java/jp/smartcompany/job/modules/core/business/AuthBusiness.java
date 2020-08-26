@@ -179,7 +179,7 @@ public class AuthBusiness {
         loginAuditService.save(loginAuditDO);
     }
 
-    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds) throws SQLException {
+    public List<MenuGroupBO> getUserPerms(String systemId,String language,List<String> groupIds,String employId) {
 
         List<Object> commonParams = CollUtil.newArrayList();
         String sql = "SELECT DISTINCT MGP_CGROUPID,NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP," +
@@ -212,6 +212,7 @@ public class AuthBusiness {
                 "AND MTR_CTYPE <> '0' " +
                 "AND MTR_CSITEID = ? "+
                 "ORDER BY MTR_NSEQ,MG_NWEIGHTAGE,MGP_CGROUPID";
+
         Connection conn = null;
         String date = SysUtil.transDateToString(DateUtil.date());
         commonParams.add(date);
@@ -227,15 +228,22 @@ public class AuthBusiness {
             conn = dataSource.getConnection();
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             conn.setReadOnly(true);
-            List<Object> tmgPermParams = CollUtil.newArrayList();
-            tmgPermParams.addAll(commonParams);
-            tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);
-            Object[] permParams = new String[tmgPermParams.size()];
-            for (int i = 0; i < tmgPermParams.size(); i++) {
-                permParams[i] = tmgPermParams.get(i);
+
+            String countEvaluater = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '"+employId+"' AND TEV_DSTARTDATE <= SYSDATE AND TEV_DENDDATE >= SYSDATE";
+            List<Entity> evaluaterCount = SqlExecutor.query(conn,countEvaluater,new EntityListHandler());
+            // 为0则表示不是承认者，不显示承认site
+            int count = evaluaterCount.get(0).getInt("COUNT");
+            if (count>0) {
+                List<Object> tmgPermParams = CollUtil.newArrayList();
+                tmgPermParams.addAll(commonParams);
+                tmgPermParams.add(TmgUtil.Cs_SITE_ID_TMG_PERM);
+                Object[] permParams = new String[tmgPermParams.size()];
+                for (int i = 0; i < tmgPermParams.size(); i++) {
+                    permParams[i] = tmgPermParams.get(i);
+                }
+                List<Entity> tmgPermEntityList = SqlExecutor.query(preparedStatement, new EntityListHandler(), permParams);
+                convertDbData(tmgPermList, tmgPermEntityList);
             }
-            List<Entity> tmgPermEntityList = SqlExecutor.query(preparedStatement,new EntityListHandler(),permParams);
-            convertDbData(tmgPermList, tmgPermEntityList);
 
             List<Object> tmgAdminParams = CollUtil.newArrayList();
             tmgAdminParams.addAll(commonParams);
@@ -249,7 +257,7 @@ public class AuthBusiness {
 
             List<Object> tmgInpParams = CollUtil.newArrayList();
             tmgInpParams.addAll(commonParams);
-            tmgInpParams.add( TmgUtil.Cs_SITE_ID_TMG_INP);
+            tmgInpParams.add(TmgUtil.Cs_SITE_ID_TMG_INP);
             Object[] inpParams = new String[tmgInpParams.size()];
             for (int i = 0; i < tmgInpParams.size(); i++) {
                 inpParams[i] = tmgInpParams.get(i);

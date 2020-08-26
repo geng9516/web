@@ -406,9 +406,9 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     }
 
     // 加载系统菜单
-    private void loadMenus(String systemCode,  List<MastSystemDO> systemList) throws SQLException {
+    private void loadMenus(String systemCode,  List<MastSystemDO> systemList) {
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
-        Map<String,List<LoginGroupBO>> loginGroupList =  session.getLoginGroups();
+        Map<String,List<LoginGroupBO>> loginGroupList = session.getLoginGroups();
         List<LoginGroupBO> groupList = CollUtil.newArrayList();
         systemList.forEach(system ->
             loginGroupList.forEach((key,value)-> {
@@ -419,7 +419,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         );
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
-        List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes);
+        List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,session.getLoginEmployee());
         httpSession.setAttribute(Constant.TOP_NAVS,menuGroupList);
     }
 

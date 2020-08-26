@@ -63,6 +63,7 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
         if (e instanceof ExpiredCredentialsException) {
             status = HttpStatus.FORBIDDEN.value();
         }
+        resp.setStatus(status);
         response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status, e.getMessage())));
         return false;
     }
