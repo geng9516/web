@@ -27,6 +27,7 @@ import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastGroupapppermissionService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
 import jp.smartcompany.job.modules.core.service.LoginAuditService;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.SecurityUtils;
@@ -44,7 +45,6 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -134,10 +134,10 @@ public class AuthBusiness {
     }
 
     public void logout() {
-        String username = ShiroUtil.getUsername();
-        saveLoginInfo(false, username);
         HttpSession session = ContextUtil.getHttpRequest().getSession();
-        if (session.getAttribute(Constant.PS_SESSION)!=null) {
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
+        if (psSession!=null) {
+            saveLoginInfo(false, psSession.getLoginUser());
             session.removeAttribute(Constant.PS_SESSION);
             session.removeAttribute(Constant.TOP_NAVS);
             ShiroUtil.getSubject().logout();
