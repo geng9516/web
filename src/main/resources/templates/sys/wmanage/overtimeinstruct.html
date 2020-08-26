@@ -200,7 +200,7 @@
                         全選択
                     </i-button>
                 </div>
-                <i-table border :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
+                <i-table border class="hack" :row-class-name="() => 'select-col'" :columns="columns3" :data="tableData3" ref="selection2" :loading="dailyTableLoading">
                     <template slot-scope="{ row }" slot="name">
                         <span>{{ row.empName }}</span>
                     </template>
@@ -225,7 +225,7 @@
                         <Row :gutter="10" v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i"
                             class="mb2">
                             <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
-                                <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea"
+                                <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea" class="tl"
                                     :autosize="{ minRows: 2, maxRows: 5 }"
                                     :maxlength="100"
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
@@ -234,6 +234,15 @@
                                 <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
+                                <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
+                                class="confirm-sytle ing">待</span>
+                            <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('5') > -1"
+                                class="confirm-sytle">確</span>
+                            <span
+                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
+                                class="confirm-sytle">命</span>
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
@@ -244,19 +253,8 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="workApplyStatus">
-                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
-                            <span
-                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
-                                class="confirm-sytle ing">待</span>
-                            <span
-                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('5') > -1"
-                                class="confirm-sytle">確</span>
-                            <span
-                                v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
-                                class="confirm-sytle">命</span>
-                        </div>
-                    </template>
 
+                    </template>
                     <template slot-scope="{ row }" slot="restTime">
                         <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"
                             class="mb2">
@@ -670,7 +668,7 @@
                                             cursor: 'pointer',
                                         },
                                         domProps: {
-                                            //className: 'table-head',
+                                            className: 'table-head',
                                             innerHTML: e.tableTop,
                                         },
                                         on: {
