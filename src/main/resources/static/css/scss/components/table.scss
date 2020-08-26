@@ -113,7 +113,6 @@
   // 日间表格 激活class
   tr {
     &.select-col:hover td {
-      cursor: pointer;
       background-color: var(--table-td-hover);
       .ivu-progress-bg:before {
         content: '';
