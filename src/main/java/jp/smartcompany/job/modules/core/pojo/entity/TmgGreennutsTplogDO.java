@@ -1,10 +1,8 @@
 package jp.smartcompany.job.modules.core.pojo.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+
 import java.util.Date;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import lombok.*;
 import lombok.experimental.Accessors;
@@ -23,14 +21,15 @@ import lombok.experimental.Accessors;
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
 @TableName("tmg_greennuts_tplog")
+@KeySequence("tmg_greennuts_tplog_seq")
 public class TmgGreennutsTplogDO implements Serializable {
 
 private static final long serialVersionUID=1L;
 
         /**
-         * id                                                          tmg_greennuts_tplog_seq
+         * id
          */
-                @TableId(value = "tgtl_nid", type = IdType.AUTO)
+                @TableId("tgtl_nid")
                 private Long tgtlNid;
 
         /**
