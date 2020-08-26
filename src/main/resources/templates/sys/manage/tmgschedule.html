@@ -45,11 +45,11 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                             <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange" transfer></date-picker>
                             </i-col>
                             <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                             <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange" transfer>
                                 <i-option :value="1">全て</i-option>
                                 <i-option :value="2">グループごとに</i-option>
                                 <i-option :value="3">部署ごとに</i-option>
@@ -379,7 +379,6 @@
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     type: 11,
-                    txtBaseDate:''
                 },
                 selectedDeptViewType: 3,
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
@@ -397,7 +396,6 @@
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     txtBaseDate:'',
                     txtEndDate:'',
-                    content:'',
                     sectionid:'',
                     groupid:'',
                 },
@@ -522,7 +520,6 @@
                 const that = this
 
                 this.valueMap.map(Number).forEach(e=>{
-                    console.log("ee"+e)
                     let index=e
                     Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
@@ -604,6 +601,7 @@
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
                 this.kanjiName = e[0].empname
+                this.deptName = e[0].secnic
                 this.loginEmployee = e[0].empid
                 this.query.EmployeeCode = e[0].empid
                 this.selectDisabled = true
@@ -619,6 +617,8 @@
                 await this.getHatuRei()
             },
             async getSelectScheduleInfo() {
+                this.nextMonthDisable=false
+                this.preMonthDisable=false
                 const handleTime = Vue.filter('handleTime');
                 this.loading=true
                 try {
@@ -828,17 +828,18 @@
                     loginUserId: [[${ session.psSession.loginEmployee }]]
                 }
 
-                this.query.content=JSON.stringify(content)
-                console.log("postExecuteEditMonthlyUSchedule"+this.query.content)
+
+                const query = {...this.query,content:JSON.stringify(content) }
+
+                console.log("postExecuteEditMonthlyUSchedule"+query)
                 try{
                     this.postScheduleLoading=true
                     this.loading=true
-                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,this.query)
+                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
                     this.$Message.success('登録完了')
                 }catch (e) {
                     return
                 }finally {
-                    this.query.content=''
                     this.isEditable=false
                     this.valueMap=[]
                     this.postScheduleLoading=false
