@@ -1011,6 +1011,14 @@
                     this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
                     return
                 }
+
+                let nextMonthStr=Utils.formatDate(this.nextMonthFirstDay,"YYYY/MM/DD")
+                let msg=`適用終了日は${nextMonthStr}以降を入力してください。`
+                if(this.nextMonthFirstDay>new Date(enddate)){
+                    this.$Message.error(msg)
+                    return
+                }
+
                 this.weekPatternloading2=true
                 try{
                     this.updateWeekPtnParam.txtACTION='ACT_MakeWeekPattern_UWPtn'
