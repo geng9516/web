@@ -108,10 +108,13 @@ public class AuthBusiness {
     public void changeExpirePassword(ChangePasswordDTO dto) {
         // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
+        MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
+        // 如果旧密码不正确则不允许修改
+        if (!StrUtil.equals(passwordEntity.getMapCpassword(),dto.getOldPassword())) {
+           throw new GlobalException("古いパスワードは間違います");
+        }
         if (CollUtil.isNotEmpty(lMastPasswordList)) {
-            MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
             Date dDate = DateUtil.date();
-
             if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
                 // 当日：複数回パスワード変更対応用パスワードマスタ 更新
                 MastPasswordDO oEntity = setData(dto.getUsername(), dto.getNewPassword());
@@ -120,16 +123,15 @@ public class AuthBusiness {
                 iMastPasswordService.updateById(oEntity);
             } else {
                 // パスワードマスタ 更新（履歴No +1）
-//                mastPasswordUpdateDao.updateHistory(sLoginUser);
-//                // パスワードマスタ 新規登録
-//                this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
+//                iMastPasswordService.updateHistory(dto.getUsername());
+                // パスワードマスタ 新規登録
+                iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
             }
         } else {
-//            // パスワードマスタ 更新（履歴No +1）
-//            this.mastPasswordUpdateDao.updateHistory(sLoginUser);
-//
-//            // パスワードマスタ 新規登録
-//            this.changePasswordDao.insert(this.setData(sLoginUser, sPassword));
+            // パスワードマスタ 更新（履歴No +1）
+//            iMastPasswordService.updateHistory(dto.getUsername());
+            // パスワードマスタ 新規登録
+            iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
         }
     }
 
