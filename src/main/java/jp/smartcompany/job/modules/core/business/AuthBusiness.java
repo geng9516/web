@@ -118,7 +118,7 @@ public class AuthBusiness {
         // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
         MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
-        if (StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
+        if (!StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
             throw new GlobalException(400,"パスワードの確認はまちがいます");
         }
         // 如果旧密码不正确则不允许修改
