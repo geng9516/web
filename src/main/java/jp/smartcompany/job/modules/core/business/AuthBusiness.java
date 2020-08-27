@@ -66,6 +66,7 @@ public class AuthBusiness {
     private final LRUCache<Object,Object> lruCache;
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
+    private final HttpSession httpSession;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 

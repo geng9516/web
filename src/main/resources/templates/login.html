@@ -147,9 +147,8 @@
                         // this.$refs.login.$el.submit()
                     } catch (error) {
                         // 账户过期
-                        console.log(error)
                         if(error.status === 303) {
-                            location.href = '/expirePassword'
+                             location.href = '/expirePassword?username='+error.data.msg
                         }
                         this.loading = false
                         this.clockDisable = false
