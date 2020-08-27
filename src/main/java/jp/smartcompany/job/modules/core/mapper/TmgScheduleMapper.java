@@ -349,4 +349,23 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      */
     int updateWeekPattern(HashMap<String, Object> params);
 
+    /**
+     * * 対象職員について、開始日～終了日の勤怠締め有無、給与確定有無を判定して返します。
+     * * この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * * 第3引数"all"がtrueであれば、指定された期間全てが勤怠締め完了（または給与確定完了）の場合に1を返します。
+     * * falseであれば、指定された期間のうち1月でも勤怠締め完了（または給与確定完了）の場合に1を返します。
+     *
+     * @param params
+     * @return
+     */
+    TmgStatusDTO buildSQLForSelectTmgStatus(HashMap<String, Object> params);
+
+    /**
+     *  * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     * 	* この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * @param params
+     * @return
+     */
+    List<TmgStatusDTO> buildSQLForSelectTmgStatus2(HashMap<String, Object> params);
+
 }
