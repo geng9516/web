@@ -94,7 +94,9 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/error","anon");
         filterChainDefinitionMap.put("/stamping","anon");
         filterChainDefinitionMap.put("/login", "anon");
+
         filterChainDefinitionMap.put("/expirePassword","anon");
+        filterChainDefinitionMap.put("/changeExpirePassword","anon");
 
         filterChainDefinitionMap.put("/logout", "user");
         filterChainDefinitionMap.put("/index","user");
