@@ -21,4 +21,5 @@ public interface MastPasswordMapper extends BaseMapper<MastPasswordDO> {
 
    List<MastPasswordDO> selectSinglePassword(@Param("username") String username,@Param("hisCnt") String passwordHisCnt);
 
+   int updateHistory(String username);
 }

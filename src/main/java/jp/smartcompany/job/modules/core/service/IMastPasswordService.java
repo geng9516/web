@@ -31,4 +31,11 @@ public interface IMastPasswordService extends IService<MastPasswordDO> {
          */
         List<MastPasswordDO> selectSinglePassword(String username, String passwordHisCnt);
 
+        /**
+         * パスワード変更処理用（パスワードマスタ：履歴No +1）SQLファイル
+         * @param username
+         * @return
+         */
+        int updateHistory(String username);
+
 }

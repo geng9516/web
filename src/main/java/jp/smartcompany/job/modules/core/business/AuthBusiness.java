@@ -98,6 +98,10 @@ public class AuthBusiness {
         return true;
     }
 
+    /**
+     * 登录方法
+     * @param loginDTO
+     */
     public void login(LoginDTO loginDTO) {
         String username = loginDTO.getUsername();
         UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
@@ -105,10 +109,16 @@ public class AuthBusiness {
         subject.login(token);
     }
 
-    public void changeExpirePassword(ChangePasswordDTO dto) {
+    /**
+     * 登录密码
+     */
+    public void changePassword(ChangePasswordDTO dto,boolean execLogin) {
         // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
         MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
+        if (StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
+            throw new GlobalException("パスワードの確認はまちがいます");
+        }
         // 如果旧密码不正确则不允许修改
         if (!StrUtil.equals(passwordEntity.getMapCpassword(),dto.getOldPassword())) {
            throw new GlobalException("古いパスワードは間違います");
@@ -123,15 +133,22 @@ public class AuthBusiness {
                 iMastPasswordService.updateById(oEntity);
             } else {
                 // パスワードマスタ 更新（履歴No +1）
-//                iMastPasswordService.updateHistory(dto.getUsername());
+                iMastPasswordService.updateHistory(dto.getUsername());
                 // パスワードマスタ 新規登録
                 iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
             }
         } else {
             // パスワードマスタ 更新（履歴No +1）
-//            iMastPasswordService.updateHistory(dto.getUsername());
+            iMastPasswordService.updateHistory(dto.getUsername());
             // パスワードマスタ 新規登録
             iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
+        }
+        if (execLogin) {
+            // 修改完密码后进行登录
+            LoginDTO loginDTO = new LoginDTO();
+            loginDTO.setUsername(dto.getUsername());
+            loginDTO.setPassword(dto.getNewPassword());
+            login(loginDTO);
         }
     }
 
