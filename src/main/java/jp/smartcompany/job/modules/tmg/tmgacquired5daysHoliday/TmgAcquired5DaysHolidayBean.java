@@ -164,12 +164,12 @@ public class TmgAcquired5DaysHolidayBean {
             tmgPaiduseinfoFixDO.setTpfDmodifierdate(DateTime.now());
             tmgPaiduseinfoFixDO.setTpfCmodifierprogramid(PROGRAM_ID);
             tmgPaiduseinfoFixDO.setTpfCemployeeid(updateAcquired5DaysVO.getTxtUserCode());
+            tmgPaiduseinfoFixDO.setTpfFuyobi(DateUtil.parse(updateAcquired5DaysVO.getTxtFuyobi()));
             tmgPaiduseinfoFixDO.setTpfDpaidHolidayFix(DateUtil.parse(updateAcquired5DaysVO.getKijunbiEdit()));
             tmgPaiduseinfoFixDO.setTpfDkikanbiFix(DateUtil.parse(updateAcquired5DaysVO.getDkikanbiFix()));
-            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(Double.parseDouble(updateAcquired5DaysVO.getDkikanbiFix()));
             tmgPaiduseinfoFixDO.setTpfNusedaysAjdust(Double.parseDouble(updateAcquired5DaysVO.getUsedDaysEdit()));
+            tmgPaiduseinfoFixDO.setTpfNmustdaysFix(Double.parseDouble(updateAcquired5DaysVO.getTxtNusedaysDays()));
 
-            tmgPaiduseinfoFixDO.setTpfFuyobi(DateUtil.parse(updateAcquired5DaysVO.getTxtFuyobi()));
             iTmgPaiduseinfoFixService.getBaseMapper().insert(tmgPaiduseinfoFixDO);
         }
 

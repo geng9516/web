@@ -363,7 +363,7 @@
                                 align: 'center'
                             },
                             {
-                                title: '修正\n必要日数',
+                                title: '調整\n必要日数',
                                 className: 'checkin',
                                 slot: 'editMustDays',
                                 width: 100,
@@ -503,10 +503,10 @@
                 this.privateInfo.name = e.name
                 this.privateInfo.workType = e.type
 
-                this.query.txtUserCode = e.taCemployeeid
+                this.query.txtUserCode = e.cemployeeid0
                 this.query.kijunbi = e.basedDay
-                this.query.pdSearchStart = e.tpDntfSurveyStart
-                this.query.pdSearchEnd = e.tpDntfSurveyEnd
+                this.query.pdSearchStart = e.basedDay
+                this.query.pdSearchEnd = e.checkPeriod
                 //まずは年5日時季指定取得確認画面を開く
                 this.isShow = true
                 this.isSeason = true
@@ -524,33 +524,107 @@
                     this.$refs.editDatepicker.handleClear()
                 }
 
-                this.query.txtUserCode = e[0].taCemployeeid
+                this.query.txtUserCode = e[0].cemployeeid0
 
-                // const { data } = await this.http.get('sys/tmgacquired5daysholiday/edit', this.query)
-                // this.paidData = data
+                this.takenDaysDataLoading = true
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
+                if(data.length>0){
+                    let b = data.map((e,i) => {
+                        const vactionGiveDay = [{
+                            day:e.taDyyyymmdd3,
+                            isReGive: data[i].taCduplicateflg === '1'
+                        }]
+                        return {
+                            name:e.cemployeeName1,
+                            type:e.workertypeNm2,
+                            vactionGiveDay,
+                            paidDays:[e.taFuyodays4],
 
-                this.paidData = [e[0]]
-                // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
-                // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
-                if (e[0].taKijyunbi == null) {
-                    this.paidData[0].basedDay = '-'
-                } else {
-                    this.paidData[0].basedDay = e[0].taKijyunbi
+                            basedDay:e.taDyyyymmdd3,
+                            // checkPeriod:e.taDyyyymmdd3+12,
+                            checkPeriod:Utils.formatDate(Utils.addMonths(new Date(Date.parse(e.taDyyyymmdd3)),12), 'yyyy/mm/dd'),
+                            takenDays:e.sumSyutokudays7,
+                            mustDays:e.taMustdays8,
+                            lackDays:e.taLessdays9,
+
+                            editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
+                            editTakenDays:e.sumSyutokudays7,    //編集画面用_取得日数
+                            adjustTakenDays:e.tpfNusedaysAjdust13, //編集画面用_調整取得日数
+                            editCheckPeriod:e.tpfDkikanbiFix12, //修正期間チェック
+                            editMustDays:e.tpfNmustdaysDix14,    //修正必要日数
+                            detailshow:true,
+
+                            cemployeeid0:e.cemployeeid0,
+                            cemployeeName1:e.cemployeeName1,
+                            workertypeNm2:e.workertypeNm2,
+                            taDyyyymmdd3:e.taDyyyymmdd3,
+                            taFuyodays4:e.taFuyodays4,
+                            taKijyunbi5:e.taKijyunbi5,
+                            taKikanbi6:e.taKikanbi6,
+                            sumSyutokudays7:e.sumSyutokudays7,
+                            taMustdays8:e.taMustdays8,
+                            taLessdays9:e.taLessdays9,
+                            taRowpan10:e.taRowpan10,
+                            tpfDpaidHolidayFix11:e.tpfDpaidHolidayFix11,
+                            tpfDkikanbiFix12:e.tpfDkikanbiFix12,
+                            tpfNusedaysAjdust13:e.tpfNusedaysAjdust13,
+                            tpfNmustdaysDix14:e.tpfNmustdaysDix14,
+                            taCduplicateflg:e.taCduplicateflg
+                        }
+                    })
+
+                    const addNumDeci = Vue.filter('addNumDeci')
+                    //
+                    for (var i=0;i < b.length;i++){
+                        console.log("b[i].taKijyunbi5")
+                        console.log(b[i].taKijyunbi5)
+                        if (b[i].taKijyunbi5 == null){
+                            b[i].basedDay = "-"
+                            b[i].checkPeriod = "-"
+                            b[i].takenDays = "-"
+                            b[i].mustDays = "-"
+                            b[i].lackDays = "-"
+                            b[i].editTakenDays = "-"  //編集画面用‐取得日数
+                            b[i].adjustTakenDays = addNumDeci(b[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
+                            b[i].editMustDays = addNumDeci(b[i].tpfNmustdaysDix14,true) //編集画面用‐調整必要日数
+
+                            b[i].detailshow = false
+                        }
+                    }
+                    this.paidData = b
+
+                    console.log("this.paidData")
+                    console.log(this.paidData)
+                    this.takenDaysDataLoading = false
                 }
+                // else if(data.length == 0){
+                //     this.tableData = data
+                //     this.dataLoading = false
+                // }
+
+                // this.paidData = [e[0]]
+
+                // // 編集画面の基準日については、修正基準日あるかどうかにかかわらず、
+                // // 基準日：taKijyunbiが存在する場合、基準日で設定すること。
+                // if (e[0].taKijyunbi5 == null) {
+                //     this.paidData[0].basedDay = '-'
+                // } else {
+                //     this.paidData[0].basedDay = e[0].taKijyunbi5
+                // }
 
                 this.privateInfo.deptName = this.deptName
-                this.privateInfo.name = e[0].name
-                this.privateInfo.workType = e[0].type
+                this.privateInfo.name = this.paidData[0].name
+                this.privateInfo.workType = this.paidData[0].type
 
                 const addNumDeci = Vue.filter('addNumDeci')
                 //事前に
-                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd
+                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd3
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                this.updateAcquired5DaysVO.txtUserCode = e[0].taCemployeeid
+                this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
                 // this.updateAcquired5DaysVO.txtYear = '2020'
-                this.updateAcquired5DaysVO.kijunbi = e[0].taKijyunbi
-                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].editBasedDay
-                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfSyutokudaysAdjust,true)
+                this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
+                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfNusedaysAjdust13,true)
                 console.log("this.updateAcquired5DaysVO")
                 console.log(this.updateAcquired5DaysVO)
 
@@ -577,20 +651,20 @@
                 if(data.length>0){
                     let b = data.map((e,i) => {
                         const vactionGiveDay = [{
-                            day:e.taDyyyymmdd,
+                            day:e.taDyyyymmdd3,
                             isReGive: data[i].taCduplicateflg === '1'
                         }]
                         return {
-                            name:e.cemployeeName,
-                            type:e.workertypeNm,
+                            name:e.cemployeeName1,
+                            type:e.workertypeNm2,
                             vactionGiveDay,
-                            paidDays:[e.taFuyodays],
+                            paidDays:[e.taFuyodays4],
 
-                            basedDay:e.taKijyunbi,
-                            checkPeriod:e.taKikanbi,
-                            takenDays:e.tpSyutokudays,
-                            mustDays:e.taMustdays,
-                            lackDays:e.taLessdays,
+                            basedDay:e.taKijyunbi5,
+                            checkPeriod:e.taKikanbi6,
+                            takenDays:e.sumSyutokudays7,
+                            mustDays:e.taMustdays8,
+                            lackDays:e.taLessdays9,
 
                             editBasedDay:'',    //編集画面用_修正基準日
                             editTakenDays:'',    //編集画面用_取得日数
@@ -599,51 +673,43 @@
                             editMustDays:'',    //修正必要日数
                             detailshow:true,
 
-                            cemployeeName:e.cemployeeName,
-                            sumSyutokudays:e.sumSyutokudays,
-                            taCduplicateflg:e.taCduplicateflg,
-                            taCemployeeid:e.taCemployeeid,
-                            taDyyyymmdd:e.taDyyyymmdd,
-                            taFuyodays:e.taFuyodays,
-                            taKijyunbi:e.taKijyunbi,
-                            taKikanbi:e.taKikanbi,
-                            taLessdays:e.taLessdays,
-                            taMustdays:e.taMustdays,
-                            taRowpan:e.taRowpan,
-                            tpDntfSurveyEnd:e.tpDntfSurveyEnd,
-                            tpDntfSurveyStart:e.tpDntfSurveyStart,
-                            tpSyutokudays:e.tpSyutokudays,
-                            tpfKijyunbi:e.tpfKijyunbi,
-                            tpfKikanbi:e.tpfKikanbi,
-                            tpfLessdays:e.tpfLessdays,
-                            tpfMustdays:e.tpfMustdays,
-                            tpfSyutokudays:e.tpfSyutokudays,
-                            tpfSyutokudaysAdjust:e.tpfSyutokudaysAdjust,
-                            workertypeId:e.workertypeId,
-                            workertypeNm:e.workertypeNm,
-                            tpfHolidayendfix:e.tpfHolidayendfix,
-                            tpfNusedaysfix:e.tpfNusedaysfix
+                            cemployeeid0:e.cemployeeid0,
+                            cemployeeName1:e.cemployeeName1,
+                            workertypeNm2:e.workertypeNm2,
+                            taDyyyymmdd3:e.taDyyyymmdd3,
+                            taFuyodays4:e.taFuyodays4,
+                            taKijyunbi5:e.taKijyunbi5,
+                            taKikanbi6:e.taKikanbi6,
+                            sumSyutokudays7:e.sumSyutokudays7,
+                            taMustdays8:e.taMustdays8,
+                            taLessdays9:e.taLessdays9,
+                            taRowpan10:e.taRowpan10,
+                            tpfDpaidHolidayFix11:e.tpfDpaidHolidayFix11,
+                            tpfDkikanbiFix12:e.tpfDkikanbiFix12,
+                            tpfNusedaysAjdust13:e.tpfNusedaysAjdust13,
+                            tpfNmustdaysDix14:e.tpfNmustdaysDix14,
+                            taCduplicateflg:e.taCduplicateflg
                         }
                     })
                     let a=[]
                     for (var i=0;i < b.length;i++){
-                        if (b[i].taRowpan == 1) {
+                        if (b[i].taRowpan10 == 1) {
                             a.push(b[i])
-                        } else if (b[i].taRowpan > 1) {
+                        } else if (b[i].taRowpan10 > 1) {
                             a.push(b[i])
 
-                            let max = i + +b[i].taRowpan
+                            let max = i + +b[i].taRowpan10
                             for (var j=i+1;j <  max;j++){
                                 a[a.length-1].vactionGiveDay.push(b[j].vactionGiveDay[0])
                                 a[a.length-1].paidDays.push(b[j].paidDays[0])
                             }
-                            i = i + +b[i].taRowpan - 1
+                            i = i + +b[i].taRowpan10 - 1
                         }
                     }
                     const addNumDeci = Vue.filter('addNumDeci')
                     //
                     for (var i=0;i < a.length;i++){
-                        if (a[i].taKijyunbi == null && a[i].tpfKijyunbi == null){
+                        if (a[i].taKijyunbi5 == null){
                             a[i].basedDay = "-"
                             a[i].checkPeriod = "-"
                             a[i].takenDays = "-"
@@ -651,34 +717,35 @@
                             a[i].lackDays = "-"
 
                             a[i].editTakenDays = "-"  //編集画面用‐取得日数
-                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                            a[i].adjustTakenDays = addNumDeci(a[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
 
                             a[i].detailshow = false
-                        } else if (a[i].taKijyunbi != null && a[i].tpfKijyunbi == null) {
-                            a[i].basedDay = a[i].taKijyunbi
-                            a[i].checkPeriod = a[i].taKikanbi
-                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
-                            a[i].mustDays = a[i].taMustdays
-                            a[i].lackDays = a[i].taLessdays
-
-                            a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
-                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
-                            a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
-                            a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
-
-                        } else if (a[i].tpfKijyunbi != null) {
-                            a[i].basedDay = a[i].tpfKijyunbi
-                            a[i].checkPeriod = a[i].tpfKikanbi
-                            a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
-                            a[i].mustDays = a[i].tpfMustdays
-                            a[i].lackDays = a[i].tpfLessdays
-
-                            a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
-                            a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
-                            a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
-                            a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
-                            a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
                         }
+                        // else if (a[i].taKijyunbi5 != null) {
+                        //     a[i].basedDay = a[i].taKijyunbi
+                        //     a[i].checkPeriod = a[i].taKikanbi
+                        //     a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                        //     a[i].mustDays = a[i].taMustdays
+                        //     a[i].lackDays = a[i].taLessdays
+                        //
+                        //     a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
+                        //     a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                        //     a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
+                        //     a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
+                        //
+                        // } else if (a[i].tpfKijyunbi != null) {
+                        //     a[i].basedDay = a[i].tpfKijyunbi
+                        //     a[i].checkPeriod = a[i].tpfKikanbi
+                        //     a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
+                        //     a[i].mustDays = a[i].tpfMustdays
+                        //     a[i].lackDays = a[i].tpfLessdays
+                        //
+                        //     a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
+                        //     a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
+                        //     a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
+                        //     a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
+                        //     a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
+                        // }
                     }
                     this.tableData = a
                     this.dataLoading = false
