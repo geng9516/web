@@ -222,7 +222,7 @@
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
-                 ref="selection2"  @on-selection-change="handleSelectAll($event)" no-data-text="所属から職員を選んでください"
+                 ref="selection2"  @on-selection-change="handleSelectAll($event)" no-data-text="適応している週勤務パターンがありません"
         >
 
             <template slot-scope="{ row }" slot="intDay">
@@ -321,7 +321,8 @@
             <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="所属から職員を選んでください">
                 <template slot-scope="{ row }" slot="startTime">
                     <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
-                                 format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(row.twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
+                                 format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(tableDataUsedbak[row._index].twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
+
                 </template>
 
                 <template slot-scope="{ row }" slot="endTime">
@@ -632,12 +633,6 @@
                     txtBaseDate:'',
                     txtEndDate:'',
                     sectionid:'',
-                },
-                updateWeekPtnParam:{
-                    txtACTION:'',
-                    twp_dstartdate:'',
-                    twp_denddate:'',
-                    twp_nid:'',
                 },
 
             }
@@ -1003,7 +998,6 @@
                     this.$Message.error("データは変更されません")
                     return
                 }
-               console.log("updateWeekPatternInfo"+index)
                 let startdate=this.tableDataUsed[index].twp_dstartdate
                 let enddate=this.tableDataUsed[index].twp_denddate
                 let nid=this.tableDataUsed[index].twp_nid
@@ -1013,19 +1007,24 @@
                 }
 
                 let curDate=Utils.formatDate(new Date(),"YYYY/MM/DD")
-                let msg=`適用終了日は${curDate}以降を入力してください。`
+                let msg=`は${curDate}以降を入力してください。`
                 if(new Date()>new Date(enddate)){
-                    this.$Message.error(msg)
+                    this.$Message.error('適用終了日'+msg)
                     return
                 }
 
+                if(startdate!=this.tableDataUsedbak[index].twp_dstartdate){
+                    if(new Date()>new Date(startdate)){
+                        this.$Message.error('適用開始日'+msg)
+                        return
+                    }
+                }
+
+
                 this.weekPatternloading2=true
                 try{
-                    this.updateWeekPtnParam.txtACTION='ACT_MakeWeekPattern_UWPtn'
-                    this.updateWeekPtnParam.twp_dstartdate=startdate
-                    this.updateWeekPtnParam.twp_denddate=enddate
-                    this.updateWeekPtnParam.twp_nid=nid
-                    const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, this.updateWeekPtnParam)
+                    const  query={txtACTION:"ACT_MakeWeekPattern_UWPtn",twp_dstartdate:startdate,twp_denddate:enddate,twp_nid:nid}
+                    const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, query)
                     if(data){
                         this.$Message.success('更新完了')
                     }
