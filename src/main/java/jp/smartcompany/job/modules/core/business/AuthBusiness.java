@@ -117,11 +117,11 @@ public class AuthBusiness {
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
         MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
         if (StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
-            throw new GlobalException("パスワードの確認はまちがいます");
+            throw new GlobalException(400,"パスワードの確認はまちがいます");
         }
         // 如果旧密码不正确则不允许修改
         if (!StrUtil.equals(passwordEntity.getMapCpassword(),dto.getOldPassword())) {
-           throw new GlobalException("古いパスワードは間違います");
+           throw new GlobalException(400,"古いパスワードは間違います");
         }
         if (CollUtil.isNotEmpty(lMastPasswordList)) {
             Date dDate = DateUtil.date();
