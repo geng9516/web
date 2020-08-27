@@ -377,8 +377,8 @@ public class TmgScheduleBean {
 
         logger.info("****");
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
-        if (null != psDBBean.getUserCode()) {
-            _targetUserCode = psDBBean.getUserCode();
+        if (null != psDBBean.getEmployeeCode()) {
+            _targetUserCode = psDBBean.getEmployeeCode();
         } else {
             _targetUserCode = psDBBean.getTargetUser();
         }
@@ -1382,7 +1382,7 @@ public class TmgScheduleBean {
             logger.info("--->targetDate:" + monthlyScheduleEmpInfoDTO.getDyyyymmdd());
             iTmgScheduleService.insertTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getTargetUserId(),
                     Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, monthlyScheduleEmpInfoDTO.getDyyyymmdd(), ACT_EDITMONTHLY_USCHEDULE);
-            iTmgScheduleService.deleteTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
+            iTmgScheduleService.deleteTmgTrigger(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getTargetUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID);
             iTmgScheduleService.deleteDailyCheck(monthlyUScheduleEditParaDTO.getLoginUserId(), psDBBean.getCompCode(), psDBBean.getCustID(), monthlyScheduleEmpInfoDTO.getDyyyymmdd());
             iTmgScheduleService.deleteDetailCheck(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getLoginUserId(), monthlyScheduleEmpInfoDTO.getDyyyymmdd());
         }
@@ -1457,7 +1457,7 @@ public class TmgScheduleBean {
         // 適用開始日が未来のパターンが全て表示される。
         boolean isAfter = this.compareDate(sysDate, baseDate);
 
-        List<TmgWeekPatternDTO> tmgWeekPatternDTOS = iTmgScheduleService.selectTmgWeekPattern(psDBBean.getUserCode(), baseDate, psDBBean.getCustID(), psDBBean.getCompCode(), isAfter);
+        List<TmgWeekPatternDTO> tmgWeekPatternDTOS = iTmgScheduleService.selectTmgWeekPattern(psDBBean.getEmployeeCode(), baseDate, psDBBean.getCustID(), psDBBean.getCompCode(), isAfter);
         return tmgWeekPatternDTOS;
     }
 
@@ -1486,7 +1486,7 @@ public class TmgScheduleBean {
     public TmgWeekPatternVO selectCsvReference(int twp_nid, PsDBBean psDBBean) {
 
         if (ObjectUtil.isNotNull(twp_nid)) {
-            String employeeId = psDBBean.getUserCode();
+            String employeeId = psDBBean.getEmployeeCode();
             if (null == employeeId || "".equals(employeeId)) {
                 logger.error("目標ユーザーが空です");
                 return null;
@@ -1504,7 +1504,7 @@ public class TmgScheduleBean {
      * @return
      */
     public List<TmgWeekPatternVO> selectCsvReference(PsDBBean psDBBean) {
-        String employeeId = psDBBean.getUserCode();
+        String employeeId = psDBBean.getEmployeeCode();
         if (null == employeeId || "".equals(employeeId)) {
             logger.error("目標ユーザーが空です");
             return null;
@@ -1566,7 +1566,7 @@ public class TmgScheduleBean {
         List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
         String _targetCustCode = psDBBean.getCustID();
         String _targetCompCode = psDBBean.getCompCode();
-        String _targetUserCode = psDBBean.getUserCode();
+        String _targetUserCode = psDBBean.getEmployeeCode();
         String _loginUserCode = psDBBean.getUserCode();
         String _loginLanguageCode = psDBBean.getLanguage();
         if (JSONUtil.isJsonObj(content)) {
@@ -1690,10 +1690,10 @@ public class TmgScheduleBean {
                     JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
                     Iterator it = jsonObject_err.values().iterator();
                     String errMsg = "";
-                    while (it.hasNext()) {
-                        JSONArray value = (JSONArray) it.next();
-                        jsonObject_err = (JSONObject) value.get(0);
-                        errMsg = jsonObject_err.get("ERRMSG") == null ? "" : jsonObject_err.get("ERRMSG").toString();
+                    while(it.hasNext()){
+                        JSONArray value = (JSONArray)it.next();
+                        jsonObject_err = (JSONObject)value.get(0);
+                        errMsg = jsonObject_err.get("ERRMSG")==null?"":jsonObject_err.get("ERRMSG").toString();
                     }
                     globalResponse = GlobalResponse.error(errMsg);
                     return globalResponse;
@@ -1812,88 +1812,5 @@ public class TmgScheduleBean {
         }
     }
 
-  /*  public boolean isEditable() {
-        Boolean isEditable = null;
-        if (isEditable == null) {
-            // 「給与確定済」の場合、サイト関係なく常に編集不可
-            if (isFixedSalary()) {
-                isEditable = false;
-            }
-            // 「勤怠締め完了済」の場合、管理サイトでなければ編集不可
-            else if (isFixedMonthly() && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(getSiteId())) {
-                isEditable = false;
-            }
-            // 入力サイトのみ、月次ステータスが「承認済」の場合、編集不可
-            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(getSiteId()) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus())) {
-                isEditable = false;
-            }
-            // 承認サイトのみ、予定作成の権限を持っているか判定を行う。権限が無ければ編集不可
-            else if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(getSiteId()) && !existsAuthorityAtEmpSchedule()) {
-                isEditable = false;
-            }
-            // いずれの条件も満たさなければ編集可
-            else {
-                isEditable = true;
-            }
-        }
 
-        return isEditable;
-    }
-
-    private boolean isFixedSalary() {
-        Boolean isFixedSalary = null;
-        if (isFixedSalary == null) {
-            try {
-                isFixedSalary = Integer.parseInt((String) getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_SALARY)) == 1;
-            } catch (Exception e) {
-                e.printStackTrace();
-                isFixedSalary = false;
-            }
-        }
-        return isFixedSalary;
-    }
-
-    public boolean isFixedMonthly() {
-        Boolean isFixedMonthly = null;
-        if (isFixedMonthly == null) {
-            try {
-                isFixedMonthly = Integer.parseInt((String) getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_FIXED_MONTHLY)) == 1;
-            } catch (Exception e) {
-                e.printStackTrace();
-                isFixedMonthly = false;
-            }
-        }
-        return isFixedMonthly;
-    }
-
-    *//**
-     *
-     *//*
-    private void getTmgStatus(){
-
-    }
-
-    public String getMonthlyStatus() {
-        String monthlyStatus = null;
-        if (monthlyStatus == null) {
-            try {
-                monthlyStatus = (String) getTmgStatus().elementAt(TmgUtil.COL_TMGSTATUS_MONTHLY_STATUS);
-            } catch (Exception e) {
-                e.printStackTrace();
-                monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
-            }
-        }
-        return monthlyStatus;
-    }
-
-    *//** 指定した社員についての勤怠承認権限フラグ *//*
-    private boolean existsAuthorityAtEmpSchedule() {
-        try {
-            return referList.hasAuthorityAtEmployee(_baseDate, _targetUserCode, ps.c01.tmg.util.TmgUtil.Cs_AUTHORITY_SCHEDULE);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-*/
 }
