@@ -994,10 +994,9 @@
             },
             async updateWeekPatternInfo(index){
 
-                let dateArr=this.tableDataUsedbak.map(e=>{
+                let dateArr=this.tableDataUsed.map(e=>{
                     return {"start":e.twp_dstartdate,"end":e.twp_denddate}
                 })
-                dateArr.push({"start":this.tableDataUsed[index].twp_dstartdate,"end":this.tableDataUsed[index].twp_denddate})
                 console.log("dateArr"+JSON.stringify(dateArr))
                 if(Utils.multipleDateRangeOverlaps(dateArr)){
                     this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
@@ -1044,6 +1043,8 @@
                 }finally {
                     this.weekPatternloading2=false
                 }
+
+                this.getSelectScheduleInfo()
 
 
             },
@@ -1179,6 +1180,7 @@
                         this.weekPatternloading2=false
                     }
                     this.selectTmgWeekPatternList()
+                    this.getSelectScheduleInfo()
                     this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
                             let id='TMG_WORK|000'
                             if(index==0){
