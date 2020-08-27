@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -56,9 +55,9 @@ public class UpdateAcquired5DaysVO {
 //     * 修正終期
 //     */
 //    private String txtDpaidholidayEnd;
-//    /**
-//     * 修正必要日数
-//     */
-//    private String txtNusedaysDays;
+    /**
+     * 修正必要日数
+     */
+    private String txtNusedaysDays;
 
 }
