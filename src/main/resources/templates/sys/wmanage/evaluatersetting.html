@@ -29,7 +29,7 @@
             </div>
             <div class="searchwrap">
                 <span class="label">改訂日指定</span>
-                <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
+                <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false"
                     @on-change="handleDatePicker" format="yyyy年MM月dd日" :disabled="deptName === '選んでください' || loading">
                 </date-picker>
                 <!-- 共通組織図画面 start-->
@@ -72,7 +72,7 @@
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
                         :class="row.main ? 'width75 tl' : 'ml30 width75 tl'" style="font-weight: bold;">{{ row.group }}</span>
-                    <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '30px' : '', fontSize: '13px'}" v-else> {{ row.group }}</span>
+                    <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click="handleCickGroup(row)" :style="{ marginLeft: row.main ? '' : '30px', fontSize: '13px'}" v-else> {{ row.group }}</span>
                 </template>
                 <template slot-scope="{ row }" slot="name">
                     <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" style="display: inline-block;" class="tl width100"
@@ -169,8 +169,8 @@
                     <date-picker v-model="permissionAdminValue[row._index].validStartDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>&nbsp;-&nbsp;<date-picker v-model="permissionAdminValue[row._index].validEndDate" format="yyyy/MM/dd" type="date" transfer style="width:46%" placement="bottom-end"></date-picker>
                 </template>
 
-                <template slot-scope="{ row }" slot="delete" v-if="row._index < permissionAdminAddData.length - 1 && PermissionAdminEditer">
-                    <Checkbox v-model="permissionAdminValue[row._index].delete"></Checkbox>
+                <template slot-scope="{ row }" slot="delete">
+                    <Checkbox v-if="row._index < permissionAdminAddData.length - 1 && PermissionAdminEditer" v-model="permissionAdminValue[row._index].delete"></Checkbox>
                 </template>
             </i-table>
             <div class="my-footer tr">
@@ -779,8 +779,7 @@
                     const query = { ...this.referListObject, sectionId: secid, txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'), }
                     try {
                         const { data } = await this.http.get('sys/evaluatorsetting/searchemp', query)
-                        this.empTreeData = Utils.convertTreeData(data.empList)
-
+                        this.empTreeData = Utils.convertTreeData(data.empList, true)
                     } catch (error) {
                     } finally {
                         this.emplistLoading = false
@@ -793,8 +792,7 @@
                     }
                 },
                 handleClickEmpLeaf(e) {
-                    if (!e[0]) return
-                    console.log(e[0])
+                    if (!e[0] ) return
                     // 需要将此条得信息覆盖
                     this.addPermissionAdminInfo.name = e[0].label
                     this.addPermissionAdminInfo.id = e[0].empid

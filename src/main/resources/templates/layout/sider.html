@@ -13,8 +13,7 @@
     </ul>
     <!-- 以下分别为以及菜单和二级菜单 -->
     <i-menu theme="light" :active-name="curPageId" :class="showSider ? 'sys-menu show-sider' : 'sys-menu'" style="width:398px">
-        <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"
-            :class="curMenu === e.pageId ? 'actived-menu' : ''" @click.native="handleMenuGroupChange(e)">
+        <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"　:class="curMenu === e.pageId ? 'actived-menu' : ''" >
             <div style="overflow-x: hidden">
                 <div v-show="curMenu === e.pageId"
                     style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: 3px;padding-bottom: 60px;">
@@ -43,6 +42,7 @@
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),
                     toUrl: '',
                     showSider: false,
+                    _forDoubleclickSiderIconCloseSider:'',
                     siteId: Utils.getUrlParam(location.href, 'psSite')
                 }
             },
@@ -56,8 +56,10 @@
             },
             methods: {
                 handleMenuGroupChange(item) {
-                    this.showSider = true
+                    if (item.pageId === this._forDoubleclickSiderIconCloseSider) this.showSider = !this.showSider
+                    else this.showSider = true
                     this.siteId = item.pageId
+                    this._forDoubleclickSiderIconCloseSider = item.pageId
                     this.curMenu = item.pageId
                 },
                 handleSubMenuClick(e, i) {
