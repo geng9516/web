@@ -375,6 +375,7 @@ public class TmgScheduleBean {
         _targetCustCode = "";
         _preFirstDayOfSysDate = "";
 
+        logger.info("****");
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         if (null != psDBBean.getUserCode()) {
             _targetUserCode = psDBBean.getUserCode();
