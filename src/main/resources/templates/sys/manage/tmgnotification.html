@@ -1061,6 +1061,7 @@
           // comment
           query.owncomment = this.detailsData.tntfCowncomment
           query.bosscomment = this.detailsData.tntfCbosscomment
+          console.log(query.bosscomment)
           //query.cancelcomment = this.detailsData.tntfCcancelcomment
           // 起算日
           query.txtPeriod = this.detailsData.tntfDperiodDate
@@ -1178,7 +1179,7 @@
             this.errorMsg = '申請区分を選んでください。'
             return
           }
-          if(!this.restApply.owncomment) {
+          if(this.selectedRestInfo.confirmComment !='0' &&!this.restApply.owncomment) {
             this.errorInfo = true
             this.errorMsg = '申請事由等を入力してください。'
             return
