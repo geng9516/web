@@ -148,7 +148,6 @@
                             <i-button type="primary" ghost size="small" @click="confHealth">解除</i-button>
                         </span>
                         <span class="with-split" style="width: 100%;" v-else>現在の状況：未確認 </span>
-
                     </div>
                 </div>
             </i-col>
@@ -243,6 +242,7 @@
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
                         <i-select v-model="workingId" class="mr30" @on-change="changeWorkingID"
+                                  clearable ref="select1"
                                   v-if="!bHoliday && !bFixed">
                             <i-option v-for="(item, index) of workingIdList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
@@ -254,7 +254,7 @@
                 <Row>
                     <i-col span="8" class="label tc">出張</i-col>
                     <i-col span="8" class="no-border-radius" v-if="!bDisable">
-                        <i-select v-model="businessTrip" class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
+                        <i-select v-model="businessTrip" class="mr30" @on-change="" clearable ref="select2" v-if="(!bHoliday && !bFixed)">
                             <i-option v-for="(item, index) of businessTripList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
@@ -323,7 +323,7 @@
             </div>
             <Row class="mb15 tr" v-if=" !bHoliday && !bFixed ">
                 <i-col span="6" offset="15">
-                    <i-select v-model="categoryNonduty" class="mr30" @on-change="" v-if="!bDisable">
+                    <i-select v-model="categoryNonduty" class="mr30" @on-change="" clearable ref="select3" v-if="!bDisable">
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
                                   　:value="item.itemCode">
                         </i-option>
@@ -372,7 +372,7 @@
                 <Row class="mb15 tr" v-if="!bHoliday && !bFixed ">
 
                     <i-col span="6" offset="15">
-                        <i-select v-model="categoryOverhours" class="mr30" @on-change="" v-if="!bDisable">
+                        <i-select v-model="categoryOverhours" class="mr30" @on-change="" clearable ref="select4" v-if="!bDisable">
                             <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
                                       　:value="item.itemCode">
                             </i-option>
@@ -997,7 +997,10 @@
 
             // 就業登録画面情報取得・設定する
             async dailyDetail() {
-
+                this.$refs.select1.clearSingleSelect()
+                this.$refs.select2.clearSingleSelect()
+                this.$refs.select3.clearSingleSelect()
+                this.$refs.select4.clearSingleSelect()
                 // 画面情報取得
                 const {data} = await this.http.get('sys/tmgResults/dailyDetail', this.query)
 
@@ -1278,6 +1281,7 @@
             },
             // 就業区分の切り替え表示制御
             changeWorkingID(workingid) {
+                changeWorkingID
                 this.bDisable = false;
                 // 休暇
                 if (this.bHoliday) {
@@ -1447,13 +1451,12 @@
                     attributeUrl: categoryNondutyVO.attributeUrl,
                     tdadCnotworkid: categoryNondutyVO.itemCode,
                     itemName: categoryNondutyVO.itemName,
-                    tdadNdeleteflg: "0",
+                    tdadNdeleteflpg: "0",
                     tdadNopen: '',
                     tdadNclose: '',
                     tdadSeq: Date.now(),
                     tdadCsparechar1: '',
                     tdadNsparenum1: null
-
                 })
 
             },
