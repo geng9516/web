@@ -95,6 +95,14 @@
         <result column="workname7" property="workname7" javaType="java.lang.String"/>
     </resultMap>
 
+  <!--  <resultMap id="selectTmgStatusMap" type=" jp.smartcompany.job.modules.tmg.schedule.dto.TmgStatusDTO">
+        <result column="fixed_monthly" property="fixed_monthly" javaType="java.lang.String"/>
+        <result column="fixed_salary" property="fixed_salary" javaType="java.lang.String"/>
+        <result column="tda_cstatusflg" property="tda_cstatusflg" javaType="java.lang.String"/>
+        <result column="tmo_cstatusflg" property="tmo_cstatusflg" javaType="java.lang.String"/>
+        <result column="is_future" property="is_future" javaType="java.lang.String"/>
+    </resultMap>-->
+
     <!--  [勤怠]週次勤務パターン（エラーチェック用）登録  -->
     <parameterMap id="insertTmgWeekPatternCheckMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternCheckDTO">
         <parameter property="custId"></parameter>
@@ -1450,6 +1458,33 @@
          where p.twp_nid = #{twp_nid}
     </update>
 
+    <!--<select id="buildSQLForSelectTmgStatus" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
+    select #{group}(tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_monthly
+    ,#{group}(tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_salary
+    from tmg_monthly m
+    where m.tmo_cemployeeid = #{employeeId}
+    and m.tmo_dyyyymm <![CDATA[>=]]>  TRUNC(#{dstart}, 'MM')
+    and m.tmo_dyyyymm <![CDATA[<=]]>  TRUNC(#{dend}, 'MM')
+    and m.tmo_ccompanyid = #{compCode}
+    and m.tmo_ccustomerid = #{custId}
+    </select>
 
+    <select id="buildSQLForSelectTmgStatuses2" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
+        select tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid,m.tmo_ccompanyid) as fixed_monthly
+        ,tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid,m.tmo_ccompanyid) as fixed_salary
+        ,d.tda_cstatusflg
+        ,m.tmo_cstatusflg
+        ,(case when trunc(sysdate) <![CDATA[<]]> d.tda_dyyyymmdd then 1 else 0 end) as is_future
+        from tmg_daily d,
+        tmg_monthly m
+        where d.tda_cemployeeid = #{employeeId}
+        and d.tda_dyyyymmdd = to_date(#{dyyyymmdd}, 'yyyy/mm/dd')
+        and d.tda_ccustomerid = #{custId}
+        and d.tda_ccompanyid = #{compCode}
+        and m.tmo_cemployeeid = d.tda_cemployeeid
+        and m.tmo_dyyyymm = d.tda_dyyyymm
+        and m.tmo_ccustomerid = d.tda_ccustomerid
+        and m.tmo_ccompanyid = d.tda_ccompanyid
+    </select>-->
 
 </mapper>

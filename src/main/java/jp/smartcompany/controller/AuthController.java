@@ -2,7 +2,6 @@ package jp.smartcompany.controller;
 
 import cn.hutool.cache.impl.LRUCache;
 import jp.smartcompany.job.modules.core.CoreBean;
-import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
 import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
@@ -10,10 +9,14 @@ import jp.smartcompany.boot.util.ShiroUtil;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
+import jp.smartcompany.job.modules.core.business.AuthBusiness;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * @author Xiao Wenpeng
@@ -142,10 +145,19 @@ public class AuthController {
         return "expirePassword";
     }
 
-    @PostMapping
-    public String changeExpirePassword(ChangePasswordDTO dto) {
-        authBusiness.changeExpirePassword(dto);
-        return "redirect:/sys";
+    @PostMapping("changeExpirePassword")
+    @ResponseBody
+    public String changeExpirePassword(@RequestBody @Valid ChangePasswordDTO dto) {
+        authBusiness.changePassword(dto,true);
+        return "パスワード変更成功";
+    }
+
+    @PostMapping("changePassword")
+    @ResponseBody
+    public String changePassword(@RequestBody @Valid ChangePasswordDTO dto) {
+        authBusiness.changePassword(dto,false);
+        authBusiness.logout();
+        return "パスワード変更成功";
     }
 
 }

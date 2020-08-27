@@ -34,4 +34,9 @@ public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, Mas
                 return baseMapper.selectSinglePassword(username,passwordHisCnt);
         }
 
+        @Override
+        public int updateHistory(String username) {
+               return baseMapper.updateHistory(username);
+        }
+
 }

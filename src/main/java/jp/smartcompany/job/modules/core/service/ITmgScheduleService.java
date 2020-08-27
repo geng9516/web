@@ -515,7 +515,35 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param modifieruserid
      * @return
      */
-    int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid,String modifieruserid);
+    int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid, String modifieruserid);
+
+
+    /**
+     * * 対象職員について、開始日～終了日の勤怠締め有無、給与確定有無を判定して返します。
+     * * この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * * 第3引数"all"がtrueであれば、指定された期間全てが勤怠締め完了（または給与確定完了）の場合に1を返します。
+     * * falseであれば、指定された期間のうち1月でも勤怠締め完了（または給与確定完了）の場合に1を返します。
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param dstart
+     * @param dend
+     * @param group
+     * @return
+     */
+    TmgStatusDTO buildSQLForSelectTmgStatus(String custId, String compCode, String employeeId, String dstart, String dend,String group);
+
+    /**
+     *  * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     * 	* この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param dyyyymmdd
+     * @return
+     */
+    List<TmgStatusDTO> buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd);
 
 
 }

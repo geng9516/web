@@ -78,7 +78,7 @@ public class Acquired5DaysListVO {
     /**
      * 修正必要日数
      */
-    private String tpfNmustdaysDix14;
+    private String tpfNmustdaysFix14;
 
 //    /**
 //     * 所属Id

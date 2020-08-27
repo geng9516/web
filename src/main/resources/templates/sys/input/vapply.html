@@ -455,7 +455,6 @@
                     // 获得休假选择 申请用
                     this.loading = true
                     try {
-                        console.log(this.opts)
                         const { data } = await this.http.get('sys/vapply/NtfTypeList', this.opts)
                         this.restTypeListForApply = data
                     } catch (error) {
@@ -523,7 +522,6 @@
                     }
                 }),
                 handleWeekSelect(e) {
-                    console.log(e)
                  },
                 handleRestType(e) {
                     if(this.rotate) {
@@ -548,8 +546,8 @@
                         this.selectedRestInfo = {}
                         return
                     }
+                    console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
-                    console.log(this.selectedRestInfo)
                 },
                 onRefresh() {
                     this.rotate = !this.rotate
@@ -610,6 +608,7 @@
                         this.errorMsg = '申請事由等を入力してください。'
                         return
                     }
+
                     if(!this.restApply.begin || !this.restApply.end) {
                         this.errorInfo = true
                         this.errorMsg = '期間を選んでください。'
@@ -718,36 +717,43 @@
                 },
                 // 按下背面的再申请按钮
                 async handleReApplybtn(item) {
+
                     this.errorInfo = false
                     this.deleteFiles = []
                     this.uploadFiles = []
                     this.rotate = !this.rotate
                     this.isReApplyIng = true
+
+
+                    console.log(this.selectedRestInfo.transfer)
                     // 时间部分
-                    if(!this.selectedRestInfo.transfer) {
-                        // 是时间不是振休
-                        if(this.timerangeType === 2) {
-                            // 是范围不是单一时间
-                            this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
-                            this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
+                    console.log(item.remakeApply)
+                    this.$nextTick(()=>{
+                        this.handleRestType(item.remakeApply)
+                        if(!this.selectedRestInfo.transfer) {
+                            // 是时间不是振休
+                            if(this.timerangeType === 2) {
+                                // 是范围不是单一时间
+                                this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
+                                this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
+                            }
+                            if(this.timerangeType === 1) {
+                                this.restApply._dateList = item.tntfDbegin
+                                this.restApply.dateList = item.tntfDbegin
+                            }
+                        } else {
+                            // 振休
+                            console.log(item.tntfDbegin)
+                            console.log(item.tntfDend)
+                            this.restApply.begin = item.tntfDbegin
+                            this.restApply.end = item.tntfDend
                         }
-                        if(this.timerangeType === 1) {
-                            this.restApply._dateList = item.tntfDbegin
-                            this.restApply.dateList = item.tntfDbegin
-                        }
-                    } else {
-                        // 振休
-                        this.restApply.begin = item.tntfDbegin
-                        this.restApply.end = item.tntfDbegin
-                    }
+                    })
 
                     // 申请区分
                     this.restApply.restTypeId = item.remakeApply
                     this.restApply.ntfNo = item.tntfCntfNo
-
-                    this.$nextTick(()=>this.handleRestType(item.remakeApply))
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
-
                     // 文件
                     this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
@@ -869,7 +875,6 @@
                 },
                 // 打开上传的文件
                 applyCardDownloadFile(e) {
-                    console.log(e)
                     if(e.url) {
                         window.open(`http:////${e.url.slice(2)}`, '_blank')
                     }
