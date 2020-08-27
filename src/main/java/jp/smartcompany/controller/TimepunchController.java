@@ -115,7 +115,7 @@ public class TimepunchController {
                                   @RequestAttribute("BeanName") PsDBBean psDBBean) {
         tmgTimePunchBean.setExecuteParameters(null, psDBBean);
         ClockResultVO clockResultVO = new ClockResultVO();
-        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode());
         if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
             //予定データがない場合、打刻しない
             clockResultVO.setResultCode("20");
@@ -129,7 +129,7 @@ public class TimepunchController {
             return clockResultVO;
         }
         //打刻
-        clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getEmployeeCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
+        clockResultVO = tmgTimePunchBean.execTimePunch(psDBBean.getUserCode(), psDBBean.getCustID(), psDBBean.getCompCode(), pAction);
         if ("ACT_EXEC_OPEN".equals(pAction) && "".equals(clockResultVO.getResultMsg())) {
             clockResultVO.setResultMsg("今日も一日頑張りましょう");
         }
@@ -147,7 +147,7 @@ public class TimepunchController {
     @PostMapping("clockInfo")
     @ResponseBody
     public ClockInfoVO clockInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) {
-        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode());
         return clockInfoVO;
     }
 
