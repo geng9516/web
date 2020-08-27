@@ -1445,8 +1445,8 @@ public class TmgScheduleBean {
     public List<TmgWeekPatternDTO> selectTmgWeekPattern(String baseDate, PsDBBean psDBBean) {
 
         if (null == baseDate || "".equals(baseDate)) {
-            baseDate = DateUtil.now();
-            logger.warn("週次勤務パターン-->baseDate パラメータが空です");
+            baseDate = DateUtil.nextMonth().toString("yyyy/MM") + "/01";
+            logger.warn("週次勤務パターン-->baseDate パラメータが空です," + baseDate + "にリセットされた");
             //  return null;
         }
 
@@ -1690,10 +1690,10 @@ public class TmgScheduleBean {
                     JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
                     Iterator it = jsonObject_err.values().iterator();
                     String errMsg = "";
-                    while(it.hasNext()){
-                        JSONArray value = (JSONArray)it.next();
-                        jsonObject_err = (JSONObject)value.get(0);
-                        errMsg = jsonObject_err.get("ERRMSG")==null?"":jsonObject_err.get("ERRMSG").toString();
+                    while (it.hasNext()) {
+                        JSONArray value = (JSONArray) it.next();
+                        jsonObject_err = (JSONObject) value.get(0);
+                        errMsg = jsonObject_err.get("ERRMSG") == null ? "" : jsonObject_err.get("ERRMSG").toString();
                     }
                     globalResponse = GlobalResponse.error(errMsg);
                     return globalResponse;

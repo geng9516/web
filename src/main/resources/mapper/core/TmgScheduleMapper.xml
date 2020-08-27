@@ -95,13 +95,13 @@
         <result column="workname7" property="workname7" javaType="java.lang.String"/>
     </resultMap>
 
-  <!--  <resultMap id="selectTmgStatusMap" type=" jp.smartcompany.job.modules.tmg.schedule.dto.TmgStatusDTO">
+    <resultMap id="selectTmgStatusMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgStatusDTO">
         <result column="fixed_monthly" property="fixed_monthly" javaType="java.lang.String"/>
         <result column="fixed_salary" property="fixed_salary" javaType="java.lang.String"/>
         <result column="tda_cstatusflg" property="tda_cstatusflg" javaType="java.lang.String"/>
         <result column="tmo_cstatusflg" property="tmo_cstatusflg" javaType="java.lang.String"/>
         <result column="is_future" property="is_future" javaType="java.lang.String"/>
-    </resultMap>-->
+    </resultMap>
 
     <!--  [勤怠]週次勤務パターン（エラーチェック用）登録  -->
     <parameterMap id="insertTmgWeekPatternCheckMap" type="jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternCheckDTO">
@@ -336,14 +336,14 @@
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
         and twp_cemployeeid = #{employeeId}
-        and twp_denddate >= trunc(sysdate)
-        <!-- <if test="isAfter == true">
-             and twp_dstartdate <![CDATA[<]]> trunc(add_months(#{baseDate}, 1))
-             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
+        <!--and twp_denddate >= trunc(sysdate)-->
+       <if test="isAfter == true">
+             and twp_dstartdate <![CDATA[<]]> trunc(add_months(to_date(#{baseDate},'yyyy/MM/dd'), 1))
+             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate},'yyyy/MM/dd'))
          </if>
          <if test="isAfter == false">
-             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate}))
-         </if>-->
+             and twp_denddate  <![CDATA[>=]]> trunc(to_date(#{baseDate},'yyyy/MM/dd'))
+         </if>
         order by twp_denddate
     </select>
 
@@ -1458,15 +1458,15 @@
          where p.twp_nid = #{twp_nid}
     </update>
 
-    <!--<select id="buildSQLForSelectTmgStatus" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
-    select #{group}(tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_monthly
-    ,#{group}(tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_salary
-    from tmg_monthly m
-    where m.tmo_cemployeeid = #{employeeId}
-    and m.tmo_dyyyymm <![CDATA[>=]]>  TRUNC(#{dstart}, 'MM')
-    and m.tmo_dyyyymm <![CDATA[<=]]>  TRUNC(#{dend}, 'MM')
-    and m.tmo_ccompanyid = #{compCode}
-    and m.tmo_ccustomerid = #{custId}
+    <select id="buildSQLForSelectTmgStatus" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
+        select #{group}(tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_monthly
+        ,#{group}(tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid, m.tmo_ccompanyid)) as fixed_salary
+        from tmg_monthly m
+        where m.tmo_cemployeeid = #{employeeId}
+        and m.tmo_dyyyymm <![CDATA[>=]]>  TRUNC(#{dstart}, 'MM')
+        and m.tmo_dyyyymm <![CDATA[<=]]>  TRUNC(#{dend}, 'MM')
+        and m.tmo_ccompanyid = #{compCode}
+        and m.tmo_ccustomerid = #{custId}
     </select>
 
     <select id="buildSQLForSelectTmgStatuses2" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
@@ -1485,6 +1485,6 @@
         and m.tmo_dyyyymm = d.tda_dyyyymm
         and m.tmo_ccustomerid = d.tda_ccustomerid
         and m.tmo_ccompanyid = d.tda_ccompanyid
-    </select>-->
+    </select>
 
 </mapper>
