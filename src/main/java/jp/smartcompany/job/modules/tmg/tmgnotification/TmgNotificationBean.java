@@ -824,6 +824,9 @@ public class TmgNotificationBean {
         tmgNotificationDO.setTntfDmodifieddate(DateTime.now());
         tmgNotificationDO.setTntfCmodifierprogramid(BEAN_DESC + "_" + param.getAction());
         tmgNotificationDO.setTntfCstatusflg(STATUS_REJECT);
+        tmgNotificationDO.setTntfCboss(param.getUserCode());
+        tmgNotificationDO.setTntfCbosscomment(param.getBosscomment());
+        tmgNotificationDO.setTntfDboss(DateTime.now());
         tmgNotificationDO.setTntfCapprovalLevel("");
         tmgNotificationDO.setTntfCsiteid(param.getSiteId());
         tmgNotificationDO.setTntfCntfaction(TmgUtil.Cs_MGD_NTFACTION_5);
