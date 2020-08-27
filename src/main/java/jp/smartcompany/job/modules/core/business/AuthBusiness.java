@@ -37,6 +37,7 @@ import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -66,7 +67,6 @@ public class AuthBusiness {
     private final LRUCache<Object,Object> lruCache;
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
-    private final HttpSession httpSession;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
@@ -113,16 +113,17 @@ public class AuthBusiness {
     /**
      * 登录密码
      */
+    @Transactional(rollbackFor = GlobalException.class)
     public void changePassword(ChangePasswordDTO dto,boolean execLogin) {
         // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
         MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
         if (StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
-            throw new GlobalException("パスワードの確認はまちがいます");
+            throw new GlobalException(400,"パスワードの確認はまちがいます");
         }
         // 如果旧密码不正确则不允许修改
         if (!StrUtil.equals(passwordEntity.getMapCpassword(),dto.getOldPassword())) {
-           throw new GlobalException("古いパスワードは間違います");
+           throw new GlobalException(400,"古いパスワードは間違います");
         }
         if (CollUtil.isNotEmpty(lMastPasswordList)) {
             Date dDate = DateUtil.date();
