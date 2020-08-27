@@ -510,4 +510,26 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.updateWeekPattern(params);
     }
 
+    @Override
+    public TmgStatusDTO buildSQLForSelectTmgStatus(String custId, String compCode, String employeeId, String dstart, String dend, String group) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("dstart", dstart);
+        params.put("dend", dend);
+        params.put("group", group);
+        return baseMapper.buildSQLForSelectTmgStatus(params);
+    }
+
+    @Override
+    public List<TmgStatusDTO> buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("dyyyymmdd", dyyyymmdd);
+        return baseMapper.buildSQLForSelectTmgStatus2(params);
+    }
+
 }

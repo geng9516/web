@@ -183,16 +183,9 @@ public class TmgTimePunchBean {
         String resultMsg = "";
         String resultCode = "10";
         boolean isPass = true;
-        //1、パラメータをチェックする
-        if (null == psDBBean) {
-            log.info("ログインしなかった");
-        } else {
-            //ログインしたら、psDBBeanからパラメータを取得する
-            employeeId = psDBBean.getEmployeeCode();
-            custId = psDBBean.getCustID();
-            compId = psDBBean.getCompCode();
-        }
 
+        //1、パラメータをチェックする
+        logger.info("打刻ユーザー：" + employeeId);
         if (null == employeeId || "".equals(employeeId)) {
             isPass = false;
             resultMsg = "社員番号が空です";

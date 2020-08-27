@@ -699,7 +699,7 @@ public class AttendanceBookBean {
         }
         String monthStartDate = DateUtil.format(new Date(), "yyyy/MM") + "/01";
         String monthEndDate = DateUtil.endOfMonth(new Date()).toString("yyyy/MM/dd");
-        List<String> results = this.selectWorkTime(sqlStr, psDBBean.getEmployeeCode(), monthStartDate, monthEndDate, psDBBean.getCompCode(), psDBBean.getCustID());
+        List<String> results = this.selectWorkTime(sqlStr, psDBBean.getUserCode(), monthStartDate, monthEndDate, psDBBean.getCompCode(), psDBBean.getCustID());
         StringBuffer sb = new StringBuffer();
         if (null != results) {
             String workTime = results.get(0);

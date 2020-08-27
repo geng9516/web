@@ -122,10 +122,11 @@ const Utils = {
   /**
    * 通用转化所属选择器data
    * @param treeData 标准树形数据
+   * @param fristDisable 是否禁用第一项
    *
    */
-  convertTreeData(treeData = []) {
-    return treeData.map(e => {
+  convertTreeData(treeData = [], fristDisable) {
+    return treeData.map((e, i) => {
       const children = e.child || e.children
       if (children) {
         return {
@@ -133,11 +134,14 @@ const Utils = {
           title: e.data.label,
           // 前两层级默认展开方便查看
           expand: e.data.level < 2 || !e.data.level,
+          //是否禁用第一项
+          disabled: i === 0 && fristDisable,
           children: this.convertTreeData(children)
         }
       } else {
         return {
           ...e.data,
+          disabled: i === 0 && fristDisable,
           title: e.data.label
         }
       }
@@ -152,6 +156,14 @@ const Utils = {
     let d = date.getDate()
     date.setMonth(date.getMonth() + +months)
     if (date.getDate() !== d) {
+      date.setDate(0)
+    }
+    return new Date(date)
+  },
+  minusMonths: function (date, months) {
+    let d = date.getMonth()
+    date.setMonth(date.getMonth() - months)
+    if (date.getMonth() === d) {
       date.setDate(0)
     }
     return new Date(date)
@@ -186,14 +198,6 @@ const Utils = {
         window.URL.revokeObjectURL(url)
       }, 0)
     }
-  },
-  minusMonths: function (date, months) {
-    let d = date.getMonth()
-    date.setMonth(date.getMonth() - months)
-    if (date.getMonth() === d) {
-      date.setDate(0)
-    }
-    return new Date(date)
   },
   /**
    * 检测时间段是否重叠,为true重叠

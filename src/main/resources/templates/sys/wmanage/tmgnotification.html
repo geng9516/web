@@ -199,8 +199,11 @@
           <form-item label="加算日数" v-if="detailsData.tntfNuapperAddition">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfNuapperAddition }}</span>
           </form-item>
-          <form-item label="氏名" v-if="detailsData.tntfCemployeeidName">
-            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCemployeeidName }}</span>
+          <form-item label="氏名" v-if="detailsData.tntfCkanjiname">
+            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCkanjiname }}</span>
+          </form-item>
+          <form-item label="続柄" v-if="detailsData.tntfCrelation">
+            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCrelation }}</span>
           </form-item>
           <form-item label="対象の人数" v-if="detailsData.tntfNnumberOfTarget">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfNnumberOfTarget }}</span>

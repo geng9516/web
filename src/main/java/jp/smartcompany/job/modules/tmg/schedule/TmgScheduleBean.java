@@ -353,6 +353,8 @@ public class TmgScheduleBean {
      * @param txtBaseDate 2020/03/15
      * @param txtEndDate  2020/04/11
      */
+
+
     public void setExecuteParameters(String txtBaseDate, String txtEndDate, PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         //変数初期化
@@ -373,6 +375,7 @@ public class TmgScheduleBean {
         _targetCustCode = "";
         _preFirstDayOfSysDate = "";
 
+        logger.info("****");
         //先ずは、目標ユーザー、いないあれば、ログインユーザーを取得する
         if (null != psDBBean.getEmployeeCode()) {
             _targetUserCode = psDBBean.getEmployeeCode();
@@ -1444,7 +1447,7 @@ public class TmgScheduleBean {
         if (null == baseDate || "".equals(baseDate)) {
             baseDate = DateUtil.now();
             logger.warn("週次勤務パターン-->baseDate パラメータが空です");
-          //  return null;
+            //  return null;
         }
 
         // 本日

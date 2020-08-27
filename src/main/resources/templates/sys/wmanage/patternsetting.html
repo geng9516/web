@@ -122,11 +122,36 @@
             </form-item>
 
             <form-item label="勤務時間" prop="dutyTime">
-                <time-picker format="HH:mm" placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.dutyTime"></time-picker>
+               <!-- <time-picker format="HH:mm" placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.dutyTime"></time-picker>-->
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.dutyTime[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.dutyTime,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.dutyTime[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.dutyTime,1,$event.target)"></i-input>
+                    </i-col>
+                </Row>
             </form-item>
 
-            <form-item label="休憩時間1" prop="restTime1">
-                <time-picker format="HH:mm" placeholder="入力してください" :editable="false" 　:steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest1"></time-picker>
+            <form-item label="休憩時間1" prop="planRest1">
+                 <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest1[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest1,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest1[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest1,1,$event.target)"></i-input>
+                    </i-col>
+                 </Row>
             </form-item>
 
             <form-item label="休憩時間2" prop="restTime2">
@@ -152,7 +177,7 @@
             </form-item>
 
             <form-item label="デフォルト設定値">
-                <checkbox v-model="isDefault" class="input-like-span" style="margin: 0;" @on-change="defaultSelect"></checkbox>
+                <checkbox v-model="isDefault" class="input-like-span select-col" style="margin: 0;" @on-change="defaultSelect"></checkbox>
             </form-item>
 
           </i-form>
@@ -166,7 +191,7 @@
       </span>
     </template>
     <!-- 勤務パターン追加END -->
-    <!-- CSVファイル取込STARD -->
+    <!-- CSVファイル取込START -->
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
         <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select width100" type="drag">
             <div style="padding: 20px 0">
@@ -215,11 +240,11 @@
                     tpa_cgroupid: '',
                     tpa_cpatternid: '',
                     tpa_cpatternname: '',
-                    dutyTime: [],
-                    planRest1: [],
-                    planRest2: [],
-                    planRest3: [],
-                    planRest4: [],
+                    dutyTime: ['', ''],
+                    planRest1: ['', ''],
+                    planRest2: ['', ''],
+                    planRest3: ['', ''],
+                    planRest4: ['', ''],
                     tpa_ndate_change_time: '',
                     tpa_cnextptn: '',
                     flag: ''
@@ -229,11 +254,11 @@
                     tpa_cgroupid: '',
                     tpa_cpatternid: '',
                     tpa_cpatternname: '',
-                    dutyTime: [],
-                    planRest1: [],
-                    planRest2: [],
-                    planRest3: [],
-                    planRest4: [],
+                    dutyTime: ['', ''],
+                    planRest1: ['', ''],
+                    planRest2: ['', ''],
+                    planRest3: ['', ''],
+                    planRest4: ['', ''],
                     tpa_ndate_change_time: '',
                     tpa_cnextptn: '',
                     flag: ''
@@ -242,7 +267,7 @@
                 query_sk: {
                     groupId: '',
                     sectionId: '',
-                    baseDate: '2020/07/20',
+                    baseDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),  //TMG_ADMIN
                     psApp: Utils.getUrlParam(location.href, 'psApp'),   //PatternSetting
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
@@ -549,6 +574,7 @@
 
             // 新規と編集画面を開く
             async mergePattern(row) {
+
                 this.isShow = true
                 this.mergePatternLoading = true
                 this.btn_sk_commit_show = true
@@ -573,21 +599,29 @@
                         const rest_start = handleTime(row.planRest[0].NOPEN)
                         const rest_end = handleTime(row.planRest[0].NCLOSE)
                         this.rawData.planRest1 = [rest_start, rest_end]
+                    } else {
+                        this.rawData.planRest1 = ['', '']
                     }
                     if (row.planRest[1] !== undefined) {
                         const rest_start = handleTime(row.planRest[1].NOPEN)
                         const rest_end = handleTime(row.planRest[1].NCLOSE)
                         this.rawData.planRest2 = [rest_start, rest_end]
+                    } else {
+                        this.rawData.planRest2 = ['', '']
                     }
                     if (row.planRest[2] !== undefined) {
                         const rest_start = handleTime(row.planRest[2].NOPEN)
                         const rest_end = handleTime(row.planRest[2].NCLOSE)
                         this.rawData.planRest3 = [rest_start, rest_end]
+                    } else {
+                        this.rawData.planRest3 = ['', '']
                     }
                     if (row.planRest[3] !== undefined) {
                         const rest_start = handleTime(row.planRest[3].NOPEN)
                         const rest_end = handleTime(row.planRest[3].NCLOSE)
                         this.rawData.planRest4 = [rest_start, rest_end]
+                    } else {
+                        this.rawData.planRest4 = ['', '']
                     }
 
                     this.rawData.tpa_ndate_change_time = row.tpa_ndate_change_time
@@ -630,11 +664,18 @@
                 // this.rawData.tpa_cgroupid = ''
                 this.rawData.tpa_cpatternid = ''
                 this.rawData.tpa_cpatternname = ''
-                this.rawData.dutyTime = []
-                this.rawData.planRest1 = []
-                this.rawData.planRest2 = []
-                this.rawData.planRest3 = []
-                this.rawData.planRest4 = []
+                this.rawData.dutyTime = ['', '']
+                this.rawData.planRest1 = ['', '']
+                this.rawData.planRest1[0] = ''
+                this.rawData.planRest1[1] = ''
+                this.$nextTick(() => {
+                    this.rawData.planRest1[0] = ''
+                })
+
+                this.rawData_bak.planRest1 = ['', '']
+                this.rawData.planRest2 = ['', '']
+                this.rawData.planRest3 = ['', '']
+                this.rawData.planRest4 = ['', '']
                 this.rawData.tpa_ndate_change_time = ''
                 this.rawData.tpa_cnextptn = ''
                 this.rawData.flag = ''
@@ -681,11 +722,11 @@
             valid_length(title, msg) {
                 this.hiddenAlert()
                 if (msg.length < 5) {
-                    this.showAlert(title + 'は半角英数記号文字を5桁以上に入力してください')
+                    this.showAlert(title + 'は全角・半角カナ5字以上')
                     return false
                 }
                 if (msg.length > 50) {
-                    this.showAlert(title + 'は半角英数記号文字を50桁以下に入力してください')
+                    this.showAlert(title + 'は全角・半角カナ50字以内、半角英数100字以内')
                     return false
                 }
                 return true
@@ -779,6 +820,34 @@
                     return false
                 }
                 return true
+            },
+            //時間フォーマットに変更する
+            handleInputChange(object, index, el) {
+                console.log('update before',object[index])
+                var value = object[index]
+                if (value) {
+                    const regExp1 = /^[0-9]{1,2}:[0-9]{2}$/g
+                    const regExp2 = /^[0-9]{3,4}$/g
+                    if (regExp1.test(value) || regExp2.test(value)) {
+                        const minutes = Utils.timeToMinute(value)
+                        const handleTime = Vue.filter('handleTime')
+                        value = handleTime(+minutes)
+                        console.log('update after',value)
+                        this.rawData.planRest1 = [value, '']
+                        console.log(this.rawData.planRest1)
+                        this.$set(object, index, value)
+                        object[index] = value
+                        return true
+                    }
+                    el.focus()
+                    // el.focus() 取消focus
+                    Vue.prototype.$Notice.error({
+                        title: '注意',
+                        desc: '時刻をHH:MM形式で入力してください',
+                        duration: 6.5
+                    })
+                    return false
+                }
             },
             //勤務パターン更新登録
             async handleSubmit(name) {

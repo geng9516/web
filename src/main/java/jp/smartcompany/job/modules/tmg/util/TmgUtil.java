@@ -1969,6 +1969,13 @@ public class TmgUtil {
     /** 日付形式2 */
     private static final String Cs_FORMAT_SLASH = "/";
 
+    public static final int COL_TMGSTATUS_FIXED_MONTHLY  = 0;
+    public static final int COL_TMGSTATUS_FIXED_SALARY   = 1;
+    public static final int COL_TMGSTATUS_DAILY_STATUS   = 2;
+    public static final int COL_TMGSTATUS_MONTHLY_STATUS = 3;
+    public static final int COL_TMGSTATUS_IS_FUTURE      = 4;
+
+
     /**
      * システム日付を返す
      * @return String システム日付

@@ -426,7 +426,7 @@ public class PatternSettingBean {
         tmgPatternInsertDTO.setCompCode(psDBBean.getCompCode());
         tmgPatternInsertDTO.setSectionId(tmgPatternMergeDTO.getTpa_csectionid());
         tmgPatternInsertDTO.setGroupId(tmgPatternMergeDTO.getTpa_cgroupid());
-        tmgPatternInsertDTO.setEmployeeId(psDBBean.getEmployeeCode());
+        tmgPatternInsertDTO.setEmployeeId(psDBBean.getUserCode());
         tmgPatternInsertDTO.setPatternId(tmgPatternMergeDTO.getTpa_cpatternid());
         tmgPatternInsertDTO.setPatternName(tmgPatternMergeDTO.getTpa_cpatternname());
         tmgPatternInsertDTO.setDefaultFlag(tmgPatternMergeDTO.getFlag());
