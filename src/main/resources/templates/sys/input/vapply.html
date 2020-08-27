@@ -603,7 +603,7 @@
                         this.errorMsg = '申請区分を選んでください。'
                         return
                     }
-                    if(!this.restApply.owncomment) {
+                    if(this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
                         this.errorInfo = true
                         this.errorMsg = '申請事由等を入力してください。'
                         return
