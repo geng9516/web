@@ -59,10 +59,12 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
         int status = HttpStatus.FORBIDDEN.value();
         if (e instanceof ExpiredCredentialsException) {
             status = HttpStatus.SEE_OTHER.value();
+            response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status,(String)token.getPrincipal())));
+        }else {
+            response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status,e.getMessage())));
         }
         resp.setStatus(status);
 
-        response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status,(String)token.getPrincipal())));
         return false;
     }
 }
