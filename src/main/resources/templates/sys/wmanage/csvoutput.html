@@ -204,7 +204,7 @@
                     txtTermFrom: '',
                     txtTermTo: '',
                     txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
-                    txtIncludeOt100Flg: '',
+                    txtIncludeOt100Flg: '1',
                     psSecurityDate: '',
                     selLedgerSheet: '',
                     selYear: '',
@@ -447,7 +447,7 @@
             changeModel(e) {
                 console.log("changeModel")
                 console.log(e)
-                this.ledgerParamVO.txtIncludeOt100Flg = e
+                this.ledgerParamVO.txtIncludeOt100Flg = `${e}`
             },
         }
     })
