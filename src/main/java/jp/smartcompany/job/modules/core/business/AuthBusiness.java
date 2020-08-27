@@ -122,7 +122,7 @@ public class AuthBusiness {
             throw new GlobalException(400,"パスワードの確認はまちがいます");
         }
         // 如果旧密码不正确则不允许修改
-        if (!StrUtil.equals(passwordEntity.getMapCpassword(),dto.getOldPassword())) {
+        if (!StrUtil.equals(passwordEntity.getMapCpassword(),new Md5Hash(dto.getOldPassword()).toHex())) {
            throw new GlobalException(400,"古いパスワードは間違います");
         }
         if (CollUtil.isNotEmpty(lMastPasswordList)) {
