@@ -353,6 +353,8 @@ public class TmgScheduleBean {
      * @param txtBaseDate 2020/03/15
      * @param txtEndDate  2020/04/11
      */
+
+
     public void setExecuteParameters(String txtBaseDate, String txtEndDate, PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         //変数初期化
