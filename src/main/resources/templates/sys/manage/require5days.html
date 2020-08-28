@@ -138,7 +138,7 @@
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -176,7 +176,7 @@
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -519,10 +519,10 @@
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
                 console.log(e[0])
-                //初期化 datePicker
-                if(this.$refs.editDatepicker){
-                    this.$refs.editDatepicker.handleClear()
-                }
+                // //初期化 datePicker
+                // if(this.$refs.editDatepicker){
+                //     this.$refs.editDatepicker.handleClear()
+                // }
 
                 this.query.txtUserCode = e[0].cemployeeid0
 
@@ -548,7 +548,7 @@
                             lackDays:e.taLessdays9,
 
                             editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
-                            editTakenDays:e.sumSyutokudays7,        //編集画面用_取得日数
+                            editTakenDays:e.fixSumSyutokudays16,    //編集画面用_取得日数
                             adjustTakenDays:e.tpfNusedaysAjdust13,  //編集画面用_調整取得日数
                             editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
                             editMustDays:e.tpfNmustdaysFix14,       //修正必要日数
