@@ -275,6 +275,25 @@ public class TmgNotificationBean {
         return notificationDispVo;
     }
 
+
+    /**
+     * 休暇休業承認の権限判定で代理申請の使用可否を決める
+     * @param psDBBean
+     * @return
+     * @throws Exception
+     */
+    public boolean hasAuthority(PsDBBean psDBBean) throws Exception {
+        String today = TmgUtil.getSysdate();
+        String year=today.substring(0, 4);
+        String startDate=iMastGenericDetailService.selectDate(psDBBean.getCustID(),psDBBean.getCompCode(), Integer.parseInt(year), today).getStartDate();
+
+        //referlist 新规
+        referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
+        return referList.hasAuthority(referList.getRecordDate(), referList.getRecordDate(), TmgUtil.Cs_AUTHORITY_NOTIFICATION);
+    }
+
+
+
     //再申請/详细用　list
     public NotificationDetailVo getNotificationDetail(String ntfNo ,PsDBBean psDBBean){
         ParamNotificationListDto param=new ParamNotificationListDto();

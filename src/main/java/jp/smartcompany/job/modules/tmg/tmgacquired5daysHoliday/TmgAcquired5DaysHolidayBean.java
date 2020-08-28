@@ -93,6 +93,7 @@ public class TmgAcquired5DaysHolidayBean {
         for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
             if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
                     && Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
+                    && Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>=10
                     && DateUtil.betweenMonth(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),true)<12
             ){
                 acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
