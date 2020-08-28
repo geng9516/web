@@ -366,6 +366,13 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    List<TmgStatusDTO> buildSQLForSelectTmgStatus2(HashMap<String, Object> params);
+    TmgStatusDTO buildSQLForSelectTmgStatus2(HashMap<String, Object> params);
+
+    /**
+     * 予定編集可能な職員かマスタデータより判定を行った結果を取得する
+     * @param params
+     * @return
+     */
+    String buildSQLForSelectUseScheculeUser(HashMap<String, Object> params);
 
 }

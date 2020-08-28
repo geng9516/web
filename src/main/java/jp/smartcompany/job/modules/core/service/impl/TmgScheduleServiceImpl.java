@@ -31,7 +31,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
 
     @Override
     public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
-        System.out.println("dStart:"+dStart+" dEnd："+dEnd);
+        System.out.println("dStart:" + dStart + " dEnd：" + dEnd);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("ctpye_plan", ctpye_plan);
         params.put("employeeId", employeeId);
@@ -502,7 +502,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid,String modifieruserid) {
+    public int updateWeekPattern(String twp_dstartdate, String twp_denddate, String twp_nid, String modifieruserid) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("twp_dstartdate", twp_dstartdate);
         params.put("twp_denddate", twp_denddate);
@@ -524,13 +524,23 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public List<TmgStatusDTO> buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd) {
+    public TmgStatusDTO buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
         params.put("compCode", compCode);
         params.put("employeeId", employeeId);
         params.put("dyyyymmdd", dyyyymmdd);
         return baseMapper.buildSQLForSelectTmgStatus2(params);
+    }
+
+    @Override
+    public String buildSQLForSelectUseScheculeUser(String custId, String compCode, String employeeId, String language) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("language", language);
+        return baseMapper.buildSQLForSelectUseScheculeUser(params);
     }
 
 }
