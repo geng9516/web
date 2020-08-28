@@ -223,13 +223,12 @@ public class ScheduleController {
      */
     @PostMapping("executeUpdateWeekPattern")
     @ResponseBody
-    public boolean executeUpdateWeekPattern(@RequestParam("twp_dstartdate") String twp_dstartdate,
+    public GlobalResponse executeUpdateWeekPattern(@RequestParam("twp_dstartdate") String twp_dstartdate,
                                             @RequestParam("twp_denddate") String twp_denddate,
                                             @RequestParam("twp_nid") String twp_nid,
                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //    System.out.println("controller-->executeUpdateWeekPattern");
-        //初期化
-        return tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid, psDBBean);
+        return  tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid, psDBBean);
     }
 
 
