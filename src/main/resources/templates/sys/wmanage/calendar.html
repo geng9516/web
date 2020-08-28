@@ -66,6 +66,14 @@
         </div>
         <div class="content_body tc" style="position: relative;min-height: 500px;">
             <Alert type="error" class="error-info tl" style="width: 70%" v-show="isDisable">{{ infoMsg }}</Alert>
+            <div class="tl ml10 mb15">
+                <template>
+                    <Tag checkable color="blue">定休日</Tag>
+                    <Tag checkable color="red">法休日</Tag>
+                    <Tag checkable color="green">祝日</Tag>
+                    <Tag checkable color="default">出勤日</Tag>
+                </template>
+            </div>
             <div style="display:inline-block;width:80%;margin-left: -14%;">
                 <div v-for="(e, i) of yearData" :key="i" style="display:inline-block;width:30%">
                     <span class="label big" style="display:block;width:87.5%;">{{ `${i + 1}月` }}</span>
@@ -96,6 +104,7 @@
                 </div>
             </div>
             <div style="display:inline-block;position: relative;width:16%;top: -139px;margin-left: -50px;">
+
                 <Row v-for="(e, i) of yearData" :key="i"　v-if="!isDisable">
                     <i-col span="18" class="label big">{{i+1}}月 基準日数</i-col>
                     <i-col span="6">
