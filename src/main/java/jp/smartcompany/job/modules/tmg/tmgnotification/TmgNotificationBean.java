@@ -289,7 +289,7 @@ public class TmgNotificationBean {
 
         //referlist 新规
         referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_LIST, true);
-        return referList.hasAuthority(today, today, TmgUtil.Cs_AUTHORITY_NOTIFICATION);
+        return referList.hasAuthority(referList.getRecordDate(), referList.getRecordDate(), TmgUtil.Cs_AUTHORITY_NOTIFICATION);
     }
 
 
