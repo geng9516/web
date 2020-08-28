@@ -80,42 +80,12 @@ public class Acquired5DaysListVO {
      */
     private String tpfNmustdaysFix14;
     /**
-     * 必要日数
+     * 修正页面用必要日数
      */
     private String fixMustdays15;
-
-//    /**
-//     * 所属Id
-//     */
-//    private String workertypeId;
-//    /**
-//     * 年休調査期間（開始日
-//     */
-//    private String tpDntfSurveyStart;
-//    /**
-//     * 年休調査期間（終了日）
-//     */
-//    private String tpDntfSurveyEnd;
-//    /**
-//     * 修正取得日数
-//     */
-//    private String tpfSyutokudays;
-//    /**
-//     * 修正不足日数
-//     */
-//    private String tpfLessdays;
-//    /**
-//     * 編集画面表示取得日数
-//     */
-//    private String tpSyutokudays;
-//    /**
-//     * 修正終期
-//     */
-//    private String tpfHolidayendfix;
-//
-//    /**
-//     * 修正必要日数
-//     */
-//    private String tpfNusedaysfix ;
+    /**
+     * 修正页面用取得日数
+     */
+    private String fixSumSyutokudays16;
 
 }
