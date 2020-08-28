@@ -62,7 +62,7 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                             <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree"

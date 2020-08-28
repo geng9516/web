@@ -45,7 +45,7 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                             <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange" transfer></date-picker>
+                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange" transfer></date-picker>
                             </i-col>
                             <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                             <div style="display: inline-block;width: 32.5%;" class="no-border-radius">

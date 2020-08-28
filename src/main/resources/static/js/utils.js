@@ -333,6 +333,10 @@ const Throttle = (fn, t) => {
 // 语言日文
 iview.lang('ja-JP');
 
+// 全局配置iview
+// Vue.prototype.$IVIEW.transfer = true
+// Vue.prototype.$IVIEW.capture = false
+
 window.requestAnimFrame =
   window.requestAnimationFrame ||
   window.webkitRequestAnimationFrame ||
