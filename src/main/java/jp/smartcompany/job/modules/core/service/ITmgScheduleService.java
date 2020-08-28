@@ -543,7 +543,16 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param dyyyymmdd
      * @return
      */
-    List<TmgStatusDTO> buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd);
+    TmgStatusDTO buildSQLForSelectTmgStatus2(String custId, String compCode, String employeeId, String dyyyymmdd);
 
+    /**
+     * 予定編集可能な職員かマスタデータより判定を行った結果を取得する
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param language
+     * @return
+     */
+    String buildSQLForSelectUseScheculeUser(String custId, String compCode, String employeeId,String language);
 
 }

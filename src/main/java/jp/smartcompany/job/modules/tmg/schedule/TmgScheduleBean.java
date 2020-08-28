@@ -304,6 +304,11 @@ public class TmgScheduleBean {
     private String _preFirstDayOfSysDate = "";
 
     /**
+     * システムプロパティー キー値 予定作成可否制御機能使用状態
+     */
+    private final String USE_SCHEDULE4PERM_SITE = "TMG_USE_SCHEDULE4PERM_SITE";
+
+    /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
      *
      * @param baseDate
@@ -1502,7 +1507,7 @@ public class TmgScheduleBean {
      * @return
      */
     private GlobalResponse executeMakeWeekPattern(List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList, String _targetCustCode, String _targetCompCode, String _targetUserCode, String _loginUserCode, String _loginLanguageCode, String twp_nid) {
-        // if (null != tmgWeekPatternCheckDTOList) {
+
         /**
          * eg:ACT_MakeWeekPattern_UWPtn
          */
@@ -1558,10 +1563,7 @@ public class TmgScheduleBean {
         iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         return GlobalResponse.ok();
-        /*} else {
-            logger.error("週勤務パターンリストが空です");
-            return GlobalResponse.error("週勤務パターンリストが空です");
-        }*/
+
     }
 
 
@@ -2044,6 +2046,166 @@ public class TmgScheduleBean {
             return true;
         } else {
             logger.error("週勤務パターンコードが空です");
+            return false;
+        }
+    }
+
+    /**
+     * 「編集ボタン」の使用可否設定を取得します
+     *
+     * @return boolean true：使用可、false：使用不可
+     */
+    public boolean isEditableSchedule(PsDBBean psDBBean) {
+
+        String _targetCustCode = psDBBean.getCustID();
+        String _targetCompCode = psDBBean.getCompCode();
+        String _targetUserCode = psDBBean.getEmployeeCode();
+        String _language = psDBBean.getLanguage();
+        String siteId = psDBBean.getSiteId();
+
+        Boolean bEditableFlg = null;
+        /*
+         * 承認サイト以外の場合は「編集ボタン」使用可とする。
+         */
+        if (!TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId)) {
+            bEditableFlg = true;
+            return bEditableFlg.booleanValue();
+        }
+        /*
+         * 職員全員の予定編集が可能な場合、「編集ボタン」使用可とする （システムプロパティの設定）
+         */
+        if ("all".equals(psDBBean.getSystemProperty(USE_SCHEDULE4PERM_SITE))) {
+            bEditableFlg = true;
+            return bEditableFlg.booleanValue();
+        } else {
+            /*
+             * 指定職員のみ予定編集が可能な場合、
+             * 表示対象の職員が、予定編集可能対象者として登録されている場合、「編集ボタン」使用可とする
+             */
+
+            String sFlg = iTmgScheduleService.buildSQLForSelectUseScheculeUser(_targetCustCode, _targetCompCode, _targetUserCode, _language);
+
+            // 取得結果が1だったら、trueを返却
+            if ("1".equals(sFlg)) {
+                bEditableFlg = true;
+                return bEditableFlg.booleanValue();
+            }
+
+            // 上記条件を全てスルーした場合、false（編集ボタン使用不可）を返す。
+            bEditableFlg = false;
+            return bEditableFlg.booleanValue();
+        }
+    }
+
+
+    /**
+     * 編集権限を制御する
+     *
+     * @param psDBBean
+     * @param baseDate 2020/09/01  月初
+     * @return
+     */
+    public boolean isEditable(PsDBBean psDBBean, String baseDate) {
+
+        String _targetCustCode = psDBBean.getCustID();
+        String _targetCompCode = psDBBean.getCompCode();
+        String _targetUserCode = psDBBean.getEmployeeCode();
+        String siteId = psDBBean.getSiteId();
+
+        if (null == psDBBean) {
+            logger.error("編集権限を制御する依頼のPsDBBeanが空です");
+            return false;
+        }
+        if (null == baseDate || "".equals(baseDate)) {
+            logger.error("編集権限を制御する依頼のbaseDateが空です、もう初期化された");
+            baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+        }
+        String dstart = DateUtil.parse(baseDate, "yyyy/MM").toString("yyyy/MM") + "/01";
+        String dend = DateUtil.endOfMonth(DateUtil.parse(dstart, "yyyy/MM/dd")).toString("yyyy/MM/dd");
+
+        Boolean isEditable = null;
+        if (isEditable == null) {
+            // 「給与確定済」の場合、サイト関係なく常に編集不可
+            if (isFixedSalary(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend)) {
+                isEditable = false;
+            }
+            // 「勤怠締め完了済」の場合、管理サイトでなければ編集不可
+            else if (isFixedMonthly(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend) && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
+                isEditable = false;
+            }
+            // 入力サイトのみ、月次ステータスが「承認済」の場合、編集不可
+            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(siteId) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend))) {
+                isEditable = false;
+            }
+            // 承認サイトのみ、予定作成の権限を持っているか判定を行う。権限が無ければ編集不可
+            else if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) && !existsAuthorityAtEmpSchedule()) {
+                isEditable = false;
+            }
+            // いずれの条件も満たさなければ編集可
+            else {
+                isEditable = true;
+            }
+        }
+        return isEditable;
+    }
+
+    private boolean isFixedSalary(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+        Boolean isFixedSalary = false;
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        if (null != tmgStatusDTO) {
+            if ("1".equals(tmgStatusDTO.getFixed_salary())) {
+                isFixedSalary = true;
+            }
+        }
+        return isFixedSalary;
+    }
+
+    private boolean isFixedMonthly(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+        Boolean isFixedMonthly = false;
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        if (null != tmgStatusDTO) {
+            if ("1".equals(tmgStatusDTO.getFixed_monthly())) {
+                isFixedMonthly = true;
+            }
+        }
+        return isFixedMonthly;
+    }
+
+    private TmgStatusDTO getTmgStatus(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend, boolean all) {
+        this.setVariationalWorkInfo(baseDate);
+        TmgStatusDTO tmgStatusDTO = null;
+        String group = "";
+        if (all) {
+            group = "MIN";
+        } else {
+            group = "MAX";
+        }
+        if (_isVariationalWorkType) {
+            tmgStatusDTO = iTmgScheduleService.buildSQLForSelectTmgStatus(custId, compCode, employeeId, dstart, dend, group);
+        } else {
+            tmgStatusDTO = iTmgScheduleService.buildSQLForSelectTmgStatus2(custId, compCode, employeeId, dyyyymmdd);
+        }
+        return tmgStatusDTO;
+    }
+
+    private String getMonthlyStatus(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+        String monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        if (null != tmgStatusDTO) {
+            monthlyStatus = tmgStatusDTO.getTmo_cstatusflg();
+        }
+        return monthlyStatus;
+    }
+
+    /**
+     * 指定した社員についての勤怠承認権限フラグ
+     */
+
+    private boolean existsAuthorityAtEmpSchedule() {
+        try {
+            return referList.hasAuthorityAtEmployee(_baseDate, _targetUserCode, TmgUtil.Cs_AUTHORITY_SCHEDULE);
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
