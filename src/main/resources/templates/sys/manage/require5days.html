@@ -110,7 +110,7 @@
             </template>
 
             <template slot-scope="{ row }" slot="season">
-                <div v-if = "row.season > '1'">
+                <div v-if = "row.season > '0' && row.detailshow ">
                     <span class="divi-line" v-for="(item, i) of +row.season" :key="i"><i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">詳細</i-button></span>
                 </div>
                 <span v-else> - </span>
@@ -591,7 +591,8 @@
                     for (var i=0;i < b.length;i++){
                         console.log("b[i].taKijyunbi5")
                         console.log(b[i].taKijyunbi5)
-                        if (b[i].taFuyodays4 == '0'){
+                        if (b[i].taFuyodays4 < '10' && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
+                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
                             b[i].basedDay = "-"
                             b[i].checkPeriod = "-"
                             b[i].takenDays = "-"
@@ -730,16 +731,27 @@
                     }
                     const addNumDeci = Vue.filter('addNumDeci')
                     //
+
+
                     for (var i=0;i < a.length;i++){
-                        if (a[i].taFuyodays4 == '0'){
+                        if (b[i].taFuyodays4 < '10' && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
+                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
+
+                            console.log(b[i].cemployeeid0)
+                            console.log(b[i].taFuyodays4)
+                            console.log(b[i].tpfDpaidHolidayFix11)
+                            console.log(b[i].tpfDkikanbiFix12)
+                            console.log(b[i].tpfNusedaysAjdust13)
+                            console.log(b[i].tpfNmustdaysFix14)
+
                             a[i].basedDay = "-"
                             a[i].checkPeriod = "-"
                             a[i].takenDays = "-"
                             a[i].mustDays = "-"
                             a[i].lackDays = "-"
 
-                            a[i].editTakenDays = "-"  //編集画面用‐取得日数
-                            a[i].adjustTakenDays = addNumDeci(a[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
+                            // a[i].editTakenDays = "-"  //編集画面用‐取得日数
+                            // a[i].adjustTakenDays = addNumDeci(a[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
 
                             a[i].detailshow = false
                         }
