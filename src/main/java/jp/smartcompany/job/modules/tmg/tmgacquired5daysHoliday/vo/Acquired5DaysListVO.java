@@ -87,5 +87,9 @@ public class Acquired5DaysListVO {
      * 修正页面用取得日数
      */
     private String fixSumSyutokudays16;
+    /**
+     * 修正页面用取得日数
+     */
+    private String fixTaKikanbi17;
 
 }
