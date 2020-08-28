@@ -61,6 +61,7 @@
 
     <!--  週勤務パターンを取得する -->
     <resultMap id="selectCsvReferenceMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO">
+        <result column="twp_nid" property="twp_nid" javaType="java.lang.String"/>
         <result column="twp_cemployeeid" property="twp_cemployeeid" javaType="java.lang.String"/>
         <result column="twp_dstartdate" property="twp_dstartdate" javaType="java.lang.String"/>
         <result column="twp_denddate" property="twp_denddate" javaType="java.lang.String"/>
@@ -690,6 +691,7 @@
     <select id="selectCsvReference" parameterType="java.util.HashMap" resultMap="selectCsvReferenceMap">
         select
         twp_cemployeeid,
+        twp_nid,
         to_char(twp_dstartdate, 'yyyy/mm/dd')as twp_dstartdate
         ,to_char(twp_denddate, 'yyyy/mm/dd') as twp_denddate
         ,to_char(twp_dstartdate, 'yyyy/mm/dd') || ' - ' || to_char(twp_denddate , 'yyyy/mm/dd') as period
@@ -945,10 +947,12 @@
         and twp_cemployeeid = #{employeeId};
     </select>
 
+
     <!-- 週勤務パターンリストを取得する -->
     <select id="selectCsvReferenceList" parameterType="java.util.HashMap" resultMap="selectCsvReferenceMap">
         select
         twp_cemployeeid,
+        twp_nid,
         to_char(twp_dstartdate, 'yyyy/mm/dd')as twp_dstartdate
         ,to_char(twp_denddate, 'yyyy/mm/dd') as twp_denddate
         ,to_char(twp_dstartdate, 'yyyy/mm/dd') || ' - ' || to_char(twp_denddate , 'yyyy/mm/dd') as period
@@ -1200,7 +1204,11 @@
         from tmg_week_pattern
         where twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
-        and twp_cemployeeid = #{employeeId};
+        and twp_cemployeeid = #{employeeId}
+        <if test="twp_nid != null and twp_nid != 0">
+            and twp_nid != #{twp_nid}
+        </if>
+        and twp_denddate <![CDATA[>]]> trunc(sysdate)
     </select>
 
 
@@ -1396,6 +1404,10 @@
         <if test="twp_nid != null">
             and twp_nid != #{twp_nid}
         </if>
+        <if test="twp_nid == null">
+            and twp_denddate <![CDATA[>]]> trunc(sysdate)
+        </if>
+<!--
         <if test="twp_nid != null">
             union
             select tmg_week_pattern_seq.nextval
@@ -1447,7 +1459,7 @@
             and twp_ccompanyid = #{compCode}
             and twp_cemployeeid = #{employeeId}
             and twp_nid = #{twp_nid}
-        </if>
+        </if>-->
     </insert>
     <!-- 勤務パターンを更新する -->
     <update id="updateWeekPattern" parameterType="java.util.HashMap">

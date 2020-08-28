@@ -364,12 +364,13 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
      * @return
      */
     @Override
-    public List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId) {
+    public List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId, int twp_nid) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
         params.put("compCode", compCode);
         params.put("employeeId", employeeId);
         params.put("language", language);
+        params.put("twp_nid", twp_nid);
         return baseMapper.selectCsvReferenceList(params);
     }
 

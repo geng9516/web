@@ -1186,69 +1186,6 @@ public class TmgScheduleBean {
         return results;
     }
 
-    /**
-     * データをロードのテストファンクション
-     *
-     * @return
-     */
-    private MonthlyUScheduleEditParaDTO loadMonthlyUScheduleEditParaDTOData() {
-
-        MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = new MonthlyUScheduleEditParaDTO();
-        monthlyUScheduleEditParaDTO.setLoginUserId("46402406");
-        monthlyUScheduleEditParaDTO.setBaseDate("2020/04/01");
-        monthlyUScheduleEditParaDTO.setDispStartDate("2020/07/01");
-        monthlyUScheduleEditParaDTO.setEndDispDate("2020/04/30");
-        monthlyUScheduleEditParaDTO.setTargetUserId("29042924");
-
-        MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO = new MonthlyScheduleEmpInfoDTO();
-        monthlyScheduleEmpInfoDTO.setBussinessTripid("TMG_BUSINESS_TRIP|00");
-        monthlyScheduleEmpInfoDTO.setComment("77777111");
-        monthlyScheduleEmpInfoDTO.setDyyyymmdd("2020/04/02");
-        monthlyScheduleEmpInfoDTO.setNopen("9:00");
-        monthlyScheduleEmpInfoDTO.setNclose("17:30");
-        monthlyScheduleEmpInfoDTO.setWorkId("TMG_WORK|000");
-
-        List<HashMap<String, String>> restList = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> rest1 = new HashMap<String, String>();
-        rest1.put(_restOpen, "12:00");
-        rest1.put(_restClose, "12:46");
-        restList.add(rest1);
-
-        HashMap<String, String> rest2 = new HashMap<String, String>();
-        rest2.put(_restOpen, "12:46");
-        rest2.put(_restClose, "13:00");
-        restList.add(rest2);
-        monthlyScheduleEmpInfoDTO.setRestList(restList);
-        //////////////////////////////////////////////////////
-
-        MonthlyScheduleEmpInfoDTO monthlyScheduleEmpInfoDTO1 = new MonthlyScheduleEmpInfoDTO();
-        monthlyScheduleEmpInfoDTO1.setBussinessTripid("TMG_BUSINESS_TRIP|00");
-        monthlyScheduleEmpInfoDTO1.setComment("8888111");
-        monthlyScheduleEmpInfoDTO1.setDyyyymmdd("2020/04/03");
-        monthlyScheduleEmpInfoDTO1.setNopen("9:00");
-        monthlyScheduleEmpInfoDTO1.setNclose("17:30");
-        monthlyScheduleEmpInfoDTO1.setWorkId("TMG_WORK|000");
-
-        List<HashMap<String, String>> restList1 = new ArrayList<HashMap<String, String>>();
-        HashMap<String, String> rest11 = new HashMap<String, String>();
-        rest11.put(_restOpen, "12:00");
-        rest11.put(_restClose, "13:00");
-        restList1.add(rest11);
-       /* HashMap<String, String> rest21 = new HashMap<String, String>();
-        rest21.put(_restOpen, "12:45");
-        rest21.put(_restClose, "12:51");
-        restList1.add(rest21);*/
-        monthlyScheduleEmpInfoDTO1.setRestList(restList1);
-
-        List<MonthlyScheduleEmpInfoDTO> monthlyScheduleEmpInfoDTOS = new ArrayList<MonthlyScheduleEmpInfoDTO>();
-        monthlyScheduleEmpInfoDTOS.add(monthlyScheduleEmpInfoDTO);
-        monthlyScheduleEmpInfoDTOS.add(monthlyScheduleEmpInfoDTO1);
-        monthlyUScheduleEditParaDTO.setMonthlyScheduleEmpInfoDTOS(monthlyScheduleEmpInfoDTOS);
-        JSONObject jsonObject = new JSONObject(monthlyUScheduleEditParaDTO);
-        System.out.println("予定作成jsonフォーマット:\n" + jsonObject.toString());
-        return monthlyUScheduleEditParaDTO;
-
-    }
 
     /**
      * 実績クリアの可否を取得します
@@ -1295,9 +1232,6 @@ public class TmgScheduleBean {
      */
     @Transactional(rollbackFor = GlobalException.class)
     public void executeEditMonthlyUSchedule(MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO, PsDBBean psDBBean) {
-
-        //画面から
-        //  MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = this.loadMonthlyUScheduleEditParaDTOData();
 
         if (null == monthlyUScheduleEditParaDTO) {
             logger.warn("更新データが空です");
@@ -1504,13 +1438,13 @@ public class TmgScheduleBean {
      *
      * @return
      */
-    public List<TmgWeekPatternVO> selectCsvReference(PsDBBean psDBBean) {
+    public List<TmgWeekPatternVO> selectCsvReferenceList(int twp_nid, PsDBBean psDBBean) {
         String employeeId = psDBBean.getEmployeeCode();
         if (null == employeeId || "".equals(employeeId)) {
             logger.error("目標ユーザーが空です");
             return null;
         }
-        return iTmgScheduleService.selectCsvReferenceList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage(), employeeId);
+        return iTmgScheduleService.selectCsvReferenceList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getLanguage(), employeeId, twp_nid);
     }
 
     private String workTypeConvert(String divisionId) {
@@ -1557,6 +1491,81 @@ public class TmgScheduleBean {
     }
 
     /**
+     * 　週勤務パターン　汎用　実行
+     *
+     * @param tmgWeekPatternCheckDTOList
+     * @param _targetCustCode
+     * @param _targetCompCode
+     * @param _targetUserCode
+     * @param _loginUserCode
+     * @param _loginLanguageCode
+     * @return
+     */
+    private GlobalResponse executeMakeWeekPattern(List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList, String _targetCustCode, String _targetCompCode, String _targetUserCode, String _loginUserCode, String _loginLanguageCode, String twp_nid) {
+        // if (null != tmgWeekPatternCheckDTOList) {
+        /**
+         * eg:ACT_MakeWeekPattern_UWPtn
+         */
+        String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
+        //初期化modifiedProgramId
+        if (null == actionParam || "".equals(actionParam)) {
+            actionParam = "ACT_MakeWeekPattern_UWPtn";
+        }
+        /**
+         * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
+         */
+        String modifierprogramid = "TmgSchedule_" + actionParam;
+        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+
+        //週勤務パターンデータを登録
+        for (int i = 0; i < tmgWeekPatternCheckDTOList.size(); i++) {
+            TmgWeekPatternCheckDTO twpcDto = tmgWeekPatternCheckDTOList.get(i);
+            twpcDto.setTwp_cmodifierprogramid(modifierprogramid);
+            if (twpcDto.isCheckFlag()) {
+                //注意：　更新フラグ  TRUEの場合は登録    FALSEの場合は削除(不要)
+                iTmgScheduleService.insertTmgWeekPatternCheck(twpcDto);
+            }
+        }
+
+        //更新又は削除の場合、既存レコードは、もう含めていますので、インサート不要
+        //つまり、登録時に、既存データがインサートするとことが必要です
+        if (null == twp_nid || "".equals(twp_nid)) {
+            //既存レコードをインサート
+            iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, null, null, null);
+        }
+
+        //エラーメッセージに追加する
+        iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
+        //エラーメッセージ取得
+        String _errCode = "0";
+        String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        if (!_errCode.equals(errCode)) {
+            logger.error("週勤務パターン登録の際は、エラーが発生しました!");
+            JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
+            Iterator it = jsonObject_err.values().iterator();
+            String errMsg = "";
+            while (it.hasNext()) {
+                JSONArray value = (JSONArray) it.next();
+                jsonObject_err = (JSONObject) value.get(0);
+                errMsg = jsonObject_err.get("ERRMSG") == null ? "" : jsonObject_err.get("ERRMSG").toString();
+            }
+            return GlobalResponse.error(errMsg);
+        }
+        iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
+        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        return GlobalResponse.ok();
+        /*} else {
+            logger.error("週勤務パターンリストが空です");
+            return GlobalResponse.error("週勤務パターンリストが空です");
+        }*/
+    }
+
+
+    /**
      * 週勤務パターンの適用時間を更新する
      *
      * @param twp_dstartdate
@@ -1576,27 +1585,34 @@ public class TmgScheduleBean {
         String _loginUserCode = psDBBean.getUserCode();
         String _loginLanguageCode = psDBBean.getLanguage();
         //先ずは、週勤務パターンを取得する
-        TmgWeekPatternVO tmgWeekPatternVO = iTmgScheduleService.selectCsvReference(_targetCustCode, _targetCompCode, _loginLanguageCode,_targetUserCode, Integer.parseInt(twp_nid));
-        if (null != tmgWeekPatternVO) {
-            //次は、データを削除する
-            boolean flag = this.deleteWeekPtn(twp_nid, psDBBean);
-            if (flag) {
-                TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
-                tmgWeekPatternCheckDTO.setTwp_dstartdate(twp_dstartdate);
-                tmgWeekPatternCheckDTO.setTwp_denddate(twp_denddate);
-                tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(psDBBean.getUserCode());
-                tmgWeekPatternCheckDTO.setPeriod(twp_dstartdate + "-" + twp_denddate);
+        List<TmgWeekPatternVO> tmgWeekPatternVOList = iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, 0);
+        if (null != tmgWeekPatternVOList) {
+            List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
+            TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO = null;
+            for (int i = 0; i < tmgWeekPatternVOList.size(); i++) {
+                TmgWeekPatternVO tmgWeekPatternVO = tmgWeekPatternVOList.get(i);
+                tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
+                if (tmgWeekPatternVO.getTwp_nid().equals(twp_nid)) {
+                    //update
+                    tmgWeekPatternCheckDTO.setTwp_dstartdate(twp_dstartdate);
+                    tmgWeekPatternCheckDTO.setTwp_denddate(twp_denddate);
+                } else {
+                    tmgWeekPatternCheckDTO.setTwp_dstartdate(tmgWeekPatternVO.getTwp_dstartdate());
+                    tmgWeekPatternCheckDTO.setTwp_denddate(tmgWeekPatternVO.getTwp_denddate());
+                }
+                tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(_loginUserCode);
+                tmgWeekPatternCheckDTO.setPeriod(tmgWeekPatternCheckDTO.getTwp_dstartdate() + "-" + tmgWeekPatternCheckDTO.getTwp_denddate());
                 tmgWeekPatternCheckDTO.setCheckFlag(true);
-                tmgWeekPatternCheckDTO.setEmployeeId(psDBBean.getEmployeeCode());
-                tmgWeekPatternCheckDTO.setCompCode(psDBBean.getCompCode());
-                tmgWeekPatternCheckDTO.setCustId(psDBBean.getCustID());
+                tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
+                tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
+                tmgWeekPatternCheckDTO.setCustId(_targetCustCode);
                 tmgWeekPatternCheckDTO.setTwp_copen1(tmgWeekPatternVO.getTwp_copen1() == null ? "" : tmgWeekPatternVO.getTwp_copen1());
                 tmgWeekPatternCheckDTO.setTwp_cclose1(tmgWeekPatternVO.getTwp_cclose1() == null ? "" : tmgWeekPatternVO.getTwp_cclose1());
                 if (null != tmgWeekPatternVO.getRest1() && !"".equals(tmgWeekPatternVO.getRest1().trim())) {
                     String rest = tmgWeekPatternVO.getRest1().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen1(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose1(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen1("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose1("");
                 }
@@ -1608,7 +1624,7 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest2().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen2(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose2(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen2("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose2("");
                 }
@@ -1620,7 +1636,7 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest3().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen3(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose3(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen3("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose3("");
                 }
@@ -1632,7 +1648,7 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest4().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen4(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose4(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen4("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose4("");
                 }
@@ -1644,7 +1660,7 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest5().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen5(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose5(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen5("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose5("");
                 }
@@ -1656,7 +1672,7 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest6().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen6(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose6(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen6("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose6("");
                 }
@@ -1668,75 +1684,24 @@ public class TmgScheduleBean {
                     String rest = tmgWeekPatternVO.getRest7().replaceAll(" ", "");
                     tmgWeekPatternCheckDTO.setTwp_crestopen7(rest.split("-")[0]);
                     tmgWeekPatternCheckDTO.setTwp_crestclose7(rest.split("-")[1]);
-                }else{
+                } else {
                     tmgWeekPatternCheckDTO.setTwp_crestopen7("");
                     tmgWeekPatternCheckDTO.setTwp_crestclose7("");
                 }
                 tmgWeekPatternCheckDTO.setTwp_cholflg7(this.workTypeConvert2(tmgWeekPatternVO.getWorkname7()));
 
-                //インサートする
-                List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
-                String _errCode = "0";
-                /**
-                 * eg:ACT_MakeWeekPattern_UWPtn
-                 */
-                String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
-                //初期化modifiedProgramId
-                if (null == actionParam || "".equals(actionParam)) {
-                    actionParam = "ACT_MakeWeekPattern_UWPtn";
-                }
-                /**
-                 * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
-                 */
-                String modifierprogramid = "TmgSchedule_" + actionParam;
-                tmgWeekPatternCheckDTO.setTwp_cmodifierprogramid(modifierprogramid);
                 tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
-
-                iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-
-                //週勤務パターンデータを登録
-                for (int i = 0; i < tmgWeekPatternCheckDTOList.size(); i++) {
-                    TmgWeekPatternCheckDTO twpcDto = tmgWeekPatternCheckDTOList.get(i);
-                    twpcDto.setTwp_cmodifierprogramid(modifierprogramid);
-                    if (twpcDto.isCheckFlag()) {
-                        //注意：　更新フラグ  TRUEの場合は登録    FALSEの場合は削除(不要)
-                        iTmgScheduleService.insertTmgWeekPatternCheck(twpcDto);
-                    }
-                }
-                //既存レコードをインサート
-                iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, null, null, null);
-
-                //エラーメッセージに追加する
-                iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
-                //エラーメッセージ取得
-                String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                if (!_errCode.equals(errCode)) {
-                    logger.error("週勤務パターン登録の際は、エラーが発生しました!");
-                    JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
-                    Iterator it = jsonObject_err.values().iterator();
-                    String errMsg = "";
-                    while (it.hasNext()) {
-                        JSONArray value = (JSONArray) it.next();
-                        jsonObject_err = (JSONObject) value.get(0);
-                        errMsg = jsonObject_err.get("ERRMSG") == null ? "" : jsonObject_err.get("ERRMSG").toString();
-                    }
-                    return GlobalResponse.error(errMsg);
-                }
-                iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
-                iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-            } else {
+            }
+            //トリガ　実行
+            return this.executeMakeWeekPattern(tmgWeekPatternCheckDTOList, _targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, _loginLanguageCode, twp_nid);
+           /* } else {
                 logger.error("週勤務パターンを削除することが失敗しました");
                 return GlobalResponse.error("週勤務パターンを削除することが失敗しました");
-            }
+            }*/
         } else {
-                logger.error("週勤務パターンを取得することが失敗しました");
+            logger.error("週勤務パターンを取得することが失敗しました");
             return GlobalResponse.error("週勤務パターンを取得することが失敗しました");
         }
-        return GlobalResponse.ok();
 
     }
 
@@ -1823,6 +1788,8 @@ public class TmgScheduleBean {
                         }
                         tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
 
+                        //トリガ　実行
+                        return this.executeMakeWeekPattern(tmgWeekPatternCheckDTOList, _targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, _loginLanguageCode, null);
                     } else {
                         flag = false;
                         globalResponse = GlobalResponse.error("週勤務パターンリストを取得失敗しました");
@@ -1837,58 +1804,7 @@ public class TmgScheduleBean {
                     return globalResponse;
                 }
 
-                String _errCode = "0";
-                /**
-                 * eg:ACT_MakeWeekPattern_UWPtn
-                 */
-                String actionParam = psDBBean.getRequestHash().get("txtACTION") == null ? "" : psDBBean.getRequestHash().get("txtACTION").toString();
-                //初期化modifiedProgramId
-                if (null == actionParam || "".equals(actionParam)) {
-                    actionParam = "ACT_MakeWeekPattern_UWPtn";
-                }
-                /**
-                 * eg: TmgSchedule_ACT_MakeWeekPattern_UWPtn
-                 */
-                String modifierprogramid = "TmgSchedule_" + actionParam;
 
-                iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-
-                //週勤務パターンデータを登録
-                for (int i = 0; i < tmgWeekPatternCheckDTOList.size(); i++) {
-                    TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO = tmgWeekPatternCheckDTOList.get(i);
-                    tmgWeekPatternCheckDTO.setTwp_cmodifierprogramid(modifierprogramid);
-                    if (tmgWeekPatternCheckDTO.isCheckFlag()) {
-                        //注意：　更新フラグ  TRUEの場合は登録    FALSEの場合は削除(不要)
-                        iTmgScheduleService.insertTmgWeekPatternCheck(tmgWeekPatternCheckDTO);
-                    }
-                }
-                //logger.info("_targetUserCode--->" + _targetUserCode);
-                //既存レコードをインサート
-                iTmgScheduleService.buildSQLForSelectInsertTmgWeekPatternCheck(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, null, null, null);
-
-                //エラーメッセージに追加する
-                iTmgScheduleService.insertErrMsg(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, _loginUserCode, modifierprogramid, Cs_MINDATE, Cs_MAXDATE);
-                //エラーメッセージ取得
-                String errCode = iTmgScheduleService.selectErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                if (!_errCode.equals(errCode)) {
-                    logger.error("週勤務パターン登録の際は、エラーが発生しました!");
-                    JSONObject jsonObject_err = JSONUtil.parseObj(errCode);
-                    Iterator it = jsonObject_err.values().iterator();
-                    String errMsg = "";
-                    while (it.hasNext()) {
-                        JSONArray value = (JSONArray) it.next();
-                        jsonObject_err = (JSONObject) value.get(0);
-                        errMsg = jsonObject_err.get("ERRMSG") == null ? "" : jsonObject_err.get("ERRMSG").toString();
-                    }
-                    globalResponse = GlobalResponse.error(errMsg);
-                    return globalResponse;
-                }
-                iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
-                iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
-                iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
             }
         } else {
             flag = false;
@@ -1982,16 +1898,149 @@ public class TmgScheduleBean {
 
     }
 
+
     /**
      * 週勤務パターン　を削除する
      */
-    public boolean deleteWeekPtn(String twp_nid, PsDBBean psDBBean) {
+    public boolean deleteWeekPtn_bak(String twp_nid, PsDBBean psDBBean) {
         if (null == psDBBean) {
             logger.error("週勤務パターン　を削除する -->PsDBBean が空です");
             return false;
         }
         if (null != twp_nid && !"".equals(twp_nid)) {
             iTmgScheduleService.deleteWeekPtn(psDBBean.getCustID(), psDBBean.getCompCode(), twp_nid);
+            return true;
+        } else {
+            logger.error("週勤務パターンコードが空です");
+            return false;
+        }
+    }
+
+
+    /**
+     * 週勤務パターン　を削除する
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public boolean deleteWeekPtn(String twp_nid, PsDBBean psDBBean) {
+        if (null == psDBBean) {
+            logger.error("週勤務パターン　を削除する -->PsDBBean が空です");
+            return false;
+        }
+        if (null != twp_nid && !"".equals(twp_nid)) {
+            String _targetCustCode = psDBBean.getCustID();
+            String _targetCompCode = psDBBean.getCompCode();
+            String _targetUserCode = psDBBean.getEmployeeCode();
+            String _loginUserCode = psDBBean.getUserCode();
+            String _loginLanguageCode = psDBBean.getLanguage();
+            //先ずは、週勤務パターンを取得する
+            List<TmgWeekPatternVO> tmgWeekPatternVOList = iTmgScheduleService.selectCsvReferenceList(_targetCustCode, _targetCompCode, _loginLanguageCode, _targetUserCode, Integer.parseInt(twp_nid));
+            if (null != tmgWeekPatternVOList) {
+                List<TmgWeekPatternCheckDTO> tmgWeekPatternCheckDTOList = new ArrayList<TmgWeekPatternCheckDTO>();
+                TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO = null;
+                for (int i = 0; i < tmgWeekPatternVOList.size(); i++) {
+                    TmgWeekPatternVO tmgWeekPatternVO = tmgWeekPatternVOList.get(i);
+                    tmgWeekPatternCheckDTO = new TmgWeekPatternCheckDTO();
+                    tmgWeekPatternCheckDTO.setTwp_dstartdate(tmgWeekPatternVO.getTwp_dstartdate());
+                    tmgWeekPatternCheckDTO.setTwp_denddate(tmgWeekPatternVO.getTwp_denddate());
+                    tmgWeekPatternCheckDTO.setPeriod(tmgWeekPatternVO.getTwp_dstartdate() + "-" + tmgWeekPatternVO.getTwp_denddate());
+                    tmgWeekPatternCheckDTO.setTwp_cmodifieruserid(_loginUserCode);
+                    tmgWeekPatternCheckDTO.setCheckFlag(true);
+                    tmgWeekPatternCheckDTO.setEmployeeId(_targetUserCode);
+                    tmgWeekPatternCheckDTO.setCompCode(_targetCompCode);
+                    tmgWeekPatternCheckDTO.setCustId(_targetCustCode);
+                    tmgWeekPatternCheckDTO.setTwp_copen1(tmgWeekPatternVO.getTwp_copen1() == null ? "" : tmgWeekPatternVO.getTwp_copen1());
+                    tmgWeekPatternCheckDTO.setTwp_cclose1(tmgWeekPatternVO.getTwp_cclose1() == null ? "" : tmgWeekPatternVO.getTwp_cclose1());
+                    if (null != tmgWeekPatternVO.getRest1() && !"".equals(tmgWeekPatternVO.getRest1().trim())) {
+                        String rest = tmgWeekPatternVO.getRest1().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen1(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose1(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen1("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose1("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg1(this.workTypeConvert2(tmgWeekPatternVO.getWorkname1()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen2(tmgWeekPatternVO.getTwp_copen2() == null ? "" : tmgWeekPatternVO.getTwp_copen2());
+                    tmgWeekPatternCheckDTO.setTwp_cclose2(tmgWeekPatternVO.getTwp_cclose2() == null ? "" : tmgWeekPatternVO.getTwp_cclose2());
+                    if (null != tmgWeekPatternVO.getRest2() && !"".equals(tmgWeekPatternVO.getRest2().trim())) {
+                        String rest = tmgWeekPatternVO.getRest2().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen2(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose2(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen2("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose2("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg2(this.workTypeConvert2(tmgWeekPatternVO.getWorkname2()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen3(tmgWeekPatternVO.getTwp_copen3() == null ? "" : tmgWeekPatternVO.getTwp_copen3());
+                    tmgWeekPatternCheckDTO.setTwp_cclose3(tmgWeekPatternVO.getTwp_cclose3() == null ? "" : tmgWeekPatternVO.getTwp_cclose3());
+                    if (null != tmgWeekPatternVO.getRest3() && !"".equals(tmgWeekPatternVO.getRest3().trim())) {
+                        String rest = tmgWeekPatternVO.getRest3().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen3(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose3(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen3("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose3("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg3(this.workTypeConvert2(tmgWeekPatternVO.getWorkname3()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen4(tmgWeekPatternVO.getTwp_copen4() == null ? "" : tmgWeekPatternVO.getTwp_copen4());
+                    tmgWeekPatternCheckDTO.setTwp_cclose4(tmgWeekPatternVO.getTwp_cclose4() == null ? "" : tmgWeekPatternVO.getTwp_cclose4());
+                    if (null != tmgWeekPatternVO.getRest4() && !"".equals(tmgWeekPatternVO.getRest4().trim())) {
+                        String rest = tmgWeekPatternVO.getRest4().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen4(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose4(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen4("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose4("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg4(this.workTypeConvert2(tmgWeekPatternVO.getWorkname4()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen5(tmgWeekPatternVO.getTwp_copen5() == null ? "" : tmgWeekPatternVO.getTwp_copen5());
+                    tmgWeekPatternCheckDTO.setTwp_cclose5(tmgWeekPatternVO.getTwp_cclose5() == null ? "" : tmgWeekPatternVO.getTwp_cclose5());
+                    if (null != tmgWeekPatternVO.getRest5() && !"".equals(tmgWeekPatternVO.getRest5().trim())) {
+                        String rest = tmgWeekPatternVO.getRest5().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen5(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose5(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen5("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose5("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg5(this.workTypeConvert2(tmgWeekPatternVO.getWorkname5()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen6(tmgWeekPatternVO.getTwp_copen6() == null ? "" : tmgWeekPatternVO.getTwp_copen6());
+                    tmgWeekPatternCheckDTO.setTwp_cclose6(tmgWeekPatternVO.getTwp_cclose6() == null ? "" : tmgWeekPatternVO.getTwp_cclose6());
+                    if (null != tmgWeekPatternVO.getRest6() && !"".equals(tmgWeekPatternVO.getRest6().trim())) {
+                        String rest = tmgWeekPatternVO.getRest6().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen6(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose6(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen6("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose6("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg6(this.workTypeConvert2(tmgWeekPatternVO.getWorkname6()));
+
+                    tmgWeekPatternCheckDTO.setTwp_copen7(tmgWeekPatternVO.getTwp_copen7() == null ? "" : tmgWeekPatternVO.getTwp_copen7());
+                    tmgWeekPatternCheckDTO.setTwp_cclose7(tmgWeekPatternVO.getTwp_cclose7() == null ? "" : tmgWeekPatternVO.getTwp_cclose7());
+                    if (null != tmgWeekPatternVO.getRest7() && !"".equals(tmgWeekPatternVO.getRest7().trim())) {
+                        String rest = tmgWeekPatternVO.getRest7().replaceAll(" ", "");
+                        tmgWeekPatternCheckDTO.setTwp_crestopen7(rest.split("-")[0]);
+                        tmgWeekPatternCheckDTO.setTwp_crestclose7(rest.split("-")[1]);
+                    } else {
+                        tmgWeekPatternCheckDTO.setTwp_crestopen7("");
+                        tmgWeekPatternCheckDTO.setTwp_crestclose7("");
+                    }
+                    tmgWeekPatternCheckDTO.setTwp_cholflg7(this.workTypeConvert2(tmgWeekPatternVO.getWorkname7()));
+                    tmgWeekPatternCheckDTOList.add(tmgWeekPatternCheckDTO);
+                }
+                //トリガ　実行
+                this.executeMakeWeekPattern(tmgWeekPatternCheckDTOList, _targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, _loginLanguageCode, twp_nid);
+
+            } else {
+                logger.error("週勤務パターンを取得することが失敗しました");
+                //return GlobalResponse.error("週勤務パターンを取得することが失敗しました");
+                return false;
+            }
             return true;
         } else {
             logger.error("週勤務パターンコードが空です");

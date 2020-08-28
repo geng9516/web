@@ -171,11 +171,10 @@ public class ScheduleController {
      */
     @GetMapping("selectWeekPatternInfoList")
     @ResponseBody
-    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("txtBaseDate") String txtBaseDate,
-                                                         @RequestParam("txtEndDate") String txtEndDate,
+    public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("twp_nid") int twp_nid,
                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //   System.out.println("controller-->selectCsvReferenceList");
-        return tmgScheduleBean.selectCsvReference(psDBBean);
+        return tmgScheduleBean.selectCsvReferenceList(twp_nid,psDBBean);
     }
 
     /**

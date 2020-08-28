@@ -377,7 +377,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param employeeId
      * @return
      */
-    List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId);
+    List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId,int twp_nid);
 
     /**
      * [勤怠]週次勤務パターン（エラーチェック用）登録

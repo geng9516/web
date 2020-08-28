@@ -14,6 +14,12 @@ import lombok.ToString;
 @Setter
 @ToString
 public class TmgWeekPatternVO {
+
+    /**
+     * twp_nid
+     */
+    private String twp_nid;
+
     /**
      * 週勤務社員ID
      */
