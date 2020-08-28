@@ -202,6 +202,17 @@ public class TmgNotificationController {
     }
 
 
+    /**
+     * 休暇休業承認の権限判定で代理申請の使用可否を決める
+     *
+     * @return　エラー
+     */
+    @GetMapping("hasAuthority")
+    public boolean hasAuthority(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgNotificationBean.hasAuthority(psDBBean);
+    }
+
+
     @GetMapping("download")
     public void downloadFileAction(String url,HttpServletResponse response) {
 

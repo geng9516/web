@@ -18,7 +18,7 @@
             {{ `休暇・休業承認` }}
           </h1>
         </div>
-        <div class="btnbox">
+        <div class="btnbox" v-if="hasAuthority">
           <span style="flex:1"></span>
           <i-button type="primary" ghost icon="md-nutrition" @click="agencyApplyShow = true">代理申請
           </i-button>
@@ -170,7 +170,7 @@
           </div>
           <Spin size="large" fix v-if="restInfoLoading"></Spin>
         </div>
-        <div class="tr">
+        <div class="tr" v-if="hasAuthority">
           <i-button type="error" class="mr15 mb10" ghost @click="denyByPerson" v-if="detailsStatus.indexOf('2') > -1">
             差戻し</i-button>
           <i-button type="primary" class="mb10" ghost @click="confirmByPerson" v-if="detailsStatus.indexOf('2') > -1">承認
@@ -225,7 +225,7 @@
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
 
-          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 ">
+          <form-item label="承認者コメント" v-if="hasAuthority && (detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 )">
             <i-input class="tl" type="textarea" :maxlength="100"  placeholder="文字の長さは１００位以内になっております。" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"></i-input>
           </form-item>
 
@@ -512,6 +512,7 @@
       el: '.restapplyconfirm-warp',
       data() {
         return {
+          hasAuthority:false,
           hasPassedTimeCheck: true,
           agencyApplyShow: false,
           columns: [
@@ -706,6 +707,7 @@
         this.getOrgTree()
         this.getStatusList()
         this.getRestTypeForReview()
+        this.getHasAuthority()
         window.addEventListener('scroll',this.handleScroll,{ passive: true })
       },
         beforeDestroy() {
@@ -786,6 +788,11 @@
           // 获得休假选择list
           const { data } = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
           this.restTypeListForReview = data
+        },
+        async getHasAuthority() {
+          // 获得休假选择list
+          const { data } = await this.http.get('sys/vapply/hasAuthority', this.referListObject)
+          this.hasAuthority = data
         },
         async handleDeptDateChange(e) {
           this.referListObject.txtTmgReferListTreeViewRecordDate = e
