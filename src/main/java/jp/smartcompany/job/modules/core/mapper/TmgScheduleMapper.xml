@@ -1481,7 +1481,7 @@
         and m.tmo_ccustomerid = #{custId}
     </select>
 
-    <select id="buildSQLForSelectTmgStatuses2" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
+    <select id="buildSQLForSelectTmgStatus2" resultMap="selectTmgStatusMap" parameterType="java.util.HashMap">
         select tmg_f_is_fixed_monthly(m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid,m.tmo_ccompanyid) as fixed_monthly
         ,tmg_f_is_fixed_salary (m.tmo_cemployeeid, m.tmo_dyyyymm, m.tmo_ccustomerid,m.tmo_ccompanyid) as fixed_salary
         ,d.tda_cstatusflg
@@ -1499,7 +1499,7 @@
         and m.tmo_ccompanyid = d.tda_ccompanyid
     </select>
 
-    <select id="buildSQLForSelectUseScheculeUser" parameterType="java.util.HashMap" resultMap="java.lang.String">
+    <select id="buildSQLForSelectUseScheculeUser" parameterType="java.util.HashMap" resultType="java.lang.String">
         select TMG_F_IS_SCHEDULABLE_EMP( #{custId},#{compCode},#{employeeId},#{language}) from dual
     </select>
 

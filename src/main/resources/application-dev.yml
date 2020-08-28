@@ -6,3 +6,6 @@ spring:
     driver-class-name: oracle.jdbc.OracleDriver
 server:
   port: 6879
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
