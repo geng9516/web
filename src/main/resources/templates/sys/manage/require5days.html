@@ -544,14 +544,14 @@
                             // checkPeriod:e.taDyyyymmdd3+12,
                             checkPeriod:Utils.formatDate(Utils.addMonths(new Date(Date.parse(e.taDyyyymmdd3)),12), 'yyyy/mm/dd'),
                             takenDays:e.sumSyutokudays7,
-                            mustDays:e.taMustdays8,
+                            mustDays:e.fixMustdays15,
                             lackDays:e.taLessdays9,
 
                             editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
-                            editTakenDays:e.sumSyutokudays7,    //編集画面用_取得日数
-                            adjustTakenDays:e.tpfNusedaysAjdust13, //編集画面用_調整取得日数
-                            editCheckPeriod:e.tpfDkikanbiFix12, //修正期間チェック
-                            editMustDays:e.tpfNmustdaysFix14,    //修正必要日数
+                            editTakenDays:e.sumSyutokudays7,        //編集画面用_取得日数
+                            adjustTakenDays:e.tpfNusedaysAjdust13,  //編集画面用_調整取得日数
+                            editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
+                            editMustDays:e.tpfNmustdaysFix14,       //修正必要日数
                             detailshow:true,
 
                             cemployeeid0:e.cemployeeid0,
