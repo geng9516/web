@@ -50,7 +50,7 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
-                                    placeholder="基準日" format="yyyy/MM/dd" ref="datePicker"
+                                    placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"
                                     @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
@@ -72,7 +72,7 @@
                     <Tag checkable color="blue">定休日</Tag>
                     <Tag checkable color="red">法休日</Tag>
                     <Tag checkable color="green">祝日</Tag>
-                    <Tag checkable color="default">出勤日</Tag>
+                    <Tag checkable style="background:white">出勤日</Tag>
                 </template>
             </div>
             <div style="display:inline-block;width:80%;margin-left: -14%;">

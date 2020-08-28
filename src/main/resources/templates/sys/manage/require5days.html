@@ -39,7 +39,7 @@
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
                             <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" :transfer="true"
-                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし">
@@ -88,20 +88,31 @@
                 <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
+            <template slot-scope="{ row }" slot="basedDay">
+                <span v-for="(item, i) of row.basedDay" :key="i" class="divi-line">{{ item }}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="checkPeriod">
+                <span v-for="(item, i) of row.checkPeriod" :key="i" class="divi-line">{{ item }}</span>
+            </template>
+
             <template slot-scope="{ row }" slot="takenDays">
-                <span>{{ row.takenDays | addNumDeci(true)}}</span>
+                <span v-for="(item, i) of row.takenDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="mustDays">
-                <span>{{ row.mustDays | addNumDeci(true)}}</span>
+                <span v-for="(item, i) of row.mustDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="lackDays">
-                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>
+                <span :class="+row.lackDays ? 'lack-day' : ''" v-for="(item, i) of row.lackDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+                <!--                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>-->
             </template>
 
             <template slot-scope="{ row }" slot="season">
-                <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row)" v-if="row.detailshow">詳細</i-button>
+                <div v-if = "row.season > '1'">
+                    <span class="divi-line" v-for="(item, i) of +row.season" :key="i"><i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">詳細</i-button></span>
+                </div>
                 <span v-else> - </span>
             </template>
         </i-table>
@@ -270,12 +281,12 @@
                         children: [
                             {
                                 title: '基準日',
-                                key: 'basedDay',
+                                slot: 'basedDay',
                                 align: 'center'
                             },
                             {
                                 title: 'チェック期間',
-                                key: 'checkPeriod',
+                                slot: 'checkPeriod',
                                 align: 'center'
                             },
                             {
@@ -494,19 +505,21 @@
         },
         methods: {
 
-            async handleBtn(e) {
+            async handleBtn(e,i) {
+                console.log("handleBtn(e)")
+                console.log(i)
                 console.log(e)
-                this.privateInfo.taKijyunbi = e.basedDay
-                this.privateInfo.sumSyutokudays = e.takenDays
+                this.privateInfo.taKijyunbi = e.basedDay[i]
+                this.privateInfo.sumSyutokudays = e.takenDays[i]
 
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e.name
                 this.privateInfo.workType = e.type
 
                 this.query.txtUserCode = e.cemployeeid0
-                this.query.kijunbi = e.basedDay
-                this.query.pdSearchStart = e.basedDay
-                this.query.pdSearchEnd = e.checkPeriod
+                this.query.kijunbi = e.basedDay[i]
+                this.query.pdSearchStart = e.basedDay[i]
+                this.query.pdSearchEnd = e.checkPeriod[i]
                 //まずは年5日時季指定取得確認画面を開く
                 this.isShow = true
                 this.isSeason = true
@@ -542,7 +555,7 @@
 
                             basedDay:e.taDyyyymmdd3,
                             // checkPeriod:e.taDyyyymmdd3+12,
-                            checkPeriod:Utils.formatDate(Utils.addMonths(new Date(Date.parse(e.taDyyyymmdd3)),12), 'yyyy/mm/dd'),
+                            checkPeriod:e.fixTaKikanbi17,
                             takenDays:e.sumSyutokudays7,
                             mustDays:e.fixMustdays15,
                             lackDays:e.taLessdays9,
@@ -578,7 +591,7 @@
                     for (var i=0;i < b.length;i++){
                         console.log("b[i].taKijyunbi5")
                         console.log(b[i].taKijyunbi5)
-                        if (b[i].taKijyunbi5 == null){
+                        if (b[i].taFuyodays4 == '0'){
                             b[i].basedDay = "-"
                             b[i].checkPeriod = "-"
                             b[i].takenDays = "-"
@@ -661,11 +674,11 @@
                             vactionGiveDay,
                             paidDays:[e.taFuyodays4],
 
-                            basedDay:e.taKijyunbi5,
-                            checkPeriod:e.taKikanbi6,
-                            takenDays:e.sumSyutokudays7,
-                            mustDays:e.taMustdays8,
-                            lackDays:e.taLessdays9,
+                            basedDay:[e.taKijyunbi5],
+                            checkPeriod:[e.taKikanbi6],
+                            takenDays:[e.sumSyutokudays7],
+                            mustDays:[e.taMustdays8],
+                            lackDays:[e.taLessdays9],
 
                             editBasedDay:'',    //編集画面用_修正基準日
                             editTakenDays:'',    //編集画面用_取得日数
@@ -673,6 +686,7 @@
                             editCheckPeriod:'', //修正期間チェック
                             editMustDays:'',    //修正必要日数
                             detailshow:true,
+                            season:e.taRowpan10,
 
                             cemployeeid0:e.cemployeeid0,
                             cemployeeName1:e.cemployeeName1,
@@ -703,6 +717,13 @@
                             for (var j=i+1;j <  max;j++){
                                 a[a.length-1].vactionGiveDay.push(b[j].vactionGiveDay[0])
                                 a[a.length-1].paidDays.push(b[j].paidDays[0])
+
+                                a[a.length-1].basedDay.push(b[j].basedDay[0])
+                                a[a.length-1].checkPeriod.push(b[j].checkPeriod[0])
+                                a[a.length-1].takenDays.push(b[j].takenDays[0])
+                                a[a.length-1].mustDays.push(b[j].mustDays[0])
+                                a[a.length-1].lackDays.push(b[j].lackDays[0])
+
                             }
                             i = i + +b[i].taRowpan10 - 1
                         }
@@ -710,7 +731,7 @@
                     const addNumDeci = Vue.filter('addNumDeci')
                     //
                     for (var i=0;i < a.length;i++){
-                        if (a[i].taKijyunbi5 == null){
+                        if (a[i].taFuyodays4 == '0'){
                             a[i].basedDay = "-"
                             a[i].checkPeriod = "-"
                             a[i].takenDays = "-"
@@ -750,6 +771,10 @@
                     }
                     this.tableData = a
                     this.dataLoading = false
+
+                    console.log("this.tableData = a")
+                    console.log(this.tableData)
+
                 } else if(data.length == 0){
                     this.tableData = data
                     this.dataLoading = false
@@ -962,7 +987,7 @@
             errorCheck() {
                 let date = this.updateAcquired5DaysVO.kijunbiEdit
                 let days = this.updateAcquired5DaysVO.usedDaysEdit
-console.log("errorCheck")
+                console.log("errorCheck")
                 console.log(date)
                 console.log(days)
                 // 修正基準日チェック ※2019/04/01(法改日)以降
