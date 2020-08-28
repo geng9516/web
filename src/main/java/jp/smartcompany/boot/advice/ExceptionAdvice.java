@@ -7,6 +7,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -115,6 +116,13 @@ public class ExceptionAdvice {
     public GlobalResponse nullPointerException(NullPointerException e) {
         printStackTrace(e);
         return GlobalResponse.error("NPE異常");
+    }
+
+    @ExceptionHandler(UnknownAccountException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public GlobalResponse unknownAccountException(UnknownAccountException e) {
+        printStackTrace(e);
+        return GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(),"システム処理中にエラーが発生しました。システム管理者にお問い合わせください");
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

@@ -1200,16 +1200,14 @@ public class EvaluatorSettingBean {
         String sEmpId    = escDBString(evaluaterSettingParam.getEmployee());
         String sLangage  = escDBString(evaluaterSettingParam.getLanguage());
 
-        return " SELECT " +
-                "     TMG_F_GET_DEFAULT_APPLEVEL( " +
+        return  "SELECT TMG_F_GET_DEFAULT_APPLEVEL( " +
                 "                               " + sEmpId + ", " +
                 "                               " + sBaseDate + ", " +
                 "                               " + sCustId + ", " +
                 "                               " + sCompId + ", " +
                 "                               " + sLangage +
-                "                               ) " +
-                " FROM    " +
-                "     DUAL ";
+                " ) " +
+                "FROM DUAL";
     }
 
     /**
