@@ -183,7 +183,7 @@
                                 </i-col>
                            </Row>
                         <Tree :data="treeData" @on-check-change="handleDeptChange"  class="tree mt2" empty-text="所属データなし"
-                              ref="tree" show-checkbox multiple check-strictly="true"></Tree>
+                              ref="tree" show-checkbox multiple check-strictly check-directly></Tree>
                         </Drawer>
                                 <!-- 共通組織図画面 end-->
                     </span>
@@ -431,20 +431,24 @@
                 },
                 treeChangeExpand(treeData) {
                     let _this = this;
-                    for (var i = 0; treeData && i < treeData.length; i++) {
-                        this.$set(treeData[i],'expand',true); //重要！用set方法
-                        if (treeData[i].children) {
-                            treeData[i].children = _this.treeChangeExpand(treeData[i].children,true);
+                    treeData.forEach((e, i)=>{
+                        treeData[i].expand = true
+                        if(e.children) {
+                            _this.treeChangeExpand(e.children);
                         }
-                    }
-                    return treeData;
+                    })
                 },
-                async handleDeptChange(e){
-                    if(e[0] == null ){
+                async handleDeptChange(e,current){
+                    if(!e[0] ){
                         this.deptName="クリックした組織選択"
                         this.deptId=""
                         this.deptNameList=[]
                         return
+                    }
+                    if(current.children && current.children.length > 0) {
+                        console.log(this.treeData)
+                        console.log(current)
+                        // current.secid 从this.treeData找到current在它的位置  再将改位置下的所有节点checked全部置为true
                     }
                     this.deptName=""
                     this.deptId=""

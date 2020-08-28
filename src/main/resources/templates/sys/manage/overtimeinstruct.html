@@ -1026,13 +1026,13 @@
                     const selectedData = this.$refs.selection2.getSelection()
                     if (selectedData.length === 0) return
                     const selectedDataKeys = selectedData.map(e => e.empId)
-                    const PATTERN = Utils.deepClone(this.pattern)
+                    const PATTERN = this.pattern
                     // 只将被勾选项赋值
                     this.value.forEach(item => {
                         if (selectedDataKeys.includes(item.sEmpId)) {
                             Object.keys(PATTERN).forEach(function (key) {
                                 if (status) {
-                                    item[key] = PATTERN[key]
+                                    item[key] = Utils.deepClone(PATTERN[key])
                                 } else {
                                     // 清空操作
                                     if (key.indexOf('List') > -1) {
