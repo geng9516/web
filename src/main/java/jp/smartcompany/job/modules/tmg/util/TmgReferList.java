@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
@@ -22,6 +23,7 @@ import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ui.ModelMap;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -657,6 +659,8 @@ public class TmgReferList {
      */
     private void createTreeViewSiteAdmin(String baseDate) throws Exception {
 
+        HttpSession session = psDBBean.getSession();
+
         // 対象社員の社員コードをリクエストパラメータから取得
         targetEmp_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_EMP);
         // リクエストパラメータに存在しない場合、セッションから取得
@@ -699,15 +703,11 @@ public class TmgReferList {
                     targetEmp_admin = null;
                 }
             }
-        } else {
-            // todo 暂时设置最顶级sectionId为默认查询id
-            targetSec_admin = "000000";
-            createEmpList(targetSec_admin, targetDate, getHidSelectTab());
         }
 
         // 改めてセッションに登録する
-        psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
-        psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
+        session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
+        session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
 
     }
 
@@ -723,12 +723,15 @@ public class TmgReferList {
     }
 
     private void createTreeViewNoTargetSection(String psDaseDate) throws Exception {
+
+        HttpSession session = psDBBean.getSession();
+
         createMemberList(targetDate, getHidSelectTab());
         // 対象組織の組織コードをリクエストパラメータから取得
         targetSec_perm    = psDBBean.getReqParam(TREEVIEW_KEY_PERM_TARGET_SECTION);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetSec_perm == null){
-            targetSec_perm = (String)psDBBean.getSession().getAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION);
+            targetSec_perm = (String)session.getAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION);
         }
 
         // 対象グループのグループIDをリクエストパラメータから取得
@@ -804,6 +807,10 @@ public class TmgReferList {
         psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP, targetGroup_perm);
         psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_EMP, targetMember_perm);
         psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_SELECTED_VIEW, selectedView_perm);
+
+        log.debug("勤怠承認サイトsectionId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION));
+        log.debug("勤怠承認サイトempId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP));
+        log.debug("勤怠承認サイトgroupId:{}",session.getAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP));
     }
 
     /**
@@ -839,8 +846,8 @@ public class TmgReferList {
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
                     log.debug("【调用TmgOrgTress的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
                     orgTree.createOrgTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
-                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
-                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
+//                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
+//                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -869,10 +876,10 @@ public class TmgReferList {
                 try{
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
                     divTree.createDivisionTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
-                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_RESULT, divTree.getDataArray());
+//                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_RESULT, divTree.getDataArray());
 //                    session.setAttribute(SESSION_KEY_DIVTREE_CONDITION, sExists);
-                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_ALL, divTree.isAllDivision());
-                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_ROOT, divTree.getRootSection());
+//                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_ALL, divTree.isAllDivision());
+//                    psDBBean.getSession().setAttribute(SESSION_KEY_DIVTREE_ROOT, divTree.getRootSection());
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -1435,6 +1442,9 @@ public class TmgReferList {
     }
 
 
+    // 正则匹配部门信息
+    // ReUtil.get("\\{[^{]*'201000000000\\'[^}]*\\}",0)
+
     /**
      * 作成された組織ツリーの内容に従って、ツリービュー作成用のJSON配列を生成して返します。<br>
      * 勤怠管理サイトの各種コンテンツで使用します。
@@ -1447,7 +1457,16 @@ public class TmgReferList {
             if(orgTree == null){
                 return null;
             }
-            return orgTree.getJSONArrayForTreeView();
+            System.out.println("orgTree");
+            System.out.println(targetSec_admin);
+            System.out.println(targetEmp_admin);
+            String orgTreeList = orgTree.getJSONArrayForTreeView();
+            System.out.println(orgTreeList);
+            if (StrUtil.isNotBlank(targetSec_admin)) {
+               List<String> result =ReUtil.findAllGroup0("\\{*'" + targetSec_admin + "'*\\}", orgTreeList);
+               System.out.println(result);
+            }
+            return orgTreeList;
         }else{
             return null;
         }
@@ -1464,7 +1483,12 @@ public class TmgReferList {
             if(divTree == null){
                 return null;
             }
-            return divTree.getJSONArrayForTreeView();
+            System.out.println("divTree");
+            System.out.println(targetSec_admin);
+            System.out.println(targetEmp_admin);
+            String divTreeList = divTree.getJSONArrayForTreeView();
+            System.out.println(divTreeList);
+            return divTreeList;
         }else{
             return null;
         }
@@ -1496,7 +1520,11 @@ public class TmgReferList {
             if(groupList == null){
                 return null;
             }
-            return groupList.getJSONArrayForTreeView();
+            System.out.println("groupList");
+            System.out.println(targetGroup_perm);
+            String treeViewGroup = groupList.getJSONArrayForTreeView();
+            System.out.println(treeViewGroup);
+            return treeViewGroup;
         }else{
             return null;
         }
@@ -1512,7 +1540,11 @@ public class TmgReferList {
             if(groupList == null){
                 return null;
             }
-            return groupList.getJSONArrayForTreeViewSection();
+            System.out.println("sectionList");
+            System.out.println(targetSec_perm);
+            System.out.println(targetMember_perm);
+            String treeViewSection = groupList.getJSONArrayForTreeViewSection();
+            return treeViewSection;
         }else{
             return null;
         }
