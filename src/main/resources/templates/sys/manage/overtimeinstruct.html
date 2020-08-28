@@ -140,7 +140,7 @@
                 <Row :gutter="16" class="mb5">
                     <i-col span="13" offset="11" class="tr">
                         <i-button type="primary" size="large" class="tr" @click="overTimeUpdate"
-                            :loading="updateBtnLoading">命令/確認</i-button>
+                            :loading="updateBtnLoading" v-if="hasAuthority">命令/確認</i-button>
                     </i-col>
                 </Row>
                 <Row class="mb15">
@@ -169,7 +169,7 @@
 
                     <template slot-scope="{ row }" slot="content">
                         <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl"
-                            :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
+                               :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
                     </template>
 
                     <template slot-scope="{ row }" slot="restTime" v-if="!restTimeSetDisable">
@@ -216,18 +216,20 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="startTime">
-                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl"
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-if="hasAuthority"
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNOpen', $event.target)">
                             </i-input>
+                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNOpen" class="tl" v-else disabled></i-input>
                         </div>
                     </template>
 
                     <template slot-scope="{ row }" slot="endTime">
-                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb20">
-                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl"
+                        <div v-for="(item, i) of value[row._index].updateOverTimeDtoList" :key="i" class="mb2">
+                            <i-input v-model="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-if="hasAuthority"
                                 @on-blur="handleInputChange(row._index, value[row._index].updateOverTimeDtoList[i],'sNClose', $event.target)">
                             </i-input>
+                            <i-input :value="value[row._index].updateOverTimeDtoList[i].sNClose" class="tl" v-else disabled></i-input>
                         </div>
                     </template>
 
@@ -237,10 +239,12 @@
                             <i-col :span="value[row._index].updateOverTimeDtoList.length > 1 ? 18 : 24">
                                 <i-input v-model="value[row._index].updateOverTimeDtoList[i].sCComment" type="textarea" class="tl"
                                     :autosize="{ minRows: 2, maxRows: 5 }" :maxlength="100"
+                                         v-if="hasAuthority"
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
+                                <i-input :value="value[row._index].updateOverTimeDtoList[i].sCComment" class="tl" v-else disabled></i-input>
                             </i-col>
                             <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
-                                <i-button ghost type="error"
+                                <i-button ghost type="error" v-if="hasAuthority"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
                                 <span
@@ -255,7 +259,7 @@
                             </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)"
+                            @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)" v-if="hasAuthority"
                             v-show="value[row._index].updateOverTimeDtoList.length < 4">
                             +
                         </i-button>
