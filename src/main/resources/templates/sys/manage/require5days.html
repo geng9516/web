@@ -108,15 +108,16 @@
                 <span :class="+row.lackDays ? 'lack-day' : ''" v-for="(item, i) of row.lackDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
                 <!--                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>-->
             </template>
-
             <template slot-scope="{ row }" slot="season">
-                <div v-if = "row.season > '0' && row.detailshow ">
-                    <span class="divi-line" v-for="(item, i) of +row.season" :key="i"><i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">詳細</i-button></span>
-                </div>
-                <span v-else> - </span>
+                <span v-for="(item, i) of row.season" :key="i" class="divi-line">
+                    <div v-if = "item == '詳細'">
+                        <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">{{ item }}</i-button>
+                    </div>
+                    <span v-else> - </span>
+                </span>
             </template>
         </i-table>
-        <Modal :mask-closable="false" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1100"
+        <Modal :mask-closable="false" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1130"
                footer-hide>
             <div>
                 <Row :gutter="10">
@@ -144,6 +145,10 @@
                 修正年次休暇付与内容
             </div>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
+                <template slot-scope="{ row }" slot="radio">
+                    <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
+                </template>
+
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
@@ -182,6 +187,10 @@
 
             </i-table>
             <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
+                <template slot-scope="{ row }" slot="radio">
+                    <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
+                </template>
+
                 <template slot-scope="{ row }" slot="editBasedDay">
                     <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
@@ -315,6 +324,11 @@
                     }
                 ],
                 paidColums: [
+                    {
+                        title: ' ',
+                        slot: 'radio',
+                        width: 35
+                    },
                     {
                         title: '年次休暇\n付与日',
                         slot: 'vactionGiveDay',
@@ -476,7 +490,6 @@
                 title: '',
                 isSearchHistory: false,
 
-                // detailshow: false,
                 isSeason: false,
                 isShow: false,
                 selectedDeptViewType: 3,
@@ -486,7 +499,8 @@
                 emplistLoading: false,  //職員一覧ローディング用動画
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
                 dataLoading: false,
-                forRest: true
+                forRest: true,
+                radioCheckedIndex: 0
             }
         },
         async mounted() {
@@ -565,7 +579,7 @@
                             adjustTakenDays:e.tpfNusedaysAjdust13,  //編集画面用_調整取得日数
                             editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
                             editMustDays:e.tpfNmustdaysFix14,       //修正必要日数
-                            detailshow:true,
+                            isChecked:false,
 
                             cemployeeid0:e.cemployeeid0,
                             cemployeeName1:e.cemployeeName1,
@@ -602,7 +616,6 @@
                             b[i].adjustTakenDays = addNumDeci(b[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
                             b[i].editMustDays = addNumDeci(b[i].tpfNmustdaysFix14,true) //編集画面用‐調整必要日数
 
-                            b[i].detailshow = false
                         }
                     }
                     this.paidData = b
@@ -631,17 +644,17 @@
                 this.privateInfo.workType = this.paidData[0].type
 
                 const addNumDeci = Vue.filter('addNumDeci')
-                //事前に
-                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd3
-                this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
-                // this.updateAcquired5DaysVO.txtYear = '2020'
-                this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
-                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
-                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfNusedaysAjdust13,true)
-                this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[0].tpfNmustdaysFix14,true)
-                console.log("this.updateAcquired5DaysVO")
-                console.log(this.updateAcquired5DaysVO)
+                // //事前に
+                // this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd3
+                // this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                // this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
+                // // this.updateAcquired5DaysVO.txtYear = '2020'
+                // this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
+                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
+                // this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfNusedaysAjdust13,true)
+                // this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[0].tpfNmustdaysFix14,true)
+                // console.log("this.updateAcquired5DaysVO")
+                // console.log(this.updateAcquired5DaysVO)
 
                 this.isShow = true
                 this.isSeason = false
@@ -686,8 +699,8 @@
                             adjustTakenDays:'', //編集画面用_調整取得日数
                             editCheckPeriod:'', //修正期間チェック
                             editMustDays:'',    //修正必要日数
-                            detailshow:true,
-                            season:e.taRowpan10,
+                            // season:e.taRowpan10,
+                            season:[],
 
                             cemployeeid0:e.cemployeeid0,
                             cemployeeName1:e.cemployeeName1,
@@ -707,6 +720,32 @@
                             taCduplicateflg:e.taCduplicateflg
                         }
                     })
+
+                    for (var i=0;i < b.length;i++){
+                        b[i].season.push("詳細")
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
+                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
+                            console.log("test_tart")
+                            console.log(b[i].cemployeeid0)
+                            console.log(b[i].taFuyodays4)
+                            console.log(b[i].tpfDpaidHolidayFix11)
+                            console.log(b[i].tpfDkikanbiFix12)
+                            console.log(b[i].tpfNusedaysAjdust13)
+                            console.log(b[i].tpfNmustdaysFix14)
+                            console.log("test_end")
+
+                            b[i].basedDay = ["-"]
+                            b[i].checkPeriod = ["-"]
+                            b[i].takenDays = ["-"]
+                            b[i].mustDays = ["-"]
+                            b[i].lackDays = ["-"]
+                            b[i].season = ["-"]
+                        }
+                    }
+
+                    console.log("this.b = b")
+                    console.log(b)
+
                     let a=[]
                     for (var i=0;i < b.length;i++){
                         if (b[i].taRowpan10 == 1) {
@@ -724,7 +763,7 @@
                                 a[a.length-1].takenDays.push(b[j].takenDays[0])
                                 a[a.length-1].mustDays.push(b[j].mustDays[0])
                                 a[a.length-1].lackDays.push(b[j].lackDays[0])
-
+                                a[a.length-1].season.push(b[j].season[0])
                             }
                             i = i + +b[i].taRowpan10 - 1
                         }
@@ -733,54 +772,7 @@
                     //
 
 
-                    for (var i=0;i < a.length;i++){
-                        if (b[i].taFuyodays4 < '10' && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
-                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
 
-                            console.log(b[i].cemployeeid0)
-                            console.log(b[i].taFuyodays4)
-                            console.log(b[i].tpfDpaidHolidayFix11)
-                            console.log(b[i].tpfDkikanbiFix12)
-                            console.log(b[i].tpfNusedaysAjdust13)
-                            console.log(b[i].tpfNmustdaysFix14)
-
-                            a[i].basedDay = "-"
-                            a[i].checkPeriod = "-"
-                            a[i].takenDays = "-"
-                            a[i].mustDays = "-"
-                            a[i].lackDays = "-"
-
-                            // a[i].editTakenDays = "-"  //編集画面用‐取得日数
-                            // a[i].adjustTakenDays = addNumDeci(a[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
-
-                            a[i].detailshow = false
-                        }
-                        // else if (a[i].taKijyunbi5 != null) {
-                        //     a[i].basedDay = a[i].taKijyunbi
-                        //     a[i].checkPeriod = a[i].taKikanbi
-                        //     a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
-                        //     a[i].mustDays = a[i].taMustdays
-                        //     a[i].lackDays = a[i].taLessdays
-                        //
-                        //     a[i].editTakenDays = a[i].tpSyutokudays          //編集画面用‐取得日数
-                        //     a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
-                        //     a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
-                        //     a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
-                        //
-                        // } else if (a[i].tpfKijyunbi != null) {
-                        //     a[i].basedDay = a[i].tpfKijyunbi
-                        //     a[i].checkPeriod = a[i].tpfKikanbi
-                        //     a[i].takenDays = a[i].sumSyutokudays //一覧画面表示取得日数
-                        //     a[i].mustDays = a[i].tpfMustdays
-                        //     a[i].lackDays = a[i].tpfLessdays
-                        //
-                        //     a[i].editBasedDay = a[i].tpfKijyunbi    //編集画面用‐修正基準日
-                        //     a[i].editTakenDays = a[i].tpfSyutokudays　//編集画面用‐取得日数
-                        //     a[i].adjustTakenDays = addNumDeci(a[i].tpfSyutokudaysAdjust,true) //編集画面用‐調整取得日数
-                        //     a[i].editCheckPeriod = a[i].tpfHolidayendfix          //編集画面用‐修正期間チェック
-                        //     a[i].editMustDays = addNumDeci(a[i].tpfNusedaysfix,true) //編集画面用‐修正必要日数
-                        // }
-                    }
                     this.tableData = a
                     this.dataLoading = false
 
@@ -919,6 +911,19 @@
             register(e) {
                 //1:登録　2:クリア
                 this.updateAcquired5DaysVO.txtUpdateflg = '1'
+
+                // const addNumDeci = Vue.filter('addNumDeci')
+                // let index=this.radioCheckedIndex
+                // this.updateAcquired5DaysVO.txtFuyobi = this.paidData[index].taDyyyymmdd3
+                // this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                // this.updateAcquired5DaysVO.txtUserCode = this.paidData[index].cemployeeid0
+                // this.updateAcquired5DaysVO.kijunbi = this.paidData[index].taKijyunbi5
+                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index].tpfDpaidHolidayFix11
+                // this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[index].tpfNusedaysAjdust13,true)
+                // this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[index].tpfNmustdaysFix14,true)
+                // console.log("register_this.updateAcquired5DaysVO")
+                // console.log(this.updateAcquired5DaysVO)
+
                 if (this.errorCheck()){
                     this.$Modal.confirm({
                         title: '',
@@ -950,6 +955,11 @@
                 this.updateAcquired5DaysVO.kijunbiEdit = ''
                 //調整取得日数を削除
                 this.updateAcquired5DaysVO.usedDaysEdit = ''
+
+                //修正チェック期間を削除
+                this.updateAcquired5DaysVO.dkikanbiFix = ''
+                //修正必要日数を削除
+                this.updateAcquired5DaysVO.txtNusedaysDays = ''
 
                 this.$Modal.confirm({
                     title: '',
@@ -1024,7 +1034,31 @@
                     return
                 }
                 return true;
-            }
+            },
+            handleRadio(index) {
+                console.log("handleRadio(index)")
+                this.radioCheckedIndex = index
+                console.log(this.radioCheckedIndex)
+
+                const addNumDeci = Vue.filter('addNumDeci')
+                let index_=this.radioCheckedIndex
+                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[index_].taDyyyymmdd3
+                this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.updateAcquired5DaysVO.txtUserCode = this.paidData[index_].cemployeeid0
+                this.updateAcquired5DaysVO.kijunbi = this.paidData[index_].taKijyunbi5
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index_].tpfDpaidHolidayFix11
+                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[index_].tpfNusedaysAjdust13,true)
+                this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[index_].tpfNmustdaysFix14,true)
+                console.log("register_this.updateAcquired5DaysVO")
+                console.log(this.updateAcquired5DaysVO)
+
+                this.paidData = this.paidData.map((e, i) => {
+                    return {
+                        ...e,
+                        isChecked: i === index ? true : false
+                    }
+                })
+            },
         }
     })
 </script>
