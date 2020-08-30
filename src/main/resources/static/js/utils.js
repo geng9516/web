@@ -176,7 +176,7 @@ const Utils = {
    */
   downloadFile: function (data, filename, type) {
     let file = {}
-    if (type.indexOf('pdf')>-1) {
+    if (type.indexOf('pdf') > -1) {
       file = new Blob([data], { type: type })
     } else {
       file = new Blob([`\ufeff${data}`], { type: type })
@@ -221,28 +221,28 @@ const Utils = {
    * @returns {boolean}
    */
   multipleDateRangeOverlaps: function (dateArray) {
-    if(dateArray.length === 1) return false
+    if (dateArray.length === 1) return false
     let _dateArray = []
-    dateArray.forEach(e=>{
+    dateArray.forEach(e => {
       // 排除两个都为空值
-      if(e.start && e.end) {
+      if (e.start && e.end) {
         _dateArray = _dateArray.concat(this.formatDate(e.start, 'yyyymmdd'))
         _dateArray = _dateArray.concat(this.formatDate(e.end, 'yyyymmdd'))
       }
     })
     // 被去重了就说明已经有重复的了
-    if(_dateArray.length !== new Set([..._dateArray]).size) return true
+    if (_dateArray.length !== new Set([..._dateArray]).size) return true
 
     // 检查所有项目
     for (let i = 0; i < _dateArray.length - 2; i += 2) {
-        for (let j = i + 2; j < _dateArray.length; j += 2) {
-            if (
-              this.timeOverlap(
-                    _dateArray[i], _dateArray[i+1],
-                    _dateArray[j], _dateArray[j+1]
-                )
-            ) return true;
-        }
+      for (let j = i + 2; j < _dateArray.length; j += 2) {
+        if (
+          this.timeOverlap(
+            _dateArray[i], _dateArray[i + 1],
+            _dateArray[j], _dateArray[j + 1]
+          )
+        ) return true;
+      }
     }
     return false;
   },

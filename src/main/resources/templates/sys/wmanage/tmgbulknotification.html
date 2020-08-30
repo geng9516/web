@@ -430,10 +430,10 @@
                     }
                 },
                 treeChangeExpand(treeData) {
-                    let _this = this;
+                    let _this = this
                     treeData.forEach((e, i)=>{
                         treeData[i].expand = true
-                        if(e.children) {
+                        if(e.children && e.children.length > 0) {
                             _this.treeChangeExpand(e.children);
                         }
                     })
@@ -445,25 +445,45 @@
                         this.deptNameList=[]
                         return
                     }
+                    // 如果有子节点，则遍历影响
                     if(current.children && current.children.length > 0) {
-                        console.log(this.treeData)
-                        console.log(current)
-                        // current.secid 从this.treeData找到current在它的位置  再将改位置下的所有节点checked全部置为true
+                        this.treeCheckHack(current.children, current.checked)
                     }
-                    this.deptName=""
-                    this.deptId=""
-                    this.deptNameList=[]
-                    e.forEach(j => {
-                        this.deptName=this.deptName+j.secnic+","
-                        this.deptId=this.deptId+j.secid+","
-                        this.deptNameList=this.deptNameList.concat(j.secnic)
+
+                    // 在这里显示选中的名字
+                    this.$nextTick(()=>{
+                        const selectedTreeNodes = this.$refs.tree.getCheckedNodes()
+                        if(selectedTreeNodes.length > 0) {
+                            this.deptName = selectedTreeNodes.map(e=> e.secname).join(',')
+                        } else {
+                            this.deptName = ''
+                        }
                     })
-                    if(this.deptName.split(',').length>2){
-                        this.deptName=this.deptName.split(',')[0]+","+this.deptName.split(',')[1]+","+this.deptName.split(',')[2]+",..."
-                    }else{
-                        this.deptName = this.deptName.substring(0,this.deptName.lastIndexOf(','))
-                    }
-                    this.deptId = this.deptId.substring(0,this.deptId.lastIndexOf(','))
+                    // this.deptName=""
+                    // this.deptId=""
+                    // this.deptNameList=[]
+                    // e.forEach(j => {
+                    //     this.deptName=this.deptName+j.secnic+","
+                    //     this.deptId=this.deptId+j.secid+","
+                    //     this.deptNameList=this.deptNameList.concat(j.secnic)
+                    // })
+                    // if(this.deptName.split(',').length>2){
+                    //     this.deptName=this.deptName.split(',')[0]+","+this.deptName.split(',')[1]+","+this.deptName.split(',')[2]+",..."
+                    // }else{
+                    //     this.deptName = this.deptName.substring(0,this.deptName.lastIndexOf(','))
+                    // }
+                    // this.deptId = this.deptId.substring(0,this.deptId.lastIndexOf(','))
+                },
+                // 使得check-strictly的情况下， 勾选/取消 checkbox父也会遍历全部子集
+                treeCheckHack(treeNode, checked) {
+                    let _this = this
+                    treeNode.forEach((e, i) => {
+                        _this.$set(e, 'checked', checked)
+                        if (e.children && e.children.length > 0) {
+                            _this.treeCheckHack(e.children, checked);
+
+                        }
+                    })
                 },
                 async errDetail(e){
                     if (!e) {
