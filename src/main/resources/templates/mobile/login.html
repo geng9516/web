@@ -2,8 +2,39 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="layout/header::common_header(title='mobile login',cssPaths='/pages/errorPage.min.css')"></head>
 <body>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<svg th:replace="layout/logos::svg_logos"></svg>
+<style>
+.login-page {
+   min-height:100vh;
+   max-height:100vh;
+   /* background: var(--login-left-part-bg); */
+}
+</style>
 <main class="login-page">
-   mobile login
+   
+   <svg class="logo-warp">
+      <use xlink:href="#logo-p-mark"></use>
+   </svg>
+
+      <svg class="logo-warp">
+      <use xlink:href="#logo-suit"></use>
+   </svg>
+
+         <svg class="logo-warp">
+      <use xlink:href="#logo"></use>
+   </svg>
 </main>
+<script type="text/babel" data-presets="latest">
+    const login = new Vue({
+        el: '.login-page',
+        data() {
+            return {
+            }
+        },
+        methods: {
+        }
+    })
+</script>
 </body>
 </html>
