@@ -217,6 +217,7 @@
 
             <form-item label="翌日勤務パターン" prop="ykjtPattern">
               <i-select v-model="ykjtPatternModel" placeholder="選択ください" filterable transfer @on-change="handleChangePattern($event)">
+                  <i-option label="なし" value=""></i-option>
                   <i-option v-for="(item, index) of ykjtPatternList" :key="index" :label="item.tpa_cpatternname" :value="item.tpa_cpatternid"></i-option>
               </i-select>
             </form-item>
@@ -269,7 +270,7 @@
                 errorFlag: false,
                 errorMsg: '',
                 selectedDeptViewType: 3, //組織ツリー用
-                hasPassedTimeCheck: false,
+                hasPassedTimeCheck: true,
                 planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
                 localValue: {
@@ -597,6 +598,10 @@
             handleChangePattern(e) {
                 if (e) {
                     this.rawData.tpa_cnextptn = e
+                }else{
+                    //日付切替時刻の値をリセットする
+                    this.rawData.tpa_ndate_change_time = ''
+                    this.rawData.tpa_cnextptn = ''
                 }
             },
             //所属変更する
@@ -817,6 +822,8 @@
             //日付切替時刻と翌日勤務パターンをチェック
             valid_nextPtn(changeTime, nextptn) {
                 //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
+                console.log("changeTime:",changeTime)
+                console.log("nextptn:",nextptn)
                 this.hiddenAlert()
                 if (changeTime) {
                     if (!nextptn) {
