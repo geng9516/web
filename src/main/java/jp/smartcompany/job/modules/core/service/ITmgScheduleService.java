@@ -377,7 +377,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param employeeId
      * @return
      */
-    List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId,int twp_nid);
+    List<TmgWeekPatternVO> selectCsvReferenceList(String custId, String compCode, String language, String employeeId, int twp_nid);
 
     /**
      * [勤怠]週次勤務パターン（エラーチェック用）登録
@@ -532,11 +532,12 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param group
      * @return
      */
-    TmgStatusDTO buildSQLForSelectTmgStatus(String custId, String compCode, String employeeId, String dstart, String dend,String group);
+    TmgStatusDTO buildSQLForSelectTmgStatus(String custId, String compCode, String employeeId, String dstart, String dend, String group);
 
     /**
-     *  * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
-     * 	* この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     * * この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     *
      * @param custId
      * @param compCode
      * @param employeeId
@@ -547,12 +548,25 @@ public interface ITmgScheduleService extends IService<Object> {
 
     /**
      * 予定編集可能な職員かマスタデータより判定を行った結果を取得する
+     *
      * @param custId
      * @param compCode
      * @param employeeId
      * @param language
      * @return
      */
-    String buildSQLForSelectUseScheculeUser(String custId, String compCode, String employeeId,String language);
+    String buildSQLForSelectUseScheculeUser(String custId, String compCode, String employeeId, String language);
+
+    /**
+     * 勤務予定時間リスト
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @param formatter
+     * @return
+     */
+    List<String> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter);
+
 
 }

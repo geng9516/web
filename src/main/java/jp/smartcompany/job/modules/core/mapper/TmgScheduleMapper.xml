@@ -1503,5 +1503,17 @@
         select TMG_F_IS_SCHEDULABLE_EMP( #{custId},#{compCode},#{employeeId},#{language}) from dual
     </select>
 
+    <!-- 勤務予定時間リスト -->
+    <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tda_dyyyymm
+              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as
+                    tda_dyyyymm
+                  from tmg_daily d
+                 where d.tda_ccompanyid = #{compCode}
+                   and d.tda_ccustomerid = #{custId}
+                   and d.tda_cemployeeid = #{employeeId})
+             order by tda_dyyyymm
+    </select>
+
 
 </mapper>

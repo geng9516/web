@@ -361,8 +361,9 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
     TmgStatusDTO buildSQLForSelectTmgStatus(HashMap<String, Object> params);
 
     /**
-     *  * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
-     * 	* この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     * * 対象職員・年月日の日別、月別ステータスおよび勤怠締め有無、給与確定有無、システム日付との比較結果を返します。
+     * * この検索結果は、個人タイプかつ編集機能を持つ各種コンテンツにおいて、編集可否を判定する際に使用できます。
+     *
      * @param params
      * @return
      */
@@ -370,9 +371,19 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
 
     /**
      * 予定編集可能な職員かマスタデータより判定を行った結果を取得する
+     *
      * @param params
      * @return
      */
     String buildSQLForSelectUseScheculeUser(HashMap<String, Object> params);
+
+    /**
+     * 勤務予定時間リスト
+     *
+     * @param params
+     * @return
+     */
+    List<String> selectScheduleDateList(HashMap<String, Object> params);
+
 
 }
