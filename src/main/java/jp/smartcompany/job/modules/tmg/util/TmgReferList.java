@@ -165,6 +165,7 @@ public class TmgReferList {
     // リクエストパラメータorセッションに登録する際のキー(勤怠管理サイト用)
     public static final String TREEVIEW_KEY_ADMIN_TARGET_SECTION = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetSection";
     public static final String TREEVIEW_KEY_ADMIN_TARGET_EMP     = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetEmp";
+    public static final String TREEVIEW_KEY_ADMIN_TARGET_EMP_NAME      = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetEmpName";
     // xin追加：选中部门名称
     public static final String TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetSectionName";
 
@@ -174,6 +175,7 @@ public class TmgReferList {
     public static final String TREEVIEW_KEY_PERM_TARGET_GROUP    = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetGroup";
     public static final String TREEVIEW_KEY_PERM_TARGET_GROUP_NAME  = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetGroupName";
     public static final String TREEVIEW_KEY_PERM_TARGET_EMP      = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetEmp";
+    public static final String TREEVIEW_KEY_PERM_TARGET_EMP_NAME      = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetEmpName";
     public static final String TREEVIEW_KEY_PERM_SELECTED_VIEW   = "txt"+TREEVIEW_OBJ_HEADER_PERM+"SelectedView";
 
     // 勤怠承認サイトにおいて、選択されているビューのタイプを表す
@@ -1447,10 +1449,6 @@ public class TmgReferList {
         }
     }
 
-
-    // 正则匹配部门信息
-    // ReUtil.get("\\{[^{]*'201000000000\\'[^}]*\\}",0)
-
     /**
      * 作成された組織ツリーの内容に従って、ツリービュー作成用のJSON配列を生成して返します。<br>
      * 勤怠管理サイトの各種コンテンツで使用します。
@@ -1469,6 +1467,7 @@ public class TmgReferList {
                JSONObject obj = JSONUtil.parseObj(result);
                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME,obj.get("secnic"));
             }
+
             return orgTreeList;
         }else{
             return null;
@@ -1492,6 +1491,7 @@ public class TmgReferList {
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, obj.get("secnic"));
             }
+
             return divTreeList;
         }else{
             return null;
@@ -1508,7 +1508,8 @@ public class TmgReferList {
             if(empList == null){
                 return null;
             }
-            return empList.getJSONArrayForTreeViewGroupBySection(targetSec_admin);
+            String rs = empList.getJSONArrayForTreeViewGroupBySection(targetSec_admin);
+            return rs;
         }else{
             return null;
         }
@@ -1569,6 +1570,7 @@ public class TmgReferList {
             if(memberList ==  null){
                 return null;
             }
+
             return memberList.getJSONArrayForTreeView();
         }else{
             return null;
@@ -1601,6 +1603,12 @@ public class TmgReferList {
             if(memberList ==  null){
                 return null;
             }
+            //            if (StrUtil.isNotBlank(targetMember_perm)) {
+//                String c = ReUtil.get(targetMember_perm+"[^\\(]*\\("  ,     rs, 0);
+//                String empName = c.substring(0, c.lastIndexOf(" "));
+//                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_EMP_NAME,empName);
+//                System.out.println(empName);
+//            }
             return memberList.getJSONArrayForTreeViewGroupByGroup(targetGroup_perm);
         }else{
             return null;
@@ -2829,8 +2837,7 @@ public class TmgReferList {
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
             }
-        }else
-        if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+        }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             String sSec = memberList.getTargetMemberData(sEmp,TmgMemberList.DEFAULT_KEY_SECID);
             String sGroup = memberList.getTargetMemberData(sEmp,TmgMemberList.DEFAULT_KEY_GROUPID);
             if(sSec != null && sGroup != null){
