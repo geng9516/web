@@ -970,7 +970,12 @@
         },
         handleDatePicker(e) {
           this.opts.year = +e
-          this.getTableData(false, true)
+          if (this.deptName !== '選んでください') {
+            this.getTableData(false, true)
+            return
+          }
+          this.$Notice.warning({ title: '所属を選択して下さい' })
+
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop

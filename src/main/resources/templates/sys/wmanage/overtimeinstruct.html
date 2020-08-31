@@ -366,6 +366,7 @@
                     columnsActionData: [{}],   //一括日别编辑表数据
                     value: [],//一括日别编辑表更新用数据
                     tableData3: [],   //日别编辑表数据
+                    tableData3Bak: [],   //日别编辑表数据Bak
                     overWorkViewType: 2,
                     treeData: [],            //組織ツリー用
                     curDate: new Date(),
@@ -789,7 +790,6 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
                         this.tableHead = data
-                        console.log(this.tableHead)
                     } catch (error) {
                         return
                     } finally {
@@ -807,6 +807,7 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/editData', this.query)
                         this.tableData3 = data.dailyOverTimeVoList
+
                         this.value = data.dailyOverTimeVoList.map(e => {
                             const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
                                 return {
@@ -832,7 +833,7 @@
                                 updateRestTimeDtoList: updateRestTimeDtoList.length > 0 ? updateRestTimeDtoList : [{}],
                             }
                         })
-                        console.log(this.value)
+                        this.tableData3Bak = Utils.deepClone(this.value)
                     } catch (error) {
                         return
                     } finally {
@@ -887,7 +888,6 @@
                             }
                         })
                         this.overFlagData = result
-                        console.log(result)
                     } catch (error) {
                     } finally {
                         this.permissionFlagLoading = false
@@ -907,7 +907,6 @@
                             { name: "6か月平均", average: data.avgTimes[4], m1: "6か月平均", cellClassName: { m1: "rest-title" } }
                         ])
                         this.empWorkerTypeName = data.workTypeName
-                        console.log(this.monthAverageTable)
                     } catch (error) {
                         return
                     } finally {
@@ -1007,27 +1006,34 @@
                 },
                 async overTimeUpdate() {
                     // 将没打勾的排除出去
-                    const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
-                    const UpdateData = this.value.filter(e => selectedData.includes(e.sEmpId)).map(t => {
-                        return {
-                            ...t,
-                            updateOverTimeDtoList: Object.keys(t.updateOverTimeDtoList[0]).length === 0 ? [] : t.updateOverTimeDtoList,
-                            updateRestTimeDtoList: Object.keys(t.updateRestTimeDtoList[0]).length === 0 ? [] : t.updateRestTimeDtoList
-                        }
-                    })
-                    if (UpdateData.length === 0) {
-                        this.$Modal.error({
-                            title: 'データを選択してください！',
-                            okText: 'OK'
-                        })
-                        return
-                    }
+                    // const selectedData = this.$refs.selection2.getSelection().map(e => e.empId)
+                    // const UpdateData = this.value.filter(e => selectedData.includes(e.sEmpId)).map(t => {
+                    //     return {
+                    //         ...t,
+                    //         updateOverTimeDtoList: Object.keys(t.updateOverTimeDtoList[0]).length === 0 ? [] : t.updateOverTimeDtoList,
+                    //         updateRestTimeDtoList: Object.keys(t.updateRestTimeDtoList[0]).length === 0 ? [] : t.updateRestTimeDtoList
+                    //     }
+                    // })
+
+                    let that=this
+                    let UpdateData= this.value.filter(function(obj) {
+                        return !that.tableData3Bak.some(function(obj2) {
+                            return JSON.stringify(obj) == JSON.stringify(obj2)
+                        });
+                    });
+                    // if (UpdateData.length === 0) {
+                    //     this.$Modal.error({
+                    //         title: 'データを選択してください！',
+                    //         okText: 'OK'
+                    //     })
+                    //     return
+                    // }
                     // handle 强制关闭抽屉取消失焦的错误
                     if (!this.hasPassedTimeCheck) {
                         this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください' })
                         return
                     }
-                    const that = this
+
                     const check = UpdateData.some(e => {
                         if (e.updateOverTimeDtoList.length > 0) {
                             let checkArr = []

@@ -494,14 +494,18 @@ public class OvertimeInstructBean {
                         .eq("TDAD_CMODIFIERPROGRAMID", "OvertimeInstruct_" + "ACT_EDIT_UOVERTIME"));
                 // 日次詳細CHECKデータ（超過勤務）　登録
                 for (UpdateRestTimeDto updateRest : updateDto.getUpdateRestTimeDtoList()) {
-                    int insertTmgDailyDetailCheck = insertTmgDailyDetailCheck(updateRest.getSNRestOpen(),
-                            updateRest.getSNRestClose(),
-                            updateDto.getSEmpId(),
-                            TmgUtil.Cs_MGD_ITEMS_ResultRest,
-                            updateDto.getBaseDay(),
-                            updateDto.getBaseMonth(),
-                            null, null,
-                            psDBBean);
+                    // 日次詳細CHECKデータ（超過勤務）　登録
+                    if (!StrUtil.hasEmpty(updateRest.getSNRestOpen()) && !StrUtil.hasEmpty(updateRest.getSNRestClose()) ) {
+                        int insertTmgDailyDetailCheck = insertTmgDailyDetailCheck(updateRest.getSNRestOpen(),
+                                updateRest.getSNRestClose(),
+                                updateDto.getSEmpId(),
+                                TmgUtil.Cs_MGD_ITEMS_ResultRest,
+                                updateDto.getBaseDay(),
+                                updateDto.getBaseMonth(),
+                                null, null,
+                                psDBBean);
+                    }
+
                 }
                 // 超勤命令反映処理（トリガー起動）
                 int insertTrigger = insertTrigger(updateDto.getSEmpId(), "ACT_EDIT_UOVERTIME", updateDto.getBaseDay(), psDBBean);
