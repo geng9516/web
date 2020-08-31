@@ -543,4 +543,14 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         return baseMapper.buildSQLForSelectUseScheculeUser(params);
     }
 
+    @Override
+    public List<String> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("employeeId", employeeId);
+        params.put("formatter", formatter);
+        return baseMapper.selectScheduleDateList(params);
+    }
+
 }

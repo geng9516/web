@@ -164,8 +164,6 @@ public class ScheduleController {
      * 週勤務パターンlistを取得する
      * http://localhost:6879/sys/schedule/selectWeekPatternInfoList?employeeId=40010001&txtBaseDate=&txtEndDate=
      *
-     * @param txtBaseDate
-     * @param txtEndDate
      * @param psDBBean
      * @return
      */
@@ -174,7 +172,7 @@ public class ScheduleController {
     public List<TmgWeekPatternVO> selectCsvReferenceList(@RequestParam("twp_nid") int twp_nid,
                                                          @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //   System.out.println("controller-->selectCsvReferenceList");
-        return tmgScheduleBean.selectCsvReferenceList(twp_nid,psDBBean);
+        return tmgScheduleBean.selectCsvReferenceList(twp_nid, psDBBean);
     }
 
     /**
@@ -223,11 +221,11 @@ public class ScheduleController {
     @PostMapping("executeUpdateWeekPattern")
     @ResponseBody
     public GlobalResponse executeUpdateWeekPattern(@RequestParam("twp_dstartdate") String twp_dstartdate,
-                                            @RequestParam("twp_denddate") String twp_denddate,
-                                            @RequestParam("twp_nid") String twp_nid,
-                                            @RequestAttribute("BeanName") PsDBBean psDBBean) {
+                                                   @RequestParam("twp_denddate") String twp_denddate,
+                                                   @RequestParam("twp_nid") String twp_nid,
+                                                   @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //    System.out.println("controller-->executeUpdateWeekPattern");
-        return  tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid, psDBBean);
+        return tmgScheduleBean.executeMakeWeekPattern_UWPtn(twp_dstartdate, twp_denddate, twp_nid, psDBBean);
     }
 
 
@@ -332,5 +330,17 @@ public class ScheduleController {
         return tmgResultsBean.getHatuReiVoInfo(tmgResultsBean.getReferList().getRecordDate(), psDBBean);
     }
 
+    /**
+     * 勤務予定時間リスト
+     * http://localhost:6879/sys/schedule/selectScheduleDateList
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("selectScheduleDateList")
+    @ResponseBody
+    public List<String> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgScheduleBean.selectScheduleDateList(psDBBean);
+    }
 
 }

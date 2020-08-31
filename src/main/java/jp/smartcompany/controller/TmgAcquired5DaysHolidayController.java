@@ -43,7 +43,9 @@ public class TmgAcquired5DaysHolidayController {
     @GetMapping("showDisp")
     @ResponseBody
     public List<PaidHolidayVO> showDisp(@RequestAttribute("BeanName") PsDBBean psDBBean, String recordDate, String year, String txtUserCode, String kijunbi, String pdSearchStart, String pdSearchEnd) throws Exception {
+
         tmgAcquired5DaysHolidayBean.execute(psDBBean, recordDate, year);
+
         return tmgAcquired5DaysHolidayBean.showDisp(txtUserCode, kijunbi, pdSearchStart, pdSearchEnd, psDBBean);
     }
 
@@ -52,7 +54,9 @@ public class TmgAcquired5DaysHolidayController {
      */
     @PostMapping(value = "update", produces = "application/json;charset=UTF-8")
     public void update(@RequestAttribute("BeanName") PsDBBean psDBBean,String year, @RequestBody UpdateAcquired5DaysVO updateAcquired5DaysVO) throws Exception {
+
         tmgAcquired5DaysHolidayBean.execute(psDBBean, updateAcquired5DaysVO.getRecordDate(), year);
+
         tmgAcquired5DaysHolidayBean.update(psDBBean,updateAcquired5DaysVO);
     }
 }
