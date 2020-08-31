@@ -22,7 +22,7 @@
             <li class="group-info" v-for="(t, j) of item" :key="j">{{ t.groupName }}</li>
           </div>
         </ul>
-        <dropdown-item style="border-bottom: 1px solid #d2d2d2;">パスワード変更</dropdown-item>
+        <dropdown-item style="border-bottom: 1px solid #d2d2d2;" @click.native="alterPasswordModal = true">パスワード変更</dropdown-item>
         <dropdown-item @click.native="logout">ログアウト</dropdown-item>
       </dropdown-menu>
     </dropdown>
@@ -39,6 +39,28 @@
       </dropdown-menu>
     </dropdown>
   </i-menu>
+  <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
+    <i-form ref="password" :label-width="200" :model="password" class="tl" style="margin: 10px 10px 0;">
+        <form-item label="現在のパスワード">
+            <i-input v-model="password.oldPassword" placeholder="パスワード"
+                type="password" password autocomplete="new-password" />
+        </form-item>
+
+        <form-item label="変更後のパスワード">
+            <i-input v-model="password.newPassword" placeholder="パスワード"
+                type="password" password autocomplete="new-password" />
+        </form-item>
+
+        <form-item label="変更後のパスワード(確認用)">
+            <i-input v-model="password.repeatPassword" placeholder="パスワード"
+                type="password" password autocomplete="new-password" />
+        </form-item>
+    </i-form>
+        <div slot="footer">
+          <i-button type="text" @click="cancelUpdatePassword">キャンセル</i-button>
+          <i-button icon="md-create" type="primary" @click="updatePassword" :loading="passwordLoading">更新</i-button>
+        </div>
+  </Modal>
   <footer class="footer">Smart Public WorkManager Ver.1.0.0 Copyright© 株式会社日進サイエンティア</footer>
   <script th:inline="javascript">
     const HEADER = new Vue({
@@ -47,7 +69,10 @@
         return {
           baseUrl: SIDER._data.baseUrl,
           session: [[${ session }]],
-          themeList: ['デフォルト', 'クラシック', 'ナイト']
+          themeList: ['デフォルト', 'クラシック', 'ナイト'],
+          password:{},
+          passwordLoading: false,
+          alterPasswordModal: false
         }
       },
       computed: {
@@ -55,21 +80,50 @@
           return Object.keys(this.session.psSession.loginGroups).map(e=> this.session.psSession.loginGroups[e])
         }
       },
+      mounted() {
+        this.password.username = this.session.psSession.loginUser
+      },
       methods: {
         logout() {
           location.href = '/logout'
         },
-        goProfile() {
-          // if (this.$route.path === '/sys/user/profile') {
-          //   return
-          // }
-          // this.$router.push('/sys/user/profile')
+        updatePassword: Debounce(async function () {
+          if (!this.password.oldPassword) {
+            return this.$Notice.warning({ title: '注意', desc: '現在のパスワードを入力してください。', duration: 6.5 })
+          }
+          if (!this.password.newPassword) {
+            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワードを入力してください。', duration: 6.5 })
+          }
+          if (!this.password.repeatPassword) {
+            return this.$Notice.warning({ title: '注意', desc: '変更後のパスワード(確認用)を入力してください。', duration: 6.5 })
+          }
+          if (this.password.newPassword !== this.password.repeatPassword) {
+            return this.$Notice.warning({ title: '注意', desc: '新パスワード(確認用)には、新パスワードと同じパスワードを入力してください。', duration: 6.5 })
+          }
+          this.passwordLoading = true
+          try {
+            await this.http.post('/changePassword', this.password)
+            this.$Message.success('更新完了')
+            setTimeout(() => {
+              location.href = '/login'
+            }, 1000);
+          } catch (error) {
+            this.passwordLoading = false
+            return this.$Notice.error({ title: '注意', desc: error, duration: 6.5 })
+          }
+
+        }),
+        cancelUpdatePassword() {
+           this.alterPasswordModal = false
+           this.password = {
+             username:this.session.psSession.loginUser
+           }
         },
         // 点击顶部边栏时也关闭sider
         handleClickMenuOutSide() {
           SIDER._data.showSider = false
         }
-      },
+      }
     })
   </script>
 </div>
