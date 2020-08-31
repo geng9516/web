@@ -619,6 +619,7 @@
                         }
                     }
                     this.paidData = b
+                    this.paidData[0].isChecked = true
 
                     console.log("this.paidData")
                     console.log(this.paidData)
@@ -644,17 +645,16 @@
                 this.privateInfo.workType = this.paidData[0].type
 
                 const addNumDeci = Vue.filter('addNumDeci')
-                // //事前に
-                // this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd3
-                // this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                // this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
-                // // this.updateAcquired5DaysVO.txtYear = '2020'
-                // this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
-                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
-                // this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[0].tpfNusedaysAjdust13,true)
-                // this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[0].tpfNmustdaysFix14,true)
-                // console.log("this.updateAcquired5DaysVO")
-                // console.log(this.updateAcquired5DaysVO)
+                // 事前に1行目をデフォルト値として登録する
+                this.updateAcquired5DaysVO.txtFuyobi = this.paidData[0].taDyyyymmdd3
+                this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
+                this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
+                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[0].tpfNusedaysAjdust13
+                this.updateAcquired5DaysVO.txtNusedaysDays = this.paidData[0].tpfNmustdaysFix14
+                console.log("this.updateAcquired5DaysVO")
+                console.log(this.updateAcquired5DaysVO)
 
                 this.isShow = true
                 this.isSeason = false
@@ -1013,16 +1013,17 @@
                 console.log(date)
                 console.log(days)
                 // 修正基準日チェック ※2019/04/01(法改日)以降
-                if (date != "" && date.split("/").join("") - 20190401 < 0) {
-                    this.$Message.error({
-                        background: true,
-                        closable: true,
-                        duration: 0,
-                        content: '修正基準日は2019/04/01以降の日付に入力してください。'
-                    });
-                    return
+                if (date != "" &&  date != null) {
+                    if (date.split("/").join("") - 20190401 < 0) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '修正基準日は2019/04/01以降の日付に入力してください。'
+                        });
+                        return
+                    }
                 }
-
                 // 調整取得日数チェック
                 if(isNaN(days) || days%0.5 > 0 || days < 0){
                     this.$Message.error({
