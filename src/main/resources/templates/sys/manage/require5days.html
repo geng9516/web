@@ -117,7 +117,7 @@
                 </span>
             </template>
         </i-table>
-        <Modal :mask-closable="false" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1130"
+        <Modal :mask-closable="false" class="tc" @on-cancel="cancel" title="年5日時季指定取得確認" v-model="isShow" width="1130"
                footer-hide>
             <div>
                 <Row :gutter="10">
@@ -240,7 +240,11 @@
                         </i-col>
                         <i-col span="8">
                         <div class="label">取得日数</div>
-                        <div class="person-info">{{ privateInfo.sumSyutokudays | addNumDeci(true) }}</div>
+                        <div class="person-info">{{ privateInfo.Syutokudays | addNumDeci(true) }}</div>
+                        </i-col>
+                        <i-col span="8">
+                        <div class="label">調整取得日数</div>
+                        <div class="person-info">{{ privateInfo.ajustSyutokudays | addNumDeci(true) }}</div>
                         </i-col>
                     </Row>
                     <div class="titlenorm mb10 mt20">
@@ -475,7 +479,8 @@
                 },
                 privateInfo: {
                     taKijyunbi: '',
-                    sumSyutokudays: '',
+                    Syutokudays: '',
+                    ajustSyutokudays: '',
                     deptName: '',
                     name: '',
                     workType: ''
@@ -524,7 +529,8 @@
                 console.log(i)
                 console.log(e)
                 this.privateInfo.taKijyunbi = e.basedDay[i]
-                this.privateInfo.sumSyutokudays = e.takenDays[i]
+                this.privateInfo.Syutokudays = e.detailSyutokuDays[i]
+                this.privateInfo.ajustSyutokudays = e.detailAdjustSyutokuDays[i]
 
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e.name
@@ -694,12 +700,8 @@
                             mustDays:[e.taMustdays8],
                             lackDays:[e.taLessdays9],
 
-                            editBasedDay:'',    //編集画面用_修正基準日
-                            editTakenDays:'',    //編集画面用_取得日数
-                            adjustTakenDays:'', //編集画面用_調整取得日数
-                            editCheckPeriod:'', //修正期間チェック
-                            editMustDays:'',    //修正必要日数
-                            // season:e.taRowpan10,
+                            detailSyutokuDays:[e.fixSumSyutokudays16],   //詳細画面取得状況_取得日数
+                            detailAdjustSyutokuDays:[e.tpfNusedaysAjdust13], //詳細画面取得状況_調整取得日数
                             season:[],
 
                             cemployeeid0:e.cemployeeid0,
@@ -717,6 +719,9 @@
                             tpfDkikanbiFix12:e.tpfDkikanbiFix12,
                             tpfNusedaysAjdust13:e.tpfNusedaysAjdust13,
                             tpfNmustdaysFix14:e.tpfNmustdaysFix14,
+                            fixMustdays15:e.fixMustdays15,
+                            fixSumSyutokudays16:e.fixSumSyutokudays16,
+                            fixTaKikanbi17:e.fixTaKikanbi17,
                             taCduplicateflg:e.taCduplicateflg
                         }
                     })
@@ -763,6 +768,9 @@
                                 a[a.length-1].takenDays.push(b[j].takenDays[0])
                                 a[a.length-1].mustDays.push(b[j].mustDays[0])
                                 a[a.length-1].lackDays.push(b[j].lackDays[0])
+
+                                a[a.length-1].detailSyutokuDays.push(b[j].detailSyutokuDays[0])
+                                a[a.length-1].detailAdjustSyutokuDays.push(b[j].detailAdjustSyutokuDays[0])
                                 a[a.length-1].season.push(b[j].season[0])
                             }
                             i = i + +b[i].taRowpan10 - 1
@@ -911,18 +919,6 @@
             register(e) {
                 //1:登録　2:クリア
                 this.updateAcquired5DaysVO.txtUpdateflg = '1'
-
-                // const addNumDeci = Vue.filter('addNumDeci')
-                // let index=this.radioCheckedIndex
-                // this.updateAcquired5DaysVO.txtFuyobi = this.paidData[index].taDyyyymmdd3
-                // this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                // this.updateAcquired5DaysVO.txtUserCode = this.paidData[index].cemployeeid0
-                // this.updateAcquired5DaysVO.kijunbi = this.paidData[index].taKijyunbi5
-                // this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index].tpfDpaidHolidayFix11
-                // this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[index].tpfNusedaysAjdust13,true)
-                // this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[index].tpfNmustdaysFix14,true)
-                // console.log("register_this.updateAcquired5DaysVO")
-                // console.log(this.updateAcquired5DaysVO)
 
                 if (this.errorCheck()){
                     this.$Modal.confirm({
