@@ -1524,15 +1524,12 @@ public class TmgReferList {
             if(groupList == null){
                 return null;
             }
-            System.out.println("groupList");
-            System.out.println(targetGroup_perm);
             String treeViewGroup = groupList.getJSONArrayForTreeView();
             if (StrUtil.isNotBlank(targetGroup_perm)) {
                 String result = ReUtil.get("\\{[^{]*'" + targetGroup_perm + "'[^}]*\\}", treeViewGroup, 0);
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
             }
-            System.out.println(treeViewGroup);
             return treeViewGroup;
         }else{
             return null;
