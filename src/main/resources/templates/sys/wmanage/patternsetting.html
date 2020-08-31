@@ -643,30 +643,31 @@
                     if (row.planRest[0] !== undefined) {
                         const rest_start = handleTime(row.planRest[0].NOPEN)
                         const rest_end = handleTime(row.planRest[0].NCLOSE)
-                        this.rawData.planRest1 = [rest_start, rest_end]
+                        this.$set(this.rawData, 'planRest1', [rest_start, rest_end])
                     } else {
-                        this.rawData.planRest1 = ['', '']
+                        this.$set(this.rawData, 'planRest1', ['', ''])
                     }
+                    console.log(this.rawData.planRest1)
                     if (row.planRest[1] !== undefined) {
                         const rest_start = handleTime(row.planRest[1].NOPEN)
                         const rest_end = handleTime(row.planRest[1].NCLOSE)
-                        this.rawData.planRest2 = [rest_start, rest_end]
+                        this.$set(this.rawData, 'planRest2', [rest_start, rest_end])
                     } else {
-                        this.rawData.planRest2 = ['', '']
+                        this.$set(this.rawData, 'planRest2', ['', ''])
                     }
                     if (row.planRest[2] !== undefined) {
                         const rest_start = handleTime(row.planRest[2].NOPEN)
                         const rest_end = handleTime(row.planRest[2].NCLOSE)
-                        this.rawData.planRest3 = [rest_start, rest_end]
+                        this.$set(this.rawData, 'planRest3', [rest_start, rest_end])
                     } else {
-                        this.rawData.planRest3 = ['', '']
+                        this.$set(this.rawData, 'planRest3', ['', ''])
                     }
                     if (row.planRest[3] !== undefined) {
                         const rest_start = handleTime(row.planRest[3].NOPEN)
                         const rest_end = handleTime(row.planRest[3].NCLOSE)
-                        this.rawData.planRest4 = [rest_start, rest_end]
+                        this.$set(this.rawData, 'planRest4', [rest_start, rest_end])
                     } else {
-                        this.rawData.planRest4 = ['', '']
+                        this.$set(this.rawData, 'planRest4', ['', ''])
                     }
 
                     this.rawData.tpa_ndate_change_time = row.tpa_ndate_change_time
@@ -871,12 +872,7 @@
                 if (object) {
                     this.hasPassedTimeCheck = Utils.checkTime(object, index)
                     this.$set(object, index, object[index])
-                    if (!this.hasPassedTimeCheck) {
-                        el.focus()
-                        return
-                    }
                 }
-                this.$forceUpdate()
             },
             //勤務パターン更新登録
             async handleSubmit(name) {
