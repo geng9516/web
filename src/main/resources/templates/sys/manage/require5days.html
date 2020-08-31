@@ -585,9 +585,9 @@
 
                             editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
                             editTakenDays:e.fixSumSyutokudays16,    //編集画面用_取得日数
-                            adjustTakenDays:addNumDeci(e.tpfNusedaysAjdust13,true),  //編集画面用_調整取得日数
+                            adjustTakenDays:e.tpfNusedaysAjdust13==null ? e.tpfNusedaysAjdust13:addNumDeci(e.tpfNusedaysAjdust13,true),  //編集画面用_調整取得日数
                             editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
-                            editMustDays:addNumDeci(e.tpfNmustdaysFix14,true),       //修正必要日数
+                            editMustDays:e.tpfNmustdaysFix14==null ? e.tpfNmustdaysFix14:addNumDeci(e.tpfNmustdaysFix14,true),       //修正必要日数
                             isChecked:false,
 
                             cemployeeid0:e.cemployeeid0,
@@ -614,8 +614,7 @@
                     for (var i=0;i < b.length;i++){
                         console.log("b[i].taKijyunbi5")
                         console.log(b[i].taKijyunbi5)
-                        if (b[i].taFuyodays4 < '10' && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
-                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
+                        if (b[i].taFuyodays4 < '10' && b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
                             b[i].basedDay = "-"
                             b[i].checkPeriod = "-"
                             b[i].takenDays = "-"
@@ -728,8 +727,7 @@
 
                     for (var i=0;i < b.length;i++){
                         b[i].season.push("詳細")
-                        if (+b[i].taFuyodays4 < 10 && b[i].tpfDpaidHolidayFix11 == null && b[i].tpfDkikanbiFix12 == null &&
-                            b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 == null &&　b[i].tpfNmustdaysFix14 == null){
                             console.log("test_tart")
                             console.log(b[i].cemployeeid0)
                             console.log(b[i].taFuyodays4)

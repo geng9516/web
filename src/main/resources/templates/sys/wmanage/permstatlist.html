@@ -5,7 +5,12 @@
 </head>
 
 <body>
-    <div th:replace="layout/loadingBar::loadingBar"></div>
+<div th:replace="layout/loadingBar::loadingBar"></div>
+<style>
+    .table-head:hover {
+        text-decoration: underline;
+    }
+</style>
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
     <main class="content permstatlist-warp" ref="layout">
@@ -80,7 +85,7 @@
                 </Row>
             </div>
             <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange"
-                :disabled-hover="true" :loading="listLoading" no-data-text="教職員が存在している所属を選択して下さい。">
+                :disabled-hover="true" :loading="listLoading" no-data-text="職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>
                 </template>
@@ -672,11 +677,11 @@
                                 return h(
                                     'span',
                                     {
-                                        style: {
-                                            cursor: 'pointer',
-                                        },
+                                        // style: {
+                                        //     cursor: 'pointer',
+                                        // },
                                         domProps: {
-                                            className: 'table-head',
+                                            // className: 'table-head',
                                             innerHTML: e.mgdCheader,
                                         }
                                     }
