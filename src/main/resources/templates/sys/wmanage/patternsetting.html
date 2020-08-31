@@ -823,30 +823,33 @@
             },
             //時間フォーマットに変更する
             handleInputChange(object, index, el) {
-                console.log('update before',object[index])
-                var value = object[index]
-                if (value) {
-                    const regExp1 = /^[0-9]{1,2}:[0-9]{2}$/g
-                    const regExp2 = /^[0-9]{3,4}$/g
-                    if (regExp1.test(value) || regExp2.test(value)) {
-                        const minutes = Utils.timeToMinute(value)
-                        const handleTime = Vue.filter('handleTime')
-                        value = handleTime(+minutes)
-                        console.log('update after',value)
-                        this.rawData.planRest1 = [value, '']
-                        console.log(this.rawData.planRest1)
-                        this.$set(object, index, value)
-                        object[index] = value
-                        return true
-                    }
-                    el.focus()
-                    // el.focus() 取消focus
-                    Vue.prototype.$Notice.error({
-                        title: '注意',
-                        desc: '時刻をHH:MM形式で入力してください',
-                        duration: 6.5
-                    })
-                    return false
+                // console.log('update before',object[index])
+                // var value = object[index]
+                // if (value) {
+                //     const regExp1 = /^[0-9]{1,2}:[0-9]{2}$/g
+                //     const regExp2 = /^[0-9]{3,4}$/g
+                //     if (regExp1.test(value) || regExp2.test(value)) {
+                //         const minutes = Utils.timeToMinute(value)
+                //         const handleTime = Vue.filter('handleTime')
+                //         value = handleTime(+minutes)
+                //         // this.rawData.planRest1 = [value, '']
+                //         // console.log(this.rawData.planRest1)
+                //         this.$set(object, index, value)
+                //         console.log('update after',value)
+                //         return true
+                //     }
+                //     el.focus()
+                //     // el.focus() 取消focus
+                //     Vue.prototype.$Notice.error({
+                //         title: '注意',
+                //         desc: '時刻をHH:MM形式で入力してください',
+                //         duration: 6.5
+                //     })
+                //     return false
+                // }
+                if(object) {
+                    this.hasPassedTimeCheck = Utils.checkTime(object, index)
+                    this.$set(object, index, object[index])
                 }
             },
             //勤務パターン更新登録
