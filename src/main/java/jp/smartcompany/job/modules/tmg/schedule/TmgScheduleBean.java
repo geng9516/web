@@ -314,7 +314,7 @@ public class TmgScheduleBean {
      * @param baseDate
      */
     private void setVariationalWorkInfo(String baseDate) {
-
+        logger.info("-->setVariationalWorkInfo baseDate:"+baseDate);
         int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
         int tmp2 = iTmgScheduleService.selectVariationalWorkDays(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
 
