@@ -1526,7 +1526,8 @@ public class TmgReferList {
             }
             String treeViewGroup = groupList.getJSONArrayForTreeView();
             if (StrUtil.isNotBlank(targetGroup_perm)) {
-                String result = ReUtil.get("\\{[^{]*'" + targetGroup_perm + "'[^}]*\\}", treeViewGroup, 0);
+                String regexGroupPerm =  targetGroup_perm.replace("|","\\|");
+                String result = ReUtil.get("\\{[^{]*'" + regexGroupPerm+ "'[^}]*\\}", treeViewGroup, 0);
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
             }
