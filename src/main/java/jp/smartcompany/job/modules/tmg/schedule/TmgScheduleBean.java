@@ -104,6 +104,11 @@ public class TmgScheduleBean {
     private static final String Cs_FORMAT_DATE_TYPE3 = "yyyy年M月dd日";
 
     /**
+     * 日付形式4
+     */
+    private static final String Cs_FORMAT_DATE_TYPE4 = "yyyy\"年\"MM\"月\"";
+
+    /**
      * 今月
      */
     private static final int PARAM_THIS_MONTH = -1;
@@ -314,7 +319,7 @@ public class TmgScheduleBean {
      * @param baseDate
      */
     private void setVariationalWorkInfo(String baseDate) {
-        logger.info("-->setVariationalWorkInfo baseDate:"+baseDate);
+        logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
         int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
         int tmp2 = iTmgScheduleService.selectVariationalWorkDays(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
 
@@ -2207,6 +2212,33 @@ public class TmgScheduleBean {
         } catch (Exception e) {
             e.printStackTrace();
             return false;
+        }
+    }
+
+    /**
+     * 勤務予定時間リスト
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    private List<String> selectScheduleDateList(String custId, String compCode, String employeeId) {
+        return iTmgScheduleService.selectScheduleDateList(custId, compCode, employeeId, Cs_FORMAT_DATE_TYPE4);
+    }
+
+    /**
+     * 勤務予定時間リスト
+     *
+     * @param psDBBean
+     * @return
+     */
+    public List<String> selectScheduleDateList(PsDBBean psDBBean) {
+        if (null != psDBBean) {
+            return this.selectScheduleDateList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+        } else {
+            logger.error("勤務予定時間リスト-->PsDBBean対象が空です");
+            return null;
         }
     }
 
