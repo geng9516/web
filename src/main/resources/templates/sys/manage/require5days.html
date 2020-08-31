@@ -19,9 +19,9 @@
             </div>
         </div>
         <div class="searchwrap" >
-            <span class="label">年度</span>
-            <date-picker type="year" :value="query.year" :disabled="!yearShow" class="pr15" placeholder="選択ください" format="yyyy年" ref="datePicker" @on-change="handleYearChange">
-            </date-picker>
+<!--            <span class="label">年度</span>-->
+<!--            <date-picker type="year" :value="query.year" :disabled="!yearShow" class="pr15" placeholder="選択ください" format="yyyy年" ref="datePicker" @on-change="handleYearChange">-->
+<!--            </date-picker>-->
             <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey" style="width: calc(100% - 120px);border-radius:0;border: 1px dashed var(--dept-select);color: var(--dept-select);">
@@ -66,7 +66,7 @@
                             社員
                         </div>
                         <div style="position: relative;">
-                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし"></Tree>
+                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="職員データなし"></Tree>
                             <Spin size="large" fix v-if="emplistLoading"></Spin>
                         </div>
                    </tab-pane>
@@ -79,7 +79,11 @@
     </div>
     <div class="content_body">
         <i-table class="long-table" border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
-                 :row-class-name="() => 'select-col'" @on-row-click="handleRowClick(arguments)">
+                 :row-class-name="() => 'select-col'" >
+            <template slot-scope="{ row }" slot="name">
+                <span class="cursor blue" style="text-decoration: underline" @click="handleRowClick(row)">{{ row.name}}</span>
+            </template>
+
             <template slot-scope="{ row }" slot="vactionGiveDay">
                 <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
             </template>
@@ -150,11 +154,11 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -192,11 +196,11 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
@@ -266,7 +270,7 @@
                 columns: [
                     {
                         title: '氏名',
-                        key: 'name',
+                        slot: 'name',
                         width: 150,
                         align: 'center'
                     },
@@ -392,7 +396,7 @@
                                 align: 'center'
                             },
                             {
-                                title: '調整\n必要日数',
+                                title: '修正\n必要日数',
                                 className: 'checkin',
                                 slot: 'editMustDays',
                                 width: 100,
@@ -551,17 +555,17 @@
             },
             async handleRowClick(e) {
                 console.log("handleRowClick-s")
-                console.log(e[0])
+                console.log(e)
                 // //初期化 datePicker
                 // if(this.$refs.editDatepicker){
                 //     this.$refs.editDatepicker.handleClear()
                 // }
-
-                this.query.txtUserCode = e[0].cemployeeid0
+                this.query.txtUserCode = e.cemployeeid0
 
                 this.takenDaysDataLoading = true
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
+                    const addNumDeci = Vue.filter('addNumDeci')
                     let b = data.map((e,i) => {
                         const vactionGiveDay = [{
                             day:e.taDyyyymmdd3,
@@ -574,7 +578,6 @@
                             paidDays:[e.taFuyodays4],
 
                             basedDay:e.taDyyyymmdd3,
-                            // checkPeriod:e.taDyyyymmdd3+12,
                             checkPeriod:e.fixTaKikanbi17,
                             takenDays:e.sumSyutokudays7,
                             mustDays:e.fixMustdays15,
@@ -582,9 +585,9 @@
 
                             editBasedDay:e.tpfDpaidHolidayFix11,    //編集画面用_修正基準日
                             editTakenDays:e.fixSumSyutokudays16,    //編集画面用_取得日数
-                            adjustTakenDays:e.tpfNusedaysAjdust13,  //編集画面用_調整取得日数
+                            adjustTakenDays:addNumDeci(e.tpfNusedaysAjdust13,true),  //編集画面用_調整取得日数
                             editCheckPeriod:e.tpfDkikanbiFix12,     //修正期間チェック
-                            editMustDays:e.tpfNmustdaysFix14,       //修正必要日数
+                            editMustDays:addNumDeci(e.tpfNmustdaysFix14,true),       //修正必要日数
                             isChecked:false,
 
                             cemployeeid0:e.cemployeeid0,
@@ -606,7 +609,7 @@
                         }
                     })
 
-                    const addNumDeci = Vue.filter('addNumDeci')
+                    // const addNumDeci = Vue.filter('addNumDeci')
                     //
                     for (var i=0;i < b.length;i++){
                         console.log("b[i].taKijyunbi5")
@@ -619,9 +622,6 @@
                             b[i].mustDays = "-"
                             b[i].lackDays = "-"
                             b[i].editTakenDays = "-"  //編集画面用‐取得日数
-                            b[i].adjustTakenDays = addNumDeci(b[i].tpfNusedaysAjdust13,true) //編集画面用‐調整取得日数
-                            b[i].editMustDays = addNumDeci(b[i].tpfNmustdaysFix14,true) //編集画面用‐調整必要日数
-
                         }
                     }
                     this.paidData = b
@@ -1005,6 +1005,11 @@
             errorCheck() {
                 let date = this.updateAcquired5DaysVO.kijunbiEdit
                 let days = this.updateAcquired5DaysVO.usedDaysEdit
+
+                //修正チェック期間
+                let date1 = this.updateAcquired5DaysVO.dkikanbiFix
+                //修正必要日数
+                let days1 = this.updateAcquired5DaysVO.txtNusedaysDays
                 console.log("errorCheck")
                 console.log(date)
                 console.log(days)
@@ -1020,6 +1025,18 @@
                         return
                     }
                 }
+                // 修正チェック期間チェック ※2019/04/01(法改日)以降
+                if (date1 != "" &&  date != null) {
+                    if (date.split("/").join("") - 20190401 < 0) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '修正チェック期間は2019/04/01以降の日付に入力してください。'
+                        });
+                        return
+                    }
+                }
                 // 調整取得日数チェック
                 if(isNaN(days) || days%0.5 > 0 || days < 0){
                     this.$Message.error({
@@ -1030,6 +1047,17 @@
                     });
                     return
                 }
+                // 修正必要日数チェック
+                if(isNaN(days1) || days%0.5 > 0 || days < 0){
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 0,
+                        content: '修正必要日数は半休単位(0.5)で入力してください。'
+                    });
+                    return
+                }
+
                 return true;
             },
             handleRadio(index) {
