@@ -11,6 +11,8 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMgdMsgSearchTreeView;
 import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
@@ -163,10 +165,14 @@ public class TmgReferList {
     // リクエストパラメータorセッションに登録する際のキー(勤怠管理サイト用)
     public static final String TREEVIEW_KEY_ADMIN_TARGET_SECTION = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetSection";
     public static final String TREEVIEW_KEY_ADMIN_TARGET_EMP     = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetEmp";
+    // xin追加：选中部门名称
+    public static final String TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME = "txt"+TREEVIEW_OBJ_HEADER_ADMIN+"TargetSectionName";
 
     // リクエストパラメータorセッションに登録する際のキー(勤怠承認サイト用)
     public static final String TREEVIEW_KEY_PERM_TARGET_SECTION  = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetSection";
+    public static final String TREEVIEW_KEY_PERM_TARGET_SECTION_NAME  = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetSectionName";
     public static final String TREEVIEW_KEY_PERM_TARGET_GROUP    = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetGroup";
+    public static final String TREEVIEW_KEY_PERM_TARGET_GROUP_NAME  = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetGroupName";
     public static final String TREEVIEW_KEY_PERM_TARGET_EMP      = "txt"+TREEVIEW_OBJ_HEADER_PERM+"TargetEmp";
     public static final String TREEVIEW_KEY_PERM_SELECTED_VIEW   = "txt"+TREEVIEW_OBJ_HEADER_PERM+"SelectedView";
 
@@ -1454,17 +1460,14 @@ public class TmgReferList {
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)
                 || this.treeViewType == TREEVIEW_TYPE_LIST_WARD
         ){
-            if(orgTree == null){
+            if(orgTree == null) {
                 return null;
             }
-            System.out.println("orgTree");
-            System.out.println(targetSec_admin);
-            System.out.println(targetEmp_admin);
             String orgTreeList = orgTree.getJSONArrayForTreeView();
-            System.out.println(orgTreeList);
             if (StrUtil.isNotBlank(targetSec_admin)) {
-               List<String> result =ReUtil.findAllGroup0("\\{*'" + targetSec_admin + "'*\\}", orgTreeList);
-               System.out.println(result);
+               String result =ReUtil.get("\\{[^{]*'"+targetSec_admin+"'[^}]*\\}",orgTreeList,0);
+               JSONObject obj = JSONUtil.parseObj(result);
+               psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME,obj.get("secnic"));
             }
             return orgTreeList;
         }else{
@@ -1483,11 +1486,12 @@ public class TmgReferList {
             if(divTree == null){
                 return null;
             }
-            System.out.println("divTree");
-            System.out.println(targetSec_admin);
-            System.out.println(targetEmp_admin);
             String divTreeList = divTree.getJSONArrayForTreeView();
-            System.out.println(divTreeList);
+            if (StrUtil.isNotBlank(targetSec_admin)) {
+                String result = ReUtil.get("\\{[^{]*'" + targetSec_admin + "'[^}]*\\}", divTreeList, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, obj.get("secnic"));
+            }
             return divTreeList;
         }else{
             return null;
@@ -1523,6 +1527,11 @@ public class TmgReferList {
             System.out.println("groupList");
             System.out.println(targetGroup_perm);
             String treeViewGroup = groupList.getJSONArrayForTreeView();
+            if (StrUtil.isNotBlank(targetGroup_perm)) {
+                String result = ReUtil.get("\\{[^{]*'" + targetGroup_perm + "'[^}]*\\}", treeViewGroup, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
+            }
             System.out.println(treeViewGroup);
             return treeViewGroup;
         }else{
@@ -1540,10 +1549,12 @@ public class TmgReferList {
             if(groupList == null){
                 return null;
             }
-            System.out.println("sectionList");
-            System.out.println(targetSec_perm);
-            System.out.println(targetMember_perm);
             String treeViewSection = groupList.getJSONArrayForTreeViewSection();
+            if (StrUtil.isNotBlank(targetSec_perm)) {
+                String result = ReUtil.get("\\{[^{]*'" + targetSec_perm + "'[^}]*\\}", treeViewSection, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, obj.get("label"));
+            }
             return treeViewSection;
         }else{
             return null;

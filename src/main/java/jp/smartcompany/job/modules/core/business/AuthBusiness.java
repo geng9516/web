@@ -125,11 +125,14 @@ public class AuthBusiness {
         if (!StrUtil.equals(passwordEntity.getMapCpassword(),new Md5Hash(dto.getOldPassword()).toHex())) {
            throw new GlobalException(400,"古いパスワードは間違います");
         }
+        if (StrUtil.equals(dto.getOldPassword(), dto.getNewPassword())) {
+            throw new GlobalException(400,"古いパスワードと新しいパスワードは同じです");
+        }
         if (CollUtil.isNotEmpty(lMastPasswordList)) {
             Date dDate = DateUtil.date();
             if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
                 // 当日：複数回パスワード変更対応用パスワードマスタ 更新
-                MastPasswordDO oEntity = setData(dto.getUsername(), dto.getNewPassword());
+                MastPasswordDO oEntity = setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex());
                 oEntity.setMapId(passwordEntity.getMapId());
                 oEntity.setVersionno(passwordEntity.getVersionno());
                 iMastPasswordService.updateById(oEntity);
