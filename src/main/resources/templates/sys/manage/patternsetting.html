@@ -129,27 +129,90 @@
             </form-item>
 
             <form-item label="勤務時間" prop="dutyTime">
-                <time-picker format="HH:mm" placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.dutyTime"></time-picker>
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.dutyTime[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.dutyTime,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.dutyTime[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.dutyTime,1,$event.target)"></i-input>
+                    </i-col>
+                </Row>
             </form-item>
 
             <form-item label="休憩時間1" prop="restTime1">
-                <time-picker format="HH:mm" placeholder="入力してください" :editable="false" 　:steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest1"></time-picker>
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest1[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest1,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest1[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest1,1,$event.target)"></i-input>
+                    </i-col>
+                 </Row>
             </form-item>
 
             <form-item label="休憩時間2" prop="restTime2">
-                <time-picker format="HH:mm" 　placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest2"></time-picker>
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest2[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest2,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest2[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest2,1,$event.target)"></i-input>
+                    </i-col>
+                 </Row>
             </form-item>
 
             <form-item label="休憩時間3" prop="restTime3">
-                <time-picker format="HH:mm" 　placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest3"></time-picker>
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest3[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest3,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest3[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest3,1,$event.target)"></i-input>
+                    </i-col>
+                 </Row>
             </form-item>
 
             <form-item label="休憩時間4" prop="restTime4">
-                <time-picker format="HH:mm" 　placeholder="入力してください" :editable="false" :steps="[1, 5]" type="timerange" class="width100" v-model="rawData.planRest4"></time-picker>
+                <Row>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest4[0]" placeholder="開始時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest4,0,$event.target)"></i-input>
+                    </i-col>
+                    <i-col span="4">
+                         <span style="display: inline-block;vertical-align: sub;color:grey;margin-top: 17px;margin-left: 20px">～</span>
+                    </i-col>
+                    <i-col span="10">
+                         <i-input v-model="rawData.planRest4[1]" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData.planRest4,1,$event.target)"></i-input>
+                    </i-col>
+                 </Row>
             </form-item>
 
             <form-item label="日付切替時刻" prop="changeTime">
-                <time-picker format="HH:mm" 　placeholder="入力してください" :editable="false" :steps="[1, 5]" class="width100" v-model="rawData.tpa_ndate_change_time"></time-picker>
+                <i-col span="24">
+                         <i-input v-model="rawData.tpa_ndate_change_time" placeholder="終了時間" maxlength="5" icon="ios-clock-outline"
+                                  @on-blur="handleInputChange(rawData,'tpa_ndate_change_time',$event.target)"></i-input>
+                </i-col>
             </form-item>
 
             <form-item label="翌日勤務パターン" prop="ykjtPattern">
@@ -206,6 +269,7 @@
                 errorFlag: false,
                 errorMsg: '',
                 selectedDeptViewType: 3, //組織ツリー用
+                hasPassedTimeCheck: false,
                 planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
                 localValue: {
@@ -808,6 +872,18 @@
                 }
                 return true
             },
+            //時間フォーマットに変更する
+            handleInputChange(object, index, el) {
+                if (object) {
+                    this.hasPassedTimeCheck = Utils.checkTime(object, index)
+                    this.$set(object, index, object[index])
+                    if (!this.hasPassedTimeCheck) {
+                        el.focus()
+                        return
+                    }
+                }
+                this.$forceUpdate()
+            },
             //勤務パターン更新登録
             async handleSubmit(name) {
                 //form validate
@@ -823,13 +899,13 @@
                 var changeTime = this.rawData.tpa_ndate_change_time
                 var nextptn = this.rawData.tpa_cnextptn
                 if (this.edit_flag) {
-                    this.rawData_bak.tpa_ndate_change_time = changeTime
                     if (JSON.stringify(this.rawData_bak) === JSON.stringify(this.rawData)) {
                         this.showAlert('まだ編集していません、先ずは編集しましょう')
                         return
                     } else {
                         this.hiddenAlert()
                     }
+                    this.rawData_bak.tpa_ndate_change_time = changeTime
                 }
                 if (!this.valid_secAndGroup(sectionId, groupId)) {
                     return
@@ -860,6 +936,12 @@
                 if (!this.valid_ifnull('勤務時間', dutyDate[0])) {
                     //isnull  format
                     return
+                }
+                if (!this.hasPassedTimeCheck) {
+                    this.showAlert('勤務時間または休憩時間フォーマットが正しくないので、もう一度確認してください')
+                    return
+                } else {
+                    this.hiddenAlert();
                 }
 
                 //休憩時間は勤務時間と　比べる
@@ -914,7 +996,7 @@
                     }
                 }
                 if (planRest4) {
-                    if (restMins4.length > 0 && planRest4[0] != '') {
+                    if (planRest4.length > 0 && planRest4[0] != '') {
                         restMins4 = this.valid_timeMins(planRest4[0], planRest4[1])
                     } else {
                         restMins4 = 0
