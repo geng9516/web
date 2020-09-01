@@ -1029,101 +1029,107 @@
                     //     return
                     // }
                     // handle 强制关闭抽屉取消失焦的错误
-                    if (!this.hasPassedTimeCheck) {
-                        this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください' })
-                        return
+                    console.log(UpdateData)
+                    if(UpdateData.length > 0){
+                        if (!this.hasPassedTimeCheck) {
+                            this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください' })
+                            return
+                        }
+
+                        const check = UpdateData.some(e => {
+                            if (e.updateOverTimeDtoList.length > 0) {
+                                let checkArr = []
+                                let result = e.updateOverTimeDtoList.some(t => {
+                                    if (!t.sNOpen && t.sNClose) {
+                                        that.$Notice.warning({ title: '注意', desc: '開始時間を入力してください。', duration: 6.5 })
+                                        return true
+                                    }
+                                    if (t.sNOpen && !t.sNClose) {
+                                        that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。', duration: 6.5 })
+                                        return true
+                                    }
+                                    if (!t.sCComment) {
+                                        that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください。', duration: 6.5 })
+                                        return true
+                                    }
+                                    if (t.sNOpen && t.sNClose) {
+                                        if (Utils.timeToMinute(t.sNOpen) >= Utils.timeToMinute(t.sNClose)) {
+                                            that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                                            return true
+                                        }
+                                        // check 超勤时间是否与勤务时间重复
+                                        if (Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
+                                            that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
+                                            return true
+                                        }
+                                        // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
+                                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNOpen), Utils.timeToMinute(t.sNClose)).slice(1, -1))
+                                    }
+                                })
+                                const checkArr2 = new Set([...checkArr])
+                                // 如果遭到了去重，则证明有重复的时间
+                                if (checkArr.length !== checkArr2.size) {
+                                    that.$Notice.warning({ title: '注意', desc: '超勤勤務が重複しています。', duration: 6.5 })
+                                    result = true
+                                }
+                                if (result) {
+                                    return true
+                                }
+                            }
+                            if (e.updateRestTimeDtoList.length > 0) {
+                                let result = false
+                                if (!e.updateOverTimeDtoList.length > 0) {
+                                    that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。', duration: 6.5 })
+                                    return true
+                                }
+                                let checkArr = []
+                                result = e.updateRestTimeDtoList.some(t => {
+                                    if (!t.sNRestOpen && t.sNRestClose) {
+                                        that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。', duration: 6.5 })
+                                        return true
+                                    }
+                                    if (t.sNRestOpen && !t.sNRestClose) {
+                                        that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。', duration: 6.5 })
+                                        return true
+                                    }
+                                    if (t.sNRestOpen && t.sNRestClose) {
+                                        if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
+                                            that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                            return true
+                                        }
+                                        // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
+                                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNRestOpen), Utils.timeToMinute(t.sNRestClose)).slice(1, -1))
+                                    }
+                                })
+                                const checkArr2 = new Set([...checkArr])
+                                // 如果遭到了去重，则证明有重复的时间
+                                if (checkArr.length !== checkArr2.size) {
+                                    that.$Notice.warning({ title: '注意', desc: '休憩時間が重複しています。', duration: 6.5 })
+                                    result = true
+                                }
+                                if (result) {
+                                    return true
+                                }
+                                // 超過勤務時間は予定始業時間～予定終業時間外で入力してください。
+                            }
+                        })
+                        if (!check) {
+                            try {
+                                this.updateBtnLoading = true
+                                await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
+                                this.getTableDataDaily({ day: this.query.baseDay })
+                                this.overWorkViewType=1
+                                this.getTableData()
+                                this.$Message.success('命令完了')
+                            } catch (error) {
+                            } finally {
+                                this.updateBtnLoading = false
+                            }
+                        }
+                    }else{
+                        this.showDayApply=false
                     }
 
-                    const check = UpdateData.some(e => {
-                        if (e.updateOverTimeDtoList.length > 0) {
-                            let checkArr = []
-                            let result = e.updateOverTimeDtoList.some(t => {
-                                if (!t.sNOpen && t.sNClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '開始時間を入力してください。', duration: 6.5 })
-                                    return true
-                                }
-                                if (t.sNOpen && !t.sNClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。', duration: 6.5 })
-                                    return true
-                                }
-                                if (!t.sCComment) {
-                                    that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください。', duration: 6.5 })
-                                    return true
-                                }
-                                if (t.sNOpen && t.sNClose) {
-                                    if (Utils.timeToMinute(t.sNOpen) >= Utils.timeToMinute(t.sNClose)) {
-                                        that.$Notice.warning({ title: '注意', desc: '開始時間＜終了時間となるようにしてください。', duration: 6.5 })
-                                        return true
-                                    }
-                                    // check 超勤时间是否与勤务时间重复
-                                    if (Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
-                                        that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
-                                        return true
-                                    }
-                                    // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
-                                    checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNOpen), Utils.timeToMinute(t.sNClose)).slice(1, -1))
-                                }
-                            })
-                            const checkArr2 = new Set([...checkArr])
-                            // 如果遭到了去重，则证明有重复的时间
-                            if (checkArr.length !== checkArr2.size) {
-                                that.$Notice.warning({ title: '注意', desc: '超勤勤務が重複しています。', duration: 6.5 })
-                                result = true
-                            }
-                            if (result) {
-                                return true
-                            }
-                        }
-                        if (e.updateRestTimeDtoList.length > 0) {
-                            let result = false
-                            if (!e.updateOverTimeDtoList.length > 0) {
-                                that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。', duration: 6.5 })
-                                return true
-                            }
-                            let checkArr = []
-                            result = e.updateRestTimeDtoList.some(t => {
-                                if (!t.sNRestOpen && t.sNRestClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。', duration: 6.5 })
-                                    return true
-                                }
-                                if (t.sNRestOpen && !t.sNRestClose) {
-                                    that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。', duration: 6.5 })
-                                    return true
-                                }
-                                if (t.sNRestOpen && t.sNRestClose) {
-                                    if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
-                                        that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                                        return true
-                                    }
-                                    // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
-                                    checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNRestOpen), Utils.timeToMinute(t.sNRestClose)).slice(1, -1))
-                                }
-                            })
-                            const checkArr2 = new Set([...checkArr])
-                            // 如果遭到了去重，则证明有重复的时间
-                            if (checkArr.length !== checkArr2.size) {
-                                that.$Notice.warning({ title: '注意', desc: '休憩時間が重複しています。', duration: 6.5 })
-                                result = true
-                            }
-                            if (result) {
-                                return true
-                            }
-                            // 超過勤務時間は予定始業時間～予定終業時間外で入力してください。
-                        }
-                    })
-                    if (!check) {
-                        try {
-                            this.updateBtnLoading = true
-                            await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
-                            this.getTableDataDaily({ day: this.query.baseDay })
-                            this.overWorkViewType=1
-                            this.getTableData()
-                            this.$Message.success('命令完了')
-                        } catch (error) {
-                        } finally {
-                            this.updateBtnLoading = false
-                        }
-                    }
 
                 },
                 handleSpan({ rowIndex, columnIndex }) {
