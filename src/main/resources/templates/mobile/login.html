@@ -1,40 +1,185 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="layout/header::common_header(title='mobile login',cssPaths='/pages/errorPage.min.css')"></head>
+
 <body>
-<div th:replace="layout/loadingBar::loadingBar"></div>
-<svg th:replace="layout/logos::svg_logos"></svg>
-<style>
-.login-page {
-   min-height:100vh;
-   max-height:100vh;
-   /* background: var(--login-left-part-bg); */
-}
-</style>
-<main class="login-page">
-   
-   <svg class="logo-warp">
-      <use xlink:href="#logo-p-mark"></use>
-   </svg>
+   <div th:replace="layout/loadingBar::loadingBar"></div>
+   <svg th:replace="layout/logos::svg_logos"></svg>
+   <style>
+      body {
+         background: var(--login-right-part-bg);
+         overflow-y: hidden;
+      }
 
-      <svg class="logo-warp">
-      <use xlink:href="#logo-suit"></use>
-   </svg>
+      .login-page {
+         height: 100vh;
+         animation: scrollToUp 80s linear infinite alternate;
+      }
 
+      @keyframes scrollToUp {
+         100% {
+            background-position: 600px 600px
+         }
+      }
+
+      .main-logo {
+         position: absolute;
+         top: 10px;
+         right: 10px;
+      }
+
+      .logo-trademark {
+         display: inline-block;
+         width: 1.5rem;
+         height: 2rem;
+      }
+
+      .logo-suit {
+         display: inline-block;
+         width: 8.5rem;
+         height: 2rem;
+      }
+
+      .login-warp {
+         position: relative;
+         top: 80px;
+         width: 80vw;
+         margin: 0 auto;
+      }
+
+      .title {
+         position: relative;
+         top: 85px;
+         padding: 20px 34px 35px;
+         /* border-bottom: 1px solid lightgrey; */
+      }
+
+      .logo-warp {
+         width: 260px;
+         height: 31px;
+         background-repeat: no-repeat;
+         background-size: 91%;
+      }
+
+      .sub-title {
+         color: var(--login-svg-fill);
+         margin-top: 10px;
+      }
+
+      .login-label {
+         display: inline-block;
+         text-align: left;
+         margin-bottom: 10px;
+         /* font-size: 16px; */
+         font-weight: bold;
+         color: rgb(128, 134, 149);
+         background: transparent;
+      }
+
+      /* .ivu-input-prefix {
+         padding-left: 25px;
+      }
+
+      .ivu-input-prefix i {
+         font-size: 30px;
+         line-height: 50px;
+      } */
+
+      .ivu-input {
+         height: 50px;
+         padding-left: 15px;
+         border-radius: 5px;
+         box-shadow: 0 1px 5px 0 var(--ghost-primary-shadow);
+         background: rgba(255,255,255,.6);
+         /* border-color: var(--input-border-grey); */
+         border-color: transparent;
+      }
+      .mobile-login-btn {
+         background: linear-gradient(90deg, rgba(50, 182, 255,.6), rgb(66, 118, 255,.6));
+      }
+      .mobile-footer {
+         position: absolute;
+         bottom: -103px;
+         height: 195px;
+         width: 100vw;
+         border-radius: 50%;
+         text-align: center;
+         background-color: #fff;
+         font-size: 12px;
+      }
+
+   </style>
+   <main class="login-page" :style="`background-image:url(${BASE_URL}/static/svg/trademark.svg)`">
+      <section class="main-logo">
+         <svg class="logo-trademark mr2">
+            <use xlink:href="#logo-p-mark"></use>
+         </svg>
+
+         <svg class="logo-suit">
+            <use xlink:href="#logo-suit"></use>
+         </svg>
+      </section>
+      <div class="title">
          <svg class="logo-warp">
-      <use xlink:href="#logo"></use>
-   </svg>
-</main>
-<script type="text/babel" data-presets="latest">
-    const login = new Vue({
-        el: '.login-page',
-        data() {
+            <use xlink:href="#logo"></use>
+         </svg>
+         <div class="tr sub-title">公的機関向け就業管理システム</div>
+      </div>
+      <section class="login-warp">
+         <i-input class="mb20" style="border-radius: 23px;" v-model="login.username" @on-blur="fixH5Height" @keyup.enter.native="loging"
+         placeholder="アカウント"></i-input>
+         <i-input v-model="login.password" style="border-radius: 23px;" @on-blur="fixH5Height" @keyup.enter.native="loging" placeholder="パスワード"
+         type="password" autocomplete="new-password"></i-input>
+         <i-button class="mt20 mb20" style="background: rgba(255,255,255,.6);" type="primary" size="large" ghost long>出勤</i-button>
+         <i-button class="mt10 mb20" style="background: rgba(255,255,255,.6);" size="large" long>退勤</i-button>
+         <i-button @click="loging" class="mobile-login-btn" type="primary" size="large" long>
+            ログイン
+         </i-button>
+      </section> 
+      <div class="mobile-footer"><div style="position: relative;bottom: -42px;color: var(--grey);">Smart Public WorkManager Ver.1.0.0 Copyright©</br>株式会社日進サイエンティア</div></div>
+   </main>
+   <script type="text/babel" data-presets="latest">
+      const login = new Vue({
+         el: '.login-page',
+         data() {
             return {
+               login: {
+                  username: '',
+                  password: ''
+               },
+               ruleValidate: {
+                  username: [
+                     {
+                        required: true,
+                        message: '社員コードを入力してください',
+                        trigger: 'blur'
+                     }
+                  ],
+                  password: [
+                     {
+                        required: true,
+                        message: 'パスワードを入力してください',
+                        trigger: 'blur'
+                     }
+                  ]
+               },
             }
-        },
-        methods: {
-        }
-    })
-</script>
+         },
+         methods: {
+            loging: Debounce(async function () {
+
+            }),
+            fixH5Height() {
+               setTimeout(function () {
+                  let scrollHeight =
+                     document.documentElement.scrollTop || document.body.scrollTop || 0
+                  window.scrollTo(0, Math.max(scrollHeight - 1, 0))
+               }, 100)
+            }
+         }
+      })
+   </script>
 </body>
+
 </html>
