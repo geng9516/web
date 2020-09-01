@@ -106,9 +106,9 @@
             </template>
             <template slot-scope="{ row }" slot="season">
                 <span v-for="(item, i) of row.season" :key="i" class="divi-line">
-                    <div v-if = "item == '詳細'">
+                    <span v-if = "item == '詳細'">
                         <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">{{ item }}</i-button>
-                    </div>
+                    </span>
                     <span v-else> - </span>
                 </span>
             </template>
