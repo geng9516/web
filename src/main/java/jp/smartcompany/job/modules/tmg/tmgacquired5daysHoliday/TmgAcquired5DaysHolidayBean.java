@@ -92,13 +92,11 @@ public class TmgAcquired5DaysHolidayBean {
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
         // 重複Flg判断
         for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
-            long b = DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false);
             if (acquired5DaysVOList.get(i).getCemployeeid0().equals(acquired5DaysVOList.get(i+1).getCemployeeid0())
                     && Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
                     && Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>=10
                     && DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()), DateUnit.DAY,false)<=
                        DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false)
-//                    && DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false)>=0
             ){
                 acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
             }
