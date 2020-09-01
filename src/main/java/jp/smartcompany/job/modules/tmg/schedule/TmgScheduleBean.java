@@ -868,8 +868,8 @@ public class TmgScheduleBean {
      * @return
      */
     public List<ScheduleDataDTO> selectSchedule(String year, String month, String employeeId) {
-       // List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
-       // return scheduleDataDTOS;
+        // List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        // return scheduleDataDTOS;
 
         return null;
     }
@@ -916,7 +916,7 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextStart(nextStart);
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
-        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0,useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         // Arrayにデータフォーマッを変える
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
             ScheduleDataDTO scheduleDataDTO = scheduleDataDTOS.get(i);
@@ -1573,13 +1573,15 @@ public class TmgScheduleBean {
             return GlobalResponse.error(errMsg);
         }
         iTmgScheduleService.insertTrigger(_targetCustCode, _targetCompCode, _targetUserCode, _loginUserCode, modifierprogramid, actionParam);
-        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+
+        //注意deleteTmgTrigger的執行順序，目的是爲了防止trigger假執行而故意錯開空出等待時間
         iTmgScheduleService.deleteErrMsg(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
         iTmgScheduleService.deleteWeekPatternCheck(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+        iTmgScheduleService.deleteTmgTrigger(_targetCustCode, _targetCompCode, _loginUserCode, modifierprogramid);
+
         return GlobalResponse.ok();
 
     }
-
 
     /**
      * 週勤務パターンの適用時間を更新する

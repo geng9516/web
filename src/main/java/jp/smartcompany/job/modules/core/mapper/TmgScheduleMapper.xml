@@ -1208,7 +1208,7 @@
         <if test="twp_nid != null and twp_nid != 0">
             and twp_nid != #{twp_nid}
         </if>
-        and twp_denddate <![CDATA[>]]> trunc(sysdate)
+        and twp_denddate <![CDATA[>]]> trunc(add_months(sysdate,1))
     </select>
 
 
@@ -1405,7 +1405,7 @@
             and twp_nid != #{twp_nid}
         </if>
         <if test="twp_nid == null">
-            and twp_denddate <![CDATA[>]]> trunc(sysdate)
+            and twp_denddate <![CDATA[>]]> trunc(add_months(sysdate,1))
         </if>
         <!--
                 <if test="twp_nid != null">
