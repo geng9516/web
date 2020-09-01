@@ -20,7 +20,7 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0"  @click="isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 || !editable"  @click="isEditable = !isEditable"  v-if=" !isEditable && showEdit">対象者一括編集</i-button>
                 <i-button type="success" icon="md-create" :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
                 <i-button v-if=" isEditable" @click="isEditable = !isEditable;handleSelectAll2(false);restPattern()">キャンセル</i-button>
             </div>
@@ -229,7 +229,8 @@
             </template>
 
             <template slot-scope="{ row }" slot="workDivision">
-                <span v-if=" isEditable && !kubunnList.map(e=>e.MGD_CMASTERCODE).includes(value[row._index].workId)">{{value[row._index].workMM}}</span>
+                <span v-if=" isEditable && row._disabled">{{value[row._index].workMM}}</span>
+
                 <i-select v-model="value[row._index].workId" transfer v-else-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
@@ -237,19 +238,19 @@
             </template>
 
             <template slot-scope="{ row }" slot="workFar">
-                <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable" :disabled="!kubunnList.map(e=>e.MGD_CMASTERCODE).includes(value[row._index].workId)">
+                <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable" :disabled="row._disabled">
                     <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
                 <span  v-else>{{ row.tda_cbusinesstripid_mm=='なし'?'':row.tda_cbusinesstripid_mm }}</span>
             </template>
 
             <template slot-scope="{ row}" slot="workStartFinal">
-                <i-input v-model="value[row._index].nopen" :disabled="value[row._index].workId!='TMG_WORK|000'" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nopen', $event.target)"></i-input>
+                <i-input v-model="value[row._index].nopen" :disabled="value[row._index].workId!='TMG_WORK|000' || row._disabled " v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nopen', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nopen }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workEndFinal">
-                <i-input v-model="value[row._index].nclose" :disabled="value[row._index].workId!='TMG_WORK|000'" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nclose', $event.target)"></i-input>
+                <i-input v-model="value[row._index].nclose" :disabled="value[row._index].workId!='TMG_WORK|000'  || row._disabled" v-if=" isEditable" @on-blur="handleInputChange(row._index, value[row._index],'nclose', $event.target)"></i-input>
                 <span v-else>{{ value[row._index].nclose}}</span>
             </template>
 
@@ -257,17 +258,17 @@
                 <div v-if=" isEditable">
                     <Row :gutter="10" v-for="(item, i) of value[row._index].restList" :key="i" class="mb5">
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restOpen" :disabled="value[row._index].workId!='TMG_WORK|000'" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restOpen', $event.target)"/>
+                            <i-input v-model="value[row._index].restList[i].restOpen" :disabled="value[row._index].workId!='TMG_WORK|000' || row._disabled" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restOpen', $event.target)"/>
                         </i-col>
                         <i-col :span="value[row._index].restList.length > 1 ? 8 : 12">
-                            <i-input v-model="value[row._index].restList[i].restClose" :disabled="value[row._index].workId!='TMG_WORK|000'" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restClose', $event.target)"/>
+                            <i-input v-model="value[row._index].restList[i].restClose" :disabled="value[row._index].workId!='TMG_WORK|000' || row._disabled" @on-blur="handleInputChange(row._index, value[row._index].restList[i],'restClose', $event.target)"/>
                         </i-col>
                         <i-col span="8" v-show="value[row._index].restList.length > 1">
                             <i-button ghost type="error" @click="handleMinusRest(value[row._index].restList, i)">-</i-button>
                         </i-col>
                     </Row>
                     <i-button
-                            :disabled="value[row._index].workId!='TMG_WORK|000'"
+                            :disabled="value[row._index].workId!='TMG_WORK|000' || row._disabled"
                             class="mt5"
                             size="small"
                             ghost
@@ -283,7 +284,7 @@
             </template>
 
             <template slot-scope="{ row }" slot="remark">
-                <i-input v-model="value[row._index].comment" v-if=" isEditable"></i-input>
+                <i-input v-model="value[row._index].comment" v-if=" isEditable" :disabled="row._disabled" ></i-input>
                 <span v-else>{{ value[row._index].comment }}</span>
             </template>
         </i-table>
@@ -298,6 +299,8 @@
         el: '.tmgschedule-warp',
         data() {
             return {
+                showEdit:false,
+                editable:false,
                 isSearchHistory: false,
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 preMonthDisable:false,
@@ -489,6 +492,18 @@
             }
         },
         methods: {
+            async isEditableSchedule(){
+                const query = {...this.query}
+                const {data}=await  this.http.get(`sys/schedule/isEditableSchedule`,query)
+                console.log("showEdit"+data)
+                this.showEdit=data
+            },
+            async isEditable4Schedule(){
+                const query = {...this.query,baseDate: this.query.txtBaseDate}
+                const {data}=await  this.http.get(`sys/schedule/isEditable`,query)
+                console.log("editable"+data)
+                this.editable=data
+            },
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
@@ -615,6 +630,8 @@
                 await  this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
+                this.isEditableSchedule()
+                this.isEditable4Schedule()
             },
             async getSelectScheduleInfo() {
                 this.nextMonthDisable=false
@@ -930,6 +947,8 @@
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
+                this.isEditableSchedule()
+                this.isEditable4Schedule()
             },
             async nextMonth() {
                 this.query.txtBaseDate=this.selectScheduleInfo.nextStart
@@ -937,6 +956,8 @@
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
+                this.isEditableSchedule()
+                this.isEditable4Schedule()
             },
             rowClass(row) {
 
