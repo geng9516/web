@@ -33,13 +33,14 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param dStart
      * @param dEnd
      * @param manageflg
+     * @param useFixedFunction
      * @param employeeId
      * @param compCode
      * @param custId
      * @param language
      * @return
      */
-    List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language);
+    List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg,String useFixedFunction, String employeeId, String compCode, String custId, String language);
 
     /**
      * 4週間単位の変形労働制職員対応

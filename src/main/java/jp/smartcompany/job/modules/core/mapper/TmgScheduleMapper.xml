@@ -186,7 +186,7 @@
         tmg_f_conv_min2hhmi(tda_nrestopen_p, 0) as tda_nrestopen_p ,
         tmg_f_conv_min2hhmi(tda_nrestclose_p, 0) as tda_nrestclose_p ,
         nvl(tda_cmessage, ' ') tda_cmessage,
-        greatest(tda_nlock_p,tmg_f_is_fixed_monthly(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid)) as tda_nlock_p ,
+        greatest(tda_nlock_p,#{useFixedFunction}(tda_cemployeeid, tda_dyyyymmdd,tda_ccustomerid, tda_ccompanyid)) as tda_nlock_p ,
         tda_cworkingid_p ,
         to_char(tda_dyyyymmdd, 'yyyy/mm/dd') as tda_ccustomerid ,
         tda_cstatusflg ,

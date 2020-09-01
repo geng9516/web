@@ -868,8 +868,10 @@ public class TmgScheduleBean {
      * @return
      */
     public List<ScheduleDataDTO> selectSchedule(String year, String month, String employeeId) {
-        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
-        return scheduleDataDTOS;
+       // List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _baseDate, _endDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+       // return scheduleDataDTOS;
+
+        return null;
     }
 
 
@@ -889,6 +891,13 @@ public class TmgScheduleBean {
             _endDispDate = endDispDate;
         }*/
 
+        String useFixedFunction = "";
+        if (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
+            useFixedFunction = "TMG_F_IS_FIXED_SALARY";
+        } else {
+            useFixedFunction = "TMG_F_IS_FIXED_MONTHLY";
+        }
+
         String employeeId = _targetUserCode;
 
         ScheduleInfoVO scheduleInfoVO = new ScheduleInfoVO();
@@ -907,7 +916,7 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextStart(nextStart);
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
-        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0,useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         // Arrayにデータフォーマッを変える
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
             ScheduleDataDTO scheduleDataDTO = scheduleDataDTOS.get(i);

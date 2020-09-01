@@ -30,7 +30,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg, String employeeId, String compCode, String custId, String language) {
+    public List<ScheduleDataDTO> selectSchedule(String ctpye_plan, String dStart, String dEnd, boolean isVariationalWorkDays, String manageflg,String useFixedFunction, String employeeId, String compCode, String custId, String language) {
         System.out.println("dStart:" + dStart + " dEnd：" + dEnd);
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("ctpye_plan", ctpye_plan);
@@ -39,6 +39,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
         params.put("dEnd", dEnd);
         params.put("isVariationalWorkDays", isVariationalWorkDays);
         params.put("manageflg", manageflg);
+        params.put("useFixedFunction", useFixedFunction);
         params.put("compCode", compCode);
         params.put("custId", custId);
         params.put("language", language);
