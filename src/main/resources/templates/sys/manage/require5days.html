@@ -154,15 +154,15 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker class="tl" :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editBasedDay" :disabled="row._index !== radioCheckedIndex" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker class="tl" :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editCheckPeriod" :disabled="row._index !== radioCheckedIndex" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -182,7 +182,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <i-input @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -196,15 +196,15 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="editBasedDay">
-                    <date-picker class="tl" :value="row.editBasedDay" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editBasedDay" :disabled="row._index !== radioCheckedIndex" @on-change="handleChangeBasedDay($event)" format="yyyy/MM/dd" ref="editDatepicker" transfer type="date"></date-picker>
                 </template>
 
                 <template slot="editCheckPeriod" slot-scope="{ row }">
-                    <date-picker class="tl" :value="row.editCheckPeriod" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
+                    <date-picker class="tl" :value="row.editCheckPeriod" :disabled="row._index !== radioCheckedIndex" @on-change="handleChangeCheckPeriod($event)" format="yyyy/MM/dd" ref="editDatepicker1" transfer type="date"></date-picker>
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -224,7 +224,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <i-input @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -1068,8 +1068,8 @@
                 this.updateAcquired5DaysVO.txtUserCode = this.paidData[index_].cemployeeid0
                 this.updateAcquired5DaysVO.kijunbi = this.paidData[index_].taKijyunbi5
                 this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index_].tpfDpaidHolidayFix11
-                this.updateAcquired5DaysVO.usedDaysEdit = addNumDeci(this.paidData[index_].tpfNusedaysAjdust13,true)
-                this.updateAcquired5DaysVO.txtNusedaysDays = addNumDeci(this.paidData[index_].tpfNmustdaysFix14,true)
+                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[index_].tpfNusedaysAjdust13
+                this.updateAcquired5DaysVO.txtNusedaysDays = this.paidData[index_].tpfNmustdaysFix14
                 console.log("register_this.updateAcquired5DaysVO")
                 console.log(this.updateAcquired5DaysVO)
 
