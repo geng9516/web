@@ -49,9 +49,10 @@ public class AuthController {
      * 登录API
      */
     @PostMapping("login")
+    @ResponseBody
     public String login(@RequestParam LoginDTO loginDTO) {
         authBusiness.login(loginDTO);
-        return "redirect:/sys";
+        return "ログイン成功";
     }
 
 
