@@ -25,8 +25,8 @@
 
       .main-logo {
          position: absolute;
-         top: 10px;
-         right: 10px;
+         top: .8rem;
+         right: .8rem;
       }
 
       .logo-trademark {
@@ -43,34 +43,34 @@
 
       .login-warp {
          position: relative;
-         top: 80px;
+         top: 5.714rem;
          width: 80vw;
          margin: 0 auto;
       }
 
       .title {
          position: relative;
-         top: 85px;
-         padding: 20px 34px 35px;
+         top: 6.071rem;
+         padding: 1.428rem 2.428rem 2.5rem;
          /* border-bottom: 1px solid lightgrey; */
       }
 
       .logo-warp {
-         width: 260px;
-         height: 31px;
+         width: 18.571rem;
+         height: 2.214rem;
          background-repeat: no-repeat;
          background-size: 91%;
       }
 
       .sub-title {
          color: var(--login-svg-fill);
-         margin-top: 10px;
+         margin-top: 0.714rem;
       }
 
       .login-label {
          display: inline-block;
          text-align: left;
-         margin-bottom: 10px;
+         margin-bottom: 0.714rem;
          /* font-size: 16px; */
          font-weight: bold;
          color: rgb(128, 134, 149);
@@ -87,8 +87,8 @@
       } */
 
       .ivu-input {
-         height: 50px;
-         padding-left: 15px;
+         height: 3.571rem;
+         padding-left: 1.071rem;
          border-radius: 5px;
          box-shadow: 0 1px 5px 0 var(--ghost-primary-shadow);
          background: rgba(255,255,255,.6);
@@ -96,12 +96,12 @@
          border-color: transparent;
       }
       .mobile-login-btn {
-         background: linear-gradient(90deg, rgba(50, 182, 255,.6), rgb(66, 118, 255,.6));
+         background: linear-gradient(90deg, rgba(50, 182, 255,.7), rgb(66, 118, 255,.7));
       }
       .mobile-footer {
          position: absolute;
-         bottom: -103px;
-         height: 195px;
+         bottom: -7.357rem;
+         height: 13.928rem;
          width: 100vw;
          border-radius: 50%;
          text-align: center;
@@ -133,7 +133,7 @@
          type="password" autocomplete="new-password"></i-input>
          <i-button class="mt20 mb20" style="background: rgba(255,255,255,.6);" type="primary" size="large" ghost long>出勤</i-button>
          <i-button class="mt10 mb20" style="background: rgba(255,255,255,.6);" size="large" long>退勤</i-button>
-         <i-button @click="loging" class="mobile-login-btn" type="primary" size="large" long>
+         <i-button @click="loging" class="mobile-login-btn" type="primary" size="large" :loading="loading" long>
             ログイン
          </i-button>
       </section> 
@@ -164,11 +164,23 @@
                      }
                   ]
                },
+               loading: false
             }
          },
          methods: {
             loging: Debounce(async function () {
-
+               this.loading = true
+                    try {
+                        // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
+                        await this.http.postForm('/login', this.login)
+                        location.href = '/login'
+                    } catch (error) {
+                        // 账户过期
+                        if(error.status === 303) {
+                             location.href = '/expirePassword?username='+error.data.msg
+                        }
+                        this.loading = false
+                    }
             }),
             fixH5Height() {
                setTimeout(function () {
