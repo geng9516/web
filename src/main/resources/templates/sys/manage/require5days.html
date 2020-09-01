@@ -162,7 +162,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurAdjustTakenDays(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -204,7 +204,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurAdjustTakenDays(row)" class="tc" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -560,6 +560,10 @@
                 // if(this.$refs.editDatepicker){
                 //     this.$refs.editDatepicker.handleClear()
                 // }
+
+                // 销毁table
+                this.forRest = !this.forRest
+
                 //デフォルトの場合、1行目が選択させる。
                 this.radioCheckedIndex = 0
                 this.query.txtUserCode = e.cemployeeid0
@@ -977,15 +981,24 @@
                 })
             },
             //調整取得日数
-            blur(e) {
+            blurAdjustTakenDays(e) {
                 console.log("blur")
                 console.log(e)
                 this.updateAcquired5DaysVO.usedDaysEdit = e.adjustTakenDays
+
+                //調整取得日数を一旦残る
+                let index=this.radioCheckedIndex
+                this.paidData[index].adjustTakenDays = e.adjustTakenDays
             },
+            //修正必要日数
             blurEditMustDays(e) {
                 console.log("blurEditMustDays")
                 console.log(e)
                 this.updateAcquired5DaysVO.txtNusedaysDays = e.editMustDays
+
+                //修正必要日数を一旦残る
+                let index=this.radioCheckedIndex
+                this.paidData[index].editMustDays = e.editMustDays
             },
             handleChangeBasedDay(e) {
                 this.updateAcquired5DaysVO.kijunbiEdit = e
@@ -1062,6 +1075,7 @@
                 console.log("handleRadio(index)")
                 this.radioCheckedIndex = index
                 console.log(this.radioCheckedIndex)
+                console.log(this.paidData)
 
                 const addNumDeci = Vue.filter('addNumDeci')
                 let index_=this.radioCheckedIndex
