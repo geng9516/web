@@ -201,11 +201,11 @@
 
                     <otherwise>
                         --検索条件・状態・全て
-                        AND(
-                            TNTF_CSTATUSFLG NOT IN ('TMG_NTFSTATUS|0','TMG_NTFSTATUS|3')
-                            OR
-                            TNTF_CALTEREMPLOYEEID = '${paramNotificationList.userCode}'
-                        )
+                        --AND(
+                        --  TNTF_CSTATUSFLG NOT IN ('TMG_NTFSTATUS|0','TMG_NTFSTATUS|3')
+                        --  OR
+                        --   TNTF_CALTEREMPLOYEEID = '${paramNotificationList.userCode}'
+                        -- )
                     </otherwise>
                 </choose>
 
