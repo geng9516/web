@@ -1226,7 +1226,7 @@ public class TmgNotificationBean {
         tncDo.setTntfNfri(Long.parseLong(param.getFri()));
         tncDo.setTntfNsat(Long.parseLong(param.getSat()));
         tncDo.setTntfNsun(Long.parseLong(param.getSun()));
-        if (StrUtil.hasEmpty(param.getNoreserved())) {
+        if (!StrUtil.hasEmpty(param.getNoreserved()) && param.getNoreserved().equals("0")) {
             tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(param.getMon(),
                     param.getTue(),
                     param.getWed(),

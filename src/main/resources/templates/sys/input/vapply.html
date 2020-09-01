@@ -204,6 +204,7 @@
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
                                             class="datepicker-single" v-model="restApply._dateList"
+                                                     format="yyyy/MM/dd" @on-blur=""
                                             @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
                                     </Row>
                                 </section>
