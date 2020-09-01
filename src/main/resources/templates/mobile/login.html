@@ -25,8 +25,8 @@
 
       .main-logo {
          position: absolute;
-         top: .8rem;
-         right: .8rem;
+         top: 0.714rem;
+         right: 0.714rem;
       }
 
       .logo-trademark {
@@ -131,12 +131,13 @@
          placeholder="アカウント"></i-input>
          <i-input v-model="login.password" style="border-radius: 23px;" @on-blur="fixH5Height" @keyup.enter.native="loging" placeholder="パスワード"
          type="password" autocomplete="new-password"></i-input>
-         <i-button class="mt20 mb20" style="background: rgba(255,255,255,.6);" type="primary" size="large" ghost long>出勤</i-button>
-         <i-button class="mt10 mb20" style="background: rgba(255,255,255,.6);" size="large" long>退勤</i-button>
-         <i-button @click="loging" class="mobile-login-btn" type="primary" size="large" :loading="loading" long>
+         <i-button @click="loging" class="mobile-login-btn mt20 mb20" type="primary" size="large" :loading="loading" long>
             ログイン
          </i-button>
-      </section> 
+         <Divider size="small" style="color: var(--login-svg-fill);border-color:var(--login-svg-fill);">OR</Divider>
+         <i-button class="mt10 mb10" style="background: rgba(255,255,255,.6);" type="primary" size="large" ghost long>出勤</i-button>
+         <i-button style="background: rgba(255,255,255,.6);" size="large" long>退勤</i-button>
+      </section>
       <div class="mobile-footer"><div style="position: relative;bottom: -42px;color: var(--grey);">Smart Public WorkManager Ver.1.0.0 Copyright©</br>株式会社日進サイエンティア</div></div>
    </main>
    <script type="text/babel" data-presets="latest">

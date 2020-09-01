@@ -1,0 +1,116 @@
+@mixin flex-row($justify) {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: var($justify);
+    align-items: center
+  }
+  .content {
+    min-height: 100vh;
+    padding-top: 51px;
+    overflow-y: auto;
+    .content_head {
+      padding: 0 10px 12px;
+      // border-bottom: solid 1px var(--border-grey);
+    }
+    .content_body {
+      padding: 0 20px 20px 12px;
+      margin-bottom: 50px;
+      .table-top {
+        text-align: left;
+        padding: 8px;
+        background: var(--white);
+        border: solid 1px var(--border-grey);
+        border-bottom: none;
+      }
+    }
+    .searchwrap {
+      // background-color: var(--searchwrap-background);
+      // margin-top: 15px;
+      @include flex-row(flex-start);
+      .ivu-select {
+        width: 15%;
+      }
+      .label {
+        width: 120px;
+        text-align: right;
+        padding-right: 10px;
+        border-radius: 3px 0 0 3px;
+        background-color: var(--form-label);
+        color: var(--white);
+      }
+      .mar {
+        margin-right: 30px;
+      }
+      .ivu-page .ivu-select {
+        width: 100%;
+      }
+      .ivu-select-selection,.ivu-input{
+        border-radius: 1px;
+      }
+      .like-select {
+        width: 15%;
+        top: 0;
+        .ivu-input-group-append {
+          background: var(--table-head);
+          border: none;
+          &:hover {
+            background: var(--theme-blue);
+          }
+          &:before {
+            top: 0px;
+            bottom: 0px;
+          }
+        }
+      }
+    }
+    .btnbox {
+      flex: 1;
+      @include flex-row(flex-end);
+      button {
+        margin: 5px;
+      }
+      &.ivu-btn {
+        margin-right: 10px;
+      }
+    }
+    .ivu-page {
+      margin-top: 0;
+    }
+    .header {
+      margin: 10px 0 5px;
+      color: var(--header);
+      padding-left: 15px;
+      border: 1px solid var(--header-border);
+      background-color: var(--header-bg);
+      border-radius: 5px;
+      @include flex-row(center);
+      .title1 {
+        padding: 4px 0;
+        h1 {
+          font-size: 18px;
+        }
+        i {
+          font-size: 30px;
+          padding: 5px 6px;
+          margin-right: 8px;
+          color: var(--theme-blue);
+          vertical-align: middle;
+          flex: 1;
+        }
+      }
+    }
+  }
+
+  .header-wrap .head-logo {
+    width: 145px !important;
+    left: 12px !important;
+}
+.ivu-select-dropdown {
+    max-height: 200px !important;
+}
+.footer {
+    font-size: 10px;
+    font-weight: normal;
+    line-height: 14px;
+    padding: 3px 50px;
+}

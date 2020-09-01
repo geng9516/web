@@ -3,13 +3,13 @@
 -->
 <div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org">
   <svg th:replace="layout/logos::svg_logos"></svg>
-  <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
+  <i-menu mode="horizontal" theme="light" class="header-wrap">
     <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
     <svg class="head-logo">
       <use xlink:href="#logo"></use>
     </svg>
     <!-- 注意这里是row-reverse，要反着方 -->
-    <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
+    <!-- <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
         <span style="position: relative;  top: 3px; font-size: 16px; font-weight: bold; margin-left: 5px; padding-right: 30px;">{{ session.psSession.loginKanjiName }}</span>
@@ -24,9 +24,9 @@
         <dropdown-item style="border-bottom: 1px solid #d2d2d2;" @click.native="alterPasswordModal = true">パスワード変更</dropdown-item>
         <dropdown-item @click.native="logout">ログアウト</dropdown-item>
       </dropdown-menu>
-    </dropdown>
+    </dropdown> -->
 
-    <dropdown class="head-dropdown" trigger="click" style="margin-right: 5px;" placement="bottom-start">
+    <!-- <dropdown class="head-dropdown" trigger="click" style="margin-right: 5px;" placement="bottom-start">
       <a>
         <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
@@ -36,9 +36,28 @@
           {{ item }}
         </dropdown-item>
       </dropdown-menu>
-    </dropdown>
+    </dropdown> -->
+    <button :class="navIcon ? 'active menu' : 'menu'" @click="navIcon = !navIcon">
+    <svg viewBox="0 0 64 48">
+        <path d="M19,15 L45,15 C70,15 58,-2 49.0177126,7 L19,37"></path>
+        <path d="M19,24 L45,24 C61.2371586,24 57,49 41,33 L32,24"></path>
+        <path d="M45,33 L19,33 C-8,33 6,-2 22,14 L45,37"></path>
+    </svg>
+</button>
+  <div :class="navIcon ? 'active mobile-nav' : 'mobile-nav'">
+    <ul style="font-size: 30px; font-weight: 800; text-align: right;color: white;    margin-top: 55px;">
+      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/addwork?menuId=1642&moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">就業登録</li>
+      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/vapply?menuId=1644&moduleIndex=3&psSite=TMG_INP&psApp=TmgNotification`">休暇休業申請</li>
+      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/oconfirm?menuId=1648&moduleIndex=5&psSite=TMG_INP&psApp=TmgScheduleCheck`">予定確認</li>
+    </ul>
+  </div>
   </i-menu>
-  <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
+    <!-- <Drawer width="40" title="Basic Drawer" :closable="false" v-model="navIcon">
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+        <p>Some contents...</p>
+    </Drawer> -->
+  <!-- <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
     <i-form ref="password" :label-width="200" :model="password" class="tl" style="margin: 10px 10px 0;">
         <form-item label="現在のパスワード">
             <i-input v-model="password.oldPassword" placeholder="パスワード"
@@ -59,7 +78,7 @@
           <i-button type="text" @click="cancelUpdatePassword">キャンセル</i-button>
           <i-button icon="md-create" type="primary" @click="updatePassword" :loading="passwordLoading">更新</i-button>
         </div>
-  </Modal>
+  </Modal> -->
   <footer class="footer">Smart Public WorkManager Ver.1.0.0 Copyright© 株式会社日進サイエンティア</footer>
   <script th:inline="javascript">
     const HEADER = new Vue({
@@ -70,6 +89,7 @@
           session: [[${ session }]],
           themeList: ['デフォルト', 'クラシック', 'ナイト'],
           password:{},
+          navIcon:false,
           passwordLoading: false,
           alterPasswordModal: false
         }
@@ -117,10 +137,6 @@
            this.password = {
              username:this.session.psSession.loginUser
            }
-        },
-        // 点击顶部边栏时也关闭sider
-        handleClickMenuOutSide() {
-          SIDER._data.showSider = false
         }
       }
     })

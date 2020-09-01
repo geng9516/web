@@ -10,6 +10,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestAttribute;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,9 +49,13 @@ public class SiteInputController {
      */
     @GetMapping("addwork")
     public String toInputAddWork(@RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+                                 @RequestParam("menuId") Long menuId, ModelMap modelMap,
+                                 @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+        if (isMobile) {
+            return "mobile/index";
+        }
 //        TmgResultsDto dto = this.ssss();
 ////        tgResultsBean.actDispRmonthly(psDBBean);
         return "sys/input/addwork";
