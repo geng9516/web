@@ -1165,7 +1165,7 @@
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }
-                this.updateDailyLoading = true
+
 
                 this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
                 this.tmgResultsDto.txtAction = 'ACT_EDITPERM_UPERMIT'
@@ -1198,6 +1198,7 @@
                     okText: 'OK',
                     cancelText: 'キャンセル',
                     onOk: async () => {
+                        this.updateDailyLoading = true
                         try {
                             const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                             if(msg === '0'){
