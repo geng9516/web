@@ -65,9 +65,8 @@
                 handleSubMenuClick(e, i) {
                     var pageId = e.pageId
                     this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}`
-                    console.log(this.toUrl)
                     this.showSider = false
-                    // location.href = this.toUrl
+                    location.href = this.toUrl
                 },
                 handleClickMenuOutSide() {
                     this.showSider = false
