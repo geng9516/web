@@ -701,7 +701,7 @@ public class TmgReferList {
         }
 
         // 組織が選択されている場合、社員一覧を初期化
-        if(StrUtil.isNotBlank(targetSec_admin)){
+//        if(StrUtil.isNotBlank(targetSec_admin)){
             createEmpList(targetSec_admin, targetDate, getHidSelectTab());
             // 対象社員の値が存在しない場合、デフォルト値をセットする
             if(targetEmp_admin == null ||!empList.existsEmp(targetEmp_admin)){
@@ -711,7 +711,7 @@ public class TmgReferList {
                     targetEmp_admin = null;
                 }
             }
-        }
+//        }
 
         // 改めてセッションに登録する
         session.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
@@ -959,7 +959,7 @@ public class TmgReferList {
                 empList.createEmpList(
                         "'"+psDBBean.getCustID()+"'",
                         "'"+psDBBean.getCompCode()+"'",
-                        "'"+targetSection+"'",
+                        SysUtil.transStringNullToDB(targetSection),
                         target, //現状未使用
                         base,
                         "'"+psDBBean.getLanguage()+"'",

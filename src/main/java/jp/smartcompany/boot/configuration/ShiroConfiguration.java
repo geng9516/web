@@ -6,13 +6,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
 import org.apache.shiro.mgt.SecurityManager;
-import org.apache.shiro.session.mgt.eis.JavaUuidSessionIdGenerator;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
-import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,24 +37,12 @@ public class ShiroConfiguration {
         return bean;
     }
 
-    @Bean("sessionIdCookie")
-    @Primary
-    public SimpleCookie sessionIdCookie() {
-        return new SimpleCookie("sid");
-    }
-
-    @Bean("sessionIdGenerator")
-    public JavaUuidSessionIdGenerator sessionIdGenerator() {
-        return new JavaUuidSessionIdGenerator();
-    }
-
     @Bean("sessionManager")
     @Primary
     public DefaultWebSessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
-        sessionManager.setSessionIdCookie(sessionIdCookie());
         // 先设为30分钟便于调试 1000 * 60 * 30
-        sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
+//        sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
     }

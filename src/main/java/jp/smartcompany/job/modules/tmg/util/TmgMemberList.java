@@ -441,7 +441,6 @@ public class TmgMemberList {
             // 社員番号でdistinctをかけてから、JSON配列を生成する
             int[] distinctKeyArray = { DEFAULT_KEY_EMPID };
             List distinctDataArray = JSONArrayGenerator.distinctDataArray(gvSearchDataArray, distinctKeyArray);
-
             return JSONArrayGenerator.getJSONArrayForTreeView(distinctDataArray,keyArray);
 
         }catch(Exception e){

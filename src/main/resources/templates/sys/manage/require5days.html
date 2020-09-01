@@ -78,45 +78,37 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table class="long-table" border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
+        <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  :row-class-name="() => 'select-col'" >
-            <template slot-scope="{ row }" slot="name">
-                <span class="cursor blue" style="text-decoration: underline" @click="handleRowClick(row)">{{ row.name}}</span>
+            <template slot-scope="{ row }" slot="name"><span class="cursor blue" style="text-decoration: underline" @click="handleRowClick(row)">{{ row.name}}</span>
             </template>
 
             <template slot-scope="{ row }" slot="vactionGiveDay">
                 <span v-for="(item, i) of row.vactionGiveDay" :key="i" class="divi-line"><span v-if="item.isReGive" class="re-give">重</span>{{ item.day }}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="paidDays">
-                <span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+            <template slot-scope="{ row }" slot="paidDays"><span v-for="(item, i) of row.paidDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="basedDay">
-                <span v-for="(item, i) of row.basedDay" :key="i" class="divi-line">{{ item }}</span>
+            <template slot-scope="{ row }" slot="basedDay"><span v-for="(item, i) of row.basedDay" :key="i" class="divi-line">{{ item }}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="checkPeriod">
-                <span v-for="(item, i) of row.checkPeriod" :key="i" class="divi-line">{{ item }}</span>
+            <template slot-scope="{ row }" slot="checkPeriod"><span v-for="(item, i) of row.checkPeriod" :key="i" class="divi-line">{{ item }}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="takenDays">
-                <span v-for="(item, i) of row.takenDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+            <template slot-scope="{ row }" slot="takenDays"><span v-for="(item, i) of row.takenDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="mustDays">
-                <span v-for="(item, i) of row.mustDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
+            <template slot-scope="{ row }" slot="mustDays"><span v-for="(item, i) of row.mustDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
             </template>
 
-            <template slot-scope="{ row }" slot="lackDays">
-                <span :class="+row.lackDays ? 'lack-day' : ''" v-for="(item, i) of row.lackDays" :key="i" class="divi-line">{{ item | addNumDeci(true)}}</span>
-                <!--                <span :class="+row.lackDays ? 'lack-day' : ''">{{ row.lackDays | addNumDeci(true)}}</span>-->
+            <template slot-scope="{ row }" slot="lackDays"><div v-for="(item, i) of row.lackDays" :key="i" class="divi-line"><span :class="item > 0 ? 'lack-day' : ''">{{ item | addNumDeci(true)}}</span></div>
             </template>
             <template slot-scope="{ row }" slot="season">
                 <span v-for="(item, i) of row.season" :key="i" class="divi-line">
-                    <div v-if = "item == '詳細'">
+                    <span v-if = "item == '詳細'">
                         <i-button type="primary" long ghost size="small" @click.stop="handleBtn(row,i)">{{ item }}</i-button>
-                    </div>
+                    </span>
                     <span v-else> - </span>
                 </span>
             </template>
@@ -660,6 +652,7 @@
                 this.updateAcquired5DaysVO.txtUserCode = this.paidData[0].cemployeeid0
                 this.updateAcquired5DaysVO.kijunbi = this.paidData[0].taKijyunbi5
                 this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[0].tpfDpaidHolidayFix11
+                this.updateAcquired5DaysVO.dkikanbiFix = this.paidData[0].tpfDkikanbiFix12
                 this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[0].tpfNusedaysAjdust13
                 this.updateAcquired5DaysVO.txtNusedaysDays = this.paidData[0].tpfNmustdaysFix14
                 console.log("this.updateAcquired5DaysVO")
@@ -1000,11 +993,21 @@
                 let index=this.radioCheckedIndex
                 this.paidData[index].editMustDays = e.editMustDays
             },
+            //修正基準日
             handleChangeBasedDay(e) {
                 this.updateAcquired5DaysVO.kijunbiEdit = e
+
+                //修正基準日を一旦残る
+                let index=this.radioCheckedIndex
+                this.paidData[index].editBasedDay = e
             },
+            //修正期間チェック
             handleChangeCheckPeriod(e) {
                 this.updateAcquired5DaysVO.dkikanbiFix = e
+
+                //修正期間チェックを一旦残る
+                let index=this.radioCheckedIndex
+                this.paidData[index].editCheckPeriod = e
             },
             currentTabChanged(name) {
                 if (name=="organisationTree") {
@@ -1083,9 +1086,10 @@
                 this.updateAcquired5DaysVO.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.updateAcquired5DaysVO.txtUserCode = this.paidData[index_].cemployeeid0
                 this.updateAcquired5DaysVO.kijunbi = this.paidData[index_].taKijyunbi5
-                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index_].tpfDpaidHolidayFix11
-                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[index_].tpfNusedaysAjdust13
-                this.updateAcquired5DaysVO.txtNusedaysDays = this.paidData[index_].tpfNmustdaysFix14
+                this.updateAcquired5DaysVO.kijunbiEdit = this.paidData[index_].editBasedDay //修正基準日
+                this.updateAcquired5DaysVO.dkikanbiFix = this.paidData[index_].editCheckPeriod     //修正チェック期間
+                this.updateAcquired5DaysVO.usedDaysEdit = this.paidData[index_].adjustTakenDays //調整取得日数
+                this.updateAcquired5DaysVO.txtNusedaysDays = this.paidData[index_].editMustDays //修正必要日数
                 console.log("register_this.updateAcquired5DaysVO")
                 console.log(this.updateAcquired5DaysVO)
 
