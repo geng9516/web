@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
@@ -95,6 +96,7 @@ public class TmgAcquired5DaysHolidayBean {
                     && Double.parseDouble(acquired5DaysVOList.get(i+1).getTaFuyodays4())>=10
                     && Double.parseDouble(acquired5DaysVOList.get(i).getTaFuyodays4())>=10
                     && DateUtil.betweenMonth(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKijyunbi5()),true)<12
+                    && DateUtil.between(DateUtil.parse(acquired5DaysVOList.get(i+1).getTaKijyunbi5()),DateUtil.parse(acquired5DaysVOList.get(i).getTaKikanbi6()), DateUnit.DAY,false)>=1
             ){
                 acquired5DaysVOList.get(i+1).setTaCduplicateflg("1");
             }
