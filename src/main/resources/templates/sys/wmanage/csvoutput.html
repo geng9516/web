@@ -221,7 +221,8 @@
                 empolyeeLoading: false,
                 empolyeeList: [],
                 pdfDownloadLoading: false,
-                csvDownloadLoading: false
+                csvDownloadLoading: false,
+                restType: 0
             }
         },
          created() {
@@ -383,46 +384,26 @@
             },
             async downLoadByPdf() {
                 console.log(this.empName)
-                if (this.curFileTypeInfo.mgdOutputTargetType=='EMP'){
-                    if (!this.selectEmpNameFlg) {
-                        this.errorInfo = true
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象職員が未選択です、職員を指定して下さい。'
-                        });
+                if (this.errorCheck()){
+                    try {
+                        this.pdfDownloadLoading = true
+                        const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
+                        Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
+                    } catch (e) {
+                        this.pdfDownloadLoading = false
+                        this.isSearchHistory = false
                         return
+                    } finally {
+                        this.errorInfo = false
+                        this.pdfDownloadLoading = false
+                        this.isSearchHistory = false
                     }
-                } else if (this.curFileTypeInfo.mgdOutputTargetType=='ORG'){
-                    if (!this.selectDeptNameFlg) {
-                        this.errorInfo = true
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象部署が未選択です、部署を指定して下さい。'
-                        });
-                        return
-                    }
-                   }
-                try {
-                    this.pdfDownloadLoading = true
-                    const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
-                    Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
-                } catch (e) {
-                    this.pdfDownloadLoading = false
-                    this.isSearchHistory = false
-                    return
-                } finally {
-                    this.errorInfo = false
-                    this.pdfDownloadLoading = false
-                    this.isSearchHistory = false
                 }
             },
             handleRestType(e) {
               console.log("handleRestType")
               console.log(e)
+                this.restType = e
                 this.ledgerParamVO.txtLedgerSheetId = this.curFileTypeInfo.mgdLedgerSheetId
                 this.ledgerParamVO.selLedgerSheet = this.curFileTypeInfo.mgdLedgerSheetId
             },
@@ -448,6 +429,69 @@
                 console.log("changeModel")
                 console.log(e)
                 this.ledgerParamVO.txtIncludeOt100Flg = `${e}`
+            },
+            errorCheck() {
+                if (this.curFileTypeInfo.mgdOutputTargetType=='EMP'){
+                    if (!this.selectEmpNameFlg) {
+                        this.errorInfo = true
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象職員が未選択です、職員を指定して下さい。'
+                        });
+                        return
+                    }
+                } else if (this.curFileTypeInfo.mgdOutputTargetType=='ORG'){
+                    if (!this.selectDeptNameFlg) {
+                        this.errorInfo = true
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象部署が未選択です、部署を指定して下さい。'
+                        });
+                        return
+                    }
+                }
+
+
+                let date = this.ledgerParamVO.txtTermFrom
+                let date1 = this.ledgerParamVO.txtTermTo
+
+                // 対象期間（開始日）チェック
+                if (this.restType == 2 || this.restType == 3) {
+                    if (date == "" ||  date == null) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象期間（開始日）が未指定です、期間（開始日）を指定してください。'
+                        });
+                        return
+                    }
+                    // 対象期間（終了日）チェック
+                    if (date1 == "" ||  date1 == null) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象期間（終了日）が未指定です、期間（終了日）を指定してください。'
+                        });
+                        return
+                    }
+
+                    if(date > date1) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '対象期間終了日は対象期間開始日より後の日付を指定してください。'
+                        });
+                        return
+                    }
+                }
+                return true;
             },
         }
     })

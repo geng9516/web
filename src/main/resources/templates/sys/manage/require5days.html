@@ -609,12 +609,10 @@
                         }
                     })
 
-                    // const addNumDeci = Vue.filter('addNumDeci')
-                    //
                     for (var i=0;i < b.length;i++){
                         console.log("b[i].taKijyunbi5")
                         console.log(b[i].taKijyunbi5)
-                        if (b[i].taFuyodays4 < '10' && b[i].tpfNusedaysAjdust13 == null&&　b[i].tpfNmustdaysFix14 == null){
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 == null &&　b[i].tpfNmustdaysFix14 == null){
                             b[i].basedDay = "-"
                             b[i].checkPeriod = "-"
                             b[i].takenDays = "-"
