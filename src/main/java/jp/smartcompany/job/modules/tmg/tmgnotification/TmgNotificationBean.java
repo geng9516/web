@@ -538,7 +538,14 @@ public class TmgNotificationBean {
         String GsStartDate =iMastGenericDetailService.selectDate(psDBbean.getCustID(), psDBbean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)),TmgUtil.getSysdate()).getStartDate();
         referList = new TmgReferList(psDBbean, "TmgNotification",GsStartDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 false, false, false, false);
+        String sApprovalLevelName=referList.getApprovalLevelName(TmgUtil.getSysdate(), TmgUtil.getSysdate(), psDBbean.getTargetUser());
         EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBbean.getCustID(), psDBbean.getCompCode(), psDBbean.getTargetUser(), psDBbean.getLanguage(), referList.getTargetSec());
+        if(sApprovalLevelName!=null){
+            employeeDetailVo.setSApprovalLevelName(sApprovalLevelName);
+        }else{
+            employeeDetailVo.setSApprovalLevelName("");
+        }
+
         return employeeDetailVo;
     }
 
@@ -1219,7 +1226,7 @@ public class TmgNotificationBean {
         tncDo.setTntfNfri(Long.parseLong(param.getFri()));
         tncDo.setTntfNsat(Long.parseLong(param.getSat()));
         tncDo.setTntfNsun(Long.parseLong(param.getSun()));
-        if (StrUtil.hasEmpty(param.getNoreserved())) {
+        if (!StrUtil.hasEmpty(param.getNoreserved()) && param.getNoreserved().equals("0")) {
             tncDo.setTntfNdayofweek(iMastGenericDetailService.toDayofWeek(param.getMon(),
                     param.getTue(),
                     param.getWed(),

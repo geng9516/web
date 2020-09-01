@@ -204,6 +204,7 @@
                                     <Row type="flex" justify="start">
                                         <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
                                             class="datepicker-single" v-model="restApply._dateList"
+                                                     format="yyyy/MM/dd" @on-blur=""
                                             @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
                                     </Row>
                                 </section>
@@ -227,7 +228,7 @@
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日数</p>
-                                    <i-input placeholder="日数" v-model="restApply.txtAddDate" class="mb15"><span slot="append">日</span></i-input>
+                                    <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></i-input-number>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
@@ -294,7 +295,7 @@
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
-                                        <i-input placeholder="人数" v-model="restApply.txtTargetNumber" class="mb15"><span slot="append">人</span></i-input>
+                                        <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></i-input-number>
                                     </section>
 
                                     <!-- 有生年月日-->
@@ -334,7 +335,7 @@
                             </i-col>
                         </Row>
                         <Divider size="small" orientation="left">申請事由</Divider>
-                        <i-input v-model="restApply.owncomment" class="tl" :maxlength="100" type="textarea" :autosize="{ minRows: 5 }" placeholder="文字の長さは１００位以内になっております。"></i-input>
+                        <i-input v-model="restApply.owncomment" class="tl" :maxlength="100" type="textarea" :autosize="{ minRows: 5 }" placeholder="申請事由は100桁以内で入力してください。"></i-input>
                         <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply()" icon="md-create" :loading="loading">申請
                         </i-button>
                         <i-button v-show="this.isReApplyIng" class="btn width75 mr15"  style="display: inline-block"  type="primary" ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
@@ -636,6 +637,36 @@
                         this.errorMsg = '時刻をHH:MM形式で入力してください'
                         return
                     }
+                    if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
+                        this.errorInfo = true
+                        this.errorMsg = '生年月日を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
+                        this.errorInfo = true
+                        this.errorMsg = '起算日を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
+                        this.errorInfo = true
+                        this.errorMsg = '続柄を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
+                        this.errorInfo = true
+                        this.errorMsg = '傷病名を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
+                        this.errorInfo = true
+                        this.errorMsg = '対象の人数を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+                        this.errorInfo = true
+                        this.errorMsg = '氏名を入力してください。'
+                        return
+                    }
                     this.deleteFiles = [...new Set(this.deleteFiles)]
                     try {
                         this.loading = true
@@ -820,14 +851,14 @@
                     let checkPassed = true
                      if (this.uploadFiles.length >= 5) {
                         this.$Notice.warning({
-                        title: 'Up to five files can be uploaded.'
+                        title: '添付可能なファイル数が上限（5個）を超えました。'
                         })
                         checkPassed = false
                     }
                     if (files.size / 1024 > 500) {
                         this.$Notice.warning({
                             title: 'Exceeding file size limit',
-                            desc: 'File ' + files.name + ' is too large, no more than 500K.'
+                            desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
                         })
                         checkPassed = false
                     }

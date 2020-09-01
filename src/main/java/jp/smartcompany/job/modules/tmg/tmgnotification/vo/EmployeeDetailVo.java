@@ -20,4 +20,6 @@ public class EmployeeDetailVo {
     private String worktype;// 2 種別名称
 
     private String post;// 3 役職
+
+    private String sApprovalLevelName; //ログインユーザー決裁レベル(名称)返却
 }

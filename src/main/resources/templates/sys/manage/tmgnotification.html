@@ -186,9 +186,9 @@
           <form-item label="申請区分">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCtypeName }}</span>
           </form-item>
-          <form-item label="最終決裁レベル">
-            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>
-          </form-item>
+<!--          <form-item label="最終決裁レベル">-->
+<!--            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>-->
+<!--          </form-item>-->
           <form-item label="対象期間-日">
             <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyDayShow(detailsData) }}</span>
           </form-item>
@@ -312,6 +312,12 @@
                   <div class="person-info">{{ applyEmployPersonalInfo.worktype }}</div>
                 </i-col>
               </Row>
+              <Row :gutter="10">
+                <i-col span="8">
+                  <div class="label" style="padding:1px 0">あなたの決裁レベル</div>
+                  <div class="person-info">{{ applyEmployPersonalInfo.sapprovalLevelName }}</div>
+                </i-col>
+              </Row>
               <div v-for="(item, i) of applyEmployRestInfo" :key="i">
                 <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
                 <Row class="ft13 mb5 mt10">
@@ -356,6 +362,9 @@
                   </option-group>
                 </i-select>
               </form-item>
+              <form-item label="最終決裁レベル">
+                <span  class="mb5 input-like-span" >{{approvalLevel}}</span>
+              </form-item>
               <form-item label="対象期間" v-show="!selectedRestInfo.transfer">
                 <span class="input-like-span">
                   <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
@@ -380,7 +389,7 @@
               </form-item>
 
               <!-- 有起算日-->
-              <form-item label="起算日" 　v-show="selectedRestInfo.period">
+              <form-item label="起算日" 　v-show="selectedRestInfo.period" >
                 <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
                   placeholder="日付け" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
                 </date-picker>
@@ -388,8 +397,7 @@
 
               <!-- 有加算日-->
               <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
-                <i-input placeholder="日数" v-model="restApply.txtAddDate" class="mb5"><span slot="append">日</span>
-                </i-input>
+                <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></i-input-number>
               </form-item>
 
               <!-- 是小时单位的 時間帯 -->
@@ -408,7 +416,7 @@
               </form-item>
 
               <!-- 始業・終業-->
-              <form-item label="始業・終業" 　v-show="selectedRestInfo.workTime">
+              <form-item label="始業・終業" 　v-show="selectedRestInfo.workTime" >
                 <Row>
                   <i-col span="11">
                     <i-input placeholder="始業後" v-model="restApply.timeOpen" v-show="selectedRestInfo.workTime"><span
@@ -442,19 +450,18 @@
               </form-item>
 
               <!-- 是有氏名的-->
-              <form-item label="氏名" v-show="selectedRestInfo.name">
-                <i-input class="mb5" v-model="restApply.txtName" />
+              <form-item label="氏名" v-show="selectedRestInfo.name" >
+                <i-input class="mb5 tl" v-model="restApply.txtName" />
               </form-item>
 
               <!-- 是有続柄的-->
-              <form-item label="続柄" v-show="selectedRestInfo.relation">
+              <form-item label="続柄" v-show="selectedRestInfo.relation" >
                 <i-input class="mb5" v-model="restApply.txtRelation" />
               </form-item>
 
               <!-- 是有対象の人数的-->
-              <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber">
-                <i-input placeholder="人数" v-model="restApply.txtTargetNumber" class="mb5"><span slot="append">人</span>
-                </i-input>
+              <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber" >
+                <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></i-input-number>
               </form-item>
 
               <!-- 有生年月日-->
@@ -465,7 +472,7 @@
 
               <!-- 有伤病-->
               <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
-                <i-input v-model="restApply.txtSickName" />
+                <i-input v-model="restApply.txtSickName" class="tl"/>
               </form-item>
 
               <form-item label="申請事由等">
@@ -512,6 +519,7 @@
       el: '.restapplyconfirm-warp',
       data() {
         return {
+          approvalLevel:'',
           hasAuthority:false,
           hasPassedTimeCheck: true,
           agencyApplyShow: false,
@@ -1135,7 +1143,8 @@
             return
           }
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
-          console.log(this.selectedRestInfo)
+          this.approvalLevel=this.flatRestTypeList.find(t => t.ntfId === e).sparechar2
+          console.log(this.approvalLevel)
         },
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
@@ -1222,6 +1231,36 @@
           if (!this.hasPassedTimeCheck) {
             this.errorInfo = true
             this.errorMsg = '時刻をHH:MM形式で入力してください'
+            return
+          }
+          if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
+            this.errorInfo = true
+            this.errorMsg = '生年月日を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
+            this.errorInfo = true
+            this.errorMsg = '起算日を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
+            this.errorInfo = true
+            this.errorMsg = '続柄を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
+            this.errorInfo = true
+            this.errorMsg = '傷病名を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
+            this.errorInfo = true
+            this.errorMsg = '対象の人数を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+            this.errorInfo = true
+            this.errorMsg = '氏名を入力してください。'
             return
           }
           this.deleteFiles = [...new Set(this.deleteFiles)]

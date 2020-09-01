@@ -343,4 +343,29 @@ public class ScheduleController {
         return tmgScheduleBean.selectScheduleDateList(psDBBean);
     }
 
+    /**
+     * 「編集ボタン」の使用可否設定を取得します
+     *
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("isEditableSchedule")
+    @ResponseBody
+    public boolean isEditableSchedule(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgScheduleBean.isEditableSchedule(psDBBean);
+    }
+
+    /**
+     * 編集権限を制御する
+     *
+     * @param baseDate
+     * @param psDBBean
+     * @return
+     */
+    @GetMapping("isEditable")
+    @ResponseBody
+    public boolean isEditable(@RequestParam("baseDate") String baseDate, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return tmgScheduleBean.isEditable(psDBBean, baseDate);
+    }
+
 }

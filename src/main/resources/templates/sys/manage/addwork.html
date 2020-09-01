@@ -1219,12 +1219,12 @@
                 //差戻
                 async updateRemandsStatus() {
                     this.$Modal.confirm({
-                        title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n※今回、入力した内容は、承認者コメントのみ保存されます',
+                        title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n'+'※今回、入力した内容は、承認者コメントのみ保存されます',
                         width: 490,
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
-                            this.updateDailyLoading = true
+
                             this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
                             this.tmgResultsDto.txtAction = 'ACT_REMANDS'
                             this.tmgResultsDto.workingId = this.workingId
@@ -1240,6 +1240,7 @@
                             }
                             this.tmgResultsDto.targetEmp=this.query.txtTmgReferListTreeViewPermTargetEmp
                             try{
+                                this.updateDailyLoading = true
                                 const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                                 this.updateDailyLoading = false
                                 this.isShow = false
