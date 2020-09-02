@@ -1,11 +1,234 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
 <head th:replace="layout/header::common_header(title='mobile vpply',cssPaths='/pages/mobile.min.css')"></head>
+
 <body>
-<div th:replace="layout/loadingBar::loadingBar"></div>
-<main class="content login-page">
-  scheduleconfirm page
-</main>
-<div th:replace="layout/mobileHeader::header"></div>
+  <style>
+    .title-timerange {
+      font-size: 14px
+    }
+
+    @media (max-height: 600px) {
+      .title-timerange {
+        font-size: 12px
+      }
+    }
+  </style>
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <main class="content mobile-warp">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>予定確認<span class="title-timerange">{{ yyyyMMdd ? `（${yyyyMMdd})` : ''}}</span>
+          </h1>
+        </div>
+      </div>
+      <div class="mt10 tr">
+        <i-button style="display: inline-block;" type="primary" size="small" ghost class="mr15" @click="preMonth"
+          :disabled="!selectDisabled || !preMonthDisable">
+          <Icon type="ios-arrow-back"></Icon>
+          前月
+        </i-button>
+        <i-button style="display: inline-block;" type="primary" size="small" ghost @click="nextMonth"
+          :disabled="!selectDisabled || !nextMonthDisable">
+          翌月
+          <Icon type="ios-arrow-forward"></Icon>
+        </i-button>
+      </div>
+    </div>
+    <div class="content_body" style="position: relative">
+      <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns" border :disabled-hover="true"
+        :data="scheduleDataDTOList" :loading="loading">
+        <template slot-scope="{ row }" slot="week">
+          <span :class="dayRed(row)">{{ row.tda_nmmday }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="intDay">
+          <span :class="dayRed(row)">{{ row.tda_nmmdd }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="workDivision">
+          <span :class="dayRed(row)">{{ row.tda_cworkingid_mm }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="workFar">
+          <span>{{ row.tda_cbusinesstripid_mm=='なし'?'':row.tda_cbusinesstripid_mm }}</span>
+        </template>
+
+        <template slot-scope="{ row}" slot="workStartFinal">
+          <span>{{row.tda_nopen_p }}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="workEndFinal">
+          <span>{{ row.tda_nclose_p}}</span>
+        </template>
+
+        <template slot-scope="{ row }" slot="restTimeList">
+          <span
+            v-for="(item,i) of row.timerange_arr">{{i==0?"":" / "}}{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}
+          </span>
+        </template>
+
+        <template slot-scope="{ row }" slot="remark">
+          <span>{{ row.tda_ccomment_p }}</span>
+        </template>
+      </i-table>
+    </div>
+
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/mobileHeader::header"></div>
+
 </body>
+<script type="text/babel" th:inline="javascript">
+  new Vue({
+    el: '.mobile-warp',
+    data() {
+      return {
+        hatuReiName: '',
+        hatuResTimeRange: '',
+        today: Utils.formatDate(new Date(), 'YYYY/MM/DD'),
+        preMonthDisable: false,
+        nextMonthDisable: false,
+        scheduleDataDTOList: [],
+        yyyyMMdd: '',
+        paidHolidayVO: {},
+        selectScheduleInfo: {},
+        selectDisabled: true,
+        loading: false,　       //ローディングアクション
+        index: 0,
+        contentScrollTop: 0,
+        kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
+        loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
+        sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
+        query: {
+          employeeId: [[${ session.psSession.loginEmployee }]],　 //組織ツリーで選択した職員番号
+          psSite: Utils.getUrlParam(location.href, 'psSite'),
+          psApp: Utils.getUrlParam(location.href, 'psApp'),
+          txtBaseDate: '',
+          txtEndDate: '',
+        }
+      }
+    },
+    async mounted() {
+      console.log([[${ session }]])
+      this.getSelectScheduleInfo()
+      window.addEventListener('scroll', this.handleScroll, { passive: true })
+    },
+    beforeDestroy() {
+      window.removeEventListener('scroll', this.handleScroll, { passive: true })
+    },
+    computed: {
+      tableHeadFixed() {
+        if (this.contentScrollTop > 122) return true
+        else return false
+      },
+      columns() {
+        return [
+          {
+            title: '曜日',
+            slot: 'week',
+            width: 35,
+            align: 'center'
+          },
+          {
+            title: '日',
+            slot: 'intDay',
+            width: 50,
+            align: 'center'
+          },
+          {
+            title: '区分',
+            width: 70,
+            slot: 'workDivision',
+            align: 'center'
+          },
+          {
+            title: '始業',
+            align: 'center',
+            width: 50,
+            slot: 'workStartFinal'
+          },
+          {
+            title: '終業',
+            width: 50,
+            slot: 'workEndFinal',
+            align: 'center'
+          },
+          {
+            title: '休憩',
+            className: 'urgent change-line',
+            minWidth: 90,
+            slot: 'restTimeList',
+            align: 'center'
+          },
+        ]
+      }
+    },
+    methods: {
+      async getSelectScheduleInfo() {
+        this.loading = true
+        try {
+          const { data } = await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
+          this.selectScheduleInfo = data
+          this.paidHolidayVO = this.selectScheduleInfo.paidHolidayVO
+          this.scheduleDataDTOList = this.selectScheduleInfo.scheduleDataDTOList
+          this.yyyyMMdd = this.selectScheduleInfo.period
+
+          if (this.selectScheduleInfo.nextStart == '' || this.selectScheduleInfo.nextEnd == '') {
+            this.nextMonthDisable = false
+          } else {
+            this.nextMonthDisable = true
+          }
+          if (this.selectScheduleInfo.preStart == '' || this.selectScheduleInfo.preEnd == '') {
+            this.preMonthDisable = false
+          } else {
+            this.preMonthDisable = true
+          }
+        } catch (error) {
+          return
+        } finally {
+          this.loading = false
+        }
+      },
+      async preMonth() {
+        this.query.txtBaseDate = this.selectScheduleInfo.preStart
+        this.query.txtEndDate = this.selectScheduleInfo.preEnd
+        await this.getSelectScheduleInfo()
+      },
+      async nextMonth() {
+        this.query.txtBaseDate = this.selectScheduleInfo.nextStart
+        this.query.txtEndDate = this.selectScheduleInfo.nextEnd
+        await this.getSelectScheduleInfo()
+      },
+
+
+      rowClass(row) {
+        // 表格变色
+        if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
+          return ''
+        }
+        return 'sat'
+      },
+      dayRed(e) {
+        console.log(e)
+        const dayOfWeek = e.holflgCalendar
+        if (!dayOfWeek) {
+          return
+        }
+        if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+          return 'blue'
+        }
+        if (e.tda_ccustomerid == this.today) {
+          return 'brown'
+        }
+      },
+      handleScroll: Throttle(function (e) {
+        this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+      }, 50)
+    }
+  })
+</script>
+
 </html>
