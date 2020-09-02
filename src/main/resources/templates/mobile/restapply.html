@@ -419,6 +419,8 @@
                   }
                   this.errorInfo = false
                   this.$refs.datepicker.handleClear()
+                  this.$refs.datepicker1.handleClear()
+                  this.$refs.datepicker2.handleClear()
                   this.uploadFiles = []
                   this.hasPassedTimeCheck = true
                   this.selectedRestInfo = {}
@@ -492,6 +494,23 @@
                   this.errorMsg = '期間を選んでください。'
                   return
                }
+               if (this.restApply.begin || this.restApply.end) {
+                  if (this.restApply.begin && !this.restApply.end) {
+                     this.errorInfo = true
+                     this.errorMsg = '開始期間を入力してください'
+                     return
+                  }
+                  if (!this.restApply.begin && this.restApply.end) {
+                     this.errorInfo = true
+                     this.errorMsg = '終了期間を入力してください。'
+                     return
+                  }
+                  if (this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) >= Utils.timeToMinute(this.restApply.end)) {
+                     this.errorInfo = true
+                     this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+                     return
+                  }
+               }
                if (this.restApply.timezoneOpen || this.restApply.timezoneClose) {
                   if (this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
                      this.errorInfo = true
@@ -561,6 +580,8 @@
                      _dateList: this.timerangeType === 2 ? ['', ''] : ''
                   }
                   this.$refs.datepicker.handleClear()
+                  this.$refs.datepicker1.handleClear()
+                  this.$refs.datepicker2.handleClear()
                   this.rotate = !this.rotate
                   this.isReApplyIng = false
                   await this.getApplyHistory()
