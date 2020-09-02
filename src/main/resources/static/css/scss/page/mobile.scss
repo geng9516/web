@@ -230,3 +230,14 @@
 .mobile-nav.active {
   clip-path: circle(100% at 90% 43.4%);
 }
+
+.modal-left-close-btn {
+  display: inline-block;
+  position: absolute;
+  top: -2px;
+  left: 0;
+  height: 50px;
+  width: 50px;
+  color: rgb(153, 153, 153);
+  font-size: 32px;
+}
