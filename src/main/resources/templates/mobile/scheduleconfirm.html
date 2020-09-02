@@ -65,9 +65,12 @@
         </template>
 
         <template slot-scope="{ row }" slot="restTimeList">
-          <span
-            v-for="(item,i) of row.timerange_arr">{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}
-          </span>
+          <Tooltip  title="休憩時間" trigger="click"　theme="light" placement="left" transfer>
+            <i-button type="primary" ghost icon="md-alarm" size="small"></i-button>
+            <div slot="content">
+                <div class="mt2" v-for="(item,i) of row.timerange_arr">{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}</div>
+            </div>
+          </Tooltip >
         </template>
 
         <template slot-scope="{ row }" slot="remark">
@@ -136,16 +139,14 @@
             title: '日',
             slot: 'intDay',
             minWidth: 50,
-            maxWidth: 70,
             align: 'center'
           },
-          // {
-          //   title: '区分',
-          //   minWidth: 60,
-          //   maxWidth: 70,
-          //   slot: 'workDivision',
-          //   align: 'center'
-          // },
+          {
+            title: '区分',
+            minWidth: 60,
+            slot: 'workDivision',
+            align: 'center'
+          },
           {
             title: '始業',
             align: 'center',
@@ -163,7 +164,7 @@
           {
             title: '休憩',
             className: 'urgent change-line',
-            minWidth: 90,
+            width: 60,
             slot: 'restTimeList',
             align: 'center'
           },

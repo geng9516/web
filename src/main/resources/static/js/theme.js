@@ -63,6 +63,8 @@ var THEME_CONFIG  = {
     // checkbox
     '--checkbox-border': 'var(--orange25)',
     '--checkbox-bg': 'var(--orange75)',
+    // mobile login
+    '--mobile-login-btn': 'linear-gradient(90deg, rgba(255,157,93, .7), rgb(255,102,0, .7))',
 
   },
   blue: {
@@ -128,6 +130,8 @@ var THEME_CONFIG  = {
     // checkbox
     '--checkbox-border': 'var(--primary)',
     '--checkbox-bg': 'var(--primary)',
+    // mobile login
+    '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
   }
 }
 
