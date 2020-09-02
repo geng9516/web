@@ -1512,7 +1512,7 @@
     <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultMap="selectScheduleDateListMap">
         select tda_dyyyymm ,
                flag
-              from (select distinct (to_char(d.tda_dyyyymm, ${formatter})) as
+              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as
                     tda_dyyyymm,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
                   from tmg_daily d
                  where d.tda_ccompanyid = #{compCode}
