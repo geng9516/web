@@ -224,23 +224,19 @@
                     </i-table>
 
 
-                    <Row>
-                        <i-col class="label tc" span="8">本人コメント</i-col>
-                        <i-col span="16">
-                            <i-input disabled readonly text-align="center;" type="textarea"
-                                     v-model="dailyEdit.tdaCowncommentR"></i-input>
-                        </i-col>
-                    </Row>
-                    <Row class="mb5">
-                        <i-col class="label tc" span="8">承認者コメント</i-col>
-                        <i-col span="16">
-                            <span v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                            <i-input text-align="center;" type="textarea" v-if="!bFixed"
-                                     v-model="dailyEdit.tdaCbosscommentR" ></i-input>
-                            <i-input readonly text-align="center;" type="textarea"
-                                     v-else v-model="dailyEdit.tdaCbosscommentR"></i-input>
-                        </i-col>
-                    </Row>
+                    <div class="mt5 no-border-radius" style="display: flex; align-items: stretch;">
+                        <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">本人コメント</span>
+                        <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="!bFixed">
+                        </i-input>
+                        <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
+                      </div>
+            
+                      <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+                        <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">承認者コメント</span>
+                        <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="!bApproved">
+                        </i-input>
+                        <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                      </div>
                 </div>
 
 

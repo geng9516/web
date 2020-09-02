@@ -4,84 +4,6 @@
 <head th:replace="layout/header::common_header(title='mobile login',cssPaths='/pages/mobile.min.css')"></head>
 
 <body>
-  <style>
-    .menu {
-      /* --color: var(--login-svg-fill); */
-      --color: white;
-      width: 45px;
-      outline: none;
-      position: relative;
-      border: none;
-      cursor: pointer;
-      z-index: 2;
-      -webkit-appearence: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .menu svg {
-      width: 49px;
-      stroke: var(--color);
-      stroke-width: 4px;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-      fill: none;
-      display: block;
-    }
-
-    .menu svg path {
-      transition: stroke-dasharray var(--duration, 0.85s) var(--easing, ease) var(--delay, 0s), stroke-dashoffset var(--duration, 0.85s) var(--easing, ease) var(--delay, 0s);
-      stroke-dasharray: var(--array-1, 26px) var(--array-2, 100px);
-      stroke-dashoffset: var(--offset, 126px);
-      transform: translateZ(0);
-    }
-
-    .menu svg path:nth-child(2) {
-      --duration: .7s;
-      --easing: ease-in;
-      --offset: 100px;
-      --array-2: 74px;
-    }
-
-    .menu svg path:nth-child(3) {
-      --offset: 133px;
-      --array-2: 107px;
-    }
-
-    .menu.active svg path {
-      --offset: 57px;
-    }
-
-    .menu.active svg path:nth-child(1),
-    .menu.active svg path:nth-child(3) {
-      --delay: .15s;
-      --easing: cubic-bezier(.2, .4, .2, 1.1);
-    }
-
-    .menu.active svg path:nth-child(2) {
-      --duration: .4s;
-      --offset: 2px;
-      --array-1: 1px;
-    }
-
-    .menu.active svg path:nth-child(3) {
-      --offset: 58px;
-    }
-
-    .mobile-nav {
-      position: absolute;
-      z-index: 1;
-      width: 100vw;
-      clip-path: circle(19px at 94.6% 3.8%);
-      /* background: var(--login-right-part-bg); */
-      background:var(--table-head);
-      height: 100vh;
-      transition: clip-path .8s cubic-bezier(0.86, 0, 0.07, 1);
-    }
-
-    .mobile-nav.active {
-      clip-path: circle(100% at 94% 38.4%);
-    }
-  </style>
   <div th:replace="layout/loadingBar::loadingBar"></div>
   <main class="content mobile-warp">
     <div class="content_head">
@@ -104,11 +26,11 @@
       <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" border :disabled-hover="true"
         :data="tableData" :loading="loading">
         <template slot-scope="{ row }" slot="week">
-          <span :class="dayRed(row,0)" style="text-decoration: underline">{{ row.TDA_DYYYYMMDD_DY }}</span>
+          <span :class="dayRed(row,0)">{{ row.TDA_DYYYYMMDD_DY }}</span>
         </template>
 
         <template slot-scope="{ row }" slot="intDay">
-          <span :class="dayRed(row,0)" style="text-decoration: underline">{{ row.TDA_DYYYYMMDD_DD }}</span>
+          <span :class="dayRed(row,0)">{{ row.TDA_DYYYYMMDD_DD }}</span>
         </template>
 
 
@@ -124,10 +46,199 @@
         </template>
 
         <template slot-scope="{ row }" slot="action">
-          <i-button type="primary" ghost size="small" long>詳細</i-button>
+          <i-button type="primary" ghost size="small" long @click="showDay(row.TDA_DYYYYMMDD)">詳細</i-button>
         </template>
       </i-table>
     </div>
+
+    <!--日次就業実績-->
+    <Drawer class="tc" width="100" v-model="isShow" placement="left" :closable="false">
+      <template slot="header">
+        <i-button class="modal-left-close-btn" type="text" @click="handleClose()" icon="ios-close">
+        </i-button>
+        <p style="color: var(--grey); font-weight: bold;">
+          {{ title }}
+        </p>
+      </template>
+      <div style="position: relative">
+        <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
+        <div class="mb15 tr">
+          <i-button style="display: inline-block;" type="primary" ghost class="mr15" v-if="!bFixed" @click="updateInp">
+            コメントのみ登録</i-button>
+          <i-button style="display: inline-block;" type="primary" ghost v-if="!bFixed" @click="updateDaily"
+            :loading="updateDailyLoading">登録</i-button>
+        </div>
+        <div class="titlenorm mb10">
+          <Icon type="logo-buffer"></Icon>
+          就業実績
+        </div>
+        <div style="position: relative;">
+          <Row>
+            <i-col span="8" class="label tc">就業区分</i-col>
+            <i-col span="16" class="no-border-radius">
+              <i-select v-model="workingId" clearable ref="select1" class="mr30" @on-change="changeWorkingID"
+                v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
+                <i-option v-for="(item, index) of workingIdList" :key="index" :label="item.mgdCgenericdetaildesc"
+                  　:value="item.mgdCmastercode">
+                </i-option>
+              </i-select>
+              <p v-else class="tc">{{dailyEdit.tdaCworkingidRName}}</p>
+            </i-col>
+          </Row>
+          <Row class="mb5">
+            <i-col span="8" class="label tc">出張</i-col>
+            <i-col span="16" class="no-border-radius" v-if="!bDisable">
+              <i-select v-model="businessTrip" clearable ref="select2" class="mr30" @on-change=""
+                v-if="(!bHoliday && !bFixed)">
+                <i-option v-for="(item, index) of businessTripList" :key="index" :label="item.mgdCgenericdetaildesc"
+                  　:value="item.mgdCmastercode">
+                </i-option>
+              </i-select>
+              <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
+            </i-col>
+            <i-col span="8" class="no-border-radius" v-else>
+              <i-select v-model="businessTrip" class="mr30" @on-change="" disabled v-if="(!bHoliday && !bFixed)">
+                <i-option v-for="(item, index) of businessTripList" :key="index" :label="item.mgdCgenericdetaildesc"
+                  　:value="item.mgdCmastercode">
+                </i-option>
+              </i-select>
+              <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
+            </i-col>
+          </Row>
+          <i-table :columns="columnsWork" :data="workData">
+            <template slot-scope="{ row, index }" slot="workStart">
+              <i-input v-model="workData[index].workStart" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"
+                :disabled="workTimeDisable" class="tc"
+                @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
+              <span v-else>{{ row.workStart | toTime }}</span>
+            </template>
+            <template slot-scope="{ row , index}" slot="workEnd">
+              <i-input v-model="workData[index].workEnd" v-if="row.isInput && !bFixed && isEdiTableResult4Inp"
+                :disabled="workTimeDisable" class="tc"
+                @on-blur="handleInputChange(index,  workData[index],'workEnd', $event.target)"></i-input>
+              <span v-else>{{ row.workEnd | toTime }}</span>
+            </template>
+          </i-table>
+
+          <div class="mt5 no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">本人コメント</span>
+            <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCowncommentR"
+              type="textarea" v-if="!bFixed">
+            </i-input>
+            <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;"
+              v-if="bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
+          </div>
+
+          <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+            <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">承認者コメント</span>
+            <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCbosscommentR"
+              type="textarea" v-if="!bApproved">
+            </i-input>
+            <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;"
+              v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+          </div>
+        </div>
+
+
+        <!-- 非勤務 -->
+        <div class="titlenorm mb10">
+          <Icon type="logo-buffer"></Icon>
+          非勤務
+        </div>
+        <div class="mb10 tr" v-if="!bHoliday && !bFixed">
+          <i-select style="display: inline-block;" v-model="categoryNonduty" class="mr15 width50" ref="select3"
+            clearable v-if="!bDisable">
+            <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
+              　:value="item.itemCode">
+            </i-option>
+          </i-select>
+          <i-select style="display: inline-block;" v-model="categoryNonduty" class="mr15 width50" disabled
+            v-if="bDisable">
+            <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
+              　:value="item.itemCode">
+            </i-option>
+          </i-select>
+          <i-button style="display: inline-block;" type="primary" ghost @click="addNotWork" v-if="!bDisable">追加
+          </i-button>
+          <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
+        </div>
+
+        <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 long-table" no-data-text="">
+          <template slot-scope="{ row, index }" slot="tdadNopen">
+            <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed"
+              @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
+            <span v-else>{{  row.tdadNopen | toTime  }}</span>
+          </template>
+
+          <template slot-scope="{ row, index }" slot="tdadNclose">
+            <i-input v-model="detailNonDutyVOList[index].tdadNclose" v-if="!bFixed "
+              @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNclose', $event.target)"></i-input>
+            <span v-else>{{ row.tdadNclose | toTime }}</span>
+          </template>
+
+          <template slot-scope="{ row ,index}" slot="tdadCsparechar1">
+            <i-input v-model="detailNonDutyVOList[index].tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }"
+              v-if="row.tdadCnotworkid !== 'TMG_ITEMS|ResultRest' && !bFixed "></i-input>
+            <span v-else>{{ row.tdadCsparechar1 | toTime }}</span>
+          </template>
+
+          <template slot-scope="{ row }" slot="tdadNdeleteflg" v-if="!bFixed">
+            <i-button type="error" ghost size="small" class="width100" @click="delNotWork(row)">削除</i-button>
+          </template>
+        </i-table>
+
+        <div v-if="!isDiscretion">
+          <!-- 超過勤務 -->
+          <div class="titlenorm mb10">
+            <Icon type="logo-buffer"></Icon>
+            超過勤務
+          </div>
+          <div class="mb10 tr" v-if="!bHoliday && !bFixed">
+            <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
+              ref="select4" clearable v-if="!bDisable">
+              <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
+                　:value="item.itemCode">
+              </i-option>
+            </i-select>
+            <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
+              disabled v-if="bDisable">
+              <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
+                　:value="item.itemCode">
+              </i-option>
+            </i-select>
+            <i-button style="display: inline-block;" type="primary" ghost @click="addOverWork" v-if="!bDisable">追加
+            </i-button>
+            <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
+          </div>
+
+          <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 long-table" no-data-text="">
+            <template slot-scope="{ row ,index }" slot="tdadNopen">
+              <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed"
+                @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
+              <span v-else>{{ row.tdadNopen | toTime }}</span>
+            </template>
+
+            <template slot-scope="{ row ,index}" slot="tdadNclose">
+              <i-input v-model="detailOverhoursVOList[index].tdadNclose" v-if=" !bFixed"
+                @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNclose', $event.target)"></i-input>
+              <span v-else>{{ row.tdadNclose | toTime }}</span>
+            </template>
+
+            <template slot-scope="{ row ,index}" slot="tdadCsparechar1">
+              <i-input v-model="detailOverhoursVOList[index].tdadCsparechar1" type="textarea" :autosize="{ maxRows: 3 }"
+                v-if="!bFixed"></i-input>
+              <span v-else>{{ row.tdadCsparechar1}}</span>
+            </template>
+
+            <template slot-scope="{ row ,index}" slot="tdadNdeleteflg" v-if="!bFixed">
+              <i-button type="error" ghost size="small" class="width100" @click="delOverWork(row)">削除</i-button>
+            </template>
+          </i-table>
+        </div>
+        <Spin size="large" fix v-if="dailyloading"></Spin>
+      </div>
+    </Drawer>
+    <back-top></back-top>
   </main>
   <div th:replace="layout/mobileHeader::header"></div>
   <script type="text/babel" th:inline="javascript">
@@ -136,7 +247,12 @@
       data() {
         return {
           curDate: new Date(),
+          hasPassedTimeCheck: false,
+          monthlyLoading: false,
+          dailyloading: false,
+          selectDisabled: false,   　//年月選択可否制御
           loading: false,
+          updateDailyLoading: false,
           dispMonthlyList: [],       //年月リスト
           query: {
             txtAction: 'ACT_DISP_RMONTHLY',
@@ -144,8 +260,8 @@
             txtDYYYYMMDD: '',
             today: '',
             selHealthStatus: '',
-            psSite: Utils.getUrlParam(location.href, 'psSite'),
-            psApp: Utils.getUrlParam(location.href, 'psApp')
+            psSite: Utils.getUrlParam(location.href, 'psSite') || 'TMG_INP',
+            psApp: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults'
           },
           columns: [
             {
@@ -178,6 +294,7 @@
               align: 'center'
             }
           ],
+          // data目前用的线上某一份
           tableData: [{
             "TDA_NOPEN_N": "9:30",
             "TDA_CSTATUSFLG": "TMG_DATASTATUS|2",
@@ -520,6 +637,142 @@
             "CCOMMENT": " ",
             "TDA_CWORKINGID_R": "TMG_WORK|000"
           }],
+          title: '',
+          errorFlag: false,
+          errorMsg: '',
+          isShow: false,
+          workingId: '',
+          today: '',
+          workingIdList: [],
+          businessTrip: '',
+          businessTripList: [],
+          categoryNonduty: '',
+          categoryNondutyName: '',
+          categoryNondutyList: [],
+          categoryOverhours: '',
+          categoryOverhoursName: '',
+          categoryOverhoursList: [],
+          workTimeDisable: false,
+          columnsWork: [
+            {
+              title: '勤務時間',
+              align: 'center',
+              key: 'workTime'
+            },
+            {
+              title: '始業',
+              slot: 'workStart',
+              align: 'center'
+            },
+            {
+              title: '終業',
+              slot: 'workEnd',
+              align: 'center'
+            }
+          ],
+          columnsNotWork: [
+            {
+              title: '内容',
+              align: 'center',
+              width: '80',
+              key: 'itemName'
+            },
+            {
+              title: '開始',
+              width: '60',
+              slot: 'tdadNopen',
+              align: 'center'
+            },
+            {
+              title: '終了',
+              slot: 'tdadNclose',
+              width: '60',
+              align: 'center'
+            },
+            {
+              title: '備考',
+              slot: 'tdadCsparechar1',
+              align: 'center'
+            },
+            {
+              title: '削除',
+              slot: 'tdadNdeleteflg',
+              width: '50',
+              align: 'center'
+            }
+          ],
+          detailNonDutyVOList: [],
+          columnsOverWork: [
+            {
+              title: '内容',
+              align: 'center',
+              width: '80',
+              key: 'itemName'
+            },
+            {
+              title: '開始',
+              width: '60',
+              slot: 'tdadNopen',
+              align: 'center'
+            },
+            {
+              title: '終了',
+              slot: 'tdadNclose',
+              width: '60',
+              align: 'center'
+            },
+            {
+              title: '用務内容',
+              slot: 'tdadCsparechar1',
+              align: 'center'
+            },
+            {
+              title: '状態',
+              key: 'tdadCsparechar2Name',
+              align: 'center'
+            },
+            {
+              title: '削除',
+              slot: 'tdadNdeleteflg',
+              width: '50',
+              align: 'center'
+            }
+          ],
+          detailOverhoursVOList: [],
+          dailyEdit: [],
+          notWorkType: 1,
+          dailyData: {},
+          workData0: [],
+          mgdCsparechar4VOList: [],
+          bHoliday: false,
+          bFixed: false,
+          isEdiTableResult4Inp: false,
+          isCommonDiscretionaryLabor: false,
+          isDiscretion: false,//裁量労働制
+          bOpen: false,
+          bClose: false,
+          // 承認者コメントの入力制御
+          bApproved: false,
+
+          txtDYYYYMMDD: '',
+          index: 0,
+          // 承認ステータス
+          isConfirm: '',
+          // 更新履歴の表示制御
+          isLogShow: false,
+          updateDailyLoading: false,
+          // 就業区分切替の表示制御
+          bDisable: false,
+          overHourLimit: '',
+          otDaily: '',
+          targetForOverTime: '',
+          errMsg: [],
+          bDispKinmujokyoKakunin: false,
+          bDispKenkojotaiKakunin: false,
+          bWorkChkStatus: false,
+          bHealthChkStatus: false,
+          kinmujokyoEnd: 0,
+          workData: [],
           contentScrollTop: 0
         }
       },
@@ -536,6 +789,329 @@
         },
       },
       methods: {
+        //一覧から日次実績をクリックする
+        async showDay(e) {
+          // 業登録画面表示
+          this.isShow = true
+          this.dailyloading = true
+
+          // 就業登録画面項目クリアする
+          this.categoryNonduty = ''
+          this.categoryOverhours = ''
+          this.dailyEdit = []
+          this.workData0 = []
+          this.detailNonDutyVOList = []
+          this.detailOverhoursVOList = []
+
+          this.title = '  '
+          this.query.txtDYYYYMMDD = e
+          this.txtDYYYYMMDD = e
+          this.query.txtAction = 'ACT_EDITINP_RDAILY'
+          this.bFixed = false
+          this.bHoliday = false
+          // 業登録画面データ取得
+          await this.dailyDetail()
+          this.dailyloading = false
+        },
+        // 就業登録画面情報取得・設定する
+        async dailyDetail() {
+          this.$refs.select1.clearSingleSelect()
+          this.$refs.select2.clearSingleSelect()
+          this.$refs.select3.clearSingleSelect()
+          this.$refs.select4.clearSingleSelect()
+          // 画面情報取得
+          const { data } = await this.http.get('sys/tmgResults/dailyDetail', this.query)
+
+          // 就業区分ドロップダウン
+          this.workingIdList = data.workIdList
+
+          // 出張ドロップダウン
+          this.businessTripList = data.businessTripList
+
+          // 非勤務ドロップダウン
+          this.categoryNondutyList = data.categoryNondutyList
+          this.categoryNonduty = this.categoryNondutyList[0].itemCode
+
+          // 超過勤務ドロップダウン
+          this.categoryOverhoursList = data.categoryOverhoursList
+          this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+          this.mgdCsparechar4VOList = data.mgdCsparechar4VOList
+
+          // 詳細:欠勤離籍以外
+          this.workData0 = data.dailyDetail0List
+
+          // 就業実績
+          this.dailyEdit = data.dailyEditVO
+
+          if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
+            && '' !== this.dailyEdit.tdaCmodifieruseridR
+            && '' !== this.dailyEdit.tdaDmodifieddateR
+          ) {
+            this.bApproved = true
+          } else {
+            this.bApproved = false
+          }
+
+          // 登録ボタンとコメントのみ登録ボタンの表示制御
+          this.bFixed = !data.isEditable
+          if (data.workIdList.length < 2) {
+            this.bHoliday = true
+          }
+
+          //就業入力サイトでの就業実績編集機能を使用するか判定し値を返却します
+          this.isEdiTableResult4Inp = data.isEdiTableResult4Inp
+
+          this.isCommonDiscretionaryLabor = data.isCommonDiscretionaryLabor
+          this.isDiscretion = data.isDiscretion
+
+          if (this.dailyEdit.tdaNopenR !== this.dailyEdit.tdaNopenTp) {
+            this.bOpen = true
+          } else {
+            this.bOpen = false
+          }
+          if (this.dailyEdit.tdaNcloseR !== this.dailyEdit.tdaNcloseTp) {
+            this.bClose = true
+          } else {
+            this.bClose = false
+          }
+
+          if (this.isEdiTableResult4Inp) {
+            this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNopenRHidden
+            this.dailyEdit.tdaNcloseR = this.dailyEdit.tdaNcloseRHidden
+          }
+
+          if (this.dailyEdit.tdaNopenTp === null) {
+            this.dailyEdit.tdaNopenTp = '---'
+          }
+          if (this.dailyEdit.tdaNcloseTp === null) {
+            this.dailyEdit.tdaNcloseTp = '---'
+          }
+          if (this.isDiscretion) {
+            this.dailyEdit.tdaNopenN = '---'
+            this.dailyEdit.tdaNcloseN = '---'
+          }
+
+          this.workingId = this.dailyEdit.tdaCworkingidR
+          this.businessTrip = this.dailyEdit.tdaCbusinesstripidR
+          this.title = this.dailyEdit.tdaDyyyymmddDy
+
+          if (this.dailyEdit.tdaCerrcode !== null) {
+
+            let tempErrCode = JSON.parse(this.dailyEdit.tdaCerrcode)
+            Object.keys(tempErrCode).some(e => {
+
+              if (e === 'ERRTYPE_10') {
+
+                this.$Modal.info({ title: '注意', content: tempErrCode.ERRTYPE_10[0].ERRMSG })
+                return true
+              }
+            })
+
+          }
+          this.workData = [
+            {
+              workTime: '予定時間',
+              workStart: this.dailyEdit.tdaNopenN,
+              workEnd: this.dailyEdit.tdaNcloseN,
+              cellClassName: {
+                workTime: 'sub-title'
+              }
+            },
+            {
+              workTime: '打刻',
+              workStart: this.dailyEdit.tdaNopenTp,
+              workEnd: this.dailyEdit.tdaNcloseTp,
+              cellClassName: {
+                workTime: 'sub-title'
+              }
+            },
+            {
+              workTime: '就業時間',
+              workStart: this.dailyEdit.tdaNopenR,
+              workEnd: this.dailyEdit.tdaNcloseR,
+              isInput: true,
+              cellClassName: {
+                workTime: 'sub-title'
+              }
+            }]
+          this.workData0.forEach(e => {
+            this.workData = this.workData.concat(
+              {
+                workTime: e.tdadCnotworkName,
+                workStart: e.tdadNopenHhmi,
+                workEnd: e.tdadNcloseHhmi,
+                cellClassName: {
+                  workTime: 'sub-title'
+                }
+              }
+            )
+          })
+          // 非勤務
+          this.detailNonDutyVOList = data.detailNonDutyVOList
+          // 超過勤務
+          this.detailOverhoursVOList = data.detailOverhoursVOList
+          //
+          let limitOfBasedateVO = data.limitOfBasedateVO
+          this.overHourLimit = limitOfBasedateVO.dailyConvMinute
+          this.otDaily = limitOfBasedateVO.otDaily
+          this.targetForOverTime = data.targetForOverTime
+          this.changeWorkingID(this.workingId),
+
+            console.log(this.bHoliday)
+          console.log(this.bFixed)
+          console.log(this.isEdiTableResult4Inp)
+
+        },
+        //コメントのみ登録
+        updateInp: Debounce(function () {
+          this.tmgResultsDto.txtAction = 'ACT_EDITINP_UCOMMENT'
+          this.tmgResultsDto.holiday = this.bHoliday
+          this.tmgResultsDto.workingId = this.workingId
+          this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
+          this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
+          this.tmgResultsDto.txtTdaNopenR = this.dailyEdit.tdaNopenR
+          this.tmgResultsDto.txtTdaNcloseR = this.dailyEdit.tdaNcloseR
+          this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+
+          if (this.tmgResultsDto.tdaCowncommentR !== null && this.getLengthB(this.tmgResultsDto.tdaCowncommentR) > 100) {
+            this.$Notice.error({ desc: "中断備考が設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。" })
+            return false
+          }
+          this.http.post('sys/tmgResults/updateInp', this.tmgResultsDto)
+          this.isShow = false
+        }),
+        //登録
+        async updateDaily() {
+          console.log(this.workData)
+          if (!this.errorCheck(this.workingId)) {
+            return
+          }
+          this.updateDailyLoading = true
+
+          this.tmgResultsDto.txtDYYYYMMDD = this.txtDYYYYMMDD
+          this.tmgResultsDto.txtAction = 'ACT_EDITINP_UDAILY'
+
+          this.tmgResultsDto.workingId = this.workingId
+          this.tmgResultsDto.selMgdCbusinessTrip = this.businessTrip
+          this.tmgResultsDto.holiday = null
+          this.tmgResultsDto.txtTdaNopenR = ''
+          this.tmgResultsDto.txtTdaNcloseR = ''
+          this.tmgResultsDto.tdaCowncommentR = ''
+          this.tmgResultsDto.hasAuthority = ''
+          this.tmgResultsDto.holiday = this.bHoliday
+          this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
+          if (!this.bDisable) {
+            this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+            this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
+            this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
+            this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
+            if (this.bFixed || this.bHoliday) {
+              this.tmgResultsDto.hasAuthority = false
+            } else {
+              this.tmgResultsDto.hasAuthority = true
+            }
+          }
+          try {
+            const { msg } = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
+            if (msg === '0') {
+              this.updateDailyLoading = false
+              this.isShow = false
+              this.getTitleData()
+              return
+            }
+            this.errMsg = JSON.parse(msg)
+            let errMsg20
+            let check = Object.keys(this.errMsg).some(e => {
+              if (e === 'ERRTYPE_10') {
+                this.$Notice.error({ desc: this.errMsg.ERRTYPE_10[0].ERRMSG })
+                return true
+              }
+              if (e === 'ERRTYPE_20') {
+                this.errMsg.ERRTYPE_20.forEach(e20 => {
+                  errMsg20 = errMsg20 + e20.ERRMSG + '/n'
+                })
+                this.$Notice.error({ desc: errMsg20 })
+              }
+
+            })
+            if (check) {
+              return false
+            }
+          } catch (error) {
+            return
+          } finally {
+            this.updateDailyLoading = false
+          }
+
+        },
+        // 就業区分の切り替え表示制御
+        changeWorkingID(workingid) {
+          if (!workingid) {
+            return
+          }
+          this.bDisable = false
+          // 休暇
+          if (this.bHoliday) {
+            this.bDisable = true
+            this.workTimeDisable = true
+            // 休暇以外
+          } else {
+            let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
+            // 出勤 or 休日出勤
+            if (mgdCsparechar4VO.mgdCsparechar5 == '0') {
+              this.bDisable = false
+              this.workTimeDisable = false
+              // 欠勤
+            } else {
+              this.bDisable = true;
+              this.workTimeDisable = true
+            }
+          }
+          if (this.bDisable === true) {
+            this.workData[2].workStart = ''
+            this.workData[2].workEnd = ''
+            this.detailNonDutyVOList = []
+            this.detailOverhoursVOList = []
+
+          }
+        },
+        addOverWork() {
+          let detailOverhoursVO = this.categoryOverhoursList.find(e => e.itemCode === this.categoryOverhours)
+
+          this.detailOverhoursVOList.push({
+            attributeUrl: detailOverhoursVO.attributeUrl,
+            tdadCnotworkid: detailOverhoursVO.itemCode,
+            itemName: detailOverhoursVO.itemName,
+            tdadNopen: '',
+            tdadNclose: '',
+            tdadNdeleteflg: '0',
+            tdadSeq: Date.now(),
+            tdadCsparechar1: '',
+            tdadNsparenum1: '',
+            tdadCcode01: '',
+            tdadCcode01Name: '',
+            tdadCsparechar2: '',
+            tdadCsparechar2Name: ''
+
+          })
+        },
+        addNotWork() {
+          let categoryNondutyVO = this.categoryNondutyList.find(e => e.itemCode === this.categoryNonduty)
+
+          this.detailNonDutyVOList.push({
+            attributeUrl: categoryNondutyVO.attributeUrl,
+            tdadCnotworkid: categoryNondutyVO.itemCode,
+            itemName: categoryNondutyVO.itemName,
+            tdadNdeleteflg: "0",
+            tdadNopen: '',
+            tdadNclose: '',
+            tdadSeq: Date.now(),
+            tdadCsparechar1: '',
+            tdadNsparenum1: null
+
+          })
+
+        },
         dayRed(e, i) {
           const dayOfWeek = e.TMG_HOLFLG
           if (i === 0) {
@@ -562,6 +1138,15 @@
             }
 
           }
+        },
+        handleInputChange(i, object, value, el) {
+          if (object) {
+            this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
+          }
+        },
+        handleClose() {
+          this.errorFlag = false
+          this.isShow = false
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop

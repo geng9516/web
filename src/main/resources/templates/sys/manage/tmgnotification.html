@@ -172,7 +172,7 @@
         </div>
         <div class="tr" v-if="hasAuthority">
           <i-button type="error" class="mr15 mb10" ghost @click="denyByPerson" v-if="detailsStatus.indexOf('2') > -1">
-            差戻し</i-button>
+            差戻</i-button>
           <i-button type="primary" class="mb10" ghost @click="confirmByPerson" v-if="detailsStatus.indexOf('2') > -1">承認
           </i-button>
           <i-button type="primary" class="mb10" ghost @click="cancelByPerson" v-if="detailsStatus.indexOf('5') > -1">取消
@@ -222,15 +222,15 @@
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDdateofbirth }}</span>
           </form-item>
           <form-item label="申請事由等">
-            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCowncomment }}</span>
+            <span class="input-like-span"  style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
 
           <form-item label="承認者コメント" v-if="hasAuthority && (detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 )">
-            <i-input class="tl" type="textarea" :maxlength="100"  placeholder="文字の長さは１００位以内になっております。" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"></i-input>
+            <i-input class="tl" type="textarea" :maxlength="100"  placeholder="文字の長さは１００位以内になっております。"  style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCbosscomment"></i-input>
           </form-item>
 
           <form-item label="承認者コメント" v-else>
-            <span class="input-like-span tl"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
+            <span class="input-like-span tl"  style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCbosscomment }}</span>
           </form-item>
 
           <form-item label="添付ファイル"
@@ -373,25 +373,25 @@
                   </radio-group>
                 </span>
               </form-item>
-              <form-item label="日付け" v-show="!selectedRestInfo.transfer">
+              <form-item label="日付" v-show="!selectedRestInfo.transfer">
                 <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100 tl"
-                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付け"
+                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付"
                   ref="datepicker" transfer></date-picker>
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付け"
+                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付け"
+                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period" >
                 <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
-                  placeholder="日付け" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
+                  placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
                 </date-picker>
               </form-item>
 
@@ -466,7 +466,7 @@
 
               <!-- 有生年月日-->
               <form-item label="生年月日" 　v-show="selectedRestInfo.birthday">
-                <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付け"
+                <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.txtBirthday = $event" transfer></date-picker>
               </form-item>
 

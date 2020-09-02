@@ -70,9 +70,13 @@ public class SiteInputController {
      */
     @GetMapping("vapply")
     public String toInputVApply(@RequestParam("moduleIndex") Integer moduleIndex,
-                                @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+                                @RequestParam("menuId") Long menuId, ModelMap modelMap,
+                                @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+        if (isMobile) {
+            return "mobile/restapply";
+        }
         return "sys/input/vapply";
     }
 
@@ -101,9 +105,13 @@ public class SiteInputController {
      */
     @GetMapping("oconfirm")
     public String oConfirm(@RequestParam("moduleIndex") Integer moduleIndex,
-                           @RequestParam("menuId") Long menuId, ModelMap modelMap) {
+                           @RequestParam("menuId") Long menuId, ModelMap modelMap,
+                           @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex)
                 .addAttribute("menuId",menuId);
+        if (isMobile) {
+            return "mobile/scheduleconfirm";
+        }
         return "sys/input/oconfirm";
     }
 

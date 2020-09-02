@@ -5,10 +5,7 @@ import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.TmgScheduleBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TargetUserDetailDTO;
 import jp.smartcompany.job.modules.tmg.schedule.dto.TmgWeekPatternDTO;
-import jp.smartcompany.job.modules.tmg.schedule.vo.ModifiedDateVO;
-import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
-import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleInfoVO;
-import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
+import jp.smartcompany.job.modules.tmg.schedule.vo.*;
 import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
 import jp.smartcompany.job.modules.tmg.tmgresults.vo.HatuReiVo;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -332,6 +329,7 @@ public class ScheduleController {
 
     /**
      * 勤務予定時間リスト
+     * flag 0: 編集できます　　　1；編集できない
      * http://localhost:6879/sys/schedule/selectScheduleDateList
      *
      * @param psDBBean
@@ -339,7 +337,7 @@ public class ScheduleController {
      */
     @GetMapping("selectScheduleDateList")
     @ResponseBody
-    public List<String> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgScheduleBean.selectScheduleDateList(psDBBean);
     }
 

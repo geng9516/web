@@ -67,7 +67,7 @@
         <div class="content_body tc" style="position: relative;min-height: 500px;">
             <Alert type="error" class="error-info tl" style="width: 70%" v-show="isDisable">{{ infoMsg }}</Alert>
             <Alert type="error" class="error-info tl" style="width: 70%" v-show="nodata">対象期間(年)は適切な日付ではありません。</Alert>
-            <div class="tl ml10 mb15">
+            <div class="tl ml10 mb15" v-if="yearData.length>0">
                 <template>
                     <Tag checkable color="blue">定休日</Tag>
                     <Tag checkable color="red">法休日</Tag>

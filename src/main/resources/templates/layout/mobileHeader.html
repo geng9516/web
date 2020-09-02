@@ -3,28 +3,13 @@
 -->
 <div th:fragment="header" class="header-w" xmlns:th="http://www.thymeleaf.org">
   <svg th:replace="layout/logos::svg_logos"></svg>
+  <svg th:replace="layout/icons::svg_icons"></svg>
   <i-menu mode="horizontal" theme="light" class="header-wrap">
     <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
     <svg class="head-logo">
       <use xlink:href="#logo"></use>
     </svg>
     <!-- 注意这里是row-reverse，要反着方 -->
-    <!-- <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
-      <a>
-        <avatar class="white-avatar" style="background-color: rgb(113, 112, 112)">{{ session.psSession.loginKanjiName.slice(0, 1) }}</avatar>
-        <span style="position: relative;  top: 3px; font-size: 16px; font-weight: bold; margin-left: 5px; padding-right: 30px;">{{ session.psSession.loginKanjiName }}</span>
-      </a>
-      <dropdown-menu slot="list">
-        <ul v-for="(item, i) of groupList" :key="i">
-          <div class="tc company">{{item[0].systemName}}</div>
-          <div class="group-info-wrap">
-            <li class="group-info" v-for="(t, j) of item" :key="j">{{ t.groupName }}</li>
-          </div>
-        </ul>
-        <dropdown-item style="border-bottom: 1px solid #d2d2d2;" @click.native="alterPasswordModal = true">パスワード変更</dropdown-item>
-        <dropdown-item @click.native="logout">ログアウト</dropdown-item>
-      </dropdown-menu>
-    </dropdown> -->
 
     <!-- <dropdown class="head-dropdown" trigger="click" style="margin-right: 5px;" placement="bottom-start">
       <a>
@@ -45,10 +30,34 @@
     </svg>
 </button>
   <div :class="navIcon ? 'active mobile-nav' : 'mobile-nav'">
-    <ul style="font-size: 30px; font-weight: 800; text-align: right;color: white;    margin-top: 55px;">
-      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/addwork?menuId=1642&moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">就業登録</li>
-      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/vapply?menuId=1644&moduleIndex=3&psSite=TMG_INP&psApp=TmgNotification`">休暇休業申請</li>
-      <li style="padding: 1vh 15vw;" @click="()=> location.href = `${BASE_URL}/sys/input/oconfirm?menuId=1648&moduleIndex=5&psSite=TMG_INP&psApp=TmgScheduleCheck`">予定確認</li>
+    <ul style="font-size: 24px; font-weight: 800; text-align: right;color: white;margin-top: 55px;">
+      <li :class="curMenu === 'TmgResults' ? 'active menu-li' : 'menu-li'"  @click="()=> location.href = `${BASE_URL}/sys/input/addwork?menuId=1642&moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">
+        就業登録
+        <svg class="menu-li-logo">
+          <use xlink:href="#WorkRegistration01"></use>
+        </svg>
+      </li>
+      <li :class="curMenu === 'TmgNotification' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/vapply?menuId=1644&moduleIndex=3&psSite=TMG_INP&psApp=TmgNotification`">
+        休暇休業申請
+        <svg class="menu-li-logo">
+          <use xlink:href="#VacationApplication08"></use>
+        </svg>
+      </li>
+      <li :class="curMenu === 'TmgScheduleCheck' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/oconfirm?menuId=1648&moduleIndex=5&psSite=TMG_INP&psApp=TmgScheduleCheck`">
+        予定確認
+        <svg class="menu-li-logo">
+          <use xlink:href="#ScheduleConfirmation09"></use>
+        </svg>
+      </li>
+      <li class="menu-li" style="margin-top: 80px;">
+        <i-button class="tr" type="primary" size="large" ghost long>パスワード変更</i-button>
+      </li>
+      <li class="menu-li">
+        <i-button class="tr" type="primary" size="large"  @click="()=> location.href = '/logout'" ghost long>ログアウト</i-button>
+        <!-- <svg class="menu-li-logo">
+          <use xlink:href="##LoginLog40"></use>
+        </svg> -->
+      </li>
     </ul>
   </div>
   </i-menu>
@@ -88,8 +97,13 @@
           baseUrl: BASE_URL,
           session: [[${ session }]],
           themeList: ['デフォルト', 'クラシック', 'ナイト'],
+          query:{
+            psSite: Utils.getUrlParam(location.href, 'psSite') || 'TMG_INP',
+            psApp: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults'
+          },
           password:{},
           navIcon:false,
+          curMenu: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults' ,
           passwordLoading: false,
           alterPasswordModal: false
         }
