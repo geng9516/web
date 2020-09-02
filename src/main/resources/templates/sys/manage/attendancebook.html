@@ -146,7 +146,7 @@
                     </div>
                 </i-col>
                 <i-col span="8" class="no-border-radius">
-                    <div class="work-changed-day">摘要
+                    <div class="label spec">摘要
                         <Poptip
                             v-if="remarksDisabled"
                             v-model="commentBtnShow"
@@ -160,7 +160,7 @@
                         </div>
                         </Poptip>
                         </div>
-                    <i-input type="textarea" :autosize="{ maxRows: 2 }" v-model="query.comment" />
+                    <i-input class="tl" :disabled="!remarksDisabled" type="textarea" :autosize="{ maxRows: 2 }" v-model="query.comment" />
                 </i-col>
             </Row>
             <div class="titlenorm mb10 mt10" style="font-size:15px">
