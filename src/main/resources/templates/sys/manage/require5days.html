@@ -154,7 +154,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -174,7 +174,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -196,7 +196,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -216,7 +216,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -1026,27 +1026,27 @@
                 let days1 = this.updateAcquired5DaysVO.txtNusedaysDays
                 console.log("errorCheck")
                 console.log(date)
-                console.log(days)
+                console.log(days1)
                 // 修正基準日チェック ※2019/04/01(法改日)以降
                 if (date != "" &&  date != null) {
                     if (date.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
-                            duration: 0,
-                            content: '修正基準日は2019/04/01以降の日付を入力してください。'
+                            duration: 6,
+                            content: '修正基準日は2019/04/01以降の日付を入力してください。00'
                         });
                         return
                     }
                 }
                 // 修正チェック期間チェック ※2019/04/01(法改日)以降
-                if (date1 != "" &&  date != null) {
+                if (date1 != "" &&  date1 != null) {
                     if (date1.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
-                            duration: 0,
-                            content: '修正チェック期間は2019/04/01以降の日付を入力してください。'
+                            duration: 6,
+                            content: '修正チェック期間は2019/04/01以降の日付を入力してください。01'
                         });
                         return
                     }
@@ -1056,7 +1056,7 @@
                     this.$Message.error({
                         background: true,
                         closable: true,
-                        duration: 0,
+                        duration: 6,
                         content: '調整取得日数は半休単位(0.5)で入力してください。'
                     });
                     return
@@ -1066,7 +1066,7 @@
                     this.$Message.error({
                         background: true,
                         closable: true,
-                        duration: 0,
+                        duration: 6,
                         content: '修正必要日数は半休単位(0.5)で入力してください。'
                     });
                     return
@@ -1083,7 +1083,7 @@
                         this.$Message.error({
                             background: true,
                             closable: true,
-                            duration: 0,
+                            duration: 6,
                             content: '修正基準日は'+this.paidData[index].taKikanbi6+'以前の日付を入力してください。1'
                         });
                         return
@@ -1095,7 +1095,7 @@
                         this.$Message.error({
                             background: true,
                             closable: true,
-                            duration: 0,
+                            duration: 6,
                             content: '修正期間チェックは'+this.paidData[index].taKijyunbi5+'以降の日付を入力してください。2'
                         });
                         return
@@ -1110,7 +1110,7 @@
                             this.$Message.error({
                                 background: true,
                                 closable: true,
-                                duration: 0,
+                                duration: 6,
                                 content: '修正基準日は'+this.paidData[index+1].taKijyunbi5+'以前の日付を入力してください。3'
                             });
                             return
@@ -1123,15 +1123,12 @@
                              this.$Message.error({
                                     background: true,
                                     closable: true,
-                                    duration: 0,
+                                    duration: 6,
                                     content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。4'
                              });
                              return
                          }
                     }
-
-
-
                 }
 
                 //最終行のチェック
@@ -1147,7 +1144,7 @@
                             this.$Message.error({
                                 background: true,
                                 closable: true,
-                                duration: 0,
+                                duration: 6,
                                 content: '修正基準日は'+this.paidData[index-1].taKijyunbi5+'以降の日付を入力してください。5'
                             });
                             return
@@ -1164,7 +1161,7 @@
                             this.$Message.error({
                                 background: true,
                                 closable: true,
-                                duration: 0,
+                                duration: 6,
                                 content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。6'
                             });
                             return
@@ -1186,7 +1183,7 @@
                             this.$Message.error({
                                 background: true,
                                 closable: true,
-                                duration: 0,
+                                duration: 6,
                                 content: '修正基準日は'+this.paidData[index-1].taKijyunbi5+'以降の日付を入力してください。7'
                             });
                             return
@@ -1195,7 +1192,7 @@
                             this.$Message.error({
                                 background: true,
                                 closable: true,
-                                duration: 0,
+                                duration: 6,
                                 content: '修正基準日は'+this.paidData[index+1].taKijyunbi5+'以前の日付を入力してください。8'
                             });
                             return
@@ -1212,7 +1209,7 @@
                                 this.$Message.error({
                                     background: true,
                                     closable: true,
-                                    duration: 0,
+                                    duration: 6,
                                     content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。9'
                                 });
                                 return
@@ -1221,7 +1218,7 @@
                                 this.$Message.error({
                                     background: true,
                                     closable: true,
-                                    duration: 0,
+                                    duration: 6,
                                     content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。10'
                                 });
                                 return
