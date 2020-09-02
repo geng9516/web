@@ -154,7 +154,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -174,7 +174,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -196,7 +196,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -216,7 +216,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <input-number :max="999" :min="0.5" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">

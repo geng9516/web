@@ -154,7 +154,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -174,7 +174,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
+                    <input-number :max="999" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -196,7 +196,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="adjustTakenDays">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blur(row)" class="tc" v-model="row.adjustTakenDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurAdjustTakenDays(row)" class="tl" v-model="row.adjustTakenDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -216,7 +216,7 @@
                 </template>
 
                 <template slot="editMustDays" slot-scope="{ row }">
-                    <i-input :disabled="row._index !== radioCheckedIndex" @on-blur="blurEditMustDays(row)" class="tc" v-model="row.editMustDays"/>
+                    <input-number :max="999.5" :min="0.0" :step="0.5" :disabled="row._index !== radioCheckedIndex" @on-change="blurEditMustDays(row)" class="tl" v-model="row.editMustDays"/>
                 </template>
 
                 <template slot-scope="{ row }" slot="lackDays">
@@ -1010,7 +1010,7 @@
                 let days1 = this.updateAcquired5DaysVO.txtNusedaysDays
                 console.log("errorCheck")
                 console.log(date)
-                console.log(days)
+                console.log(days1)
                 // 修正基準日チェック ※2019/04/01(法改日)以降
                 if (date != "" &&  date != null) {
                     if (date.split("/").join("") - 20190401 < 0) {
@@ -1018,19 +1018,19 @@
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '修正基準日は2019/04/01以降の日付に入力してください。'
+                            content: '修正基準日は2019/04/01以降の日付を入力してください。00'
                         });
                         return
                     }
                 }
                 // 修正チェック期間チェック ※2019/04/01(法改日)以降
-                if (date1 != "" &&  date != null) {
-                    if (date.split("/").join("") - 20190401 < 0) {
+                if (date1 != "" &&  date1 != null) {
+                    if (date1.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '修正チェック期間は2019/04/01以降の日付に入力してください。'
+                            content: '修正チェック期間は2019/04/01以降の日付を入力してください。01'
                         });
                         return
                     }
@@ -1056,6 +1056,164 @@
                     return
                 }
 
+                //日付関連チェック
+                let index=this.radioCheckedIndex
+                console.log("日付関連チェック")
+                console.log(index)
+
+                // 修正基準日の関連チェック・当レコードのチェック期間との比較
+                if (date != "" &&  date != null) {
+                    if (date.split("/").join("") - this.paidData[index].taKikanbi6.split("/").join("") > 0) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '修正基準日は'+this.paidData[index].taKikanbi6+'以前の日付を入力してください。1'
+                        });
+                        return
+                    }
+                }
+                // 修正期間チェック・当レコードの基準日との比較
+                if (date1 != "" &&  date1 != null) {
+                    if (date1.split("/").join("") - this.paidData[index].taKijyunbi5.split("/").join("") < 0) {
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 0,
+                            content: '修正期間チェックは'+this.paidData[index].taKijyunbi5+'以降の日付を入力してください。2'
+                        });
+                        return
+                    }
+                }
+
+                //1行目チェック
+                if (index == 0 && this.paidData[index].taRowpan10 > 1) {
+                    // 修正基準日の関連チェック
+                    if (date != "" &&  date != null) {
+                        if (date.split("/").join("") - this.paidData[index+1].taKijyunbi5.split("/").join("") > 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正基準日は'+this.paidData[index+1].taKijyunbi5+'以前の日付を入力してください。3'
+                            });
+                            return
+                        }
+                    }
+
+                    // 修正期間チェックの関連チェック
+                    if (date1 != "" &&  date1 != null) {
+                        if (date1.split("/").join("") - this.paidData[index+1].taKikanbi6.split("/").join("") > 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。4'
+                            });
+                            return
+                        }
+                    }
+
+
+
+                }
+
+                //最終行のチェック
+                if (index == this.paidData[index].taRowpan10-1 && this.paidData[index].taRowpan10 > 1) {
+
+                    // 修正基準日の関連チェック
+                    if (date != "" &&  date != null) {
+                        console.log("最後1")
+                        console.log(date.split("/").join(""))
+                        console.log(this.paidData[index-1].taKijyunbi5.split("/").join(""))
+
+                        if (date.split("/").join("") - this.paidData[index-1].taKijyunbi5.split("/").join("") < 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正基準日は'+this.paidData[index-1].taKijyunbi5+'以降の日付を入力してください。5'
+                            });
+                            return
+                        }
+                    }
+                    // 修正期間チェックの関連チェック
+                    if (date1 != "" &&  date1 != null) {
+                        console.log("最後1")
+                        console.log(index == this.paidData[index].taRowpan10-1)
+                        console.log(date1.split("/").join(""))
+                        console.log(this.paidData[index-1].taKijyunbi5.split("/").join(""))
+
+                        if (date1.split("/").join("") - this.paidData[index-1].taKikanbi6.split("/").join("") < 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。6'
+                            });
+                            return
+                        }
+                    }
+
+                }
+
+                //１行目から最終行までのチェック
+                if (index > 0 && this.paidData[index].taRowpan10-1 > index) {
+
+                    // 修正基準日の関連チェック
+                    if (date != "" &&  date != null) {
+                        console.log("2行目からN-1行までのチェック")
+                        console.log(date.split("/").join(""))
+                        console.log(this.paidData[index-1].taKijyunbi5.split("/").join(""))
+                        // -----------------------
+                        if (date.split("/").join("") - this.paidData[index-1].taKijyunbi5.split("/").join("") < 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正基準日は'+this.paidData[index-1].taKijyunbi5+'以降の日付を入力してください。7'
+                            });
+                            return
+                        }
+                        if (date.split("/").join("") - this.paidData[index+1].taKijyunbi5.split("/").join("") > 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正基準日は'+this.paidData[index+1].taKijyunbi5+'以前の日付を入力してください。8'
+                            });
+                            return
+                        }
+                    }
+                    // -----------------------
+                    if (date1 != "" &&  date1 != null) {
+                        console.log("最後2")
+                        console.log(date1.split("/").join(""))
+                        console.log(this.paidData[index-1].taKikanbi6.split("/").join(""))
+                        console.log(this.paidData[index+1].taKikanbi6.split("/").join(""))
+
+                        if (date1.split("/").join("") - this.paidData[index-1].taKikanbi6.split("/").join("") < 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正期間チェックは'+this.paidData[index-1].taKikanbi6+'以降の日付を入力してください。9'
+                            });
+                            return
+                        }
+                        if (date1.split("/").join("") - this.paidData[index+1].taKikanbi6.split("/").join("") > 0) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '修正期間チェックは'+this.paidData[index+1].taKikanbi6+'以前の日付を入力してください。10'
+                            });
+                            return
+                        }
+                    }
+                    // -----------------------
+
+                }
                 return true;
              },
             handleRadio(index) {
