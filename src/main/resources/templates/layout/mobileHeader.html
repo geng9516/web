@@ -11,17 +11,6 @@
     </svg>
     <!-- 注意这里是row-reverse，要反着方 -->
 
-    <!-- <dropdown class="head-dropdown" trigger="click" style="margin-right: 5px;" placement="bottom-start">
-      <a>
-        <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
-      </a>
-      <dropdown-menu slot="list">
-        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item" style="border-bottom: 1px solid #d2d2d2;"
-          @click.native="Changetheme(item)">
-          {{ item }}
-        </dropdown-item>
-      </dropdown-menu>
-    </dropdown> -->
     <button :class="navIcon ? 'active menu' : 'menu'" @click="navIcon = !navIcon">
     <svg viewBox="0 0 64 48">
         <path d="M19,15 L45,15 C70,15 58,-2 49.0177126,7 L19,37"></path>
@@ -50,44 +39,50 @@
         </svg>
       </li>
       <li class="menu-li" style="margin-top: 80px;">
-        <i-button class="tr" type="primary" size="large" ghost long>パスワード変更</i-button>
+        <i-button class="tr" type="primary" size="large" @click.native="alterPasswordModal = true" ghost long>パスワード変更</i-button>
       </li>
-      <li class="menu-li">
+      <li class="menu-li" style="margin-top: -5px;">
+        <i-button class="tr" type="primary" size="large"  ghost long>出勤</i-button>
+      </li>
+      <li class="menu-li" style="margin-top: -5px;">
+        <i-button class="tr" type="primary" size="large"  ghost long>退勤</i-button>
+      </li>
+      <li class="menu-li" style="margin-top: -5px;">
         <i-button class="tr" type="primary" size="large"  @click="()=> location.href = '/logout'" ghost long>ログアウト</i-button>
-        <!-- <svg class="menu-li-logo">
-          <use xlink:href="##LoginLog40"></use>
-        </svg> -->
       </li>
     </ul>
+    <dropdown class="head-dropdown" style="position: absolute; top: 0; left: 0;" trigger="click" placement="bottom-start">
+      <a>
+        <avatar class="white-avatar" style="background-color: var(--table-head)">テーマ</avatar>
+      </a>
+      <dropdown-menu slot="list">
+        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item" style="border-bottom: 1px solid #d2d2d2;"
+          @click.native="Changetheme(item)">
+          {{ item }}
+        </dropdown-item>
+      </dropdown-menu>
+    </dropdown>
   </div>
   </i-menu>
-    <!-- <Drawer width="40" title="Basic Drawer" :closable="false" v-model="navIcon">
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-        <p>Some contents...</p>
-    </Drawer> -->
-  <!-- <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
-    <i-form ref="password" :label-width="200" :model="password" class="tl" style="margin: 10px 10px 0;">
-        <form-item label="現在のパスワード">
-            <i-input v-model="password.oldPassword" placeholder="パスワード"
-                type="password" password autocomplete="new-password" />
-        </form-item>
+  <Modal title="パスワード変更" class="tc" v-model="alterPasswordModal" :mask-closable="false">
+    <div class="tl" style="margin: 10px 10px 0;">
+      <p class="mb5">現在のパスワード</p>
+      <i-input class="mb2" v-model="password.oldPassword" placeholder="パスワード" type="password" password
+        autocomplete="new-password"></i-input>
 
-        <form-item label="変更後のパスワード">
-            <i-input v-model="password.newPassword" placeholder="パスワード"
-                type="password" password autocomplete="new-password" />
-        </form-item>
+      <p class="mb5 mt5">変更後のパスワード</p>
+      <i-input class="mb2" v-model="password.newPassword" placeholder="パスワード" type="password" password
+        autocomplete="new-password"></i-input>
 
-        <form-item label="変更後のパスワード(確認用)">
-            <i-input v-model="password.repeatPassword" placeholder="パスワード"
-                type="password" password autocomplete="new-password" />
-        </form-item>
-    </i-form>
-        <div slot="footer">
-          <i-button type="text" @click="cancelUpdatePassword">キャンセル</i-button>
-          <i-button icon="md-create" type="primary" @click="updatePassword" :loading="passwordLoading">更新</i-button>
-        </div>
-  </Modal> -->
+      <p class="mb5 mt5">変更後のパスワード(確認用)</p>
+      <i-input class="mb2" v-model="password.repeatPassword" placeholder="パスワード" type="password" password
+        autocomplete="new-password"></i-input>
+    </div>
+    <div slot="footer">
+      <i-button type="text" @click="cancelUpdatePassword">キャンセル</i-button>
+      <i-button icon="md-create" type="primary" @click="updatePassword" :loading="passwordLoading">更新</i-button>
+    </div>
+  </Modal>
   <footer class="footer">Smart Public WorkManager Ver.1.0.0 Copyright© 株式会社日進サイエンティア</footer>
   <script th:inline="javascript">
     const HEADER = new Vue({
@@ -142,7 +137,7 @@
             }, 1000);
           } catch (error) {
             this.passwordLoading = false
-            return this.$Notice.error({ title: '注意', desc: error, duration: 6.5 })
+            return this.$Modal.error({ title: '注意', content: error })
           }
 
         }),
