@@ -1513,8 +1513,10 @@
     <!-- 勤務予定時間リスト -->
     <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultMap="selectScheduleDateListMap">
         select tda_dyyyymm ,
+        tda_firstDay,
+        tda_endDay,
                flag
-              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as tda_dyyyymm,
+              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as tda_dyyyymm
                    ,to_char(d.tda_dyyyymm,'yyyy/MM')||'/01' as tda_firstDay
                    ,to_char(LAST_day(d.tda_dyyyymm),'yyyy/MM/dd') as tda_endDay
                   ,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
