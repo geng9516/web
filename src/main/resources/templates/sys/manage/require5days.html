@@ -1041,7 +1041,7 @@
                 }
                 // 修正チェック期間チェック ※2019/04/01(法改日)以降
                 if (date1 != "" &&  date != null) {
-                    if (date.split("/").join("") - 20190401 < 0) {
+                    if (date1.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
