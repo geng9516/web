@@ -216,7 +216,12 @@
                                 差戻
                             </i-button>
                         </i-col>
-                        <i-col  span="1">
+                        <i-col  span="8" offset="16" v-if="!notapproval">
+                            <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
+                                承認
+                            </i-button>
+                        </i-col>
+                        <i-col  span="1"  v-if="notapproval">
                             <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
                                 承認
                             </i-button>
