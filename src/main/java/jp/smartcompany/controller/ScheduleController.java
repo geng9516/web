@@ -362,7 +362,7 @@ public class ScheduleController {
      */
     @GetMapping("isEditable")
     @ResponseBody
-    public boolean isEditable(@RequestParam("baseDate") String baseDate, @RequestAttribute("BeanName") PsDBBean psDBBean) {
+    public GlobalResponse isEditable(@RequestParam("baseDate") String baseDate, @RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgScheduleBean.isEditable(psDBBean, baseDate);
     }
 
