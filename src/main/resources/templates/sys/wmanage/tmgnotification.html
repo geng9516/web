@@ -212,11 +212,11 @@
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDdateofbirth }}</span>
           </form-item>
           <form-item label="申請事由等">
-            <span class="input-like-span tl" style="border-radius: 5px;">{{ detailsData.tntfCowncomment }}</span>
+            <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
 
           <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1">
-            <i-input class="tl" type="textarea" style="border-radius: 5px;" v-model="detailsData.tntfCbosscomment"
+            <i-input class="tl" type="textarea" style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCbosscomment"
                      :maxlength="100" placeholder="文字の長さは１００位以内になっております。"></i-input>
           </form-item>
 
