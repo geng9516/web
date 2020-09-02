@@ -16,6 +16,8 @@ import lombok.ToString;
 public class ScheduleDateListVO {
 
     private String tda_dyyyymm;
+    private String tda_firstDay;
+    private String tda_endDay;
     private String flag;
 
 }

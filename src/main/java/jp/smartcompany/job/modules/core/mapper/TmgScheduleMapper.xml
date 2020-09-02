@@ -158,6 +158,8 @@
 
     <resultMap id="selectScheduleDateListMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO">
         <result column="tda_dyyyymm" property="tda_dyyyymm"/>
+        <result column="tda_firstDay" property="tda_firstDay"/>
+        <result column="tda_endDay" property="tda_endDay"/>
         <result column="flag" property="flag"/>
     </resultMap>
 
@@ -1512,13 +1514,15 @@
     <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultMap="selectScheduleDateListMap">
         select tda_dyyyymm ,
                flag
-              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as
-                    tda_dyyyymm,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
+              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as tda_dyyyymm,
+                   ,to_char(d.tda_dyyyymm,'yyyy/MM')||'/01' as tda_firstDay
+                   ,to_char(LAST_day(d.tda_dyyyymm),'yyyy/MM/dd') as tda_endDay
+                  ,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
                   from tmg_daily d
                  where d.tda_ccompanyid = #{compCode}
                    and d.tda_ccustomerid = #{custId}
                    and d.tda_cemployeeid = #{employeeId})
-             order by tda_dyyyymm
+             order by tda_dyyyymm desc
     </select>
 
 
