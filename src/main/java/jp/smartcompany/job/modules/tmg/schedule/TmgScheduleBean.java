@@ -881,12 +881,12 @@ public class TmgScheduleBean {
      */
     public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate) {
 
-     /*   if (null != startDispDate && !"".equals(startDispDate)) {
+        if (null != startDispDate && !"".equals(startDispDate)) {
             _startDispDate = startDispDate;
         }
         if (null != endDispDate && !"".equals(endDispDate)) {
             _endDispDate = endDispDate;
-        }*/
+        }
 
         String useFixedFunction = "";
         if (TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(psDBBean.getSiteId())) {
