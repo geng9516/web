@@ -38,8 +38,8 @@
       </div>
     </div>
     <div class="content_body" style="position: relative">
-      <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns" border :disabled-hover="true"
-        :data="scheduleDataDTOList" :loading="loading">
+      <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns" border
+        :disabled-hover="true" :data="scheduleDataDTOList" :loading="loading">
         <template slot-scope="{ row }" slot="week">
           <span :class="dayRed(row)">{{ row.tda_nmmday }}</span>
         </template>
@@ -66,7 +66,7 @@
 
         <template slot-scope="{ row }" slot="restTimeList">
           <span
-            v-for="(item,i) of row.timerange_arr">{{i==0?"":" / "}}{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}
+            v-for="(item,i) of row.timerange_arr">{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}
           </span>
         </template>
 
@@ -135,24 +135,28 @@
           {
             title: '日',
             slot: 'intDay',
-            width: 50,
+            minWidth: 50,
+            maxWidth: 70,
             align: 'center'
           },
-          {
-            title: '区分',
-            width: 70,
-            slot: 'workDivision',
-            align: 'center'
-          },
+          // {
+          //   title: '区分',
+          //   minWidth: 60,
+          //   maxWidth: 70,
+          //   slot: 'workDivision',
+          //   align: 'center'
+          // },
           {
             title: '始業',
             align: 'center',
-            width: 50,
+            minWidth: 50,
+            maxWidth: 60,
             slot: 'workStartFinal'
           },
           {
             title: '終業',
-            width: 50,
+            minWidth: 50,
+            maxWidth: 60,
             slot: 'workEndFinal',
             align: 'center'
           },
