@@ -1026,7 +1026,7 @@
                 let days1 = this.updateAcquired5DaysVO.txtNusedaysDays
                 console.log("errorCheck")
                 console.log(date)
-                console.log(days)
+                console.log(days1)
                 // 修正基準日チェック ※2019/04/01(法改日)以降
                 if (date != "" &&  date != null) {
                     if (date.split("/").join("") - 20190401 < 0) {
@@ -1034,19 +1034,19 @@
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '修正基準日は2019/04/01以降の日付を入力してください。'
+                            content: '修正基準日は2019/04/01以降の日付を入力してください。00'
                         });
                         return
                     }
                 }
                 // 修正チェック期間チェック ※2019/04/01(法改日)以降
-                if (date1 != "" &&  date != null) {
+                if (date1 != "" &&  date1 != null) {
                     if (date1.split("/").join("") - 20190401 < 0) {
                         this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 0,
-                            content: '修正チェック期間は2019/04/01以降の日付を入力してください。'
+                            content: '修正チェック期間は2019/04/01以降の日付を入力してください。01'
                         });
                         return
                     }
