@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.core.mapper;
 import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import org.apache.ibatis.annotations.Mapper;
@@ -383,7 +384,7 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    List<String> selectScheduleDateList(HashMap<String, Object> params);
+    List<ScheduleDateListVO> selectScheduleDateList(HashMap<String, Object> params);
 
 
 }

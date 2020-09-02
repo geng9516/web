@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 
@@ -567,7 +568,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param formatter
      * @return
      */
-    List<String> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter);
+    List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter);
 
 
 }

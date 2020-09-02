@@ -156,6 +156,11 @@
         <result column="mgd_workname" property="mgd_workname"/>
     </resultMap>
 
+    <resultMap id="selectScheduleDateListMap" type="jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO">
+        <result column="tda_dyyyymm" property="tda_dyyyymm"/>
+        <result column="flag" property="flag"/>
+    </resultMap>
+
 
     <!-- 年次休暇残 -->
     <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
@@ -1504,10 +1509,11 @@
     </select>
 
     <!-- 勤務予定時間リスト -->
-    <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultType="java.lang.String">
-        select tda_dyyyymm
-              from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as
-                    tda_dyyyymm
+    <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultMap="selectScheduleDateListMap">
+        select tda_dyyyymm ,
+               flag
+              from (select distinct (to_char(d.tda_dyyyymm, ${formatter})) as
+                    tda_dyyyymm,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
                   from tmg_daily d
                  where d.tda_ccompanyid = #{compCode}
                    and d.tda_ccustomerid = #{custId}

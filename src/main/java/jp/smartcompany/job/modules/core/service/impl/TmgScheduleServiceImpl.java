@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.job.modules.core.mapper.TmgScheduleMapper;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
+import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.TmgWeekPatternVO;
 import jp.smartcompany.job.modules.tmg.schedule.vo.WeekWorkType;
 import org.springframework.stereotype.Repository;
@@ -545,7 +546,7 @@ public class TmgScheduleServiceImpl extends ServiceImpl<TmgScheduleMapper, Objec
     }
 
     @Override
-    public List<String> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter) {
+    public List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("custId", custId);
         params.put("compCode", compCode);
