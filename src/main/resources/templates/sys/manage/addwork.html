@@ -211,16 +211,17 @@
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <Row class="mb15 tr">
                     <div v-if="!bFixed">
-                        <i-col  span="6" offset="16">
-                            <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
-                                承認
-                            </i-button>
-                        </i-col>
-                        <i-col span="1">
+                        <i-col span="6" offset="16" class="mr15">
                             <i-button type="error" ghost  @click="updateRemandsStatus" :loading="updateDailyLoading" v-if="notapproval">
                                 差戻
                             </i-button>
                         </i-col>
+                        <i-col  span="1">
+                            <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
+                                承認
+                            </i-button>
+                        </i-col>
+
                     </div>
                     <div v-else>
                         <i-col  span="7" offset="16">
