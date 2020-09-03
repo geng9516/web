@@ -11,7 +11,7 @@
       <div class="content_body" style="padding-top: 15px">
          <div v-if="!rotate">
             <div class="vacation-type-warp">
-               <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
+               <div class="label">申請区分</div>
                <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
                   class="mb10 no-border-radius" ref="select">
                   <i-option value="全て" v-if="this.rotate">全て</i-option>
@@ -55,9 +55,11 @@
                   </div>
                   <Spin size="large" fix v-if="restInfoLoading"></Spin>
                </div>
+               <i-button class="mt3" type="primary" ghost size="small" @click="onRefresh" long>
+                  申請状況一覧へ
+               </i-button>
             </div>
 
-            <!-- <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span> -->
             <Divider size="small" orientation="left">期間</Divider>
             <div style="margin-top:10px" class="tl">
                <!-- 没有振休-->
@@ -286,7 +288,7 @@
                </Row>
                <div class="description cursor light-grey mt10 tr mr5">{{ `申請日時：${item.tntfDnotification}` }}</div>
             </li>
-            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 72vh;">
+            <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 88vh;">
             </Spin>
             <!-- 还有更多数据的时候 -->
             <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" class="width75"
@@ -488,9 +490,6 @@
                      noreserved: 1,
                      _dateList: this.timerangeType === 2 ? ['', ''] : ''
                   }
-                  this.$refs.datepicker.handleClear()
-                  this.$refs.datepicker1.handleClear()
-                  this.$refs.datepicker2.handleClear()
                   this.uploadFiles = []
                   this.hasPassedTimeCheck = true
                   this.selectedRestInfo = {}
@@ -618,9 +617,6 @@
                      noreserved: 1,
                      _dateList: this.timerangeType === 2 ? ['', ''] : ''
                   }
-                  this.$refs.datepicker.handleClear()
-                  this.$refs.datepicker1.handleClear()
-                  this.$refs.datepicker2.handleClear()
                   this.rotate = !this.rotate
                   this.isReApplyIng = false
                   await this.getApplyHistory()
