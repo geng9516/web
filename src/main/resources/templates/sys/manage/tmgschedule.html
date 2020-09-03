@@ -315,7 +315,7 @@
                 valuebak:[],
                 patternDisabled:false,
                 yyyyMMdd:'',
-                pattern:{nclose:'',nopen:'',workId:'',bussinessTripid:'',restList:[]},
+                pattern:{nclose:'',nopen:'',workId:'TMG_WORK|',bussinessTripid:'TMG_BUSINESS_TRIP|',restList:[]},
                 value: [],
                 valueMap:[],
                 selectDisabled:false,
@@ -541,6 +541,9 @@
                         desc: 'データを選択してください',
                         duration: 3.5
                     })
+                    return
+                }
+                if(this.pattern.workId=='TMG_WORK|' || this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
                     return
                 }
                 const that = this
@@ -884,7 +887,11 @@
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
+                    this.kubunnList.unshift({"MGD_CMASTERCODE":"TMG_WORK|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
+                    this.syuccyouList.unshift({"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+
             },
             async getOrgTree() {
                 this.empDeptLoading = true
@@ -962,12 +969,11 @@
                 }
             },
             restPattern(){
-                this.pattern.nclose=''
-                this.pattern.nopen=''
-                this.pattern.workId=''
-                this.pattern.bussinessTripid=''
-                this.pattern.restList=[]
-                this.curSelectedWorkPattern.CPATTERNID='TMG_PATTERN|'
+                this.pattern.workId='TMG_WORK|'
+                this.pattern.bussinessTripid='TMG_BUSINESS_TRIP|'
+                this.workPatternSelected='TMG_PATTERN|'
+                this.handleChangeWorkPattern()
+                this.patternDisabled=false
             },
             async selectScheduleDateList() {
                 try {
