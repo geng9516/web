@@ -254,10 +254,8 @@ public class ScheduleController {
                                                     @RequestAttribute("BeanName") PsDBBean psDBBean) {
 
         //  System.out.println("controller-->selectMonthlyModifiedDate");
-        //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
         ModifiedDateVO modifiedDateVO = new ModifiedDateVO();
-        modifiedDateVO.setModifiedDate(tmgScheduleBean.selectMonthlyModifiedDate());
+        modifiedDateVO.setModifiedDate(tmgScheduleBean.selectMonthlyModifiedDate(psDBBean,txtBaseDate));
         return modifiedDateVO;
     }
 
@@ -273,9 +271,7 @@ public class ScheduleController {
     public boolean updateSchedulePermStatus(@RequestParam("txtBaseDate") String txtBaseDate,
                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //    System.out.println("controller-->updateSchedulePermStatus");
-        //初期化
-        tmgScheduleBean.setExecuteParameters(txtBaseDate, null, psDBBean);
-        return tmgScheduleBean.updateSchedulePermStatus();
+        return tmgScheduleBean.updateSchedulePermStatus(psDBBean,txtBaseDate);
     }
 
     /**
