@@ -886,7 +886,7 @@
                     //付与日チェック
                     if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[3].expiryDate) < 0) {
                         // MSG_BEFORE_EXPIRE
-                        this.$Notice.warning({desc: "有効期限（調整付与）は降の日付を指定してください。"})
+                        this.$Notice.warning({desc: "有効期限（調整付与）は付与日以降の日付を指定してください。"})
                         return false;
                     }
 

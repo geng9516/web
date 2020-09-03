@@ -16,24 +16,15 @@
         <if test="dto.tphDexpireAdjust != null">
             ,TPH_DEXPIRE_ADJUST     = #{dto.tphDexpireAdjust}
         </if>
-        <if test="dto.tphDexpireAdjust == null">
-            ,TPH_DEXPIRE_ADJUST     = null
-        </if>
         <if test="dto.tphDexpireAdjustTo != null">
             ,TPH_DEXPIRE_ADJUST_TO  = #{dto.tphDexpireAdjustTo}
-        </if>
-        <if test="dto.tphDexpireAdjustTo == null">
-            ,TPH_DEXPIRE_ADJUST_TO  = null
         </if>
         <if test="dto.tphCcomment != null">
             ,TPH_CCOMMENT           = #{dto.tphCcomment}
         </if>
-        <if test="dto.tphCcomment == null">
-            ,TPH_CCOMMENT           = null
-        </if>
         WHERE
             TPH_CEMPLOYEEID      = #{dto.tphCemployeeid}
-        AND TPH_DYYYYMMDD        = TO_DATE(#{dto.tphDyyyymmdd}, 'yyyy/MM/dd')
+        AND TPH_DYYYYMMDD        = #{dto.tphDyyyymmdd}
         AND TPH_CCOMPANYID       = #{dto.tphCcompanyid}
         AND TPH_CCUSTOMERID      = #{dto.tphCcustomerid}
     </update>
