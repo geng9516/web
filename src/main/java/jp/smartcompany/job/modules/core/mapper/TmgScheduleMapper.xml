@@ -160,7 +160,6 @@
         <result column="tda_dyyyymm" property="tda_dyyyymm"/>
         <result column="tda_firstDay" property="tda_firstDay"/>
         <result column="tda_endDay" property="tda_endDay"/>
-        <result column="flag" property="flag"/>
     </resultMap>
 
 
@@ -1513,17 +1512,16 @@
     <!-- 勤務予定時間リスト -->
     <select id="selectScheduleDateList" parameterType="java.util.HashMap" resultMap="selectScheduleDateListMap">
         select tda_dyyyymm ,
-        tda_firstDay,
-        tda_endDay,
-               flag
+                tda_firstDay,
+                tda_endDay
               from (select distinct (to_char(d.tda_dyyyymm, #{formatter})) as tda_dyyyymm
                    ,to_char(d.tda_dyyyymm,'yyyy/MM')||'/01' as tda_firstDay
                    ,to_char(LAST_day(d.tda_dyyyymm),'yyyy/MM/dd') as tda_endDay
-                  ,TMG_F_IS_FIXED_MONTHLY(#{employeeId},d.tda_dyyyymm,#{custId},#{compCode}) as flag
                   from tmg_daily d
                  where d.tda_ccompanyid = #{compCode}
                    and d.tda_ccustomerid = #{custId}
-                   and d.tda_cemployeeid = #{employeeId})
+                   and d.tda_cemployeeid = #{employeeId}
+                   and to_char(d.tda_dyyyymm,'yyyy/mm') <![CDATA[<=]]>  to_char(add_months(to_date(#{baseDate},'yyyy/mm/dd'),+1),'yyyy/mm'))
              order by tda_dyyyymm desc
     </select>
 

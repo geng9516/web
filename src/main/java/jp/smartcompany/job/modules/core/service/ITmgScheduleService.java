@@ -568,7 +568,7 @@ public interface ITmgScheduleService extends IService<Object> {
      * @param formatter
      * @return
      */
-    List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter);
+    List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String formatter,String baseDate);
 
 
 }
