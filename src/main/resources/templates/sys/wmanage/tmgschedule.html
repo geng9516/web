@@ -28,7 +28,12 @@
         </div>
         <div class="searchwrap">
             <span class="label">年月</span>
-            <i-select v-model="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="resetMonthSelectForBtnEditable"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
+                </i-option>
+            </i-select>
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="!resetMonthSelectForBtnEditable"
                       placeholder="選択ください">
                 <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
                 </i-option>
@@ -437,6 +442,7 @@
         el: '.tmgschedule-warp',
         data() {
             return {
+                resetMonthSelectForBtnEditable:false,
                 editErrMsg:'',
                 defaultDate: '', //年月选择（Date）
                 dispMonthlyList: [],       //年月リスト
@@ -725,14 +731,19 @@
         methods: {
 
             async isEditable4Schedule(){
+                this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
                 try{
                     const query = {...this.query,baseDate: this.query.txtBaseDate}
                     await  this.http.get(`sys/schedule/isEditable`,query)
                     this.editable=true
+                    this.editErrMsg=''
                     console.log("success")
                 }catch (e) {
                     console.log("fail")
-                    this.editable=false
+                    if(!this.isEditable){
+                        this.editable=false
+                    }
+
                     this.editErrMsg=e
 
                 }
@@ -1258,7 +1269,7 @@
 
                         let countRest=0;
                         let checkArr = []
-
+                        e.restList= e.restList.filter(e=>e.restOpen!=''&&e.restClose!='')
                         if(count >=360 && e.restList.some(e1=>{
 
                             if (!e1.restOpen) {
@@ -1484,9 +1495,10 @@
                 this.query.txtBaseDate=select.tda_firstDay
                 this.query.txtEndDate=select.tda_endDay
                 await this.isEditable4Schedule()
-                if(!this.editable && this.isEditable){
+                if(this.editErrMsg && this.isEditable){
                     return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
                 }
+                this.defaultDate = e
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
