@@ -329,6 +329,27 @@ public class TmgScheduleBean {
     }
 
     /**
+     * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
+     *
+     * @param baseDate
+     */
+    private boolean setVariationalWorkInfo(String baseDate, String custId, String compCode, String employeeId,String language) {
+        logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
+        int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(employeeId, baseDate, custId, compCode, language);
+        int tmp2 = iTmgScheduleService.selectVariationalWorkDays(employeeId, baseDate, custId, compCode, language);
+
+        if (tmp1 > 0) {
+            return true;
+        }
+        if (tmp2 > 0) {
+            return true;
+        }
+        return false;
+
+    }
+
+
+    /**
      * 対象ユーザー情報
      *
      * @return
@@ -360,6 +381,7 @@ public class TmgScheduleBean {
      * @param txtBaseDate 2020/03/15
      * @param txtEndDate  2020/04/11
      */
+
 
 
     public void setExecuteParameters(String txtBaseDate, String txtEndDate, PsDBBean psDBBean) {
@@ -2134,6 +2156,7 @@ public class TmgScheduleBean {
         String _targetCustCode = psDBBean.getCustID();
         String _targetCompCode = psDBBean.getCompCode();
         String _targetUserCode = psDBBean.getEmployeeCode();
+        String _language = psDBBean.getLanguage();
         String siteId = psDBBean.getSiteId();
 
         if (null == psDBBean) {
@@ -2152,24 +2175,24 @@ public class TmgScheduleBean {
         Boolean isEditable = null;
         if (isEditable == null) {
             // 「給与確定済」の場合、サイト関係なく常に編集不可
-            if (isFixedSalary(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend)) {
+            if (isFixedSalary(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language,baseDate, dstart, dend)) {
                 isEditable = false;
-                return GlobalResponse.error("該当職員「"+dateStr+"」の勤怠はすでに確認済みになりました。\n" + "予定変更することができません。");
+                return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに確認済みになりました。\n" + "予定変更することができません。");
             }
             // 「勤怠締め完了済」の場合、管理サイトでなければ編集不可
-            else if (isFixedMonthly(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend) && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
+            else if (isFixedMonthly(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language, baseDate, dstart, dend) && !TmgUtil.Cs_SITE_ID_TMG_ADMIN.equals(siteId)) {
                 isEditable = false;
-                return GlobalResponse.error("該当職員「"+dateStr+"」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業管理をご利用ください。");
+                return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業管理をご利用ください。");
             }
             // 入力サイトのみ、月次ステータスが「承認済」の場合、編集不可
-            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(siteId) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, baseDate, dstart, dend))) {
+            else if (TmgUtil.Cs_SITE_ID_TMG_INP.equals(siteId) && TmgUtil.Cs_MGD_DATASTATUS_5.equals(getMonthlyStatus(baseDate, _targetCustCode, _targetCompCode, _targetUserCode, _language,baseDate, dstart, dend))) {
                 isEditable = false;
-                return GlobalResponse.error("該当職員「"+dateStr+"」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業承認・就業管理をご利用ください。");
+                return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠はすでに締め完了になりました。\n" + "承認サイトでは予定変更することができません。\n" + "変更が必要の場合、就業承認・就業管理をご利用ください。");
             }
             // 承認サイトのみ、予定作成の権限を持っているか判定を行う。権限が無ければ編集不可
             else if (TmgUtil.Cs_SITE_ID_TMG_PERM.equals(siteId) && !existsAuthorityAtEmpSchedule()) {
                 isEditable = false;
-                return GlobalResponse.error("該当職員「"+dateStr+"」の勤怠に対して、予定編集するの権限がありません。\n" + "利用権限について、\n" + "権限設定画面で確認してください。");
+                return GlobalResponse.error("該当職員「" + dateStr + "」の勤怠に対して、予定編集するの権限がありません。\n" + "利用権限について、\n" + "権限設定画面で確認してください。");
             }
             // いずれの条件も満たさなければ編集可
             else {
@@ -2179,9 +2202,9 @@ public class TmgScheduleBean {
         return GlobalResponse.ok();
     }
 
-    private boolean isFixedSalary(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+    private boolean isFixedSalary(String baseDate, String custId, String compCode, String employeeId,String language, String dyyyymmdd, String dstart, String dend) {
         Boolean isFixedSalary = false;
-        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId,language, dyyyymmdd, dstart, dend, true);
         if (null != tmgStatusDTO) {
             if ("1".equals(tmgStatusDTO.getFixed_salary())) {
                 isFixedSalary = true;
@@ -2190,9 +2213,9 @@ public class TmgScheduleBean {
         return isFixedSalary;
     }
 
-    private boolean isFixedMonthly(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+    private boolean isFixedMonthly(String baseDate, String custId, String compCode, String employeeId,String language, String dyyyymmdd, String dstart, String dend) {
         Boolean isFixedMonthly = false;
-        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId,language, dyyyymmdd, dstart, dend, true);
         if (null != tmgStatusDTO) {
             if ("1".equals(tmgStatusDTO.getFixed_monthly())) {
                 isFixedMonthly = true;
@@ -2201,8 +2224,8 @@ public class TmgScheduleBean {
         return isFixedMonthly;
     }
 
-    private TmgStatusDTO getTmgStatus(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend, boolean all) {
-        this.setVariationalWorkInfo(baseDate);
+    private TmgStatusDTO getTmgStatus(String baseDate, String custId, String compCode, String employeeId, String language,String dyyyymmdd, String dstart, String dend, boolean all) {
+        boolean _isVariationalWorkType =  this.setVariationalWorkInfo(baseDate,custId,compCode,employeeId,language);
         TmgStatusDTO tmgStatusDTO = null;
         String group = "";
         if (all) {
@@ -2218,9 +2241,9 @@ public class TmgScheduleBean {
         return tmgStatusDTO;
     }
 
-    private String getMonthlyStatus(String baseDate, String custId, String compCode, String employeeId, String dyyyymmdd, String dstart, String dend) {
+    private String getMonthlyStatus(String baseDate, String custId, String compCode, String employeeId,String language, String dyyyymmdd, String dstart, String dend) {
         String monthlyStatus = TmgUtil.Cs_MGD_DATASTATUS_0;
-        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd, dstart, dend, true);
+        TmgStatusDTO tmgStatusDTO = this.getTmgStatus(baseDate, custId, compCode, employeeId, dyyyymmdd,language, dstart, dend, true);
         if (null != tmgStatusDTO) {
             monthlyStatus = tmgStatusDTO.getTmo_cstatusflg();
         }
