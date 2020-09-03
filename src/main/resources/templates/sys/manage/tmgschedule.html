@@ -20,12 +20,18 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 || !editable"  @click="isEditable = !isEditable"  v-if=" !isEditable && showEdit">対象者一括編集</i-button>
+                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 || !editable"  @click="isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
                 <i-button type="success" icon="md-create" :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
                 <i-button v-if=" isEditable" @click="isEditable = !isEditable;handleSelectAll2(false);restPattern()">キャンセル</i-button>
             </div>
         </div>
         <div class="searchwrap">
+            <span class="label">年月</span>
+            <i-select v-model="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
+                </i-option>
+            </i-select>
             <!-- 共通組織図画面 start-->
             <span style="display:flex;width: calc(15% + 200px);">
                 <span class="label">所属</span>
@@ -101,16 +107,6 @@
     <div class="content_body">
         <div class="table-top">
             <Row :gutter="16">
-                <Col span="11">
-                <i-button type="text" @click="preMonth" :disabled="!selectDisabled || !preMonthDisable">
-                    <Icon type="ios-arrow-back"></Icon>
-                    前月
-                </i-button>
-                <i-button type="text" @click="nextMonth" :disabled="!selectDisabled || !nextMonthDisable">
-                    翌月
-                    <Icon type="ios-arrow-forward"></Icon>
-                </i-button >
-                </Col>
             </Row>
         </div>
         <div style="position: relative;">
@@ -299,7 +295,9 @@
         el: '.tmgschedule-warp',
         data() {
             return {
-                showEdit:true,
+                editErrMsg:'',
+                defaultDate: '', //年月选择（Date）
+                dispMonthlyList: [],       //年月リスト
                 editable:false,
                 isSearchHistory: false,
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
@@ -492,17 +490,19 @@
             }
         },
         methods: {
-            async isEditableSchedule(){
-                const query = {...this.query}
-                const {data}=await  this.http.get(`sys/schedule/isEditableSchedule`,query)
-                console.log("showEdit"+data)
-                this.showEdit=data
-            },
+
             async isEditable4Schedule(){
-                const query = {...this.query,baseDate: this.query.txtBaseDate}
-                const {data}=await  this.http.get(`sys/schedule/isEditable`,query)
-                console.log("editable"+data)
-                this.editable=data
+                try{
+                    const query = {...this.query,baseDate: this.query.txtBaseDate}
+                    await  this.http.get(`sys/schedule/isEditable`,query)
+                    this.editable=true
+                    console.log("success")
+                }catch (e) {
+                    console.log("fail")
+                    this.editable=false
+                    this.editErrMsg=e
+
+                }
             },
             async getHatuRei() {
                 try {
@@ -626,11 +626,10 @@
                 this.query.groupid=e[0].groupid
 
 
-
-                await  this.getSelectScheduleInfo()
+                await this.selectScheduleDateList()
+                await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
-                this.isEditableSchedule()
                 this.isEditable4Schedule()
             },
             async getSelectScheduleInfo() {
@@ -929,7 +928,6 @@
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
             dayRed(e) {
-                console.log(e)
                 const dayOfWeek = e.holflgCalendar
                 if (!dayOfWeek) {
                     return
@@ -941,24 +939,7 @@
                     return 'brown'
                 }
             },
-            async preMonth() {
-                this.query.txtBaseDate=this.selectScheduleInfo.preStart
-                this.query.txtEndDate=this.selectScheduleInfo.preEnd
-                await this.getSelectScheduleInfo()
-                await this.getSelectIkkaInfo()
-                await this.getHatuRei()
-                this.isEditableSchedule()
-                this.isEditable4Schedule()
-            },
-            async nextMonth() {
-                this.query.txtBaseDate=this.selectScheduleInfo.nextStart
-                this.query.txtEndDate=this.selectScheduleInfo.nextEnd
-                await this.getSelectScheduleInfo()
-                await this.getSelectIkkaInfo()
-                await this.getHatuRei()
-                this.isEditableSchedule()
-                this.isEditable4Schedule()
-            },
+
             rowClass(row) {
 
             },
@@ -976,9 +957,37 @@
                 this.pattern.bussinessTripid=''
                 this.pattern.restList=[]
                 this.curSelectedWorkPattern.CPATTERNID='TMG_PATTERN|'
-            }
+            },
+            async selectScheduleDateList() {
+                try {
+                    const query = {...this.query}
+                    const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+                    this.dispMonthlyList = data
+                    this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
+                    this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
+                    this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
 
+
+                } catch (error) {
+                    return
+                }
+            },
+            async handleStartMonth(e) {
+                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
+                this.query.txtBaseDate=select.tda_firstDay
+                this.query.txtEndDate=select.tda_endDay
+                await this.isEditable4Schedule()
+                if(!this.editable && this.isEditable){
+                    return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
+                }
+                await this.getSelectScheduleInfo()
+                await this.getSelectIkkaInfo()
+                await this.getHatuRei()
+
+
+            },
         }
+
     })
 </script>
 </body>
