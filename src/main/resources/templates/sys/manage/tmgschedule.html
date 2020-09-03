@@ -27,7 +27,12 @@
         </div>
         <div class="searchwrap">
             <span class="label">年月</span>
-            <i-select v-model="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="resetMonthSelectForBtnEditable"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
+                </i-option>
+            </i-select>
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="!resetMonthSelectForBtnEditable"
                       placeholder="選択ください">
                 <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
                 </i-option>
@@ -314,6 +319,7 @@
                 value: [],
                 valueMap:[],
                 selectDisabled:false,
+                resetMonthSelectForBtnEditable:false,
                 workPatternSelected: "TMG_PATTERN|",
                 columnsAction: [
                     {
@@ -492,6 +498,7 @@
         methods: {
 
             async isEditable4Schedule(){
+                this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
                 try{
                     const query = {...this.query,baseDate: this.query.txtBaseDate}
                     await  this.http.get(`sys/schedule/isEditable`,query)
@@ -980,6 +987,7 @@
                 if(!this.editable && this.isEditable){
                     return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
                 }
+                this.defaultDate = e
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()
