@@ -333,7 +333,7 @@ public class ScheduleController {
      */
     @GetMapping("selectScheduleDateList")
     @ResponseBody
-    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean, String baseDate) {
+    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean,  @RequestParam("baseDate") String baseDate) {
         return tmgScheduleBean.selectScheduleDateList(psDBBean, baseDate);
     }
 
