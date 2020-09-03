@@ -586,6 +586,7 @@ public class TmgReferList {
             Connection conn = null;
             try {
                 conn = dataSource.getConnection();
+                log.info("日期SQL语句：{}",sSQL);
                 /* 执行查询语句，返回实体列表，一个Entity对象表示一行的数据，Entity对象是一个继承自HashMap的对象，存储的key为字段名，value为字段值 */
                 List<Entity> entityList = SqlExecutor.query(conn, sSQL.toString(), new EntityListHandler());
                 Entity entity = entityList.get(0);
@@ -596,6 +597,7 @@ public class TmgReferList {
                 gcSysdate = DateUtil.date(sysdate);
                 gcPreMonthDate = DateUtil.date(preMonthDate);
                 gcPreYearDate = DateUtil.date(preYearDate);
+
             } catch (SQLException | ParseException e) {
                 e.printStackTrace();
                 // 例外発生時の緊急対応
@@ -622,9 +624,9 @@ public class TmgReferList {
             } finally {
                 DbUtil.close(conn);
             }
-//            psDBBean.getSession().setAttribute(SESSION_KEY_SYSDATE, gcSysdate);
-//            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_MONTH_DATE, gcPreMonthDate);
-//            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_YEAR_DATE, gcPreYearDate);
+            psDBBean.getSession().setAttribute(SESSION_KEY_SYSDATE, gcSysdate);
+            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_MONTH_DATE, gcPreMonthDate);
+            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_YEAR_DATE, gcPreYearDate);
         }
     }
 
@@ -853,7 +855,7 @@ public class TmgReferList {
             else{
                 try{
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
-                    log.debug("【调用TmgOrgTress的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
+                    log.debug("【调用TmgOrgTree的createOrgTree方法，custId:{},compCode:{},language:{},baseDate:{}】",psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getLanguage(),baseDate);
                     orgTree.createOrgTree("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'", "'"+psDBBean.getLanguage()+"'", baseDate);
 //                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_RESULT, orgTree.getDataArray());
 //                    psDBBean.getSession().setAttribute(SESSION_KEY_ORGTREE_CONDITION, sExists);
@@ -957,6 +959,7 @@ public class TmgReferList {
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             // ===== fix: 从数据库查出的gcPreYearDate在比当前年份仅小于一年时数量和查询出的员工数量不正确的问题
             if(SysDateUtil.isLess(date,gcPreYearDate) || ( DateUtil.date().year()-DateUtil.date(date).year()) == 1){
+//                if(SysDateUtil.isLess(date,gcPreYearDate)){
                 target = SysUtil.transDateNullToDB(targetDate);
                 empList.createEmpList(
                         "'"+psDBBean.getCustID()+"'",

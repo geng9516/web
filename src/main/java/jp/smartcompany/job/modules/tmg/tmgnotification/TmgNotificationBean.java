@@ -467,10 +467,10 @@ public class TmgNotificationBean {
         //referlist 新规
         if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_INP)){
             referList = new TmgReferList(psDBBean, "TmgNotification", psDBBean.getReqParam(TmgReferList.TREEVIEW_KEY_RECORD_DATE), TmgReferList.TREEVIEW_TYPE_EMP, true,
-                    false, false, false, false);;
+                    true, false, true, false);;
         }else{
             referList = new TmgReferList(psDBBean, "TmgNotification", psDBBean.getReqParam(TmgReferList.TREEVIEW_KEY_RECORD_DATE), TmgReferList.TREEVIEW_TYPE_LIST, true,
-                    false, false, false, false);
+                    true, false, true, false);
         }
         String basedate=referList.getRecordDate();
         if(StrUtil.isBlank(basedate)){
