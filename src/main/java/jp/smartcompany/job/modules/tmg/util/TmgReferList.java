@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.CalendarUtil;
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
@@ -621,9 +622,9 @@ public class TmgReferList {
             } finally {
                 DbUtil.close(conn);
             }
-            psDBBean.getSession().setAttribute(SESSION_KEY_SYSDATE, gcSysdate);
-            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_MONTH_DATE, gcPreMonthDate);
-            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_YEAR_DATE, gcPreYearDate);
+//            psDBBean.getSession().setAttribute(SESSION_KEY_SYSDATE, gcSysdate);
+//            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_MONTH_DATE, gcPreMonthDate);
+//            psDBBean.getSession().setAttribute(SESSION_KEY_PRE_YEAR_DATE, gcPreYearDate);
         }
     }
 
@@ -954,14 +955,17 @@ public class TmgReferList {
 
             log.info("【createEmpList的参数:sectionId:{},targetDate:{},dateCompare:{}】",targetSection,targetDate,SysDateUtil.isLess(date,gcPreYearDate));
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
-            if(date.before(gcPreYearDate)){
+            // ===== fix: 从数据库查出的gcPreYearDate在比当前年份仅小于一年时数量和查询出的员工数量不正确的问题
+            if(SysDateUtil.isLess(date,gcPreYearDate) || ( DateUtil.date().year()-DateUtil.date(date).year()) == 1){
                 target = SysUtil.transDateNullToDB(targetDate);
                 empList.createEmpList(
                         "'"+psDBBean.getCustID()+"'",
                         "'"+psDBBean.getCompCode()+"'",
                         SysUtil.transStringNullToDB(targetSection),
                         target, //現状未使用
-                        base,
+// fix: 老代码以basedate查询，现在统一用target查询
+//                       base,
+                        target,
                         "'"+psDBBean.getLanguage()+"'",
                         true, // 本務のみとする
                         isJoinTmgEmployees,
@@ -988,6 +992,8 @@ public class TmgReferList {
             else{
                 target = SysUtil.transDateNullToDB(getDateStringFor(gcPreYearDate, DEFAULT_DATE_FORMAT));
                 try{
+//                    createEmpList4TreeView(target, target, targetSection, sdf);
+//                    createEmpList4SearchView(target, target, targetSection, sdf);
                     createEmpList4TreeView(base, target, targetSection, sdf);
                     createEmpList4SearchView(base, target, targetSection, sdf);
                     psDBBean.getSession().setAttribute(SESSION_KEY_TARGETDATE, target);
