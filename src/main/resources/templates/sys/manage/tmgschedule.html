@@ -960,7 +960,7 @@
             },
             async selectScheduleDateList() {
                 try {
-                    const query = {...this.query}
+                    const query = {...this.query,baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate}
                     const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList = data
                     this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
