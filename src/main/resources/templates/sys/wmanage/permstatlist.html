@@ -389,6 +389,8 @@
                         txtCallBeanAction: 'ACT_DISP_MONTHLY',
                         txtTmgReferListTreeViewRecordDate: '',
                         txtTmgReferListTreeViewAdminTargetSection: '',
+                        txtTmgReferListTreeViewAdminTargetEmp: '',
+                        txtTmgReferListTreeViewAdminTargetEmpName: '',
                         txtCEMPLOYEEID: '',
                         sectionid: '',
                         txtExecuteEmpId: '',
@@ -736,6 +738,10 @@
                     this.approval = data.approval
                     this.listLoading  = false
                     this.isSearchHistory = false
+
+                    //他画面へ遷移するとき、職員番号と職員氏名をデフォルト値として設定する
+                    this.query.txtTmgReferListTreeViewAdminTargetEmp = data.tmgMonthlyInfoVOList[0].empid
+                    this.query.txtTmgReferListTreeViewAdminTargetEmpName = data.tmgMonthlyInfoVOList[0].empname
                 },
                 async getTmgMonthlyInfoVOList() {
                     this.query.txtAction = 'ACT_DISP_MONTHLY'
