@@ -80,7 +80,7 @@
     <div class="content_body">
         <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  :row-class-name="() => 'select-col'" >
-            <template slot-scope="{ row }" slot="name"><span class="cursor blue" style="text-decoration: underline" @click="handleRowClick(row)">{{ row.name}}</span>
+            <template slot-scope="{ row }" slot="name"><i-button type="primary" ghost size="small" style="margin-right: 5px" @click.stop="handleRowClick(row)">{{ row.name }}</i-button>
             </template>
 
             <template slot-scope="{ row }" slot="vactionGiveDay">

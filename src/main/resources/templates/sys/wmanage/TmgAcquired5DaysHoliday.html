@@ -80,7 +80,7 @@
     <div class="content_body">
         <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  :row-class-name="() => 'select-col'" >
-            <template slot-scope="{ row }" slot="name"><span class="cursor blue" style="text-decoration: underline" @click="handleRowClick(row)">{{ row.name}}</span>
+            <template slot-scope="{ row }" slot="name"><i-button type="primary" ghost size="small" style="margin-right: 5px" @click.stop="handleRowClick(row)">{{ row.name }}</i-button>
             </template>
 
             <template slot-scope="{ row }" slot="vactionGiveDay">
@@ -500,7 +500,9 @@
                 dataLoading: false,
                 forRest: true,
                 radioCheckedIndex: 0,
-                targetAdminSection: ''
+                targetAdminSection: '',
+                loginDesignationSection: '',
+                targetAdminSectionFlag: false
             }
         },
         async mounted() {
@@ -662,9 +664,8 @@
                 }
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
-                let b=[]
                 if(data.length>0){
-                        b = data.map((e,i) => {
+                    let b = data.map((e,i) => {
                         const vactionGiveDay = [{
                             day:e.taDyyyymmdd3,
                             isReGive: data[i].taCduplicateflg === '1'
@@ -1243,21 +1244,26 @@
             },
             //初期化処理
             async getInit() {
+                console.log("getInit")
                 console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
                 console.log(this.referListObject)
 
                 this.targetAdminSection = '',
                 this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
-                let loginDesignationSection = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log("getDeptCode")
+                console.log(this.loginDesignationSection)
+                console.log(this.targetAdminSection)
 
                 if (this.targetAdminSection == null || this.targetAdminSection == ''){
-                    if (this.getDeptCode(this.treeData)) {
+                    this.getDeptCode(this.treeData)
+                    if (this.targetAdminSectionFlag) {
                         console.log("getDeptCode_true")
-                        this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
-                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                        this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     } else {
@@ -1279,10 +1285,9 @@
                 this.getTableData()
             },
             getDeptCode(data) {
-                // idによりループ処理でdeptNameを取得する
                 data.forEach(e => {
-                    if (e.secid === this.targetAdminSection) {
-                        return true
+                    if (e.secid === this.loginDesignationSection) {
+                        this.targetAdminSectionFlag = true
                     } else {
                         const children = e.child || e.children
                         if (children) {
