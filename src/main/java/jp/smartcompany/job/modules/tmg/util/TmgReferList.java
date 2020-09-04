@@ -1580,7 +1580,9 @@ public class TmgReferList {
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, obj.get("label"));
             }
             String targetSection = ContextUtil.getHttpRequest().getParameter(TREEVIEW_KEY_PERM_TARGET_SECTION);
+            System.out.println("+++");
             if (StrUtil.isNotBlank(targetSection)) {
+                System.out.println(targetSection);
                 String regexSectionPerm =  targetSection.replace("|","\\|");
                 String result = ReUtil.get("\\{[^{]*'" + regexSectionPerm+ "'[^}]*\\}", treeViewSection, 0);
                 JSONObject obj = JSONUtil.parseObj(result);
