@@ -165,6 +165,7 @@ public class AuthBusiness {
             session.removeAttribute(Constant.PS_SESSION);
             session.removeAttribute(Constant.TOP_NAVS);
             ShiroUtil.getSubject().logout();
+            session.invalidate();
         }
     }
 
