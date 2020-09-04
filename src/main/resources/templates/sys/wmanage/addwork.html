@@ -745,7 +745,7 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-
+                console.log(e)
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
@@ -795,6 +795,7 @@
 
                 this.loginEmployee = e[0].empid
                 this.sectionName = e[0].secnic
+                this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.kanjiName = e[0].empname

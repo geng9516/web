@@ -961,7 +961,11 @@
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
                 if (!this.bDisable) {
                     this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
-                    this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
+                    if (!this.workData[2].workEnd ) {
+                        this.tmgResultsDto.txtTdaNcloseR = this.workData[0].workEnd
+                    }else{
+                        this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
+                    }
                     this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
                     this.tmgResultsDto.overHoursList = this.detailOverhoursVOList
                     if (this.bFixed || this.bHoliday) {
@@ -1049,7 +1053,8 @@
                 }
 
                 // 修正退社時刻形式
-                if (this.workData[2].workEnd ===null || !this.time_check(this.workData[2].workEnd)) {
+
+                if (this.workData[2].workEnd && !this.time_check(this.workData[2].workEnd)) {
                     this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
                     return false;
                 }

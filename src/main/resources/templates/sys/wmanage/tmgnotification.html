@@ -27,7 +27,7 @@
       </div>
       <div class="searchwrap">
         <span class="label">年</span>
-        <date-picker type="year" format="yyyy" class="mr15" :value="curYear" @on-change="handleDatePicker">
+        <date-picker type="year" format="yyyy年" class="mr15" :value="curYear" @on-change="handleDatePicker">
         </date-picker>
         <!-- 共通組織図画面 start-->
         <span style="display:flex;width: calc(15% + 200px);">
@@ -140,13 +140,13 @@
             <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
             <Row class="ft13 mb5 mt10">
               <i-col span="12">
-                <p class="head-info mr1">期間</p>
+                <p class="label mr1">期間</p>
               </i-col>
               <i-col span="6">
-                <p class="head-info mr1">残日数</p>
+                <p class="label mr1">残日数</p>
               </i-col>
               <i-col span="6">
-                <p class="head-info">残時間数</p>
+                <p class="label">残時間数</p>
               </i-col>
             </Row>
             <Row class="mb5 ft13 border">
@@ -182,8 +182,11 @@
 <!--          <form-item label="最終決裁レベル">-->
 <!--            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>-->
 <!--          </form-item>-->
-          <form-item label="対象期間">
+          <form-item label="対象期間-日">
             <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyDayShow(detailsData) }}</span>
+          </form-item>
+          <form-item label="対象期間-時" v-if="handleApplyHourShow(detailsData)">
+            <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyHourShow(detailsData) }}</span>
           </form-item>
           <form-item label="曜日">
             <span class="input-like-span" v-if="detailsData.tntfNnoreserved === 1"
@@ -481,6 +484,9 @@
               <form-item label="">
                 <Alert class="primary-info">各上限 500kBytes</Alert>
               </form-item>
+              <form-item label="注意事項" v-if="selectBiko">
+                <Alert class="primary-info" >{{selectBiko}}</Alert>
+              </form-item>
             </i-form>
             <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create" :loading="applyLoading">申請
             </i-button>
@@ -497,6 +503,7 @@
       el: '.restapplyconfirmw-warp',
       data() {
         return {
+          selectBiko:'',
           hasPassedTimeCheck: true,
           agencyApplyShow: false,
           columns: [
@@ -885,13 +892,25 @@
           if (e.tntfDbegin === e.tntfDend) {
             result = result.concat(e.tntfDbegin)
           } else {
-            result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
+            if(e.ntfTypeValue.transfer){
+              result = result.concat(`出勤にする休日:${e.tntfDbegin} ～ 振休日とする出勤日:${e.tntfDend}`)
+            }else{
+              result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
+            }
+
           }
-          if (e.tntfNtimeOpenHhmi) {
-            result = result.concat(`${e.tntfNtimeOpenHhmi} ～ ${e.tntfNtimeCloseHhmi}`)
+          return result
+        },
+        handleApplyHourShow(e) {
+          let result = ''
+          if (e.tntfNtimezoneOpenHhmi) {
+            result = result.concat(`${e.tntfNtimezoneOpenHhmi} ～ ${e.tntfNtimezoneCloseHhmi}`)
           }
           if (e.tntfNtimeOpen) {
-            result = result.concat(`${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
+            result = result.concat(`始業後${e.tntfNtimeOpen}分 ～ 終業前${e.tntfNtimeClose}分`)
+          }
+          if (e.tntfNrestopen) {
+            result = result.concat(`休憩時間:${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
           }
           return result
         },
@@ -921,7 +940,7 @@
           return result
         },
         handleDatePicker(e) {
-          this.opts.year = +e
+          this.opts.year = e.slice(0,-1)
           this.getTableData(false, true)
         },
         handleScroll: Throttle(function (e) {
@@ -1083,8 +1102,11 @@
             return
           }
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+          const turnLine = Vue.filter('turnLine');
+          this.selectBiko=turnLine(this.flatRestTypeList.find(t => t.ntfId === e).biko)
           console.log(this.selectedRestInfo)
         },
+
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
           let checkPassed = true
@@ -1172,14 +1194,26 @@
             this.errorMsg = '時刻をHH:MM形式で入力してください'
             return
           }
-          if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
-            this.errorInfo = true
-            this.errorMsg = '生年月日を入力してください。'
-            return
+          if(this.selectedRestInfo.workTime) {
+            if (!this.restApply.timeOpen) {
+              this.errorInfo = true
+              this.errorMsg = '始業後時刻を入力してください'
+              return
+            }
+            if (!this.restApply.timeClose) {
+              this.errorInfo = true
+              this.errorMsg = '終業前時刻を入力してください'
+              return
+            }
           }
           if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
             this.errorInfo = true
             this.errorMsg = '起算日を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+            this.errorInfo = true
+            this.errorMsg = '氏名を入力してください。'
             return
           }
           if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
@@ -1187,19 +1221,19 @@
             this.errorMsg = '続柄を入力してください。'
             return
           }
-          if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
-            this.errorInfo = true
-            this.errorMsg = '傷病名を入力してください。'
-            return
-          }
           if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
             this.errorInfo = true
             this.errorMsg = '対象の人数を入力してください。'
             return
           }
-          if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+          if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
             this.errorInfo = true
-            this.errorMsg = '氏名を入力してください。'
+            this.errorMsg = '生年月日を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
+            this.errorInfo = true
+            this.errorMsg = '傷病名を入力してください。'
             return
           }
           this.deleteFiles = [...new Set(this.deleteFiles)]

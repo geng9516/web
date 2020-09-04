@@ -637,14 +637,26 @@
                         this.errorMsg = '時刻をHH:MM形式で入力してください'
                         return
                     }
-                    if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
-                        this.errorInfo = true
-                        this.errorMsg = '生年月日を入力してください。'
-                        return
+                    if(this.selectedRestInfo.workTime) {
+                        if (!this.restApply.timeOpen) {
+                            this.errorInfo = true
+                            this.errorMsg = '始業後時刻を入力してください'
+                            return
+                        }
+                        if (!this.restApply.timeClose) {
+                            this.errorInfo = true
+                            this.errorMsg = '終業前時刻を入力してください'
+                            return
+                        }
                     }
                     if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
                         this.errorInfo = true
                         this.errorMsg = '起算日を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+                        this.errorInfo = true
+                        this.errorMsg = '氏名を入力してください。'
                         return
                     }
                     if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
@@ -652,19 +664,19 @@
                         this.errorMsg = '続柄を入力してください。'
                         return
                     }
-                    if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
-                        this.errorInfo = true
-                        this.errorMsg = '傷病名を入力してください。'
-                        return
-                    }
                     if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
                         this.errorInfo = true
                         this.errorMsg = '対象の人数を入力してください。'
                         return
                     }
-                    if(this.selectedRestInfo.name && !this.restApply.txtName ) {
+                    if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
                         this.errorInfo = true
-                        this.errorMsg = '氏名を入力してください。'
+                        this.errorMsg = '生年月日を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
+                        this.errorInfo = true
+                        this.errorMsg = '傷病名を入力してください。'
                         return
                     }
                     this.deleteFiles = [...new Set(this.deleteFiles)]
@@ -851,13 +863,14 @@
                     let checkPassed = true
                      if (this.uploadFiles.length >= 5) {
                         this.$Notice.warning({
-                        title: '添付可能なファイル数が上限（5個）を超えました。'
+                        title: '',
+                        desc: '添付可能なファイル数が上限（5個）を超えました。'
                         })
                         checkPassed = false
                     }
                     if (files.size / 1024 > 500) {
                         this.$Notice.warning({
-                            title: 'Exceeding file size limit',
+                            title: '',
                             desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
                         })
                         checkPassed = false
