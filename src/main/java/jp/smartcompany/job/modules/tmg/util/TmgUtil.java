@@ -5,6 +5,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -20,48 +21,48 @@ public class TmgUtil {
     /**
      * 勤怠入力サイトのサイトIDを表す文字列です
      */
-    public static final String Cs_SITE_ID_TMG_INP    = "TMG_INP";
+    public static final String Cs_SITE_ID_TMG_INP = "TMG_INP";
     /**
      * 勤怠承認サイトのサイトIDを表す文字列です
      */
-    public static final String Cs_SITE_ID_TMG_PERM   = "TMG_PERM";
+    public static final String Cs_SITE_ID_TMG_PERM = "TMG_PERM";
     /**
      * 勤怠管理サイトのサイトIDを現す文字列です
      */
-    public static final String Cs_SITE_ID_TMG_ADMIN  = "TMG_ADMIN";
+    public static final String Cs_SITE_ID_TMG_ADMIN = "TMG_ADMIN";
 
     /**
      * 勤怠承認の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_RESULT		= "RESULT";			// 勤怠承認
+    public static final String Cs_AUTHORITY_RESULT = "RESULT";            // 勤怠承認
     /**
      * 休暇承認の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_NOTIFICATION	= "NOTIFICATION";	// 休暇承認
+    public static final String Cs_AUTHORITY_NOTIFICATION = "NOTIFICATION";    // 休暇承認
     /**
      * 超勤命令の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_OVERTIME		= "OVERTIME";		// 超勤命令
+    public static final String Cs_AUTHORITY_OVERTIME = "OVERTIME";        // 超勤命令
     /**
      * 権限付与の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_AUTHORITY	    = "AUTHORITY";		// 権限付与
+    public static final String Cs_AUTHORITY_AUTHORITY = "AUTHORITY";        // 権限付与
 
     /**
      * 予定作成の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_SCHEDULE	    = "SCHEDULE";		// 権限付与
+    public static final String Cs_AUTHORITY_SCHEDULE = "SCHEDULE";        // 権限付与
 
     /**
      * 勤怠承認(月次)の権限を表す権限コードです<br>
      * TmgReferListの権限判定メソッドを実行する際に使用します
      */
-    public static final String Cs_AUTHORITY_MONTHLYAPPROVAL	    = "MONTHLYAPPROVAL";		// 勤怠承認(月次)
+    public static final String Cs_AUTHORITY_MONTHLYAPPROVAL = "MONTHLYAPPROVAL";        // 勤怠承認(月次)
 
     /**
      * 部署直下を表すグループに付けられる、デフォルトグループ番号です
@@ -69,30 +70,30 @@ public class TmgUtil {
     public static final String Cs_DEFAULT_GROUPSEQUENCE = "000000";
 
     //フォーマット
-    public static final String Cs_MM 			= "MM";
-    public static final String Cs_YYYY 		= "YYYY";
-    public static final String Cs_YYYYMM 		= "YYYYMM";
-    public static final String Cs_YYYYMMDD	= "YYYYMMDD";
-    public static final String Cs_FM00 		= "FM00";
+    public static final String Cs_MM = "MM";
+    public static final String Cs_YYYY = "YYYY";
+    public static final String Cs_YYYYMM = "YYYYMM";
+    public static final String Cs_YYYYMMDD = "YYYYMMDD";
+    public static final String Cs_FM00 = "FM00";
 
     /**
      * レコードのデータ開始日の最小値です<BR>
-     *   この文字列は、フォーマットを指定し、TO_DATE関数を使用しているので<B>そのまま使用できます。</B><BR><BR>
-     *   使用例)<BR>
-     *    "テーブル名.日付カラム <= " + Cs_MINDATE + " ";
+     * この文字列は、フォーマットを指定し、TO_DATE関数を使用しているので<B>そのまま使用できます。</B><BR><BR>
+     * 使用例)<BR>
+     * "テーブル名.日付カラム <= " + Cs_MINDATE + " ";
      */
     public static final String Cs_MINDATE = "TO_DATE('1900/01/01', 'YYYY/MM/DD')"; //データ開始日
     /**
      * レコードのデータ終了日の最大値です<BR>
-     *   この文字列は、フォーマットを指定し、TO_DATE関数を使用しているので<B>そのまま使用できます。</B><BR><BR>
-     *   使用例)<BR>
-     *    "テーブル名.日付カラム >= " + Cs_MAXDATE + " ";
+     * この文字列は、フォーマットを指定し、TO_DATE関数を使用しているので<B>そのまま使用できます。</B><BR><BR>
+     * 使用例)<BR>
+     * "テーブル名.日付カラム >= " + Cs_MAXDATE + " ";
      */
     public static final String Cs_MAXDATE = "TO_DATE('2222/12/31', 'YYYY/MM/DD')"; //データ終了日
 
     /**
      * レコードのデータ終了日の最大値です<BR>
-     *   この文字列は、フォーマットを指定していません。</B><BR><BR>
+     * この文字列は、フォーマットを指定していません。</B><BR><BR>
      */
     public static final String Cs_DEFAULT_MAXDATE = "2222/12/31";    //データ終了日(TO_DATE関数なし)
 
@@ -108,17 +109,17 @@ public class TmgUtil {
      * ARTERIALのフェーズ
      * SQLの中で使うのでString
      */
-    public static final String Cn_PHASE_SHEET_INSERT     = "100" ;  // 勤怠シート作成処理
-    public static final String Cn_PHASE_SET_EMPLOYEES    = "200" ;  // 入社退職反映処理
-    public static final String Cn_PHASE_SET_SUSPENSION   = "300" ;  // 休職反映処理
-    public static final String Cn_PHASE_SET_NOTIFICATION = "400" ;  // 申請反映処理
-    public static final String Cn_PHASE_SET_TIMEPUNCH    = "500" ;  // 打刻反映処理
-    public static final String Cn_PHASE_VALIDATE_DAILY   = "600" ;  // 実績整合性チェック処理
-    public static final String Cn_PHASE_CHECK_RESULTS    = "650" ;  // 勤怠承認時(論理エラーチェック時に使う)
-    public static final String Cn_PHASE_APPROVE_HOLIDAY  = "700" ;  // 休暇日自動承認処理
-    public static final String Cn_PHASE_CALC_DAILY       = "800" ;  // 日別勤怠計算処理
-    public static final String Cn_PHASE_CALC_HOLIDAY     = "900" ;  // 年次休暇計算処理
-    public static final String Cn_PHASE_CALC_MONTHLY     = "1000";  // 月別勤怠計算処理
+    public static final String Cn_PHASE_SHEET_INSERT = "100";  // 勤怠シート作成処理
+    public static final String Cn_PHASE_SET_EMPLOYEES = "200";  // 入社退職反映処理
+    public static final String Cn_PHASE_SET_SUSPENSION = "300";  // 休職反映処理
+    public static final String Cn_PHASE_SET_NOTIFICATION = "400";  // 申請反映処理
+    public static final String Cn_PHASE_SET_TIMEPUNCH = "500";  // 打刻反映処理
+    public static final String Cn_PHASE_VALIDATE_DAILY = "600";  // 実績整合性チェック処理
+    public static final String Cn_PHASE_CHECK_RESULTS = "650";  // 勤怠承認時(論理エラーチェック時に使う)
+    public static final String Cn_PHASE_APPROVE_HOLIDAY = "700";  // 休暇日自動承認処理
+    public static final String Cn_PHASE_CALC_DAILY = "800";  // 日別勤怠計算処理
+    public static final String Cn_PHASE_CALC_HOLIDAY = "900";  // 年次休暇計算処理
+    public static final String Cn_PHASE_CALC_MONTHLY = "1000";  // 月別勤怠計算処理
     public static final String Cn_PHASE_SET_MONTHLY_INFO = "1100";  // 月単位日別情報更新処理
 
 
@@ -128,26 +129,42 @@ public class TmgUtil {
     public static final String Cs_NO_ERROR_BY_AJAX_ERROR_CHECK = "0";
 
     // 2007.10.15 tanaka #175 想定外の例外が発生した場合のハンドリング処理
-    /** SQL実行時の例外 */
-    public static final int Cs_EXECUTE_QUERY_FAILER  = -2;
-    /** コネクション取得時の例外 */
+    /**
+     * SQL実行時の例外
+     */
+    public static final int Cs_EXECUTE_QUERY_FAILER = -2;
+    /**
+     * コネクション取得時の例外
+     */
     public static final int Cs_GET_CONNECTION_FAILER = -1;
-    /** sessionへ登録する想定外の例外キー */
+    /**
+     * sessionへ登録する想定外の例外キー
+     */
     public static final String Cs_INSERT_ERROR_MSG = "txtInsertErrorMsg";
 
     private static TmgUtil tmgUtil = null;
 
-    /** メール未送信:0 */
-    public static final String Cs_MAIL_UNSEND  = "0";
-    /** メール送信:1 */
-    public static final String Cs_MAIL_SEND  = "1";
+    /**
+     * メール未送信:0
+     */
+    public static final String Cs_MAIL_UNSEND = "0";
+    /**
+     * メール送信:1
+     */
+    public static final String Cs_MAIL_SEND = "1";
 
-    /** 遅延理由を非表示:0 */
-    public static final String Cs_DELAY_REASON_HIDDEN  = "0";
-    /** 遅延理由を表示:1 */
-    public static final String Cs_DELAY_REASON_VIEW  = "1";
+    /**
+     * 遅延理由を非表示:0
+     */
+    public static final String Cs_DELAY_REASON_HIDDEN = "0";
+    /**
+     * 遅延理由を表示:1
+     */
+    public static final String Cs_DELAY_REASON_VIEW = "1";
 
-    /** 組織ツリー検索タブで使用している検索項目・検索条件 */
+    /**
+     * 組織ツリー検索タブで使用している検索項目・検索条件
+     */
     public static final String Cs_TREE_VIEW_ITEMS_KANANAME = "KANANAME";               // カナ氏名
     public static final String Cs_TREE_VIEW_ITEMS_KANJINAME = "KANJIMAME";             // 漢字氏名
     public static final String Cs_TREE_VIEW_ITEMS_EMPLOYEEID = "EMPLOYEEID";           // 職員番号
@@ -157,11 +174,17 @@ public class TmgUtil {
 
     public static final String Cs_TmgDispLimit4TreeDefault = "100";
 
-    /** 使用ブラウザ識別子　Internet Explorer */
+    /**
+     * 使用ブラウザ識別子　Internet Explorer
+     */
     public static final String BROWSER_IE = "IE";
-    /** 使用ブラウザ識別子　Firefox */
+    /**
+     * 使用ブラウザ識別子　Firefox
+     */
     public static final String BROWSER_FF = "FF";
-    /** 使用ブラウザ識別子　Safari */
+    /**
+     * 使用ブラウザ識別子　Safari
+     */
     public static final String BROWSER_SF = "SF";
 
 
@@ -645,7 +668,7 @@ public class TmgUtil {
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、非常勤の休日 を表すマスターコードです
      */
-    public static final String Cs_MGD_HOLFLG_HIJOKIN = "TMG_HOLFLG|4";	//#406 上記のコードなぜ、定数を名前につけている
+    public static final String Cs_MGD_HOLFLG_HIJOKIN = "TMG_HOLFLG|4";    //#406 上記のコードなぜ、定数を名前につけている
 
     /**
      * 名称マスタ(MAST_GENERIC)において、"<b>閾値</b>"を表すグループIDです
@@ -1575,7 +1598,9 @@ public class TmgUtil {
 
     public static final String Cs_MGD_MANAGER4SALARY = "TMG_MANAGER4SALARY|1";
 
-    /** 遅延理由を表示するか */
+    /**
+     * 遅延理由を表示するか
+     */
     public static final String Cs_DELAY_RESON_ONOFF_1 = "1";
 
     /**
@@ -1636,7 +1661,7 @@ public class TmgUtil {
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"月次集計ステータス：給与締め"を表すマスタコードです
      */
-    public static final String Cs_MGD_TMG_STATUS_SALARYFIX  = "TMG_STATUS|SALARY_FIX";
+    public static final String Cs_MGD_TMG_STATUS_SALARYFIX = "TMG_STATUS|SALARY_FIX";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"１日の法定労働時間"を表すマスタコードです
@@ -1646,17 +1671,17 @@ public class TmgUtil {
     /**
      * 名称マスタ(MAST_GENERIC)において、"<b>月次情報表示項目</b>"を表すグループIDです
      */
-    public static final String Cs_MGD_DISPMONTHLYITEMS  = "TMG_DISPMONTHLYITEMS";
+    public static final String Cs_MGD_DISPMONTHLYITEMS = "TMG_DISPMONTHLYITEMS";
 
     /**
      * 名称マスタ(MAST_GENERIC)において、"<b>日次情報表示項目</b>"を表すグループIDです
      */
-    public static final String Cs_MGD_DISPDAILYITEMS   = "TMG_DISPDAILYITEMS";
+    public static final String Cs_MGD_DISPDAILYITEMS = "TMG_DISPDAILYITEMS";
 
     /**
      * 名称マスタ(MAST_GENERIC)において、"<b>出勤簿月単位集計情報表示項目</b>"を表すグループIDです
      */
-    public static final String Cs_MGD_DISPATTENDANCEITEMS  = "TMG_ATTENDANCEITEMS";
+    public static final String Cs_MGD_DISPATTENDANCEITEMS = "TMG_ATTENDANCEITEMS";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC)において、"決済レベル"を表すマスタコードです
@@ -1681,37 +1706,37 @@ public class TmgUtil {
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・申請"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_1   = "TMG_NTFACTION|1";
+    public static final String Cs_MGD_NTFACTION_1 = "TMG_NTFACTION|1";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・再申請"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_2   = "TMG_NTFACTION|2";
+    public static final String Cs_MGD_NTFACTION_2 = "TMG_NTFACTION|2";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・代理申請"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_3   = "TMG_NTFACTION|3";
+    public static final String Cs_MGD_NTFACTION_3 = "TMG_NTFACTION|3";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・取下"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_4   = "TMG_NTFACTION|4";
+    public static final String Cs_MGD_NTFACTION_4 = "TMG_NTFACTION|4";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・差戻"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_5   = "TMG_NTFACTION|5";
+    public static final String Cs_MGD_NTFACTION_5 = "TMG_NTFACTION|5";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・承認"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_6   = "TMG_NTFACTION|6";
+    public static final String Cs_MGD_NTFACTION_6 = "TMG_NTFACTION|6";
 
     /**
      * 名称マスタ詳細(MAST_GENERIC_DETAIL)において、"申請アクション・取消"を表すマスタコードです
      */
-    public static final String Cs_MGD_NTFACTION_7   = "TMG_NTFACTION|7";
+    public static final String Cs_MGD_NTFACTION_7 = "TMG_NTFACTION|7";
 
     /**
      * 名称マスタ(MAST_GENERIC)において、"月次集計データ作成/CSVデータ取得表関数"を表すグループID
@@ -1953,41 +1978,53 @@ public class TmgUtil {
     public static final String Cs_UTIL_PROPERTY_KYE_TERM_SEPARATOR = "TERM_SEPARATOR";
 
 
-    /** 最大日付 */
+    /**
+     * 最大日付
+     */
     public static final Date minDate = DateUtil.parse("1900-01-01");
 
 
-    /** 最小日付 */
+    /**
+     * 最小日付
+     */
     public static final Date maxDate = DateUtil.parse("2222-12-31");
 
-    /** 日付形式1 */
+    /**
+     * 日付形式1
+     */
     public static final String Cs_FORMAT_DATE_TYPE1 = "yyyy/MM/dd";
 
-    /** 今月 */
+    /**
+     * 今月
+     */
     public static final int Cs_PARAM_THIS_MONTH = -1;
 
-    /** 日付形式2 */
+    /**
+     * 日付形式2
+     */
     private static final String Cs_FORMAT_SLASH = "/";
 
-    public static final int COL_TMGSTATUS_FIXED_MONTHLY  = 0;
-    public static final int COL_TMGSTATUS_FIXED_SALARY   = 1;
-    public static final int COL_TMGSTATUS_DAILY_STATUS   = 2;
+    public static final int COL_TMGSTATUS_FIXED_MONTHLY = 0;
+    public static final int COL_TMGSTATUS_FIXED_SALARY = 1;
+    public static final int COL_TMGSTATUS_DAILY_STATUS = 2;
     public static final int COL_TMGSTATUS_MONTHLY_STATUS = 3;
-    public static final int COL_TMGSTATUS_IS_FUTURE      = 4;
+    public static final int COL_TMGSTATUS_IS_FUTURE = 4;
 
 
     /**
      * システム日付を返す
+     *
      * @return String システム日付
      */
-    public static String getSysdate(){
+    public static String getSysdate() {
         SimpleDateFormat sdf = new SimpleDateFormat(Cs_FORMAT_DATE_TYPE1);
         return sdf.format(new Date());
     }
 
     /**
      * 引数で指定された値分だけ基準日の月を移動します。
-     * @param date 基準日 (「yyyy/mm/dd」形式の文字列)
+     *
+     * @param date    基準日 (「yyyy/mm/dd」形式の文字列)
      * @param mvValue 移動したい値()
      * @return String 移動した年月日 - ※日は月初(1日)になります。
      */
@@ -2013,28 +2050,27 @@ public class TmgUtil {
     /****************************************************************************
      * リソースバンドルファイル(TmgUtil_ja_JP.Properties)から値を取得します。
      *
-     * @param	sKey	キー文字列
-     * @return String	値
+     * @param    sKey    キー文字列
+     * @return String    値
      */
-    public static String getPropertyValue(String sKey){
+    public static String getPropertyValue(String sKey) {
         return SysUtil.getpropertyvalue("ja", sKey, "jp.smartcompany.job.modules.tmg.util.TmgUtil");
     }
 
-    public static String Mintue2HHmi(int date){
+    public static String Mintue2HHmi(int date) {
         String HHmi;
-        HHmi= (date/60) + "時" + (date%60) + "分";
+        HHmi = (date / 60) + "時" + (date % 60) + "分";
         return HHmi;
     }
 
     /**
      * フレックスかどうかを判定
      *
-     * @param bean PsDBBean
-     * @param custId 顧客コード
-     * @param compCode 法人コード
+     * @param bean         PsDBBean
+     * @param custId       顧客コード
+     * @param compCode     法人コード
      * @param employeeCode 社員番号
-     * @param date 日付
-     *
+     * @param date         日付
      * @return true:フレックス対象者
      */
     @SuppressWarnings("unchecked")
@@ -2066,7 +2102,7 @@ public class TmgUtil {
                     , 0
                     , 0
                     , 0);
-        } catch(Exception e) {
+        } catch (Exception e) {
             psResult = null;
         }
 
@@ -2082,11 +2118,10 @@ public class TmgUtil {
     /**
      * フレックス制か判断するSELECTクエリを返します
      *
-     * @param custId 顧客コード
-     * @param compCode 法人コード
+     * @param custId       顧客コード
+     * @param compCode     法人コード
      * @param employeeCode 社員番号
-     * @param date 日付
-     *
+     * @param date         日付
      * @return SELECT文
      */
     private static String buildSQLForSelectFlex(String custId
@@ -2095,10 +2130,10 @@ public class TmgUtil {
             , String date) {
         StringBuffer sql = new StringBuffer();
 
-        sql.append(" TMG_F_IS_FLEX("+ custId);
-        sql.append("  , "+ compCode);
-        sql.append("  , "+ employeeCode);
-        sql.append("  , "+ date + ") ");
+        sql.append(" TMG_F_IS_FLEX(" + custId);
+        sql.append("  , " + compCode);
+        sql.append("  , " + employeeCode);
+        sql.append("  , " + date + ") ");
 
         return sql.toString();
     }
@@ -2106,12 +2141,11 @@ public class TmgUtil {
     /**
      * 月間勤務時間に対して、足りない時間数を取得
      *
-     * @param bean PsDBBean
-     * @param custId 顧客コード
-     * @param compCode 法人コード
+     * @param bean         PsDBBean
+     * @param custId       顧客コード
+     * @param compCode     法人コード
      * @param employeeCode 社員番号
-     * @param date 日付
-     *
+     * @param date         日付
      * @return int:時間数
      */
     public static String getNeedTime4Flex(PsDBBean bean
@@ -2142,7 +2176,7 @@ public class TmgUtil {
                     , 0
                     , 0
                     , 0);
-        } catch(Exception e) {
+        } catch (Exception e) {
             psResult = null;
         }
 
@@ -2151,6 +2185,7 @@ public class TmgUtil {
 
     /**
      * 検索結果からデータを取り出す
+     *
      * @param bean
      * @param psResult
      * @param qry
@@ -2158,54 +2193,54 @@ public class TmgUtil {
      * @param row
      * @return
      */
-    public static String valueAtColumnRowFromPsResult(PsDBBean bean, PsResult psResult, int qry, int col, int row){
+    public static String valueAtColumnRowFromPsResult(PsDBBean bean, PsResult psResult, int qry, int col, int row) {
         String retval = "";
         Vector vQrys;
         Vector vRows;
         Vector vCols;
-        if(bean == null || psResult == null || qry < 0 || col < 0 || row < 0){
+        if (bean == null || psResult == null || qry < 0 || col < 0 || row < 0) {
             retval = "";
             return retval;
         }
 
         vQrys = psResult.getResult();
 
-        if(vQrys.size() <= qry){
+        if (vQrys.size() <= qry) {
             retval = "";
             return retval;
         }
-        try{
-            vRows = (Vector)psResult.getResult().get(qry);
-        }catch (Exception e) {
+        try {
+            vRows = (Vector) psResult.getResult().get(qry);
+        } catch (Exception e) {
             e.printStackTrace();
             retval = "";
             return retval;
         }
 
-        if(vRows.size() <= row){
+        if (vRows.size() <= row) {
             retval = "";
             return retval;
         }
-        try{
-            vCols = (Vector)vRows.get(row);
-        }catch (Exception e) {
+        try {
+            vCols = (Vector) vRows.get(row);
+        } catch (Exception e) {
             e.printStackTrace();
             retval = "";
             return retval;
         }
 
-        if(vCols.size() <= col){
+        if (vCols.size() <= col) {
             retval = "";
             return retval;
         }
-        try{
+        try {
             retval = String.valueOf(vCols.get(col));
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             retval = "";
             return retval;
         }
-        if(retval == null){
+        if (retval == null) {
             retval = "";
         }
         return retval;
@@ -2214,11 +2249,10 @@ public class TmgUtil {
     /**
      * 月間勤務時間に対して、足りない時間数を取得
      *
-     * @param custId 顧客コード
-     * @param compCode 法人コード
+     * @param custId       顧客コード
+     * @param compCode     法人コード
      * @param employeeCode 社員番号
-     * @param date 日付
-     *
+     * @param date         日付
      * @return SELECT文
      */
     private static String buildSQLForSelectNeedTime4Flex(String custId
@@ -2227,12 +2261,110 @@ public class TmgUtil {
             , String date) {
         StringBuffer sql = new StringBuffer();
 
-        sql.append(" TMG_F_CONV_MIN2HHMI(TMG_4CALC_GET_NEED_TIME("+ employeeCode);
-        sql.append("  , "+ date);
-        sql.append("  , "+ custId);
-        sql.append("  , "+ compCode + ")) ");
+        sql.append(" TMG_F_CONV_MIN2HHMI(TMG_4CALC_GET_NEED_TIME(" + employeeCode);
+        sql.append("  , " + date);
+        sql.append("  , " + custId);
+        sql.append("  , " + compCode + ")) ");
 
         return sql.toString();
     }
+
+
+    /**
+     * 裁量労働対象者か判断するSELECTクエリを返します
+     *
+     * @param custId       顧客コード
+     * @param compCode     法人コード
+     * @param employeeCode 社員番号
+     * @param date         日付
+     * @return SELECT文
+     */
+    private static String buildSQLForSelectDiscretion(String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+        StringBuffer sql = new StringBuffer();
+
+        sql.append(" TMG_F_IS_DISCRETIONWORK(" + custId);
+        sql.append("  , " + compCode);
+        sql.append("  , " + employeeCode);
+        sql.append("  , " + date + ") ");
+
+        return sql.toString();
+    }
+
+
+    /**
+     * 裁量労働対象者かどうかを判定
+     *
+     * @param bean         PsDBBean
+     * @param custId       顧客コード
+     * @param compCode     法人コード
+     * @param employeeCode 社員番号
+     * @param date         日付
+     * @return true:裁量労働対象者
+     */
+    @SuppressWarnings("unchecked")
+    public static Boolean isDiscretion(PsDBBean bean
+            , String custId
+            , String compCode
+            , String employeeCode
+            , String date) {
+
+        StringBuffer sb = new StringBuffer();
+
+        sb.append("SELECT ");
+        sb.append(buildSQLForSelectDiscretion(bean.escDBString(custId)
+                , bean.escDBString(compCode)
+                , bean.escDBString(employeeCode)
+                , "'" + date + "'"));
+        sb.append("  FROM DUAL");
+
+        Vector vecQuery = new Vector();
+        vecQuery.add(sb.toString());
+
+        PsResult psResult = null;
+        String discretionWork = null;
+
+        try {
+            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            discretionWork = valueAtColumnRowFromPsResult(bean
+                    , psResult
+                    , 0
+                    , 0
+                    , 0);
+        } catch (Exception e) {
+            psResult = null;
+        }
+
+        // 裁量労働対象者判定
+        String discretionWorkTrue = "1";
+
+        if (discretionWorkTrue.equals(discretionWork)) {
+            System.out.println("職員「" + employeeCode + "」 は　裁量労働対象者です");
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 裁量労働対象者かどうかを判定
+     *
+     * @param psDBBean
+     * @return
+     */
+    public static Boolean isDiscretion(PsDBBean psDBBean) {
+
+        if (null == psDBBean) {
+            System.out.println("裁量労働対象者かどうかを判定 中で　PsDBBean対象が空です");
+            return false;
+        }
+        String baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+
+        return isDiscretion(psDBBean, psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode(), baseDate);
+
+
+    }
+
 
 }
