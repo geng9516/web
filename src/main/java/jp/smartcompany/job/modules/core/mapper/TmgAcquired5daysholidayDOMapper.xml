@@ -103,7 +103,7 @@
         <if test="userCode != NULL">
             AND TPH_CEMPLOYEEID = #{userCode}
         </if>
-        <!--order by CEMPLOYEEID_0,TA_DYYYYMMDD_3-->
+        order by CEMPLOYEEID_0,TA_DYYYYMMDD_3
     </select>
 <!--    <select id="buildSQLTmgAcquired5daykikanbi" statementType="CALLABLE">-->
 <!--        CALL TMG_P_SET_ACQUIRED5DAYKIKANBI(-->
