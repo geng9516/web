@@ -142,7 +142,10 @@ public class AuthController {
     }
 
     @GetMapping("expirePassword")
-    public String expirePassword() {
+    public String expirePassword(@RequestAttribute("isMobile")Boolean isMobile) {
+        if (isMobile) {
+            return "mobile/expirePassword";
+        }
         return "expirePassword";
     }
 
