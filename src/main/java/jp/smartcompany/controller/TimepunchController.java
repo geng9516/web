@@ -8,6 +8,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.SystemTimerVO;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -115,7 +116,7 @@ public class TimepunchController {
                                   @RequestAttribute("BeanName") PsDBBean psDBBean) {
         tmgTimePunchBean.setExecuteParameters(null, psDBBean);
         ClockResultVO clockResultVO = new ClockResultVO();
-        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode());
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
         if (null == clockInfoVO.getTda_nopen_p() || "".equals(clockInfoVO.getTda_nopen_p())) {
             //予定データがない場合、打刻しない
             clockResultVO.setResultCode("20");
@@ -147,8 +148,21 @@ public class TimepunchController {
     @PostMapping("clockInfo")
     @ResponseBody
     public ClockInfoVO clockInfo(@RequestAttribute("BeanName") PsDBBean psDBBean) {
-        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(),psDBBean.getUserCode());
+        ClockInfoVO clockInfoVO = tmgTimePunchBean.selectClockInfo(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
         return clockInfoVO;
+    }
+
+    /**
+     * 裁量労働対象者かどうかを判定
+     * 1:裁量労働制
+     * 0:　その他
+     *
+     * @return
+     */
+    @PostMapping("isDiscretion")
+    @ResponseBody
+    public boolean isDiscretion(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        return TmgUtil.isDiscretion(psDBBean);
     }
 
 
