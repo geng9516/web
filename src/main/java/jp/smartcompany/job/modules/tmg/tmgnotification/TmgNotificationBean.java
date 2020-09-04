@@ -1208,7 +1208,7 @@ public class TmgNotificationBean {
             tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeOpen()));
         }
         if (!StrUtil.hasEmpty(param.getTimeClose())) {
-            tncDo.setTntfNtimeOpen(Long.parseLong(param.getTimeClose()));
+            tncDo.setTntfNtimeClose(Long.parseLong(param.getTimeClose()));
         }
         if (!StrUtil.hasEmpty(param.getTimezoneOpen())) {
             tncDo.setTntfNtimezoneOpen(iMastGenericDetailService.tmgFConvHhmi2Min(param.getTimezoneOpen()));

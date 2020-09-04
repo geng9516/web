@@ -1283,6 +1283,11 @@
             this.errorMsg = '傷病名を入力してください。'
             return
           }
+          if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
+            this.errorInfo = true
+            this.errorMsg = '添付ファイルを入力してください。'
+            return
+          }
           this.deleteFiles = [...new Set(this.deleteFiles)]
           try {
             this.applyLoading = true

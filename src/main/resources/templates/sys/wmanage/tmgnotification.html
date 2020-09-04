@@ -1104,7 +1104,7 @@
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
           const turnLine = Vue.filter('turnLine');
           this.selectBiko=turnLine(this.flatRestTypeList.find(t => t.ntfId === e).biko)
-          console.log(this.selectedRestInfo)
+          //console.log(this.selectedRestInfo)
         },
 
         handleBeforeUpload(files) {
@@ -1137,7 +1137,7 @@
           // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
           this.errorInfo = false
           this.restApply.action = 'ACT_AlterApply_CAppl'
-          console.log(this.selectedRestInfo)
+          //console.log(this.selectedRestInfo)
           this.restApply.typeNew = this.selectedRestInfo.ntfId
           // 代理申请用，个人申请此处为空
           this.restApply.finalApprovalLevel = this.selectedRestInfo.sparechar2
@@ -1236,9 +1236,15 @@
             this.errorMsg = '傷病名を入力してください。'
             return
           }
+          if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
+            this.errorInfo = true
+            this.errorMsg = '添付ファイルを入力してください。'
+            return
+          }
           this.deleteFiles = [...new Set(this.deleteFiles)]
           try {
             this.applyLoading = true
+            console.log(this.restApply)
             await this.http.uploadFiles('sys/vapply/MakeApply', {
               params: JSON.stringify(this.restApply),
               uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
@@ -1271,7 +1277,7 @@
           }
         }),
         handleWeekSelect(e) {
-          console.log(e)
+          //console.log(e)
         },
         pageChange(e) {
           this.opts.page = e
@@ -1285,7 +1291,7 @@
           }
         },
         applyCardDownloadFile(e) {
-          console.log(e)
+          //console.log(e)
           if(e.url) {
             window.open(e.url, '_blank')
           }
