@@ -353,7 +353,7 @@
               </form-item>
               <form-item label="日付" v-show="!selectedRestInfo.transfer">
                 <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100 tl"
-                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付"
+                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付" format="yyyy/MM/dd"
                   ref="datepicker" transfer></date-picker>
               </form-item>
               <!-- 有振休 -->
