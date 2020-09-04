@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.EvaluatorSettingBean;
 
@@ -172,8 +173,10 @@ public class TmgSearchEmpList {
      * @param useManageFLG 管理対象外職員を表示するかの判定フラグ（true：含める、false：含めない）
      */
     private void createEmpList(String psDate, boolean pbWithTarget, boolean useManageFLG) {
+        System.out.println("---++++");
+        System.out.println(psDate);
         String sDate;
-        if (psDate != null && !psDate.equals("")) {
+        if (StrUtil.isNotBlank(psDate)) {
             sDate = "TO_DATE('" + psDate + "', 'yyyy/MM/dd')";
         } else {
             sDate = "SYSDATE";

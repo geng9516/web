@@ -160,9 +160,11 @@ public class SysLoginInterceptor implements HandlerInterceptor {
 
         if (StrUtil.isNotBlank(standardDate)){
             hashtable.put("txtDYYYYMM",standardDate);
+            httpSession.setAttribute("txtDYYYYMM",standardDate);
         }
         if (StrUtil.isNotBlank((standardDay))) {
             hashtable.put("txtDYYYYMMDD",standardDay);
+            httpSession.setAttribute("txtDYYYYMMDD",standardDay);;
         }
 
         if (StrUtil.isNotBlank(replacedCompCode)){

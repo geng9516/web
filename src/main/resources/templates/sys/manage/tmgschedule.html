@@ -15,19 +15,24 @@
             <div class="title1">
                 <h1>
                     <Icon type="i-emeer colored"></Icon>
-                    {{yyyyMMdd ? `予定作成（${yyyyMMdd})` : '予定作成'}}
+                        予定作成
                 </h1>
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 || !editable"  @click="isEditable = !isEditable"  v-if=" !isEditable">対象者一括編集</i-button>
+                <i-button type="primary" icon="md-create"  :disabled="!selectDisabled || !scheduleDataDTOList.length >0 || !editable"  @click="isEditable = !isEditable"  v-if=" !isEditable">編集</i-button>
                 <i-button type="success" icon="md-create" :loading="postScheduleLoading" v-if=" isEditable" @click="postExecuteEditMonthlyUSchedule">登録</i-button>
                 <i-button v-if=" isEditable" @click="isEditable = !isEditable;handleSelectAll2(false);restPattern()">キャンセル</i-button>
             </div>
         </div>
         <div class="searchwrap">
             <span class="label">年月</span>
-            <i-select v-model="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)"
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="resetMonthSelectForBtnEditable"
+                      placeholder="選択ください">
+                <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
+                </i-option>
+            </i-select>
+            <i-select :value="defaultDate" :disabled="!selectDisabled" class="mr30" @on-change="handleStartMonth($event)" v-show="!resetMonthSelectForBtnEditable"
                       placeholder="選択ください">
                 <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
                 </i-option>
@@ -310,10 +315,11 @@
                 valuebak:[],
                 patternDisabled:false,
                 yyyyMMdd:'',
-                pattern:{nclose:'',nopen:'',workId:'',bussinessTripid:'',restList:[]},
+                pattern:{nclose:'',nopen:'',workId:'TMG_WORK|',bussinessTripid:'TMG_BUSINESS_TRIP|',restList:[]},
                 value: [],
                 valueMap:[],
                 selectDisabled:false,
+                resetMonthSelectForBtnEditable:false,
                 workPatternSelected: "TMG_PATTERN|",
                 columnsAction: [
                     {
@@ -492,14 +498,19 @@
         methods: {
 
             async isEditable4Schedule(){
+                this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
                 try{
                     const query = {...this.query,baseDate: this.query.txtBaseDate}
                     await  this.http.get(`sys/schedule/isEditable`,query)
                     this.editable=true
+                    this.editErrMsg=''
                     console.log("success")
                 }catch (e) {
                     console.log("fail")
-                    this.editable=false
+                    if(!this.isEditable){
+                        this.editable=false
+                    }
+
                     this.editErrMsg=e
 
                 }
@@ -530,6 +541,9 @@
                         desc: 'データを選択してください',
                         duration: 3.5
                     })
+                    return
+                }
+                if(this.pattern.workId=='TMG_WORK|' || this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
                     return
                 }
                 const that = this
@@ -741,7 +755,7 @@
                         let countRest=0;
                         let checkArr = []
 
-
+                        e.restList= e.restList.filter(e=>e.restOpen!=''&&e.restClose!='')
 
                         if(count >=360 && e.restList.some(e1=>{
 
@@ -873,7 +887,11 @@
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
+                    this.kubunnList.unshift({"MGD_CMASTERCODE":"TMG_WORK|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
+                    this.syuccyouList.unshift({"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+
             },
             async getOrgTree() {
                 this.empDeptLoading = true
@@ -951,16 +969,15 @@
                 }
             },
             restPattern(){
-                this.pattern.nclose=''
-                this.pattern.nopen=''
-                this.pattern.workId=''
-                this.pattern.bussinessTripid=''
-                this.pattern.restList=[]
-                this.curSelectedWorkPattern.CPATTERNID='TMG_PATTERN|'
+                this.pattern.workId='TMG_WORK|'
+                this.pattern.bussinessTripid='TMG_BUSINESS_TRIP|'
+                this.workPatternSelected='TMG_PATTERN|'
+                this.handleChangeWorkPattern()
+                this.patternDisabled=false
             },
             async selectScheduleDateList() {
                 try {
-                    const query = {...this.query}
+                    const query = {...this.query,baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate}
                     const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList = data
                     this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
@@ -977,9 +994,10 @@
                 this.query.txtBaseDate=select.tda_firstDay
                 this.query.txtEndDate=select.tda_endDay
                 await this.isEditable4Schedule()
-                if(!this.editable && this.isEditable){
+                if(this.editErrMsg && this.isEditable){
                     return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
                 }
+                this.defaultDate = e
                 await this.getSelectScheduleInfo()
                 await this.getSelectIkkaInfo()
                 await this.getHatuRei()

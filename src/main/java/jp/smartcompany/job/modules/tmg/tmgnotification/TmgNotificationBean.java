@@ -154,7 +154,7 @@ public class TmgNotificationBean {
 
         param.setGsStartDate(iMastGenericDetailService.selectDate(param.getCustId(), param.getCompId(), Integer.parseInt(param.getYear()), param.getToday()).getStartDate());
         //referlist 新规
-        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
+        if(StrUtil.equals(psDBBean.getSiteId(),(TmgUtil.Cs_SITE_ID_TMG_INP))){
             referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_EMP, true);
         }else{
             referList = new TmgReferList(psDBBean, "TmgNotification", param.getGsStartDate(), TmgReferList.TREEVIEW_TYPE_LIST, true);
@@ -163,7 +163,7 @@ public class TmgNotificationBean {
             param.setYear(year);
         }
         //基准日取得 入力site为系统日期
-        if(!StrUtil.hasEmpty(referList.getRecordDate())&&param.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
+        if(!StrUtil.hasEmpty(referList.getRecordDate())&&StrUtil.equals(param.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_INP)){
             param.setToday(referList.getRecordDate());
         }else{
             param.setToday(TmgUtil.getSysdate());
@@ -178,7 +178,7 @@ public class TmgNotificationBean {
         param.setType(ntfTypeId);
         param.setSearchEmp(serEmpId);
         // 申請一覧（本人）用検索パラメータを取得するメソッド(返すものは常に承認済・取下・却下(選択不可))
-        if (param.getAction() == ACT_DISPINP_RLIST && statusFlg == null) {
+        if (StrUtil.equals(param.getAction() ,ACT_DISPINP_RLIST) && statusFlg == null) {
             statusFlg = STATUS_WAIT;
         } else if (statusFlg == null) {
             statusFlg = STATUS_WAIT;
@@ -191,7 +191,7 @@ public class TmgNotificationBean {
         if(StrUtil.hasEmpty(String.valueOf(param.getPage()))){
             param.setPage(1);
         }
-        if(psDBBean.getSiteId()!=TmgUtil.Cs_SITE_ID_TMG_INP){
+        if(!StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_INP)){
             param.setEmployeeListSql(referList.buildSQLForSelectEmployees());
         }
         //if(!isNtfTermUseCond(psDBBean)){
@@ -463,21 +463,21 @@ public class TmgNotificationBean {
      */
     public List<EmployeeListVo> getEmployeeList(PsDBBean psDBBean) throws Exception {
         //初始基准日取得
-        String startDate = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)), TmgUtil.getSysdate()).getStartDate();
+//        String startDate = iMastGenericDetailService.selectDate(psDBBean.getCustID(), psDBBean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)), TmgUtil.getSysdate()).getStartDate();
         //referlist 新规
-        if(psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
-            referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
-                    false, false, false, false);;
+        if(StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_INP)){
+            referList = new TmgReferList(psDBBean, "TmgNotification", psDBBean.getReqParam(TmgReferList.TREEVIEW_KEY_RECORD_DATE), TmgReferList.TREEVIEW_TYPE_EMP, true,
+                    true, false, true, false);;
         }else{
-            referList = new TmgReferList(psDBBean, "TmgNotification", startDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
-                    false, false, false, false);
+            referList = new TmgReferList(psDBBean, "TmgNotification", psDBBean.getReqParam(TmgReferList.TREEVIEW_KEY_RECORD_DATE), TmgReferList.TREEVIEW_TYPE_LIST, true,
+                    true, false, true, false);
         }
-
         String basedate=referList.getRecordDate();
-        if(StrUtil.hasEmpty(basedate)){
+        if(StrUtil.isBlank(basedate)){
             basedate=TmgUtil.getSysdate();
         }
-       return  iHistDesignationService.selectemployeeList(psDBBean.getCustID(),psDBBean.getCompCode(),basedate,referList.buildSQLForSelectEmployees());
+       return  iHistDesignationService
+               .selectemployeeList(psDBBean.getCustID(),psDBBean.getCompCode(),basedate,referList.buildSQLForSelectEmployees());
     }
     /**
      * 年次休暇残日数及び時間

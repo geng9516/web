@@ -255,7 +255,7 @@ public class ScheduleController {
 
         //  System.out.println("controller-->selectMonthlyModifiedDate");
         ModifiedDateVO modifiedDateVO = new ModifiedDateVO();
-        modifiedDateVO.setModifiedDate(tmgScheduleBean.selectMonthlyModifiedDate(psDBBean,txtBaseDate));
+        modifiedDateVO.setModifiedDate(tmgScheduleBean.selectMonthlyModifiedDate(psDBBean, txtBaseDate));
         return modifiedDateVO;
     }
 
@@ -271,7 +271,7 @@ public class ScheduleController {
     public boolean updateSchedulePermStatus(@RequestParam("txtBaseDate") String txtBaseDate,
                                             @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //    System.out.println("controller-->updateSchedulePermStatus");
-        return tmgScheduleBean.updateSchedulePermStatus(psDBBean,txtBaseDate);
+        return tmgScheduleBean.updateSchedulePermStatus(psDBBean, txtBaseDate);
     }
 
     /**
@@ -325,16 +325,16 @@ public class ScheduleController {
 
     /**
      * 勤務予定時間リスト
-     * flag 0: 編集できます　　　1；編集できない
      * http://localhost:6879/sys/schedule/selectScheduleDateList
      *
      * @param psDBBean
+     * @param baseDate
      * @return
      */
     @GetMapping("selectScheduleDateList")
     @ResponseBody
-    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) {
-        return tmgScheduleBean.selectScheduleDateList(psDBBean);
+    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean,  @RequestParam("baseDate") String baseDate) {
+        return tmgScheduleBean.selectScheduleDateList(psDBBean, baseDate);
     }
 
     /**

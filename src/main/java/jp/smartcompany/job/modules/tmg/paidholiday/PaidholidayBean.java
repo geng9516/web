@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.tmg.paidholiday;
 
+import cn.hutool.core.date.DateUnit;
+import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
@@ -76,24 +78,24 @@ public class PaidholidayBean {
         tmgPaidHolidayDto.setTphCmodifieruserid(psDBBean.getUserCode());
         tmgPaidHolidayDto.setTphCmodifierprogramid(MOD_PROGRAM_ID);
         //txtTPH_NINVEST
-        tmgPaidHolidayDto.setTphNinvest(paidHolidayUpdateVO.getNinvest());
+        tmgPaidHolidayDto.setTphNinvest(Double.valueOf(paidHolidayUpdateVO.getNinvest()));
         //txtTPH_NADJUST
-        tmgPaidHolidayDto.setTphNadjust(paidHolidayUpdateVO.getNadjust());
+        tmgPaidHolidayDto.setTphNadjust(Double.valueOf(paidHolidayUpdateVO.getNadjust()));
         //txtTPH_NADJUST_HOURS
-        tmgPaidHolidayDto.setTphNadjustHours(paidHolidayUpdateVO.getNadjustHours()) ;
+        tmgPaidHolidayDto.setTphNadjustHours(Double.valueOf(paidHolidayUpdateVO.getNadjustHours())) ;
         // txtTPH_NADJUST_TO
-        tmgPaidHolidayDto.setTphNadjustTo(paidHolidayUpdateVO.getNadjustTo());
+        tmgPaidHolidayDto.setTphNadjustTo(Double.valueOf(paidHolidayUpdateVO.getNadjustTo()));
         // txtTPH_NADJUST_HOURS_TO
-        tmgPaidHolidayDto.setTphNadjustHoursTo(paidHolidayUpdateVO.getNadjustHoursTo());
+        tmgPaidHolidayDto.setTphNadjustHoursTo(Double.valueOf(paidHolidayUpdateVO.getNadjustHoursTo()));
         //txtTPH_DEXPIRE_ADJUST
-        tmgPaidHolidayDto.setTphDexpireAdjust(paidHolidayUpdateVO.getDexpireAdjust());
+        tmgPaidHolidayDto.setTphDexpireAdjust(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjust()));
         //txtTPH_DEXPIRE_ADJUST_TO
-        tmgPaidHolidayDto.setTphDexpireAdjustTo(paidHolidayUpdateVO.getDexpireAdjustTo());
+        tmgPaidHolidayDto.setTphDexpireAdjustTo(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjustTo()));
         // txtTPH_CCOMMENT
         tmgPaidHolidayDto.setTphCcomment(paidHolidayUpdateVO.getCcomment());
 
         tmgPaidHolidayDto.setTphCemployeeid(paidHolidayUpdateVO.getCemployeeid()) ;
-        tmgPaidHolidayDto.setTphDyyyymmdd(paidHolidayUpdateVO.getDyyyymmdd()) ;
+        tmgPaidHolidayDto.setTphDyyyymmdd(DateUtil.parse(paidHolidayUpdateVO.getDyyyymmdd())) ;
         tmgPaidHolidayDto.setTphCcompanyid(psDBBean.getCompCode());
         tmgPaidHolidayDto.setTphCcustomerid(psDBBean.getCustID());
 

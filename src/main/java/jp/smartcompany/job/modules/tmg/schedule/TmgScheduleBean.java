@@ -2244,19 +2244,24 @@ public class TmgScheduleBean {
      * @param employeeId
      * @return
      */
-    private List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId) {
-        return iTmgScheduleService.selectScheduleDateList(custId, compCode, employeeId, Cs_FORMAT_DATE_TYPE4);
+    private List<ScheduleDateListVO> selectScheduleDateList(String custId, String compCode, String employeeId, String baseDate) {
+        return iTmgScheduleService.selectScheduleDateList(custId, compCode, employeeId, Cs_FORMAT_DATE_TYPE4, baseDate);
     }
 
     /**
      * 勤務予定時間リスト
+     * psDBBean -->baseDate
      *
      * @param psDBBean
      * @return
      */
-    public List<ScheduleDateListVO> selectScheduleDateList(PsDBBean psDBBean) {
+    public List<ScheduleDateListVO> selectScheduleDateList(PsDBBean psDBBean, String baseDate) {
         if (null != psDBBean) {
-            return this.selectScheduleDateList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode());
+            if (null == baseDate || "".equals(baseDate)) {
+                //初期化
+                baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+            }
+            return this.selectScheduleDateList(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getEmployeeCode(), baseDate);
         } else {
             logger.error("勤務予定時間リスト-->PsDBBean対象が空です");
             return null;

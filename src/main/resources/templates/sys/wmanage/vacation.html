@@ -639,7 +639,8 @@
                     this.paramters.dyyyymmdd = this.dataDetail.dyyyymmdd
                     this.paramters.ninvest = this.dataDetail.ninvest
                     this.paramters.nadjust = this.dataDetail.nadjust
-                    this.paramters.nadjustHours = this.format_hours(this.dataDetail.nadjustHours,2)
+                    // this.paramters.nadjustHours = this.format_hours(this.dataDetail.nadjustHours,2)
+                    this.paramters.nadjustHours = this.format_hours(this.toMinuteFromHours(this.dataDetail.nadjustHours)/60,2)
                     this.paramters.nadjustTo = this.dataDetail.nadjustTo
                     this.paramters.nadjustHoursTo =  this.format_hours(this.dataDetail.nadjustHoursTo,2)
                     this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
@@ -681,9 +682,12 @@
                     + eval(+nadjust)
                     + eval(+nadjustTo))
 
-                this.dataDetail.ninvestHours = (this.toMinuteFromHours(+this.dataDetail.nthroughoutHours)
-                    + this.toMinuteFromHours(+nadjustHours)
-                    + this.toMinuteFromHours(+nadjustHoursTo))/60
+                // this.dataDetail.ninvestHours = (this.toMinuteFromHours(+this.dataDetail.nthroughoutHours)
+                //     + this.toMinuteFromHours(+nadjustHours)
+                //     + this.toMinuteFromHours(+nadjustHoursTo))/60
+                this.dataDetail.ninvestHours = (this.dataDetail.nthroughoutHours
+                    + nadjustHours
+                    + nadjustHoursTo)
                 this.dataDetail.nadjust = nadjust
                 this.dataDetail.nadjustHours = nadjustHours
                 this.dataDetail.dexpireAdjust = dexpireAdjust
@@ -886,7 +890,7 @@
                     //付与日チェック
                     if (this.daysBetween(this.dataDetail.dyyyymmdd, this.paidNowData[3].expiryDate) < 0) {
                         // MSG_BEFORE_EXPIRE
-                        this.$Notice.warning({desc: "有効期限（調整付与）は降の日付を指定してください。"})
+                        this.$Notice.warning({desc: "有効期限（調整付与）は付与日以降の日付を指定してください。"})
                         return false;
                     }
 
