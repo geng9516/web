@@ -6,20 +6,25 @@ import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.business.BaseSectionBusiness;
 import jp.smartcompany.job.modules.core.business.GroupBusiness;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.pojo.bo.MenuGroupBO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastEmployeesDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastOrganisationDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
-import jp.smartcompany.job.modules.core.service.IMastSystemService;
+import jp.smartcompany.job.modules.core.pojo.entity.TmgGroupDO;
+import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.Designation;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.boot.util.ShiroUtil;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +54,10 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
     private final AuthBusiness authBusiness;
     private final LRUCache<Object,Object> lruCache;
+
+    private final IMastOrganisationService organisationService;
+    private final ITmgGroupService groupService;
+    private final IMastEmployeesService employeesService;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws SQLException {
@@ -280,33 +289,78 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put(TmgReferList.TREEVIEW_KEY_RECORD_DATE,recordDate);
         }
 
-        String targetGroup = request.getParameter(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
-
+        // --- start --- 保存在session中的site数据
+        // psDBBean中的targetDept和targetUser是跨承认和管理site的部门id和用户id
         if (StrUtil.isNotBlank(targetAdminSection)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION,targetAdminSection);
             psDBBean.setTargetDept(targetAdminSection);
+            // 保存管理site选中的部门id到session中
+            String sessionAdminTargetSection = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+            if (StrUtil.isBlank(sessionAdminTargetSection)) {
+                saveOrgName(targetAdminSection,TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+            } else {
+                if (!StrUtil.equals(sessionAdminTargetSection, targetAdminSection)){
+                     saveOrgName(targetAdminSection,TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+                }
+            }
         }
         if (StrUtil.isNotBlank(targetAdminEmp)){
             hashtable.put(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP,targetAdminEmp);
             psDBBean.setTargetUser(targetAdminEmp);
+            // 保存管理site选中的员工id到session中
+            String sessionAdminTargetEmp = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
+            if (StrUtil.isBlank(sessionAdminTargetEmp)) {
+                saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+            } else {
+                if (!StrUtil.equals(sessionAdminTargetEmp, targetAdminSection)) {
+                    saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
+                }
+            }
         }
 
 
         if (StrUtil.isNotBlank(targetPermSection)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION,targetPermSection);
             psDBBean.setTargetDept(targetPermSection);
+
+            // 保存承认site选中的部门id到session中
+            String sessionPermTargetSection = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION);
+            if (StrUtil.isBlank(sessionPermTargetSection)) {
+                saveOrgName(targetPermSection,TmgUtil.Cs_SITE_ID_TMG_PERM);
+            } else {
+                if (!StrUtil.equals(sessionPermTargetSection, targetAdminSection)){
+                    saveOrgName(targetPermSection,TmgUtil.Cs_SITE_ID_TMG_PERM);
+                }
+            }
         }
         if (StrUtil.isNotBlank(targetPermEmp)) {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
             psDBBean.setTargetUser(targetPermEmp);
-        }
-        if (StrUtil.isNotBlank(targetPermGroup)) {
-            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetPermGroup);
+            // 保存承认site选中的员工id到session中
+            String sessionAdminTargetEmp = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
+            if (StrUtil.isBlank(sessionAdminTargetEmp)) {
+                saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
+            } else {
+                if (!StrUtil.equals(sessionAdminTargetEmp, targetAdminSection)) {
+                    saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
+                }
+            }
         }
 
-        if (StrUtil.isNotBlank(targetGroup)){
-            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetGroup);
+        if (StrUtil.isNotBlank(targetPermGroup)) {
+            hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP,targetPermGroup);
+            String sessionPermTargetGroup = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP);
+            if (StrUtil.isBlank(sessionPermTargetGroup)) {
+                saveGroupName(targetPermGroup, TmgUtil.Cs_SITE_ID_TMG_PERM);
+            } else {
+                if (!StrUtil.equals(sessionPermTargetGroup, sessionPermTargetGroup)) {
+                    saveGroupName(targetPermGroup, TmgUtil.Cs_SITE_ID_TMG_PERM);
+                }
+            }
         }
+        // --- end --- 保存在session中的site数据
+
+
         String siteId = request.getParameter(PsConst.PARAM_KEY_SITEID);
         if (StrUtil.isNotBlank(siteId)) {
             hashtable.put("SiteId", siteId);
@@ -423,6 +477,48 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,session.getLoginEmployee());
         httpSession.setAttribute(Constant.TOP_NAVS,menuGroupList);
+    }
+
+    private void saveOrgName(String sectionId,String siteId) {
+        if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+            List<MastOrganisationDO> orgList = organisationService.list(SysUtil.<MastOrganisationDO>query().eq("MO_CSECTIONID_CK", sectionId).select("MO_CSECTIONNAME"));
+            if (CollUtil.isNotEmpty(orgList)) {
+                if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION, sectionId);
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
+                }
+                if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION, sectionId);
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
+                }
+            }
+        }
+    }
+
+    private void saveGroupName(String groupId,String siteId) {
+        if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+            List<TmgGroupDO> groupList = groupService.list(SysUtil.<TmgGroupDO>query().eq("TGR_GROUPID", groupId).select("TGR_CGROUPNAME"));
+            if (CollUtil.isNotEmpty(groupList)) {
+                if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP, groupId);
+                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, groupList.get(0).getTgrCgroupname());
+                }
+            }
+        }
+    }
+
+    private void saveEmpName(String empId,String siteId) {
+        List<MastEmployeesDO> orgList = employeesService.list(SysUtil.<MastEmployeesDO>query().eq("ME_CEMPLOYEEID_CK",empId).select("ME_CKANJINAME"));
+        if (CollUtil.isNotEmpty(orgList)) {
+            if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP, empId);
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP_NAME, orgList.get(0).getMeCkanjiname());
+            }
+            if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP, empId);
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP_NAME, orgList.get(0).getMeCkanjiname());
+            }
+        }
     }
 
 }
