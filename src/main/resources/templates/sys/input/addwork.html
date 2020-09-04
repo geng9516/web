@@ -717,10 +717,18 @@
 
             // 就業登録画面情報取得・設定する
             async dailyDetail() {
-                this.$refs.select1.clearSingleSelect()
-                this.$refs.select2.clearSingleSelect()
-                this.$refs.select3.clearSingleSelect()
-                this.$refs.select4.clearSingleSelect()
+                if(this.$refs.select1){
+                    this.$refs.select1.clearSingleSelect()
+                }
+                if(this.$refs.select2){
+                    this.$refs.select2.clearSingleSelect()
+                }
+                if(this.$refs.select3){
+                    this.$refs.select3.clearSingleSelect()
+                }
+                if(this.$refs.select4){
+                    this.$refs.select4.clearSingleSelect()
+                }
                 // 画面情報取得
                 const {data} = await this.http.get('sys/tmgResults/dailyDetail', this.query)
 
