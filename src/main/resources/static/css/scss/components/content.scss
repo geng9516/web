@@ -78,6 +78,15 @@
         }
       }
     }
+    .dept-select {
+      width: calc(100% - 120px);
+      color: var(--dept-select);
+      margin-right: 30px;
+      border: 1px dashed var(--dept-select);
+      border-radius:0;
+      border-left: 0;
+      cursor: pointer;
+    }
   }
   .btnbox {
     flex: 1;

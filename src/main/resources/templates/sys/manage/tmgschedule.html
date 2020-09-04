@@ -40,10 +40,11 @@
             <!-- 共通組織図画面 start-->
             <span style="display:flex;width: calc(15% + 200px);">
                 <span class="label">所属</span>
-                <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                              style="width: calc(100% - 120px);border-radius:0;border: 1px dashed var(--dept-select);color: var(--dept-select);">
-                        {{ deptName }}
-                    </i-button>
+                <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
+                    <Tooltip trigger="hover" theme="dark" transfer>{{deptName}}
+                        <div slot="content">{{deptName}}</div>
+                    </Tooltip>
+                </i-button>
                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                 <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
@@ -104,9 +105,17 @@
             </span>
             <!-- 共通組織図画面 end-->
             <span class="label">氏名</span>
-            <span class="input-like-span width15 mr30">{{ kanjiName }}</span>
+            <span class="input-like-span width15 mr30">
+                <Tooltip trigger="hover"　theme="dark" transfer>{{kanjiName}}
+                    <div slot="content">{{kanjiName}}</div>
+                </Tooltip>
+            </span>
             <span class="label">種別</span>
-            <span class="input-like-span width15">{{wokertypename}}</span>
+            <span class="input-like-span width15">
+                <Tooltip trigger="hover"　theme="dark" transfer v-if="wokertypename">{{wokertypename}}
+                    <div slot="content">{{wokertypename}}</div>
+                </Tooltip>
+            </span>
         </div>
     </div>
     <div class="content_body">
@@ -543,7 +552,7 @@
                     })
                     return
                 }
-                if(this.pattern.workId=='TMG_WORK|' || this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
+                if(this.pattern.workId=='TMG_WORK|' && this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
                     return
                 }
                 const that = this
@@ -552,6 +561,7 @@
                     let index=e
                     Object.keys(that.value[index]).forEach(function(key) {
                         if(key in that.pattern) {
+                            if(that.pattern[key] === 'TMG_WORK|' || that.pattern[key] === 'TMG_BUSINESS_TRIP|') return
                             that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
                         }
                     })
@@ -582,6 +592,10 @@
                 e.push({ restOpen:'', restClose:''})
             },
             handleChangeDivision(e){
+                // 区分选择しない时，将勤務パターン也置为変更しない
+                if(e === 'TMG_WORK|') {
+                    this.workPatternSelected = this.workPatternList[0].CPATTERNID
+                }
                 if("TMG_WORK|000"!=e){
                     this.pattern.nclose=''
                     this.pattern.nopen=''

@@ -65,7 +65,7 @@
         </template>
 
         <template slot-scope="{ row }" slot="restTimeList">
-          <Tooltip  title="休憩時間" trigger="click"　theme="light" placement="left" transfer>
+          <Tooltip trigger="click"　theme="light" placement="left" transfer>
             <i-button type="primary" ghost icon="md-alarm" size="small" v-if="row.timerange_arr.length > 0"></i-button>
             <div slot="content">
                 <div class="mt2" v-for="(item,i) of row.timerange_arr">{{item.NOPEN |handleTime }}-{{item.NCLOSE | handleTime}}</div>
