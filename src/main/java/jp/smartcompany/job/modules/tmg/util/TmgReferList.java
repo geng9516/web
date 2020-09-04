@@ -2,7 +2,6 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.CalendarUtil;
-import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
@@ -15,6 +14,7 @@ import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMgdMsgSearchTreeView;
 import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
 import jp.smartcompany.job.modules.core.service.ITmgMgdMsgSearchTreeViewService;
@@ -1476,7 +1476,12 @@ public class TmgReferList {
                JSONObject obj = JSONUtil.parseObj(result);
                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME,obj.get("secnic"));
             }
-
+            String targetSection =ContextUtil.getHttpRequest().getParameter(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+            if (StrUtil.isNotBlank(targetSection)) {
+                String result =ReUtil.get("\\{[^{]*'"+targetSection+"'[^}]*\\}",orgTreeList,0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME,obj.get("secnic"));
+            }
             return orgTreeList;
         }else{
             return null;
@@ -1500,7 +1505,12 @@ public class TmgReferList {
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, obj.get("secnic"));
             }
-
+            String divTargetSection = ContextUtil.getHttpRequest().getParameter(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+            if (StrUtil.isNotBlank(divTargetSection)) {
+                String result = ReUtil.get("\\{[^{]*'" + divTargetSection+ "'[^}]*\\}", divTreeList, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, obj.get("secnic"));
+            }
             return divTreeList;
         }else{
             return null;
@@ -1517,8 +1527,7 @@ public class TmgReferList {
             if(empList == null){
                 return null;
             }
-            String rs = empList.getJSONArrayForTreeViewGroupBySection(targetSec_admin);
-            return rs;
+            return empList.getJSONArrayForTreeViewGroupBySection(targetSec_admin);
         }else{
             return null;
         }
@@ -1537,6 +1546,13 @@ public class TmgReferList {
             String treeViewGroup = groupList.getJSONArrayForTreeView();
             if (StrUtil.isNotBlank(targetGroup_perm)) {
                 String regexGroupPerm =  targetGroup_perm.replace("|","\\|");
+                String result = ReUtil.get("\\{[^{]*'" + regexGroupPerm+ "'[^}]*\\}", treeViewGroup, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
+            }
+            String targetGroup = ContextUtil.getHttpRequest().getParameter(TREEVIEW_KEY_PERM_TARGET_GROUP);
+            if (StrUtil.isNotBlank(targetGroup)) {
+                String regexGroupPerm =  targetGroup.replace("|","\\|");
                 String result = ReUtil.get("\\{[^{]*'" + regexGroupPerm+ "'[^}]*\\}", treeViewGroup, 0);
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
@@ -1562,6 +1578,15 @@ public class TmgReferList {
                 String result = ReUtil.get("\\{[^{]*'" + targetSec_perm + "'[^}]*\\}", treeViewSection, 0);
                 JSONObject obj = JSONUtil.parseObj(result);
                 psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, obj.get("label"));
+            }
+            String targetSection = ContextUtil.getHttpRequest().getParameter(TREEVIEW_KEY_PERM_TARGET_SECTION);
+            System.out.println("+++");
+            if (StrUtil.isNotBlank(targetSection)) {
+                System.out.println(targetSection);
+                String regexSectionPerm =  targetSection.replace("|","\\|");
+                String result = ReUtil.get("\\{[^{]*'" + regexSectionPerm+ "'[^}]*\\}", treeViewSection, 0);
+                JSONObject obj = JSONUtil.parseObj(result);
+                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP_NAME, obj.get("label"));
             }
             return treeViewSection;
         }else{

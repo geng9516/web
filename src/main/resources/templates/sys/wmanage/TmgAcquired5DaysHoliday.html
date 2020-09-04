@@ -503,8 +503,10 @@
             }
         },
         async mounted() {
-            this.getOrgTree()
-            this.getSearchCondition()
+            console.log([[${ session }]])
+            await this.getOrgTree()
+            await this.getSearchCondition()
+            await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
         beforeDestroy() {
@@ -1240,6 +1242,135 @@
                         isChecked: i === index ? true : false
                     }
                 })
+            },
+            async getInit() {
+
+                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
+                console.log(this.referListObject)
+                let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+
+                //　初回管理サイトの画面に入るなら、targetSectionがnullであることから、
+                // ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属部署とする。
+                // ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属部署とする
+                if (targetAdminSection == null || targetAdminSection == ''){
+
+                } else {
+
+                    this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                }
+
+                this.dataLoading = true
+                this.tableData = []
+                if (this.query.hidSelectTab == '1') {
+                    this.query.hidSearchItems = this.referListObject.hidSearchItems
+                    this.query.hidSearchCondition = this.referListObject.hidSearchCondition
+                    this.query.hidSearchData = this.referListObject.hidSearchData
+                } else if (this.query.hidSelectTab == '0') {
+                    this.query.hidSearchItems = ''
+                    this.query.hidSearchCondition = ''
+                    this.query.hidSearchData = ''
+                }
+
+                const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
+                if(data.length>0){
+                    let b = data.map((e,i) => {
+                        const vactionGiveDay = [{
+                            day:e.taDyyyymmdd3,
+                            isReGive: data[i].taCduplicateflg === '1'
+                        }]
+                        return {
+                            name:e.cemployeeName1,
+                            type:e.workertypeNm2,
+                            vactionGiveDay,
+                            paidDays:[e.taFuyodays4],
+
+                            basedDay:[e.taKijyunbi5],
+                            checkPeriod:[e.taKikanbi6],
+                            takenDays:[e.sumSyutokudays7],
+                            mustDays:[e.taMustdays8],
+                            lackDays:[e.taLessdays9],
+
+                            detailSyutokuDays:[e.fixSumSyutokudays16],   //詳細画面取得状況_取得日数
+                            detailAdjustSyutokuDays:[e.tpfNusedaysAjdust13], //詳細画面取得状況_調整取得日数
+                            season:[],
+
+                            cemployeeid0:e.cemployeeid0,
+                            cemployeeName1:e.cemployeeName1,
+                            workertypeNm2:e.workertypeNm2,
+                            taDyyyymmdd3:e.taDyyyymmdd3,
+                            taFuyodays4:e.taFuyodays4,
+                            taKijyunbi5:e.taKijyunbi5,
+                            taKikanbi6:e.taKikanbi6,
+                            sumSyutokudays7:e.sumSyutokudays7,
+                            taMustdays8:e.taMustdays8,
+                            taLessdays9:e.taLessdays9,
+                            taRowpan10:e.taRowpan10,
+                            tpfDpaidHolidayFix11:e.tpfDpaidHolidayFix11,
+                            tpfDkikanbiFix12:e.tpfDkikanbiFix12,
+                            tpfNusedaysAjdust13:e.tpfNusedaysAjdust13,
+                            tpfNmustdaysFix14:e.tpfNmustdaysFix14,
+                            fixMustdays15:e.fixMustdays15,
+                            fixSumSyutokudays16:e.fixSumSyutokudays16,
+                            fixTaKikanbi17:e.fixTaKikanbi17,
+                            taCduplicateflg:e.taCduplicateflg
+                        }
+                    })
+
+                    for (var i=0;i < b.length;i++){
+                        b[i].season.push("詳細")
+                        if (+b[i].taFuyodays4 < 10 && b[i].tpfNusedaysAjdust13 == null &&　b[i].tpfNmustdaysFix14 == null){
+
+                            b[i].basedDay = ["-"]
+                            b[i].checkPeriod = ["-"]
+                            b[i].takenDays = ["-"]
+                            b[i].mustDays = ["-"]
+                            b[i].lackDays = ["-"]
+                            b[i].season = ["-"]
+                        }
+                    }
+                console.log("Cannot read property 'vactionGiveDay' of undefined")
+                console.log(b)
+                    let a=[]
+                    for (var i=0;i < b.length;i++){
+                        if (b[i].taRowpan10 == 1) {
+                            a.push(b[i])
+                        } else if (b[i].taRowpan10 > 1) {
+                            a.push(b[i])
+
+                            let max = i + +b[i].taRowpan10
+                            for (var j=i+1;j <  max;j++){
+                                console.log("'vactionGiveDay' of undefined  ss")
+                                console.log(a.length)
+                                console.log(a[a.length-1])
+                                console.log(b[j].vactionGiveDay[0])
+                                console.log("'vactionGiveDay' of undefined  ee")
+
+                                a[a.length-1].vactionGiveDay.push(b[j].vactionGiveDay[0])
+                                a[a.length-1].paidDays.push(b[j].paidDays[0])
+
+                                a[a.length-1].basedDay.push(b[j].basedDay[0])
+                                a[a.length-1].checkPeriod.push(b[j].checkPeriod[0])
+                                a[a.length-1].takenDays.push(b[j].takenDays[0])
+                                a[a.length-1].mustDays.push(b[j].mustDays[0])
+                                a[a.length-1].lackDays.push(b[j].lackDays[0])
+
+                                a[a.length-1].detailSyutokuDays.push(b[j].detailSyutokuDays[0])
+                                a[a.length-1].detailAdjustSyutokuDays.push(b[j].detailAdjustSyutokuDays[0])
+                                a[a.length-1].season.push(b[j].season[0])
+                            }
+                            i = i + +b[i].taRowpan10 - 1
+                        }
+                    }
+                    this.tableData = a
+                    this.dataLoading = false
+                } else if(data.length == 0){
+                    this.tableData = data
+                    this.dataLoading = false
+                }
+                this.isSearchHistory = false
             },
         }
     })

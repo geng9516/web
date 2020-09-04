@@ -18,12 +18,11 @@
                     </i-button>
                 </i-col>
                 <i-col span="12" class="mb20">
-                    <i-button class="offwork-btn" type="primary" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{
-                        clockBtn.exit }}
+                    <i-button class="offwork-btn" type="primary" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{ clockBtn.exit }}
                     </i-button>
                 </i-col>
                 <i-col span="24">
-                    <i-button class="addwork-btn" type="primary" ghost @click="showDay(null)" long>超勤申請</i-button>
+                    <i-button class="addwork-btn" type="primary" ghost @click="showDay(null)" 　:disabled="discretionDisable" long>超勤申請</i-button>
                 </i-col>
             </Row>
         </i-col>
@@ -137,14 +136,14 @@
                         <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="!bFixed">
                         </i-input>
                         <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
-                      </div>
+                    </div>
 
-                      <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+                    <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
                         <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">承認者コメント</span>
                         <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="!bApproved">
                         </i-input>
                         <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-                      </div>
+                    </div>
                 </div>
 
 
@@ -311,11 +310,12 @@
                 clocking: false,
                 exiting: false,
                 clockDisable: false,
+                discretionDisable: true,
                 dutyAndRelaxData: {
-                    dutyDates:'0',
-                    dutyHours:['0','0'],
-                    npaidRestDaysHour:['0','0','0'],
-                    overTime:['0','0']
+                    dutyDates: '0',
+                    dutyHours: ['0', '0'],
+                    npaidRestDaysHour: ['0', '0', '0'],
+                    overTime: ['0', '0']
                 },
                 /**********/
                 monthlyLoading: false,
@@ -348,7 +348,7 @@
                     txtDYYYYMM: '',
                     txtDYYYYMMDD: '',
                     today: '',
-                    targetDate:'',
+                    targetDate: '',
                     selHealthStatus: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
@@ -558,6 +558,7 @@
             }
         },
         async mounted() {
+            this.getIsDiscretion()
             await this.getData()
             this.$refs.clock.showTime()
             this.getClockInfo()
@@ -698,26 +699,34 @@
                 //console.log('DutyAndRelaxDate data:', data)
                 if (data) {
                     //月間出勤日数
-                    if(data.dutyDates){
-                        this.dutyAndRelaxData.dutyDates = data.dutyDates.substring(0,data.dutyDates.indexOf("日"))
+                    if (data.dutyDates) {
+                        this.dutyAndRelaxData.dutyDates = data.dutyDates.substring(0, data.dutyDates.indexOf("日"))
                     }
                     //月間実働時間
-                    if(data.dutyHours){
-                        this.dutyAndRelaxData.dutyHours[0]=data.dutyHours.substring(0,data.dutyHours.indexOf("時"))
-                        this.dutyAndRelaxData.dutyHours[1]=data.dutyHours.substring(data.dutyHours.indexOf("時")+1,data.dutyHours.length-1)
+                    if (data.dutyHours) {
+                        this.dutyAndRelaxData.dutyHours[0] = data.dutyHours.substring(0, data.dutyHours.indexOf("時"))
+                        this.dutyAndRelaxData.dutyHours[1] = data.dutyHours.substring(data.dutyHours.indexOf("時") + 1, data.dutyHours.length - 1)
                     }
                     //残業時間
-                    if(data.overTime){
-                        this.dutyAndRelaxData.overTime[0]=data.overTime.substring(0,data.overTime.indexOf("時"))
-                        this.dutyAndRelaxData.overTime[1]=data.overTime.substring(data.overTime.indexOf("時")+1,data.overTime.length-1)
+                    if (data.overTime) {
+                        this.dutyAndRelaxData.overTime[0] = data.overTime.substring(0, data.overTime.indexOf("時"))
+                        this.dutyAndRelaxData.overTime[1] = data.overTime.substring(data.overTime.indexOf("時") + 1, data.overTime.length - 1)
                     }
                     //有休残日数
-                    if(data.npaidRestDaysHour){
-                        this.dutyAndRelaxData.npaidRestDaysHour[0]=data.npaidRestDaysHour.substring(0,data.npaidRestDaysHour.indexOf("日"))
-                        this.dutyAndRelaxData.npaidRestDaysHour[1]=data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("日")+1,data.npaidRestDaysHour.indexOf("時"))
-                        this.dutyAndRelaxData.npaidRestDaysHour[2]=data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("時")+1,data.npaidRestDaysHour.length-1)
+                    if (data.npaidRestDaysHour) {
+                        this.dutyAndRelaxData.npaidRestDaysHour[0] = data.npaidRestDaysHour.substring(0, data.npaidRestDaysHour.indexOf("日"))
+                        this.dutyAndRelaxData.npaidRestDaysHour[1] = data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("日") + 1, data.npaidRestDaysHour.indexOf("時"))
+                        this.dutyAndRelaxData.npaidRestDaysHour[2] = data.npaidRestDaysHour.substring(data.npaidRestDaysHour.indexOf("時") + 1, data.npaidRestDaysHour.length - 1)
                     }
 
+                }
+            },
+            //裁量労働の場合、超勤申請できない
+            async getIsDiscretion() {
+                const {data} = await this.http.postForm('sys/timePunch/isDiscretion', this.query_clockInfo)
+                //console.log('裁量労働：',data)
+                if(!data){
+                    this.discretionDisable = data
                 }
             },
             handleClose() {
