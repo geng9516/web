@@ -86,6 +86,7 @@
                 <span class="num">{{monthlyMap[item.key]}}</span>
             </div>
         </div>
+        <Alert class="primary-info mt10">「日」もしくは「曜日」をクリックすると、就業実績画面を表示します。</Alert>
         <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
                  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"

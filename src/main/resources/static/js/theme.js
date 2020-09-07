@@ -150,7 +150,7 @@ var Changetheme = function(e = APP_THEME) {
   }
 }
 
-var toolTipTheme = function(theme) {
-  return APP_THEME === 'dark' ? 'dark' : 'light'
+var toolTipTheme = function() {
+  return APP_THEME === 'dark' ? 'light' : 'dark'
 }
 Changetheme()
