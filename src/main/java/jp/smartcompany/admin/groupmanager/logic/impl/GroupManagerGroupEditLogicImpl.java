@@ -19,6 +19,7 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionDTO;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
+import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.component.logic.QueryConditionValidatorLogic;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
@@ -48,6 +49,8 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     private final IMastGroupsectionpostmappingService iMastGroupsectionpostmappingService;
     private final IMastGroupdefinitionsService iMastGroupdefinitionsService;
     private final IHistGroupdefinitionsService iHistGroupdefinitionsService;
+    private final IMastDatadictionaryService mastDatadictionaryService;
+
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
     private final DbControllerLogic dbControllerLogic;
@@ -451,6 +454,18 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         updateMastGroupDefinitions(
                 insertGroupDefinitions(
                         customerId, systemId, groupId, startDate, endDate, baseFlag),groupCheckQuery,dto);
+    }
+
+
+    @Override
+    public List<QueryConditionSelectDTO> queryConditionList(String tableId) {
+        List<QueryConditionSelectDTO> fieldList;
+        if (StrUtil.isBlank(tableId)) {
+            fieldList = mastDatadictionaryService.selectTableInfo("01", "ja", null);
+        } else {
+            fieldList = mastDatadictionaryService.selectColumnInfo("01", "ja", tableId, null);
+        }
+        return fieldList;
     }
 
     /**

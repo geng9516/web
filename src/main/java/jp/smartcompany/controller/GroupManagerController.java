@@ -7,6 +7,7 @@ import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerLogic;
+import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
 import jp.smartcompany.framework.component.logic.EmployeeInfoSearchLogic;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -35,6 +36,12 @@ public class GroupManagerController {
     private final EmployeeInfoSearchLogic employeeInfoSearchLogic;
     private final GroupManagerDateEditLogic groupManagerDateEditLogic;
 
+    /**
+     * ===========================================
+     * GroupManagerMainAction 整理接口
+     * ===========================================
+     */
+
     // http://localhost:6879/sys/groupmanager/groups?psSite=Admin
     // グループ定義:閲覧画面リスト
     @GetMapping("groups")
@@ -45,6 +52,11 @@ public class GroupManagerController {
         return groupManagerLogic.getManagerGroupList(psDBBean,searchDate,systemId);
     }
 
+    /**
+     * ===========================================
+     * GroupManagerMainAction 整理接口
+     * ===========================================
+     */
     @GetMapping("detail")
     // http://localhost:6879/sys/groupmanager/detail?groupId=010000&psSite=Admin
     public Map<String,Object> getGroupDetail(
@@ -61,14 +73,25 @@ public class GroupManagerController {
         return groupManagerGroupEditLogic.detail(searchDate,systemId, groupId);
     }
 
-    /*******弹窗相关路由*********/
+    @PostMapping("update")
+    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
+        groupManagerGroupEditLogic.update(dto);
+        return "変更成功";
+    }
+
+    /**
+     * ===========================================
+     * GroupManagerMainAction 整理接口
+     * ===========================================
+     */
+
     // http://localhost:6879/sys/groupmanager/empsearch?searchWord=464&psSite=Admin
     @GetMapping("empsearch")
     public List<EmployeeInfoSearchEntity> searchEmpList(
       @RequestParam(value="searchWord",required = false) String searchWord,
       @RequestParam(value="searchWordConve",required = false) String searchWordConve,
       @RequestParam(value="searchWordEnglish",required = false) String searchWordEnglish,
-      @RequestParam(value="serchRange",required = false,defaultValue = "0") String searchRange,
+      @RequestParam(value="searchRange",required = false,defaultValue = "0") String searchRange,
       @RequestParam(value = "searchFlg",required = false,defaultValue = "zai") String searchFlg,
       @RequestParam(value="companyId",required = false,defaultValue = "01") String companyId,
       @RequestParam(value="targetComp",required = false,defaultValue = "01") String targetComp,
@@ -79,18 +102,22 @@ public class GroupManagerController {
       return employeeInfoSearchLogic.searchEmpList(searchWord,searchWordConve,searchWordEnglish,searchRange,searchFlg,companyId,targetComp,ifKeyorAdditionalRole,targetDept,type);
     }
 
-    @PostMapping("update")
-    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
-        groupManagerGroupEditLogic.update(dto);
-        return "変更成功";
+    /**
+     * 条件式選択一覧(指定テーブル一覧) 表示画面用初期処理<br>
+     * 選択一覧(テーブル一覧)にて表示する情報を取得します。
+     */
+    // http://localhost:6879/sys/groupmanager/queryconditions
+    @GetMapping("queryconditions")
+    public List<QueryConditionSelectDTO> queryConditionList(@RequestParam(value="tableId",required = false) String tableId) {
+        return groupManagerGroupEditLogic.queryConditionList(tableId);
     }
+
 
     /**
      * ===========================================
      * GroupManagerDateEditAction 整理接口
      * ===========================================
       */
-
     // グループ定義 一覧(指定基準日)画面にて表示する情報を取得します。
     // http:localhost:6879/sys/groupmanager/editlist?psSite=Admin
     @GetMapping("editlist")
@@ -99,6 +126,8 @@ public class GroupManagerController {
             @RequestParam(value="systemId",required = false) String systemId) {
         return groupManagerDateEditLogic.editListHandler(searchDate,systemId);
     }
+
+
 
     // 指定されたグループを削除
     @PostMapping("delete")

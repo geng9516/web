@@ -9,14 +9,12 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
 import jp.smartcompany.framework.jsf.orgtree.logic.OrgTreeListLogic;
 import jp.smartcompany.framework.jsf.orgtree.vo.OrgTreeVO;
 import jp.smartcompany.job.modules.base.pojo.vo.TreeSearchConditionVO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastPostDO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
@@ -252,6 +250,7 @@ public class TreeController {
       * ================== 弹窗相关json =================
       *
       */
+
 
     // http://localhost:6879/sys/tree/orgs?psSite=Admin
     // 要渲染具有层数的树结构时不能用这两个参数：companyCode=01&sectionCode=204000000000

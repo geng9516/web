@@ -88,6 +88,7 @@
       },
       methods: {
         logout() {
+          document.cookie = 'JSESSIONID='+getCookie('JSESSIONID')+';expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
           location.href = '/logout'
         },
         updatePassword: Debounce(async function () {
@@ -128,5 +129,14 @@
         }
       }
     })
+
+    function getCookie(name)
+    {
+        var arr,reg=new RegExp("(^| )"+name+"=([^;]*)(;|$)");
+        if(arr=document.cookie.match(reg))
+            return unescape(arr[2]);
+        else
+            return null;
+    }
   </script>
 </div>

@@ -1096,11 +1096,13 @@ public class TmgReferList {
     private boolean isSession4SearchTabItem(){
 
         if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
-            if(!(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS).toString().equals(psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES)) &&
-                    psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION).toString().equals(psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION)) &&
-                    psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA).toString().equals(psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA))
-            )
-            ){
+            String searchItems = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS);
+            String searchCondition =  (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
+            String searchData =  (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
+            if(!StrUtil.equals(searchItems,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES)) &&
+                    StrUtil.equals(searchCondition,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION)) &&
+                    StrUtil.equals(searchData,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA))
+            ) {
                 return false;
             }
             return true;

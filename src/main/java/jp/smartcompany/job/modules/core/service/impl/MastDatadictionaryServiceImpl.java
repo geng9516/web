@@ -1,12 +1,13 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
-import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
+import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import jp.smartcompany.job.modules.core.mapper.MastDatadictionaryMapper;
 import jp.smartcompany.job.modules.core.service.IMastDatadictionaryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -35,5 +36,18 @@ public class MastDatadictionaryServiceImpl extends ServiceImpl<MastDatadictionar
         @Override
         public List<QueryConditionRowDTO> selectGroupJoinQuery(String customerId, String tableId) {
           return baseMapper.selectGroupJoinQuery(customerId,tableId);
+        }
+
+        @Override
+        public List<QueryConditionSelectDTO> selectTableInfo(
+                                                  String customerId,
+                                                  String language,
+                                                  String mdCavlforckStart) {
+          return baseMapper.selectTableInfo(customerId,language,mdCavlforckStart);
+        }
+
+        @Override
+        public List<QueryConditionSelectDTO> selectColumnInfo(String customerId,String language,String tableId,String mdCavlforckStart) {
+          return baseMapper.selectColumnInfo(customerId,language,tableId,mdCavlforckStart);
         }
 }

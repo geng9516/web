@@ -126,4 +126,53 @@
            )
     </select>
 
+    <select id="selectTableInfo" parameterType="map" resultType="jp.smartcompany.framework.component.dto.QueryConditionSelectDTO">
+        -- 使用出来るテーブル一覧を取得
+        SELECT
+            DISTINCT MDT_CTABLENAME AS code_info,
+            PSMASTER.FUNC_GET_TABLE_DESC('${customerId}',MDT_CTABLENAME,'${language}') AS name_info,
+            MDT_NTABLESEQ
+        FROM
+            MAST_DATADICTIONARY,
+            MAST_DATADICTBL
+        WHERE
+           MD_CCUSTOMERID  = #{customerId}
+            <choose>
+                <when test="mdCavlforckStart != null">
+                    AND MD_CAVLFORCKSTART   = '1'
+                </when>
+                <otherwise>
+                    AND MD_CAVLGROUPS   = '1'
+                </otherwise>
+            </choose>
+            AND MD_CCUSTOMERID = MDT_CCUSTOMERID
+            AND MD_CTABLENAME = MDT_CTABLENAME
+            ORDER BY
+            MDT_NTABLESEQ,MDT_CTABLENAME
+    </select>
+
+    <select id="selectColumnInfo" parameterType="map" resultType="jp.smartcompany.framework.component.dto.QueryConditionSelectDTO">
+        SELECT
+            DISTINCT
+            MD_CCOLUMNNAME AS code_info,
+            PSMASTER.FUNC_GET_TABLE_DESC('${customerId}',MD_CTABLENAME,'${language}') || '－' || PSMASTER.FUNC_GET_COLUMN_DESC('${customerId}','${tableId}',MD_CCOLUMNNAME,'${language}') AS name_info,
+            MD_CMASTERTBLNAME AS MASTERINFO,
+            MD_CTYPEOFCOLUMN AS TYPEINFO,
+            MD_NSEQ
+        FROM
+            MAST_DATADICTIONARY
+        WHERE
+            MD_CCUSTOMERID = #{customerId} AND
+            MD_CTABLENAME = #{tableId}
+            <choose>
+                <when test="mdCavlforckStart != null">
+                    AND MD_CAVLFORCKSTART   = '1'
+                </when>
+                <otherwise>
+                    AND MD_CAVLGROUPS   = '1'
+                </otherwise>
+            </choose>
+            ORDER BY MD_NSEQ
+    </select>
+
 </mapper>

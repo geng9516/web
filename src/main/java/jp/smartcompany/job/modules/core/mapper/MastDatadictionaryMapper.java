@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper;
 
 import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
+import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -27,4 +28,32 @@ public interface MastDatadictionaryMapper extends BaseMapper<MastDatadictionaryD
 
         List<QueryConditionRowDTO> selectGroupJoinQuery(@Param("customerId") String customerId,@Param("tableId") String tableId);
 
+        /**
+         * データディクショナリマスタより、登録されているテーブル情報を取得
+         *
+         * @author  isolyamada
+         * @param   customerId    顧客コード
+         * @param   language      言語区分
+         * @param   mdCavlforckStart  自由条件検索の場合使用
+         * @return  List < QueryConditionSelectDto >   テーブル情報リスト
+         * @exception
+         */
+        List<QueryConditionSelectDTO> selectTableInfo(@Param("customerId") String customerId,
+                                                      @Param("language") String language,
+                                                      @Param("mdCavlforckStart") String mdCavlforckStart);
+        /**
+         * データディクショナリマスタより、登録されているカラム情報を取得
+         *
+         * @author  isolyamada
+         * @param   customerId        顧客コード
+         * @param   language          言語区分
+         * @param   tableId           対象テーブル
+         * @param   mdCavlforckStart  自由条件検索の場合使用
+         */
+        List<QueryConditionSelectDTO> selectColumnInfo(
+                @Param("customerId") String customerId,
+                @Param("language") String language,
+                @Param("tableId") String tableId,
+                @Param("mdCavlforckStart") String mdCavlforckStart
+        );
 }
