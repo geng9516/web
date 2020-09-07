@@ -31,9 +31,9 @@
         <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
       <dropdown-menu slot="list">
-        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item" style="border-bottom: 1px solid #d2d2d2;"
-          @click.native="Changetheme(item)">
-          {{ item }}
+        <dropdown-item v-for="(item, i) of themeList" :value="item.value" :name="item.name" :key="i" style="border-bottom: 1px solid #d2d2d2;"
+          @click.native="Changetheme(item.value)">
+          {{ item.name }}
         </dropdown-item>
       </dropdown-menu>
     </dropdown>
@@ -68,7 +68,11 @@
         return {
           baseUrl: BASE_URL,
           session: [[${ session }]],
-          themeList: ['デフォルト', 'クラシック', 'ナイト'],
+          themeList: [
+            { name: 'デフォルト', value: 'default'},
+            { name: 'クラシック', value: 'classical'},
+            { name: 'ナイト', value: 'dark'}
+          ],
           password:{},
           passwordLoading: false,
           alterPasswordModal: false

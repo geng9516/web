@@ -1,4 +1,4 @@
-var APP_THEME = localStorage.getItem('APP_THEME') || 'デフォルト'
+var APP_THEME = localStorage.getItem('APP_THEME') || 'default'
 var THEME_CONFIG  = {
   orange: {
     '--login-svg-fill': 'var(--orange)',
@@ -136,17 +136,21 @@ var THEME_CONFIG  = {
 }
 
 var Changetheme = function(e = APP_THEME) {
-  if(e === 'デフォルト') {
+  if(e === 'default') {
     localStorage.setItem('APP_THEME', e)
     Object.keys(THEME_CONFIG.orange).forEach(e=>{
       document.documentElement.style.setProperty(e,THEME_CONFIG.orange[e])
     })
   }
-  if(e=== 'クラシック') {
+  if(e=== 'classical') {
     localStorage.setItem('APP_THEME', e)
     Object.keys(THEME_CONFIG.blue).forEach(e=>{
       document.documentElement.style.setProperty(e,THEME_CONFIG.blue[e])
     })
   }
+}
+
+var toolTipTheme = function(theme) {
+  return APP_THEME === 'dark' ? 'dark' : 'light'
 }
 Changetheme()
