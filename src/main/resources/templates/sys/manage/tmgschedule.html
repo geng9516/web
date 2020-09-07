@@ -41,7 +41,7 @@
             <span style="display:flex;width: calc(15% + 200px);">
                 <span class="label">所属</span>
                 <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
-                    <Tooltip trigger="hover" theme="dark" transfer>{{deptName}}
+                    <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}
                         <div slot="content">{{deptName}}</div>
                     </Tooltip>
                 </i-button>
@@ -106,13 +106,13 @@
             <!-- 共通組織図画面 end-->
             <span class="label">氏名</span>
             <span class="input-like-span width15 mr30">
-                <Tooltip trigger="hover"　theme="dark" transfer>{{kanjiName}}
+                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{kanjiName}}
                     <div slot="content">{{kanjiName}}</div>
                 </Tooltip>
             </span>
             <span class="label">種別</span>
             <span class="input-like-span width15">
-                <Tooltip trigger="hover"　theme="dark" transfer v-if="wokertypename">{{wokertypename}}
+                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer v-if="wokertypename">{{wokertypename}}
                     <div slot="content">{{wokertypename}}</div>
                 </Tooltip>
             </span>
