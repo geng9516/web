@@ -81,7 +81,7 @@
     </div>
     <div class="content_body">
         <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
-                 :row-class-name="() => 'select-col'" >
+                 no-data-text="" :row-class-name="() => 'select-col'" >
             <template slot-scope="{ row }" slot="name"><i-button type="primary" ghost size="small" style="margin-right: 5px" @click.stop="handleRowClick(row)">{{ row.name }}</i-button>
             </template>
 
@@ -229,20 +229,28 @@
             <span v-if="isSeason">
                     <div class="titlenorm mb10 mt20">
                         <Icon type="logo-buffer"></Icon>
-                        取得状況
+                        取得状況詳細
                     </div>
                     <Row :gutter="10">
-                        <i-col span="8">
+                        <i-col span="4">
                         <div class="label">基準日</div>
                         <div class="person-info">{{ privateInfo.taKijyunbi }}</div>
                         </i-col>
-                        <i-col span="8">
-                        <div class="label">取得日数</div>
+                        <i-col span="5">
+                        <div class="label">実績取得日数</div>
                         <div class="person-info">{{ privateInfo.Syutokudays | addNumDeci(true) }}</div>
                         </i-col>
-                        <i-col span="8">
+                        <i-col span="5">
                         <div class="label">調整取得日数</div>
                         <div class="person-info">{{ privateInfo.ajustSyutokudays | addNumDeci(true) }}</div>
+                        </i-col>
+                        <i-col span="5">
+                        <div class="label">必要日数</div>
+                        <div class="person-info">{{ privateInfo.taMustdays8 | addNumDeci(true) }}</div>
+                        </i-col>
+                        <i-col span="5">
+                        <div class="label">不足日数</div>
+                        <div class="person-info">{{ privateInfo.taLessdays9 | addNumDeci(true) }}</div>
                         </i-col>
                     </Row>
                     <div class="titlenorm mb10 mt20">
@@ -438,7 +446,7 @@
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
                 },
-                deptName: '選んでください',
+                deptName: '',
                 query: {
                     txtAction: 'ACT_DISP',
                     txtDYYYYMM: '',
@@ -482,6 +490,8 @@
                     taKijyunbi: '',
                     Syutokudays: '',
                     ajustSyutokudays: '',
+                    taMustdays8: '',
+                    taLessdays9: '',
                     deptName: '',
                     name: '',
                     workType: ''
@@ -536,6 +546,8 @@
                 this.privateInfo.taKijyunbi = e.basedDay[i]
                 this.privateInfo.Syutokudays = e.detailSyutokuDays[i]
                 this.privateInfo.ajustSyutokudays = e.detailAdjustSyutokuDays[i]
+                this.privateInfo.taMustdays8 = e.taMustdays8[i]
+                this.privateInfo.taLessdays9 = e.taLessdays9[i]
 
                 this.privateInfo.deptName = this.deptName
                 this.privateInfo.name = e.name
@@ -794,6 +806,12 @@
                 } else if(data.length == 0){
                     this.tableData = data
                     this.dataLoading = false
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '職員が存在している部署を選択してくだい。'
+                    });
                 }
                 this.isSearchHistory = false
             },
@@ -1277,24 +1295,25 @@
                 console.log("getDeptCode")
                 console.log(this.targetPermSection)
 
-                // if (this.targetPermSection == null || this.targetPermSection == ''){
-                this.getDeptCode(this.treeData)
-                if (this.targetPermSectionFlag) {
-                    console.log("getDeptCode_true")
-                    console.log(this.treeData)
-                    this.getDeptName(this.treeData)
-                    this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-                    this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                } else {
-                    console.log("getDeptCode_false")
-                    console.log(this.treeData)
-                    this.deptName = this.treeData[0].label
-                    this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
-                    this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                if (this.targetPermSection != null || this.targetPermSection != '') {
+                    this.getDeptCode(this.treeData)
+                    if (this.targetPermSectionFlag) {
+                        console.log("getDeptCode_true")
+                        console.log(this.treeData)
+                        this.getDeptName(this.treeData)
+                        this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    } else {
+                        console.log("getDeptCode_false")
+                        console.log(this.treeData)
+                        this.deptName = this.treeData[0].label
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
                 }
 
                 //一覧画面取得
