@@ -32,10 +32,11 @@
         <!-- 共通組織図画面 start-->
         <span style="display:flex;width: calc(15% + 200px);">
           <span class="label">所属</span>
-          <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-            style="width: calc(100% - 120px);border-radius:0;border: 1px dashed var(--dept-select);color: var(--dept-select);">
-            {{ deptName }}
-          </i-button>
+          <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
+            <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}
+                <div slot="content">{{deptName}}</div>
+            </Tooltip>
+        </i-button>
           ​
           <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
@@ -267,7 +268,7 @@
               <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
               <i-col span="7" class="no-border-radius">
                 <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
-                  format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+                  format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
               <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
               <div style="display: inline-block;width: 36.3%;" class="no-border-radius">
@@ -322,13 +323,13 @@
                 <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
                 <Row class="ft13 mb5 mt10">
                   <i-col span="12">
-                    <p class="head-info mr1">期間</p>
+                    <p class="label mr1">期間</p>
                   </i-col>
                   <i-col span="6">
-                    <p class="head-info mr1">残日数</p>
+                    <p class="label mr1">残日数</p>
                   </i-col>
                   <i-col span="6">
-                    <p class="head-info">残時間数</p>
+                    <p class="label">残時間数</p>
                   </i-col>
                 </Row>
                 <Row class="mb5 ft13 border">
@@ -1159,14 +1160,13 @@
           let checkPassed = true
           if (this.uploadFiles.length >= 5) {
             this.$Notice.warning({
-              title: 'Up to five files can be uploaded.'
+              title: '添付可能なファイル数が上限（5個）を超えました。'
             })
             checkPassed = false
           }
           if (files.size / 1024 > 500) {
             this.$Notice.warning({
-              title: 'Exceeding file size limit',
-              desc: 'File ' + files.name + ' is too large, no more than 500K.'
+              desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
             })
             checkPassed = false
           }
@@ -1209,11 +1209,7 @@
             this.errorMsg = '申請区分を選んでください。'
             return
           }
-          if(this.selectedRestInfo.confirmComment !='0' &&!this.restApply.owncomment) {
-            this.errorInfo = true
-            this.errorMsg = '申請事由等を入力してください。'
-            return
-          }
+
           if (!this.restApply.begin || !this.restApply.end) {
             this.errorInfo = true
             this.errorMsg = '期間を選んでください。'
@@ -1281,6 +1277,11 @@
           if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
             this.errorInfo = true
             this.errorMsg = '傷病名を入力してください。'
+            return
+          }
+          if(this.selectedRestInfo.confirmComment !='0' &&!this.restApply.owncomment) {
+            this.errorInfo = true
+            this.errorMsg = '申請事由等を入力してください。'
             return
           }
           if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {

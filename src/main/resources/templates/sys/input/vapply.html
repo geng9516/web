@@ -605,11 +605,6 @@
                         this.errorMsg = '申請区分を選んでください。'
                         return
                     }
-                    if(this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
-                        this.errorInfo = true
-                        this.errorMsg = '申請事由等を入力してください。'
-                        return
-                    }
 
                     if(!this.restApply.begin || !this.restApply.end) {
                         this.errorInfo = true
@@ -678,6 +673,11 @@
                     if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
                         this.errorInfo = true
                         this.errorMsg = '傷病名を入力してください。'
+                        return
+                    }
+                    if(this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
+                        this.errorInfo = true
+                        this.errorMsg = '申請事由等を入力してください。'
                         return
                     }
                     if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {

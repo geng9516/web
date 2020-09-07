@@ -42,9 +42,10 @@
             </i-select>
             <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
-                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span mr30 cursor grey"
-                              style="width: calc(100% - 120px);border-radius:0;border: 1px dashed var(--dept-select);color: var(--dept-select);">
-                        {{ deptName }}
+                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
+                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}
+                            <div slot="content">{{deptName}}</div>
+                        </Tooltip>
                     </i-button>
 
                 <!-- 共通組織図画面 start-->
@@ -107,7 +108,11 @@
                 <!-- 共通組織図画面 end-->
                 </span>
             <span class="label">氏名</span>
-            <span class="input-like-span width15">{{ kanjiName }}</span>
+            <span class="input-like-span width15">
+                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{kanjiName}}
+                    <div slot="content">{{kanjiName}}</div>
+                </Tooltip>
+            </span>
         </div>
     </div>
     <div class="content_body">
