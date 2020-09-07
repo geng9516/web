@@ -34,7 +34,7 @@ public class TmgAcquired5DaysHolidayController {
 
         tmgAcquired5DaysHolidayBean.execute(psDBBean, recordDate, year);
 
-        return tmgAcquired5DaysHolidayBean.selectList(txtUserCode, psDBBean);
+        return tmgAcquired5DaysHolidayBean.selectList(txtUserCode, psDBBean, recordDate);
     }
 
     /**

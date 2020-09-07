@@ -85,10 +85,12 @@ public class TmgAcquired5DaysHolidayBean {
      * @param psDBBean 　PsDBBean
      * @return
      */
-    public List<Acquired5DaysListVO> selectList(String userCode, PsDBBean psDBBean) {
+    public List<Acquired5DaysListVO> selectList(String userCode, PsDBBean psDBBean, String recordDate) {
 
         String empsql = referList.buildSQLForSelectEmployees();
-
+        if (recordDate!=null || !"".equals(recordDate)){
+            baseDate = recordDate;
+        }
         List<Acquired5DaysListVO> acquired5DaysVOList = iTmgAcquired5daysholidayService.buildSQLforList(baseDate, empsql, userCode);
         // 重複Flg判断
         for (int i = 0; i < acquired5DaysVOList.size()-1 ; i++) {
