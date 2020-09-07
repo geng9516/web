@@ -30,10 +30,6 @@
                         {{ `出勤簿 （${fromYYYYMM}～ ${toYYYYMM}）` }}
                     </h1>
                 </div>
-                <div class="btnbox">
-                    <!-- 出勤簿一个按钮都没有，需要占位 -->
-                    
-                </div>
             </div>
             <div class="searchwrap">
                 <span class="label">表示開始月</span>
@@ -42,9 +38,17 @@
                     </i-option>
                 </i-select>
                 <span class="label">所属</span>
-                <span class="input-like-span width15">{{ sectionName }}</span>
+                <span class="input-like-span width15">
+                    <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{ sectionName }}
+                        <div slot="content">{{ sectionName }}</div>
+                    </Tooltip>
+                </span>
                 <span class="ml15 label">氏名</span>
-                <span class="input-like-span width15">{{ kanjiName }}</span>
+                <span class="input-like-span width15">
+                    <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{ kanjiName }}
+                        <div slot="content">{{ kanjiName }}</div>
+                    </Tooltip>
+                </span>
             </div>
         </div>
         <div class="content_body">
