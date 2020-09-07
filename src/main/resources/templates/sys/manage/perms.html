@@ -662,8 +662,10 @@
                     }
                 }
             },
-            mounted() {
-                this.getOrgTree()
+            async mounted() {
+                await this.getOrgTree()
+                this.getTableData()
+                this.deptName = this.treeData[0].groupname
             },
             watch: {
                 data: {
