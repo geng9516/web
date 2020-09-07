@@ -312,7 +312,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             if (StrUtil.isBlank(sessionAdminTargetEmp)) {
                 saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
             } else {
-                if (!StrUtil.equals(sessionAdminTargetEmp, targetAdminSection)) {
+                if (!StrUtil.equals(sessionAdminTargetEmp, targetAdminEmp)) {
                     saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_ADMIN);
                 }
             }
@@ -337,12 +337,12 @@ public class SysLoginInterceptor implements HandlerInterceptor {
             hashtable.put(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP,targetPermEmp);
             psDBBean.setTargetUser(targetPermEmp);
             // 保存承认site选中的员工id到session中
-            String sessionAdminTargetEmp = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_EMP);
-            if (StrUtil.isBlank(sessionAdminTargetEmp)) {
-                saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
+            String sessionPermTargetEmp = (String)httpSession.getAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_EMP);
+            if (StrUtil.isBlank(sessionPermTargetEmp)) {
+                saveEmpName(targetPermEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
             } else {
-                if (!StrUtil.equals(sessionAdminTargetEmp, targetAdminSection)) {
-                    saveEmpName(targetAdminEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
+                if (!StrUtil.equals(sessionPermTargetEmp, targetPermEmp)) {
+                    saveEmpName(targetPermEmp, TmgUtil.Cs_SITE_ID_TMG_PERM);
                 }
             }
         }
