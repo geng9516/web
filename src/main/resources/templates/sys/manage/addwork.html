@@ -212,18 +212,18 @@
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <Row class="mb15 tr">
                     <div v-if="!bFixed">
-                        <i-col span="6" offset="16" class="mr15">
-                            <i-button type="error" ghost  @click="updateRemandsStatus" :loading="updateDailyLoading" v-if="notapproval">
+                        <i-col span="6" offset="16" class="mr15" v-if="notapproval">
+                            <i-button type="error" ghost  @click="updateRemandsStatus" icon="md-hand" :loading="updateDailyLoading">
                                 差戻
                             </i-button>
                         </i-col>
                         <i-col  span="8" offset="16" v-if="!notapproval">
-                            <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
+                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading">
                                 承認
                             </i-button>
                         </i-col>
                         <i-col  span="1"  v-if="notapproval">
-                            <i-button type="primary" ghost  @click="updateDaily" :loading="updateDailyLoading">
+                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading">
                                 承認
                             </i-button>
                         </i-col>
@@ -1152,7 +1152,7 @@
                     if (!this.errorCheck(this.workingId)) {
                         return
                     }
-                    this.updateDailyLoading = true
+
 
                     this.tmgResultsDto.txtDYYYYMMDD = this.query.txtDYYYYMMDD
                     this.tmgResultsDto.txtAction = 'ACT_EDITPERM_UPERMIT'
@@ -1180,11 +1180,12 @@
                     }
                     this.$Modal.confirm({
                         title: 'この内容で承認します。よろしいですか？',
-                        width: 490,
+                        width: 400,
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             try {
+                                this.updateDailyLoading = true
                                 const {msg} = await this.http.post('sys/tmgResults/updateDaily', this.tmgResultsDto)
                                 if (msg === '0') {
                                     this.updateDailyLoading = false
