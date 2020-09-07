@@ -175,6 +175,7 @@
                     <span class="num">{{monthlyMap[item.key]}}</span>
                 </div>
             </div>
+            <Alert class="primary-info mt10">「日」もしくは「曜日」をクリックすると、就業実績画面を表示します。</Alert>
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
                      border :columns="columns"
                      :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
@@ -711,8 +712,7 @@
                             this.treeData = Utils.convertTreeData(memberList)
                         }
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                        this.empDeptLoading = false
-                        await this.getWorkDateList()
+                        //await this.getWorkDateList()
                     } catch (error) {
                         return
                     } finally {
@@ -744,10 +744,9 @@
                     //よって、二回目クリックすると、何もしない
                     if(!e[0]) return
                     if(e[0].children) return
-                    console.log(e)
                     this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
-
+                    console.log(e)
                     this.referListObject[section] = e[0].secid
                     this.deptName = e[0].secnic
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
@@ -755,6 +754,8 @@
                     this.kanjiName = e[0].empname
                     this.selectDisabled = true
                     await this.getWorkDateList()
+
+
                     if (!this.query.txtDYYYYMM){
                         this.$Notice.warning({ title: '年月を選択して下さい' })
                     }else{
