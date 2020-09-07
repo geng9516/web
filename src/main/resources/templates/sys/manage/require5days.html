@@ -468,6 +468,9 @@
                     dkikanbiFix: '',
                     txtNusedaysDays: '',
                     txtFuyobi: '',
+                    txtTmgReferListTreeViewPermSelectedView: '',
+                    txtTmgReferListTreeViewPermTargetSection: '',
+                    txtTmgReferListTreeViewPermTargetGroup: '',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -501,12 +504,16 @@
                 currentTab: '',         //組織のツリーと検索タブーを切り替え
                 dataLoading: false,
                 forRest: true,
-                radioCheckedIndex: 0
+                radioCheckedIndex: 0,
+                targetPermSection: '',
+                targetPermSectionFlag: false
             }
         },
         async mounted() {
-            this.getOrgTree()
-            this.getSearchCondition()
+            console.log([[${ session }]])
+            await this.getOrgTree()
+            await this.getSearchCondition()
+            await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
         beforeDestroy() {
@@ -1252,6 +1259,67 @@
                     return {
                         ...e,
                         isChecked: i === index ? true : false
+                    }
+                })
+            },
+            //初期化処理
+            async getInit() {
+                console.log("getInit")
+                console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
+
+                this.targetPermSection = '',
+                this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log("getDeptCode")
+                console.log(this.targetPermSection)
+
+                // if (this.targetPermSection == null || this.targetPermSection == ''){
+                this.getDeptCode(this.treeData)
+                if (this.targetPermSectionFlag) {
+                    console.log("getDeptCode_true")
+                    console.log(this.treeData)
+                    this.getDeptName(this.treeData)
+                    this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                    this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                } else {
+                    console.log("getDeptCode_false")
+                    console.log(this.treeData)
+                    this.deptName = this.treeData[0].label
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                    this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                }
+
+                //一覧画面取得
+                this.getTableData()
+            },
+            getDeptCode(data) {
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.targetPermSectionFlag = true
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptCode(children)
+                        }
+                    }
+                })
+            },
+            getDeptName(data) {
+                // idによりループ処理でdeptNameを取得する
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.deptName = e.label
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptName(children)
+                        }
                     }
                 })
             },
