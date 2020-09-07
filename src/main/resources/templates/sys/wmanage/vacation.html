@@ -752,31 +752,13 @@
             },
             dateRefresh() {
 
-                let nadjust = this.paidNowData[3].days
-                let nadjustHours = this.paidNowData[3].times
-                let dexpireAdjust = this.paidNowData[3].expiryDate
+                this.dataDetail.nadjust = this.paidNowData[3].days
+                this.dataDetail.nadjustHours = this.paidNowData[3].times
+                this.dataDetail.dexpireAdjust = this.paidNowData[3].expiryDate
 
-                let nadjustTo = this.paidNowData[4].days
-                let nadjustHoursTo = this.paidNowData[4].times
-                let dexpireAdjustTo = this.paidNowData[4].expiryDate
-
-                this.paidDetailsLoading = true
-
-                this.dataDetail.ninvestDays = (eval(this.dataDetail.ninvest)
-                    + eval(+this.dataDetail.nthroughout)
-                    + eval(+nadjust)
-                    + eval(+nadjustTo))
-
-                this.dataDetail.ninvestHours = this.toHoursFromMinutes(this.toMinuteFromHours(nadjustHours)
-                    + this.toMinuteFromHours(nadjustHoursTo)
-                    + this.toMinuteFromHours(this.dataDetail.nthroughoutHours)).toFixed(2)
-                this.dataDetail.nadjust = nadjust
-                this.dataDetail.nadjustHours = nadjustHours
-                this.dataDetail.dexpireAdjust = dexpireAdjust
-
-                this.dataDetail.nadjustTo = nadjustTo
-                this.dataDetail.nadjustHoursTo = nadjustHoursTo
-                this.dataDetail.dexpireAdjustTo = dexpireAdjustTo
+                this.dataDetail.nadjustTo = this.paidNowData[4].days
+                this.dataDetail.nadjustHoursTo = this.paidNowData[4].times
+                this.dataDetail.dexpireAdjustTo = this.paidNowData[4].expiryDate
 
                 setTimeout(()=>this.paidDetailsLoading = false)
 
