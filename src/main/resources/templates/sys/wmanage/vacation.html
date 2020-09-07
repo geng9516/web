@@ -116,12 +116,12 @@
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2">
                             <template slot-scope="{ row ,index }" slot="days">
-                                <i-input  v-model="paidNowData[index].days"  v-if="row.isEditable" @on-change="dateRefresh" class=" tc" ></i-input>
+                                <i-input  v-model="paidNowData[index].days"  v-if="row.isEditable" @on-blur="dateRefresh" class=" tc" ></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
                             <template slot-scope="{ row,index }" slot="times">
-                                <i-input v-model="paidNowData[index].times"  v-if="row.isEditable" @on-change="dateRefresh" class=" tc" ></i-input>
+                                <i-input v-model="paidNowData[index].times"  v-if="row.isEditable" @on-blur="dateRefresh" class=" tc" ></i-input>
                                 <p v-else>{{ row.times| addNumDeci }}</p>
                             </template>
 
