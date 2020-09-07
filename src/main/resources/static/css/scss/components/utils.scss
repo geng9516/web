@@ -323,6 +323,10 @@
 .ivu-spin-dot {
   background-color: var(--spin);
 }
+.ivu-tree-context-menu {
+  // 禁止适用tree右键
+  display: none;
+}
 .footer {
   position: relative;
   margin-top: -32px;
