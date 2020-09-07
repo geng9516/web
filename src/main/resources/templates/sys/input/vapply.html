@@ -125,7 +125,7 @@
                                     <i-col span="4" style="position: absolute;right: 42px;top: -5px;" class="description"
                                         v-if="item.tntfCstatusflg.indexOf('2') > -1">
                                         <!-- 承认中可以自行取消 -->
-                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item, index)" :loading="cacelBtnLoading[index]">取り消し
+                                        <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item, index)" :loading="cacelBtnLoading[index]">取下
                                         </i-button>
                                     </i-col>
                                     <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
@@ -562,6 +562,7 @@
                             ntfNo:e.tntfCntfNo,
                             psSite: this.opts.psSite
                         })
+                        await this.getRestInfo()
                         this.$Message.success('取り消し完了')
                     } catch (error) {
                         return
@@ -705,6 +706,7 @@
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
+                        await this.getRestInfo()
                         this.$Message.success('申请完了')
                         this.uploadFiles = []
                     } catch (error) {
