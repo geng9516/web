@@ -88,9 +88,15 @@ public class PaidholidayBean {
         // txtTPH_NADJUST_HOURS_TO
         tmgPaidHolidayDto.setTphNadjustHoursTo(Double.valueOf(paidHolidayUpdateVO.getNadjustHoursTo()));
         //txtTPH_DEXPIRE_ADJUST
-        tmgPaidHolidayDto.setTphDexpireAdjust(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjust()));
+        if ( tmgPaidHolidayDto.getTphNadjust()==0.0 && tmgPaidHolidayDto.getTphNadjustHours()==0.0){
+        }else{
+            tmgPaidHolidayDto.setTphDexpireAdjust(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjust()));
+        }
         //txtTPH_DEXPIRE_ADJUST_TO
-        tmgPaidHolidayDto.setTphDexpireAdjustTo(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjustTo()));
+        if ( tmgPaidHolidayDto.getTphNadjustTo()==0.0 && tmgPaidHolidayDto.getTphNadjustHoursTo()==0.0){
+        }else{
+            tmgPaidHolidayDto.setTphDexpireAdjustTo(DateUtil.parse(paidHolidayUpdateVO.getDexpireAdjustTo()));
+        }
         // txtTPH_CCOMMENT
         tmgPaidHolidayDto.setTphCcomment(paidHolidayUpdateVO.getCcomment());
 

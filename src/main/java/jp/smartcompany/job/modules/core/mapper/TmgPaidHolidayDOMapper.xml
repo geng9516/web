@@ -18,8 +18,14 @@
        <if test="dto.tphDexpireAdjust != null">
            ,TPH_DEXPIRE_ADJUST     = #{dto.tphDexpireAdjust}
        </if>
+       <if test="dto.tphDexpireAdjust == null">
+            ,TPH_DEXPIRE_ADJUST     = null
+       </if>
        <if test="dto.tphDexpireAdjustTo != null">
            ,TPH_DEXPIRE_ADJUST_TO  = #{dto.tphDexpireAdjustTo}
+       </if>
+       <if test="dto.tphDexpireAdjustTo == null">
+            ,TPH_DEXPIRE_ADJUST_TO     = null
        </if>
        <if test="dto.tphCcomment != null">
            ,TPH_CCOMMENT           = #{dto.tphCcomment}
