@@ -57,9 +57,18 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table @on-row-click="showDay(arguments)" no-data-text="所属を選択して下さい。" border :columns="columns"
+        <i-table  no-data-text="所属を選択して下さい。" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
-            <template slot-scope="{ row }" slot="investDaysSum">
+            <div slot-scope="{ row }" slot="name" class="tc">
+                <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click.stop="showDay(row)">{{ row.name }}</span>
+            </div>
+            <template slot-scope="{ row }" slot="workertypenm" >
+                <span>{{ row.workertypenm }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="tphDyyyymmdd" >
+                <span>{{ row.tphDyyyymmdd }}</span>
+            </template>
+            <template slot-scope="{ row }" slot="investDaysSum" >
                 <span>{{ row.investDaysSum | addNumDeci(true) }}</span>
             </template>
 
@@ -190,7 +199,7 @@
             </div>
             <i-table @on-row-click="showDayList(arguments)" :row-class-name="() => 'select-col'"
                      border :columns="paidDetailsColumns" :data="paidDetailsData" :loading="paidNowLoading">
-                <template slot-scope="{ row }" slot="ninvest">
+                <template slot-scope="{ row }" slot="ninvest" >
                     <span>{{ row.ninvest | addNumDeci(true) }}</span>
                 </template>
 
@@ -234,18 +243,18 @@
                 columns: [
                     {
                         title: '氏名',
-                        key: 'name',
+                        slot: 'name',
                         align: 'right'
                     },
                     {
                         title: '種別',
-                        key: 'workertypenm',
+                        slot: 'workertypenm',
                         minWidth: 250,
                         align: 'left'
                     },
                     {
                         title: '年次休暇付与日',
-                        key: 'tphDyyyymmdd',
+                        slot: 'tphDyyyymmdd',
                         align: 'center'
                     },
                     {
@@ -578,12 +587,12 @@
                 this.paidHolidayInitRList = true
                 this.title='年次休暇管理'
 
-                this.name = e[0].name
-                this.workertypenm = e[0].workertypenm
+                this.name = e.name
+                this.workertypenm = e.workertypenm
 
-                this.cemployeeid = e[0].tphCemployeeid
+                this.cemployeeid = e.tphCemployeeid
 
-                this.getDetailList(e[0].tphDyyyymmdd, e[0].tphCemployeeid)
+                this.getDetailList(e.tphDyyyymmdd, e.tphCemployeeid)
 
             },
             // 年次休暇管理
