@@ -30,6 +30,7 @@ import jp.smartcompany.job.modules.core.service.LoginAuditService;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.UnauthenticatedException;
@@ -46,10 +47,7 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -58,6 +56,7 @@ import java.util.stream.Collectors;
  */
 @Service(CoreBean.Business.AUTH)
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@Slf4j
 public class AuthBusiness {
 
     private final IMastPasswordService iMastPasswordService;
@@ -162,8 +161,13 @@ public class AuthBusiness {
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (psSession!=null) {
             saveLoginInfo(false, psSession.getLoginUser());
-            session.removeAttribute(Constant.PS_SESSION);
-            session.removeAttribute(Constant.TOP_NAVS);
+            Enumeration e=session.getAttributeNames();
+            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
+               log.debug("清除session key：{}",sessionName);
+                session.removeAttribute(sessionName);
+            }
+//            session.removeAttribute(Constant.PS_SESSION);
+//            session.removeAttribute(Constant.TOP_NAVS);
 //            ShiroUtil.getSubject().logout();
             session.invalidate();
         }
