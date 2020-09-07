@@ -126,7 +126,7 @@
                             </template>
 
                             <template slot-scope="{ row ,index}" slot="expiryDate">
-                                <date-picker type="date"  v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付け"
+                                <date-picker type="date"  v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付"
                                              format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event" :disabled="row.days ==0.0 && row.times == 0.00" v-if="row.isEditable" transfer ></date-picker>
                                 <p v-else>{{ row.expiryDate }}</p>
                             </template>
