@@ -82,7 +82,7 @@
     <div class="content_body">
         <i-table border :columns="columns" :data="tableData" :loading="dataLoading" :disabled-hover="true"
                  no-data-text= "" :row-class-name="() => 'select-col'" >
-            <template slot-scope="{ row }" slot="name"><i-button type="primary" ghost size="small" style="margin-right: 5px" @click.stop="handleRowClick(row)">{{ row.name }}</i-button>
+            <template slot-scope="{ row }" slot="name"><span class="pl5 pr5 cursor row-label-primary tl no-border-radius width80"  @click.stop="handleRowClick(row)">{{ row.name }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="vactionGiveDay">
