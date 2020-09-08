@@ -459,7 +459,8 @@
                     const { msg } =await this.http.postForm('sys/sumdate/changeFix', this.opts)
                     this.$Modal.error({
                         title: '注意',
-                        content: msg
+                        content: msg,
+                        okText:'キャンセル'
                     })
                 },
                 delFix(e){

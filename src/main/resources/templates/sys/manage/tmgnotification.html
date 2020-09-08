@@ -1016,6 +1016,7 @@
           query = this.changeData(query)
 
           this.$Modal.confirm({
+            inDrawer: true,
             title: 'この申請を最終決裁します。よろしいですか？',
             width: 490,
             okText: 'OK',
@@ -1038,6 +1039,7 @@
           query.action = "ACT_EditPerm_UReject"
           query = this.changeData(query)
           this.$Modal.confirm({
+            inDrawer: true,
             title: 'この申請を差戻します。よろしいですか？',
             width: 490,
             okText: 'OK',
@@ -1060,6 +1062,7 @@
           query = this.changeData(query)
 
           this.$Modal.confirm({
+            inDrawer: true,
             title: '申請の最終決裁を取消します。よろしいですか？',
             width: 490,
             okText: 'OK',
