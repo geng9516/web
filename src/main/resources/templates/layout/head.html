@@ -88,8 +88,7 @@
       },
       methods: {
         logout() {
-          document.cookie = 'JSESSIONID='+getCookie('JSESSIONID')+';expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/';
-          location.href = '/logout'
+           location.href = '/logout'
         },
         updatePassword: Debounce(async function () {
           if (!this.password.oldPassword) {

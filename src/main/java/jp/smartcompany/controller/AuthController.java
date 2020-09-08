@@ -1,6 +1,7 @@
 package jp.smartcompany.controller;
 
 import cn.hutool.cache.impl.LRUCache;
+import cn.hutool.cache.impl.TimedCache;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
@@ -28,6 +29,7 @@ public class AuthController {
     private final AuthBusiness authBusiness;
     private final TmgTimePunchBean tmgTimePunchBean;
     private final LRUCache<Object, Object> scCache;
+    private final TimedCache<String,Object> timedCache;
 
     /**
      * 跳转到登录页
@@ -138,6 +140,7 @@ public class AuthController {
     public String logout() {
         authBusiness.logout();
         scCache.clear();
+        timedCache.clear();
         return "redirect:/login";
     }
 

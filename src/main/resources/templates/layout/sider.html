@@ -32,11 +32,12 @@
     <!-- clickoutside关闭菜单 -->
     <div style="position: fixed;right: 0;width: calc(100vw - 458px);height: 100vh;" @click="handleClickMenuOutSide" v-show="showSider"></div>
     <script th:inline="javascript">
+        console.log([[${session}]])
         const SIDER = new Vue({
             el: '.navbar-wrap',
             data() {
                 return {
-                    topNavs: [[${ #session.getAttribute('topNavs') }]],
+                    topNavs: [[${topNavs}]],
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
                     curPageId: Utils.getUrlParam(location.href, 'psApp') + Utils.getUrlParam(location.href, 'menuId'),
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),

@@ -34,6 +34,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -108,38 +109,48 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 searchDate, maxDate, null, psSession.getLanguage(),oCompanyValidList);
         companyId = groupDTO.getMgCcompanyid();
         companyName = groupDTO.getCompanyName();
-        // 該当条件(基点組織選択)情報を取得
-        // 基点組織編集 - 定義情報取得(法人リスト)
-        List<BaseSectionRowDTO> oBaseSectionRowList = iMastGroupbasesectionService.
-                selectGroupBaseSectionCompanyList(psSession.getLoginCustomer(),systemId,
-                        groupId, psSession.getLanguage(), searchDate, oCompanyValidList);
-        String sBelowSingle = dispBaseSectionInfo(psSession.getLoginCustomer(), searchDate, oBaseSectionRowList,systemId,groupId,psSession.getLanguage());
-        // 該当条件(組織・役職選択)情報を取得
-        SectionPostDTO orgJobConditions = getSectionPostDispInfo(
-                psSession.getLoginCustomer(), searchDate, companyId, companyName,psSession.getLanguage(),systemId,groupId
-        );
-        SelectEmployeesEditDTO empList = getEmpList(psSession.getLoginCustomer(),companyId,systemId,groupId,searchDate,psSession.getLanguage());
 
-        /**
-         * 該当条件(条件式選択)情報を取得
-         */
-        // 条件式編集 - 定義情報取得
-        List<QueryConditionRowDTO> oQueryConditionRowList = iHistGroupdefinitionsService.selectGroupDefinitions(psSession.getLoginCustomer(), companyId,
-                        systemId, groupId, searchDate, null);
-        QueryConditionDTO queryConditionDTO=dispQueryConditionInfo(companyId, searchDate, oQueryConditionRowList,psSession.getLoginCustomer());
+        QueryConditionDTO queryConditionDTO = null;
+        SelectEmployeesEditDTO empList = null;
+        SectionPostDTO orgJobConditions =null;
+        List<BaseSectionRowDTO> oBaseSectionRowList=null;
+        String sBelowSingle = "0";
+        if (StrUtil.isNotBlank(groupId)) {
+            // 該当条件(基点組織選択)情報を取得
+            // 基点組織編集 - 定義情報取得(法人リスト)
+            oBaseSectionRowList = iMastGroupbasesectionService.
+                    selectGroupBaseSectionCompanyList(psSession.getLoginCustomer(), systemId,
+                            groupId, psSession.getLanguage(), searchDate, oCompanyValidList);
+            sBelowSingle = dispBaseSectionInfo(psSession.getLoginCustomer(), searchDate, oBaseSectionRowList, systemId, groupId, psSession.getLanguage());
 
-        /**
-         * 定義設定画面の初期表示状態を取得する
-         */
-        // グループ定義条件情報を取得
-        List<MastGroupdefinitionsDO> oList = iMastGroupdefinitionsService.selectGroupDefinitions(
-                        searchDate, psSession.getLoginCustomer(),systemId, groupId);
-        groupDTO.setGsBaseFlg(getGroupDefinitionsDispInfo(oList,groupDTO));
-        // 全社区分を含むか否かを取得する
+            // 該当条件(組織・役職選択)情報を取得
+            orgJobConditions = getSectionPostDispInfo(
+                    psSession.getLoginCustomer(), searchDate, companyId, companyName, psSession.getLanguage(), systemId, groupId
+            );
+            empList = getEmpList(psSession.getLoginCustomer(), companyId, systemId, groupId, searchDate, psSession.getLanguage());
+
+            /**
+             * 該当条件(条件式選択)情報を取得
+             */
+            // 条件式編集 - 定義情報取得
+            List<QueryConditionRowDTO> oQueryConditionRowList = iHistGroupdefinitionsService.selectGroupDefinitions(psSession.getLoginCustomer(), companyId,
+                    systemId, groupId, searchDate, null);
+            queryConditionDTO = dispQueryConditionInfo(companyId, searchDate, oQueryConditionRowList, psSession.getLoginCustomer());
+
+            /**
+             * 定義設定画面の初期表示状態を取得する
+             */
+            // グループ定義条件情報を取得
+            List<MastGroupdefinitionsDO> oList = iMastGroupdefinitionsService.selectGroupDefinitions(
+                    searchDate, psSession.getLoginCustomer(), systemId, groupId);
+            // 全社区分を含むか否かを取得する
+            groupDTO.setAllCompaniesFlg(psSearchCompanyUtil.isAllCompaniesFlg());
+        } else {
+            groupDTO.setGsBaseFlg("0");
+        }
         groupDTO.setAllCompaniesFlg(psSearchCompanyUtil.isAllCompaniesFlg());
 
-
-        Map<String,Object> json = MapUtil.<String,Object>builder()
+        return MapUtil.<String,Object>builder()
                 .put("groupInfo",groupDTO)
                 .put("queryConditions",queryConditionDTO)
                 .put("belowSingle",sBelowSingle)
@@ -149,7 +160,6 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 .put("orgJobConditions",orgJobConditions)
                 .put("empList",empList)
                 .build();
-        return json;
     }
 
     /**
@@ -202,7 +212,43 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                                      Date endDate, String weightage, String language,List<String> companyList) {
         GroupManagerGroupListDTO groupListDTO = new GroupManagerGroupListDTO();
         if (StrUtil.isBlank(groupId)) {
+            // 優先順位(初期値は固定で"999")
+           Long bWeightage = 999L;
+            // 優先順位(現在の最大優先順位)が指定されていた場合
+            if (weightage != null) {
+                bWeightage = Long.parseLong(weightage);
+            }
 
+            // 異動歴より、法人情報を取得する
+            String sCompanyId   = designation.getCompanyCode();
+            String sCompanyName = designation.getCompanyName();
+
+            // 表示用Dtoに初期表示値を格納
+            groupListDTO.setMgId(null);
+            groupListDTO.setMgDstartdate(startDate);
+            groupListDTO.setMgDenddate(endDate);
+            groupListDTO.setMgCgroupidPk("");
+            groupListDTO.setMgCgroupdescription("");
+            groupListDTO.setMgCgroupdescriptionja("");
+            groupListDTO.setMgCgroupdescriptionen("");
+            groupListDTO.setMgCgroupdescriptionch("");
+            groupListDTO.setMgCgroupdescription01("");
+            groupListDTO.setMgCgroupdescription02("");
+            groupListDTO.setMgClanguage(language);
+            groupListDTO.setMgNpartinentnumber(null);
+            groupListDTO.setMgNweightage(bWeightage);
+            groupListDTO.setMgCtext("");
+            groupListDTO.setMgCcompanyid(sCompanyId);
+            groupListDTO.setCompanyName(sCompanyName);
+            groupListDTO.setGbDisabled(false);
+            groupListDTO.setMgpversionNo(null);
+
+            // 法人情報を格納
+//            this.setCompanyId(sCompanyId);
+//            this.setCompanyName(sCompanyName);
+
+            // 法人選択フラグを格納(個別法人選択)
+            groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ONE);
         } else {
             // 指定グループ情報取得
             List<GroupManagerGroupListDTO> oGroupInfo  = iMastGroupService.selectGroupHistoryList(

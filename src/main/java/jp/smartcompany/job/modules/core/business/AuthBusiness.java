@@ -161,15 +161,12 @@ public class AuthBusiness {
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (psSession!=null) {
             saveLoginInfo(false, psSession.getLoginUser());
-            Enumeration e=session.getAttributeNames();
-            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
-               log.debug("清除session key：{}",sessionName);
-                session.removeAttribute(sessionName);
-            }
-//            session.removeAttribute(Constant.PS_SESSION);
-//            session.removeAttribute(Constant.TOP_NAVS);
-//            ShiroUtil.getSubject().logout();
-            session.invalidate();
+//            Enumeration e=session.getAttributeNames();
+//            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
+//               log.debug("清除session key：{}",sessionName);
+//                session.removeAttribute(sessionName);
+//            }
+            ShiroUtil.getSubject().logout();
         }
     }
 

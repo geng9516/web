@@ -187,7 +187,7 @@
         <!--承認者追加画面  end-->
 
       <!-- 承認者追加画面的Tree -->
-      <Modal class="tc" title="代理申請" placement="right" width="800" v-model="addPermissionAdminGroupDrawer" style="z-index: 999;">
+      <Modal class="tc" title="代理申請" placement="right" width="800" v-model="addPermissionAdminGroupDrawer" style="z-index: 999;" footer-hide>
         <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
             所属
@@ -665,6 +665,7 @@
             },
             async mounted() {
                 await this.getOrgTree()
+                this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
                 this.getTableData()
                 this.deptName = this.treeData[0].groupname
             },
@@ -1183,7 +1184,7 @@
                         txtAction: 'ACT_EditGroup_UGrpName',
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                         targetGroupId: this.gruopNameForm.groupId,
-                        targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         groupName: this.gruopNameForm.groupName,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
@@ -1207,7 +1208,7 @@
                     }
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                        targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         groupName: this.gruopNameForm.groupName,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
