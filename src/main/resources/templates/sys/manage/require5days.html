@@ -1089,7 +1089,7 @@
                     return
                 }
                 // 修正必要日数チェック
-                if(isNaN(days1) || days%0.5 > 0 || days < 0){
+                if(isNaN(days1) || days1%0.5 > 0 || days1 < 0){
                     this.$Message.error({
                         background: true,
                         closable: true,
