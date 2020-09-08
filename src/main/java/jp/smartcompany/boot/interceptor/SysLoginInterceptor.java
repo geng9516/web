@@ -1,6 +1,7 @@
 package jp.smartcompany.boot.interceptor;
 
 import cn.hutool.cache.impl.LRUCache;
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.Constant;
@@ -54,6 +55,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
     private final AuthBusiness authBusiness;
     private final LRUCache<Object,Object> lruCache;
+    private final TimedCache<String,Object> timedCache;
 
     private final IMastOrganisationService organisationService;
     private final ITmgGroupService groupService;
@@ -96,7 +98,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {
             executeLoginSequence(systemList,language);
-            if (httpSession.getAttribute(Constant.TOP_NAVS) == null) {
+            if (timedCache.get(Constant.TOP_NAVS,true) == null) {
                 loadMenus(systemCode, systemList);
             }
         }
@@ -476,7 +478,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,session.getLoginEmployee());
-        httpSession.setAttribute(Constant.TOP_NAVS,menuGroupList);
+        timedCache.put(Constant.TOP_NAVS,menuGroupList);
     }
 
     private void saveOrgName(String sectionId,String siteId) {

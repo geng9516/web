@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.groupappmanager.logic.impl;
 
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
@@ -33,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -88,6 +88,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private final IMastCompanyService iMastCompanyService;
   private final DbControllerLogic dbControllerLogic;
   private final DataSource dataSource;
+  private final TimedCache<String,Object> timedCache;
 
   @Override
   public GroupAppManagerTableLayout listPermsTable(
@@ -95,8 +96,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
           String groupId, String psSite,
           String psApp, String psLanguage,
           String customerId,String companyId,
-          Boolean isAll,
-          HttpSession httpSession
+          Boolean isAll
   ) {
     GroupAppManagerTableLayout layout = new GroupAppManagerTableLayout();
     List<GroupAppManagerGroupDTO> groupList = getGroupList(customerId, systemId, psLanguage,
@@ -131,8 +131,8 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
     int nIndex = 0;
     // オブジェクトでのループ（縦方向）
-    for (int i = 0; i < lTable.size(); i++) {
-      List <GroupAppManagerPermissionDTO> lRecord = lTable.get(i).getList();
+    for (GroupAppManagerPermissionTableDTO groupAppManagerPermissionTableDTO : lTable) {
+      List<GroupAppManagerPermissionDTO> lRecord = groupAppManagerPermissionTableDTO.getList();
       GroupAppManagerPermissionDTO oldDto = null;
       // オブジェクトのグループごとのループ（横方向）
       for (int j = 0; j < lRecord.size(); j++) {
@@ -188,7 +188,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     }
     layout.setTableBody(lTable);
     // 権限一覧をrequestScopeに登録
-    httpSession.setAttribute(REQ_SCOPE_NAME,lTable);
+    timedCache.put(REQ_SCOPE_NAME,lTable);
     getSearchDate(layout,systemId, date,  groupId);
     return layout;
   }
@@ -276,11 +276,11 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   }
 
   @Override
-  public String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePerm) throws ParseException, SQLException {
+  public String executeUpdate(GroupAppManagerUpdatePermsForm updatePerm) throws SQLException {
     HttpServletRequest request = ContextUtil.getHttpRequest();
     PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
     // 画面表示のためのイレモノを取得
-    List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>)session.getAttribute(REQ_SCOPE_NAME);
+    List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME,false);
     if (CollUtil.isEmpty(lTable)) {
       throw new GlobalException("権限データが存在しない");
     }
@@ -514,8 +514,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
        }
     }
 
+    timedCache.remove(REQ_SCOPE_NAME);
     // 刷新启动权限
-    request.removeAttribute(Constant.TOP_NAVS);
+    timedCache.remove(Constant.TOP_NAVS);
 
     return "権限の変更が成功しました";
   }

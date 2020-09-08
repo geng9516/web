@@ -1,6 +1,5 @@
 package jp.smartcompany.controller;
 
-import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -16,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("sys/settings")
 @RequiredArgsConstructor
 public class SiteSettingsController {
-
-    private final GroupAppManagerMainLogic groupAppManagerMainLogic;
 
     /**
      * 跳转到ユーザ管理界面

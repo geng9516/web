@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpSession;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.Date;
@@ -37,9 +36,8 @@ public class GroupAppManagerController {
   @PostMapping
   public GroupAppManagerTableLayout list(
                                          @RequestAttribute("BeanName") PsDBBean psDBBean,
-                                         @RequestParam Map<String,Object> params,
-                                         HttpSession session
-                                     ) throws ParseException {
+                                         @RequestParam Map<String,Object> params
+                                     ) {
     String dateStr = (String)params.get("date");
     Date date;
     if (StrUtil.isBlank(dateStr)){
@@ -55,7 +53,7 @@ public class GroupAppManagerController {
     boolean isAll = Boolean.parseBoolean(isAllStr);
     String psSiteId = (String)params.get("siteId");
     String psAppId = (String)params.get("appId");
-      GroupAppManagerTableLayout layout= groupAppManagerMainLogic.listPermsTable(
+      return groupAppManagerMainLogic.listPermsTable(
             psDBBean.getSystemCode(),
             date,
             groupId,
@@ -64,17 +62,15 @@ public class GroupAppManagerController {
             psDBBean.getLanguage(),
             psDBBean.getCustID(),
             psDBBean.getCompCode(),
-            isAll,
-            session
+            isAll
     );
-    return layout;
   }
 
   @PostMapping("groups")
   public List<GroupAppManagerGroupDTO> getGroupList(
           @RequestAttribute("BeanName") PsDBBean psDBBean,
           @RequestParam Map<String,Object> params
-  ) throws ParseException {
+  ) {
       String isAllStr = (String)params.get("isAll");
       if (StrUtil.isBlank(isAllStr)){
           isAllStr = "false";
@@ -135,8 +131,8 @@ public class GroupAppManagerController {
   }
 
   @PostMapping("update")
-  public String executeUpdate(HttpSession session,@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException, SQLException {
-      groupAppManagerMainLogic.executeUpdate(session,updatePermForm);
+  public String executeUpdate(@RequestBody GroupAppManagerUpdatePermsForm updatePermForm) throws ParseException, SQLException {
+      groupAppManagerMainLogic.executeUpdate(updatePermForm);
       return "変更成功";
   }
 

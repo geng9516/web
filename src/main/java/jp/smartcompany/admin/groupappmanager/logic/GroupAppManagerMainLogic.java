@@ -24,8 +24,7 @@ public interface GroupAppManagerMainLogic {
             String groupId, String psSite,
             String psApp, String psLanguage,
             String customerId,String companyId,
-            Boolean isAll,
-            HttpSession httpSession
+            Boolean isAll
     );
 
     List<GroupAppManagerGroupDTO> getGroupList(String customerId, String systemId, String language,
@@ -39,5 +38,5 @@ public interface GroupAppManagerMainLogic {
 
     List<MastCompanyDO> getCompanyList(String custId,Date searchDate);
 
-    String executeUpdate(HttpSession session, GroupAppManagerUpdatePermsForm updatePermList) throws ParseException, SQLException;
+    String executeUpdate(GroupAppManagerUpdatePermsForm updatePermList) throws ParseException, SQLException;
 }

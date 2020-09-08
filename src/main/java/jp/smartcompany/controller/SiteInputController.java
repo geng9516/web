@@ -1,8 +1,5 @@
 package jp.smartcompany.controller;
 
-import jp.smartcompany.job.modules.tmg.tmgresults.TmgResultsBean;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.DetailDto;
-import jp.smartcompany.job.modules.tmg.tmgresults.dto.TmgResultsDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -12,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Xiao Wenpeng
@@ -24,7 +19,6 @@ import java.util.List;
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class SiteInputController {
 
-    private final TmgResultsBean tgResultsBean;
     /**
      * 跳转到打刻界面
      * @param moduleIndex
@@ -56,8 +50,6 @@ public class SiteInputController {
         if (isMobile) {
             return "mobile/index";
         }
-//        TmgResultsDto dto = this.ssss();
-////        tgResultsBean.actDispRmonthly(psDBBean);
         return "sys/input/addwork";
     }
 

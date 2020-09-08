@@ -42,7 +42,7 @@ public class ShiroConfiguration {
     public DefaultWebSessionManager sessionManager() {
         DefaultWebSessionManager sessionManager = new DefaultWebSessionManager();
         // 先设为30分钟便于调试 1000 * 60 * 30
-//        sessionManager.setGlobalSessionTimeout(1000 * 60 * 30);
+        sessionManager.setGlobalSessionTimeout(1000 * 60 * 90);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
         return sessionManager;
     }
