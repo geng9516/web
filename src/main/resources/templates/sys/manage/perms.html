@@ -292,7 +292,7 @@
         <!-- グループ名作成・編集画面表示 start-->
         <Modal v-model="editGroupNameModal" class="tc" width="450" :title="PermissionGroupAdd ? 'グループ作成' : 'グループ名編集'"
             footer-hide :mask-closable="false" @on-cancel="cancel('gruopNameForm','editGroupNameModal')">
-            <i-form :label-width="100" ref="gruopNameForm" :model="gruopNameForm">
+            <i-form :label-width="100" ref="gruopNameForm" :model="gruopNameForm" @submit.native.prevent>
                 <form-item label="所属">
                     <span class="input-like-span" style="width: 95%;">{{ deptName }}</span>
                 </form-item>
@@ -1184,7 +1184,7 @@
                         txtAction: 'ACT_EditGroup_UGrpName',
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                         targetGroupId: this.gruopNameForm.groupId,
-                        targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         groupName: this.gruopNameForm.groupName,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
@@ -1208,7 +1208,7 @@
                     }
                     const query = {
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
-                        targetSectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
+                        targetSectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                         groupName: this.gruopNameForm.groupName,
                         psSite: this.referListObject.psSite,
                         psApp: this.referListObject.psApp
