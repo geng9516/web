@@ -527,7 +527,6 @@
             }
         },
         async mounted() {
-            console.log([[${ session }]])
             await this.getOrgTree()
             await this.getInit()
         },
@@ -537,6 +536,15 @@
                     this.loading = true
                     const {data} = await this.http.get('sys/paidholiday/list', this.referListObject)
                     this.data = data
+                    if(this.data.length == 0){
+                        this.Loading = false
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '職員が存在している部署を選択してくだい。'
+                        });
+                    }
                 } catch (error) {
                     return
                 } finally {
@@ -1535,35 +1543,25 @@
             },
             //初期化処理
             async getInit() {
-                console.log("getInit")
-                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
-                console.log(this.referListObject)
-
                 this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                console.log("getDeptCode")
-                console.log(this.loginDesignationSection)
-                console.log(this.targetAdminSection)
 
                 if (this.targetAdminSection == null || this.targetAdminSection == ''){
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
-                        console.log("getDeptCode_true")
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     } else {
-                        console.log("getDeptCode_false")
                         this.deptName = this.treeData[0].children[0].secnic
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-
                     }
                 } else {
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
