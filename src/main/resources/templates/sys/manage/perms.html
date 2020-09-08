@@ -187,7 +187,7 @@
         <!--承認者追加画面  end-->
 
       <!-- 承認者追加画面的Tree -->
-      <Modal class="tc" title="代理申請" placement="right" width="800" v-model="addPermissionAdminGroupDrawer" style="z-index: 999;">
+      <Modal class="tc" title="代理申請" placement="right" width="800" v-model="addPermissionAdminGroupDrawer" style="z-index: 999;" footer-hide>
         <div class="titlenorm mb5">
             <Icon type="logo-buffer"></Icon>
             所属
@@ -665,6 +665,7 @@
             },
             async mounted() {
                 await this.getOrgTree()
+                this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
                 this.getTableData()
                 this.deptName = this.treeData[0].groupname
             },
