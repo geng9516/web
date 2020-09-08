@@ -58,7 +58,7 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table  no-data-text="所属を選択して下さい。" border :columns="columns"
+        <i-table  no-data-text="" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
             <div slot-scope="{ row }" slot="name" class="tc">
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click.stop="showDay(row)">{{ row.name }}</span>
@@ -316,6 +316,8 @@
                 data: [],
                 loading: false,
                 referListObject: {
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetSection: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
@@ -524,8 +526,10 @@
                 ]
             }
         },
-        mounted() {
-            this.getOrgTree()
+        async mounted() {
+            console.log([[${ session }]])
+            await this.getOrgTree()
+            await this.getInit()
         },
         methods: {
             async getTableData() {
@@ -1528,6 +1532,60 @@
                     return true;
                 }
                 return false;
+            },
+            //初期化処理
+            async getInit() {
+                console.log("getInit")
+                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
+                console.log(this.referListObject)
+
+                this.targetAdminSection = '',
+                    this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log("getDeptCode")
+                console.log(this.loginDesignationSection)
+                console.log(this.targetAdminSection)
+
+                if (this.targetAdminSection == null || this.targetAdminSection == ''){
+                    this.getDeptCode(this.treeData)
+                    if (this.targetAdminSectionFlag) {
+                        console.log("getDeptCode_true")
+                        this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    } else {
+                        console.log("getDeptCode_false")
+                        this.deptName = this.treeData[0].children[0].secnic
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                    }
+                } else {
+                    this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                }
+
+                //一覧画面取得
+                this.getTableData()
+            },
+            getDeptCode(data) {
+                data.forEach(e => {
+                    if (e.secid === this.loginDesignationSection) {
+                        this.targetAdminSectionFlag = true
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptCode(children)
+                        }
+                    }
+                })
             },
         }
     })
