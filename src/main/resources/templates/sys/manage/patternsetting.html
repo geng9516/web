@@ -73,7 +73,7 @@
                 <i-button type="button" class="ivu-btn ivu-btn-default" disabled v-if="btn_sk_show===false"><span>照会</span></i-button>
                 <i-button type="button" class="ivu-btn ivu-btn-default" @click="selectTmgPatternApplies" v-else><span>照会</span></i-button>
                 <Drawer class="tc" :title="deptName" placement="right" width="700" :closable="true" :mask-closable="!isSearchHistory" v-model="empDrawShow">
-                      <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="データなし">
+                      <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="">
                       </i-table>
                 </Drawer>
             </span>
@@ -353,6 +353,7 @@
                     txtCallBeanAction: 'ACTION_DISP_DISP',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
+                    recordDate: '',
                     txtCEMPLOYEEID: '',
                     groupId: 'null',
                     sectionId: '',
@@ -481,11 +482,14 @@
                 ],
                 //照会リスト
                 sk_list: [],
-                sk_list_bak: []
+                sk_list_bak: [],
+                targetPermSection: '',
+                targetPermSectionFlag: false
             }
         },
         async mounted() {
-            this.getOrgTree()
+            await this.getOrgTree()
+            await this.getInit()
             window.addEventListener('scroll', this.handleScroll, {passive: true})
         },
         beforeDestroy() {
@@ -599,7 +603,7 @@
             handleChangePattern(e) {
                 if (e) {
                     this.rawData.tpa_cnextptn = e
-                }else{
+                } else {
                     //日付切替時刻の値をリセットする
                     this.rawData.tpa_ndate_change_time = ''
                     this.rawData.tpa_cnextptn = ''
@@ -672,7 +676,7 @@
                         const rest_end = handleTime(row.planRest[0].NCLOSE)
                         //this.rawData.planRest1 = [rest_start, rest_end]
                         this.$set(this.rawData, 'planRest1', [rest_start, rest_end])
-                    }else{
+                    } else {
                         this.$set(this.rawData, 'planRest1', ['', ''])
                     }
                     if (row.planRest[1] !== undefined) {
@@ -680,7 +684,7 @@
                         const rest_end = handleTime(row.planRest[1].NCLOSE)
                         //this.rawData.planRest2 = [rest_start, rest_end]
                         this.$set(this.rawData, 'planRest2', [rest_start, rest_end])
-                    }else{
+                    } else {
                         this.$set(this.rawData, 'planRest2', ['', ''])
                     }
                     if (row.planRest[2] !== undefined) {
@@ -688,7 +692,7 @@
                         const rest_end = handleTime(row.planRest[2].NCLOSE)
                         //this.rawData.planRest3 = [rest_start, rest_end]
                         this.$set(this.rawData, 'planRest3', [rest_start, rest_end])
-                    }else{
+                    } else {
                         this.$set(this.rawData, 'planRest3', ['', ''])
                     }
                     if (row.planRest[3] !== undefined) {
@@ -696,7 +700,7 @@
                         const rest_end = handleTime(row.planRest[3].NCLOSE)
                         //this.rawData.planRest4 = [rest_start, rest_end]
                         this.$set(this.rawData, 'planRest4', [rest_start, rest_end])
-                    }else{
+                    } else {
                         this.$set(this.rawData, 'planRest4', ['', ''])
                     }
 
@@ -835,8 +839,8 @@
             //日付切替時刻と翌日勤務パターンをチェック
             valid_nextPtn(changeTime, nextptn) {
                 //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
-                console.log("changeTime:",changeTime)
-                console.log("nextptn:",nextptn)
+                console.log("changeTime:", changeTime)
+                console.log("nextptn:", nextptn)
                 this.hiddenAlert()
                 if (changeTime) {
                     if (!nextptn) {
@@ -1191,6 +1195,70 @@
             //ディフォルト勤務パターン
             defaultSelect(e) {
 
+            },
+            //初期化処理
+            async getInit() {
+                //console.log("getInit")
+                //console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
+
+                this.targetPermSection = ''
+                this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                //console.log("getDeptCode")
+                //console.log(this.targetPermSection)
+
+                if (this.targetPermSection != null || this.targetPermSection != '') {
+                    this.getDeptCode(this.treeData)
+                    if (this.targetPermSectionFlag) {
+                        //console.log("getDeptCode_true")
+                        //console.log(this.treeData)
+                        this.getDeptName(this.treeData)
+                        this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    } else {
+                        //console.log("getDeptCode_false")
+                        //console.log('treedata:',this.treeData)
+                        this.deptName = this.treeData[0].label
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
+                }
+
+                //一覧画面取得
+                this.getTmgPatternList()
+                //照会制御
+                this.btn_sk_show = true
+            },
+            getDeptCode(data) {
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.targetPermSectionFlag = true
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptCode(children)
+                        }
+                    }
+                })
+            },
+            getDeptName(data) {
+                // idによりループ処理でdeptNameを取得する
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.deptName = e.label
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptName(children)
+                        }
+                    }
+                })
             }
         }
     })
