@@ -871,14 +871,12 @@
                     let checkPassed = true
                      if (this.uploadFiles.length >= 5) {
                         this.$Notice.warning({
-                        title: '',
                         desc: '添付可能なファイル数が上限（5個）を超えました。'
                         })
                         checkPassed = false
                     }
                     if (files.size / 1024 > 500) {
                         this.$Notice.warning({
-                            title: '',
                             desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
                         })
                         checkPassed = false

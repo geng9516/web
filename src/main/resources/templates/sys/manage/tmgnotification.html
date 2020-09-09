@@ -632,7 +632,7 @@
           opts: {
             ntfTypeId: '全て',
             statusFlg: 0,
-            year: 2020,
+            year: '',
             serchEmpId: '全て',
             page: 1
           },
@@ -718,10 +718,11 @@
         }
       },
       async mounted() {
-        this.getOrgTree()
-        this.getStatusList()
-        this.getRestTypeForReview()
-        this.getHasAuthority()
+        await this.getOrgTree()
+        this.getInit()
+        await this.getStatusList()
+        await this.getRestTypeForReview()
+        await this.getHasAuthority()
         window.addEventListener('scroll',this.handleScroll,{ passive: true })
       },
         beforeDestroy() {
@@ -741,6 +742,51 @@
         },
       },
       methods: {
+        //初期化処理
+        async getInit() {
+          let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+          //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+          // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+          // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+          if (targetPermSection) {
+            let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
+            if (getDeptCode) {
+              this.getDeptName(this.treeData,targetPermSection)
+              this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+              this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+              //this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE}]],'YYYY/MM/DD')
+              //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
+              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,4)
+              this.curYear=this.referListObject.txtTmgReferListTreeViewRecordDate
+            } else {
+              this.deptName = this.treeData[0].label
+              this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+              this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+              //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
+              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,4)
+              this.curYear=this.referListObject.txtTmgReferListTreeViewRecordDate
+            }
+          }
+          //一覧画面取得
+          this.getTableData()
+        },
+        getDeptCode(data,section) {
+          let dept =false
+          data.forEach(e => {
+            if (e.secid === section) {
+              dept=true
+            }
+          })
+          return dept
+        },
+        getDeptName(data,section) {
+          // idによりループ処理でdeptNameを取得する
+          data.forEach(e => {
+            if (e.secid === section) {
+              this.deptName = e.label
+            }
+          })
+        },
         getTableData: Debounce(async function (isInit, resetPage) {
           try {
             this.loading = true
@@ -873,10 +919,8 @@
             const { data } = await this.http.get('sys/vapply/RestYearList', opts)
             this.applyEmployRestInfo = data
           } catch (error) {
-
           } finally {
             this.applyEmployRestInfoLoading = false
-
           }
         },
         async getApplyEmployInfo(opts) {
@@ -1092,7 +1136,6 @@
           // comment
           query.owncomment = this.detailsData.tntfCowncomment
           query.bosscomment = this.detailsData.tntfCbosscomment
-          console.log(query.bosscomment)
           //query.cancelcomment = this.detailsData.tntfCcancelcomment
           // 起算日
           query.txtPeriod = this.detailsData.tntfDperiodDate
@@ -1156,14 +1199,13 @@
           this.approvalLevel=this.flatRestTypeList.find(t => t.ntfId === e).sparechar2
           const turnLine = Vue.filter('turnLine');
           this.selectBiko=turnLine(this.flatRestTypeList.find(t => t.ntfId === e).biko)
-          console.log(this.approvalLevel)
         },
         handleBeforeUpload(files) {
           // 返回false, 取消自带上传
           let checkPassed = true
           if (this.uploadFiles.length >= 5) {
             this.$Notice.warning({
-              title: '添付可能なファイル数が上限（5個）を超えました。'
+              desc: '添付可能なファイル数が上限（5個）を超えました。'
             })
             checkPassed = false
           }
@@ -1187,7 +1229,6 @@
           // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
           this.errorInfo = false
           this.restApply.action = 'ACT_AlterApply_CAppl'
-          console.log(this.selectedRestInfo)
           this.restApply.typeNew = this.selectedRestInfo.ntfId
           // 代理申请用，个人申请此处为空
           this.restApply.finalApprovalLevel = this.selectedRestInfo.sparechar2
@@ -1327,7 +1368,7 @@
           }
         }),
         handleWeekSelect(e) {
-          console.log(e)
+          //console.log(e)
         },
         pageChange(e) {
           this.opts.page = e
@@ -1341,7 +1382,6 @@
           }
         },
         applyCardDownloadFile(e) {
-          console.log(e)
           if(e.url) {
             window.open(e.url, '_blank')
           }

@@ -410,6 +410,7 @@
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         //目标sec
                         txtTmgReferListTreeViewPermTargetSection: '',
+                        txtTmgReferListTreeViewPermTargetGroup:'',
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
                         hidSearchItems: 'EMPLOYEEID',
@@ -420,7 +421,8 @@
                         empId: '',
                     },
                     hidSearchData: '',
-                    columns3: [
+                    columns3:[{}],
+                    columns3bak: [
                         {
                             title: '氏名',
                             slot: 'name',
@@ -592,11 +594,11 @@
                     overFlagData: []
                 }
             },
-            mounted() {
-                this.getOrgTree()
-                this.getTableHead()
-                this.getSearchCondition()
-                this.getLimit()
+            async mounted() {
+                await this.getOrgTree()
+                await this.getSearchCondition()
+                await this.getInit()
+                await this.getLimit()
             },
             computed: {
                 columns() {
@@ -724,11 +726,61 @@
                 }
             },
             methods: {
+                //初期化処理
+                async getInit() {
+                    let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    console.log(this.treeData)
+                    console.log(targetPermSection)
+                    if (targetPermSection) {
+                        let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
+                        console.log(getDeptCode)
+                        if (getDeptCode) {
+                            this.getDeptName(this.treeData,targetPermSection)
+                            this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                            this.query.txtTmgReferListTreeViewRecordDate =  [[${ session.txtTmgReferListTreeViewRecordDate }]]
+                            this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2)+'01'
+                            this.curDate=this.query.baseDay
+                        } else {
+                            this.deptName = this.treeData[0].label
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.baseMonth = this.query.recordDate.slice(-2)+'01'
+                            this.curDate=this.query.baseDay
+                        }
+                    }
+
+                    //一覧画面取得
+                    this.getTableHead()
+                    this.getTableData()
+                },
+                getDeptCode(data,section) {
+                    let dept =false
+                    data.forEach(e => {
+                        if (e.secid === section) {
+                            dept=true
+                        }
+                    })
+                    return dept
+                },
+                getDeptName(data,section) {
+                    // idによりループ処理でdeptNameを取得する
+                    data.forEach(e => {
+                        if (e.secid === section) {
+                            this.deptName = e.label
+                        }
+                    })
+                },
                 showAverageDraw(e) {
                     this.getAvgTableData(e.empid)
                     this.empName = e.empname
                     this.showAverage = true
-
                 },
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
@@ -827,7 +879,7 @@
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/tableTop', this.query)
                         this.tableHead = data
-                        console.log(this.tableHead)
+
                     } catch (error) {
                         return
                     } finally {
@@ -848,13 +900,15 @@
                         this.tableData3 = data.dailyOverTimeVoList
                         this.hasAuthority = data.hasAuthority
                         if(this.hasAuthority){
-                            this.columns3=this.columns3.concat(
+                            this.columns3=this.columns3bak.concat(
                                 {
                                 type: 'selection',
                                 width: 60,
                                 align: 'center'
                                 }
                             )
+                        }else{
+                            this.columns3=this.columns3bak
                         }
                         this.value = data.dailyOverTimeVoList.map(e => {
                             const updateOverTimeDtoList = e.overTimeList && e.overTimeList.map(t => {
@@ -937,7 +991,6 @@
                             }
                         })
                         this.overFlagData = result
-                        console.log(result)
                     } catch (error) {
                     } finally {
                         this.permissionFlagLoading = false
@@ -957,7 +1010,6 @@
                             { name: "6か月平均", average: data.avgTimes[4], m1: "6か月平均", cellClassName: { m1: "rest-title" } }
                         ])
                         this.empWorkerTypeName = data.workTypeName
-                        console.log(this.monthAverageTable)
                     } catch (error) {
                         return
                     } finally {
@@ -1078,7 +1130,6 @@
                             return JSON.stringify(obj) == JSON.stringify(obj2)
                         });
                     });
-                    console.log(UpdateData)
                     if(UpdateData.length > 0){
                         // handle 强制关闭抽屉取消失焦的错误
                         if (!this.hasPassedTimeCheck) {
