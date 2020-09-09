@@ -464,6 +464,7 @@
                     hidSelectTab:'0',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
+                    txtTmgReferListTreeViewPermTargetGroup: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -855,6 +856,7 @@
                 this.query.txtAction = 'ACT_DISP'
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].secid+"|000000"
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.txtUserCode = e[0].empid
@@ -915,6 +917,7 @@
 
                 this.deptName = e[0].label
                 this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].secid+"|000000"
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 //部門単位と個別検索は同一SQLを用いて、部門単位で検索していれば、社員コードをnullで設定する
