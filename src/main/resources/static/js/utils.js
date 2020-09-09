@@ -229,7 +229,7 @@ const Utils = {
       const timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e.close[endkey]))
       const timeArraySliced = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e.close[endkey])).slice(1, -1)
       if (timeArraySliced.length === 0) {
-        console.log(timeArray)
+        // 仅有一分钟的问题
         timeArray.forEach(e => {
           if (checkArr.includes(e)) {
             checkArr = checkArr.concat(e)
@@ -239,6 +239,7 @@ const Utils = {
         checkArr = checkArr.concat(timeArraySliced)
       }
     })
+    // 被去重了, 那就是重复了
     const checkArr2 = new Set([...checkArr])
     if (checkArr.length !== checkArr2.size) {
       Vue.prototype.$Notice.warning({ title: '注意', desc: errorMsg, duration: 6.5 })
