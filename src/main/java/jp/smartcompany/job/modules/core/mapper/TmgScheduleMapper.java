@@ -173,6 +173,7 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
+    @SqlParser(filter = true)
     List<HashMap<String, Object>> selectWorkPatternIkkatu(HashMap<String, Object> params);
 
     /**
