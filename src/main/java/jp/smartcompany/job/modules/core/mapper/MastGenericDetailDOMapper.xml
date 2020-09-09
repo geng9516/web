@@ -73,8 +73,6 @@
             #{psExuludecondTo} ,              <!-- 範囲(TO)-->
             '1'
         )
-
-
     </insert>
 
     <select id="selectNenkyuRuleH" resultType="int">
@@ -800,8 +798,6 @@
         FROM
             MAST_GENERIC_DETAIL
         WHERE  MGD_CMASTERCODE = 'TMG_LEGAL_HOURS|DAY'
-
-
     </select>
     <select id="selectWeekDaysCom" resultType="java.lang.String">
         select

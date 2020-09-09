@@ -71,6 +71,5 @@
         ORDER BY
         TPR_NRESTOPEN,
         TPR_NRESTCLOSE
-        ;
       </select>
 </mapper>

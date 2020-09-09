@@ -94,7 +94,7 @@
                 AND TCAS_CGROUPID = #{targetGroup,jdbcType=VARCHAR}
             </otherwise>
         </choose>
-        AND TCAS_DYYYYMM = #{month};
+        AND TCAS_DYYYYMM = #{month}
     </update>
 
     <select id="selectCalenderDisp" resultType="jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo">

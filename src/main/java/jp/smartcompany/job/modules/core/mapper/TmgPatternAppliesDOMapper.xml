@@ -22,7 +22,6 @@
         AND     R2.HD_DENDDATE                  >=  #{yyyymmdd,jdbcType=DATE}
         AND     R2.HD_CIFKEYORADDITIONALROLE    =   '0'
         AND     R2.HD_CSECTIONID_FK             =   R1.TPAA_CSECTIONID
-        ;
 
       </select>
 </mapper>

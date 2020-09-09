@@ -14,7 +14,6 @@
         AND     P.TPPA_CEMPLOYEEID     =   #{employeeId}
         AND     P.TPPA_DSTARTDATE      <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
         AND     P.TPPA_DENDDATE        <![CDATA[>=]]>  #{yyyymmdd,jdbcType=DATE}
-        ;
 
       </select>
 
@@ -145,7 +144,5 @@
         AND		R1.TPPA_DENDDATE		>=	#{yyyymmdd,jdbcType=DATE}
         ----------------------------------------------------------------------------------------------------
         ) TB
-        ;
-
       </select>
 </mapper>

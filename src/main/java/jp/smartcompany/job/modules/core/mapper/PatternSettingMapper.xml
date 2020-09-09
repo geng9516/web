@@ -94,7 +94,6 @@
             ,tab2.tpa_cpatternname as cnextptname
           from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{sectionId}, #{groupId}, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
                   order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid
-
     </select>
 
     <!-- TMG_PATTERNより利用可能な勤務パターンを取得する(自組織分)  -->
@@ -115,7 +114,7 @@
             ,tab2.tpa_cpatternname as cnextptname
           from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode},#{sectionId},#{groupId}, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
              where  tab1.cnextptn = tab2.tpa_cpatternid(+) and tab1.csectionid = #{sectionId}
-               order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid;
+               order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid
     </select>
 
     <!-- パターン編集画面のパターン情報 -->
@@ -171,7 +170,7 @@
         and tgrm_cemployeeid = t0.empid
         and tgrm_dstartdate <![CDATA[<=]]> to_date(#{baseDate}, 'yyyy/mm/dd')
         and tgrm_denddate <![CDATA[>=]]> to_date(#{baseDate}, 'yyyy/mm/dd'))
-        order by empid;
+        order by empid
     </select>
 
     <!--  勤務時間・休憩時間の制限値取得 -->
@@ -213,7 +212,6 @@
             where cpatternid<![CDATA[<>]]> #{patternId}
         </if>
         order by csectionid, cgroupid, cpatternid
-
     </select>
 
     <!-- DELETE TMG_PATTERN -->

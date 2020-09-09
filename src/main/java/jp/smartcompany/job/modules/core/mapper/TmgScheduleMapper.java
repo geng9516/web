@@ -1,6 +1,5 @@
 package jp.smartcompany.job.modules.core.mapper;
 
-import com.baomidou.mybatisplus.annotation.SqlParser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.ScheduleDateListVO;
@@ -33,7 +32,6 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    @SqlParser(filter = true)
     List<ScheduleDataDTO> selectSchedule(HashMap<String, Object> params);
 
     /**
@@ -173,7 +171,6 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      * @param params
      * @return
      */
-    @SqlParser(filter = true)
     List<HashMap<String, Object>> selectWorkPatternIkkatu(HashMap<String, Object> params);
 
     /**
@@ -210,7 +207,6 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      *
      * @param params
      */
-    @SqlParser(filter = true)
     void insertTmgTrigger(HashMap<String, Object> params);
 
     /**
@@ -264,7 +260,6 @@ public interface TmgScheduleMapper extends BaseMapper<Object> {
      *
      * @param tmgWeekPatternCheckDTO
      */
-    @SqlParser(filter = true)
     void insertTmgWeekPatternCheck(TmgWeekPatternCheckDTO tmgWeekPatternCheckDTO);
 
     /**

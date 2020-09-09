@@ -24,7 +24,7 @@
         AND		ORG_ROOT.MO_DEND >= #{date}
         AND		ORG_TERGET.MO_CLAYEREDSECTIONID LIKE ORG_ROOT.MO_CLAYEREDSECTIONID ||'%'
         ORDER BY
-        ORG_TERGET.MO_CSECTIONID_CK;
+        ORG_TERGET.MO_CSECTIONID_CK
     </select>
 
     <select id="buildSQLForLimitOfBasedate" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.LimitOfBasedateVO">
@@ -101,7 +101,6 @@
         AND o.MO_DEND  >= #{searchDate}
         AND o.MO_CLANGUAGE  = #{language}
         ${exists}
-        ;
     </select>
     <select id="selectTargetFiscalYear" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto">
         SELECT
@@ -172,7 +171,6 @@
         ) AS CURR_YEAR_DATE
         FROM
             DUAL
-        ;
     </select>
     <select id="selectNotApproval" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotApprovalVo">
         SELECT
@@ -204,7 +202,6 @@
         WHERE
             M.NUM BETWEEN #{numStart,jdbcType=BIGINT}
             AND #{numEnd,jdbcType=BIGINT}
-        ;
     </select>
 
     <select id="selectNotFixedDeptList" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.NotFixedDeptListVo">
@@ -397,7 +394,6 @@
             MO_CSECTIONID_CK in (${sectionId}) CONNECT BY
             MO_CSECTIONID_CK = PRIOR MO_CPARENTID
             ORDER SIBLINGS BY MO_NSEQ, MO_CSECTIONID_CK)
-
     </select>
 
 </mapper>

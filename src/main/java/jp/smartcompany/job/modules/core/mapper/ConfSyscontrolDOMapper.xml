@@ -11,8 +11,6 @@
         WHERE
                 CS_CCUSTOMERID     =   #{customerId}
         AND     CS_CPROPERTYNAME      =   #{propertyName}
-        ;
-
       </select>
 
     <select id="selectPropertyValueNotFound" resultType="java.lang.String" >
@@ -23,7 +21,5 @@
         WHERE
                 CS_CCUSTOMERID     =   '00'
         AND     CS_CPROPERTYNAME      =   #{propertyName}
-        ;
-
       </select>
 </mapper>

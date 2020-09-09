@@ -1,11 +1,11 @@
 package jp.smartcompany.boot.configuration;
 
-import cn.hutool.core.collection.CollUtil;
-import com.baomidou.mybatisplus.core.parser.ISqlParser;
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
-import com.baomidou.mybatisplus.extension.parsers.BlockAttackSqlParser;
-import com.baomidou.mybatisplus.extension.plugins.OptimisticLockerInterceptor;
-import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import jp.smartcompany.boot.interceptor.SqlParameter2NullInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,21 +19,20 @@ import java.util.List;
 @Configuration
 public class MyBatisPlusConfiguration {
 
+    /**
+     * 新的分页插件,一缓和二缓遵循mybatis的规则,需要设置 MybatisConfiguration#useDeprecatedExecutor = false 避免缓存出现问题
+     */
     @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        PaginationInterceptor paginationInterceptor = new PaginationInterceptor();
-        List<ISqlParser> sqlParserList = CollUtil.newArrayList();
-        // SQL攻击拦截器
-        //　拒绝恶意删除
-        sqlParserList.add(new BlockAttackSqlParser());
-        paginationInterceptor.setSqlParserList(sqlParserList);
-        return paginationInterceptor;
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.ORACLE_12C));
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        return interceptor;
     }
 
     @Bean
-    public OptimisticLockerInterceptor optimisticLockerInterceptor() {
-        // 乐观锁
-        return new OptimisticLockerInterceptor();
+    public ConfigurationCustomizer configurationCustomizer() {
+        return configuration -> configuration.setUseDeprecatedExecutor(false);
     }
 
     @Bean

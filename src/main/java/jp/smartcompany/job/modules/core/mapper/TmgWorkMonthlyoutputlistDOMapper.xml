@@ -21,8 +21,5 @@
                                     )
                                 )
         AND TWMO_DMODIFIEDDATE >= TRUNC( SYSDATE )
-        ;
-
-
     </select>
 </mapper>
