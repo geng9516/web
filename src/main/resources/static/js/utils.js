@@ -225,13 +225,16 @@ const Utils = {
    */
     multipleTimeOverlap: function (timeArray, formkey = 'open', endkey = 'close', errorMsg = '時間が重複しています。') {
     let checkArr = []
-    timeArray.forEach(e => {
+    timeArray.forEach((e, i) => {
       const _timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e[endkey]))
       const timeArraySliced = _timeArray.slice(1, -1)
       if (timeArraySliced.length === 0) {
         // 仅有一分钟的问题
         _timeArray.forEach(t => {
-          if (checkArr.includes(t)) {
+          if(i === 0) {
+            // 处理第一个就是1分钟得情况
+            checkArr = checkArr.concat(t)
+          } else if (checkArr.includes(t)) {
             checkArr = checkArr.concat(t)
           }
         })
