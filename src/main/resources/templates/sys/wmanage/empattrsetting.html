@@ -133,14 +133,14 @@
                         <template slot-scope="{ row }" slot="tphaNavgworktime">
                             <i-button type="primary" ghost size="small" style="margin-right: 5px"
                                       @click.stop="handleAvgTime(row)">
-                                {{ row.tphaNavgworktime | handleTime }}
+                                {{ Math.trunc(row.tphaNavgworktime/60) }}時間 {{ row.tphaNavgworktime%60 }}分
                             </i-button>
                         </template>
 
                         <template slot-scope="{ row }" slot="tphaNworkingdaysWeek">
                             <i-button type="primary" ghost size="small" style="margin-right: 5px"
                                       @click.stop="handleAvgTime(row)">
-                                {{ row.tphaNworkingdaysWeek }}
+                                {{ row.tphaNworkingdaysWeek }}日
                             </i-button>
                         </template>
 
@@ -244,9 +244,11 @@
                 </div>
                 <span class="input-like-span tl pl20" style="border-top:0">
                     {{opts.baseDate}} から
-                    <i-input size="small" class="mr10 ml10" style="width: 50px"  v-model="nowWork.nowWorkTime" @on-blur="handleInputChange(0,nowWork,'nowWorkTime',$event.target)"></i-input>
-                    (週
-                    <i-input size="small" class="mr10 ml10" style="width: 50px" v-model="nowWork.nowWorKDays"></i-input>
+                    <input-number :max="99" :min="0" :step="1"   class="tl" v-model="nowWork.avgWorkTime1"></input-number>
+                    時間
+                    <input-number :max="59" :min="0" :step="1"   class="tl" v-model="nowWork.avgWorkTime2"></input-number>
+                    分　(週
+                    <input-number :max="7" :min="0" :step="1"   class="tl" v-model="nowWork.workingdaysWeek"></input-number>
                     日) 勤務とする
                 </span>
                 <div class="titlenorm mb10 mt20">
@@ -256,6 +258,7 @@
 
                 <i-table border :columns="averageTimeColums" :data="averageTimeData" :loading="loading"></i-table>
             </span>
+        <Spin size="large" fix v-if="empattrLoading"></Spin>
     </Modal>
 </main>
 <div th:replace="layout/head::header"></div>
@@ -264,6 +267,7 @@
         el: '.empattrsettinginfo-warp',
         data() {
             return {
+                empattrLoading:false,
                 OverTimeCheck:true,
                 manageCheck:true,
                 limitTime:'',
@@ -283,8 +287,10 @@
                 },
                 radioCheckedIndex: 0,
                 nowWork: {
-                    nowWorkTime: '',
-                    nowWorKDays: ''
+                    avgWorkTime1: '',
+                    avgWorkTime2: '',
+                    workingdaysWeek: '',
+
                 },
                 empName: '',
                 workerTypeName: '',
@@ -322,7 +328,7 @@
                     hidSearchData:'',
                     hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                     keyword: '',
-                    baseDate: '',
+                    baseDate: Utils.formatDate(new Date(),'YYYY/MM/DD'),
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     //目标sec
                     txtTmgReferListTreeViewAdminTargetSection: '',
@@ -468,10 +474,34 @@
                 this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
             },
             async avgWorkTimeUpload(){
-                if (this.avgWorkTimeCheck()) {
+
+                if (parseFloat( this.nowWork.avgWorkTime1).toString() == "NaN") {
+                    this.$Notice.error({ title: '注意', desc: "時間は数字で入力してください。", duration: 6.5 });
                     return
                 }
-                let params={"sAvgWorkingHours":this.nowWork.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWork.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWork.nowWorKDays}
+                if (parseFloat( this.nowWork.avgWorkTime2).toString() == "NaN") {
+                    this.$Notice.error({ title: '注意', desc: "分は数字で入力してください。", duration: 6.5 });
+                    return
+                }
+                if (parseFloat( this.nowWork.workingdaysWeek).toString() == "NaN") {
+                    this.$Notice.error({ title: '注意', desc: "週は数字で入力してください。", duration: 6.5 });
+                    return
+                }
+                if(parseFloat(this.nowWork.avgWorkTime2)>59 || 0>parseFloat(this.nowWork.avgWorkTime2)){
+                    this.$Notice.error({ title: '注意', desc: "分は59分以内で入力してください。", duration: 6.5 });
+                    return
+                }
+                if(parseFloat( this.nowWork.workingdaysWeek)>6 || 0>parseFloat(this.nowWork.workingdaysWeek)){
+                    this.$Notice.error({ title: '注意', desc: "週勤務日数は6日以内で入力してください。", duration: 6.5 });
+                    return
+                }
+                let hours=+this.nowWork.avgWorkTime1
+                let mins=+this.nowWork.avgWorkTime2
+                if (hours*60 + mins > +(this.limitTime)) {
+                    this.$Notice.error({desc: "平均勤務時間は" + Math.trunc(this.limitTime/60)+":"+this.limitTime % 60+"分以内で入力してください。"})
+                    return
+                }
+                let params={"sAvgWorkingHours":this.nowWork.avgWorkTime1,"sAvgWorkingMinutes":this.nowWork.avgWorkTime2,"sWorkingdaysWeek":this.nowWork.workingdaysWeek}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 try{
                     this.$Modal.confirm({
@@ -480,8 +510,10 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
+                            this.empattrLoading=true
                             await this.http.postForm('sys/userprofile/avgWorkTimeUpload', OPTS)
                             this.$Notice.info({title: '登録成功', desc: ""})
+                            this.empattrLoading=false
                             this.isShow = false
                             this.getTableData()
                         }
@@ -492,26 +524,9 @@
 
             },
 
-            // エラーチェック
-            avgWorkTimeCheck() {
-                if(this.nowWork.nowWorkTime === ""){
-                    this.$Notice.error({desc: "平均勤務時間は入力してください。"})
-                    return true
-                }
-                let hours=+this.nowWork.nowWorkTime.split(":")[0]
-                let mins=+this.nowWork.nowWorkTime.split(":")[1]
-                if (hours*60 + mins > +(this.limitTime)) {
-                    this.$Notice.error({desc: "平均勤務時間は" + this.limitTime +"分以内で入力してください。"})
-                    return true
-                }
-                if (this.nowWork.nowWorKDays > '6' || this.nowWork.nowWorKDays === "" ) {
-                    this.$Notice.error({desc: "週勤務日数は6日以内で入力してください。"})
-                    return true
-                }
-                return false
-            },
+
             async avgWorkTimeDelete(){
-                let params={"sAvgWorkingHours":this.nowWork.nowWorkTime.split(":")[0],"sAvgWorkingMinutes":this.nowWork.nowWorkTime.split(":")[1],"sWorkingdaysWeek":this.nowWork.nowWorKDays}
+                let params={"sAvgWorkingHours":this.nowWork.avgWorkTime1,"sAvgWorkingMinutes":this.nowWork.avgWorkTime2,"sWorkingdaysWeek":this.nowWork.workingdaysWeek}
                 const OPTS = { ...this.opts,"params":JSON.stringify(params)}
                 try{
                     this.$Modal.confirm({
@@ -520,8 +535,10 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
+                            this.empattrLoading=true
                             await this.http.postForm('sys/userprofile/avgWorkTimeDelete', OPTS)
                             this.$Notice.info({title: '削除成功', desc: ""})
+                            this.empattrLoading=false
                             this.isShow = false
                             this.getTableData()
                         }
@@ -531,6 +548,11 @@
                 }
             },
             async beginDateDelete(){
+                console.log("beginDateDelete"+this.radioCheckedIndex)
+                if(!this.radioCheckedIndex){
+                        this.$Notice.error({desc: "削除対象の行を選択してください。\n先頭行は新規追加用の行です"})
+                        return
+                }
                 let index=this.radioCheckedIndex
                 let oldValue=Array.of(this.workDaySettingData[index]).map(e=>{
                     return {'action':'ACTION_EDITBEGINDATE_D',"psOldStartDate":e.dstart,"psOldEndDate":e.dend,'psOldBeginDate':e.beginDate,'psMaxOldStartDate':''}
@@ -545,8 +567,10 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
+                            this.empattrLoading=true
                             await this.http.postForm('sys/userprofile/beginDateDelete', OPTS)
                             this.$Notice.info({title: '削除成功', desc: ""})
+                            this.empattrLoading=false
                             this.isShow = false
                             this.workDaySettingData.splice(index,1)
                             this.getTableData()
@@ -562,9 +586,6 @@
                 let index=this.radioCheckedIndex;
                 let minDate = new Date('1900/1/1');
                 let maxDate = new Date('2222/12/31');
-                if (this.workDaySettingData[index].dend ===""){
-                    this.workDaySettingData[index].dend = '2222/12/31'
-                }
                 if ( this.workDaySettingData[index].beginDate === "" ) {
                     this.$Notice.error({desc: "勤務開始日を入力してください。"})
                     return true
@@ -573,10 +594,11 @@
                     this.$Notice.error({desc: "適用開始日を入力してください。"})
                     return true
                 }
-                if ( this.workDaySettingData[index].dend === "" ) {
-                    this.$Notice.error({desc: "適用終了日を入力してください。"})
-                    return true
+
+                if (this.workDaySettingData[index].dend ===""){
+                    this.workDaySettingData[index].dend = '2222/12/31'
                 }
+
                 if(this.workDaySettingData[index].dstart > this.workDaySettingData[index].dend){
                     this.$Notice.error({desc: "適用開始日＜＝適用終了日となるように入力してください。"})
                     return true
@@ -593,19 +615,21 @@
                     this.$Notice.error({desc: "勤務開始日は適切な日付ではありません。\n1900/01/01～2222/12/31の範囲で入力してください。"})
                     return true
                 }
+                let that=this
                 let check = this.workDaySettingData.some((e) => {
-                    if(e.dstart !="" ){
-                        if( new Date(this.workDaySettingData[index].dstart) > new Date(e.dstart)  && new Date(this.workDaySettingData[index].dstart) < new Date(e.dend)  ){
-                            this.$Notice.error({desc: "入力された適用期間が既に登録されている適用期間と重複しています。\n適用期間が重複しない様に日付を変更してください。"})
-                            return true
-                        }
-                        if(new Date(this.workDaySettingData[index].dend) < new Date(e.dend)   && new Date(this.workDaySettingData[index].dend)  > new Date(e.dstart)  ){
-                            this.$Notice.error({desc: "入力された適用期間が既に登録されている適用期間と重複しています。\n適用期間が重複しない様に日付を変更してください。"})
-                            return true
-                        }
+                    console.log("check....."+JSON.stringify(e))
+                    if(!e.isChecked){
+                            return that.dateRangeOverlaps(
+                            new Date(this.workDaySettingData[index].dstart),
+                            new Date(this.workDaySettingData[index].dend),
+                            new Date(e.dstart),
+                            new Date(e.dend)
+                        )
+
                     }
                 })
                if(check){
+                   this.$Notice.error({desc: "入力された適用期間が既に登録されている適用期間と重複しています。\n適用期間が重複しない様に日付を変更してください。"})
                    return true
                }
 
@@ -651,9 +675,11 @@
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
+                            this.empattrLoading=true
                             await this.http.postForm('sys/userprofile/'+tempUrl, OPTS)
                             this.workDaySettingData[index].isChecked=false
                             this.workDaySettingData.unshift({"isChecked": true,"dstart":'',"dend": '', "dendback": '',"beginDate": ''})
+                            this.empattrLoading=false
                             this.isShow = false
                             this.getTableData()
                         }
@@ -667,6 +693,8 @@
             async manageFlagUpdate(){
                 const OPTS = { ...this.opts,"ManageList":JSON.stringify(this.manageValue),
                         "OverTimesList":JSON.stringify(this.overValue)}
+                console.log("manageFlagUpdate"+JSON.stringify(OPTS))
+
                 try{
                     this.$Modal.confirm({
                         title: '',
@@ -779,6 +807,7 @@
                 this.loading = true
 
                 try {
+                    console.log("getTableData"+JSON.stringify(this.opts))
                     const { data } = await this.http.get('sys/userprofile/screenDisp', this.opts)
                     this.pageValue.amount = data.totalCount
                     this.tableData = data.list
@@ -839,8 +868,10 @@
                 try {
                     const { data } = await this.http.get('sys/userprofile/avgWorkTimeEditDisp', this.opts)
                     this.averageTimeData = data.historyList
-                    this.nowWork.nowWorKDays = data.nowAvgWorkTime.workingdaysWeek
-                    this.nowWork.nowWorkTime = data.nowAvgWorkTime.avgWorkTime
+                    console.log("handleAvgTime"+JSON.stringify(data))
+                    this.nowWork.workingdaysWeek = data.nowAvgWorkTime.workingdaysWeek
+                    this.nowWork.avgWorkTime1 = data.nowAvgWorkTime.avgWorkTime1
+                    this.nowWork.avgWorkTime2= data.nowAvgWorkTime.avgWorkTime2
                     this.limitTime=data.limitTime
                     this.isShow = true
                     this.isAvgTimeEdit = true
@@ -910,12 +941,13 @@
                 this.contentScrollTop = e.target.scrollTop
             }, 50),
 
-            handleInputChange(i, object, value, el) {
-                // 填完后自动checkbox
-                if (object) {
-                    this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
-                }
-            },
+            dateRangeOverlaps(a_start, a_end, b_start, b_end){
+                if (b_start >= a_start   && a_end>=b_start) return true
+                if (b_end >= a_start    && a_end >= b_end) return true
+                if (a_start>b_start   && b_end>a_end ) return true
+                return false
+            }
+
         }
     })
 </script>
