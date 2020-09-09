@@ -68,7 +68,7 @@
             統計情報
         </div>
         <div >
-            <i-table :show-header="tableHead2.length > 0" :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <i-table :show-header="tableHead2.length > 0" :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="EMPNAME"><span>{{ row.EMPNAME }}</span></template>
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
             </i-table>
@@ -123,6 +123,7 @@
                     txtDYYYYMMDD: '',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
+                    txtTmgReferListTreeViewPermTargetGroup: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -143,7 +144,7 @@
             }
         },
         async mounted() {
-            this.getOrgTree()
+            await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
         beforeDestroy() {
@@ -219,6 +220,12 @@
                 if (data.length === 0){
                     this.model1 = ''
                     this.selectDisabled = false
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '職員が存在している部署を選択してくだい。'
+                    });
                 }
             },
             async getTableData() {
@@ -349,6 +356,73 @@
             async download() {
                 const { data, headers } = await this.http.get('sys/deptStatList/executeDownloadDownload', this.query)
                 Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'text/csv')
+            },
+            //初期化処理
+            async getInit() {
+                console.log("getInit")
+                console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
+                console.log(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd'))
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
+
+                this.targetPermSection = '',
+                    this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log("getDeptCode")
+                console.log(this.targetPermSection)
+
+                if (this.targetPermSection != null || this.targetPermSection != '') {
+                    this.getDeptCode(this.treeData)
+                    if (this.targetPermSectionFlag) {
+                        console.log("getDeptCode_true")
+                        console.log(this.treeData)
+                        this.getDeptName(this.treeData)
+                        this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    } else {
+                        console.log("getDeptCode_false")
+                        console.log(this.treeData)
+                        this.deptName = this.treeData[0].label
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
+                }
+
+                //年月リストの取得
+                await this.getWorkDateList()
+                //一覧画面取得
+                await this.getTableData()
+            },
+            getDeptCode(data) {
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.targetPermSectionFlag = true
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptCode(children)
+                        }
+                    }
+                })
+            },
+            getDeptName(data) {
+                // idによりループ処理でdeptNameを取得する
+                data.forEach(e => {
+                    if (e.secid === this.targetPermSection) {
+                        this.deptName = e.label
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptName(children)
+                        }
+                    }
+                })
             },
         }
     })
