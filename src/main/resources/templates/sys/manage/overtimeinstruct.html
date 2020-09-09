@@ -1160,16 +1160,11 @@
                                             that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
                                             return true
                                         }
-                                        // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
-                                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNOpen), Utils.timeToMinute(t.sNClose)).slice(1, -1))
                                     }
                                 })
-                                const checkArr2 = new Set([...checkArr])
-                                // 如果遭到了去重，则证明有重复的时间
-                                if (checkArr.length !== checkArr2.size) {
-                                    that.$Notice.warning({ title: '注意', desc: '超勤勤務が重複しています。', duration: 6.5 })
-                                    result = true
-                                }
+
+                                result = Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')
+
                                 if (result) {
                                     return true
                                 }
@@ -1195,16 +1190,11 @@
                                             that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
                                             return true
                                         }
-                                        // check 超勤时间本身是否重复, 首先拿到每一条的时间列，应去除首尾，因为首尾的时间可以重复
-                                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(t.sNRestOpen), Utils.timeToMinute(t.sNRestClose)).slice(1, -1))
                                     }
                                 })
-                                const checkArr2 = new Set([...checkArr])
-                                // 如果遭到了去重，则证明有重复的时间
-                                if (checkArr.length !== checkArr2.size) {
-                                    that.$Notice.warning({ title: '注意', desc: '休憩時間が重複しています。', duration: 6.5 })
-                                    result = true
-                                }
+
+                                result = Utils.multipleTimeOverlap(e.updateRestTimeDtoList, 'sNRestOpen', 'sNRestClose', '休憩時間が重複しています。')
+
                                 if (result) {
                                     return true
                                 }
