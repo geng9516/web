@@ -215,6 +215,38 @@ const Utils = {
     return Math.max(+StartA, +StartB,) < Math.min(+EndA, +EndB)
   },
   /**
+   * 检测多个时间段是否重叠,为true重叠
+   * 如果是单个的请使用timeOverlap
+   * @param timeArray [{open:'12:00',close:'12:10'},{open:'12:00',close:'12:01'},{open:'12:09',close:'12:10'}]
+   * @param formkey   时间开始字段的键名
+   * @param endkey 时间结束字段的键名
+   * @param errorMsg 错误信息
+   * @returns {boolean}
+   */
+  checkTimeOverlap: function (timeArray, formkey = 'open', endkey = 'close', errorMsg = '時間が重複しています。') {
+    let checkArr = []
+    timeArray.forEach(e => {
+      const timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e.close[endkey]))
+      const timeArraySliced = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e.close[endkey])).slice(1, -1)
+      if (timeArraySliced.length === 0) {
+        console.log(timeArray)
+        timeArray.forEach(e => {
+          if (checkArr.includes(e)) {
+            checkArr = checkArr.concat(e)
+          }
+        })
+      } else {
+        checkArr = checkArr.concat(timeArraySliced)
+      }
+    })
+    const checkArr2 = new Set([...checkArr])
+    if (checkArr.length !== checkArr2.size) {
+      Vue.prototype.$Notice.warning({ title: '注意', desc: errorMsg, duration: 6.5 })
+      return true
+    }
+    return false
+  }
+  /**
    * 检测多个日期段是否重叠,为true重叠
    * 你需要在这之前check 其中之一为空值和end小于start的情况
    * @param dateArray [{start: Date,end:Date},{start:Date,end:Date}]
