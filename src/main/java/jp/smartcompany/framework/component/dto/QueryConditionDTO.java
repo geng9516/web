@@ -15,6 +15,7 @@
 
 package jp.smartcompany.framework.component.dto;
 
+import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdefinitionsDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -77,8 +78,8 @@ public class QueryConditionDTO implements java.io.Serializable {
 //    /** 一覧選択 - 役職一覧(指定法人) */
 //    private List <QueryConditionSelectDto> glPostCompList;
 //
-//    /** 条件式設定情報(単一法人用) 削除用一覧 */
-//    private List <HistGroupDefinitionsEntity> glDeleteDefinitions;
+    /** 条件式設定情報(単一法人用) 削除用一覧 */
+    private List <HistGroupdefinitionsDO> deleteDefinitions;
 //
 //    /** 条件式設定情報(複数法人用) 削除用一覧 */
 //    private List <MastDataPermissionDefsEntity> glDeleteDataPermissionDefs;

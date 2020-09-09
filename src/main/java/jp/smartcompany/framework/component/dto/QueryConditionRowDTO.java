@@ -4,14 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 @Getter
 @Setter
 @ToString
-public class QueryConditionRowDTO implements Serializable {
-
-    private static final long serialVersionUID = 5193909581008610615L;
+public class QueryConditionRowDTO  {
 
     // プロパティ変数
     /** ID */
@@ -63,7 +59,7 @@ public class QueryConditionRowDTO implements Serializable {
     /** クエリ(結合式)  */
     private String joinquery;
     /** 削除フラグ  */
-    private String delflg;
+    private Boolean delete;
     /** HSD_NSETTINGID */
     private Long settingid;
 

@@ -37,7 +37,6 @@
                 TO_DATE( #{beginDate}, 'yyyy/MM/dd' ),
                 0
             )
-        ;
     </insert>
     <insert id="buildSQLForInsertTmgDailyDetail">
         INSERT INTO MAST_GENERIC_DETAIL (
@@ -211,7 +210,6 @@
         AND     R1.MGD_DEND                 >=  #{wdKijun,jdbcType=DATE}
         AND     R1.MGD_CWORKERTYPE          =   #{workerType}
         AND     R1.MGD_CLANGUAGE_CK         =   'ja'
-        ;
     </select>
 
 
@@ -234,7 +232,6 @@
             AND MGD_DEND
         ORDER BY
             MGD_SORT ASC
-        ;
     </select>
 
 
@@ -252,7 +249,7 @@
         AND     MGD_DEND                 >=  #{yyyymmdd,jdbcType=DATE}
         AND     MGD_CLANGUAGE_CK         =   #{language}
         ORDER BY
-            MGD_NSEQ;
+            MGD_NSEQ
     </select>
 
 
@@ -294,7 +291,7 @@
         AND T1.MGD_CMASTERCODE = T2.MGD_CSPARECHAR2
         ORDER BY
             G.MGD_NSPARENUM1,
-            T2.MGD_NSPARENUM1;
+            T2.MGD_NSPARENUM1
     </select>
 
     <select id="selectGenericDetail" parameterType="java.lang.String" resultType="map">
@@ -356,7 +353,6 @@
                                 AND MGD_NSPARENUM1 > #{approvelLevel}
                             </if>
                              )
-        ;
     </select>
 
     <select id="buildSQLForSelectTmgDispMonthlyItems" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.ItemVO">
@@ -572,7 +568,6 @@
         ORDER BY
             G.MGD_NSPARENUM1,
             T2.MGD_NSPARENUM1
-        ;
     </select>
 
     <select id="selectMasterNtfProp" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.MgdNtfPropVo">
@@ -590,11 +585,11 @@
             AND MGD_CLANGUAGE_CK = #{language}
         ORDER BY
             MGD_NTFTYPEID,
-            MGD_PROPID;
+            MGD_PROPID
     </select>
 
     <select id="selectSysdate" resultType="java.lang.String">
-        SELECT TO_CHAR(SYSDATE, 'yyyy/mm/dd') FROM DUAL;
+        SELECT TO_CHAR(SYSDATE, 'yyyy/mm/dd') FROM DUAL
     </select>
 
     <select id="selectYear" resultType="int">
@@ -602,7 +597,6 @@
             TMG_F_GET_THE_YEAR(TRUNC(SYSDATE),#{custId},#{compId})
         FROM
             DUAL
-            ;
     </select>
 
 
@@ -612,7 +606,6 @@
                '${baseDate}' AS BASE_DATE
         FROM
             DUAL
-        ;
     </select>
     <select id="buildSQLForSelectDate" resultType="jp.smartcompany.job.modules.tmg.tmgresults.vo.TodayThisMonthVO">
         SELECT
@@ -631,7 +624,6 @@
         AND MGD_DEND            >= #{baseDate}
         AND MGD_CLANGUAGE_CK     = #{sLang}
         AND MGD_CMASTERCODE      = #{masterCode}
-        ;
     </select>
     <select id="selectDispOverTimeItems" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.DispOverTimeItemsDto">
         SELECT
@@ -747,7 +739,7 @@
         AND MGD_DSTART_CK <![CDATA[<=]]> #{date}
         AND MGD_DEND >= #{date}
         ORDER BY
-            MGD_NSEQ;
+            MGD_NSEQ
     </select>
 
     <select id="selectTmgMoTableFunction" resultType="jp.smartcompany.job.modules.tmg.monthlyoutput.vo.TmgMoTableFunctionVo">
@@ -777,11 +769,11 @@
         AND MGD_DEND >= #{targetDate}
         AND MGD_CDLTYPEID = #{dlTypeID}
         ORDER BY
-            MGD_NSEQ;
+            MGD_NSEQ
     </select>
     <select id="selectTmgMoCsvFileName" resultType="java.lang.String">
         SELECT  TMG_F_GET_MO_CSVFILENAME(#{targetDate},#{empId},#{dlTypeID},#{custId},#{compId})
-        FROM dual;
+        FROM dual
     </select>
     <select id="selectEmpAttsetDisp" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.EmpAttsetDispVo">
         SELECT
@@ -799,7 +791,6 @@
         AND  MGD_CLANGUAGE_CK = #{lang}
         ORDER BY
             MGD_NSEQ
-            ;
     </select>
     <select id="selectMgdTimeLimit" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.MgdTimeLimitVo">
         SELECT
@@ -808,12 +799,11 @@
             mod(MGD_NSPARENUM1, 60)  AS MINUTES
         FROM
             MAST_GENERIC_DETAIL
-        WHERE  MGD_CMASTERCODE = 'TMG_LEGAL_HOURS|DAY';
+        WHERE  MGD_CMASTERCODE = 'TMG_LEGAL_HOURS|DAY'
 
 
     </select>
     <select id="selectWeekDaysCom" resultType="java.lang.String">
-
         select
             TMG_F_GET_TMG_WEEKDAYS_COM ( #{custId}, #{compId},#{baseDate},#{daysOfWeeks,jdbcType=BIGINT},#{allMinutes,jdbcType=BIGINT}  )
         from dual
@@ -834,7 +824,6 @@
             AND MGD_CGENERICDETAILID_CK = #{empId}
         ORDER BY
             MGD_DSTART_CK DESC
-        ;
     </select>
     <select id="buildSQLForSelectSimulationMaster"
             resultType="jp.smartcompany.job.modules.tmg.tmgifsimulation.dto.SimulationMasterDto">

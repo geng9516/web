@@ -178,11 +178,11 @@ public class SectionPostLogicImpl implements SectionPostLogic {
         if (lSectionList != null) {
             for (SectionPostRowListDTO sectionPostRowListDTO : lSectionList) {
                 // グループ判定結果クエリ組み立て処理(法人＆組織＆役職)
-                int nPostListCnt = sectionPostRowListDTO.getGlPostCompList().size();
-                getQueryData(querySecPost, sectionPostRowListDTO.getGlPostCompList(), FG_COMP_SEC_POST,companyId);
+                int nPostListCnt = sectionPostRowListDTO.getPostList().size();
+                getQueryData(querySecPost, sectionPostRowListDTO.getPostList(), FG_COMP_SEC_POST,companyId);
                 // グループ判定結果クエリ組み立て処理(法人＆組織＆社員番号)
-                int nEmpListCnt = sectionPostRowListDTO.getGlEmpoyeesCompList().size();
-                getQueryData(querySecPost, sectionPostRowListDTO.getGlEmpoyeesCompList(), FG_COMP_SEC_EMP,companyId);
+                int nEmpListCnt = sectionPostRowListDTO.getEmployList().size();
+                getQueryData(querySecPost, sectionPostRowListDTO.getEmployList(), FG_COMP_SEC_EMP,companyId);
                 // グループ判定結果クエリ組み立て処理(組織配下データ)
                 if (nPostListCnt + nEmpListCnt < 1) {
                     // グループ判定結果クエリ組み立て処理(法人＆組織)
