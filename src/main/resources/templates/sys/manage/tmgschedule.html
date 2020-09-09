@@ -606,7 +606,7 @@
                         }
 
                         countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                        // checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                     })){
                         result=true
@@ -636,14 +636,12 @@
                             return result
                         }
                         countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                        checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                       // checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                     })){
                         result=true
                         return result
                     }
-
-
 
                     console.log("countRest"+countRest)
                     let cc=count-countRest
@@ -657,15 +655,8 @@
                         result=true
                         return result
                     }
-                    console.log("checkArr2"+checkArr)
-                    const checkArr2 = new Set([...checkArr])
-                    if (checkArr.length !== checkArr2.size) {
-                        that.$Notice.warning({ title: '注意', desc: ' 休憩時刻が重複しています。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
+                    result = Utils.multipleTimeOverlap(this.pattern.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
                 }
-
                 if(result){
                     return
                 }
@@ -910,7 +901,7 @@
                             }
 
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -940,7 +931,7 @@
                                 return result
                             }
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -962,12 +953,13 @@
                             return result
                         }
                         console.log("checkArr2"+checkArr)
-                        const checkArr2 = new Set([...checkArr])
-                        if (checkArr.length !== checkArr2.size) {
-                            that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
+                        result = Utils.multipleTimeOverlap(e.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
+                        // const checkArr2 = new Set([...checkArr])
+                        // if (checkArr.length !== checkArr2.size) {
+                        //     that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
+                        //     result=true
+                        //     return result
+                        // }
                     }
                 })
 
