@@ -527,7 +527,6 @@
             }
         },
         async mounted() {
-            await this.getOrgTree()
             await this.getInit()
         },
         methods: {
@@ -1523,6 +1522,9 @@
                 console.log("getInit")
                 console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
                 console.log(this.referListObject)
+
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
 
                 this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
