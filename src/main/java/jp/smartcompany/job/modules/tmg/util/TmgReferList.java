@@ -551,13 +551,19 @@ public class TmgReferList {
         if(gbIsSetTargetDate){	// gbIsSetTargetDate→true：渡ってきたtargetDateを基準日に設定   false：設定しない
             setRecordDate(this.targetDate);
         }else if (psDBBean.getReqParam(TREEVIEW_KEY_RECORD_DATE) != null){ // 基準日を格納
-            setRecordDate(psDBBean.getReqParam(TREEVIEW_KEY_RECORD_DATE));
+            Boolean isInit = (Boolean)psDBBean.getSession().getAttribute("INIT_APPLICATION");
+            if (isInit == null) {
+                setRecordDate(SysUtil.transDateToString(DateUtil.date()));
+            } else {
+                setRecordDate(psDBBean.getReqParam(TREEVIEW_KEY_RECORD_DATE));
+            }
         } else {
             if (gcSysdate != null){
                 // セッションが格納されている場合
                 setRecordDate(sdf.format(gcSysdate.getTime()));
             }
         }
+       psDBBean.getSession().setAttribute("INIT_APPLICATION",true);
         // セッション情報の日付を格納
         if (gcSysdate != null){
             gsSessionDate = sdf.format(gcSysdate.getTime());
