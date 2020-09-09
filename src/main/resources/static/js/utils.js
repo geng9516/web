@@ -230,9 +230,9 @@ const Utils = {
       const timeArraySliced = _timeArray.slice(1, -1)
       if (timeArraySliced.length === 0) {
         // 仅有一分钟的问题
-        _timeArray.forEach(e => {
-          if (checkArr.includes(e)) {
-            checkArr = checkArr.concat(e)
+        _timeArray.forEach(t => {
+          if (checkArr.includes(t)) {
+            checkArr = checkArr.concat(t)
           }
         })
       } else {
