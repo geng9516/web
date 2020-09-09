@@ -226,11 +226,11 @@ const Utils = {
     multipleTimeOverlap: function (timeArray, formkey = 'open', endkey = 'close', errorMsg = '時間が重複しています。') {
     let checkArr = []
     timeArray.forEach(e => {
-      const timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e[endkey]))
-      const timeArraySliced = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e[endkey])).slice(1, -1)
+      const _timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e[endkey]))
+      const timeArraySliced = _timeArray.slice(1, -1)
       if (timeArraySliced.length === 0) {
         // 仅有一分钟的问题
-        timeArray.forEach(e => {
+        _timeArray.forEach(e => {
           if (checkArr.includes(e)) {
             checkArr = checkArr.concat(e)
           }
