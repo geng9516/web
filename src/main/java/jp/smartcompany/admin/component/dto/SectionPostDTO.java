@@ -1,12 +1,9 @@
 package jp.smartcompany.admin.component.dto;
 
-import jp.smartcompany.job.modules.core.pojo.entity.MastDatasectionpostmappingDO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastGroupsectionpostmappingDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -16,15 +13,14 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class SectionPostDTO implements Serializable {
+public class SectionPostDTO {
 
-    private static final long serialVersionUID = -4869981621184855986L;
 
     /** 各定義ごと情報一覧 */
     private List<SectionPostSelectDTO> glMenuList;
 
     /** 組織・役職条件選択情報 格納リスト 法人一覧 */
-    private List <SectionPostCompanyRowListDTO> glCompanyList;
+    private List <SectionPostListDTO> glCompanyList;
 
     /** 選択された定義ID */
     private String gsPermissionId;

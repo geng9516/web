@@ -329,10 +329,48 @@
                     return result
                 },
             },
-            async mounted() {
-                this.getOrgTree()
+            mounted() {
+                this.getInit()
             },
             methods: {
+                getInit() {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = [[${ session.txtDYYYYMMDD }]] || ''
+                    await this.getOrgTree()
+                    const historyReferListSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    if (historyReferListSection) {
+                        this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    } else{
+                        const loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        const sectionInTreeData = this.sectionInTreeData(this.treeData, loginDesignationSection)
+                        if (sectionInTreeData) {
+                            this.deptName = sectionInTreeData
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = loginDesignationSection
+                        } else {
+                            this.deptName = this.treeData[0].children[0].secnic
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                        }
+                    }
+                    //一覧画面取得
+                    this.getCalendarData()
+                },
+                sectionInTreeData(data, loginDesignationSection) {
+                    let deptName = ''
+                    data.forEach(e => {
+                        if (e.secid === loginDesignationSection) {
+                            deptName = e.label
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.sectionInTreeData(children)
+                            }
+                        }
+                    })
+                    return deptName
+                },
                 handleDatePicker() {
                     if (this.deptName !== '選んでください') {
                         this.getCalendarData()

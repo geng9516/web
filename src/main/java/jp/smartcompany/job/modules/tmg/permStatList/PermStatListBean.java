@@ -146,6 +146,9 @@ public class PermStatListBean {
      */
     public static final String ACT_PERMIT = "ACT_PERMIT";
 
+    /** 勤怠承認権限を持っていない場合の一文字ステータス */
+    public static final String STATUS_UNAPPLYAUTHORITY = "不";
+
     /**
      * 日付形式1
      */
@@ -1312,6 +1315,13 @@ public class PermStatListBean {
             }
 
             map.put("_disabled", sChkOption);
+
+            // 承認権限が有る場合は、画面遷移リンク付で現在の承認状態を表示してあげる。
+            if (bAuthorityEmp) {
+                // 承認権限が無い場合は、「不」と表示する。
+            } else {
+                map.put("COLUMNID1",STATUS_UNAPPLYAUTHORITY);
+            }
         }
 
         resultMap.put("tmgDailyMapList", tmgDailyMapList);

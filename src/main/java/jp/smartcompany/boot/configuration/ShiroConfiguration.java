@@ -11,6 +11,8 @@ import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSource
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.filter.authc.FormAuthenticationFilter;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.Cookie;
+import org.apache.shiro.web.servlet.SimpleCookie;
 import org.apache.shiro.web.session.mgt.DefaultWebSessionManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +46,18 @@ public class ShiroConfiguration {
         // 先设为30分钟便于调试 1000 * 60 * 30
         sessionManager.setGlobalSessionTimeout(1000 * 60 * 90);
         sessionManager.setSessionIdUrlRewritingEnabled(false);
+        sessionManager.setSessionIdCookie(sessionIdCookie());
         return sessionManager;
+    }
+
+    @Bean("sessionIdCookie")
+    @Primary
+    public SimpleCookie sessionIdCookie() {
+        SimpleCookie simpleCookie = new SimpleCookie("sid");
+        simpleCookie.setHttpOnly(true);
+        simpleCookie.setMaxAge(1000 * 60 * 90);
+        simpleCookie.setSameSite(Cookie.SameSiteOptions.LAX);
+        return simpleCookie;
     }
 
     /**
