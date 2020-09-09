@@ -524,8 +524,6 @@
         },
         async mounted() {
             console.log([[${ session }]])
-            await this.getOrgTree()
-            await this.getSearchCondition()
             await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
@@ -1289,6 +1287,10 @@
             async getInit() {
                 console.log("getInit")
                 console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
+                console.log(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd'))
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
+                await this.getSearchCondition()
 
                 this.targetPermSection = '',
                 this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]

@@ -595,10 +595,7 @@
                 }
             },
             async mounted() {
-                await this.getOrgTree()
-                await this.getSearchCondition()
-                await this.getInit()
-                await this.getLimit()
+                this.getInit()
             },
             computed: {
                 columns() {
@@ -729,11 +726,13 @@
                 //初期化処理
                 async getInit() {
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
-                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
-                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                    console.log(this.treeData)
-                    console.log(targetPermSection)
+                    if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                        this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    }
+                    await this.getOrgTree()
+                        this.getSearchCondition()
+                        this.getLimit()
+                    //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
                         console.log(getDeptCode)

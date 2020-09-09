@@ -663,8 +663,7 @@
                     }
                 }
             },
-            async mounted() {
-                await this.getOrgTree()
+            mounted() {
                 this.getInit()
             },
             watch: {
@@ -722,7 +721,9 @@
                 }
             },
             methods: {
-                getInit() {
+                async getInit() {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd') || ''
+                    await this.getOrgTree()
                     const historyReferListSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                     //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
@@ -739,7 +740,6 @@
                     this.getTableData()
                 },
                 handleDatePicker() {
-                    this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
                         this.getTableData()
                         return

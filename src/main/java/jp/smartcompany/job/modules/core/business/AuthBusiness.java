@@ -36,6 +36,7 @@ import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.UnauthenticatedException;
 import org.apache.shiro.crypto.hash.Md5Hash;
 import org.apache.shiro.subject.Subject;
+import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,6 +167,7 @@ public class AuthBusiness {
 //               log.debug("清除session key：{}",sessionName);
 //                session.removeAttribute(sessionName);
 //            }
+//            SecurityUtils.getSecurityManager().createSubject(new DefaultSubjectContext()).logout();
             ShiroUtil.getSubject().logout();
         }
     }
