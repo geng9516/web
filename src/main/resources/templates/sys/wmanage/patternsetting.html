@@ -349,6 +349,7 @@
                     txtCallBeanAction: 'ACTION_DISP_DISP',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
+                    recordDate: '',
                     txtCEMPLOYEEID: '',
                     groupId: 'null',
                     sectionId: '',
@@ -477,11 +478,15 @@
                 ],
                 //照会リスト
                 sk_list: [],
-                sk_list_bak: []
+                sk_list_bak: [],
+                targetAdminSection: '',
+                loginDesignationSection: '',
+                targetAdminSectionFlag: false
             }
         },
         async mounted() {
-            this.getOrgTree()
+            await this.getOrgTree()
+            await this.getInit()
             window.addEventListener('scroll', this.handleScroll, {passive: true})
         },
         beforeDestroy() {
@@ -577,7 +582,7 @@
             handleChangePattern(e) {
                 if (e) {
                     this.rawData.tpa_cnextptn = e
-                }else{
+                } else {
                     //日付切替時刻の値をリセットする
                     this.rawData.tpa_ndate_change_time = ''
                     this.rawData.tpa_cnextptn = ''
@@ -1164,7 +1169,96 @@
             },
             //ディフォルト勤務パターン
             defaultSelect(e) {
+                if (e === true) {
+                    //checked
+                    this.rawData.flag = 'TMG_ONOFF|1'
+                } else {
+                    this.rawData.flag = 'TMG_ONOFF|0'
+                }
+            },
+            //初期化処理
+            async getInit() {
+                this.targetAdminSection = ''
+                this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                //console.log("getDeptCode")
+                //console.log(this.loginDesignationSection)
+                //console.log(this.targetAdminSection)
+                //console.log('session:',[[${session}]])
+                if (this.targetAdminSection == null || this.targetAdminSection == '') {
+                    this.getDeptCode(this.treeData)
+                    if (this.targetAdminSectionFlag) {
+                        // console.log("getDeptCode_true")
+                        //console.log('section',[[${ session.psSession.loginDesignation}]])
+                        this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
+                        this.rawData.tpa_csectionid = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.rawData.tpa_cgroupid = ''
+                        this.query_upload.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_upload.groupId = ''
+                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query_sk.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_sk.groupId = ''
+                        this.query_ykjtPattern.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+
+                    } else {
+                        // console.log("getDeptCode_false")
+                        this.deptName = this.treeData[0].children[0].secnic
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                        this.rawData.tpa_csectionid = this.treeData[0].secid
+                        this.rawData.tpa_cgroupid = ''
+                        this.query_upload.sectionId = this.treeData[0].secid
+                        this.query_upload.groupId = ''
+                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query_sk.sectionId = this.treeData[0].secid
+                        this.query_sk.groupId = ''
+                        this.query_ykjtPattern.sectionId = this.treeData[0].secid
+
+                    }
+                } else {
+                    this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                    this.rawData.tpa_csectionid = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.rawData.tpa_cgroupid = ''
+                    this.query_upload.sectionId = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query_upload.groupId = ''
+                    this.query_upload.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query_sk.sectionId = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query_sk.groupId = ''
+                    this.query_ykjtPattern.sectionId = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                }
+
+                //一覧画面取得
+                this.getTmgPatternList()
+                //照会制御
+                this.btn_sk_show = true
+            },
+            getDeptCode(data) {
+                data.forEach(e => {
+                    if (e.secid === this.loginDesignationSection) {
+                        this.targetAdminSectionFlag = true
+                    } else {
+                        const children = e.child || e.children
+                        if (children) {
+                            this.getDeptCode(children)
+                        }
+                    }
+                })
             }
         }
     })
