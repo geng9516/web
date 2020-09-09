@@ -738,21 +738,13 @@
                         let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
                         console.log(getDeptCode)
                         if (getDeptCode) {
-                            this.getDeptName(this.treeData,targetPermSection)
+                            this.getDeptName(this.treeData, targetPermSection)
                             this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-                            this.query.txtTmgReferListTreeViewRecordDate =  [[${ session.txtTmgReferListTreeViewRecordDate }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = [[${ session.txtTmgReferListTreeViewRecordDate }]]
                             this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
-                            this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2)+'01'
-                            this.curDate=this.query.baseDay
-                        } else {
-                            this.deptName = this.treeData[0].label
-                            this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
-                            this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                            this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
-                            this.query.baseMonth = this.query.recordDate.slice(-2)+'01'
-                            this.curDate=this.query.baseDay
+                            this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2) + '01'
+                            this.curDate = this.query.baseDay
                         }
                     }
 

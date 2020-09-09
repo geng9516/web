@@ -751,20 +751,11 @@
           if (targetPermSection) {
             let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
             if (getDeptCode) {
-              this.getDeptName(this.treeData,targetPermSection)
+              this.getDeptName(this.treeData, targetPermSection)
               this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
               this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-              //this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE}]],'YYYY/MM/DD')
-              //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
-              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,4)
-              this.curYear=this.referListObject.txtTmgReferListTreeViewRecordDate
-            } else {
-              this.deptName = this.treeData[0].label
-              this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
-              this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-              //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
-              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,4)
-              this.curYear=this.referListObject.txtTmgReferListTreeViewRecordDate
+              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
+              this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
             }
           }
           //一覧画面取得

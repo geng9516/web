@@ -718,7 +718,6 @@
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
                         if (getEmpCode===1) {
-                            console.log(1)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,targetPermEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -727,10 +726,8 @@
                             this.query.txtTmgReferListTreeViewPermTargetSection = this.referListObject.txtTmgReferListTreeViewPermTargetSection
                             this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                            //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
                         } else if(getEmpCode===2) {
-                            console.log(2)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -739,18 +736,6 @@
                             this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
-                        }else{
-                            console.log(0)
-                            this.deptName = this.treeData[0].label
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
-                            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-                            this.referListObject.txtTmgReferListTreeViewPermTargetEmp =this.treeData[0].children[0].empid
-                            this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
-                            this.query.txtTmgReferListTreeViewPermTargetSection = this.referListObject.txtTmgReferListTreeViewPermTargetSection
-                            this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
-                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                            //this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE}]],'YYYY/MM/DD')
-                            //console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                         }
                     }
                     //一覧画面取得
