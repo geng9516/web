@@ -738,9 +738,9 @@
                             this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                             this.referListObject.txtTmgReferListTreeViewAdminTargetGroup = [[${ session.txtTmgReferListTreeViewAdminTargetGroup }]]
                         } else {
-                            this.deptName = this.treeData[0].groupname
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetGroup = this.treeData[0].groupid
+                            this.deptName = this.treeData[0].children[0].secnic
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetGroup = this.treeData[0].children[0].groupid
                         }
                     }
                     //一覧画面取得
