@@ -518,9 +518,6 @@
             }
         },
         async mounted() {
-            console.log([[${ session }]])
-            await this.getOrgTree()
-            await this.getSearchCondition()
             await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
@@ -1265,8 +1262,12 @@
             //初期化処理
             async getInit() {
                 console.log("getInit")
+                console.log([[${ session }]])
                 console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
-                console.log(this.referListObject)
+
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
+                await this.getSearchCondition()
 
                 this.targetAdminSection = '',
                 this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
