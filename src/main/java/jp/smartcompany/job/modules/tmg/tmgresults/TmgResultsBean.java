@@ -365,8 +365,7 @@ public class TmgResultsBean {
 
             // 表示月のカレンダークラス
             Calendar cal = Calendar.getInstance();
-            cal.set(Integer.parseInt(getMonth().split("/")[0]),
-                    Integer.parseInt(getMonth().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
+            cal.set(Integer.parseInt(getMonth().split("/")[0]), Integer.parseInt(getMonth().split("/")[1]) - 1, // カレンダークラスでは月が０から始まるので１引いてあげる
                     Integer.parseInt(getMonth().split("/")[2]), 0, 0);
             // 日付を月末日にする。
             cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));

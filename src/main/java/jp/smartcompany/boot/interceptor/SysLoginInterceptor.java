@@ -482,17 +482,15 @@ public class SysLoginInterceptor implements HandlerInterceptor {
     }
 
     private void saveOrgName(String sectionId,String siteId) {
-        if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
-            List<MastOrganisationDO> orgList = organisationService.list(SysUtil.<MastOrganisationDO>query().eq("MO_CSECTIONID_CK", sectionId).select("MO_CSECTIONNAME"));
-            if (CollUtil.isNotEmpty(orgList)) {
-                if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
-                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION, sectionId);
-                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
-                }
-                if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_PERM)) {
-                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION, sectionId);
-                    httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
-                }
+        List<MastOrganisationDO> orgList = organisationService.list(SysUtil.<MastOrganisationDO>query().eq("MO_CSECTIONID_CK", sectionId).select("MO_CSECTIONNAME"));
+        if (CollUtil.isNotEmpty(orgList)) {
+            if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_ADMIN)) {
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION, sectionId);
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_ADMIN_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
+            }
+            if (StrUtil.equals(siteId,TmgUtil.Cs_SITE_ID_TMG_PERM)) {
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION, sectionId);
+                httpSession.setAttribute(TmgReferList.TREEVIEW_KEY_PERM_TARGET_SECTION_NAME, orgList.get(0).getMoCsectionname());
             }
         }
     }
