@@ -1,6 +1,6 @@
 package jp.smartcompany.admin.groupmanager.logic;
 
-import jp.smartcompany.admin.component.dto.SectionPostCompanyRowListDTO;
+import jp.smartcompany.admin.component.dto.SectionPostListDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGroupsectionpostmappingDO;
@@ -63,6 +63,6 @@ public interface SectionPostLogic {
      * @return  String グループ判定クエリ
      */
     String createQuery(String psCustomerId, String psSystemId,
-                              String psGroupId, Date ptStartDate,Date ptEndDate,List<SectionPostCompanyRowListDTO> sectionPostCompanyList,String companyId);
+                       String psGroupId, Date ptStartDate, Date ptEndDate, List<SectionPostListDTO> sectionPostCompanyList, String companyId);
 
 }

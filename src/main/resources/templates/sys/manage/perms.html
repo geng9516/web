@@ -663,11 +663,8 @@
                     }
                 }
             },
-            async mounted() {
-                await this.getOrgTree()
-                this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
-                this.getTableData()
-                this.deptName = this.treeData[0].groupname
+            mounted() {
+                this.getInit()
             },
             watch: {
                 data: {
@@ -724,8 +721,25 @@
                 }
             },
             methods: {
+                async getInit() {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd') || ''
+                    await this.getOrgTree()
+                    const historyReferListSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    if (historyReferListSection) {
+                        const sectionInTreeData = this.treeData.some(e => e.secid === historyReferListSection)
+                        if (sectionInTreeData) {
+                            this.deptName = this.treeData.find(e => e.secid === historyReferListSection).groupname
+                            this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        }
+                    }
+                    //一覧画面取得
+                    this.getTableData()
+                },
                 handleDatePicker() {
-                    this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
                         this.getTableData()
                         return
@@ -1285,6 +1299,7 @@
                 },
                 async updateMemberAssign() {
                     const query = this.memberAssignValue.filter(e=> e.originalGroupId !== e.groupId)
+                    if(query.length === 0) return
                     try {
                             this.updatePermissionFlagLoading = true
                             const { data } = await this.http.post(`sys/evaluatorsetting/editmember?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}&txtDYYYYMMDD=${Utils.formatDate(this.curDate, 'yyyy/MM/dd')}`, query)
@@ -1295,7 +1310,6 @@
                             this.permissionAdminAddModal = false
                             this.updatePermissionFlagLoading = false
                         }
-                    console.log(query)
                 },
                 handleSpan({ rowIndex, columnIndex }) {
                     // 这里将得到得合并信息进行表格列项合并

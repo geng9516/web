@@ -531,8 +531,8 @@
                 if (this.selectedDeptViewType === 2) {
                     this.query.txtTmgReferListTreeViewPermSelectedView = 'group'
                 }
-                console.log("handleDeptViewTypeChange")
-                console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
+                //console.log("handleDeptViewTypeChange")
+                //console.log(this.query.txtTmgReferListTreeViewPermSelectedView)
                 this.$Notice.success({title: '所属図更新完了'})
             },
             async getOrgTree(refreshDept) {
@@ -839,8 +839,8 @@
             //日付切替時刻と翌日勤務パターンをチェック
             valid_nextPtn(changeTime, nextptn) {
                 //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
-                console.log("changeTime:", changeTime)
-                console.log("nextptn:", nextptn)
+                //console.log("changeTime:", changeTime)
+                //console.log("nextptn:", nextptn)
                 this.hiddenAlert()
                 if (changeTime) {
                     if (!nextptn) {
@@ -912,7 +912,7 @@
             async handleSubmit(name) {
                 //form validate
                 var sectionId = this.rawData.tpa_csectionid
-                var groupId = this.rawData.groupId
+                var groupId = this.rawData.tpa_cgroupid
                 var patternId = this.rawData.tpa_cpatternid
                 var patternName = this.rawData.tpa_cpatternname
                 var dutyDate = this.rawData.dutyTime
@@ -922,8 +922,13 @@
                 var planRest4 = this.rawData.planRest4
                 var changeTime = this.rawData.tpa_ndate_change_time
                 var nextptn = this.rawData.tpa_cnextptn
+
                 if (this.edit_flag) {
                     if (JSON.stringify(this.rawData_bak) === JSON.stringify(this.rawData)) {
+                        console.log('after  isDefault', this.isDefault)
+                        console.log('befor  isDefault', this.rawData_bak.flag)
+                        console.log('this.rawData_bak', JSON.stringify(this.rawData_bak))
+                        console.log('this.rawData', JSON.stringify(this.rawData))
                         this.showAlert('まだ編集していません、先ずは編集しましょう')
                         return
                     } else {
@@ -1194,39 +1199,61 @@
             },
             //ディフォルト勤務パターン
             defaultSelect(e) {
-
+               // console.log(e)
+                if (e === true) {
+                    //checked
+                    this.rawData.flag = 'TMG_ONOFF|1'
+                } else {
+                    this.rawData.flag = 'TMG_ONOFF|0'
+                }
             },
             //初期化処理
             async getInit() {
-                //console.log("getInit")
-                //console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
-
                 this.targetPermSection = ''
                 this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                //console.log("getDeptCode")
-                //console.log(this.targetPermSection)
-
                 if (this.targetPermSection != null || this.targetPermSection != '') {
                     this.getDeptCode(this.treeData)
                     if (this.targetPermSectionFlag) {
-                        //console.log("getDeptCode_true")
-                        //console.log(this.treeData)
                         this.getDeptName(this.treeData)
                         this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                         this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                        this.rawData.tpa_csectionid = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.rawData.tpa_cgroupid = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query_upload.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query_upload.groupId = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query_sk.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query_sk.groupId = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query_ykjtPattern.sectionId = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                     } else {
                         //console.log("getDeptCode_false")
                         //console.log('treedata:',this.treeData)
+                        console.log('sectionid',this.treeData[0].secid)
+                        console.log('groupid',this.treeData[0].groupid)
+
                         this.deptName = this.treeData[0].label
                         this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
                         this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                        this.rawData.tpa_csectionid = this.treeData[0].secid
+                        this.rawData.tpa_cgroupid = this.treeData[0].groupid
+                        this.query_upload.sectionId = this.treeData[0].secid
+                        this.query_upload.groupId = this.treeData[0].groupid
+                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query_sk.sectionId = this.treeData[0].secid
+                        this.query_sk.groupId = this.treeData[0].groupid
+                        this.query_ykjtPattern.sectionId = this.treeData[0].secid
+
                     }
                 }
 

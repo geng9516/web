@@ -1,7 +1,7 @@
 package jp.smartcompany.admin.groupmanager.logic.impl;
 
 import cn.hutool.core.collection.CollUtil;
-import jp.smartcompany.admin.component.dto.SectionPostCompanyRowListDTO;
+import jp.smartcompany.admin.component.dto.SectionPostListDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowDTO;
 import jp.smartcompany.admin.component.dto.SectionPostRowListDTO;
 import jp.smartcompany.admin.groupmanager.logic.SectionPostLogic;
@@ -167,13 +167,13 @@ public class SectionPostLogicImpl implements SectionPostLogic {
 
     @Override
     public String createQuery(String psCustomerId, String psSystemId,
-                       String psGroupId, Date ptStartDate,Date ptEndDate,List<SectionPostCompanyRowListDTO> sectionPostCompanyList,String companyId) {
+                              String psGroupId, Date ptStartDate, Date ptEndDate, List<SectionPostListDTO> sectionPostCompanyList, String companyId) {
         /** グループ判定クエリ(組織・役職定義) */
         StringBuilder querySecPost = new StringBuilder();
 
-        SectionPostCompanyRowListDTO companyList = sectionPostCompanyList.get(0);
+        SectionPostListDTO companyList = sectionPostCompanyList.get(0);
         // 組織リスト
-        List<SectionPostRowListDTO> lSectionList = companyList.getGlSectionList();
+        List<SectionPostRowListDTO> lSectionList = companyList.getSectionList();
         // 組織分ループさせる
         if (lSectionList != null) {
             for (SectionPostRowListDTO sectionPostRowListDTO : lSectionList) {
@@ -192,11 +192,11 @@ public class SectionPostLogicImpl implements SectionPostLogic {
             }
         }
         // グループ判定結果クエリ組み立て処理(法人＆組織＆所属長リスト)
-        getQueryData(querySecPost,companyList.getGlBossCompSectionList(), FG_COMP_SEC_BOSS,companyId);
+        getQueryData(querySecPost,companyList.getBossSectionList(), FG_COMP_SEC_BOSS,companyId);
         // グループ判定結果クエリ組み立て処理(法人＆役職リスト)
-        getQueryData(querySecPost,companyList.getGlPostCompList(), FG_COMP_POST,companyId);
+        getQueryData(querySecPost,companyList.getPostList(), FG_COMP_POST,companyId);
         // グループ判定結果クエリ組み立て処理(法人＆社員リスト)
-        getQueryData(querySecPost,companyList.getGlEmpoyeesCompList(), FG_COMP_EMP,companyId);
+        getQueryData(querySecPost,companyList.getEmployList(), FG_COMP_EMP,companyId);
         // 設定が未定義の場合
         if (querySecPost.length() == 0) {
             // グループ判定結果クエリ組み立て処理(法人)

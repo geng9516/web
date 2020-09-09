@@ -126,18 +126,18 @@
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2">
                             <template slot-scope="{ row ,index }" slot="days">
-                                <i-input  v-model="paidNowData[index].days"  v-if="row.isEditable" @on-blur="dateRefresh" class=" tc" ></i-input>
+                                <i-input  v-model="paidNowData[index].days"  v-if="row.isEditable"  class=" tc" ></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
                             <template slot-scope="{ row,index }" slot="times">
-                                <i-input v-model="paidNowData[index].times"  v-if="row.isEditable" @on-blur="dateRefresh" class=" tc" ></i-input>
+                                <i-input v-model="paidNowData[index].times"  v-if="row.isEditable"  class=" tc" ></i-input>
                                 <p v-else>{{ row.times| addNumDeci }}</p>
                             </template>
 
                             <template slot-scope="{ row ,index}" slot="expiryDate">
                                 <date-picker type="date"  v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付"
-                                             format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event" :disabled="row.days ==0.0 && row.times == 0.00" v-if="row.isEditable" transfer ></date-picker>
+                                             format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event"  v-if="row.isEditable" transfer ></date-picker>
                                 <p v-else>{{ row.expiryDate }}</p>
                             </template>
                         </i-table>
@@ -527,7 +527,6 @@
             }
         },
         async mounted() {
-            await this.getOrgTree()
             await this.getInit()
         },
         methods: {
@@ -536,15 +535,6 @@
                     this.loading = true
                     const {data} = await this.http.get('sys/paidholiday/list', this.referListObject)
                     this.data = data
-                    if(this.data.length == 0){
-                        this.Loading = false
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 6,
-                            content: '職員が存在している部署を選択してくだい。'
-                        });
-                    }
                 } catch (error) {
                     return
                 } finally {
@@ -759,21 +749,7 @@
                     this.$Notice.warning({desc: "合計付与日数と合計付与時間数の合計は40を超えないようにして下さい。 "})
                      return false
                 }
-
                 return true
-
-            },
-            dateRefresh() {
-
-                this.dataDetail.nadjust = this.paidNowData[3].days
-                this.dataDetail.nadjustHours = this.paidNowData[3].times
-                this.dataDetail.dexpireAdjust = this.paidNowData[3].expiryDate
-
-                this.dataDetail.nadjustTo = this.paidNowData[4].days
-                this.dataDetail.nadjustHoursTo = this.paidNowData[4].times
-                this.dataDetail.dexpireAdjustTo = this.paidNowData[4].expiryDate
-
-                setTimeout(()=>this.paidDetailsLoading = false)
 
             },
             checkError() {
@@ -1543,25 +1519,38 @@
             },
             //初期化処理
             async getInit() {
+                console.log("getInit")
+                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
+                console.log(this.referListObject)
+
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
+
                 this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log("getDeptCode")
+                console.log(this.loginDesignationSection)
+                console.log(this.targetAdminSection)
 
                 if (this.targetAdminSection == null || this.targetAdminSection == ''){
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
+                        console.log("getDeptCode_true")
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     } else {
+                        console.log("getDeptCode_false")
                         this.deptName = this.treeData[0].children[0].secnic
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
                     }
                 } else {
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
