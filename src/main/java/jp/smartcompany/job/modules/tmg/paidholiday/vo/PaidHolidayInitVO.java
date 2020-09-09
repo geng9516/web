@@ -21,7 +21,7 @@ public class PaidHolidayInitVO {
     private String tphDyyyymmdd;
     private Integer seq;
     private Double investDaysSum;
-    private Integer investHours;
+    private Double investHours;
     private Double throughoutDaysSum;
     private Double throughoutHoursSum;
 

@@ -43,7 +43,7 @@ public class PaidholidayBean {
      * 一覧の検索
      */
     public List<PaidHolidayInitVO> actionInitHandler(String empSql) {
-         return iMastEmployeesService.listPaidHolidayInit(empSql);
+        return iMastEmployeesService.listPaidHolidayInit(empSql);
 }
 
     /**
