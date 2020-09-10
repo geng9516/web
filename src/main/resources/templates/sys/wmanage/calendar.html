@@ -345,9 +345,8 @@
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     } else{
                         const loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
-                        const sectionInTreeData = this.sectionInTreeData(this.treeData, loginDesignationSection)
-                        if (sectionInTreeData) {
-                            this.deptName = sectionInTreeData
+                        this.sectionInTreeData(this.treeData, loginDesignationSection)
+                        if (this.deptName !== '選んでください') {
                             this.referListObject.txtTmgReferListTreeViewAdminTargetSection = loginDesignationSection
                         } else {
                             this.deptName = this.treeData[0].children[0].secnic
@@ -358,18 +357,17 @@
                     this.getCalendarData()
                 },
                 sectionInTreeData(data, loginDesignationSection) {
-                    let deptName = ''
-                    data.forEach(e => {
+                    data.some(e => {
                         if (e.secid === loginDesignationSection) {
-                            deptName = e.label
+                            this.deptName = e.label
+                            return true
                         } else {
                             const children = e.child || e.children
-                            if (children) {
+                            if (children && children.length > 0) {
                                 this.sectionInTreeData(children)
                             }
                         }
                     })
-                    return deptName
                 },
                 handleDatePicker() {
                     if (this.deptName !== '選んでください') {
