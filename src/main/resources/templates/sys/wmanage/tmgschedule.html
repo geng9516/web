@@ -143,6 +143,10 @@
                     <div class="label">発令</div>
                     <div class="person-info tc">{{hatuReiName}} {{hatuResTimeRange}}</div>
                 </i-col>
+                <i-col span="4">
+                    <div class="label">基準平均勤務時間</div>
+                    <div class="person-info tc">{{paidHolidayVO.avgWorkTime?`${Math.trunc(paidHolidayVO.avgWorkTime/60)}時間 ${paidHolidayVO.avgWorkTime%60}分`:''}}</div>
+                </i-col>
             </Row>
 
             <div class="titlenorm mb10 mt15" v-if=" isEditable">
