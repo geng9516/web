@@ -1,7 +1,9 @@
 package jp.smartcompany.boot.configuration;
 
 import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
+import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.boot.filter.CustomLoginAuthFilter;
+import jp.smartcompany.boot.filter.CustomLogoutFilter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shiro.authc.credential.CredentialsMatcher;
 import org.apache.shiro.authc.credential.HashedCredentialsMatcher;
@@ -22,6 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
 
+import javax.servlet.Filter;
 import java.util.Map;
 
 /**
@@ -97,15 +100,19 @@ public class ShiroConfiguration {
         filterChainDefinitionMap.put("/expirePassword","anon");
         filterChainDefinitionMap.put("/changeExpirePassword","anon");
 
-        filterChainDefinitionMap.put("/logout", "user");
+        filterChainDefinitionMap.put("/logout", "logout");
         filterChainDefinitionMap.put("/index","user");
         filterChainDefinitionMap.put("/sys/**", "user");
 
         //登录
         shiroFilterFactoryBean.setLoginUrl("/login");
-
         //错误页面，认证不通过跳转
         shiroFilterFactoryBean.setUnauthorizedUrl("/unauthorized");
+
+        Map<String, Filter> filterMap = MapUtil.newHashMap();
+        filterMap.put("logout", new CustomLogoutFilter());
+        shiroFilterFactoryBean.setFilters(filterMap);
+
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
     }

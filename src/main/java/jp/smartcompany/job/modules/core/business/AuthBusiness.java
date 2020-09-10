@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.business;
 
 import cn.hutool.cache.impl.LRUCache;
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -64,9 +65,10 @@ public class AuthBusiness {
     private final IMastAccountService iMastAccountService;
     private final LoginAuditService loginAuditService;
     private final IMastGroupapppermissionService iMastGroupapppermissionService;
-    private final LRUCache<Object,Object> lruCache;
     private final ScCacheUtil scCacheUtil;
     private final DataSource dataSource;
+    private final LRUCache<Object,Object> lruCache;
+    private final TimedCache<String,Object> timedCache;
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
@@ -158,6 +160,8 @@ public class AuthBusiness {
     }
 
     public void logout() {
+        lruCache.clear();
+        timedCache.clear();
         HttpSession session = ContextUtil.getHttpRequest().getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (psSession!=null) {
