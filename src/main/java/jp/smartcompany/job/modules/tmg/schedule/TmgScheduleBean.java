@@ -983,7 +983,7 @@ public class TmgScheduleBean {
         String workingHours = iTmgScheduleService.selectWorkingHours(employeeId, _baseDate, _targetCustCode, _targetCompCode);
         String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
         paidHolidayVO.setDateOfRecord(dateOfRecord);
-
+        paidHolidayVO.setAvgWorkTime(workingHours);
 
         scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
         scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
