@@ -69,24 +69,25 @@
         <div class="content_body">
             <div class="table-top">
                 <Row :gutter="16">
-                    <i-col span="11">
-                    <i-button type="text" @click="preMonthApproval" :disabled="!preMonthShow">
-                        <Icon type="ios-arrow-back"></Icon>
-                        前月
-                    </i-button>
-                    <i-button type="text" @click="nextMonthApproval" :disabled="!nextMonthShow">
-                        翌月
-                        <Icon type="ios-arrow-forward"></Icon>
-                    </i-button>
-                    </i-col>
-                    <i-col class="tr" span="13">
+<!--                    <i-col span="11">-->
+<!--                    <i-button type="text" @click="preMonthApproval" :disabled="!preMonthShow">-->
+<!--                        <Icon type="ios-arrow-back"></Icon>-->
+<!--                        前月-->
+<!--                    </i-button>-->
+<!--                    <i-button type="text" @click="nextMonthApproval" :disabled="!nextMonthShow">-->
+<!--                        翌月-->
+<!--                        <Icon type="ios-arrow-forward"></Icon>-->
+<!--                    </i-button>-->
+<!--                    </i-col>-->
+                    <i-col class="tr">
                     <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(false)">選択状態をクリア</i-button>
                     <i-button type="primary" class="mr5" :disabled="!approval" ghost @click="handleSelectAll(true)">承認対象者を全選択</i-button>
                     </i-col>
                 </Row>
             </div>
+            <Alert class="primary-info tl" v-show="this.tableData.length>0">※日付をクリックすると、一括承認画面を表示します。※承認ステータスをクリックすると、就業承認コンテンツを表示します。</Alert>
             <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange"
-                :disabled-hover="true" :loading="listLoading" no-data-text="職員が存在している所属を選択して下さい。">
+                :disabled-hover="true" :loading="listLoading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>
                 </template>
@@ -600,8 +601,9 @@
                 }
             },
             async mounted() {
-                this.getOrgTree()
-                this.getTableHead()
+                // this.getOrgTree()
+                // this.getTableHead()
+                this.getInit()
                 window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             beforeDestroy() {
@@ -725,6 +727,12 @@
                         this.selectDisabled = false
                         this.preMonthShow = false
                         this.nextMonthShow = false
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
+                        });
                     }
                 },
                 async getTableHead() {
@@ -792,6 +800,12 @@
                     console.log(e)
                     for (var i=0;i < this.dispMonthlyList.length;i++){
                             if (e===this.dispMonthlyList[i].val) {
+                                //年月リストが１件であれば、前月・翌月が非活性化にする
+                                if(this.dispMonthlyList.length ===1){
+                                    this.preMonthShow = false
+                                    this.nextMonthShow = false
+                                    break
+                                }
                                 if (i===0){
                                     this.preMonthShow = true
                                     this.nextMonthShow = false
@@ -866,11 +880,15 @@
                     this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
                     //年月リストの取得
+                    //初期化
+                    this.tableHead = []
+                    this.tableData = []
+                    this.approval = false
                     await this.getDispTmgMonthlyList()
-
                     await this.getTableHead()
-                    await this.getTableData()
-
+                    if(this.dispMonthlyList.length>0){
+                        await this.getTableData()
+                    }
                 },
                 async getEmpList() {
                     try {
@@ -1628,6 +1646,74 @@
                     nMinute = eval(+(pHHMM.split(":")[1]));
                     retMinute = eval(nHour + nMinute);
                     return retMinute;
+                },
+                //初期化処理
+                async getInit() {
+                    console.log("getInit")
+                    console.log([[${ session }]])
+                    console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
+
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    await this.getOrgTree()
+
+                    this.targetAdminSection = '',
+                    this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    console.log("getDeptCode")
+                    console.log(this.loginDesignationSection)
+                    console.log(this.targetAdminSection)
+
+                    if (this.targetAdminSection == null || this.targetAdminSection == ''){
+                        this.getDeptCode(this.treeData)
+                        if (this.targetAdminSectionFlag) {
+                            console.log("getDeptCode_true")
+                            this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        } else {
+                            console.log("getDeptCode_false")
+                            console.log(this.treeData[0])
+                            this.deptName = this.treeData[0].children[0].secnic
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+
+                        }
+                    } else {
+                        this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
+
+                    //一覧画面取得
+                    //初期化
+                    this.tableHead = []
+                    this.tableData = []
+                    this.approval = false
+
+                    //年月リストの取得
+                    await this.getDispTmgMonthlyList()
+                    await this.getTableHead()
+                    if(this.dispMonthlyList.length>0){
+                        await this.getTableData()
+                    }
+                },
+                getDeptCode(data) {
+                    data.forEach(e => {
+                        if (e.secid === this.loginDesignationSection) {
+                            this.targetAdminSectionFlag = true
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptCode(children)
+                            }
+                        }
+                    })
                 },
             }
         })
