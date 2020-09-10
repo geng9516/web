@@ -33,4 +33,9 @@ public class PaidHolidayVO {
      * 年次休暇残
      */
     private String npaidRestDaysHour;
+
+    /**
+     * 基準平均勤務時間
+     */
+    private String avgWorkTime;
 }
