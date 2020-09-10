@@ -228,7 +228,7 @@
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日数</p>
-                                    <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></i-input-number>
+                                    <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
@@ -295,7 +295,7 @@
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
-                                        <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></i-input-number>
+                                        <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber"  placeholder="人数"><span slot="append">人</span></input-number>
                                     </section>
 
                                     <!-- 有生年月日-->
