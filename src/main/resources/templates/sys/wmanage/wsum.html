@@ -66,8 +66,8 @@
         </div>
         <div >
             <i-table :show-header="tableHead2.length > 0" :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="">
-                <template slot-scope="{ row }" slot="EMPNAME"><span>{{ row.EMPNAME }}</span></template>
-                <template v-for="item of slotList" slot-scope="{ row }" :slot="item"><span>{{ row[item] }}</span></template>
+                <template slot-scope="{ row }" slot="EMPNAME" v-if="tableHead2.length > 0"><span>{{ row.EMPNAME }}</span></template>
+                <template v-for="item of slotList" slot-scope="{ row }" :slot="item" v-if="tableHead2.length > 0"><span>{{ row[item] }}</span></template>
             </i-table>
         </div>
         <div class="titlenorm mb10 mt10" style="font-size:15px" v-show="tableData2.length > 0">
@@ -211,18 +211,23 @@
 
                     //年月リストを取得する時に、活性化にする
                     this.selectDisabled = true
+
+                    //一覧画面取得
+                    await this.getTableData()
                 }
 
                 //年月リスト.lengthがゼロ場合、非活性化にする
                 if (data.length === 0){
                     this.model1 = ''
                     this.selectDisabled = false
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 6,
-                            content: '職員が存在している部署を選択してくだい。'
-                        });
+                    this.tableHead2= []
+                    this.tableData2= []
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
+                    });
                 }
             },
              async getTableData() {
@@ -231,7 +236,6 @@
                 const { data } = await this.http.get('sys/deptStatList/executeDispStatList', this.query)
 
                 this.fullName = data.dispItemsList.slice(0,1)[0].title
-                console.log("getTableData")
                 this.tableHead2 = data.dispItemsList.slice(1)
                 this.tableData2 = data.employyesMap
 
@@ -305,8 +309,6 @@
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
 
-                console.log('e2')
-                console.log(e)
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_Disp_RList'
                 this.deptName = e[0].secnic
@@ -315,9 +317,6 @@
 
                 //年月リストの取得
                 await this.getWorkDateList()
-
-                // await this.getTableHead()
-                await this.getTableData()
 
             },
             async getEmpList() {
@@ -336,7 +335,6 @@
                 // this.getData(true)
             },
             async handleStartMonth(e) {
-                console.log("handleStartMonth")
                 if(e){
                     this.query.txtTDA_DYYYYMM = this.dateFormat(e)
                     this.query.txtDYYYYMM = this.dateFormat(e)
@@ -356,9 +354,6 @@
             },
             //初期化処理
             async getInit() {
-                console.log("getInit")
-                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
-                console.log(this.referListObject)
 
                 this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 await this.getOrgTree()
@@ -369,40 +364,29 @@
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                console.log("getDeptCode")
-                console.log(this.loginDesignationSection)
-                console.log(this.targetAdminSection)
 
                 if (this.targetAdminSection == null || this.targetAdminSection == ''){
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
-                        console.log("getDeptCode_true")
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                        console.log("这里是1："+this.query.txtTmgReferListTreeViewAdminTargetSection)
-                        console.log([[${ session.psSession.loginDesignation[0]}]])
                     } else {
-                        console.log("getDeptCode_false")
                         this.deptName = this.treeData[0].children[0].secnic
                         this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                        console.log("这里是2："+this.query.txtTmgReferListTreeViewAdminTargetSection)
                     }
                 } else {
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
                     this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                    console.log("这里是3："+this.query.txtTmgReferListTreeViewAdminTargetSection)
                 }
 
                 //年月リストの取得
                 await this.getWorkDateList()
-                //一覧画面取得
-               await this.getTableData()
             },
             getDeptCode(data) {
                 data.forEach(e => {
