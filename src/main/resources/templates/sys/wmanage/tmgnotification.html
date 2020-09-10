@@ -376,7 +376,7 @@
 
               <!-- 有加算日-->
               <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
-                <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></i-input-number>
+                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
               </form-item>
 
               <!-- 是小时单位的 時間帯 -->
@@ -440,7 +440,7 @@
 
               <!-- 是有対象の人数的-->
               <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber">
-                <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></i-input-number>
+                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
                 </i-input>
               </form-item>
 

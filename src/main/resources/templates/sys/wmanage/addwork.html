@@ -183,7 +183,7 @@
         <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"
                  border :columns="columns"
                  :row-class-name="rowClass" :disabled-hover="true" :data="dailyDataList" :loading="loading"
-                 no-data-text="勤怠シート未作成">
+                 no-data-text="該当月に勤怠シートがある教職員を所属から選択してください">
             <template slot-scope="{ row }" slot="TDA_DYYYYMMDD_DD">
                 <span :class="dayRed(row,0)" style="text-decoration: underline" @click="showDay(row.TDA_DYYYYMMDD)" >{{ row.TDA_DYYYYMMDD_DD }}</span>
             </template>
@@ -691,11 +691,11 @@
                 //締め済データの編集
                 isShowFixedMonthlyEditButton:false,
                 workTimeDisable:false, //就業時間制御
-            }
+                flag:false,
+                }
         },
         async mounted() {
-            this.getOrgTree()
-            this.getSearchCondition()
+            this.getInit()
         },
         created() {
         },
@@ -707,6 +707,95 @@
 
         },
         methods: {
+            //初期化処理
+            async getInit() {
+
+                let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                let targetAdminEmp = [[${ session.txtTmgReferListTreeViewAdminTargetEmp }]]
+                let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                    this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                }
+                await this.getOrgTree()
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                if (targetAdminSection){
+                    this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = targetAdminSection
+                    if (await this.getEmpCode(this.treeData,targetAdminEmp,targetAdminSection)) {
+                        console.log("1")
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = targetAdminEmp
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 8) + '01'
+                    }else{
+                        console.log("2")
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 8) + '01'
+                    }
+                } else {
+                    if (await this.getEmpCode(this.treeData,targetAdminEmp,loginDesignationSection)) {
+                        console.log("3")
+                        this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = [[${ session.psSession.loginDesignation[0].employee }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
+                    } else {
+                        console.log("4")
+                        this.deptName = this.treeData[0].children[0].secnic
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
+                    }
+                }
+                //一覧画面取得
+
+                // await this.getSearchCondition()
+                // await this.getWorkDateList()
+                // this.getTitleData()
+            },
+            async getEmpCode(data, empId, sectionId) {
+                if(!empId){return false}
+                this.getSecCode(data, sectionId)
+                if(this.flag){
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = sectionId
+                }else{
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = data[0].secid
+                }
+                await this.getEmpList()
+                this.empTreeData.forEach(e => {
+                    if (e.empid === empId) {
+                        this.kanjiName=e.empname
+                        return true
+                    }
+                })
+                if(this.empTreeData[0]){
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = this.empTreeData[0].empid
+                    this.kanjiName=this.empTreeData[0].empname
+                }
+                return false
+            },
+            getSecCode(data,sectionId){
+               data.some( j => {
+                    if (j.secid === sectionId) {
+                        this.flag = true
+                    }else{
+                        const children = j.child || j.children
+                        if (children && children.length > 0) {
+                            this.getSecCode(children,sectionId)
+                        }
+                    }
+                })
+            },
 //head用　所属　年月　氏名
             async getOrgTree() {
                 try {
@@ -728,6 +817,7 @@
                     this.empTreeData = []
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
                     this.empTreeData = Utils.convertTreeData(empList[0].child)
+                    console.log(this.empTreeData)
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
 
                 } catch (error) {
@@ -751,7 +841,6 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if(!e[0]) return
-                console.log(e)
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
@@ -1244,7 +1333,6 @@
             },
             //差戻
             async updateRemandsStatus() {
-                //console.log(this.dailyEdit)
                 this.$Modal.confirm({
                     inDrawer: true,
                     title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n'+'※今回、入力した内容は、承認者コメントのみ保存されます',

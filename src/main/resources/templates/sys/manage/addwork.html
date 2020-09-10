@@ -713,11 +713,11 @@
                         this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     }
                     await this.getOrgTree()
-                          this.getSearchCondition()
+
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
-                        if (getEmpCode===1) {
+                        if (getEmpCode) {
                             console.log(1)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,targetPermEmp)
@@ -728,7 +728,7 @@
                             this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
-                        } else if(getEmpCode===2) {
+                        } else if(getEmpCode) {
                             console.log(2)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
@@ -752,22 +752,23 @@
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     //一覧画面取得
+                    await this.getSearchCondition()
                     await this.getWorkDateList()
-                    await this.getTitleData()
+                    this.getTitleData()
                 },
                 getEmpCode(data,empId,sectionId) {
-                    let dept =0
+                    let dept =false
                     data.forEach(e => {
                         if (e.secid === sectionId) {
                             e.children.forEach(j => {
                                 console.log(j)
                                 if (j.empid === empId) {
-                                    dept=1
+                                    dept=true
                                 }
                             })
                             if(dept != 1){
                                 this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
-                                dept=2
+                                dept=false
                             }
                         }
                     })
@@ -900,7 +901,6 @@
                         const {data} = await this.http.get('sys/tmgResults/workDateList', this.query)
 
                         this.dispMonthlyList = data.monthLy
-
                         if (data.monthLy.length > 0) {
                             let check　= false
                             check =  this.dispMonthlyList.map(e =>{
@@ -909,6 +909,7 @@
                                     return true
                                 }
                             })
+                            console.log(check)
                             if(!check || this.query.txtDYYYYMM ===''){
                                 this.model1 = this.dispMonthlyList[0].code
                                 this.query.txtDYYYYMM = this.model1
