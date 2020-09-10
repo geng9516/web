@@ -60,6 +60,9 @@ public class SectionPostDTO {
 
     /** 組織・役職設定情報 削除用一覧(グループ定義) */
     private List<MastGroupsectionpostmappingDO> deleteSectionPost;
+    // #自定义加入，原先smartcompany并没有此属性
+    /** 社員選択設定情報 削除用一覧(グループ定義) */
+    private List<MastGroupsectionpostmappingDO> deleteEmployList;
 
     /** 組織・役職設定情報 削除用一覧(検索対象範囲設定) */
     private List<MastDatasectionpostmappingDO> deleteSectionPostCompany;
