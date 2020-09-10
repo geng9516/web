@@ -1736,7 +1736,7 @@
                 // idによりループ処理でdeptNameを取得する
                 data.forEach(e => {
                     if (e.secid === this.targetPermSection || e.groupid === this.targetPermSection) {
-                        this.deptName = e.secnic
+                        this.deptName = e.secnic || e.label
                     } else {
                         const children = e.child || e.children
                         if (children) {
