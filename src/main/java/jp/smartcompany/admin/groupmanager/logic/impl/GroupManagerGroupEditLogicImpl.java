@@ -33,7 +33,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -424,9 +423,10 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         Date startDate = dto.getStartDate();
         Long weightAge = dto.getWeightAge();
         String baseFlag = dto.getBaseFlag();
+
+        SectionPostDTO sectionPostDTO = new SectionPostDTO();
         // 組織・役職による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_SECPOST)) {
-            SectionPostDTO sectionPostDTO = new SectionPostDTO();
             assembleGroupSectionPost(sectionPostDTO,dto.getSectionPostList());
         }
         // 条件式による定義の情報取得
@@ -436,9 +436,10 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         }
         // 社員による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_EMPLOYEES)) {
-
+            assembleEmploy(sectionPostDTO,dto.getEmployList());
         }
         // 基点組織による定義の情報取得
+
 
 
 //        // 条件式妥当性チェック(条件式設定のみ)
@@ -510,6 +511,27 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 //        updateMastGroupDefinitions(
 //                insertGroupDefinitions(
 //                        customerId, systemId, groupId, startDate, endDate, baseFlag),groupCheckQuery,dto);
+    }
+
+    private void assembleEmploy(SectionPostDTO sectionPostDTO,List<SectionPostRowDTO> rowList) {
+        List<SectionPostListDTO> companyList = sectionPostDTO.getCompanyList();
+        if (CollUtil.isEmpty(companyList)) {
+            return;
+        }
+        List<MastGroupsectionpostmappingDO> lDelTemp = CollUtil.newArrayList();
+        List<SectionPostRowDTO> addEmpList = CollUtil.newArrayList();
+        for (SectionPostRowDTO employDTO : rowList) {
+            // 如果是要删除的项
+            if (employDTO.getDelete()) {
+                MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                egp.setMagId(employDTO.getId());
+                lDelTemp.add(egp);
+            } else {
+                addEmpList.add(employDTO);
+            }
+        }
+        sectionPostDTO.setDeleteEmployList(lDelTemp);
+        companyList.get(0).setEmployList(addEmpList);
     }
 
     private void assembleGroupSectionPost(SectionPostDTO sectionPostDTO,SectionPostListDTO sectionPostListDTO) {

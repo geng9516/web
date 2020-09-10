@@ -98,7 +98,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {
             executeLoginSequence(systemList,language);
-            if (timedCache.get(Constant.TOP_NAVS,true) == null) {
+            if (timedCache.get(Constant.TOP_NAVS+"_"+httpSession.getId(),true) == null) {
                 loadMenus(systemCode, systemList);
             }
         }
@@ -478,7 +478,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 根据用户拥有的用户组获取对应菜单（测试时注释）
         List<String> groupCodes = groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         List<MenuGroupBO> menuGroupList = authBusiness.getUserPerms(systemCode,session.getLanguage(),groupCodes,session.getLoginEmployee());
-        timedCache.put(Constant.TOP_NAVS,menuGroupList);
+        timedCache.put(Constant.TOP_NAVS+"_"+httpSession.getId(),menuGroupList);
     }
 
     private void saveOrgName(String sectionId,String siteId) {

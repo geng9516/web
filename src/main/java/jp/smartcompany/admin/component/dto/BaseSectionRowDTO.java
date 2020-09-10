@@ -63,20 +63,6 @@ public class BaseSectionRowDTO implements Serializable {
      */
     private String mgbsClayeredsectionid;
 
-    /**
-     * 最終更新者
-     */
-    private String mgbsCmodifieruserid;
-
-    /**
-     * 最終更新日
-     */
-    private Date mgbsDmodifieddate;
-
-    /**
-     * バージョンno
-     */
-    private Long versionno;
 
     /**
      * 以下・のみフラグ

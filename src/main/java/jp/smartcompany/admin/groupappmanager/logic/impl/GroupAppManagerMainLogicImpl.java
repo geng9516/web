@@ -188,7 +188,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     }
     layout.setTableBody(lTable);
     // 権限一覧をrequestScopeに登録
-    timedCache.put(REQ_SCOPE_NAME,lTable);
+    timedCache.put(REQ_SCOPE_NAME+"_"+ContextUtil.getHttpRequest().getSession().getId(),lTable);
     getSearchDate(layout,systemId, date,  groupId);
     return layout;
   }
@@ -279,8 +279,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   public String executeUpdate(GroupAppManagerUpdatePermsForm updatePerm) throws SQLException {
     HttpServletRequest request = ContextUtil.getHttpRequest();
     PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
+    String sessionId = request.getSession().getId();
     // 画面表示のためのイレモノを取得
-    List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME,false);
+    List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
     if (CollUtil.isEmpty(lTable)) {
       throw new GlobalException("権限データが存在しない");
     }
@@ -514,9 +515,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
        }
     }
 
-    timedCache.remove(REQ_SCOPE_NAME);
+    timedCache.remove(REQ_SCOPE_NAME+"_"+sessionId);
     // 刷新启动权限
-    timedCache.remove(Constant.TOP_NAVS);
+    timedCache.remove(Constant.TOP_NAVS+"_"+sessionId);
 
     return "権限の変更が成功しました";
   }
