@@ -583,10 +583,7 @@
                 }
             },
             mounted() {
-                this.getOrgTree()
-                this.getTableHead()
-                this.getSearchCondition()
-                this.getLimit()
+                this.getInit()
             },
             computed: {
                 columns() {
@@ -715,6 +712,73 @@
                 }
             },
             methods: {
+                //初期化処理
+                async getInit() {
+
+                    let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                    if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                        this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    }
+                    await this.getOrgTree()
+
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    if (!targetAdminSection){
+                        if (this.getDeptCode(this.treeData,loginDesignationSection)) {
+                            console.log("getDeptCode_true")
+                            this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                            this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                            this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2) + '01'
+                            this.curDate = this.query.baseDay
+                        } else {
+                            console.log("getDeptCode_false")
+                            this.deptName = this.treeData[0].children[0].secnic
+                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                            this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                            this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2) + '01'
+                            this.curDate = this.query.baseDay
+                        }
+                    } else {
+                        console.log("getDeptCode")
+                        this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                        this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                        this.query.baseDay = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.baseMonth = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(-2) + '01'
+                        this.curDate = this.query.baseDay
+                    }
+
+                    //一覧画面取得
+                    this.getTableHead()
+                    this.getSearchCondition()
+                    this.getLimit()
+                    this.getTableData()
+                },
+                getDeptCode(data,loginDesignationSection) {
+                    let SectionFlag=false
+                    data.forEach(e => {
+                        if (e.secid === loginDesignationSection) {
+                            SectionFlag = true
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptCode(children)
+                            }
+                        }
+                    })
+                    return SectionFlag
+                },
                 showAverageDraw(e) {
                     this.getAvgTableData(e.empid)
                     this.empName = e.empname
