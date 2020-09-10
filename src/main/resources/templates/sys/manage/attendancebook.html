@@ -239,6 +239,10 @@
                         hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                         modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
                         comment: this.tmyComment,                                  //摘要
+                        txtTmgReferListTreeViewPermSelectedView: '',
+                        txtTmgReferListTreeViewPermTargetSection: '',
+                        txtTmgReferListTreeViewPermTargetGroup: '',
+                        txtTmgReferListTreeViewPermTargetEmp: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite')
 
                     },
@@ -492,12 +496,15 @@
                         // 先将数据转为标准格式，再转为可用数据
                         if(this.selectedDeptViewType === 3) {
                             this.treeData = Utils.convertTreeData(sectionMemberList)
+                            this.query.txtTmgReferListTreeViewPermSelectedView = "section"
                         }
                         if(this.selectedDeptViewType === 2) {
                             this.treeData = Utils.convertTreeData(groupMemberList)
+                            this.query.txtTmgReferListTreeViewPermSelectedView = "group"
                         }
                         if(this.selectedDeptViewType === 1) {
                             this.treeData = Utils.convertTreeData(memberList)
+                            this.query.txtTmgReferListTreeViewPermSelectedView = "all"
                         }
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                     } catch (error) {
@@ -598,6 +605,9 @@
                     this.selectDisabled = true
                     this.remarksDisabled = true
                     this.ledgerParamVO.hidEmpId = e[0].empid
+                    this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                    this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                    this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.getData(true)
                 },
                 // 摘要更新
