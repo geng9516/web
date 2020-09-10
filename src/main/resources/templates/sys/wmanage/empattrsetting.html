@@ -108,6 +108,7 @@
             </div>
             <template>
                 <div>
+                    <Alert class="primary-info tl" v-show="isEditable">※「管理対象者」「超過勤務対象者」が編集対象になります、編集するときチェックボックスをクリック又は一括チェックをご利用ください。</Alert>
                     <i-table border :columns="columns" :data="tableData" :loading="loading" :disabled-hover="true"
                              :row-class-name="() => 'select-col'">
                         <template slot-scope="{ row }" slot="manageFlg">
@@ -124,21 +125,21 @@
 
 
                         <template slot-scope="{ row }" slot="begindate">
-                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px"　:disabled="isEditable"
                                       @click.stop="handleBeginDate(row)">
                                 {{ row.begindate }}
                             </i-button>
                         </template>
 
                         <template slot-scope="{ row }" slot="tphaNavgworktime">
-                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px" :disabled="isEditable"
                                       @click.stop="handleAvgTime(row)">
                                 {{ Math.trunc(row.tphaNavgworktime/60) }}時間 {{ row.tphaNavgworktime%60 }}分
                             </i-button>
                         </template>
 
                         <template slot-scope="{ row }" slot="tphaNworkingdaysWeek">
-                            <i-button type="primary" ghost size="small" style="margin-right: 5px"
+                            <i-button type="primary" ghost size="small" style="margin-right: 5px" :disabled="isEditable"
                                       @click.stop="handleAvgTime(row)">
                                 {{ row.tphaNworkingdaysWeek }}日
                             </i-button>
