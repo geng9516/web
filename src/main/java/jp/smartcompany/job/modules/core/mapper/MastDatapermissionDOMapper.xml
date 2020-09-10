@@ -24,7 +24,7 @@
         WHERE	MDPD_CPERMISSIONID  = MDP_CPERMISSIONID
         ORDER BY
             MDPD_CPERMISSIONID,
-            MDPD_NSEQ;
+            MDPD_NSEQ
     </select>
 
     <select id="selectDataSectionPost" resultType="jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO">
@@ -99,7 +99,7 @@
             MDSP_CPERMISSIONID,
             MDSP_CTYPEID,
             MDSP_CCOMPANYID,
-            MDSP_CSECTIONID;
+            MDSP_CSECTIONID
     </select>
 
 </mapper>

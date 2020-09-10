@@ -36,7 +36,5 @@
         ) M
 	    WHERE
             M.NUM BETWEEN #{numStart,jdbcType=BIGINT}  AND  #{numEnd,jdbcType=BIGINT}
-            ;
-
     </select>
 </mapper>

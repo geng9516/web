@@ -11,13 +11,11 @@
                                                 TRUNC(TO_DATE(#{dyyyymm}, 'YYYY/MM/DD')),
                                                 #{lang},
                                                 TRUNC(TO_DATE(#{psBaseDate}, 'YYYY/MM/DD'))))
-        ;
     </select>
     <select id="selectMoYearListColumn" resultType="java.lang.Integer">
         SELECT
 		    TMG_SELECT_MO_YEARLIST(#{cust},#{comp},#{secid},#{targetDate},#{introDate},#{lang},#{psBaseDate}).SALARY_FIX
         FROM
             DUAL
-        ;
     </select>
 </mapper>

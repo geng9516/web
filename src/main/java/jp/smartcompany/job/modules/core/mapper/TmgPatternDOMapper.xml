@@ -108,7 +108,7 @@
         #{patternId}
         )
         AND	TPA_DSTARTDATE		<![CDATA[<=]]> #{statDate,jdbcType=DATE}
-        AND	TPA_DENDDATE		>= #{statDate,jdbcType=DATE};
+        AND	TPA_DENDDATE		>= #{statDate,jdbcType=DATE}
       </select>
 
     <select id="selectChangeTime" resultType="int" >
@@ -132,7 +132,6 @@
         AND     R2.TPA_DSTARTDATE           <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
         AND     R2.TPA_DENDDATE             >=  #{yyyymmdd,jdbcType=DATE}
         AND     R2.TPA_CDEFAULTFLG          =   'TMG_ONOFF|1'               -- デフォルトフラグ
-        ;
       </select>
 
     <select id="selectStandardWorkTime" resultType="java.lang.Integer">

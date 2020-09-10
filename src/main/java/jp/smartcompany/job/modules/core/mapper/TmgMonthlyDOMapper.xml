@@ -15,7 +15,6 @@
         AND     TMO_CCUSTOMERID     =   ${companyId}
         AND     TMO_DYYYYMM                 =  ${yyyymmdd}
         AND     TMO_CEMPLOYEEID         =   ${employeeId}
-        ;
     </select>
 
 
@@ -49,7 +48,7 @@
         AND TPH_DSTARTDATE <![CDATA[<=]]> TRUNC( SYSDATE )
         AND TPH_DENDDATE >= TRUNC( SYSDATE )
         AND TPH_DYYYYMM = TRUNC( SYSDATE, 'MM' )
-        AND TPH_DYYYYMM != TPH_DYYYYMMDD;
+        AND TPH_DYYYYMM != TPH_DYYYYMMDD
     </select>
 
     <select id="buildSQLForSelectMonthlyOverTime" resultType="string">
@@ -272,7 +271,6 @@
         TRUNC( TMO_DYYYYMM, 'YYYY' )
         ORDER BY
         TRUNC( TMO_DYYYYMM, 'YYYY' ) DESC
-        ;
     </select>
     <select id="selectMonthDate" resultType="jp.smartcompany.job.modules.tmg.tmgledger.vo.ListBoxVo">
         SELECT
@@ -288,7 +286,6 @@
             TMO_DYYYYMM
         ORDER BY
             TMO_DYYYYMM DESC
-        ;
     </select>
     <update id="buildSQLForUpdateMonthly">
        UPDATE

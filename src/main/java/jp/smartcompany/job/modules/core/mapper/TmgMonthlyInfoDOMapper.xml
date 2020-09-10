@@ -85,7 +85,6 @@
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE(#{sBaseDate}) ), LAST_DAY( TO_DATE(#{sBaseDate}) ), e.cust, e.comp )
         ORDER BY
             E.SEQ
-        ;
     </select>
 
     <select id="selectAftBefBaseDate" resultType="java.lang.String">
@@ -116,7 +115,6 @@
         AND m.TMI_DSTARTDATE <![CDATA[<=]]> #{sBaseDate}
         AND m.TMI_DENDDATE >= #{sBaseDate}
         AND 'TMG_MANAGEFLG|0' <![CDATA[<=]]> TMG_F_IS_MANAGEFLG ( e.EMPID, TRUNC( TO_DATE( #{sBaseDate} ) ), LAST_DAY( TO_DATE( #{sBaseDate}) ), e.cust, e.comp )
-        ;
     </select>
 
 
@@ -259,7 +257,6 @@
             ORVERTIME_RESULT_INFO.COMP
         ORDER BY
             ORVERTIME_RESULT_INFO.SEQ
-        ;
     </select>
 
 

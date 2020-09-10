@@ -69,7 +69,7 @@
         HE_CSYSTEMID_CK,
         HE_NWEIGHTAGE,
         HE_CGROUPID
-        ) groups;
+        ) groups
     </select>
 
     <select id="selectAppManagerGroup" parameterType="map" resultType="jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO">

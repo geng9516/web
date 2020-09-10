@@ -304,7 +304,7 @@
     </select>
 
     <!--  今月の月中有給付与の情報 -->
-    <select id="selectHalfwayPaidHoliday" parameterType="java.util.HashMap" resultType="java.lang.String">
+    <select id="selectHalfwayPaidHoliday" parameterType="java.util.HashMap" resultType="jp.smartcompany.job.modules.tmg.schedule.dto.HalfwayPaidHolidayDTO">
         select tmo_npaid_begining_days
             ,tmo_npaid_begining_hours
             ,tmo_npaid_rest_days
@@ -950,7 +950,7 @@
         where twp_nid = #{twp_nid}
         and twp_ccustomerid = #{custId}
         and twp_ccompanyid = #{compCode}
-        and twp_cemployeeid = #{employeeId};
+        and twp_cemployeeid = #{employeeId}
     </select>
 
 

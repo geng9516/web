@@ -691,9 +691,7 @@
                 }
             },
             async mounted() {
-              await  this.getOrgTree()
-                this.getSearchCondition()
-                this.getInit()
+                await this.getInit()
             },
             created() {
             },
@@ -710,14 +708,17 @@
                 async getInit() {
                     let targetPermEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
-                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
-                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                    console.log(targetPermEmp)
-                    console.log(targetPermSection)
+
+                    if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                        this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    }
+                    await this.getOrgTree()
+                          this.getSearchCondition()
+                    //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
                         if (getEmpCode===1) {
+                            console.log(1)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,targetPermEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -728,6 +729,7 @@
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
                         } else if(getEmpCode===2) {
+                            console.log(2)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -737,6 +739,17 @@
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
                         }
+                    }else{
+                        console.log(0)
+                        console.log(this.treeData)
+                        this.deptName = this.treeData[0].label
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                        this.referListObject.txtTmgReferListTreeViewPermTargetEmp =this.treeData[0].children[0].empid
+                        this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
+                        this.query.txtTmgReferListTreeViewPermTargetSection = this.referListObject.txtTmgReferListTreeViewPermTargetSection
+                        this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     //一覧画面取得
                     await this.getWorkDateList()

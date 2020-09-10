@@ -569,11 +569,11 @@
         WHERE
             TNTF_CCUSTOMERID = #{customerId}
         AND TNTF_CCOMPANYID = #{companyId}
-        AND TNTF_CNTFNO = #{ntfNo};
+        AND TNTF_CNTFNO = #{ntfNo}
     </select>
 
     <select id="selectNotificationSeq" resultType="java.lang.String">
-        SELECT TMG_NOTIFICATION_SEQ.NEXTVAL FROM DUAL;
+        SELECT TMG_NOTIFICATION_SEQ.NEXTVAL FROM DUAL
     </select>
 
 
@@ -610,7 +610,7 @@
         WHERE
             C.TNTF_CCUSTOMERID = #{custId}
             AND C.TNTF_CCOMPANYID = #{compId}
-            AND C.TNTF_CNTFNO = #{ntfNo};
+            AND C.TNTF_CNTFNO = #{ntfNo}
     </select>
 
 

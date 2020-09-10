@@ -75,6 +75,5 @@
             TMG_BULK_NOTIFICATION A
         WHERE
             A.TBN_NTBNID = #{seq,jdbcType=BIGINT}
-
     </select>
 </mapper>

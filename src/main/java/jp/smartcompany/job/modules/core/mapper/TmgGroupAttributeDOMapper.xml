@@ -8,7 +8,6 @@
             OT_DAILY_01 * 60 AS DAILY_CONV_MINUTE
         FROM
             TABLE ( TMG_F_GET_OVERTIMELIMT ( #{custId},#{compId}, #{sectionId}, NULL, to_date( #{baseDate}, 'yyyy/mm/dd' ) ) )
-        ;
     </select>
     <select id="selectOverTimeLimit" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.OverTimeLimitDto">
         SELECT
@@ -27,7 +26,6 @@
             OT_MONTHLY_AVG
         FROM
             TABLE ( TMG_F_GET_OVERTIMELIMT ( #{custId}, #{compId}, ${sectionId}, ${groupId}, TRUNC( SYSDATE ) ) )
-        ;
     </select>
     <select id="selectHolidayTimeLimit" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.dto.HolidayTimeLimitDto">
         SELECT
@@ -38,6 +36,5 @@
             HT_MONTLY_05
         FROM
             TABLE ( TMG_F_GET_HOLIDAYTIMELIMT ( #{custId}, #{compId}, ${sectionId}, ${groupId}, TRUNC( SYSDATE ) ) )
-        ;
     </select>
 </mapper>

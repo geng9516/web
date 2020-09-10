@@ -15,8 +15,6 @@
         AND     R1.TPHA_CEMPLOYEEID     =   #{employeeId}
         AND     R1.TPHA_DSTARTDATE      <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
         AND     R1.TPHA_DENDDATE        <![CDATA[>=]]>  #{yyyymmdd,jdbcType=DATE}
-        ;
-
       </select>
 
 
@@ -121,7 +119,7 @@
         AND B.TPHA_DENDDATE (+) >= TO_DATE('${param.baseDate}', 'yyyy/MM/dd')
         AND A.SORTED_ROW BETWEEN ${numStrat} AND ${numEnd}
         ORDER BY
-            A.SORTED_ROW;
+            A.SORTED_ROW
     </select>
 
 
@@ -225,7 +223,6 @@
         AND A.TPHA_CEMPLOYEEID = #{employeeId}
         AND A.TPHA_DSTARTDATE <![CDATA[<=]]> TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
         AND A.TPHA_DENDDATE >= TO_DATE( #{yyyymmdd}, 'yyyy/MM/dd' )
-        ;
     </select>
     <select id="selectDefaultAvgWorkTime" resultType="jp.smartcompany.job.modules.tmg.empattrsetting.vo.AvgWorkTimeVo">
         SELECT
@@ -290,6 +287,5 @@
         ) A
         ORDER BY
             TPHA_DSTARTDATE
-        ;
     </select>
 </mapper>

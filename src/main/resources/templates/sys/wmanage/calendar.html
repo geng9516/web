@@ -333,8 +333,8 @@
                 this.getInit()
             },
             methods: {
-                getInit() {
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = [[${ session.txtDYYYYMMDD }]] || ''
+                async getInit() {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd') || ''
                     await this.getOrgTree()
                     const historyReferListSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する

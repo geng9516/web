@@ -441,10 +441,8 @@
             ) b ON b.MONTH_ID_YYYYMM = a.TDA_DYYYYMM
         ORDER BY
         b.MONTH_ID
-
-
-
     </select>
+
     <select id="selectDaily" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.DailyVo">
         SELECT
             e.EMPNAME AS TDA_CEMPLOYEEID_NAME,
@@ -575,6 +573,7 @@
         AND 'TMG_MANAGEFLG|0' <![CDATA[<>]]> TMG_F_IS_MANAGEFLG(v.empid, TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), TRUNC(to_date(#{targetDate},'yyyy/mm/dd')), v.cust, v.comp)
         ORDER BY v.SEQ
     </select>
+
     <select id="buildSQLForSelectObjEmpForUpdate" resultType="java.lang.String">
 		SELECT
 		    ROWID
@@ -632,8 +631,6 @@
         AND TDAD_CCOMPANYID = '${compId}'
         AND TDAD_CCUSTOMERID = '${custId}'
         AND TDAD_CNOTWORKID = 'TMG_ITEMS|Overhours'
-
-        ;
     </select>
     <select id="buildSQLForSelectPaidHoliday"
             resultType="jp.smartcompany.job.modules.tmg.tmgacquired5daysHoliday.vo.PaidHolidayVO">
@@ -721,6 +718,7 @@
         AND M.TMO_CCUSTOMERID = D.TDA_CCUSTOMERID
         AND M.TMO_CCOMPANYID  = D.TDA_CCOMPANYID
     </select>
+
     <select id="selectMaxDaily" resultType="java.lang.String">
         select TO_CHAR(MAX(TDA_DYYYYMM),'yyyymm') AS MAX_DAY
         from TMG_DAILY

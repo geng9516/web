@@ -15,7 +15,7 @@
         WHERE
                 TCA_CCUSTOMERID = #{custID}
             AND TCA_CCOMPANYID = #{userCode}
-            AND TCA_DYYYYMM = #{month};
+            AND TCA_DYYYYMM = #{month}
     </update>
     <select id="selectCalendar" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto">
         SELECT
@@ -28,7 +28,6 @@
         WHERE
                 TCA_CCUSTOMERID = #{custId}
             AND TCA_CCOMPANYID = #{compId}
-            ;
     </select>
 
 
@@ -40,7 +39,7 @@
         FROM
             TMG_V_DAYCOUNT
         WHERE
-            TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 <![CDATA[<=]]> TRUNC( Last_day( TO_DATE(#{baseDate}) ) );
+            TRUNC( TO_DATE(#{baseDate}), 'mm' ) + ROWNUM - 1 <![CDATA[<=]]> TRUNC( Last_day( TO_DATE(#{baseDate}) ) )
     </select>
 
     <select id="selectGetCalendarList" resultType="jp.smartcompany.job.modules.tmg.overtimeInstruct.vo.CalenderVo">
@@ -81,7 +80,7 @@
         WHERE
                 TCA_CCUSTOMERID = #{custId}
             AND TCA_CCOMPANYID = #{compId}
-            AND TCA_DYYYYMM = to_date( #{sBaseDate} );
+            AND TCA_DYYYYMM = to_date( #{sBaseDate} )
     </select>
     <select id="selectCalenderDisp" resultType="jp.smartcompany.job.modules.tmg.calendar.vo.CalendarDispVo">
         SELECT
@@ -154,7 +153,7 @@
         AND TCA_DYYYYMM <![CDATA[<=]]> '${year}'||'/12/31'
         AND TCA_DYYYYMM >= '${year}'||'/01/01'
         ORDER BY
-            TCA_DYYYYMM;
+            TCA_DYYYYMM
     </select>
 
 

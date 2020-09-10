@@ -33,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
@@ -276,17 +277,17 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
          * 該当条件(組織・役職選択)情報を取得
          */
         // 引数を組織・役職コンポーネントへ格納
-        sectionPostDTO.setGsApplyDate(SysUtil.transDateToString(pdSearchDate));
-        sectionPostDTO.setGsSelectedCompanyId(psCompanyId);
-        sectionPostDTO.setGsSelectedCompanyName(psCompanyName);
+        sectionPostDTO.setApplyDate(SysUtil.transDateToString(pdSearchDate));
+        sectionPostDTO.setSelectedCompanyId(psCompanyId);
+        sectionPostDTO.setSelectedCompanyName(psCompanyName);
         // 該当条件編集 - 定義情報取得(法人情報リスト)
         List<SectionPostListDTO> oCompanyList = CollUtil.newArrayList();
         SectionPostListDTO oCompanyDto = new SectionPostListDTO();
         oCompanyDto.setCompanyId(psCompanyId);
         oCompanyDto.setCompanyName(psCompanyName);
         oCompanyList.add(oCompanyDto);
-        sectionPostDTO.setGlCompanyList(oCompanyList);
-        List<SectionPostListDTO> companyList = sectionPostDTO.getGlCompanyList();
+        sectionPostDTO.setCompanyList(oCompanyList);
+        List<SectionPostListDTO> companyList = sectionPostDTO.getCompanyList();
         // 該当条件編集 - 定義情報取得(法人＆組織指定リスト)
         SectionPostListDTO company = companyList.get(0);
         company.setSectionList(iMastGroupsectionpostmappingService.selectGroupSection(psCustomerId, psCompanyId, systemId, groupId, pdSearchDate, FG_COMP_SEC, language));
@@ -297,17 +298,17 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             String sSectionId = glSectionList.get(i).getSectionId();
 
             // 組織ごとの定義情報取得(法人＆組織＆役職リスト)
-            glSectionList.get(i).setGlPostCompList(
+            glSectionList.get(i).setPostList(
                     iMastGroupsectionpostmappingService.selectWholeSectionInfo(psCustomerId, psCompanyId,
                             systemId, groupId, pdSearchDate, FG_COMP_SEC_POST, sSectionId, language));
             // 組織ごとの定義情報取得(法人＆組織＆社員番号リスト)
-            glSectionList.get(i).setGlEmpoyeesCompList(
+            glSectionList.get(i).setEmployList(
             iMastGroupsectionpostmappingService.selectWholeSectionInfo(psCustomerId, psCompanyId,
                             systemId, groupId, pdSearchDate,FG_COMP_SEC_EMP, sSectionId, language));
             // 現在の保持している役職リスト(法人＆組織)の件数を保持する
-            glSectionList.get(i).setGnSelectedPostCompCnt(glSectionList.get(i).getGlPostCompList().size());
+            glSectionList.get(i).setSelectedPostCnt(glSectionList.get(i).getPostList().size());
             // 現在の保持している社員番号リスト(法人＆組織)の件数を保持する
-            glSectionList.get(i).setGnSelectedEmpoyeesCompCnt(glSectionList.get(i).getGlEmpoyeesCompList().size());
+            glSectionList.get(i).setSelectedEmpoyeesCompCnt(glSectionList.get(i).getEmployList().size());
         }
         // 該当条件編集 - 定義情報取得(法人＆組織＆所属長リスト)
         company.setBossSectionList(
@@ -321,7 +322,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 更新用のDtoを初期化しておく(法人＆社員リスト)
         company.setEmployList(CollUtil.newArrayList());
         // 組織・役職編集情報をJSONにセット
-        sectionPostDTO.setGnDispFlg(0);
+        sectionPostDTO.setDispFlg(0);
 
         return sectionPostDTO;
     }
@@ -426,11 +427,12 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         // 組織・役職による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_SECPOST)) {
             SectionPostDTO sectionPostDTO = new SectionPostDTO();
-//            assembleGroupSectionPost(sectionPostDTO,dto.getSectionPostList());
+            assembleGroupSectionPost(sectionPostDTO,dto.getSectionPostList());
         }
         // 条件式による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_DEF)) {
-            // todo データをセットする
+            QueryConditionDTO queryConditionDTO = new QueryConditionDTO();
+            assembleGroupDefinitions(queryConditionDTO,dto.getQueryConditionList());
         }
         // 社員による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_EMPLOYEES)) {
@@ -510,6 +512,115 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 //                        customerId, systemId, groupId, startDate, endDate, baseFlag),groupCheckQuery,dto);
     }
 
+    private void assembleGroupSectionPost(SectionPostDTO sectionPostDTO,SectionPostListDTO sectionPostListDTO) {
+          // 組織リスト
+          List<SectionPostRowListDTO> sectionList = sectionPostListDTO.getSectionList();
+          // 所属長リスト
+          List<SectionPostRowDTO> bossSectionList = sectionPostListDTO.getBossSectionList();
+          // 役職リスト
+          List<SectionPostRowDTO> postList = sectionPostListDTO.getPostList();
+
+          List<MastGroupsectionpostmappingDO> lDelTemp = CollUtil.newArrayList();
+          List<SectionPostListDTO> lAddTemp = CollUtil.newArrayList();
+
+          List<SectionPostRowListDTO> lAddTempOrg = CollUtil.newArrayList();
+          // 組織リスト
+          if (CollUtil.isNotEmpty(sectionList)) {
+              for (SectionPostRowListDTO sectionPostRowDTO : sectionList) {
+                  // 組織配下の役職
+                  List<SectionPostRowDTO> addTempOrgPost = CollUtil.newArrayList();
+                  // 获取新增的役职列表
+                  List<SectionPostRowDTO> belowSectionPostList = sectionPostRowDTO.getPostList();
+                  if (CollUtil.isNotEmpty(belowSectionPostList)) {
+                      for (SectionPostRowDTO postRowDTO : belowSectionPostList) {
+                          // 如果是要删除的项
+                          if (postRowDTO.getDelete()) {
+                              MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                              egp.setMagId(postRowDTO.getId());
+                              lDelTemp.add(egp);
+                          } else {
+                              addTempOrgPost.add(postRowDTO);
+                          }
+                      }
+                      sectionPostListDTO.setEmployList(CollUtil.newArrayList());
+                      sectionPostListDTO.setPostList(addTempOrgPost);
+                  }
+                  // 削除フラグのあるデータは、削除用リストへ
+                  if (sectionPostRowDTO.getDelete()) {
+                          MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                          egp.setMagId(sectionPostRowDTO.getId());
+                          lDelTemp.add(egp);
+                  } else {
+                      // 値をセット
+                      lAddTempOrg.add(sectionPostRowDTO);
+                  }
+              }
+              sectionPostListDTO.setSectionList(lAddTempOrg);
+          }
+
+          // 所属長
+          List<SectionPostRowDTO> lAddTempList = CollUtil.newArrayList();
+
+          if (CollUtil.isNotEmpty(bossSectionList)) {
+              for (SectionPostRowDTO sectionPostRowDTO : bossSectionList) {
+                  if (sectionPostRowDTO.getDelete()) {
+                      MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                      egp.setMagId(sectionPostRowDTO.getId());
+                      lDelTemp.add(egp);
+                  } else {
+                      // 値をセット
+                      lAddTempList.add(sectionPostRowDTO);
+                  }
+              }
+              sectionPostListDTO.setSectionList(lAddTempOrg);
+          }
+
+          // 役職
+          lAddTempList = CollUtil.newArrayList();
+          if (CollUtil.isNotEmpty(postList)) {
+              for (SectionPostRowDTO sectionPostRowDTO : postList) {
+                if (sectionPostRowDTO.getDelete()) {
+                    MastGroupsectionpostmappingDO egp = new MastGroupsectionpostmappingDO();
+                    egp.setMagId(sectionPostRowDTO.getId());
+                    lDelTemp.add(egp);
+                } else {
+                    lAddTempList.add(sectionPostRowDTO);
+                }
+              }
+              sectionPostListDTO.setPostList(lAddTempList);
+          }
+
+          // 削除フラグのあるデータは、削除用リストへ
+          if (sectionPostListDTO.getDelete()) {
+                MastGroupsectionpostmappingDO eh = new MastGroupsectionpostmappingDO();
+                eh.setMagId(sectionPostListDTO.getId());
+                lDelTemp.add(eh);
+          } else {
+            // 値をセット
+            lAddTemp.add(sectionPostListDTO);
+          }
+
+          sectionPostDTO.setCompanyList(lAddTemp);
+          sectionPostDTO.setDeleteSectionPost(lDelTemp);
+    }
+
+    private void assembleGroupDefinitions(QueryConditionDTO queryConditionDTO,List<QueryConditionRowDTO> qwRows) {
+        List<QueryConditionRowDTO> lAddTemp = CollUtil.newArrayList();
+        List<HistGroupdefinitionsDO> lDelTemp = CollUtil.newArrayList();
+        for (QueryConditionRowDTO qwRow : qwRows) {
+            if (StrUtil.isNotBlank(qwRow.getTableid()) && StrUtil.isNotBlank(qwRow.getColumnid())) {
+                if (qwRow.getDelete()) {
+                    HistGroupdefinitionsDO eh = new HistGroupdefinitionsDO();
+                    eh.setHgdId(qwRow.getId());
+                    lDelTemp.add(eh);
+                } else {
+                    lAddTemp.add(qwRow);
+                }
+            }
+        }
+        queryConditionDTO.setRowList(lAddTemp);
+        queryConditionDTO.setDeleteDefinitions(lDelTemp);
+    }
 
     @Override
     public List<QueryConditionSelectDTO> queryConditionList(String tableId) {
@@ -700,7 +811,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         /** 定義情報取得(法人＆組織＆役職リスト(登録更新用))　*/
         for (SectionPostRowListDTO sectionPostRowListDTO : sectionList) {
             /** 定義情報取得(法人＆組織＆役職リスト(登録更新用))　*/
-            insertList(sectionPostRowListDTO.getGlPostCompList(),
+            insertList(sectionPostRowListDTO.getPostList(),
                     FG_COMP_SEC_POST, psCustomerId, psSystem,
                     psGroup, ptStartDate, ptEndDate);
         }

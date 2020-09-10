@@ -1,6 +1,7 @@
 package jp.smartcompany.admin.groupmanager.dto;
 
 import jp.smartcompany.admin.component.dto.SectionPostListDTO;
+import jp.smartcompany.framework.component.dto.QueryConditionRowDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -23,6 +24,8 @@ public class GroupManagerEditDTO {
     private String remark;
     // 組織・役職条件選択情報 格納リスト 法人一覧
     private SectionPostListDTO sectionPostList;
+    // 条件式定義コンポーネント用
+    private List<QueryConditionRowDTO> queryConditionList;
 
 }
 //public class GroupManagerEditDTO extends MastGroupDO {

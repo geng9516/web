@@ -9,6 +9,5 @@
             </foreach>
         FROM
             TABLE(${functionID}('${sectionID}','${dlTypeID}','${date}','${custID}','${compID}','${lang}'))
-            ;
     </select>
 </mapper>

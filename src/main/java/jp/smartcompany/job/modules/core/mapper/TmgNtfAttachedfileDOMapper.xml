@@ -39,8 +39,5 @@
             TNAF_CNTFNO=#{ntfNo}
         and TNAF_CCUSTOMERID=#{custId}
         and TNAF_CCOMPANYID=#{compId}
-        ;
-
-
     </select>
 </mapper>

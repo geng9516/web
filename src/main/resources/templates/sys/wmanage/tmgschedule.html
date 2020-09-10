@@ -785,6 +785,8 @@
 
             },
             handleSelectApply(){
+                console.log(JSON.stringify(this.pattern))
+
                 if(this.valueMap.length==0){
                     this.$Notice.error({
                         title: '注意',
@@ -796,6 +798,115 @@
                 if(this.pattern.workId=='TMG_WORK|' && this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
                     return
                 }
+
+                let count=Utils.timeToMinute(this.pattern.nclose)-Utils.timeToMinute(this.pattern.nopen)
+                let result=false
+                console.log("count"+count)
+                if(this.pattern.workId=="TMG_WORK|000"){
+                    if (!this.pattern.nopen) {
+                        this.$Notice.warning({ title: '注意', desc:' 開始時間を入力してください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if (!this.pattern.nclose) {
+                        this.$Notice.warning({ title: '注意', desc:' 終了時間を入力してください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if(0>=count ){
+                        this.$Notice.warning({ title: '注意', desc:' 開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+
+
+                    let countRest=0;
+                    let checkArr = []
+                    this.pattern.restList= this.pattern.restList.filter(e=>e.restOpen!=''||e.restClose!='')
+                    let that=this
+                    if(count >=360 && this.pattern.restList.some(e1=>{
+
+                        if (!e1.restOpen) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e1.restClose) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
+                            that.$Notice.warning({ title: '注意', desc:' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                        //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
+                    })){
+                        result=true
+                        return result
+                    }
+
+                    if(360 >=count  && this.pattern.restList.some(e1=>{
+
+                        if (e1.restOpen=='' && e1.restClose!='') {
+                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (e1.restOpen!='' && e1.restClose=='') {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (e1.restOpen!='' && e1.restClose!=''&& !Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                        //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
+                    })){
+                        result=true
+                        return result
+                    }
+
+
+
+                    console.log("countRest"+countRest)
+                    let cc=count-countRest
+                    if(480>=cc && cc >360 &&  45>countRest){
+                        that.$Notice.warning({ title: '注意', desc:' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if(cc >480 &&  60>countRest){
+                        that.$Notice.warning({ title: '注意', desc: ' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+
+                    result = Utils.multipleTimeOverlap(this.pattern.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
+                }
+
+                if(result){
+                    return
+                }
+
                 const that = this
 
                 this.valueMap.map(Number).forEach(e=>{
@@ -1284,7 +1395,7 @@
 
                         let countRest=0;
                         let checkArr = []
-                        e.restList= e.restList.filter(e=>e.restOpen!=''&&e.restClose!='')
+                        e.restList= e.restList.filter(e=>e.restOpen!=''||e.restClose!='')
                         if(count >=360 && e.restList.some(e1=>{
 
                             if (!e1.restOpen) {
@@ -1309,7 +1420,7 @@
                             }
 
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -1339,7 +1450,7 @@
                                 return result
                             }
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -1358,13 +1469,14 @@
                             result=true
                             return result
                         }
-                        console.log("checkArr2"+checkArr)
-                        const checkArr2 = new Set([...checkArr])
-                        if (checkArr.length !== checkArr2.size) {
-                            that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
+                        result = Utils.multipleTimeOverlap(e.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
+                        // console.log("checkArr2"+checkArr)
+                        // const checkArr2 = new Set([...checkArr])
+                        // if (checkArr.length !== checkArr2.size) {
+                        //     that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
+                        //     result=true
+                        //     return result
+                        // }
                     }
                 })
 

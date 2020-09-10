@@ -18,6 +18,5 @@
         AND TDLG_DENDDATE >= TRUNC( TO_DATE( #{baseDate}, 'yyyy/MM/dd' ), 'MM' )
         ORDER BY
             TDLG_DMODIFIEDDATE DESC
-        ;
     </select>
 </mapper>

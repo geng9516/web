@@ -100,7 +100,7 @@
                 ${psBase7},
                 ${psBase8}
             )
-        FROM DUAL;
+        FROM DUAL
     </select>
 
     <select id="selectRelation" parameterType="map" resultType="int">
@@ -111,7 +111,7 @@
                        '${psSystem}',
                        '${psDesig}',
                        TO_DATE('${psDate}','yyyy/mm/dd'))
-        FROM DUAL;
+        FROM DUAL
     </select>
 
     <select id="selectUserInfoByDate" parameterType="map" resultType="jp.smartcompany.framework.auth.entity.LoginControlEntity">
@@ -188,7 +188,7 @@
                 ${desig},
                 TO_DATE('${psDate}','yyyy/mm/dd')
          )
-        FROM DUAL;
+        FROM DUAL
     </select>
 
     <select id="getVersion3SectionChief" parameterType="map" resultType="jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity">

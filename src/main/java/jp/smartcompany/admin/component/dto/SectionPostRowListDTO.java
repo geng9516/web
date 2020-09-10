@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -14,17 +13,16 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class SectionPostRowListDTO implements Serializable {
+public class SectionPostRowListDTO {
 
-    private static final long serialVersionUID = -6452959735389402480L;
     /** 組織・役職条件選択情報 格納リスト 役職一覧(指定法人＆指定組織) */
-    private List<SectionPostRowDTO> glPostCompList;
+    private List<SectionPostRowDTO> postList;
     /** 選択済みの役職一覧(指定法人＆指定組織)の件数 */
-    private int gnSelectedPostCompCnt = 0;
+    private int selectedPostCnt = 0;
     /** 組織・役職条件選択情報 格納リスト 社員一覧(指定法人＆指定組織) */
-    private List<SectionPostRowDTO> glEmpoyeesCompList;
+    private List<SectionPostRowDTO> employList;
     /** 選択済みの社員一覧(指定法人＆指定組織)の件数 */
-    private int gnSelectedEmpoyeesCompCnt = 0;
+    private int selectedEmpoyeesCompCnt = 0;
     /** 顧客名称 */
     private String customerName;
     /** 法人名称 */
@@ -59,9 +57,9 @@ public class SectionPostRowListDTO implements Serializable {
     private String employeeId;
     /** ID */
     private Long id;
-    /** VERSIONNO */
-    private Integer versionNo;
-    /** 削除フラグ  */
-    private String delflg;
+//    /** VERSIONNO */
+//    private Integer versionNo;
+//    /** 削除フラグ  */
+    private Boolean delete;
 
 }

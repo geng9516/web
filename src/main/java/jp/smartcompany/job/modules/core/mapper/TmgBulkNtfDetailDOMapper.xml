@@ -28,6 +28,5 @@
         WHERE TBND_NTBNID_FK = #{seq}) CONNECT BY MO_CSECTIONID_CK = PRIOR
         MO_CPARENTID
         ORDER SIBLINGS BY MO_NSEQ, MO_CSECTIONID_CK
-
     </select>
 </mapper>

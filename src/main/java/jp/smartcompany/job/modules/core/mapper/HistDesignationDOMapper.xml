@@ -25,7 +25,6 @@
         AND     R2.TGRM_CSECTIONID(+)           =   R1.HD_CSECTIONID_FK
         AND     R2.TGRM_DSTARTDATE(+)           <![CDATA[<=]]>  #{yyyymmdd,jdbcType=DATE}
         AND     R2.TGRM_DENDDATE(+)             >=  #{yyyymmdd,jdbcType=DATE}
-        ;
     </select>
 
     <select id="selectEvaluator" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
@@ -122,7 +121,7 @@
         ORDER BY
         HD_CIFKEYORADDITIONALROLE,
         HD_CCUSTOMERID_CK,
-        HD_CCOMPANYID_CK;
+        HD_CCOMPANYID_CK
     </select>
 
     <select id="selectAllEvaluator" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
@@ -197,7 +196,7 @@
         ORDER BY
         HD_CIFKEYORADDITIONALROLE,
         HD_CCUSTOMERID_CK,
-        HD_CCOMPANYID_CK;
+        HD_CCOMPANYID_CK
     </select>
 
     <select id="selectWithSection" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
@@ -272,7 +271,7 @@
         ORDER BY
         HD_CIFKEYORADDITIONALROLE,
         HD_CCUSTOMERID_CK,
-        HD_CCOMPANYID_CK;
+        HD_CCOMPANYID_CK
     </select>
 
     <select id="selectSectionChief" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.bo.EvaluatorBO">
@@ -347,7 +346,7 @@
 
         ORDER BY
         HD_DSTARTDATE_CK,
-        ME_CEMPLOYEEID_CK;
+        ME_CEMPLOYEEID_CK
     </select>
 
 
@@ -390,7 +389,7 @@
         AND D.HD_CIFKEYORADDITIONALROLE = 0
         ) AS POST
         FROM
-        DUAL;
+        DUAL
     </select>
 
 
@@ -421,7 +420,7 @@
             AND D.HD_CIFKEYORADDITIONALROLE = 0
         ) AS POST
         FROM
-            DUAL;
+            DUAL
     </select>
 
     <select id="selectemployeeList" resultType="jp.smartcompany.job.modules.tmg.tmgnotification.vo.EmployeeListVo">
@@ -431,8 +430,7 @@
         FROM
             (${sql}) e
         ORDER BY
-            e.SEQ;
-
+            e.SEQ
     </select>
 
 
@@ -441,7 +439,6 @@
             TMG_F_GET_MO(#{sectionId},#{date,jdbcType=DATE},0,#{custId},#{compId}) TNTF_CSECTIONID
         FROM
             DUAL
-
     </select>
     <select id="buildSQLForSelectCSVOutputImage" resultType="java.util.Map">
 

@@ -21,7 +21,7 @@
 		OR COLUMN_NAME LIKE '%\_CLANGUAGE' ESCAPE '\'
 		OR COLUMN_NAME LIKE '%\_CLAYEREDSECTIONID' ESCAPE '\'
 		OR COLUMN_NAME LIKE '%\_CIFKEYORADDITIONALROLE' ESCAPE '\'
-	   ) ORDER BY TABLE_NAME,COLUMN_ID;
+	   ) ORDER BY TABLE_NAME,COLUMN_ID
     </select>
 
 	<select id="selectSearchRangeInfo" resultType="jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO">
