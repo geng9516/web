@@ -16,7 +16,7 @@
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                            class="mb10 no-border-radius" ref="select" :disabled="typeSelectDisable">
+                            class="mb10 no-border-radius" ref="select">
                             <i-option value="全て" v-if="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
@@ -367,7 +367,6 @@
                     restInfoList:[],
                     statusList:[],
                     timerangeType: 1,
-                    typeSelectDisable: false,
                     loading: false,
                     moreDataLoading: false,
                     rotate: false,
@@ -553,6 +552,7 @@
                         return
                     }
                     this.restApply.restTypeId = e
+                    this.isReApplyIng = false
                     console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
@@ -799,22 +799,22 @@
                     this.deleteFiles = []
                     this.uploadFiles = []
                     this.rotate = !this.rotate
-                    this.isReApplyIng = true
 
-                    this.typeSelectDisable = true
                     console.log(this.selectedRestInfo.transfer)
                     // 时间部分
                     console.log(item.remakeApply)
                     this.$nextTick(()=>{
                         this.handleRestType(item.remakeApply)
+                        this.isReApplyIng = true
                         if(!this.selectedRestInfo.transfer) {
                             // 是时间不是振休
-                            if(this.timerangeType === 2) {
-                                // 是范围不是单一时间
+                            // 是范围不是单一时间
+                            if(item.tntfDbegin !== item.tntfDend) {
+                                this.timerangeType = 2
                                 this.restApply._dateListRange = [item.tntfDbegin, item.tntfDend]
                                 this.restApply.dateListRange = [item.tntfDbegin, item.tntfDend]
-                            }
-                            if(this.timerangeType === 1) {
+                            } else {
+                                this.timerangeType = 1
                                 this.restApply._dateList = item.tntfDbegin
                                 this.restApply.dateList = item.tntfDbegin
                             }
