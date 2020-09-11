@@ -63,9 +63,9 @@
                             <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                             <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
                             <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                                <i-option :value="1">全て</i-option>
-                                <i-option :value="2">グループごとに</i-option>
-                                <i-option :value="3">部署ごとに</i-option>
+                                <i-option value="all">全て</i-option>
+                                <i-option value="group">グループごとに</i-option>
+                                <i-option value="section">部署ごとに</i-option>
                             </i-select>
                             </div>
                         </Row>
@@ -445,7 +445,7 @@
                     isConfirm: '', // 承認ステータス
                     isFixed:'', //月次確定情報
                     isSearchHistory: false, //是否允许点击遮罩层关闭
-                    selectedDeptViewType: 3, //类型选择
+                    selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all" ? "section":[[${ session.txtTmgReferListTreeViewPermSelectedView }]], //类型选择
                     currentTab: '',         //組織のツリーと検索タブーを切り替え
                     deptDrawShow: false,    //組織ツリー用
                     treeData:[],            //組織ツリー用
@@ -706,6 +706,7 @@
                     }
                     await this.getOrgTree()
                     console.log([[${ session }]])
+                    console.log(this.treeData)
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
@@ -745,6 +746,7 @@
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     //一覧画面取得
+
                     await this.getSearchCondition()
                     await this.getWorkDateList()
                     this.getTitleData()
@@ -752,6 +754,7 @@
                 getEmpCode(data,empId,sectionId) {
                     let dept =false
                     data.forEach(e => {
+                        console.log(e)
                         if (e.secid === sectionId) {
                             e.children.forEach(j => {
                                 if (j.empid === empId) {
@@ -760,6 +763,7 @@
                                 }
                             })
                             if(!dept){
+                                console.log(e.children[0].empid)
                                 this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
                             }
                         }
@@ -790,13 +794,14 @@
                     try {
                         const { groupMemberList, memberList, sectionMemberList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
-                        if(this.selectedDeptViewType === 3) {
+                        console.log(this.selectedDeptViewType)
+                        if(this.selectedDeptViewType === 'section') {
                             this.treeData = Utils.convertTreeData(sectionMemberList)
                         }
-                        if(this.selectedDeptViewType === 2) {
+                        if(this.selectedDeptViewType === 'group') {
                             this.treeData = Utils.convertTreeData(groupMemberList)
                         }
-                        if(this.selectedDeptViewType === 1) {
+                        if(this.selectedDeptViewType === 'all') {
                             this.treeData = Utils.convertTreeData(memberList)
                         }
                         this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
