@@ -72,9 +72,9 @@
                   </Row>
                   <Row type="flex" justify="start">
                      <date-picker type="date" class="datepicker-single" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
-                        <span v-if="timerangeType === 2">
-                           <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateList[0]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateList[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
-                        </span>
+                     <span v-if="timerangeType === 2">
+                        <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                     </span>
                   </Row>
                </section>
                <!-- 有振休 -->
@@ -218,10 +218,10 @@
             <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply()" icon="md-create"
                :loading="loading">申請
             </i-button>
-            <i-button v-show="this.isReApplyIng" class="btn width75 mr15" style="display: inline-block" type="primary"
+            <i-button v-show="this.isReApplyIng" class="btn" long type="primary"
                ghost @click="apply(true)" icon="md-create" :loading="loading">再申請
             </i-button>
-            <i-button v-show="this.isReApplyIng" class="btn" style="display: inline-block;width: 22%;"
+            <i-button v-show="this.isReApplyIng" class="mt10" long
                @click="resetReApply">キャンセル
             </i-button>
          </div>
@@ -269,7 +269,7 @@
                      v-if="item.tntfCstatusflg.indexOf('2') > -1">
                      <!-- 承认中可以自行取消 -->
                      <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item, index)"
-                        :loading="cacelBtnLoading[index]">取り消し
+                        :loading="cacelBtnLoading[index]">取下
                      </i-button>
                   </i-col>
                   <i-col span="4" style="position: absolute;right: 0px;top: 5px;" class="description"
@@ -336,7 +336,10 @@
                restApply: {
                   useVacation: false,
                   weekSelected: [],
-                  noreserved: 1
+                  noreserved: 1,
+                  _dateList: '',
+                  _dateListRange:['', ''],
+                  dateListRange:['', '']
                },
                openDatePicker: false,
                applyHistoryListAmount: 0,
@@ -475,26 +478,32 @@
             handleWeekSelect(e) {
             },
             handleRestType(e) {
+               if (!e) return
+               console.log(this.rotate)
                if (this.rotate) {
-                  if (!e) return
                   this.opts.ntfTypeId = e === '全て' ? '' : e
                   this.getApplyHistory()
                   return
                }
                // 选择不同的休假时，判断显示不同的项目, 请空已选内容
-               if (!e || e === '全て') {
-                  this.restApply = {
-                     useVacation: false,
-                     restTypeId: '全て',
-                     weekSelected: [],
-                     noreserved: 1,
-                     _dateList: this.timerangeType === 2 ? ['', ''] : ''
-                  }
-                  this.uploadFiles = []
-                  this.hasPassedTimeCheck = true
-                  this.selectedRestInfo = {}
+               this.restApply = {
+                  useVacation: false,
+                  weekSelected: [],
+                  noreserved: 1,
+                  _dateList: '',
+                  _dateListRange: ['', ''],
+                  dateListRange: ['', '']
+               }
+               this.errorInfo = false
+               this.uploadFiles = []
+               this.hasPassedTimeCheck = true
+               this.selectedRestInfo = {}
+               if (e === '全て') {
+                  this.restApply.restTypeId = '全て'
                   return
                }
+               this.restApply.restTypeId = e
+               this.isReApplyIng = false
                console.log(this.flatRestTypeList)
                this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
             },
@@ -538,8 +547,8 @@
                })
                if (!this.selectedRestInfo.transfer) {
                   if (this.timerangeType === 2) {
-                     this.restApply.begin = this.restApply.dateList[0]
-                     this.restApply.end = this.restApply.dateList[1]
+                     this.restApply.begin = this.restApply.dateListRange[0]
+                     this.restApply.end = this.restApply.dateListRange[1]
                   }
                   if (this.timerangeType === 1) {
                      this.restApply.begin = this.restApply.dateList
@@ -567,7 +576,7 @@
                      return this.$Notice.warning({ title: '注意', desc: '開始期間 ＜ 終了期間となるようにしてください。', duration: 6.5 })
                   }
                }
-               if (this.restApply.timezoneOpen || this.restApply.timezoneClose) {
+               if (this.selectedRestInfo.timeZone) {
                   if (this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
                      return this.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。', duration: 6.5 })
                   }
@@ -581,24 +590,38 @@
                if (!this.hasPassedTimeCheck) {
                   return this.$Notice.warning({ title: '注意', desc: '時刻をHH:MM形式で入力してください。', duration: 6.5 })
                }
-               if (this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
-                  return this.$Notice.warning({ title: '注意', desc: '生年月日を入力してください。', duration: 6.5 })
+               if(this.selectedRestInfo.workTime) {
+                  if (!this.restApply.timeOpen) {
+                     return this.$Notice.warning({ title: '注意', desc: '始業後時刻を入力してください。', duration: 6.5 })
+
+                  }
+                  if (!this.restApply.timeClose) {
+                     return this.$Notice.warning({ title: '注意', desc: '終業前時刻を入力してください。', duration: 6.5 })
+                  }
                }
                if (this.selectedRestInfo.period && !this.restApply.txtPeriod) {
                   return this.$Notice.warning({ title: '注意', desc: '起算日を入力してください。', duration: 6.5 })
                }
+               if (this.selectedRestInfo.name && !this.restApply.txtName) {
+                  return this.$Notice.warning({ title: '注意', desc: '氏名を入力してください。', duration: 6.5 })
+               }
                if (this.selectedRestInfo.relation && !this.restApply.txtRelation) {
                   return this.$Notice.warning({ title: '注意', desc: '続柄を入力してください。', duration: 6.5 })
+               }
+               if (this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber) {
+                  return this.$Notice.warning({ title: '注意', desc: '対象の人数を入力してください。', duration: 6.5 })
+               }
+               if (this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
+                  return this.$Notice.warning({ title: '注意', desc: '生年月日を入力してください。', duration: 6.5 })
                }
                if (this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
                   return this.$Notice.warning({ title: '注意', desc: '傷病名を入力してください。', duration: 6.5 })
                }
-               if (this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber) {
-                  return this.$Notice.warning({ title: '注意', desc: '対象の人数を入力してください。', duration: 6.5 })
-
+               if (this.selectedRestInfo.confirmComment !='0' && !this.restApply.owncomment) {
+                  return this.$Notice.warning({ title: '注意', desc: '申請事由等を入力してください。', duration: 6.5 })
                }
-               if (this.selectedRestInfo.name && !this.restApply.txtName) {
-                  return this.$Notice.warning({ title: '注意', desc: '氏名を入力してください。', duration: 6.5 })
+               if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
+                  return this.$Notice.warning({ title: '注意', desc: '添付ファイルを入力してください。', duration: 6.5 })
                }
                this.deleteFiles = [...new Set(this.deleteFiles)]
                try {
@@ -614,7 +637,9 @@
                      restTypeId: '全て',
                      weekSelected: [],
                      noreserved: 1,
-                     _dateList: this.timerangeType === 2 ? ['', ''] : ''
+                     _dateList: '',
+                     _dateListRange:['', ''],
+                     dateListRange:['', '']
                   }
                   this.rotate = !this.rotate
                   this.isReApplyIng = false
@@ -683,22 +708,22 @@
                this.deleteFiles = []
                this.uploadFiles = []
                this.rotate = !this.rotate
-               this.isReApplyIng = true
-
 
                console.log(this.selectedRestInfo.transfer)
                // 时间部分
                console.log(item.remakeApply)
                this.$nextTick(() => {
                   this.handleRestType(item.remakeApply)
+                  this.isReApplyIng = true
                   if (!this.selectedRestInfo.transfer) {
                      // 是时间不是振休
-                     if (this.timerangeType === 2) {
-                        // 是范围不是单一时间
-                        this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
-                        this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
-                     }
-                     if (this.timerangeType === 1) {
+                     // 是范围不是单一时间
+                     if (item.tntfDbegin !== item.tntfDend) {
+                        this.timerangeType = 2
+                        this.restApply._dateListRange = [item.tntfDbegin, item.tntfDend]
+                        this.restApply.dateListRange = [item.tntfDbegin, item.tntfDend]
+                     } else {
+                        this.timerangeType = 1
                         this.restApply._dateList = item.tntfDbegin
                         this.restApply.dateList = item.tntfDbegin
                      }
