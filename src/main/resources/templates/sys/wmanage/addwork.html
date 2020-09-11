@@ -691,7 +691,9 @@
                 //締め済データの編集
                 isShowFixedMonthlyEditButton:false,
                 workTimeDisable:false, //就業時間制御
-                flag:false,
+                SecFlag:false,
+                EmpFlag:false,
+                EmpSelect:false,
                 }
         },
         async mounted() {
@@ -716,6 +718,7 @@
                 if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                     this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
+                console.log([[${ session }]])
                 await this.getOrgTree()
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
@@ -723,7 +726,8 @@
                 if (targetAdminSection){
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = targetAdminSection
-                    if (await this.getEmpCode(this.treeData,targetAdminEmp,targetAdminSection)) {
+                    await this.getEmpCode(this.treeData,targetAdminEmp,targetAdminSection)
+                    if (this.EmpSelect) {
                         console.log("1")
                         this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = targetAdminEmp
                         this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
@@ -738,7 +742,8 @@
                         this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 8) + '01'
                     }
                 } else {
-                    if (await this.getEmpCode(this.treeData,targetAdminEmp,loginDesignationSection)) {
+                    await this.getEmpCode(this.treeData,null,loginDesignationSection)
+                    if (this.EmpSelect) {
                         console.log("3")
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
@@ -758,36 +763,44 @@
                     }
                 }
                 //一覧画面取得
-
-                // await this.getSearchCondition()
-                // await this.getWorkDateList()
-                // this.getTitleData()
+                await this.getSearchCondition()
+                if(this.EmpFlag){
+                    await this.getWorkDateList()
+                    this.getTitleData()
+                }
             },
             async getEmpCode(data, empId, sectionId) {
-                if(!empId){return false}
+                this.EmpSelect=false
                 this.getSecCode(data, sectionId)
-                if(this.flag){
+                if(this.SecFlag){
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = sectionId
                 }else{
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = data[0].secid
                 }
                 await this.getEmpList()
-                this.empTreeData.forEach(e => {
-                    if (e.empid === empId) {
-                        this.kanjiName=e.empname
-                        return true
-                    }
-                })
-                if(this.empTreeData[0]){
+
+                if(empId){
+                    this.empTreeData.forEach(e => {
+                        if (e.empid === empId) {
+                            console.log(e)
+                            this.EmpFlag=true
+                            this.kanjiName=e.empname
+                            this.EmpSelect=true
+                            console.log(e.empid)
+                            return
+                        }
+                    })
+                }
+                if(this.empTreeData[0] && !this.EmpSelect){
+                    this.EmpFlag=true
                     this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = this.empTreeData[0].empid
                     this.kanjiName=this.empTreeData[0].empname
                 }
-                return false
             },
             getSecCode(data,sectionId){
                data.some( j => {
                     if (j.secid === sectionId) {
-                        this.flag = true
+                        this.SecFlag = true
                     }else{
                         const children = j.child || j.children
                         if (children && children.length > 0) {
@@ -817,7 +830,6 @@
                     this.empTreeData = []
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
                     this.empTreeData = Utils.convertTreeData(empList[0].child)
-                    console.log(this.empTreeData)
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
 
                 } catch (error) {
