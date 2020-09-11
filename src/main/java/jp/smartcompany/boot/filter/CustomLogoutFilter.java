@@ -22,9 +22,10 @@ public class CustomLogoutFilter extends LogoutFilter {
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         HttpServletRequest req = (HttpServletRequest)request;
         //清除HTTPSession的用户信息
-        HttpSession session = req.getSession();
-        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
-        if (psSession!=null) {
+        Subject subject = getSubject(request, response);
+        if (subject.isAuthenticated()) {
+            HttpSession session = req.getSession();
+            PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
             LRUCache<Object, Object> lruCache = SpringUtil.getBean(LRUCache.class);
             TimedCache<String, Object> timedCache = SpringUtil.getBean(TimedCache.class);
 
@@ -33,15 +34,16 @@ public class CustomLogoutFilter extends LogoutFilter {
             timedCache.clear();
             authBusiness.saveLoginInfo(false, psSession.getLoginUser());
             try {
-                Subject subject = getSubject(request, response);
                 subject.logout();
             } catch (SessionException ise) {
                 ise.printStackTrace();
             }
-            issueRedirect(request, response, "/login");
-        } else {
-            issueRedirect(request, response, "/");
+//            issueRedirect(request, response, "/login");
+//        } else {
+//            issueRedirect(request, response, "/");
+//        }
         }
+        issueRedirect(request, response, "/login");
         return false;
     }
 

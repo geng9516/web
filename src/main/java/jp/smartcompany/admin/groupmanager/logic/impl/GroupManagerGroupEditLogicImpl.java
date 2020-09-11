@@ -180,7 +180,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                     psCustomerId, sCompanyId, systemId, language,groupId, dSearchDate);
             rowDTO.setSectionList(sectionList);
             // 現在の保持している組織リストの件数を保持する
-            rowDTO.setGnSelectedSectionCnt(sectionList.size());
+//            rowDTO.setGnSelectedSectionCnt(sectionList.size());
             // 1件目の基点組織以下・のみフラグをセット(全件同じフラグなので)
             if (CollUtil.isNotEmpty(sectionList)) {
                 sBelowSingle = sectionList.get(0).getMgbsCbeloworsingle();
@@ -421,17 +421,20 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
         String language = "ja";
         String groupId = dto.getGroupId();
         Date startDate = dto.getStartDate();
+        Date endDate = dto.getEndDate();
         Long weightAge = dto.getWeightAge();
         String baseFlag = dto.getBaseFlag();
+        String belowSingle = dto.getBelowSingle();
 
         SectionPostDTO sectionPostDTO = new SectionPostDTO();
+        QueryConditionDTO queryConditionDTO = new QueryConditionDTO();
+
         // 組織・役職による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_SECPOST)) {
             assembleGroupSectionPost(sectionPostDTO,dto.getSectionPostList());
         }
         // 条件式による定義の情報取得
         if (StrUtil.equals(baseFlag,BASE_FLG_DEF)) {
-            QueryConditionDTO queryConditionDTO = new QueryConditionDTO();
             assembleGroupDefinitions(queryConditionDTO,dto.getQueryConditionList());
         }
         // 社員による定義の情報取得
@@ -439,39 +442,42 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             assembleEmploy(sectionPostDTO,dto.getEmployList());
         }
         // 基点組織による定義の情報取得
+        BaseSectionDTO baseSectionDTO = new BaseSectionDTO();
+        assembleBaseSectionList(baseSectionDTO,dto.getBaseSectionList(),startDate,endDate,groupId,belowSingle);
 
+        // 更新前妥当性チェック
+        // クエリ作成処理(組織・役職結合式)
+        sectionPostLogic.createQuery(customerId,systemId,groupId,startDate,endDate,sectionPostDTO.getCompanyList(),"01");
+        // グループ判定結果クエリ組み立て処理
+        queryConditionLogic.createQueryCondition(
+                customerId, "01", systemId, groupId, startDate, queryConditionDTO.getRowList());
 
+        // 条件式妥当性チェック(条件式設定のみ)
+        boolean checkFlag = isQueryCondition(baseFlag,queryConditionDTO.getRowList());
+        int checkResult=0;
+        // グループID重複チェック(新規登録のみ)
+        if (iMastGroupService.selectGroupExists(customerId,systemId,groupId) > 0 && checkFlag) {
+            checkFlag = false;
+            checkResult = 1;
+        }
+       // グループ判定クエリ妥当性チェック
+        if (checkFlag) {
+            String groupCheckQuery = getGroupCheckQuery(baseFlag,customerId, systemId, groupId, startDate, endDate,CollUtil.newArrayList(dto.getSectionPostList()),companyId,dto.getQueryConditionList());
+            if (isCheckValidQuery(groupCheckQuery) < 0) {
+                // エラーの場合は、登録／更新処理を行わない
+                checkResult = 2;
+                checkFlag = false;
+            }
+        }
+        // チェック判定
+        if (!checkFlag) {
+            throw new GlobalException("変更できません、エーラ:"+checkResult);
+        }
 
-//        // 条件式妥当性チェック(条件式設定のみ)
-//        boolean bCheckFlg = isQueryCondition(baseFlag,dto.getQueryConditionList());
-//        int checkResult = 0;
-//
-//        if (iMastGroupService.selectGroupExists(customerId,systemId,groupId) > 0 && bCheckFlg) {
-//            bCheckFlg = false;
-//            checkResult = 1;
-//        }
-//
-//        String groupCheckQuery = getGroupCheckQuery(baseFlag,customerId, systemId, groupId, startDate, endDate,dto.getSectionPostCompanyList(),companyId,dto.getQueryConditionList());
-//        // グループ判定クエリ妥当性チェック
-//        if (bCheckFlg) {
-//            if (isCheckValidQuery(groupCheckQuery) < 0) {
-//                // エラーの場合は、登録／更新処理を行わない
-//                checkResult = 2;
-//                bCheckFlg = false;
-//            }
-//        }
-//
-//        // チェック判定
-//        if (!bCheckFlg) {
-//            throw new GlobalException("変更できません、エーラ:"+checkResult);
-//        }
-//
-//        /**
-//         * グループ定義情報を更新
-//         * 対象テーブル(MAST_GROUP)
-//         */
-//        updateGroup(insertGroup(
-//                customerId, systemId, startDate, endDate, dto));
+        // グループ定義情報を更新
+        // 対象テーブル(MAST_GROUP)
+        updateGroup(insertGroup(
+                customerId, systemId, startDate, endDate, dto));
 //        /**
 //         * 組織・役職選択・社員選択情報を更新
 //         * 対象テーブル(MAST_GROUPSECTIONPOSTMAPPING)
@@ -511,6 +517,59 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 //        updateMastGroupDefinitions(
 //                insertGroupDefinitions(
 //                        customerId, systemId, groupId, startDate, endDate, baseFlag),groupCheckQuery,dto);
+    }
+
+
+    private void assembleBaseSectionList(BaseSectionDTO baseSectionDTO,List<BaseSectionRowDTO> baseSectionRowList,
+                                         Date startDate,Date endDate,String groupId,String belowSingle) {
+          if (CollUtil.isEmpty(baseSectionRowList)) {
+              return;
+          }
+          List<BaseSectionRowDTO> addSectionList = CollUtil.newArrayList();
+          List<MastGroupbasesectionDO> deleteSectionList = CollUtil.newArrayList();
+
+          for (BaseSectionRowDTO baseCompanyRowDTO : baseSectionRowList) {
+             List<BaseSectionRowListDTO> orgList = CollUtil.newArrayList();
+             List<BaseSectionRowListDTO> sectionList = baseCompanyRowDTO.getSectionList();
+
+             if (CollUtil.isNotEmpty(sectionList)) {
+                 for (BaseSectionRowListDTO baseSectionRowListDTO : sectionList) {
+                   if (baseSectionRowListDTO.getDelete()) {
+                       MastGroupbasesectionDO eh = new MastGroupbasesectionDO();
+                       eh.setMgbsId(baseSectionRowListDTO.getMgbsId());
+                       deleteSectionList.add(eh);
+                   } else {
+                       baseSectionRowListDTO.setMgbsCcustomerid("01");
+                       baseSectionRowListDTO.setMgbsCsystemid("01");
+                       baseSectionRowListDTO.setMgbsCgroupid(groupId);
+                       baseSectionRowListDTO.setMgbsDstartdate(startDate);
+                       baseSectionRowListDTO.setMgbsDenddate(endDate);
+                       baseSectionRowListDTO.setMgbsCbeloworsingle(belowSingle);
+                       orgList.add(baseSectionRowListDTO);
+                   }
+                 }
+                 baseCompanyRowDTO.setSectionList(orgList);
+             }
+             // 削除フラグのあるデータは、削除用リストへ
+              if (baseCompanyRowDTO.getDelete()) {
+                  if (baseCompanyRowDTO.getMgbsId() != null) {
+                      MastGroupbasesectionDO eh = new MastGroupbasesectionDO();
+                      eh.setMgbsId(baseCompanyRowDTO.getMgbsId());
+                      deleteSectionList.add(eh);
+                  }
+              } else {
+                  // 値をセット
+                  baseCompanyRowDTO.setMgbsCcustomerid("01");
+                  baseCompanyRowDTO.setMgbsCsystemid("01");
+                  baseCompanyRowDTO.setMgbsCgroupid(groupId);
+                  baseCompanyRowDTO.setMgbsDstartdate(startDate);
+                  baseCompanyRowDTO.setMgbsDenddate(endDate);
+                  baseCompanyRowDTO.setMgbsCbeloworsingle(belowSingle);
+                  addSectionList.add(baseCompanyRowDTO);
+              }
+          }
+          baseSectionDTO.setRowList(addSectionList);
+          baseSectionDTO.setDeleteBaseSection(deleteSectionList);
     }
 
     private void assembleEmploy(SectionPostDTO sectionPostDTO,List<SectionPostRowDTO> rowList) {
@@ -1127,7 +1186,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      *
      * @return String   登録対象グループ判定クエリ
      */
-    private String getGroupCheckQuery(String baseFlg, String customerId, String systemId, String groupId, Date startDate, Date endDate, List<SectionPostListDTO> sectionPostCompanyList, String companyId,
+    private String getGroupCheckQuery(String baseFlg, String customerId, String systemId, String groupId, Date startDate, Date endDate,
+                                      List<SectionPostListDTO> sectionPostCompanyList,
+                                      String companyId,
                                       List<QueryConditionRowDTO> queryConditionList) {
         String sQuery = "";
         // クエリ作成処理判定

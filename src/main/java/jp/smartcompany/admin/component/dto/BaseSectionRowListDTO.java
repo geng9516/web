@@ -91,6 +91,6 @@ public class BaseSectionRowListDTO implements Serializable {
     /** 組織一覧(指定法人) */
     private List<BaseSectionRowListDTO> glSectionList;
     /** 削除フラグ  */
-    private String delflg;
+    private Boolean delete;
 
 }

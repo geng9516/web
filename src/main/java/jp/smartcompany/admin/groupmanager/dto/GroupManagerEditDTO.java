@@ -19,11 +19,13 @@ public class GroupManagerEditDTO {
     private Long mgId;
     private String groupId;
     private Date startDate;
+    private Date endDate;
     private String baseFlag;
     private Long weightAge;
     private String groupName;
     private Long peopleCount;
     private String remark;
+    private String belowSingle;
     // 組織・役職条件選択情報 格納リスト 法人一覧
     private SectionPostListDTO sectionPostList;
     // 条件式定義コンポーネント用

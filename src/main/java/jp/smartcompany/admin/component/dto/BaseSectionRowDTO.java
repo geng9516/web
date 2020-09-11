@@ -52,33 +52,33 @@ public class BaseSectionRowDTO implements Serializable {
      * 法人コード
      */
     private String mgbsCcompanyid;
-
-    /**
-     * 組織コード
-     */
-    private String mgbsCsectionid;
-
-    /**
-     * 組織階層コード
-     */
-    private String mgbsClayeredsectionid;
-
-
+//
+//    /**
+//     * 組織コード
+//     */
+//    private String mgbsCsectionid;
+//
+//    /**
+//     * 組織階層コード
+//     */
+//    private String mgbsClayeredsectionid;
+//
+//
     /**
      * 以下・のみフラグ
      */
     private String mgbsCbeloworsingle;
-
-
-    /** 法人名称 */
-    private String companyName;
-    /** 組織名称 */
-    private String sectionName;
+//
+//
+//    /** 法人名称 */
+//    private String companyName;
+//    /** 組織名称 */
+//    private String sectionName;
     /** 組織一覧(指定法人) */
     private List<BaseSectionRowListDTO> sectionList;
     /** 選択済みの組織一覧(指定法人)の件数 */
-    private int gnSelectedSectionCnt = 0;
+//    private int gnSelectedSectionCnt = 0;
     /** 削除フラグ  */
-    private String delflg;
+    private Boolean delete;
 
 }

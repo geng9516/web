@@ -95,6 +95,7 @@ private static final long serialVersionUID=1L;
         /**
          * バージョンno
          */
+        @Version
     @TableField("versionno")
         private Long versionno;
 
