@@ -215,32 +215,24 @@
         <Drawer :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
             <div style="position: relative">
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
-                <Row class="mb15 tr">
+                <div class="mb10 tr">
                     <div v-if="!bFixed">
-                        <i-col span="6" offset="16" class="mr15" v-if="notapproval">
-                            <i-button type="error" ghost  @click="updateRemandsStatus" icon="md-hand" :loading="updateDailyLoading">
+                            <i-button type="error" class="mr15" ghost  @click="updateRemandsStatus" icon="md-hand" :loading="updateDailyLoading" v-if="notapproval">
                                 差戻
                             </i-button>
-                        </i-col>
-                        <i-col  span="8" offset="16" v-if="!notapproval">
-                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading">
+                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading" v-if="!notapproval">
                                 承認
                             </i-button>
-                        </i-col>
-                        <i-col  span="1"  v-if="notapproval">
-                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading">
+                            <i-button type="primary" ghost  @click="updateDaily"　icon="md-done-all" :loading="updateDailyLoading" v-if="notapproval">
                                 承認
                             </i-button>
-                        </i-col>
                     </div>
                     <div v-else>
-                        <i-col  span="7" offset="16">
                             <i-button disabled>
                                 承認
                             </i-button>
-                        </i-col>
                     </div>
-                </Row>
+                </div>
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
                     就業実績
@@ -1285,7 +1277,6 @@
                         title: 'この内容で承認します。よろしいですか？',
                         width: 400,
                         okText: 'OK',
-                        inDrawer: true,
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             try {
@@ -1330,7 +1321,6 @@
                         inDrawer: true,
                         title: '勤務実績の内容を入力者へ差戻します。よろしいですか？\n'+'※今回、入力した内容は、承認者コメントのみ保存されます',
                         width: 490,
-                        inDrawer: true,
                         okText: 'OK',
                         cancelText: 'キャンセル',
                         onOk: async () => {
