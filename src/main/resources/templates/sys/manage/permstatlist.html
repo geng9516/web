@@ -431,7 +431,7 @@
                 nextMonthShow: false,
 
                 isSearchHistory: false,
-                selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]], //組織ツリー用
+                selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all" ? "section":[[${ session.txtTmgReferListTreeViewPermSelectedView }]], //組織ツリー用
                 empDeptLoading: false,
                 deptDrawShow: false,
                 //↓↓↓↓↓↓日次実績登録用↓↓↓↓↓↓
@@ -1667,6 +1667,8 @@
                 this.targetPermSection = ''
                 if([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "group"){
                     this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all"){
+                    this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "section"){
                     this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 }
