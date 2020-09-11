@@ -169,7 +169,7 @@
             <Icon type="logo-buffer"></Icon>
             月出勤情報統計
         </div>
-        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="columns" border no-data-text="所属職員を選択して下さい。"
+        <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="columns" border no-data-text=""
                  :row-class-name="rowClass" :disabled-hover="true" :data="tableDataSum" :loading="loading">
             <template slot-scope="{ row }" slot="intDay">
                 <div style="position: relative;">
@@ -230,7 +230,6 @@
                 contentScrollTop: 0,
                 kanjiName: '',　         　 //選択した職員の氏名
                 loginEmployee: '',          //選択した職員の職員番号
-                sectionName: '',　          //選択した職員の所属
                 query: {
                     employeeId: '',        //組織ツリーで選択した職員番号
                     year: '',              //年度情報
@@ -238,6 +237,10 @@
                     hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
                     modifieruserId: [[${ session.psSession.loginEmployee }]],  //摘要更新ユーザ（ログインユーザ）
                     comment: this.tmyComment,                                  //摘要
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtDYYYYMM: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
 
@@ -301,8 +304,9 @@
             }
         },
         async mounted() {
-            this.getOrgTree()
-            this.getSearchCondition()
+            // this.getOrgTree()
+            // this.getSearchCondition()
+            this.getInit()
              window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
         beforeDestroy() {
@@ -477,6 +481,14 @@
                     })
                     this.tableData = data.slice(7)
                     this.tableHead = Object.values(data[0]).filter(e => e)
+                    if(this.tableData.length === 0){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '組織ツリーから、表示する組織を選択して下さい。'
+                        });
+                    }
                 } catch (error) {
                     return
                 } finally {
@@ -524,6 +536,14 @@
                     //初期化及び前回データをクリアする
                     this.empTreeData = []
                     const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
+                    if(!empList){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '組織ツリーから、職員データが存在している組織を選択して下さい。'
+                        });
+                    }
                     this.empTreeData = Utils.convertTreeData(empList[0].child)
                     this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
                 } catch (error) {
@@ -622,12 +642,14 @@
                 this.deptDrawShow = false
 
                 this.loginEmployee = e[0].empid
-                this.sectionName = e[0].secnic
                 this.query.employeeId = e[0].empid
                 this.kanjiName = e[0].empname
                 this.selectDisabled = true
                 this.remarksDisabled = true
                 this.ledgerParamVO.hidEmpId = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewAdminTargetGroup = e[0].groupid
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.getData(true)
             },
             showName(e) {
@@ -674,7 +696,118 @@
                 const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
                 Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                 this.pdfDownloadLoading = false
-            }
+            },
+            //初期化処理
+            async getInit() {
+
+                let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                let targetAdminEmp = [[${ session.txtTmgReferListTreeViewAdminTargetEmp }]]
+                let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                    this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                }
+                console.log([[${ session }]])
+                await this.getOrgTree()
+                //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                if (targetAdminSection){
+                    this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = targetAdminSection
+                    await this.getEmpCode(this.treeData,targetAdminEmp,targetAdminSection)
+                    if (this.EmpSelect) {
+                        console.log("1")
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = targetAdminEmp
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 8) + '01'
+                    }else{
+                        console.log("2")
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 8) + '01'
+                    }
+                } else {
+                    await this.getEmpCode(this.treeData,null,loginDesignationSection)
+                    if (this.EmpSelect) {
+                        console.log("3")
+                        this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = [[${ session.psSession.loginDesignation[0].employee }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
+                    } else {
+                        console.log("4")
+                        this.deptName = this.treeData[0].children[0].secnic
+                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
+                        console.log("41")
+                        console.log(this.treeData[0])
+                        console.log(this.referListObject)
+                    }
+                }
+                //一覧画面取得
+                await this.getSearchCondition()
+                if(this.EmpFlag){
+
+                    this.deptDrawShow = false
+
+                    this.loginEmployee = this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.query.employeeId = this.query.txtTmgReferListTreeViewAdminTargetEmp
+                    this.selectDisabled = true
+                    this.remarksDisabled = true
+                    this.ledgerParamVO.hidEmpId = this.query.txtTmgReferListTreeViewAdminTargetEmp
+
+                    await this.getData(true)
+                }
+            },
+            async getEmpCode(data, empId, sectionId) {
+                this.EmpSelect=false
+                this.getSecCode(data, sectionId)
+                if(this.SecFlag){
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = sectionId
+                }else{
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = data[0].secid
+                }
+                await this.getEmpList()
+
+                if(empId){
+                    this.empTreeData.forEach(e => {
+                        if (e.empid === empId) {
+                            console.log(e)
+                            this.EmpFlag=true
+                            this.kanjiName=e.empname
+                            this.EmpSelect=true
+                            console.log(e.empid)
+                            return
+                        }
+                    })
+                }
+                if(this.empTreeData[0] && !this.EmpSelect){
+                    this.EmpFlag=true
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = this.empTreeData[0].empid
+                    this.kanjiName=this.empTreeData[0].empname
+                }
+            },
+            getSecCode(data,sectionId){
+                data.some( j => {
+                    if (j.secid === sectionId) {
+                        this.SecFlag = true
+                    }else{
+                        const children = j.child || j.children
+                        if (children && children.length > 0) {
+                            this.getSecCode(children,sectionId)
+                        }
+                    }
+                })
+            },
         }
     })
 </script>
