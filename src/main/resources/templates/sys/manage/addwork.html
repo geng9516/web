@@ -713,10 +713,11 @@
                         this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     }
                     await this.getOrgTree()
-
+                    console.log([[${ session }]])
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
+                        console.log(getEmpCode)
                         if (getEmpCode) {
                             console.log(1)
                             this.getDeptName(this.treeData,targetPermSection)
@@ -728,7 +729,7 @@
                             this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
-                        } else if(getEmpCode) {
+                        } else {
                             console.log(2)
                             this.getDeptName(this.treeData,targetPermSection)
                             this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
@@ -761,16 +762,16 @@
                     data.forEach(e => {
                         if (e.secid === sectionId) {
                             e.children.forEach(j => {
-                                console.log(j)
                                 if (j.empid === empId) {
+                                    console.log(j)
                                     dept=true
                                 }
                             })
-                            if(dept != 1){
+                            if(!dept){
                                 this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
-                                dept=false
                             }
                         }
+
                     })
                     return dept
                 },
@@ -841,9 +842,14 @@
                     if(e[0].children) return
                     this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
+                    const group = [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]
                     console.log(e)
                     this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.referListObject[section] = e[0].secid
+
+                    this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                    this.referListObject[group] = e[0].groupid
+
                     this.deptName = e[0].secnic
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
