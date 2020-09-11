@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class GroupManagerEditDTO {
 
+    // グループ定義条件マスタ ID
+    private Long mgpId;
     private Long mgId;
     private String groupId;
     private Date startDate;
@@ -34,7 +36,6 @@ public class GroupManagerEditDTO {
     private List<SectionPostRowDTO> employList;
     // 該当条件編集画面(基点組織定義(行単位))用Dtoクラス
     private List<BaseSectionRowDTO> baseSectionList;
-
 
 }
 //public class GroupManagerEditDTO extends MastGroupDO {
