@@ -67,10 +67,10 @@
                             </i-col>
                             <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                             <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                                <i-option :value="1">全て</i-option>
-                                <i-option :value="2">グループごとに</i-option>
-                                <i-option :value="3">部署ごとに</i-option>
+                            <i-select :value="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                                <i-option value="all">全て</i-option>
+                                <i-option value="group">グループごとに</i-option>
+                                <i-option value="section">部署ごとに</i-option>
                             </i-select>
                             </div>
                         </Row>
@@ -270,7 +270,7 @@
                         psApp: Utils.getUrlParam(location.href,'psApp'),
                         type: 11
                     },
-                    selectedDeptViewType: 3,
+                    selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all" ? "section":[[${ session.txtTmgReferListTreeViewPermSelectedView }]], //組織ツリー用
                     empDeptLoading: false,  // 組織ツリーloading用
                     deptDrawShow: false,    //組織ツリー用
                     treeData:[],            //組織ツリー用
@@ -306,8 +306,9 @@
                 }
             },
             async mounted() {
-                this.getOrgTree()
-                this.getSearchCondition()
+                await this.getInit()
+                // this.getOrgTree()
+                // this.getSearchCondition()
                  window.addEventListener('scroll',this.handleScroll,{ passive: true })
             },
             beforeDestroy() {
@@ -423,6 +424,7 @@
                     this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
                     this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
+                    this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ this.query.month + "/" + "01", 'yyyy/mm/dd')
 
                     this.ledgerParamVO.txtAtdBookTermFrom = +this.defaultDate.mgd_ndefault_month
                     this.ledgerParamVO.txtYYYY = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
@@ -494,15 +496,15 @@
                     try {
                         const { groupMemberList, memberList, sectionMemberList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
-                        if(this.selectedDeptViewType === 3) {
+                        if(this.selectedDeptViewType === "section") {
                             this.treeData = Utils.convertTreeData(sectionMemberList)
                             this.query.txtTmgReferListTreeViewPermSelectedView = "section"
                         }
-                        if(this.selectedDeptViewType === 2) {
+                        if(this.selectedDeptViewType === "group") {
                             this.treeData = Utils.convertTreeData(groupMemberList)
                             this.query.txtTmgReferListTreeViewPermSelectedView = "group"
                         }
-                        if(this.selectedDeptViewType === 1) {
+                        if(this.selectedDeptViewType === "all") {
                             this.treeData = Utils.convertTreeData(memberList)
                             this.query.txtTmgReferListTreeViewPermSelectedView = "all"
                         }
@@ -537,11 +539,15 @@
                     await this.getOrgTree()
                     this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
                 },
-                async handleDeptViewTypeChange() {
+                async handleDeptViewTypeChange(e) {
+                    this.selectedDeptViewType = e
+                    this.query.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
                     await this.getOrgTree()
-                    this.$Notice.success({ title:'所属図更新完了' })
+                    this.$Notice.success({ title: '所属図更新完了' })
                 },
                 handleStartMonth: Debounce(async function (e) {
+                    //他画面ではtxtDYYYYMMを利用するかもしれないためで、事前に保存しておく。
+                    this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ e + "/" + "01", 'yyyy/mm/dd')
                     this.titleStartMonth = e
                     this.getData()
                 }),
@@ -571,16 +577,19 @@
                 async　preYear() {
                     this.showPre = false
                     this.query.year = Utils.formatDate(this.existsAttendanceBook.lastYear, 'yyyy')
+                    this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ this.query.month + "/" + "01", 'yyyy/mm/dd')
                     this.getData()
                 },
                 async　nextYear() {
                     this.showPre = true
                     this.query.year = Utils.formatDate(this.existsAttendanceBook.nextYear, 'yyyy')
+                    this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ this.query.month + "/" + "01", 'yyyy/mm/dd')
                     this.getData()
                 },
                 async　currentYear() {
                     this.showPre = true
                     this.query.year = Utils.formatDate(this.existsAttendanceBook.currentYear, 'yyyy')
+                    this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ this.query.month + "/" + "01", 'yyyy/mm/dd')
                     this.getData()
                 },
                 showDay() {
@@ -634,6 +643,7 @@
                             }
                         }
                     }
+                    this.commentBtnLoading = false
                 },
                 cancelComment() {
                     this.commentBtnShow = false
@@ -650,7 +660,98 @@
                     const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
                     Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
                     this.pdfDownloadLoading = false
-                }
+                },
+                //初期化処理
+                async getInit() {
+                    console.log("getInit")
+                    console.log([[${ session.txtTmgReferListTreeViewPermTargetSection }]])
+                    console.log([[${ session.txtTmgReferListTreeViewPermSelectedView }]])
+                    console.log(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd'))
+
+                    this.targetPermSection = ''
+                    if([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "group"){
+                        this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                    } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all"){
+                        this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                    } else if ([[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "section"){
+                        this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                    }
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    console.log("getOrgTree1")
+                    console.log(this.selectedDeptViewType)
+                    await this.getOrgTree()
+                    await this.getSearchCondition()
+
+                    //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                    // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
+                    // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                    console.log("getDeptCode")
+                    console.log(this.targetPermSection)
+
+                    if (this.targetPermSection != null || this.targetPermSection != '') {
+                        this.getDeptCode(this.treeData)
+                        if (this.targetPermSectionFlag) {
+                            console.log("getDeptCode_true")
+                            console.log(this.treeData)
+                            this.getDeptName(this.treeData)
+                            this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                            this.query.txtTmgReferListTreeViewPermSelectedView = [[${ session.txtTmgReferListTreeViewPermSelectedView }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        } else {
+                            console.log("getDeptCode_false")
+                            console.log(this.treeData)
+                            this.deptName = this.treeData[0].label
+                            this.query.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                            this.query.txtTmgReferListTreeViewPermSelectedView = [[${ session.txtTmgReferListTreeViewPermSelectedView }]]
+                            this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                            this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        }
+                    }
+
+                    //一覧画面取得
+                    //年月リストの取得
+                    //初期化
+                    this.tableHead = []
+                    this.tableData = []
+                    this.approval = false
+
+                    //年月リストの取得
+                    await this.getDispTmgMonthlyList()
+                    await this.getTableHead()
+                    if(this.dispMonthlyList.length>0){
+                        await this.getTableData()
+                    }
+
+
+                },
+                getDeptCode(data) {
+                    data.forEach(e => {
+                        if (e.secid === this.targetPermSection || e.groupid === this.targetPermSection) {
+                            this.targetPermSectionFlag = true
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptCode(children)
+                            }
+                        }
+                    })
+                },
+                getDeptName(data) {
+                    // idによりループ処理でdeptNameを取得する
+                    data.forEach(e => {
+                        if (e.secid === this.targetPermSection || e.groupid === this.targetPermSection) {
+                            this.deptName = e.secnic || e.label
+                        } else {
+                            const children = e.child || e.children
+                            if (children) {
+                                this.getDeptName(children)
+                            }
+                        }
+                    })
+                },
             }
         })
     </script>
