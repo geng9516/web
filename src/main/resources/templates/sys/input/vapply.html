@@ -16,7 +16,7 @@
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                            class="mb10 no-border-radius" ref="select">
+                            class="mb10 no-border-radius" ref="select" :disabled="typeSelectDisable">
                             <i-option value="全て" v-if="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
@@ -85,7 +85,7 @@
                                     <!-- 申请休假的时间的显示 -->
                                     <i-col span="7" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.tntfDbegin, item.tntfDend) }}</i-col>
-                                    <i-col span="12" style="position: relative;top:-5px" class="title" v-if="item.status !== 3">
+                                    <i-col span="12" style="position: absolute;left: 33%;top:-5px" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
                                             <ul style="display:flex" v-if="item.ntfapprover">
                                                 <li style="margin-right:10px" v-if="item.ntfapprover.length <= 3">
@@ -119,10 +119,10 @@
                                     <span style="position: absolute;right: 47px;" :class="handleApplyMarkShow(item.tntfCstatusflg)" />
                                 </Row>
                                 <Row>
-                                    <i-col span="15" style="font-weight:bold;margin-left: 4.5%" class="description">
+                                    <i-col span="15" style="font-weight:bold;margin-left: 4.5%;height: 30px;" class="description">
                                         <span>{{ handleTypeNameShow(item) }}</span>
                                     </i-col>
-                                    <i-col span="4" style="position: absolute;right: 42px;top: -5px;" class="description"
+                                    <i-col span="4" style="position: absolute;right: 42px;top: 5px;" class="description"
                                         v-if="item.tntfCstatusflg.indexOf('2') > -1">
                                         <!-- 承认中可以自行取消 -->
                                         <i-button class="cancel-btn" style="width: 97%;" size="small" @click="cancel(item, index)" :loading="cacelBtnLoading[index]">取下
@@ -139,8 +139,7 @@
                                     <i-col span="20" style="margin-left: 4.5%;white-space: pre-line;" class="description light-grey">{{ item.tntfCowncomment }}</i-col>
                                 </Row>
                                 <Row v-if="item.tntfCbosscomment">
-                                    <i-col span="20" style="margin-left: 4.5%;white-space: pre-line;" class="description">
-                                        {{ `承認者コメント：${item.tntfCbosscomment}` }}</i-col>
+                                    <i-col span="20" style="margin-left: 4.5%;white-space: pre-line;" class="description">{{ `承認者コメント：${item.tntfCbosscomment}` }}</i-col>
                                 </Row>
                                 <Row>
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
@@ -202,10 +201,10 @@
                                         </radio-group>
                                     </Row>
                                     <Row type="flex" justify="start">
-                                        <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'"
-                                            class="datepicker-single" v-model="restApply._dateList"
-                                                     format="yyyy/MM/dd" @on-clickoutside="handleDatePickerBlur()"
-                                            @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
+                                        <date-picker type="date" class="datepicker-single" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
+                                        <span v-if="timerangeType === 2">
+                                           <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                                        </span>
                                     </Row>
                                 </section>
                                 <!-- 有振休 -->
@@ -368,6 +367,7 @@
                     restInfoList:[],
                     statusList:[],
                     timerangeType: 1,
+                    typeSelectDisable: false,
                     loading: false,
                     moreDataLoading: false,
                     rotate: false,
@@ -385,8 +385,11 @@
                     errorMsg: '',
                     restApply: {
                         useVacation: false,
-                        weekSelected:[],
-                        noreserved:1
+                        weekSelected: [],
+                        noreserved: 1,
+                        _dateList: '',
+                        _dateListRange:['', ''],
+                        dateListRange:['', '']
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -524,29 +527,32 @@
                 }),
                 handleWeekSelect(e) {
                  },
-                handleRestType(e) {
-                    if(this.rotate) {
-                        if(!e) return
+                 handleRestType(e) {
+                    if (!e) return
+                    console.log(this.rotate)
+                    if (this.rotate) {
                         this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
                         return
                     }
                     // 选择不同的休假时，判断显示不同的项目, 请空已选内容
-                    if  (!e || e === '全て') {
-                        this.restApply =  {
-                            useVacation: false,
-                            restTypeId: '全て',
-                            weekSelected: [],
-                            noreserved:1,
-                            _dateList: this.timerangeType === 2 ? ['', ''] : ''
-                        }
-                        this.errorInfo = false
-                        this.$refs.datepicker.handleClear()
-                        this.uploadFiles = []
-                        this.hasPassedTimeCheck = true
-                        this.selectedRestInfo = {}
+                    this.restApply = {
+                        useVacation: false,
+                        weekSelected: [],
+                        noreserved: 1,
+                        _dateList: '',
+                        _dateListRange: ['', ''],
+                        dateListRange: ['', '']
+                    }
+                    this.errorInfo = false
+                    this.uploadFiles = []
+                    this.hasPassedTimeCheck = true
+                    this.selectedRestInfo = {}
+                    if (e === '全て') {
+                        this.restApply.restTypeId = '全て'
                         return
                     }
+                    this.restApply.restTypeId = e
                     console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
@@ -592,8 +598,8 @@
                     })
                     if(!this.selectedRestInfo.transfer) {
                         if(this.timerangeType === 2) {
-                            this.restApply.begin = this.restApply.dateList[0]
-                            this.restApply.end = this.restApply.dateList[1]
+                            this.restApply.begin = this.restApply.dateListRange[0]
+                            this.restApply.end = this.restApply.dateListRange[1]
                         }
                         if(this.timerangeType === 1) {
                             this.restApply.begin = this.restApply.dateList
@@ -611,6 +617,25 @@
                         this.errorMsg = '期間を選んでください。'
                         return
                     }
+
+                    if (this.restApply.begin || this.restApply.end) {
+                      if (this.restApply.begin && !this.restApply.end) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始期間を入力してください'
+                        return
+                      }
+                      if (!this.restApply.begin && this.restApply.end) {
+                        this.errorInfo = true
+                        this.errorMsg = '終了期間を入力してください。'
+                       return
+                      }
+                      if (this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+                       return
+                      }
+                    }
+
                     if(this.restApply.timezoneOpen || this.restApply.timezoneClose) {
                         if(this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
                             this.errorInfo = true
@@ -700,9 +725,10 @@
                             restTypeId: '全て',
                             weekSelected: [],
                             noreserved:1,
-                            _dateList: this.timerangeType === 2 ? ['', ''] : ''
+                            _dateList: '',
+                            _dateListRange:['', ''],
+                            dateListRange:['', '']
                         }
-                        this.$refs.datepicker.handleClear()
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
                         await this.getApplyHistory()
@@ -775,7 +801,7 @@
                     this.rotate = !this.rotate
                     this.isReApplyIng = true
 
-
+                    this.typeSelectDisable = true
                     console.log(this.selectedRestInfo.transfer)
                     // 时间部分
                     console.log(item.remakeApply)
@@ -785,8 +811,8 @@
                             // 是时间不是振休
                             if(this.timerangeType === 2) {
                                 // 是范围不是单一时间
-                                this.restApply._dateList = [item.tntfDbegin, item.tntfDend]
-                                this.restApply.dateList = [item.tntfDbegin, item.tntfDend]
+                                this.restApply._dateListRange = [item.tntfDbegin, item.tntfDend]
+                                this.restApply.dateListRange = [item.tntfDbegin, item.tntfDend]
                             }
                             if(this.timerangeType === 1) {
                                 this.restApply._dateList = item.tntfDbegin
@@ -934,11 +960,6 @@
                         this.hasPassedTimeCheck = Utils.checkTime(object, value,el)
                     }
                 },
-                handleDatePickerBlur(e) {
-                    this.$nextTick(()=> {
-                        this.restApply.dateList= this.restApply.dateList
-                    })
-                }
             }
         })
     </script>
