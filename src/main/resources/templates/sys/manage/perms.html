@@ -740,6 +740,7 @@
                     this.getTableData()
                 },
                 handleDatePicker() {
+                    this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     if (this.deptName !== '選んでください') {
                         this.getTableData()
                         return

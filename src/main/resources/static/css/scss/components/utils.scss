@@ -68,8 +68,9 @@
 }
 // this.var(--Modal.confirm警告框样式
 .ivu-modal-confirm-body {
-  padding: 15px 0 0 40px;
+  padding: 5px 0 0 40px;
   text-align: left;
+  white-space: pre-line;
 }
 .ivu-btn-small {
   padding: 0 5px;
