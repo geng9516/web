@@ -483,6 +483,7 @@
                         [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
                         [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
                         [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        txtTmgReferListTreeViewPermSelectedView: '',
                         hidSearchItems:'EMPLOYEEID',
                         hidSearchCondition:'BROADMATCH',
                         hidSearchData:'',
@@ -792,6 +793,7 @@
                 async getOrgTree() {
                     this.empDeptLoading = true
                     try {
+                        this.referListObject.txtTmgReferListTreeViewPermSelectedView=this.selectedDeptViewType
                         const { groupMemberList, memberList, sectionMemberList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                         // 先将数据转为标准格式，再转为可用数据
                         console.log(this.selectedDeptViewType)
