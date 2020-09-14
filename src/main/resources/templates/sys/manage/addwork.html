@@ -755,22 +755,39 @@
                 },
                 getEmpCode(data,empId,sectionId,groupId) {
                     let dept =false
-                    data.forEach(e => {
-                        console.log(e)
-                        if (e.secid === sectionId || e.groupid === groupId) {
-                            e.children.forEach(j => {
-                                if (j.empid === empId) {
-                                    console.log(j)
-                                    dept=true
+
+                    if(this.selectedDeptViewType==='all'){
+                        data.forEach(e => {
+                            if ((e.secid === sectionId || e.groupid === groupId) && e.empid === empId) {
+                                dept=true
+                            }
+                        })
+                        if(!dept){
+                            data.forEach(e => {
+                                if (e.secid === sectionId || e.groupid === groupId) {
+                                    this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.empid
                                 }
                             })
-                            if(!dept){
-                                console.log(e.children[0].empid)
-                                this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
-                            }
                         }
+                    }else{
+                        data.forEach(e => {
+                            console.log(e)
+                            if (e.secid === sectionId || e.groupid === groupId) {
+                                e.children.forEach(j => {
+                                    if (j.empid === empId) {
+                                        console.log(j)
+                                        dept=true
+                                    }
+                                })
+                                if(!dept){
+                                    console.log(e.children[0].empid)
+                                    this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
+                                }
+                            }
 
-                    })
+                        })
+                    }
+
                     return dept
                 },
                 getDeptName(data,section,group) {
@@ -778,19 +795,33 @@
                     data.forEach(e => {
                         if (e.secid === section || e.groupid === group) {
                             console.log(e)
-                            this.deptName = e.label
+                            if(this.selectedDeptViewType==='all'){
+                                this.deptName = e.secnic
+                            }else{
+                                this.deptName = e.label
+                            }
+
                         }
                     })
                 },
                 getEmpName(data,empId) {
                     // idによりループ処理でdeptNameを取得する
-                    data.forEach(e => {
-                        e.children.forEach(j => {
-                            if (j.empid === empId) {
-                                this.kanjiName = j.empname
-                            }
+                    if(this.selectedDeptViewType==='all'){
+                        data.forEach(e => {
+                                if (e.empid === empId) {
+                                    this.kanjiName = e.empname
+                                }
                         })
-                    })
+                    }else{
+                        data.forEach(e => {
+                            e.children.forEach(j => {
+                                if (j.empid === empId) {
+                                    this.kanjiName = j.empname
+                                }
+                            })
+                        })
+                    }
+
                 },
                 async getOrgTree() {
                     this.empDeptLoading = true
