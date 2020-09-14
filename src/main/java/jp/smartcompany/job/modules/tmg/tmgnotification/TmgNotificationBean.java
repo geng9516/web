@@ -357,8 +357,9 @@ public class TmgNotificationBean {
 
         String workType = iTmgEmployeesService.selectWorkerType(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),DateTime.now());
 
+        String date=psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)? TmgUtil.getSysdate(): this.referList.getRecordDate();
         List<MgdTmgNtfTypeVo> MgdTmgNtfTypeVos = iMastGenericDetailService.selectMasterTmgNtfType(psDBBean.getCustID(),
-                psDBBean.getCompCode(), TmgUtil.getSysdate(), psDBBean.getTargetUser(), psDBBean.getLanguage(), psDBBean.getSiteId(),workType);
+                psDBBean.getCompCode(),date, psDBBean.getTargetUser(), psDBBean.getLanguage(), psDBBean.getSiteId(),workType);
 
         List<TypeGroupVo> typeGroupVoList=new ArrayList<TypeGroupVo>();
         //显示type处理
