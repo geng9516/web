@@ -16,30 +16,30 @@ import java.io.Serializable;
 public class SectionPostRowDTO implements Serializable {
 
     private static final long serialVersionUID = -1064353696139199181L;
-//    /** 顧客名称 */
-//    private String customerName;
+    /** 顧客名称 */
+    private String customerName;
     /** 法人名称 */
     private String companyName;
-//    /** 組織名称 */
-//    private String sectionName;
-//    /** 役職名称 */
-//    private String postName;
-//    /** 漢字氏名 */
-//    private String kanJiName;
-//    /** 顧客コード */
-//    private String customerId;
-//    /** システムコード */
-//    private String systemId;
-//    /** グループコード */
-//    private String groupid;
-//    /** 開始日 */
-//    private String startDate;
-//    /** 終了日 */
-//    private String endDate;
-//    /** 定義ID */
-//    private String permissionId;
-//    /** 定義区分 */
-//    private String typeId;
+    /** 組織名称 */
+    private String sectionName;
+    /** 役職名称 */
+   private String postName;
+    /** 漢字氏名 */
+    private String kanJiName;
+    /** 顧客コード */
+    private String customerId;
+    /** システムコード */
+    private String systemId;
+    /** グループコード */
+    private String groupid;
+    /** 開始日 */
+    private String startDate;
+    /** 終了日 */
+    private String endDate;
+    /** 定義ID */
+    private String permissionId;
+    /** 定義区分 */
+    private String typeId;
     /** 法人コード */
     private String companyId;
     /** 組織コード */
@@ -49,7 +49,7 @@ public class SectionPostRowDTO implements Serializable {
     /** 社員番号 */
     private String employeeId;
     private Long id;
-//    private Integer versionNo;
+
     private Boolean delete;
 
 }

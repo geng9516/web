@@ -70,7 +70,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
     public static final String FG_COMP_SEC         = "02";
     /** 処理区分(組織ごとの定義情報取得(法人＆組織＆役職リスト)) */
     public static final String FG_COMP_SEC_POST    = "03";
-    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆社員番号リスト)) */
+    /** 処理区分(組織ごとの定義情報取得(法人＆組織＆社員番号リスト))(已弃用) */
     public static final String FG_COMP_SEC_EMP     = "04";
     /** 処理区分(法人＆組織＆所属長リスト) */
     public static final String FG_COMP_SEC_BOSS    = "05";
@@ -94,7 +94,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 
 
     @Override
-    public Map<String,Object> detail(Date searchDate, String systemId, String groupId) throws ParseException {
+    public Map<String,Object> detail(Date searchDate, String systemId, String groupId) {
         PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
         Date maxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
         String companyId;
@@ -141,11 +141,9 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             // グループ定義条件情報を取得
             List<MastGroupdefinitionsDO> oList = iMastGroupdefinitionsService.selectGroupDefinitions(
                     searchDate, psSession.getLoginCustomer(), systemId, groupId);
-            // 全社区分を含むか否かを取得する
-            groupDTO.setAllCompaniesFlg(psSearchCompanyUtil.isAllCompaniesFlg());
-        } else {
-            groupDTO.setGsBaseFlg("0");
+            getGroupDefinitionsDispInfo(oList,groupDTO);
         }
+        // 全社区分を含むか否かを取得する
         groupDTO.setAllCompaniesFlg(psSearchCompanyUtil.isAllCompaniesFlg());
 
         return MapUtil.<String,Object>builder()
@@ -238,15 +236,14 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             groupListDTO.setMgCtext("");
             groupListDTO.setMgCcompanyid(sCompanyId);
             groupListDTO.setCompanyName(sCompanyName);
-            groupListDTO.setGbDisabled(false);
-            groupListDTO.setMgpversionNo(null);
+
 
             // 法人情報を格納
 //            this.setCompanyId(sCompanyId);
 //            this.setCompanyName(sCompanyName);
 
             // 法人選択フラグを格納(個別法人選択)
-            groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ONE);
+//            groupListDTO.setCompanySelectedFlg(COMPANY_FLG_ONE);
         } else {
             // 指定グループ情報取得
             List<GroupManagerGroupListDTO> oGroupInfo  = iMastGroupService.selectGroupHistoryList(
@@ -352,7 +349,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      * @param plDefinitionList  グループ定義条件情報
      * @return String           設定状況フラグ
      */
-    public String getGroupDefinitionsDispInfo(
+    public void getGroupDefinitionsDispInfo(
             List <MastGroupdefinitionsDO> plDefinitionList,GroupManagerGroupListDTO groupDTO) {
         String sResult;
         // 初期表示情報(設定状況)を取得
@@ -361,14 +358,12 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
             sResult = definition.getMgpBaseflag();
             // IDとVersion番号も取得
             groupDTO.setMgpId(definition.getMgpId());
-            groupDTO.setMgpversionNo(definition.getVersionno());
         } else {
             // 定義情報が取得できなかった場合は、初期値(0:社員指定による定義)を設定
             sResult = "0";
             groupDTO.setMgpId(null);
-            groupDTO.setMgpversionNo(null);
         }
-        return sResult;
+        groupDTO.setGsBaseFlg(sResult);
     }
 
     /**
@@ -801,7 +796,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      */
     public void updateMastGroupDefinitions(MastGroupdefinitionsDO peInsertData,String groupCheckQuery,GroupManagerEditDTO dto) {
         // 削除対象データをデータベースへ反映
-        if (dto.getMgId() != null) {
+        if (dto.getMgpId() != null) {
             // 入れ替え用Entity
             MastGroupdefinitionsDO oDelete = new MastGroupdefinitionsDO();
             // IDの有るもの(DBに存在するデータ)のみ、更新する
@@ -1106,7 +1101,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
                 // IDの無いもの(DBに存在しないデータ)は追加する
                 if (ent.getMgbsId() == null) {
                     // データベースへ更新(新規登録)
-                    ent.setVersionno(1L);
+//                    ent.setVersionno(1L);
                     saveRows.add(ent);
                     // IDがあるものは更新する
                 } else {

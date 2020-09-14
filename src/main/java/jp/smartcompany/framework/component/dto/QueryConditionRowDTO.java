@@ -52,12 +52,12 @@ public class QueryConditionRowDTO  {
     private String displayvalue;
     /** 閉じカッコ */
     private String closedparenthsis;
-    /** 自分のフラグ */
-    private String myflag;
-    /** VERSIONNO */
-    private Integer versionNo;
     /** クエリ(結合式)  */
     private String joinquery;
+    /** 自分のフラグ */
+//    private String myflag;
+    /** VERSIONNO */
+//    private Integer versionNo;
     /** 削除フラグ  */
     private Boolean delete;
     /** HSD_NSETTINGID */

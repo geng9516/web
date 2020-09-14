@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
+import javax.validation.constraints.NotBlank;
 import java.util.Date;
 import java.util.List;
 
@@ -19,6 +20,7 @@ public class GroupManagerEditDTO {
     // グループ定義条件マスタ ID
     private Long mgpId;
     private Long mgId;
+    @NotBlank
     private String groupId;
     private Date startDate;
     private Date endDate;

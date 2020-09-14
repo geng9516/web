@@ -136,7 +136,6 @@ public class AuthBusiness {
                 // 当日：複数回パスワード変更対応用パスワードマスタ 更新
                 MastPasswordDO oEntity = setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex());
                 oEntity.setMapId(passwordEntity.getMapId());
-                oEntity.setVersionno(passwordEntity.getVersionno());
                 iMastPasswordService.updateById(oEntity);
             } else {
                 // パスワードマスタ 更新（履歴No +1）

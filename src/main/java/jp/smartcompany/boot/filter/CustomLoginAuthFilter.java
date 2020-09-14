@@ -64,7 +64,7 @@ public class CustomLoginAuthFilter extends FormAuthenticationFilter {
             response.getWriter().print(JSONUtil.toJsonStr(GlobalResponse.error(status,e.getMessage())));
         }
         resp.setStatus(status);
-
+        response.getWriter().close();
         return false;
     }
 }

@@ -126,72 +126,13 @@ public class GroupManagerGroupListDTO implements Serializable {
     /** 法人名称一覧 */
     private List<MastCompanyDO> glCompanyNameList;
 
-    /** 順序表示フラグ */
-    private int gnDispOrder;
-
-    /** 削除フラグ */
-    private boolean gbDelFlg;
-
-    /** 順序入れ替えフラグ */
-    private int gnChengeOrder;
-
-    /** 順序入れ替え(上位) */
-    private int gnChengeUpper;
-
-    /** 順序入れ替え(下位) */
-    private int gnChengeLower;
-
-    /** 表示・非表示フラグ(true:非表示/false:表示) */
-    private boolean gbDisabled;
-
-    /** 初期表示開始日付 */
-    private Date goStartdate;
-
-    /** 初期表示終了日付 */
-    private Date goEnddate;
+    private Long mgpId;
 
     /** グループ定義種別フラグ(0:組織・役職設定で定義/1:条件式で定義) */
     private String gsBaseFlg;
 
-    /** 現在登録されている言語区分情報 */
-    private List<MastLanguageDO> glLanguageList;
-
-    /** 変更フラグ */
-    private Boolean chgFlag;
-
-    /** 戻り画面フラグ */
-    private String gsPrevFlag;
-
-    /** グループ定義条件マスタ ID */
-    private Long mgpId;
-
-    /** グループ定義条件マスタ VersionNo */
-    private Long mgpversionNo;
-
-    /** グループ判定クエリ妥当性チェック結果 */
-    private int gnCheckResult = 0;
-
-    /** リロード用初期表示処理読み飛ばしフラグ */
-    private String psAction;
-
-    /** 法人選択フラグ */
-    private String companySelectedFlg;
-
-    /** 自動スクロール用リロードチェックフラグ */
-    private String reloadCheck;
-
-    /** グループ名称の入力項目サイズ */
-    private Integer nameSize = 0;
 
     /** 全社区分フラグ */
-    private Boolean allCompaniesFlg = Boolean.valueOf(false);
-
-    /** MG_DSTARTDATE を YYYY/MM/DD 形式で */
-    private String mgDstartdateName;
-    /** MG_DENDDATE を YYYY/MM/DD 形式で */
-    private String mgDenddateName;
-
-    /** 編集可能フラグ */
-    private boolean gbEditFlag;
+    private boolean allCompaniesFlg;
 
 }

@@ -38,7 +38,7 @@ public class GroupManagerController {
 
     /**
      * ===========================================
-     * GroupManagerMainAction 整理接口
+     * 原SmartCompany GroupManagerMainAction 整理接口
      * ===========================================
      */
 
@@ -54,7 +54,7 @@ public class GroupManagerController {
 
     /**
      * ===========================================
-     * GroupManagerMainAction 整理接口
+     * 原SmartCompany GroupManagerMainAction 整理接口
      * ===========================================
      */
     @GetMapping("detail")
@@ -73,15 +73,116 @@ public class GroupManagerController {
         return groupManagerGroupEditLogic.detail(searchDate,systemId, groupId);
     }
 
+    /**
+     *  更新或新增group的操作：发送的json数据格式为：
+     *  {
+     *    "mgpId":     mast_groupdefinitions表的数据库自增id，从上面的detail接口里获取，更新group时才需要
+     *    "mgId":       更新和新增都需要，mast_group表的数据库自增id，从上面的detail接口里获取，更新group时才需要
+     *    "groupId":          group表的自定义id，更新和新增都需要，会进行groupId重复check
+     *    "startDate":   有效期开始时间
+     *    "endDate": 有效期结束时间
+     *    "baseFlag":   "2"为組織・役職による定義の情報取得 "1"为条件式による定義の情報取得 "0"为社員による定義の情報取得
+     *    "weightAge": group排序字段
+     *    "groupName": group名称
+     *    "peopleCount":  能够加入此group的最大人数
+     *    "remark": 备注
+     *    "belowSingle": 基点组织的可查看范围 0 以下   1 のみ
+     *    組織・役職条件選択情報(如果为更新则要根据上面的detail接口返回的orgJobConditions字段来进行初始数据填充)
+     *    "sectionPostList": {
+     *        "companyId": "",
+     *        "companyName": "",
+     *        "sectionList": [                    ------------typeId 02的情况  組織
+     *             {
+     *                "companyId": "01"
+     *                "sectionId":  組織コード
+     *                "id":  mast_groupsectionpostmapping表的自增id，如果已经有传了id但delete字段为false，则表示保持原样
+     *                "delete": 是否是要删除的部门，如果是要删除的数据，则只需要传入id（对应detail接口里的mgbsId）和delete设置为true
+     *                "postList": [              ------------typeId 03的情况  組織役職
+     *                  "sectionId": 組織コード
+     *                  "postId": 役職コード,
+     *                  "companyId": "01",
+     *                  "delete": 是否是要删除的役職，则只需要传入id（对应detail接口里的mgbsId）和delete设置为true
+     *                  "id":  mast_groupsectionpostmapping表的自增id，如果已经有传了id但delete字段为false，则表示保持原样
+     *                ]
+     *             }
+     *        ],
+     *        "postList": [   ------------typeId 06的情况  役職
+     *             {
+     *                "id": mast_groupsectionpostmapping表的自增id，如果已经有传了id但delete字段为false，则表示保持原样
+     *                "postId": 役職コード,
+     *                "companyId": "01",
+     *                "delete": 是否要删除的部门，如果是要删除的数据，则只需要传入id（对应detail接口里的mgbsId）和delete设置为true
+     *             }
+     *        ],
+     *        "bossSectionList": [    ------------typeId 05的情况  所属長
+     *             {
+     *                 "id": mast_groupsectionpostmapping表的自增id，如果已经有传了id但delete字段为false，则表示保持原样
+     *                 "companyId": "01",
+     *                 "delete": 是否要删除的部门，如果是要删除的数据，则只需要传入id（对应detail接口里的mgbsId）和delete设置为true
+     *                 "sectionId": 組織コード
+     *             }
+     *        ]
+     *    },
+     *    "employList": [  ------------typeId 07的情况  所属長
+     *       {
+     *           "companyId": "01",
+     *           "sectionId": "201000201020",
+     *           "postId": "ZZL",
+     *           "employeeId": "65494392",
+     *           "id": 1101,
+     *           "delete": null
+     *       }
+     *    ],
+     *    "queryConditionList": [
+     *        "value":"1",
+     *        "id":"243",
+     *        "columnid":"TIE_ISEVALUATOR",
+     *        "operator":"=",
+     *        "typeofcolumn":"NUMBER",
+     *        "displayvalue":"1",
+     *        "columnname":"TMG_ISEVALUATOR－TIE_ISEVALUATOR",
+     *        "tableid":"TMG_ISEVALUATOR",
+     *        "joinquery":"",
+     *        "andor":"OR",
+     *        "seq":"0",
+     *        "closedparenthsis":")",
+     *        "mastertablename":"",
+     *        "openedparenthsis":"(",
+     *        "displayoperator":"＝",
+     *        "delete": true,
+     *        "customerid":"01",
+     *        "groupid":"2"
+     *    ],
+     *    "baseSectionList": [  基点组织的删除和添加
+     *        {
+     *            "sectionList": [
+     *                 {
+     *                    "mgbsCgroupid":
+     *                    "mgbsCcompanyid":
+     *                    "mgbsCbeloworsingle":
+     *                    "mgbsCsectionid":
+     *                    "mgbsClayeredsectionid"
+     *                    "sectionName":
+     *                    "companyName":
+     *                    "mgbsId":  mast_groupbasesection表的自增id，如果已经有传了id但delete字段为false，则表示更新而不是新增
+     *                    "mgbsCcustomerid":
+     *                    "mgbsCsystemid":
+     *                    "delete":  是否要删除的基点组织，如果是要删除的数据，则只需要传入id（对应detail接口里的mgbsId）和delete设置为true
+     *                 }
+     *            ]
+     *        }
+     *    ]
+     *  }
+     */
     @PostMapping("update")
-    public String executeUpdate(@RequestBody GroupManagerEditDTO dto) {
+    public String executeUpdate(@Valid @RequestBody GroupManagerEditDTO dto) {
         groupManagerGroupEditLogic.update(dto);
         return "変更成功";
     }
 
     /**
      * ===========================================
-     * GroupManagerMainAction 整理接口
+     * 原SmartCompany GroupManagerMainAction 整理接口
      * ===========================================
      */
 
@@ -115,7 +216,7 @@ public class GroupManagerController {
 
     /**
      * ===========================================
-     * GroupManagerDateEditAction 整理接口
+     * 原SmartCompany GroupManagerDateEditAction 整理接口
      * ===========================================
       */
     // グループ定義 一覧(指定基準日)画面にて表示する情報を取得します。
@@ -148,9 +249,8 @@ public class GroupManagerController {
      * ===========================================
      */
     @GetMapping("historylist")
-    public Map<String,Object> editHistoryList(
-            @RequestParam("systemId") String systemId,
-            @RequestParam("groupId") String groupId) {
+    public Map<String,Object> editHistoryList(@RequestParam("systemId") String systemId, @RequestParam("groupId") String groupId) {
+
         return null;
     }
 
