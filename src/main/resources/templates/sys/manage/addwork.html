@@ -445,7 +445,7 @@
                     isConfirm: '', // 承認ステータス
                     isFixed:'', //月次確定情報
                     isSearchHistory: false, //是否允许点击遮罩层关闭
-                    selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all" ? "section":[[${ session.txtTmgReferListTreeViewPermSelectedView }]], //类型选择
+                    selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
                     currentTab: '',         //組織のツリーと検索タブーを切り替え
                     deptDrawShow: false,    //組織ツリー用
                     treeData:[],            //組織ツリー用
