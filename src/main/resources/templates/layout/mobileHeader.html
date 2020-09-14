@@ -42,10 +42,10 @@
         <i-button class="tr" type="primary" size="large" @click.native="alterPasswordModal = true" ghost long>パスワード変更</i-button>
       </li>
       <li class="menu-li" style="margin-top: -5px;">
-        <i-button class="tr" type="primary" size="large"  ghost long>出勤</i-button>
+        <i-button class="tr" type="primary" size="large" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable"  ghost long>{{ clockBtn.clock }}</i-button>
       </li>
       <li class="menu-li" style="margin-top: -5px;">
-        <i-button class="tr" type="primary" size="large"  ghost long>退勤</i-button>
+        <i-button class="tr" type="primary" size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable"  ghost long>{{ clockBtn.exit }}</i-button>
       </li>
       <li class="menu-li" style="margin-top: -5px;">
         <i-button class="tr" type="primary" size="large"  @click="()=> location.href = '/logout'" ghost long>ログアウト</i-button>
@@ -96,11 +96,30 @@
             psSite: Utils.getUrlParam(location.href, 'psSite') || 'TMG_INP',
             psApp: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults'
           },
+          query_clockInfo: {
+            pAction: '',
+            custId: [[${ session.psSession.loginCustomer}]],
+            compCode: [[${ session.psSession.loginCompany}]],
+            language: [[${ session.psSession.language}]],
+            employeId: [[${ session.psSession.loginEmployee }]]
+          },
           password:{},
           navIcon:false,
           curMenu: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults' ,
           passwordLoading: false,
-          alterPasswordModal: false
+          alterPasswordModal: false,
+          loading: false,
+          clocking: false,
+          exiting: false,
+          clockDisable: false,
+          clockBtn: {
+            clock: '出勤',
+            exit: '退勤'
+          },
+          clockData: {
+            startTime: '',
+            endTime: ''
+          }
         }
       },
       computed: {
@@ -110,6 +129,7 @@
       },
       mounted() {
         this.password.username = this.session.psSession.loginUser
+        this.getClockInfo()
       },
       methods: {
         logout() {
@@ -146,6 +166,75 @@
            this.password = {
              username:this.session.psSession.loginUser
            }
+        },
+        //打刻
+        async clock(pAction) {
+          this.query_clockInfo.pAction = pAction
+          if (pAction) {
+            if (pAction === "ACT_EXEC_OPEN") {
+              this.clocking = true
+            } else {
+              this.exiting = true
+            }
+            this.clockDisable = true
+            try {
+              const {data} = await this.http.postForm('sys/timePunch/stamping', this.query_clockInfo)
+              //console.log(data)
+              if (data) {
+                //チェック合格
+                if (data.resultCode === "0") {
+                  //打刻成功(0)
+                  if (pAction === "ACT_EXEC_OPEN") {
+                    this.clockData.startTime = data.clockTime
+                    this.clockBtn.clock = '出勤(' + data.clockTime + ')'
+                    //this.$Notice.info({title: '打刻成功', desc: data.resultMsg})
+                    this.$Message.success(data.resultMsg);
+                  } else {
+                    this.clockData.endTime = data.clockTime
+                    this.clockBtn.exit = '退勤(' + data.clockTime + ')'
+                    //this.$Notice.info({title: '打刻成功', desc: data.resultMsg})
+                    this.$Message.success(data.resultMsg);
+                  }
+                } else {
+                  //打刻失敗(10,20,30)
+                  //this.$Notice.error({title: '打刻エラー', desc: data.resultMsg})
+                  this.$Message.error(data.resultMsg);
+                }
+              } else {
+                //チェック不合格
+                //this.$Notice.warning({title: '打刻エラー', desc: "内部エラーが発生しました"})
+                this.$Message.error('内部エラーが発生しました');
+              }
+            } catch (error) {
+              this.clocking = false
+              this.exiting = false
+              this.clockDisable = false
+            }
+          } else {
+            //this.$Notice.warning({title: '打刻エラー', desc: "パラメータが不正です"})
+            this.$Message.error("パラメータが不正です");
+          }
+          this.clocking = false
+          this.exiting = false
+          this.clockDisable = false
+        },
+        //打刻情報を取得する
+        async getClockInfo() {
+          const {data} = await this.http.postForm('sys/timePunch/clockInfo', this.query_clockInfo)
+          if (data) {
+            var startTime = data.nopen
+            var endTime = data.nclose
+            if (startTime) {
+              this.clockData.startTime = startTime
+              this.clockBtn.clock = '出勤(' + startTime + ')'
+            }
+            if (endTime) {
+              this.clockData.endTime = endTime
+              this.clockBtn.exit = '退勤(' + endTime + ')'
+            }
+          } else {
+            //まだ、打刻していない 何もしない
+          }
         }
       }
     })
