@@ -766,6 +766,7 @@
                             data.forEach(e => {
                                 if (e.secid === sectionId || e.groupid === groupId) {
                                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.empid
+                                    return dept
                                 }
                             })
                         }
