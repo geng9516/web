@@ -456,7 +456,7 @@
             e.EMPID AS TDA_CEMPLOYEEID,
             TMG_F_CONV_MIN2HHMI ( TDA_NOPEN_TP, 0 ) AS TDA_NOPEN_TP_C,
             TMG_F_CONV_MIN2HHMI ( TDA_NCLOSE_TP, 0 ) AS TDA_NCLOSE_TP_C,
-            TMG_F_GET_MGD ( TDA_CWORKINGID_R, #{baseDay}, #{custId}, #{compId}, #{pLanguage} ) AS TDA_CWORKINGID_R,
+            TMG_F_GET_MGD_C ( TDA_CWORKINGID_R, #{baseDay}, 3,#{custId}, #{compId}, #{pLanguage} ) AS TDA_CWORKINGID_R,
             TMG_F_CONV_MIN2HHMI ( TDA_NRESTOPEN_N, 0 ) AS TDA_NRESTOPEN_N,
             TMG_F_CONV_MIN2HHMI ( TDA_NRESTCLOSE_N, 0 ) AS TDA_NRESTCLOSE_N,
             TMG_F_IS_EXCLUDE_OVERTIME ( e.EMPID, #{baseDay}, #{custId}, #{compId} ) AS EXCLUDE_OVERTIME,

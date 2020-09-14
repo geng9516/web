@@ -452,7 +452,7 @@ public class TmgResultsBean {
         title.put(CommonUI.TITLE, "区分");
         title.put(CommonUI.SLOT, "TDA_CWORKINGID_R_NAME");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
-        title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_36);
+        title.put(CommonUI.MIN_WIDTH, 50);
         titles.add(title);
 
         for (ItemVO mgdDispDailyItemsVO : mgdDispDailyItemsVOList) {
@@ -468,7 +468,7 @@ public class TmgResultsBean {
         title.put(CommonUI.TITLE, "備考");
         title.put(CommonUI.KEY, "CCOMMENT");
         title.put(CommonUI.ALIGN, CommonUI.ALIGN_CENTER);
-        title.put(CommonUI.MIN_WIDTH, CommonUI.WIDTH_70);
+        title.put(CommonUI.MIN_WIDTH, 55);
         titles.add(title);
 
         return titles;
