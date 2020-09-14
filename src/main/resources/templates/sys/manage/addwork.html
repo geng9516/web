@@ -701,7 +701,7 @@
                 async getInit() {
                     let targetPermEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-
+                    let targetPermGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                     if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                         this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     }
@@ -710,11 +710,11 @@
                     console.log(this.treeData)
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
-                        let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection)
+                        let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection,targetPermGroup)
                         console.log(getEmpCode)
                         if (getEmpCode) {
                             console.log(1)
-                            this.getDeptName(this.treeData,targetPermSection)
+                            this.getDeptName(this.treeData,targetPermSection,targetPermGroup)
                             this.getEmpName(this.treeData,targetPermEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
@@ -725,11 +725,12 @@
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
                         } else {
                             console.log(2)
-                            this.getDeptName(this.treeData,targetPermSection)
+                            this.getDeptName(this.treeData,targetPermSection,targetPermGroup)
                             this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                             this.query.txtTmgReferListTreeViewPermTargetSection = this.referListObject.txtTmgReferListTreeViewPermTargetSection
+                            this.query.txtTmgReferListTreeViewPermTargetGroup = this.referListObject.txtTmgReferListTreeViewPermTargetGroup
                             this.query.txtTmgReferListTreeViewPermTargetEmp = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
                             this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                             this.query.txtDYYYYMM = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0,8)+'01'
@@ -752,11 +753,11 @@
                     await this.getWorkDateList()
                     this.getTitleData()
                 },
-                getEmpCode(data,empId,sectionId) {
+                getEmpCode(data,empId,sectionId,groupId) {
                     let dept =false
                     data.forEach(e => {
                         console.log(e)
-                        if (e.secid === sectionId) {
+                        if (e.secid === sectionId || e.groupid === groupId) {
                             e.children.forEach(j => {
                                 if (j.empid === empId) {
                                     console.log(j)
@@ -772,10 +773,11 @@
                     })
                     return dept
                 },
-                getDeptName(data,section) {
+                getDeptName(data,section,group) {
                     // idによりループ処理でdeptNameを取得する
                     data.forEach(e => {
-                        if (e.secid === section) {
+                        if (e.secid === section || e.groupid === group) {
+                            console.log(e)
                             this.deptName = e.label
                         }
                     })
