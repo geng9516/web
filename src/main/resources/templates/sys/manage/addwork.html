@@ -212,8 +212,8 @@
 
 
         <!--日次就業実績-->
-        <Drawer class="tc"  :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
-            <div class="tl" style="position: relative">
+        <Drawer  :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
+            <div style="position: relative">
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <div class="mb10 tr">
                     <div v-if="!bFixed">
