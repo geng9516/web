@@ -1,5 +1,6 @@
 // import axios from 'axios'
 axios.defaults.baseURL = BASE_URL
+axios.defaults.headers= {'X-Requested-With': 'XMLHttpRequest'},
 // 请求需要携带cookie时
 // axios.defaults.withCredentials = true
 

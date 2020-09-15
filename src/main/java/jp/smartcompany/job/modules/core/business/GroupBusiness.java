@@ -13,7 +13,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.MastSystemDO;
 import jp.smartcompany.job.modules.core.pojo.handler.UserGroupEntityListHandler;
 import jp.smartcompany.job.modules.core.service.IMastGroupService;
 import jp.smartcompany.job.modules.core.util.PsSession;
-import jp.smartcompany.boot.util.ShiroUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +36,6 @@ import java.util.Map;
 public class GroupBusiness {
 
     private final IMastGroupService iMastGroupService;
-    private final HttpSession httpSession;
 
     private static final String GROUP_CHECK_MODE_SINGLE = "single";
     private static final String GROUP_CHECK_MODE_MULTIPLE = "multiple";
@@ -45,23 +44,22 @@ public class GroupBusiness {
     /**
      * 获取当前登录用户拥有的角色
      */
-    public void getGroupList(String language, List<MastSystemDO> systemList) {
+    public void getGroupList(String language, List<MastSystemDO> systemList,HttpSession httpSession) {
         String groupCheckMode = GROUP_CHECK_MODE_MULTIPLE;
         boolean groupCheckFlag = false;
         if (groupCheckFlag) {
-            setPretreatGroup(language);
+            setPretreatGroup(language,httpSession);
         } else {
-            setGroupInfo(groupCheckMode,language,systemList);
+            setGroupInfo(groupCheckMode,language,systemList,httpSession);
         }
     }
 
-    public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList){
+    public void setGroupInfo(String checkMode,String language,List<MastSystemDO> systemList,HttpSession httpSession){
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         if (MapUtil.isNotEmpty(session.getLoginGroups())){
             return;
         }
-        String userId = ShiroUtil.getUserId();
-        log.info("【setGroupInfo:{}】",userId);
+        String userId = SecurityUtil.getUserId();
         systemList.forEach(system -> {
             String systemCode = system.getMsCsystemidPk();
             List<DBMastGroupBO> mastGroupList = iMastGroupService.getUserGroupByLanguage(language,systemCode);
@@ -93,13 +91,53 @@ public class GroupBusiness {
                 log.info("【groupBusiness：{}】",listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
+                    System.out.println("+++");
                 }
             }
         });
     }
 
-    private void setPretreatGroup(String language) {
-        String userId = ShiroUtil.getUserId();
+    public Map<String, List<LoginGroupBO>> getGroupInfos(String userId,String checkMode,String language,List<MastSystemDO> systemList){
+        Map<String,List<LoginGroupBO>> map = MapUtil.newHashMap();
+        systemList.forEach(system -> {
+            String systemCode = system.getMsCsystemidPk();
+            List<DBMastGroupBO> mastGroupList = iMastGroupService.getUserGroupByLanguage(language,systemCode);
+            if (CollUtil.isNotEmpty(mastGroupList)) {
+                List<LoginGroupBO> listLoginGroup =CollUtil.newArrayList();
+
+                for (DBMastGroupBO DBMastGroupBO : mastGroupList) {
+                    int nQueryCount = 0;
+                    try {
+                        nQueryCount = getAssembleSql(DBMastGroupBO, userId);
+                    } catch (SQLException throwables) {
+                        throwables.printStackTrace();
+                    }
+                    if (nQueryCount>0) {
+                        LoginGroupBO loginGroup = setLoginGroupBO(DBMastGroupBO);
+                        listLoginGroup.add(loginGroup);
+                        if (StrUtil.equalsIgnoreCase(checkMode, GROUP_CHECK_MODE_SINGLE)) {
+                            break;
+                        }
+                    }
+                }
+
+                if (StrUtil.equalsIgnoreCase(checkMode,GROUP_CHECK_MODE_SINGLE) && CollUtil.isEmpty(listLoginGroup)) {
+                    DBMastGroupBO lastGroup = CollUtil.getLast(mastGroupList);
+                    LoginGroupBO loginGroup = setLoginGroupBO(lastGroup);
+                    listLoginGroup.add(loginGroup);
+                }
+
+                log.info("【groupBusiness：{}】",listLoginGroup);
+                if (CollUtil.isNotEmpty(listLoginGroup)) {
+                    map.put(systemCode,listLoginGroup);
+                }
+            }
+        });
+        return map;
+    }
+
+    private void setPretreatGroup(String language,HttpSession httpSession) {
+        String userId = SecurityUtil.getUserId();
         List<LoginGroupBO> lGroup = CollUtil.newArrayList();
         String systemCode = "";
         Map<String, List<LoginGroupBO>> hGroupMap = MapUtil.newHashMap(true);
@@ -131,18 +169,12 @@ public class GroupBusiness {
         String strQuery = groupBO.getPQuery() + " AND HD_CUSERID = "
                 + " '" + userId + "'";
         int nQueryCount = 0;
-        Connection connection =null;
         log.info("运行的sql语句：{}",strQuery);
-        try {
-            connection = dataSource.getConnection();
-            List<PQueryUserGroupBO> entityList = SqlExecutor.query(connection,strQuery, new UserGroupEntityListHandler());
+        try (Connection connection = dataSource.getConnection()) {
+            List<PQueryUserGroupBO> entityList = SqlExecutor.query(connection, strQuery, new UserGroupEntityListHandler());
             return entityList.size();
         } catch (SQLException e) {
             e.printStackTrace();
-        } finally {
-            if (connection!=null) {
-                connection.close();
-            }
         }
         return nQueryCount;
     }

@@ -7,11 +7,11 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authc.UnknownAccountException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
@@ -118,9 +118,9 @@ public class ExceptionAdvice {
         return GlobalResponse.error("NPE異常");
     }
 
-    @ExceptionHandler(UnknownAccountException.class)
+    @ExceptionHandler(UsernameNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public GlobalResponse unknownAccountException(UnknownAccountException e) {
+    public GlobalResponse unknownAccountException(UsernameNotFoundException e) {
         printStackTrace(e);
         return GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(),"システム処理中にエラーが発生しました。システム管理者にお問い合わせください");
     }

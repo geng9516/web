@@ -84,10 +84,11 @@ security:
     - /actuator/**
     - /login
     - /logout
-    - /sqltest
+    - /sys/**
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
     - /
+    - /sys/**
   # 需要忽略的静态资源url
   resourceList:
     - /favicon.ico
@@ -95,7 +96,7 @@ security:
   # 退出成功后的转向url
   logoutSuccessUrl: /login
   # 登录成功后的转向url
-  loginSuccessUrl: /home
+  loginSuccessUrl: /sys
   # 登陆失败后的转向url
   loginFailureUrl: /login
   # 授权失败的转向url

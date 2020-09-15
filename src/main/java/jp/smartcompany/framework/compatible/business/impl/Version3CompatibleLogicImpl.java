@@ -567,7 +567,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
     @Override
     public String getBaseSectionListForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
-        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate);
+        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate,ContextUtil.getHttpRequest().getSession());
         Map<String, String> hBaseSection = baseSectionBO.getHmCompany().get(SYSTEM_CODE_01);
         String sBaseSection = "";
         if (MapUtil.isNotEmpty(hBaseSection) && hBaseSection.containsKey(sCompID)) {
@@ -589,7 +589,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     @Override
     public Map<String,String> getBaseSectionListMultiCompForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
         Map<String,String> mBaseSectionList = MapUtil.newHashMap();
-        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate);
+        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate,ContextUtil.getHttpRequest().getSession());
         Map<String, String> hBaseSection = baseSectionBO.getHmCompany().get(SYSTEM_CODE_01);
         if (hBaseSection != null) {
             // 法人コード毎に基点組織情報取得

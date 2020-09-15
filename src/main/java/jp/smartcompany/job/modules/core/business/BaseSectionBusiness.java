@@ -13,7 +13,7 @@ import jp.smartcompany.job.modules.core.pojo.bo.*;
 import jp.smartcompany.job.modules.core.service.IMastGroupbasesectionService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.util.PsSession;
-import jp.smartcompany.boot.util.ShiroUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,12 +37,11 @@ public class BaseSectionBusiness {
     private final IMastGroupbasesectionService iMastGroupbasesectionService;
     private final IMastOrganisationService iMastOrganisationService;
 
-    public void getBaseSectionList() {
-        HttpSession httpSession = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+    public void getBaseSectionList(HttpSession httpSession) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         if (MapUtil.isEmpty(psSession.getLoginBaseSection())) {
             String date = DateUtil.format(DateUtil.date(),"yyyy/MM/dd");
-            BaseSectionBO baseSection = getBaseSection(date);
+            BaseSectionBO baseSection = getBaseSection(date,httpSession);
             psSession.setLoginBaseSection(baseSection.getHmCompany());
             psSession.setLoginGroupBaseSection(baseSection.getHmGroup());
         }
@@ -53,10 +52,9 @@ public class BaseSectionBusiness {
      * @param date 基準日(yyyy/mm/dd)
      * @return 基点組織情報(法人別とグループ別)
      */
-    public BaseSectionBO getBaseSection(String date) {
-        HttpSession httpSession = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+    public BaseSectionBO getBaseSection(String date,HttpSession httpSession) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-        String userId = ShiroUtil.getUserId();
+        String userId = SecurityUtil.getUserId();
         Map<String, List<LoginGroupBO>> hmGroups = psSession.getLoginGroups();
         if (CollUtil.isEmpty(hmGroups)){
             throw new GlobalException(CoreError.LOGIN_GROUP_NOT_FOUND);
@@ -66,7 +64,7 @@ public class BaseSectionBusiness {
         Map<String, Map<String, String>> hashMapGroup = MapUtil.newHashMap(true);
         hmGroups.forEach((key,value)->
             queryBaseSection(userId, key, d,
-                    hashMapComp, hashMapGroup)
+                    hashMapComp, hashMapGroup,httpSession)
         );
         log.info("【mapComp基点组织:{}】",hashMapComp);
         log.info("【mapGroup基点组织:{}】",hashMapGroup);
@@ -84,10 +82,11 @@ public class BaseSectionBusiness {
      */
     private void queryBaseSection(String sCustomer, String sSystem, Date date,
                                   Map<String, Map<String, String>> hashMapComp,
-                                  Map<String, Map<String, String>> hashMapGroup) {
+                                  Map<String, Map<String, String>> hashMapGroup,
+                                  HttpSession httpSession) {
         Map<String, List<GroupBaseSectionBO>> lhmComp = MapUtil.newHashMap(true);
         Map<String, List<GroupBaseSectionBO>> lhmGroup = MapUtil.newHashMap(true);
-        queryBaseSectionMaster(sCustomer, sSystem, date, lhmComp, lhmGroup);
+        queryBaseSectionMaster(sCustomer, sSystem, date, lhmComp, lhmGroup,httpSession);
         log.info("hmComp:{}",lhmComp);
         log.info("hmGroup:{}",lhmGroup);
         hashMapComp.put(sSystem, getBaseSectionByCompany(sCustomer, date, lhmComp));
@@ -104,8 +103,8 @@ public class BaseSectionBusiness {
                                         String sSystem,
                                         Date date,
                                         Map<String, List<GroupBaseSectionBO>> lhmComp,
-                                        Map<String, List<GroupBaseSectionBO>> lhmGroup) {
-        HttpSession httpSession = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+                                        Map<String, List<GroupBaseSectionBO>> lhmGroup,
+                                        HttpSession httpSession) {
         PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
         List<LoginGroupBO> hmGroups = psSession.getLoginGroups().get(sSystem);
         for (LoginGroupBO hmGroup : hmGroups) {

@@ -74,6 +74,6 @@ public class Constant {
     /**
      * 前端ajax请求带的识别符，用于判断请求是否是ajax请求
      */
-    public final static String HEADER_XMLHTTPREQUEST = "x-requested-with";
+    public final static String HEADER_XMLHTTPREQUEST = "X-Requested-With";
 
 }

@@ -5,6 +5,7 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
@@ -32,13 +33,11 @@ import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.*;
-import org.apache.shiro.authz.UnauthenticatedException;
-import org.apache.shiro.crypto.hash.Md5Hash;
-import org.apache.shiro.subject.Subject;
-import org.apache.shiro.subject.support.DefaultSubjectContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,18 +71,110 @@ public class AuthBusiness {
 
     public static final String LOGIN_PERMISSIONS = "loginAppPermissions";
 
-    public boolean checkPassword(MastAccountDO account, String password) throws AuthenticationException {
+    /**
+     * 登录方法
+     * @param loginDTO
+     */
+//    public void login(LoginDTO loginDTO) {
+//        String username = loginDTO.getUsername();
+//        UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
+//        Subject subject = SecurityUtils.getSubject();
+//        subject.login(token);
+//    }
+
+    /**
+     * 登录密码
+     */
+    @Transactional(rollbackFor = GlobalException.class)
+    public void changePassword(ChangePasswordDTO dto,boolean execLogin) {
+        // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
+        List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
+        MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
+        if (!StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
+            throw new GlobalException(400,"パスワードの確認はまちがいます");
+        }
+        // 如果旧密码不正确则不允许修改
+        if (!StrUtil.equals(passwordEntity.getMapCpassword(), DigestUtil.md5Hex(dto.getOldPassword()))) {
+           throw new GlobalException(400,"古いパスワードは間違います");
+        }
+        if (StrUtil.equals(dto.getOldPassword(), dto.getNewPassword())) {
+            throw new GlobalException(400,"古いパスワードと新しいパスワードは同じです");
+        }
+        if (CollUtil.isNotEmpty(lMastPasswordList)) {
+            Date dDate = DateUtil.date();
+            if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
+                // 当日：複数回パスワード変更対応用パスワードマスタ 更新
+                MastPasswordDO oEntity = setData(dto.getUsername(), DigestUtil.md5Hex(dto.getNewPassword()));
+                oEntity.setMapId(passwordEntity.getMapId());
+                iMastPasswordService.updateById(oEntity);
+            } else {
+                // パスワードマスタ 更新（履歴No +1）
+                iMastPasswordService.updateHistory(dto.getUsername());
+                // パスワードマスタ 新規登録
+                iMastPasswordService.save(setData(dto.getUsername(), DigestUtil.md5Hex(dto.getNewPassword())));
+            }
+        } else {
+            // パスワードマスタ 更新（履歴No +1）
+            iMastPasswordService.updateHistory(dto.getUsername());
+            // パスワードマスタ 新規登録
+            iMastPasswordService.save(setData(dto.getUsername(), DigestUtil.md5Hex(dto.getNewPassword())));
+        }
+        if (execLogin) {
+            // 修改完密码后进行登录
+            LoginDTO loginDTO = new LoginDTO();
+            loginDTO.setUsername(dto.getUsername());
+            loginDTO.setPassword(dto.getNewPassword());
+//            login(loginDTO);
+        }
+    }
+
+    public void logout(HttpServletRequest req) {
+        lruCache.clear();
+        timedCache.clear();
+        HttpSession session = req.getSession();
+        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
+        if (psSession!=null) {
+            saveLoginInfo(false, psSession.getLoginUser());
+//            Enumeration e=session.getAttributeNames();
+//            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
+//               log.debug("清除session key：{}",sessionName);
+//                session.removeAttribute(sessionName);
+//            }
+//            SecurityUtils.getSecurityManager().createSubject(new DefaultSubjectContext()).logout();
+//            ShiroUtil.getSubject().logout();
+        }
+    }
+
+    // 打卡时验证用户是否登录
+    public LoginAccountBO basicStamping(String username,String password) {
+        MastAccountDO mastAccountDO = iMastAccountService.getByUsername(username);
+        //パラメータアカウントがない場合
+        if (mastAccountDO == null) {
+            throw new UsernameNotFoundException(ErrorMessage.USER_NOT_EXIST.msg());
+        }
+        if (mastAccountDO.getMaNpasswordlock() == 1) {
+            throw new LockedException(CoreError.USER_LOCK.msg());
+        }
+        String digestPassword = DigestUtil.md5Hex(password);
+        boolean isValid = checkPassword(mastAccountDO,digestPassword);
+        if (isValid) {
+            return iMastAccountService.getAccountInfo(username);
+        }
+        return null;
+    }
+
+    public boolean checkPassword(MastAccountDO account, String password) {
         //パスワード有効日数取得
         String sPasswordValid = scCacheUtil.getSystemProperty("PasswordValidPeriod");
         //パスワードﾞ有効日数が設定されていない場合
         if (sPasswordValid == null) {
-            throw new AuthenticationException("PasswordValidPeriod");
+            throw new BadCredentialsException("PasswordValidPeriod");
         }
         //パスワード入力最大許容回数取得
         String sLoginRetry = scCacheUtil.getSystemProperty("LoginRetry");
         //パスワード入力最大許容回数が設定されていない場合
         if (sLoginRetry == null) {
-            throw new AuthenticationException("LoginRetry");
+            throw new BadCredentialsException("LoginRetry");
         }
         List<MastPasswordDO> passwordHistories = iMastPasswordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),password);
         if (CollUtil.isEmpty(passwordHistories)) {
@@ -99,98 +190,6 @@ public class AuthBusiness {
             iMastAccountService.updateById(account);
         }
         return true;
-    }
-
-    /**
-     * 登录方法
-     * @param loginDTO
-     */
-    public void login(LoginDTO loginDTO) {
-        String username = loginDTO.getUsername();
-        UsernamePasswordToken token = new UsernamePasswordToken(username, loginDTO.getPassword());
-        Subject subject = SecurityUtils.getSubject();
-        subject.login(token);
-    }
-
-    /**
-     * 登录密码
-     */
-    @Transactional(rollbackFor = GlobalException.class)
-    public void changePassword(ChangePasswordDTO dto,boolean execLogin) {
-        // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
-        List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
-        MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
-        if (!StrUtil.equals(dto.getNewPassword(),dto.getRepeatPassword())) {
-            throw new GlobalException(400,"パスワードの確認はまちがいます");
-        }
-        // 如果旧密码不正确则不允许修改
-        if (!StrUtil.equals(passwordEntity.getMapCpassword(),new Md5Hash(dto.getOldPassword()).toHex())) {
-           throw new GlobalException(400,"古いパスワードは間違います");
-        }
-        if (StrUtil.equals(dto.getOldPassword(), dto.getNewPassword())) {
-            throw new GlobalException(400,"古いパスワードと新しいパスワードは同じです");
-        }
-        if (CollUtil.isNotEmpty(lMastPasswordList)) {
-            Date dDate = DateUtil.date();
-            if (DateUtil.isSameDay(dDate,passwordEntity.getMapDpwddate())) {
-                // 当日：複数回パスワード変更対応用パスワードマスタ 更新
-                MastPasswordDO oEntity = setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex());
-                oEntity.setMapId(passwordEntity.getMapId());
-                iMastPasswordService.updateById(oEntity);
-            } else {
-                // パスワードマスタ 更新（履歴No +1）
-                iMastPasswordService.updateHistory(dto.getUsername());
-                // パスワードマスタ 新規登録
-                iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
-            }
-        } else {
-            // パスワードマスタ 更新（履歴No +1）
-            iMastPasswordService.updateHistory(dto.getUsername());
-            // パスワードマスタ 新規登録
-            iMastPasswordService.save(setData(dto.getUsername(), new Md5Hash(dto.getNewPassword()).toHex()));
-        }
-        if (execLogin) {
-            // 修改完密码后进行登录
-            LoginDTO loginDTO = new LoginDTO();
-            loginDTO.setUsername(dto.getUsername());
-            loginDTO.setPassword(dto.getNewPassword());
-            login(loginDTO);
-        }
-    }
-
-    public void logout() {
-        lruCache.clear();
-        timedCache.clear();
-        HttpSession session = ContextUtil.getHttpRequest().getSession();
-        PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
-        if (psSession!=null) {
-            saveLoginInfo(false, psSession.getLoginUser());
-//            Enumeration e=session.getAttributeNames();
-//            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
-//               log.debug("清除session key：{}",sessionName);
-//                session.removeAttribute(sessionName);
-//            }
-//            SecurityUtils.getSecurityManager().createSubject(new DefaultSubjectContext()).logout();
-            ShiroUtil.getSubject().logout();
-        }
-    }
-
-    // 打卡时验证用户是否登录
-    public LoginAccountBO basicStamping(String username,String password) {
-        MastAccountDO mastAccountDO = iMastAccountService.getByUsername(username);
-        //パラメータアカウントがない場合
-        if (mastAccountDO == null) {
-            throw new UnknownAccountException(ErrorMessage.USER_NOT_EXIST.msg());
-        }
-        if (mastAccountDO.getMaNpasswordlock() == 1) {
-            throw new LockedAccountException(CoreError.USER_LOCK.msg());
-        }
-        String digestPassword = new Md5Hash(password).toHex();
-        boolean isValid = checkPassword(mastAccountDO,digestPassword);
-        if (isValid) {
-            return iMastAccountService.getAccountInfo(username);
-        }
-        return null;
     }
 
     public void saveLoginInfo(boolean status,String username) {
@@ -547,7 +546,7 @@ public class AuthBusiness {
      * @param poAccountEntity パスワードマスタ検索結果
      * @param psLoginRetry パスワード許容回数
      */
-    private void checkPassWordPermission(MastAccountDO poAccountEntity, String psLoginRetry) throws UnauthenticatedException {
+    private void checkPassWordPermission(MastAccountDO poAccountEntity, String psLoginRetry) {
         //パスワード間違い回数取得
         int iRetryCount = poAccountEntity.getMaNretrycounter();
         int retryCount = iRetryCount+1;
@@ -559,14 +558,14 @@ public class AuthBusiness {
             //アカウントマスタ更新処理
             iMastAccountService.updateById(poAccountEntity);
             //認証エラー（ロックアウト）
-            throw new LockedAccountException(CoreError.USER_LOCK.msg());
+            throw new LockedException(CoreError.USER_LOCK.msg());
         } else {
             poAccountEntity.setMaNretrycounter(iRetryCount);
             poAccountEntity.setMaNpasswordlock(0);
             poAccountEntity.setMaDmodifieddate(loginTime);
             iMastAccountService.updateById(poAccountEntity);
             //認証エラー（パスワード間違い）
-            throw new IncorrectCredentialsException(ErrorMessage.PASSWORD_INVALID.msg());
+            throw new BadCredentialsException(ErrorMessage.PASSWORD_INVALID.msg());
         }
     }
 
@@ -588,7 +587,7 @@ public class AuthBusiness {
             // 当前时间大于密码设定日时密码过期
             if (oSetDay.before(now)) {
                 //認証エラー（パスワード期間切れ）
-                throw new ExpiredCredentialsException("このパスワードは有効期限を過ぎました。新しいパスワードを登録してください");
+                throw new CredentialsExpiredException("このパスワードは有効期限を過ぎました。新しいパスワードを登録してください");
             }
         });
     }

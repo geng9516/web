@@ -1,10 +1,10 @@
 package jp.smartcompany.controller;
 
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;
-import jp.smartcompany.job.modules.core.pojo.dto.LoginDTO;
-import jp.smartcompany.boot.util.ShiroUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.job.modules.tmg.timepunch.TmgTimePunchBean;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
@@ -34,7 +34,7 @@ public class AuthController {
      */
     @GetMapping("login")
     public String toLogin(@RequestAttribute("isMobile")Boolean isMobile) {
-        if (ShiroUtil.isAuthenticated()) {
+        if (SecurityUtil.isAuthenticated()) {
             return "redirect:/sys";
         }
         if (!isMobile) {
@@ -46,12 +46,12 @@ public class AuthController {
     /**
      * 登录API
      */
-    @PostMapping("login")
-    @ResponseBody
-    public String login(@RequestParam LoginDTO loginDTO) {
-        authBusiness.login(loginDTO);
-        return "ログイン成功";
-    }
+//    @PostMapping("login")
+//    @ResponseBody
+//    public String login(@RequestParam LoginDTO loginDTO) {
+//        authBusiness.login(loginDTO);
+//        return "ログイン成功";
+//    }
 
 
     /**
@@ -61,7 +61,7 @@ public class AuthController {
      */
     @GetMapping("index")
     public String toIndex() {
-        if (ShiroUtil.isAuthenticated()) {
+        if (SecurityUtil.isAuthenticated()) {
             return "redirect:/sys/input/sign?menuId=1640&moduleIndex=1&psSite=TMG_INP&psApp=TmgTimePunch";
         }
         return "login";
@@ -147,8 +147,13 @@ public class AuthController {
     @ResponseBody
     public String changePassword(@RequestBody @Valid ChangePasswordDTO dto) {
         authBusiness.changePassword(dto,false);
-        authBusiness.logout();
+        authBusiness.logout(ContextUtil.getHttpRequest());
         return "パスワード変更成功";
+    }
+
+    @GetMapping("403")
+    public String error403() {
+        return "403";
     }
 
 }

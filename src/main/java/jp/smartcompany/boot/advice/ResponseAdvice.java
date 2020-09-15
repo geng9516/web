@@ -4,6 +4,7 @@ import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.annotation.IgnoreResponseSerializable;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
@@ -35,6 +36,7 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
     public Object beforeBodyWrite(Object body, MethodParameter methodParameter, MediaType mediaType, Class aClass, ServerHttpRequest req, ServerHttpResponse res) {
         String now = TmgUtil.getSysdate();
         HttpHeaders headers = res.getHeaders();
+        ContextUtil.removeDbBean();
         if (body == null) {
             return GlobalResponse.ok().put("sysDate", now);
         } else if (body instanceof GlobalResponse) {

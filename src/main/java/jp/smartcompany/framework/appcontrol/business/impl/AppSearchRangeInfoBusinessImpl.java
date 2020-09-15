@@ -1344,7 +1344,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
         if (sSecurityDate == null) {
             sSecurityDate = SysUtil.transDateToString(new Date());
         }
-        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sSecurityDate);
+        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sSecurityDate,ContextUtil.getHttpRequest().getSession());
         Map<String, Map<String, String>> baseSectionListMapMap = bsi.getHmGroup();
         Map<String, String> baseSectionListMap = baseSectionListMapMap.get(psSystemId);
 

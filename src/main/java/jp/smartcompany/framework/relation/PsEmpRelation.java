@@ -53,7 +53,7 @@ public class PsEmpRelation {
         }
         String sDesig = sbDesig.toString();
 
-        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sDate);
+        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sDate,ContextUtil.getHttpRequest().getSession());
         Map<String, Map<String, String>> mBaseAll = bsi.getHmGroup();
         Map<String, String> mBase = mBaseAll.get(sSystem);
         Set<String> oCompSet = mBase.keySet();

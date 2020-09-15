@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.filter.OncePerRequestFilter;
 import javax.servlet.FilterChain;
@@ -16,6 +17,7 @@ import java.io.IOException;
  * 自定义过滤器，为后端提供一些公共参数，如判断客户端是否为移动端等
  * @author Xiao Wenpeng
  */
+@Component
 public class SmartParameterFilter extends OncePerRequestFilter {
 
     @Override

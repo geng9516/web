@@ -1,0 +1,44 @@
+package jp.smartcompany.boot.configuration.security.authentication;
+
+import cn.hutool.cache.impl.LRUCache;
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.digest.DigestUtil;
+import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
+import jp.smartcompany.boot.util.ContextUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class SmartAuthenticationProvider implements AuthenticationProvider {
+
+    private final SmartUserDetailsServiceImpl userDetailsService;
+    private final LRUCache<Object,Object> lruCache;
+
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        // 获取前端表单中输入后返回的用户名、密码
+        String username = (String) authentication.getPrincipal();
+        String password = (String) authentication.getCredentials();
+        String md5Password = DigestUtil.md5Hex(password);
+        lruCache.put(username+"password",md5Password);
+
+        SmartUserDetails userDetails = (SmartUserDetails) userDetailsService.loadUserByUsername(username);
+        if (!StrUtil.equals(md5Password, userDetails.getPassword())) {
+            throw new BadCredentialsException("incorrectPassword");
+        }
+        return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+    }
+
+    @Override
+    public boolean supports(Class<?> aClass) {
+        return true;
+    }
+
+}
