@@ -994,7 +994,6 @@
         },
         addNotWork() {
           let categoryNondutyVO = this.categoryNondutyList.find(e => e.itemCode === this.categoryNonduty)
-
           this.detailNonDutyVOList.push({
             attributeUrl: categoryNondutyVO.attributeUrl,
             tdadCnotworkid: categoryNondutyVO.itemCode,
@@ -1003,7 +1002,7 @@
             tdadNopen: '',
             tdadNclose: '',
             tdadSeq: Date.now(),
-            tdadCsparechar1: '',
+            tdadCsparechar1: `中断時間登録（携帯端末　${Utils.formatDate(Date.now(),'YYYY-MM-DD hh:mm:ss')}）`,
             tdadNsparenum1: null
 
           })
