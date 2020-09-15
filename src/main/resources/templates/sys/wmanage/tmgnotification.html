@@ -730,7 +730,8 @@
           // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
           // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
           if (!targetAdminSection){
-            if (this.getDeptCode(this.treeData,loginDesignationSection)) {
+            this.getDeptCode(this.treeData,loginDesignationSection)
+            if (this.targetAdminSectionFlag) {
               console.log("getDeptCode_true")
               this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
               this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
@@ -756,18 +757,16 @@
           this.getTableData()
         },
         getDeptCode(data,loginDesignationSection) {
-          let SectionFlag=false
           data.forEach(e => {
             if (e.secid === loginDesignationSection) {
-              SectionFlag = true
+              this.targetAdminSectionFlag = true
             } else {
               const children = e.child || e.children
               if (children) {
-                this.getDeptCode(children)
+                this.getDeptCode(children,loginDesignationSection)
               }
             }
           })
-          return SectionFlag
         },
         getTableData: Debounce(async function (isInit, resetPage) {
           try {
