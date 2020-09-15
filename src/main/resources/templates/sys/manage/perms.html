@@ -69,7 +69,7 @@
         <div class="content_body">
             <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
             <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
-                no-data-text="所属を選択して下さい。" :disabled-hover="true">
+                no-data-text="" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
                         :class="row.main ? 'width75 tl' : 'ml30 width75 tl'" style="font-weight: bold;">{{ row.group }}</span>
@@ -835,6 +835,14 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
+                        if(data.list.length === 0) {
+                            this.$Message.error({
+                                background:true,
+                                closable: true,
+                                duration: 6.5,
+                                content: '指定した改訂日のデータはありません。或は選択した所属にデータはありません。'
+                            });
+                        }
                         // 操作按钮
                         this.btnAddEval = data.btnAddEval
                         this.btnMakeGroup = data.btnAddEval
