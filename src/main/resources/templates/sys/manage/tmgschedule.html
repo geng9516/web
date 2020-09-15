@@ -45,7 +45,7 @@
                         <div slot="content">{{deptName}}</div>
                     </Tooltip>
                 </i-button>
-               <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+               <Drawer class="tc" placement="right" width="700" :closable="false"
                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                 <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
                 <tab-pane label="ツリー" name="organisationTree">

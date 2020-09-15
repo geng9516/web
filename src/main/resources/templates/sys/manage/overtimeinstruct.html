@@ -34,7 +34,7 @@
                         </Tooltip>
                     </i-button>
                     ​
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="selectedTab === '検索'"
+                    <Drawer class="tc" placement="right" width="700" :closable="selectedTab === '検索'"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <Tabs v-model="selectedTab" :animated="false" @on-click="handleTabClick">
                             <tab-pane label="ツリー" name="ツリー">

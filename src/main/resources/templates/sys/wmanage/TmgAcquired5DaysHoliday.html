@@ -30,7 +30,7 @@
                         </Tooltip>
                     </i-button>
                 <!-- 共通組織図画面 start-->
-                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                <Drawer class="tc" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                   <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
                    <tab-pane label="ツリー" name="organisationTree">
                         <div class="titlenorm mt15">
