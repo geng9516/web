@@ -20,13 +20,13 @@
                 </div>
                 <div class="btnbox" v-if="isMonthlyApproval">
                     <span style="flex:1"></span>
-                    <i-button type="text" class="pr15" style="height: 40px;line-height: 45px;font-size: 16px;font-weight: bold;" :loading="monthlyLoading">
+                    <span class="pr15" style="font-size: 16px;font-weight: bold;">
                         {{ `月次承認状況： ${isConfirm==='TMG_DATASTATUS|5' ? '承認済' : '未承認'}` }}
-                    </i-button>
-                    <i-button type="primary" ghost  icon="md-nutrition" v-if="countNotApprovalDay ==='0' && isConfirm !== 'TMG_DATASTATUS|5' && flexTime ==='0:00'"  @click="updateMonth('approval')" :loading="updateMonthloading">承認</i-button>
-                    <i-button  icon="md-nutrition" disabled v-else-if="isConfirm !== 'TMG_DATASTATUS|5'">承認</i-button>
-                    <i-button type="error" icon="md-done-all" v-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed !=1 " @click="updateMonth('cancel')" :loading="updateMonthloading">解除</i-button>
-                    <i-button type="error" icon="md-done-all" v-else-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed ===1 " disabled>解除</i-button>
+                    </span>
+                    <i-button type="primary" ghost  icon="md-done-all" v-if="countNotApprovalDay ==='0' && isConfirm !== 'TMG_DATASTATUS|5' && flexTime ==='0:00'"  @click="updateMonth('approval')" :loading="updateMonthloading">承認</i-button>
+                    <i-button  icon="md-done-all" disabled v-else-if="isConfirm !== 'TMG_DATASTATUS|5'">承認</i-button>
+                    <i-button type="error" icon="md-close" v-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed !=1 " @click="updateMonth('cancel')" :loading="updateMonthloading">解除</i-button>
+                    <i-button icon="md-close" v-else-if="isConfirm === 'TMG_DATASTATUS|5' && isFixed ===1 " disabled>解除</i-button>
                 </div>
             </div>
             <div class="searchwrap">
@@ -212,7 +212,7 @@
 
 
         <!--日次就業実績-->
-        <Drawer  :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
+        <Drawer :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
             <div style="position: relative">
                 <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <div class="mb10 tr">

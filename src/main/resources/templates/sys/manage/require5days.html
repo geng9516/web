@@ -142,7 +142,8 @@
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" disabled-hover :row-class-name="() => 'select-col'"
+                class="mb30" key="forRest1">
                 <template slot-scope="{ row }" slot="radio">
                     <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                 </template>
@@ -184,7 +185,7 @@
                 </template>
 
             </i-table>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" disabled-hover :row-class-name="() => 'select-col'" class="mb30" key="forRest2">
                 <template slot-scope="{ row }" slot="radio">
                     <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                 </template>

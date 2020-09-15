@@ -43,7 +43,7 @@
                 <Row class="tl mb5">
                   <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                   <i-col span="7" class="no-border-radius">
-                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
                                  format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
                   </i-col>
                 </Row>
@@ -58,7 +58,7 @@
             <!-- 共通組織図画面 end-->
             <span style="flex:1"></span>
             <span v-show="tableData2.length > 0">
-                <i-button type="primary" @click="download" >ダウンロード</i-button>
+                <i-button type="primary" ghost icon="md-paper" @click="download" >ダウンロード</i-button>
             </span>
         </div>
     </div>
