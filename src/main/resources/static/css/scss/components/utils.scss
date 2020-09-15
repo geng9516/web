@@ -257,6 +257,9 @@
   max-width: 300px;
   white-space: pre-wrap;
 }
+.ivu-message-notice-with-background .ivu-message-notice-content-error {
+  background: var(--light-pink)
+}
 .no-border-radius {
   border-radius: 0;
   .ivu-select-selection,.ivu-input {

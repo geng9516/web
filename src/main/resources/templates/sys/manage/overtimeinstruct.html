@@ -46,7 +46,7 @@
                                     <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                                     <i-col span="7" class="no-border-radius">
                                         <date-picker type="date"
-                                            :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                                            :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
                                             format="yyyy/MM/dd" ref="datePicker" transfer
                                             @on-change="handleDeptDateChange">
                                         </date-picker>
@@ -108,6 +108,7 @@
                     <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
                 </i-select>
             </div>
+            <Alert class="primary-info">日付をクリックすると、命令画面を表示します。</Alert>
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
                 :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="name">

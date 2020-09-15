@@ -47,7 +47,7 @@
             <Row class="tl mb5">
               <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
               <i-col span="7" class="no-border-radius">
-                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
             </Row>
@@ -353,9 +353,10 @@
                 </span>
               </form-item>
               <form-item label="日付" v-show="!selectedRestInfo.transfer">
-                <date-picker :type="timerangeType === 2 ? 'daterange' : 'date'" class="datepicker-single width100 tl"
-                  v-model="restApply._dateList" @on-change="restApply.dateList = $event" placeholder="日付" format="yyyy/MM/dd"
-                  ref="datepicker" transfer></date-picker>
+                <date-picker type="date" class="datepicker-single width100 tl" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
+                <span v-if="timerangeType === 2">
+                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -5px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                </span>
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
@@ -670,7 +671,10 @@
           restApply: {
             useVacation: false,
             weekSelected: [],
-            noreserved: 1
+            noreserved: 1,
+            _dateList: '',
+            _dateListRange:['', ''],
+            dateListRange:['', '']
           },
           tabPaneLabel: (h) => {
             return h('div', [
@@ -1151,10 +1155,11 @@
               restTypeId: '全て',
               weekSelected: [],
               noreserved: 1,
-              _dateList: ''
+              _dateList: '',
+              _dateListRange: ['', ''],
+              dateListRange: ['', '']
             }
             this.errorInfo = false
-            this.$refs.datepicker.handleClear()
             this.uploadFiles = []
             this.hasPassedTimeCheck = true
             this.selectedRestInfo = {}
@@ -1162,7 +1167,7 @@
           }
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
           const turnLine = Vue.filter('turnLine');
-          this.selectBiko=turnLine(this.flatRestTypeList.find(t => t.ntfId === e).biko)
+          this.selectBiko=turnLine(this.selectedRestInfo.biko)
           //console.log(this.selectedRestInfo)
         },
 
@@ -1207,8 +1212,8 @@
           })
           if (!this.selectedRestInfo.transfer) {
             if (this.timerangeType === 2) {
-              this.restApply.begin = this.restApply.dateList[0]
-              this.restApply.end = this.restApply.dateList[1]
+              this.restApply.begin = this.restApply.dateListRange[0]
+              this.restApply.end = this.restApply.dateListRange[1]
             }
             if (this.timerangeType === 1) {
               this.restApply.begin = this.restApply.dateList
@@ -1226,6 +1231,25 @@
             this.errorMsg = '期間を選んでください。'
             return
           }
+
+          if (this.restApply.begin || this.restApply.end) {
+            if (this.restApply.begin && !this.restApply.end) {
+                this.errorInfo = true
+                this.errorMsg = '開始期間を入力してください'
+                return
+            }
+            if (!this.restApply.begin && this.restApply.end) {
+              this.errorInfo = true
+              this.errorMsg = '終了期間を入力してください。'
+              return
+            }
+            if (this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
+              this.errorInfo = true
+              this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+              return
+            }
+          }
+
           if (this.restApply.timezoneOpen || this.restApply.timezoneClose) {
             if (this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
               this.errorInfo = true
@@ -1316,9 +1340,10 @@
               restTypeId: '全て',
               weekSelected: [],
               noreserved: 1,
-              _dateList: ''
+              _dateList: '',
+              _dateListRange:['', ''],
+              dateListRange:['', '']
             }
-            this.$refs.datepicker.handleClear()
             this.$Message.success('申请完了')
             this.agencyApplyShow = false
             this.getTableData(false, true)
