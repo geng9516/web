@@ -35,16 +35,16 @@ const Utils = {
     }
 
     let result = format.replace(/YYYY/gi, date.getFullYear())
-    result = result.replace(/MM/gi, ('0' + (date.getMonth() + 1)).slice(-2))
+    result = result.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2))
     result = result.replace(/DD/gi, ('0' + date.getDate()).slice(-2))
     result = result.replace(/hh/gi, ('0' + date.getHours()).slice(-2))
-    result = result.replace(/mm/gi, ('0' + date.getMinutes()).slice(-2))
+    result = result.replace(/mm/g, ('0' + date.getMinutes()).slice(-2))
     result = result.replace(/ss/gi, ('0' + date.getSeconds()).slice(-2))
 
-    result = result.replace(/M/gi, date.getMonth() + 1)
+    result = result.replace(/M/g, date.getMonth() + 1)
     result = result.replace(/D/gi, date.getDate())
     result = result.replace(/h/gi, date.getHours())
-    result = result.replace(/m/gi, date.getMinutes())
+    result = result.replace(/m/g, date.getMinutes())
     result = result.replace(/s/gi, date.getSeconds())
 
     return result
