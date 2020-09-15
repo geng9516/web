@@ -125,7 +125,8 @@ const Utils = {
    * @param fristDisable 是否禁用第一项
    *
    */
-  convertTreeData(treeData = [], fristDisable) {
+  convertTreeData(treeData, fristDisable) {
+    if(!treeData) treeData = []
     return treeData.map((e, i) => {
       const children = e.child || e.children
       if (children) {
