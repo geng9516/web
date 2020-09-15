@@ -98,7 +98,7 @@ public class SysLoginInterceptor implements HandlerInterceptor {
         // 如果是登录用户，则执行登录后的一系列逻辑
         if (ShiroUtil.isAuthenticated()) {
             executeLoginSequence(systemList,language);
-            if (timedCache.get(Constant.TOP_NAVS+"_"+httpSession.getId(),true) == null) {
+            if (timedCache.get(Constant.TOP_NAVS+"_"+httpSession.getId(),false) == null) {
                 loadMenus(systemCode, systemList);
             }
         }

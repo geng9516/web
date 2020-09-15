@@ -4,7 +4,6 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.common.Constant;
-import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import org.apache.shiro.session.SessionException;
