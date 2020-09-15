@@ -729,11 +729,23 @@
                     // １．ログインユーザが本人所属部署の承認権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                     // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
                     if (historyReferListSection) {
-                        const sectionInTreeData = this.treeData.some(e => e.secid === historyReferListSection)
+                        const sectionInTreeData = this.treeData.find(e => e.secid === historyReferListSection)
                         if (sectionInTreeData) {
-                            this.deptName = this.treeData.find(e => e.secid === historyReferListSection).groupname
+                            this.deptName = sectionInTreeData.groupname
                             this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        }
+                    } else {
+                        const loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        const sectionInTreeData = this.treeData.find(e => e.secid === loginDesignationSection)
+                        if (sectionInTreeData) {
+                            this.deptName = sectionInTreeData.groupname
+                            this.referListObject.txtTmgReferListTreeViewPermTargetSection = sectionInTreeData.secid
+                            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = sectionInTreeData.groupid
+                        } else {
+                            this.deptName = this.treeData[0].groupname
+                            this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
+                            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
                         }
                     }
                     //一覧画面取得
