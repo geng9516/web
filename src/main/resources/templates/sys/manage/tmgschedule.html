@@ -320,8 +320,6 @@
                 editable:false,
                 isSearchHistory: false,
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
-                preMonthDisable:false,
-                nextMonthDisable:false,
                 postScheduleLoading:false,
                 hatuReiName:'',
                 hatuResTimeRange:'',
@@ -426,8 +424,7 @@
         },
         async mounted() {
             console.log([[${ session }]])
-            this.getOrgTree()
-            this.getSearchCondition()
+            await this.getInit()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
         beforeDestroy() {
@@ -512,11 +509,147 @@
             }
         },
         methods: {
+            async getInit() {
+                let targetPermEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
+                let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                let targetPermGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+                    this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                }
+                await this.getOrgTree()
+                console.log([[${ session }]])
+                console.log(this.treeData)
+                //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                if (targetPermSection) {
+                    let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection,targetPermGroup)
+                    console.log(getEmpCode)
+                    if (getEmpCode) {
+                        console.log(1)
+                        this.getDeptName(this.treeData,targetPermSection,targetPermGroup)
+                        this.getEmpName(this.treeData,targetPermEmp)
+                        this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.referListObject.txtTmgReferListTreeViewPermTargetEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
 
+                        this.query.EmployeeCode = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
+                        this.query.sectionid=[[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.groupid=[[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                    } else {
+                        console.log(2)
+                        this.getDeptName(this.treeData,targetPermSection,targetPermGroup)
+                        this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
+                        this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+
+
+                        this.query.EmployeeCode = this.referListObject.txtTmgReferListTreeViewPermTargetEmp
+                        this.query.sectionid=[[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.query.groupid=[[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+
+                    }
+                }else{
+                    console.log(0)
+                    console.log(this.treeData)
+                    this.deptName = this.treeData[0].label
+                    this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                    this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                    this.referListObject.txtTmgReferListTreeViewPermTargetEmp =this.treeData[0].children[0].empid
+                    this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
+
+                    this.query.EmployeeCode = this.treeData[0].children[0].empid
+                    this.query.sectionid=this.treeData[0].secid
+                    this.query.groupid=this.treeData[0].groupid
+
+                }
+                //一覧画面取得
+
+                await this.getSearchCondition()
+                await this.selectScheduleDateList()
+                await this.getSelectScheduleInfo()
+                await this.getSelectIkkaInfo()
+                await this.getHatuRei()
+                this.isEditable4Schedule()
+
+            },
+            getEmpCode(data,empId,sectionId,groupId) {
+                let dept =false
+
+                if(this.selectedDeptViewType==='all'){
+                    data.forEach(e => {
+                        if ((e.secid === sectionId || e.groupid === groupId) && e.empid === empId) {
+                            dept=true
+                        }
+                    })
+                    if(!dept){
+                        data.forEach(e => {
+                            if (e.secid === sectionId || e.groupid === groupId) {
+                                this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.empid
+                                return dept
+                            }
+                        })
+                    }
+                }else{
+                    data.forEach(e => {
+                        console.log(e)
+                        if (e.secid === sectionId || e.groupid === groupId) {
+                            e.children.forEach(j => {
+                                if (j.empid === empId) {
+                                    console.log(j)
+                                    dept=true
+                                }
+                            })
+                            if(!dept){
+                                console.log(e.children[0].empid)
+                                this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
+                            }
+                        }
+
+                    })
+                }
+
+                return dept
+            },
+            getDeptName(data,section,group) {
+                // idによりループ処理でdeptNameを取得する
+                data.forEach(e => {
+                    if (e.secid === section || e.groupid === group) {
+                        console.log(e)
+                        if(this.selectedDeptViewType==='all'){
+                            this.deptName = e.secnic
+                        }else{
+                            this.deptName = e.label
+                        }
+
+                    }
+                })
+            },
+            getEmpName(data,empId) {
+                // idによりループ処理でdeptNameを取得する
+                if(this.selectedDeptViewType==='all'){
+                    data.forEach(e => {
+                        if (e.empid === empId) {
+                            this.kanjiName = e.empname
+                        }
+                    })
+                }else{
+                    data.forEach(e => {
+                        e.children.forEach(j => {
+                            if (j.empid === empId) {
+                                this.kanjiName = j.empname
+                            }
+                        })
+                    })
+                }
+
+            },
             async isEditable4Schedule(){
                 this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
                 try{
-                    const query = {...this.query,baseDate: this.query.txtBaseDate}
+                    const query = {
+                        EmployeeCode:this.query.EmployeeCode,
+                        psSite:this.query.psSite,
+                        psApp:this.query.psApp,
+                        baseDate: this.query.txtBaseDate}
                     await  this.http.get(`sys/schedule/isEditable`,query)
                     this.editable=true
                     this.editErrMsg=''
@@ -752,17 +885,23 @@
                 if(e[0].children) return
 
                 this.deptDrawShow = false
-                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
+                const group = [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]
 
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
                 this.kanjiName = e[0].empname
                 this.deptName = e[0].secnic
                 this.loginEmployee = e[0].empid
-                this.query.EmployeeCode = e[0].empid
-                this.selectDisabled = true
                 this.wokertypename=e[0].wokertypename
 
+                this.referListObject[section] = e[0].secid
+                this.referListObject[group] = e[0].groupid
+                this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
+
+
+
+                this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
                 this.query.groupid=e[0].groupid
 
@@ -774,12 +913,15 @@
                 this.isEditable4Schedule()
             },
             async getSelectScheduleInfo() {
-                this.nextMonthDisable=false
-                this.preMonthDisable=false
                 const handleTime = Vue.filter('handleTime');
                 this.loading=true
                 try {
-
+                    if( this.defaultDate==''){
+                        this.selectDisabled=false
+                        this.paidHolidayVO=''
+                        this.scheduleDataDTOList=[]
+                        return
+                    }
                     const { data } = await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
                     this.selectScheduleInfo=data
                     this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
@@ -792,16 +934,7 @@
                         return item;
                     })
                     this.yyyyMMdd=this.selectScheduleInfo.period
-                    if(this.selectScheduleInfo.nextStart=='' ||this.selectScheduleInfo.nextEnd==''){
-                        this.nextMonthDisable=false
-                    }else{
-                        this.nextMonthDisable=true
-                    }
-                    if(this.selectScheduleInfo.preStart=='' ||this.selectScheduleInfo.preEnd==''){
-                        this.preMonthDisable=false
-                    }else{
-                        this.preMonthDisable=true
-                    }
+
                     this.value=this.scheduleDataDTOList.map(item=>{
                         let restList=item.timerange_arr.map(r=>{
                             return {
@@ -829,20 +962,6 @@
             },
             postExecuteEditMonthlyUSchedule: Debounce( async function() {
 
-                //
-                // if(this.valueMap.length==0){
-                //     this.$Notice.error({
-                //         title: '注意',
-                //         desc: 'データを選択してください',
-                //         duration: 3.5
-                //     })
-                //     return
-                // }
-               // let postValue=this.valueMap.map(Number).map(i=>this.value[i])
-
-                //let postValue=this.value
-
-
                 let that=this
                 let postValue= this.value.filter(function(obj) {
                     return !that.valuebak.some(function(obj2) {
@@ -854,10 +973,6 @@
                 console.log("postValue"+JSON.stringify(postValue))
                 let result=false
                 postValue.some(e=>{
-                    console.log("workId"+e.workId)
-                    console.log("nopen"+e.nopen)
-                    console.log("nclose"+e.nclose)
-                    console.log("restList"+JSON.stringify(e.restList))
                     let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
                     console.log("count"+count)
                     let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
@@ -908,7 +1023,6 @@
                             }
 
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -938,7 +1052,6 @@
                                 return result
                             }
                             countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
 
                         })){
                             result=true
@@ -961,12 +1074,7 @@
                         }
                         console.log("checkArr2"+checkArr)
                         result = Utils.multipleTimeOverlap(e.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
-                        // const checkArr2 = new Set([...checkArr])
-                        // if (checkArr.length !== checkArr2.size) {
-                        //     that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
-                        //     result=true
-                        //     return result
-                        // }
+
                     }
                 })
 
@@ -982,7 +1090,7 @@
                     endDispDate:txtBaseDate,
                     baseDate:txtEndDate,
                     dispStartDate:Utils.formatDate(Date.now(),'YYYY/MM/DD'),
-                    targetUserId:this.loginEmployee,
+                    targetUserId:this.query.EmployeeCode,
                     loginUserId: [[${ session.psSession.loginEmployee }]]
                 }
 
@@ -1009,8 +1117,15 @@
 
             }),
             async getSelectIkkaInfo() {
-                const query = {...this.query,baseDateIkka:'' }
 
+                const query = {
+                    EmployeeCode:this.query.EmployeeCode,
+                    psSite:this.query.psSite,
+                    psApp:this.query.psApp,
+                    baseDateIkka:'',
+                    sectionid:this.query.sectionid,
+                    groupid:this.query.groupid,
+                }
                 const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`,query)
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
@@ -1107,19 +1222,33 @@
             },
             async selectScheduleDateList() {
                 try {
-                    const query = {...this.query,baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate}
+
+                    const query = {
+                        EmployeeCode:this.query.EmployeeCode,
+                        psSite:this.query.psSite,
+                        psApp:this.query.psApp,
+                        baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate}
                     const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList = data
-                    this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
-                    this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
-                    this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
-
+                    if(this.dispMonthlyList.length>0){
+                        this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
+                        this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
+                        this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
+                    }else{
+                        this.defaultDate=''
+                        this.query.txtBaseDate=''
+                        this.query.txtEndDate=''
+                    }
+                    this.selectDisabled = true
 
                 } catch (error) {
                     return
                 }
             },
             async handleStartMonth(e) {
+                if(!e){
+                    return
+                }
                 let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
                 this.query.txtBaseDate=select.tda_firstDay
                 this.query.txtEndDate=select.tda_endDay

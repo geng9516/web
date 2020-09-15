@@ -342,15 +342,15 @@
                     // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
                     if (historyReferListSection) {
                         this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
-                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     } else{
                         const loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.sectionInTreeData(this.treeData, loginDesignationSection)
                         if (this.deptName !== '選んでください') {
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = loginDesignationSection
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = loginDesignationSection
                         } else {
                             this.deptName = this.treeData[0].children[0].secnic
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                         }
                     }
                     //一覧画面取得
