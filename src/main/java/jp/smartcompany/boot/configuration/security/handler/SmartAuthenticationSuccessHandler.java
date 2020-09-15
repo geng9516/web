@@ -25,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -47,7 +48,7 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp,
-                                      Authentication auth) throws IOException {
+                                      Authentication auth) throws IOException, ServletException {
     HttpSession httpSession = req.getSession();
     String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
     List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
@@ -68,6 +69,15 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
       GlobalResponse r = GlobalResponse.ok("ログイン成功");
       resp.getWriter().write(JSONUtil.toJsonStr(r));
     } else {
+//      System.out.println(req.getRequestURI());
+//      System.out.println(req.getRequestURL());
+//      System.out.println(req.getQueryString());
+//      if (StrUtil.equalsAny(req.getRequestURI(),"/",securityProperties.getLoginSuccessUrl(),"/login")) {
+//        resp.sendRedirect(securityProperties.getLoginSuccessUrl());
+//      } else {
+//        RequestDispatcher dispatcher = req.getRequestDispatcher(req.getRequestURI()+"?"+req.getQueryString());
+//        dispatcher.forward(req, resp);
+//      }
       resp.sendRedirect(securityProperties.getLoginSuccessUrl());
     }
   }

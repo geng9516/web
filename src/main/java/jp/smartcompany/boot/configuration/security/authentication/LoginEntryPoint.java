@@ -29,7 +29,7 @@ public class LoginEntryPoint implements AuthenticationEntryPoint {
             resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
             resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(), "ログイン失敗しました")));
         } else {
-            RequestDispatcher dispatcher = req.getRequestDispatcher("login");
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/login");
             dispatcher.forward(req, resp);
         }
     }

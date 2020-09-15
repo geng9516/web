@@ -26,7 +26,6 @@ public class SecurityUtil {
 		if (!isAuthenticated()){
 			throw new GlobalException(ErrorMessage.SESSION_EXPIRE);
 		}
-		System.out.println(loginUser);
 		return loginUser.getUsername();
 	}
 

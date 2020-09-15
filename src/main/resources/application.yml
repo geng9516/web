@@ -81,14 +81,26 @@ management:
 security:
   # 不需要拦截的url
   whiteList:
+    - /403
+    - /404
+    - /500
     - /actuator/**
     - /login
     - /logout
-    - /sys/**
+    - /McSrvs01
+    - /McSrvs02
+    - /McSrvs03
+    - /McSrvs04
+    - /McSrvs05
+    - /McSrvs06
+    - /McSrvs07
+    - /McSrvs08
+    - /stamping
   # 无需进行登录后授权只需要登录即可的url
   onlyAuthenticationList:
     - /
     - /sys/**
+    - /index
   # 需要忽略的静态资源url
   resourceList:
     - /favicon.ico

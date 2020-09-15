@@ -91,7 +91,6 @@ public class GroupBusiness {
                 log.info("【groupBusiness：{}】",listLoginGroup);
                 if (CollUtil.isNotEmpty(listLoginGroup)) {
                     session.setLoginGroups(MapUtil.<String,List<LoginGroupBO>>builder().put(systemCode,listLoginGroup).build());
-                    System.out.println("+++");
                 }
             }
         });
