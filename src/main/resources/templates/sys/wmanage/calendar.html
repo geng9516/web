@@ -359,12 +359,12 @@
                 sectionInTreeData(data, loginDesignationSection) {
                     data.some(e => {
                         if (e.secid === loginDesignationSection) {
-                            this.deptName = e.label
+                            this.deptName = e.secnic
                             return true
                         } else {
                             const children = e.child || e.children
                             if (children && children.length > 0) {
-                                this.sectionInTreeData(children)
+                                this.sectionInTreeData(children, loginDesignationSection)
                             }
                         }
                     })
