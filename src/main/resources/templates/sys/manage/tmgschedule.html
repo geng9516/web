@@ -247,14 +247,14 @@
                 <span v-if=" isEditable && row._disabled">{{value[row._index].workMM}}</span>
 
                 <i-select v-model="value[row._index].workId" transfer v-else-if=" isEditable" @on-change="handleChangeDivision2(row._index)">
-                    <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
+                    <i-option v-for="(item, i) of kubunnListbak" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
                 <span :class="dayRed(row)" v-else>{{ row.tda_cworkingid_mm }}</span>
             </template>
 
             <template slot-scope="{ row }" slot="workFar">
                 <i-select v-model="value[row._index].bussinessTripid" transfer v-if="isEditable" :disabled="row._disabled">
-                    <i-option v-for="(item, i) of syuccyouList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
+                    <i-option v-for="(item, i) of syuccyouListbak" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
                 </i-select>
                 <span  v-else>{{ row.tda_cbusinesstripid_mm=='なし'?'':row.tda_cbusinesstripid_mm }}</span>
             </template>
@@ -379,7 +379,9 @@
                 selectIkkaInfo:{},
                 workPatternList:[],
                 kubunnList:[],
+                kubunnListbak:[],
                 syuccyouList:[],
+                syuccyouListbak:[],
                 paidHolidayVO:{},
                 scheduleDataDTOList:[],
                 loading: false,             //ローディングアクション-->
@@ -1013,9 +1015,11 @@
                     this.selectIkkaInfo=data
                     this.workPatternList=this.selectIkkaInfo.workPatternList
                     this.kubunnList=this.selectIkkaInfo.kubunnList
+                    this.kubunnListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.kubunnList))
                     this.kubunnList.unshift({"MGD_CMASTERCODE":"TMG_WORK|","MGD_CGENERICDETAILDESC":"(変更しない)"})
 
                     this.syuccyouList=this.selectIkkaInfo.syuccyouList
+                    this.syuccyouListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.syuccyouList))
                     this.syuccyouList.unshift({"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|","MGD_CGENERICDETAILDESC":"(変更しない)"})
 
             },
