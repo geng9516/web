@@ -24,7 +24,8 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary" @click="bulkApproval" :disabled="!approval" :loading="bulkApprovalLoading">月次一括承認</i-button>
+                    <i-button type="primary" icon="md-done-all" @click="bulkApproval" :loading="bulkApprovalLoading" v-if="approval">月次一括承認</i-button>
+                    <i-button icon="md-done-all" disabled v-else>月次一括承認</i-button>
                 </div>
             </div>
             <div class="searchwrap">
@@ -41,7 +42,7 @@
                             <div slot="content">{{deptName}}</div>
                         </Tooltip>
                     </i-button>
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>

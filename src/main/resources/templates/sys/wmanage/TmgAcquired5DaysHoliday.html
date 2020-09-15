@@ -30,7 +30,7 @@
                         </Tooltip>
                     </i-button>
                 <!-- 共通組織図画面 start-->
-                <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
+                <Drawer class="tc" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                   <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
                    <tab-pane label="ツリー" name="organisationTree">
                         <div class="titlenorm mt15">
@@ -142,7 +142,7 @@
                 <Icon type="logo-buffer"></Icon>
                 修正年次休暇付与内容
             </div>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" class="mb30" key="forRest1">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && forRest" disabled-hover :row-class-name="() => 'select-col'" class="mb30" key="forRest1">
                 <template slot-scope="{ row }" slot="radio">
                     <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                 </template>
@@ -184,7 +184,7 @@
                 </template>
 
             </i-table>
-            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" class="mb30" key="forRest2">
+            <i-table border :columns="paidColums" :data="paidData" :loading="loading" v-if="!isSeason && !forRest" disabled-hover :row-class-name="() => 'select-col'" class="mb30" key="forRest2">
                 <template slot-scope="{ row }" slot="radio">
                     <Radio v-model="row.isChecked" @on-change="handleRadio(row._index)"></Radio>
                 </template>

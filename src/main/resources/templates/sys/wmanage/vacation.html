@@ -31,7 +31,7 @@
                             <div slot="content">{{deptName}}</div>
                         </Tooltip>
                     </i-button>
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory"
                             v-model="deptDrawShow">
                         <div class="titlenorm mb5">
@@ -61,7 +61,7 @@
         <i-table  no-data-text="" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
             <div slot-scope="{ row }" slot="name" class="tc">
-                <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width75" @click.stop="showDay(row)">{{ row.name }}</span>
+                <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click.stop="showDay(row)">{{ row.name }}</span>
             </div>
             <template slot-scope="{ row }" slot="workertypenm" >
                 <span>{{ row.workertypenm }}</span>
@@ -87,7 +87,7 @@
         </i-table>
     </div>
 
-    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" draggable :mask-closable ="false">
+    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" :mask-closable ="false">
         <div class="content_body">
             <Row>
                 <i-col span="6" class="label tc">所属</i-col>

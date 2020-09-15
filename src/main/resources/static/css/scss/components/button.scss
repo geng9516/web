@@ -34,7 +34,7 @@
     font-size: 14px;
     font-weight: bold;
     &:nth-child(2n) {
-      color: rgb(78, 159, 248);
+      color: var(--form-label);
       margin-left: 28px;
       &::before {
         content: '';

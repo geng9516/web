@@ -257,6 +257,9 @@
   max-width: 300px;
   white-space: pre-wrap;
 }
+.ivu-message-notice-with-background .ivu-message-notice-content-error {
+  background: var(--light-pink)
+}
 .no-border-radius {
   border-radius: 0;
   .ivu-select-selection,.ivu-input {
@@ -327,6 +330,9 @@
 .ivu-tree-context-menu {
   // 禁止适用tree右键
   display: none;
+}
+.ivu-drawer-header-inner {
+  text-align: center;
 }
 .footer {
   position: relative;

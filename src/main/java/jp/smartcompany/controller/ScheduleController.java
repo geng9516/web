@@ -50,6 +50,10 @@ public class ScheduleController {
                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
         //  System.out.println("controller-->selectScheduleInfo");
         //初期化
+        if (null == txtBaseDate || null == txtEndDate || "".equals(txtBaseDate) || "".equals(txtEndDate)) {
+            //基準時間を制限
+            return new ScheduleInfoVO();
+        }
         tmgScheduleBean.setExecuteParameters(txtBaseDate, txtEndDate, psDBBean);
         return tmgScheduleBean.selectPaidHolidayInfo(txtBaseDate, txtEndDate);
     }
@@ -333,7 +337,7 @@ public class ScheduleController {
      */
     @GetMapping("selectScheduleDateList")
     @ResponseBody
-    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean,  @RequestParam("baseDate") String baseDate) {
+    public List<ScheduleDateListVO> selectScheduleDateList(@RequestAttribute("BeanName") PsDBBean psDBBean, @RequestParam("baseDate") String baseDate) {
         return tmgScheduleBean.selectScheduleDateList(psDBBean, baseDate);
     }
 

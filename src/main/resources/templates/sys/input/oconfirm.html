@@ -75,7 +75,7 @@
         </Row>
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" no-data-text="所属から職員を選んでください。" border :columns="columns"
-                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList" >
+                :row-class-name="() => 'select-col'" :disabled-hover="true" :data="scheduleDataDTOList" >
 
             <template slot-scope="{ row }" slot="intDay">
                 <span :class="dayRed(row)">{{`${row.tda_nmmdd}　${row.tda_nmmday}`}}</span>
@@ -197,7 +197,7 @@
                     {
                         title: '休憩',
                         minWidth: 300,
-                        className: 'urgent change-line',
+                        className: 'checkin change-line',
                         slot: 'restTimeList',
                         align: 'center'
                     },
@@ -253,8 +253,6 @@
                 this.query.txtEndDate=select.tda_endDay
 
                 await this.getSelectScheduleInfo()
-            },
-            rowClass(row) {
             },
             dayRed(e) {
                 console.log(e)

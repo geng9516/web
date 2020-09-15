@@ -222,7 +222,13 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="tdadNdeleteflg" v-if="!bFixed">
-                    <i-button type="error" ghost size="small" class="width100" @click="delNotWork(row)">削除</i-button>
+                    <Poptip v-model="lightDelBtnVisible2[row._index]" placement="left" transfer>
+                        <div class="operateBtn" slot="content">
+                          <a @click="cancelNotWork(row._index)">いいえ</a>
+                          <a @click="delNotWork(row, row._index)">はい</a>
+                        </div>
+                        <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除</i-button>
+                      </Poptip>
                 </template>
             </i-table>
 
@@ -269,7 +275,13 @@
                 </template>
 
                 <template slot-scope="{ row ,index}" slot="tdadNdeleteflg" v-if="!bFixed">
-                    <i-button type="error" ghost size="small" class="width100" @click="delOverWork(row)">削除</i-button>
+                    <Poptip v-model="lightDelBtnVisible[row._index]" placement="left" transfer>
+                        <div class="operateBtn" slot="content">
+                          <a @click="cancelOverWork(row._index)">いいえ</a>
+                          <a @click="delOverWork(row, row._index)">はい</a>
+                        </div>
+                        <i-button type="error" ghost size="small" style="position: relative;left: 3px;width: 60px;">削除</i-button>
+                    </Poptip>
                 </template>
             </i-table>
             </div>
@@ -295,6 +307,8 @@
                 dailyloading:false,
                 contentScrollTop: 0,
                 selectDisabled: false,   　//年月選択可否制御
+                lightDelBtnVisible: [],
+                lightDelBtnVisible2: [],
                 dispMonthlyList: [],       //年月リスト
                 model1: '',
                 targetUser: '',
@@ -910,11 +924,19 @@
                 })
 
             },
-            delNotWork(row) {
+            delNotWork(row, i) {
                 this.detailNonDutyVOList = this.detailNonDutyVOList.filter(e => e.tdadSeq !== row.tdadSeq)
+                this.$set(this.lightDelBtnVisible2, i, false)
             },
-            delOverWork(row) {
+            delOverWork(row, i) {
                 this.detailOverhoursVOList = this.detailOverhoursVOList.filter(e => e.tdadSeq !== row.tdadSeq)
+                this.$set(this.lightDelBtnVisible, i, false)
+            },
+            cancelNotWork(i) {
+                this.$set(this.lightDelBtnVisible2, i, false)
+            },
+            cancelOverWork(i) {
+                this.$set(this.lightDelBtnVisible, i, false)
             },
             //コメントのみ登録
             updateInp: Debounce(function () {

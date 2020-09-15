@@ -20,10 +20,10 @@
         <div class="btnbox">
           <span style="flex:1"></span>
           今回改定日：
-          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="mt5 ml5" size="large"
+          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5"
             format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
           </date-picker>
-          <i-button type="success" icon="md-add" size="large" @click="add" :loading="editLoading">新規</i-button>
+          <i-button type="success" icon="md-add" @click="add" :loading="editLoading">新規</i-button>
         </div>
       </div>
       <div class="searchwrap">

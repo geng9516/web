@@ -710,6 +710,7 @@
                 let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 let targetAdminEmp = [[${ session.txtTmgReferListTreeViewAdminTargetEmp }]]
                 let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+                let loginEmp = [[${ session.psSession.loginDesignation[0].employee }]]
                 if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                     this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
@@ -735,7 +736,7 @@
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                 } else {
-                    await this.getEmpCode(this.treeData,null,loginDesignationSection)
+                    await this.getEmpCode(this.treeData,loginEmp,loginDesignationSection)
                     if (this.EmpSelect) {
                         console.log("3")
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]

@@ -34,7 +34,7 @@
                         </Tooltip>
                     </i-button>
                     ​
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="selectedTab === '検索'"
+                    <Drawer class="tc" placement="right" width="700" :closable="selectedTab === '検索'"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <Tabs v-model="selectedTab" :animated="false" @on-click="handleTabClick">
                             <tab-pane label="ツリー" name="ツリー">
@@ -726,10 +726,11 @@
                     // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                     // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
                     if (!targetAdminSection){
-                        if (this.getDeptCode(this.treeData,loginDesignationSection)) {
+                        this.getDeptCode(this.treeData,loginDesignationSection)
+                        if (this.targetAdminSectionFlag) {
                             console.log("getDeptCode_true")
                             this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                             this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                             this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
@@ -739,7 +740,7 @@
                         } else {
                             console.log("getDeptCode_false")
                             this.deptName = this.treeData[0].children[0].secnic
-                            this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
+                            this.query.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                             this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                             this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                             this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
@@ -750,7 +751,7 @@
                     } else {
                         console.log("getDeptCode")
                         this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
-                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                         this.query.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                         this.query.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
                         this.query.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
@@ -766,18 +767,16 @@
                     this.getTableData()
                 },
                 getDeptCode(data,loginDesignationSection) {
-                    let SectionFlag=false
                     data.forEach(e => {
                         if (e.secid === loginDesignationSection) {
-                            SectionFlag = true
+                            this.targetAdminSectionFlag = true
                         } else {
                             const children = e.child || e.children
                             if (children) {
-                                this.getDeptCode(children)
+                                this.getDeptCode(children,loginDesignationSection)
                             }
                         }
                     })
-                    return SectionFlag
                 },
                 showAverageDraw(e) {
                     this.getAvgTableData(e.empid)

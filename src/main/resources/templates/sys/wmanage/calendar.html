@@ -41,7 +41,7 @@
                             <div slot="content">{{deptName}}</div>
                         </Tooltip>
                     </i-button>
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" placement="right" width="700" :closable="false"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
@@ -359,12 +359,12 @@
                 sectionInTreeData(data, loginDesignationSection) {
                     data.some(e => {
                         if (e.secid === loginDesignationSection) {
-                            this.deptName = e.label
+                            this.deptName = e.secnic
                             return true
                         } else {
                             const children = e.child || e.children
                             if (children && children.length > 0) {
-                                this.sectionInTreeData(children)
+                                this.sectionInTreeData(children, loginDesignationSection)
                             }
                         }
                     })

@@ -32,7 +32,7 @@
                             <div slot="content">{{deptName}}</div>
                         </Tooltip>
                     </i-button>
-                    <Drawer class="tc" title="所属を選択してください" placement="right" width="700" :closable="false"
+                    <Drawer class="tc" placement="right" width="700" :closable="false"
                             :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                         <div class="titlenorm mt15">
                             <Icon type="logo-buffer"></Icon>
@@ -55,7 +55,7 @@
                 </span>
             <span style="flex:1"></span>
             <span v-show="tableData2.length > 0">
-                <i-button type="primary" @click="download" >ダウンロード</i-button>
+                <i-button type="primary" ghost icon="md-paper" @click="download" >ダウンロード</i-button>
             </span>
         </div>
     </div>
