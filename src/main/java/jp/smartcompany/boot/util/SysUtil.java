@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.util;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
@@ -7,6 +8,7 @@ import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.sql.Timestamp;
 import java.text.ParseException;
@@ -493,4 +495,8 @@ public class SysUtil {
         }
     }
 
+
+    public static boolean isAjaxRequest(HttpServletRequest request) {
+        return StrUtil.equalsIgnoreCase("XMLHttpRequest",request.getHeader(Constant.HEADER_XMLHTTPREQUEST));
+    }
 }

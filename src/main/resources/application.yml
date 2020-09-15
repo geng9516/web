@@ -29,7 +29,7 @@ spring:
   jackson:
     default-property-inclusion: ALWAYS
     time-zone: GMT+9
-    date-format: yyyy-MM-dd HH:mm:ss
+    date-format: yyyy/MM/dd HH:mm:ss Z
     serialization:
       WRITE_DATES_AS_TIMESTAMPS: false
       FAIL_ON_EMPTY_BEANS: false
@@ -59,7 +59,6 @@ spring:
 mybatis-plus:
   mapper-locations: classpath*:jp/smartcompany/job/modules/core/mapper/*Mapper.xml
   type-enums-package: jp.smartcompany.job.modules.*.pojo.enums
-#  type-handlers-package: jp.smartcompany.modules.common.pojo.handler,jp.smartcompany.modules.vacation.pojo.handler
   global-config:
     db-config:
       id-type: INPUT
@@ -71,3 +70,33 @@ mybatis-plus:
     banner: false
   configuration:
     jdbc-type-for-null: NULL
+management:
+  endpoints:
+    web:
+      exposure:
+        include: metrics,info,health
+  endpoint:
+    health:
+      show-details: always
+security:
+  # 不需要拦截的url
+  whiteList:
+    - /actuator/**
+    - /login
+    - /logout
+    - /sqltest
+  # 无需进行登录后授权只需要登录即可的url
+  onlyAuthenticationList:
+    - /
+  # 需要忽略的静态资源url
+  resourceList:
+    - /favicon.ico
+    - /static/**
+  # 退出成功后的转向url
+  logoutSuccessUrl: /login
+  # 登录成功后的转向url
+  loginSuccessUrl: /home
+  # 登陆失败后的转向url
+  loginFailureUrl: /login
+  # 授权失败的转向url
+  accessDeniedUrl: /403
