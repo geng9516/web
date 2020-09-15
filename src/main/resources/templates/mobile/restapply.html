@@ -80,10 +80,10 @@
                <!-- 有振休 -->
                <section v-show="selectedRestInfo.transfer" class="tl">
                   <p class="mb5">出勤にする休日</p>
-                  <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5" placeholder="日付け"
+                  <date-picker type="date" :value="restApply.begin" class="datepicker-single mb10" placeholder="日付け"
                      :editable="false" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
                   <p class="mb5">振休日とする出勤日</p>
-                  <date-picker type="date" :value="restApply.end" class="datepicker-single mb5" placeholder="日付け"
+                  <date-picker type="date" :value="restApply.end" class="datepicker-single mb10" placeholder="日付け"
                      :editable="false" format="yyyy/MM/dd" @on-change="restApply.end = $event"></date-picker>
                </section>
 
@@ -97,8 +97,7 @@
                <!-- 有加算日-->
                <section v-show="selectedRestInfo.addDate" class="tl mt20">
                   <p class="mb5">加算日数</p>
-                  <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span
-                        slot="append">日</span></i-input-number>
+                  <input-number :max="99" :min="1" class="mb15 tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
                </section>
 
                <!-- 是小时单位的 時間帯 -->
@@ -152,40 +151,40 @@
                      </i-col>
                   </Row>
                </section>
+               <!-- 是有氏名的-->
+               <section v-show="selectedRestInfo.name" class="tl mt20">
+                  <p class="mb5">氏名</p>
+                  <i-input class="mb15" v-model="restApply.txtName" />
+               </section>
+
+               <!-- 是有続柄的-->
+               <section v-show="selectedRestInfo.relation" class="tl">
+                  <p class="mb5">続柄</p>
+                  <i-input class="mb15" v-model="restApply.txtRelation" />
+               </section>
+
+               <!-- 是有対象の人数的-->
+               <section v-show="selectedRestInfo.targetNumber " class="tl">
+                  <p class="mb5">対象の人数</p>
+                  <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber"
+                     placeholder="人数"><span slot="append">人</span></i-input-number>
+               </section>
+
+               <!-- 有生年月日-->
+               <section v-show="selectedRestInfo.birthday" class="tl">
+                  <p class="mb5">生年月日</p>
+                  <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb15"
+                     :editable="false" placeholder="日付け" format="yyyy/MM/dd"
+                     @on-change="restApply.txtBirthday = $event"></date-picker>
+               </section>
+
+               <!-- 有伤病-->
+               <section v-show="selectedRestInfo.sickName" class="tl">
+                  <p class="mb5">傷病名</p>
+                  <i-input v-model="restApply.txtSickName" />
+               </section>
+
                <Alert class="mt30 right-info sub">
-                  <!-- 是有氏名的-->
-                  <section v-show="selectedRestInfo.name" class="tl">
-                     <p class="mb5">氏名</p>
-                     <i-input class="mb15" v-model="restApply.txtName" />
-                  </section>
-
-                  <!-- 是有続柄的-->
-                  <section v-show="selectedRestInfo.relation" class="tl">
-                     <p class="mb5">続柄</p>
-                     <i-input class="mb15" v-model="restApply.txtRelation" />
-                  </section>
-
-                  <!-- 是有対象の人数的-->
-                  <section v-show="selectedRestInfo.targetNumber " class="tl">
-                     <p class="mb5">対象の人数</p>
-                     <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber"
-                        placeholder="人数"><span slot="append">人</span></i-input-number>
-                  </section>
-
-                  <!-- 有生年月日-->
-                  <section v-show="selectedRestInfo.birthday" class="tl">
-                     <p class="mb5">生年月日</p>
-                     <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb15"
-                        :editable="false" placeholder="日付け" format="yyyy/MM/dd"
-                        @on-change="restApply.txtBirthday = $event"></date-picker>
-                  </section>
-
-                  <!-- 有伤病-->
-                  <section v-show="selectedRestInfo.sickName" class="tl">
-                     <p class="mb5">傷病名</p>
-                     <i-input v-model="restApply.txtSickName" />
-                  </section>
-
                   <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
                      label,restTime,sickApply -->
                   <Divider size="small" orientation="left">添付ファイル</Divider>
