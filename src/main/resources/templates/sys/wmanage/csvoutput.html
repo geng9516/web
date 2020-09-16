@@ -1,503 +1,568 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='帳票出力',cssPaths='/pages/content.min.css,' + '/pages/csvoutput.min.css')">
+<head th:replace="layout/header::common_header(title='帳票出力',cssPaths='/pages/content.min.css,')">
 </head>
 
 <body>
-<div th:replace="layout/loadingBar::loadingBar"></div>
-<!-- 菜单导航栏 -->
-<div th:replace="layout/sider"></div>
-<main class="content tmgLedger-warp" ref="layout">
-    <div class="content_body tc">
-        <Card :loading = "yearSelectLoading" class="card" title="帳票出力選択">
-            <!--            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>-->
-            <Divider class="mb10" orientation="left" size="default">帳票種別</Divider>
-            <i-select @on-change="handleRestType" class="mb20 non-border-input" placeholder="帳票種別" style="width: 450px" v-model="curFileType">
-                <i-option :key="item.mgdSort" :value="item.mgdSort" v-for="item of fileTypes">{{ item.mgdLedgerSheetName }}</i-option>
-            </i-select>
+    <div th:replace="layout/loadingBar::loadingBar"></div>
+    <!-- 菜单导航栏 -->
+    <div th:replace="layout/sider"></div>
+    <main class="content tmgLedger-warp" ref="layout">
+        <div class="content_head">
+            <div class="header">
+                <div class="title1">
+                    <h1>
+                        <Icon type="i-emeer colored"></Icon>
+                        {{ `帳票出力` }}
+                    </h1>
+                </div>
+                <div class="btnbox">
+                </div>
+            </div>
+        </div>
+        <div class="content_body tc">
+            <div class="mt20 tl">
+                <div class="ml20">
+                    <!-- 帳票種別 -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>帳票種別</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <i-select @on-change="handleRestType" class="mb20 non-border-input" placeholder="帳票種別"
+                                style="width: 450px" v-model="curFileType">
+                                <i-option :key="item.mgdSort" :value="item.mgdSort" v-for="item of fileTypes">
+                                    {{ item.mgdLedgerSheetName }}</i-option>
+                            </i-select>
+                        </i-col>
+                    </Row>
+                </div>
 
-            <span v-if="curFileTypeInfo.mgdOutputTargetType=='EMP'">
-               <Divider class="mb10" orientation="left" size="default">対象職員</Divider>
-                <p @click="deptDrawShow = true" class="csv-p pb5">{{ empName }}</p>
-               <!-- 共通組織図画面 start-->
-                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right" title="所属職員を選択してください"
-                     v-model="deptDrawShow" width="700">
-                      <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                       <Row class="tl mb5">
-                            <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
-                            <i-col class="no-border-radius" span="7">
-                            <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange"
-                                         format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" type="date"></date-picker>
-                            </i-col>
-                        </Row>
-                        <Tree :data="treeData" @on-select-change="handleClickLeafDeptEmp" class="tree mt2" empty-text="所属データなし"
-                              ref="tree"></Tree>
-                        <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            職員
-                        </div>
-                        <div style="position: relative;">
-                            <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2" empty-text="職員データなし"></Tree>
-                            <Spin fix size="large" v-if="emplistLoading"></Spin>
-                        </div>
-                    </Drawer>
-               <!-- 共通組織図画面 end-->
-                </span>
-            </span>
+                <div class="ml20" v-if="curFileTypeInfo.mgdOutputTargetType=='EMP'">
+                    <!-- 対象職員 -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象職員</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <p @click="deptDrawShow = true" class="csv-p pb5">{{ empName }}</p>
+                            <!-- 共通組織図画面 start-->
+                            <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
+                                title="所属職員を選択してください" v-model="deptDrawShow" width="700">
+                                <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+                                <Row class="tl mb5">
+                                    <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                                    <i-col class="no-border-radius" span="7">
+                                        <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                            @on-change="handleDeptDateChange" format="yyyy/MM/dd" placeholder="基準日"
+                                            ref="datePicker" type="date"></date-picker>
+                                    </i-col>
+                                </Row>
+                                <Tree :data="treeData" @on-select-change="handleClickLeafDeptEmp" class="tree mt2"
+                                    empty-text="所属データなし" ref="tree"></Tree>
+                                <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    職員
+                                </div>
+                                <div style="position: relative;">
+                                    <Tree :data="empTreeData" @on-select-change="handleClickEmpLeaf" class="tree mt2"
+                                        empty-text="職員データなし"></Tree>
+                                    <Spin fix size="large" v-if="emplistLoading"></Spin>
+                                </div>
+                            </Drawer>
+                            <!-- 共通組織図画面 end-->
+                        </i-col>
+                    </Row>
+                </div>
 
-            <span v-if="curFileTypeInfo.mgdOutputTargetType=='ORG'">
-               <Divider class="mb10" orientation="left" size="default">対象部署</Divider>
-                <p @click="deptDrawShow = true" class="csv-p pb5">{{ deptName }}</p>
-                <!-- 共通組織図画面 start-->
-                   <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
-                           v-model="deptDrawShow" width="700">
-                      <div class="titlenorm mt15">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                       <Row class="tl mb5">
-                            <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
-                            <i-col class="no-border-radius" span="7">
-                            <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange" transfer
-                                         format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" type="date"></date-picker>
-                            </i-col>
-                        </Row>
-                        <Tree :data="treeData" @on-select-change="handleClickLeafDept" class="tree mt2" empty-text="所属データなし"
-                              ref="tree"></Tree>
-                    </Drawer>
-                <!-- 共通組織図画面 end-->
-            </span>
+                <div class="ml20" v-if="curFileTypeInfo.mgdOutputTargetType=='ORG'">
+                    <!-- パスワード -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象部署</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <p @click="deptDrawShow = true" class="csv-p pb5">{{ deptName }}</p>
+                            <!-- 共通組織図画面 start-->
+                            <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
+                                v-model="deptDrawShow" width="700">
+                                <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+                                <Row class="tl mb5">
+                                    <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                                    <i-col class="no-border-radius" span="7">
+                                        <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                            @on-change="handleDeptDateChange" transfer format="yyyy/MM/dd"
+                                            placeholder="基準日" ref="datePicker" type="date"></date-picker>
+                                    </i-col>
+                                </Row>
+                                <Tree :data="treeData" @on-select-change="handleClickLeafDept" class="tree mt2"
+                                    empty-text="所属データなし" ref="tree"></Tree>
+                            </Drawer>
+                            <!-- 共通組織図画面 end-->
+                        </i-col>
+                    </Row>
+                </div>
 
+                <div class="ml20" v-if="curFileTypeInfo.mgdOutputTermType=='YEAR'">
+                    <!-- パスワード -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象年度</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <i-select class="mb20 non-border-input" :loading="yearSelectLoading" style="width: 450px"
+                                placeholder="対象年度" transfer v-model="curYear" @on-change="handleTargetYear($event)">
+                                <i-option :key="index" :label="item.disp" :value="item.disp"
+                                    v-for="(item, index) of yearSelect">
+                                </i-option>
+                            </i-select>
+                        </i-col>
+                    </Row>
+                </div>
 
-        <span v-if="curFileTypeInfo.mgdOutputTermType=='YEAR'">
-          <Divider class="mb10" orientation="left" size="default">対象年度</Divider>
-          <i-select
-                  class="mb20 non-border-input"
-                  :loading = "yearSelectLoading"
-                  style="width: 450px"
-                  placeholder="対象年度"
-                  transfer
-                  v-model="curYear"
-                  @on-change="handleTargetYear($event)"
-          >
-            <i-option :key="index" :label="item.disp" :value="item.disp"v-for="(item, index) of yearSelect" ></i-option>
-          </i-select>
-        </span>
+                <div class="ml20"
+                    v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'EMP'">
+                    <!-- 表示開始月 -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>表示開始月</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <i-select class="mb20 non-border-input" placeholder="対象月" style="width: 450px" transfer
+                                v-model="curMonth" @on-change="handleStartMonth($event)">
+                                <i-option :key="index" :label="item" :value="index + 1"
+                                    v-for="(item, index) of monthSelect">
+                                </i-option>
+                            </i-select>
+                        </i-col>
+                    </Row>
+                </div>
 
-        <span v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'EMP'">
-          <Divider class="mb10" orientation="left" size="small">表示開始月</Divider>
-          <i-select
-                  class="mb20 non-border-input"
-                  placeholder="対象月"
-                  style="width: 450px"
-                  transfer
-                  v-model="curMonth"
-                  @on-change="handleStartMonth($event)"
-          >
-            <i-option :key="index" :label="item" :value="index + 1" v-for="(item, index) of monthSelect"></i-option>
-          </i-select>
-        </span>
+                <div class="ml20" v-if="curFileTypeInfo.mgdOutputTermType=='MONTH'">
+                    <!-- 対象年月 -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象年月</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <i-select class="mb20 non-border-input" placeholder="対象年月" style="width: 450px" transfer
+                                v-model="curYearMonth" @on-change="handleTargetYearMonth($event)">
+                                <i-option :key="index" :label="item.disp" :value="item.disp"
+                                    v-for="(item, index) of yearMonthSelect"></i-option>
+                            </i-select>
+                        </i-col>
+                    </Row>
+                </div>
 
-        <span v-if="curFileTypeInfo.mgdOutputTermType=='MONTH'">
-          <Divider class="mb10" orientation="left" size="small">対象年月</Divider>
-          <i-select
-                  class="mb20 non-border-input"
-                  placeholder="対象年月"
-                  style="width: 450px"
-                  transfer
-                  v-model="curYearMonth"
-                  @on-change="handleTargetYearMonth($event)"
-          >
-            <i-option :key="index" :label="item.disp" :value="item.disp"v-for="(item, index) of yearMonthSelect" ></i-option>
-          </i-select>
-        </span>
+                <div class="ml20" v-if="curFileTypeInfo.mgdOutputTermType=='TERM'">
+                    <!-- 対象期間 -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象期間</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <date-picker @on-change="handleTermFromDateChange" format="yyyy/MM/dd"
+                                placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
+                            <date-picker @on-change="handleTermToDateChange" format="yyyy/MM/dd" placement="bottom-end"
+                                style="width:47%" transfer type="date"></date-picker>
+                        </i-col>
+                    </Row>
+                </div>
 
-        <span v-if="curFileTypeInfo.mgdOutputTermType=='TERM'">
-          <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
-          <date-picker @on-change="handleTermFromDateChange" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-          <date-picker @on-change="handleTermToDateChange" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-        </span>
+                <div class="ml20"
+                    v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'ORG'">
+                    <!-- 法定内超勤を含める -->
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>法定内超勤を含める</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <radio-group :value="1" @on-change="changeModel" class="mt10 mb10">
+                                <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
+                                <Radio :label="0" class="custom-radio" style="padding:8px 100px;">いいえ</Radio>
+                            </radio-group>
+                        </i-col>
+                    </Row>
+                </div>
 
-        <span v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'ORG'">
-          <Divider class="mb10" orientation="left" size="small">法定内超勤を含める</Divider>
-          <radio-group :value="1" @on-change="changeModel" class="mt10 mb10">
-            <Radio :label="1" class="custom-radio" style="padding:8px 100px;">はい</Radio>
-            <Radio :label="0" class="custom-radio" style="padding:8px 100px;">いいえ</Radio>
-          </radio-group>
-        </span>
-            <i-button
-                    :loading="pdfDownloadLoading"
-                    @click="downLoadByPdf"
-                    class="mt30 mr10"
-                    ghost
-                    icon="md-download"
-                    style="width:49%"
-                    type="primary" v-if="curFileTypeInfo.mgdPdfDlflg=='TMG_ONOFF|1'">
-                PDFダウンロード
-            </i-button>
+                <Row>
+                    <i-col span="9" style="margin-left: 29.933333%">
+                        <i-button :loading="pdfDownloadLoading" @click="downLoadByPdf" class="mt30 mr10" ghost
+                            icon="md-download" type="primary" style="width: 450px;"
+                            v-if="curFileTypeInfo.mgdPdfDlflg=='TMG_ONOFF|1'">
+                            PDFダウンロード
+                        </i-button>
 
-            <i-button
-                    :loading="csvDownloadLoading"
-                    @click="downLoadByPdf"
-                    class="mt30"
-                    ghost
-                    icon="md-download"
-                    style="width:49%"
-                    type="primary" v-if="curFileTypeInfo.mgdCsvDlflg=='TMG_ONOFF|1'">
-                CSVダウンロード
-            </i-button>
-        </Card>
-    </div>
-</main>
+                        <i-button :loading="csvDownloadLoading" @click="downLoadByPdf" class="mt30" ghost
+                            icon="md-download" type="primary" style="width: 450px;"
+                            v-if="curFileTypeInfo.mgdCsvDlflg=='TMG_ONOFF|1'">
+                            CSVダウンロード
+                        </i-button>
+                    </i-col>
+                </Row>
+            </div>
+        </div>
+    </main>
 
-<div th:replace="layout/head::header"></div>
-<script th:inline="javascript" type="text/babel">
-    const DEPT_STATLIST = new Vue({
-        el: '.tmgLedger-warp',
-        data() {
-            return {
-                monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
-                yearMonthSelect: [], //対象年月
-                yearSelect: [],      //対象年度
-                yearSelectLoading: false,
-                referListObject: {
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
-                    [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
-                    [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                    [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
-                    txtTmgReferListTreeViewRecordDate: '',
-                    psSite: Utils.getUrlParam(location.href, 'psSite'),
-                    psApp: Utils.getUrlParam(location.href, 'psApp'),
-                    type: 11
-                },
-                localValue: {
-                    id: '',
-                    deptId: '',
-                    year: new Date()
-                },
-                curMonth: 1,
-                curYearMonth: '',
-                curYear: '',
-                curFileType: '0',
-                fileTypes: [],
-                deptName: '選んでください',   //対象部署
-                empName: '選んでください',    //対象職員
-                selectDeptNameFlg: false,       //対象部署選択フラグ
-                selectEmpNameFlg: false,        //対象職員フラグ
-                deptDrawShow: false,         //組織ツリー用
-                treeData: [],                //組織ツリー用
-                empTreeData: [],             //組織ツリー用
-                emplistLoading: false,       //職員番号ローディング用動画
-                ledgerParamVO: {
-                    txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
-                    txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
-                    txtEmp: '',
-                    hidEmpId: '',
-                    txtOrg: '',
-                    hidOrgId: '',
-                    txtYYYY: '',
-                    txtYYYYMM: '',
-                    txtTermFrom: '',
-                    txtTermTo: '',
-                    txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
-                    txtIncludeOt100Flg: '1',
-                    psSecurityDate: '',
-                    selLedgerSheet: '',
-                    selYear: '',
-                    selMonth: '',
-                    psSite: Utils.getUrlParam(location.href, 'psSite'),
-                    psApp: Utils.getUrlParam(location.href, 'psApp'),
-                },
-                query: {},
-                isSearchHistory: false,
-                searchLevel: [],
-                errorInfo: false,
-                errorMsg: '',
-                deptLoading: false,
-                empolyeeLoading: false,
-                empolyeeList: [],
-                pdfDownloadLoading: false,
-                csvDownloadLoading: false,
-                restType: 0
-            }
-        },
-         created() {
-            this.getIniDispPara();
-        },
-        async mounted() {
-            this.getOrgTree();
-        },
-        computed: {
-            curFileTypeInfo() {
-                return this.fileTypes.find(t => t.mgdSort === this.curFileType) || {}
-            }
-        },
-        methods: {
-            async getIniDispPara() {
-                this.yearSelectLoading = true
-
-                const { data } = await this.http.get('sys/tmgLedger/iniDisp', this.query)
-
-                this.fileTypes = data.ledgerSheetVo
-                this.yearMonthSelect = data.listBoxMonthVo
-                this.yearSelect = data.listBoxYearVo
-
-                console.log("getIniDispPara_ledgerSheetVo")
-                console.log(this.fileTypes)
-
-                //デフォルトの帳票種別を設定する
-                if (this.fileTypes.length > 0){
-                    this.ledgerParamVO.selLedgerSheet = this.fileTypes[0].mgdLedgerSheetId
-                    this.ledgerParamVO.txtLedgerSheetId = this.fileTypes[0].mgdLedgerSheetId
+    <div th:replace="layout/head::header"></div>
+    <script th:inline="javascript" type="text/babel">
+        const DEPT_STATLIST = new Vue({
+            el: '.tmgLedger-warp',
+            data() {
+                return {
+                    monthSelect: Utils.getNumArray(1, 12).map(e => `${e}月`),  //表示開始月
+                    yearMonthSelect: [], //対象年月
+                    yearSelect: [],      //対象年度
+                    yearSelectLoading: false,
+                    referListObject: {
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
+                        [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
+                        [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                        [[${ TREEVIEW_KEY_REFRESH_FLG }]]: '',
+                        txtTmgReferListTreeViewRecordDate: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                        type: 11
+                    },
+                    localValue: {
+                        id: '',
+                        deptId: '',
+                        year: new Date()
+                    },
+                    curMonth: 1,
+                    curYearMonth: '',
+                    curYear: '',
+                    curFileType: '0',
+                    fileTypes: [],
+                    deptName: '選んでください',   //対象部署
+                    empName: '選んでください',    //対象職員
+                    selectDeptNameFlg: false,       //対象部署選択フラグ
+                    selectEmpNameFlg: false,        //対象職員フラグ
+                    deptDrawShow: false,         //組織ツリー用
+                    treeData: [],                //組織ツリー用
+                    empTreeData: [],             //組織ツリー用
+                    emplistLoading: false,       //職員番号ローディング用動画
+                    ledgerParamVO: {
+                        txtAction: 'ACT_LEDGER_PDF_DOWNLOAD',
+                        txtLedgerSheetId: 'ATTENDANCEBK_YEARLY',
+                        txtEmp: '',
+                        hidEmpId: '',
+                        txtOrg: '',
+                        hidOrgId: '',
+                        txtYYYY: '',
+                        txtYYYYMM: '',
+                        txtTermFrom: '',
+                        txtTermTo: '',
+                        txtAtdBookTermFrom: '1',//デフォルト：1月を設定する
+                        txtIncludeOt100Flg: '1',
+                        psSecurityDate: '',
+                        selLedgerSheet: '',
+                        selYear: '',
+                        selMonth: '',
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
+                        psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    },
+                    query: {},
+                    isSearchHistory: false,
+                    searchLevel: [],
+                    errorInfo: false,
+                    errorMsg: '',
+                    deptLoading: false,
+                    empolyeeLoading: false,
+                    empolyeeList: [],
+                    pdfDownloadLoading: false,
+                    csvDownloadLoading: false,
+                    restType: 0
                 }
-
-                //デフォルトの対象年月を設定する
-                if (this.yearMonthSelect.length > 0){
-                    this.curYearMonth = this.yearMonthSelect[0].disp
-                    this.ledgerParamVO.selMonth = this.yearMonthSelect[0].disp + "/01"
-                    this.ledgerParamVO.txtYYYYMM = this.yearMonthSelect[0].disp + "/01"
-                }
-
-                //デフォルトの対象年度を設定する
-                if (this.yearSelect.length > 0){
-                    this.curYear = this.yearSelect[0].disp
-                    this.ledgerParamVO.selYear = this.yearSelect[0].disp
-                    this.ledgerParamVO.txtYYYY = this.yearSelect[0].disp
-                }
-                this.yearSelectLoading = false
-
             },
-            async getOrgTree() {
-                try {
-                    const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-                    // 先将数据转为标准格式，再转为可用数据
-                    this.treeData = Utils.convertTreeData(orgList)
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                    this.ledgerParamVO.psSecurityDate = recordDate
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
+            created() {
+                this.getIniDispPara();
+            },
+            async mounted() {
+                this.getOrgTree();
+            },
+            computed: {
+                curFileTypeInfo() {
+                    return this.fileTypes.find(t => t.mgdSort === this.curFileType) || {}
                 }
             },
-            async handleDeptDateChange(e) {
-                this.referListObject.txtTmgReferListTreeViewRecordDate = e
-                this.isSearchHistory = true
-                await this.getOrgTree()
-                if(this.treeData.length !== 0) {
-                       this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+            methods: {
+                async getIniDispPara() {
+                    this.yearSelectLoading = true
+
+                    const { data } = await this.http.get('sys/tmgLedger/iniDisp', this.query)
+
+                    this.fileTypes = data.ledgerSheetVo
+                    this.yearMonthSelect = data.listBoxMonthVo
+                    this.yearSelect = data.listBoxYearVo
+
+                    console.log("getIniDispPara_ledgerSheetVo")
+                    console.log(this.fileTypes)
+
+                    //デフォルトの帳票種別を設定する
+                    if (this.fileTypes.length > 0) {
+                        this.ledgerParamVO.selLedgerSheet = this.fileTypes[0].mgdLedgerSheetId
+                        this.ledgerParamVO.txtLedgerSheetId = this.fileTypes[0].mgdLedgerSheetId
                     }
-            },
-            rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
-            },
-            showDay: Debounce(function () {
-                this.isShow = true
-            }),
-            convertTreeData(treeData = []) {
-                return treeData.map(e => {
-                    const children = e.child || e.children
-                    if (children) {
-                        return {
-                            ...e.data,
-                            title: e.data.label,
-                            // 前两层级默认展开方便查看
-                            expand: e.data.level < 2 || !e.data.level,
-                            children: this.convertTreeData(children)
-                        }
-                    } else {
-                        return {
-                            ...e.data,
-                            title: e.data.label
-                        }
+
+                    //デフォルトの対象年月を設定する
+                    if (this.yearMonthSelect.length > 0) {
+                        this.curYearMonth = this.yearMonthSelect[0].disp
+                        this.ledgerParamVO.selMonth = this.yearMonthSelect[0].disp + "/01"
+                        this.ledgerParamVO.txtYYYYMM = this.yearMonthSelect[0].disp + "/01"
                     }
-                })
-            },
-            async handleClickLeafDept(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
 
-                console.log('handleClickLeafDept')
-                console.log(e)
-                this.deptDrawShow = false
-                this.deptName = e[0].secnic
-                this.selectDeptNameFlg =true
-                this.ledgerParamVO.hidOrgId = e[0].secid
-            },
-            async handleClickLeafDeptEmp(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
+                    //デフォルトの対象年度を設定する
+                    if (this.yearSelect.length > 0) {
+                        this.curYear = this.yearSelect[0].disp
+                        this.ledgerParamVO.selYear = this.yearSelect[0].disp
+                        this.ledgerParamVO.txtYYYY = this.yearSelect[0].disp
+                    }
+                    this.yearSelectLoading = false
 
-                console.log('handleClickLeafDeptEmp')
-                console.log(e)
-
-                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                this.referListObject[section] = e[0].secid
-                // this.deptName = e[0].secnic
-
-                this.getEmpList()
-
-            },
-            handleClickEmpLeaf(e) {
-                console.log("handleClickEmpLeaf")
-                console.log(e)
-                this.deptDrawShow = false
-
-                this.ledgerParamVO.hidEmpId = e[0].empid
-                this.empName = e[0].empname
-
-                this.selectEmpNameFlg=true
-
-                //組織図のロック解除
-                this.isSearchHistory = false
-            },
-
-            async getEmpList() {
-                try {
-                    this.emplistLoading = true
-                    //初期化及び前回データをクリアする
-                    this.empTreeData = []
-                    this.referListObject.type = '11'
-                    const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(empList[0].child)
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                } catch (error) {
-                    return
-                } finally {
-                    this.emplistLoading = false
-                }
-            },
-            dateFormat(e) {
-                //YYYY年MM月からYYYY/MM/01へ変換する
-                let yearMMDD = e.replace("年","/")
-                yearMMDD = yearMMDD.replace("月","/")
-                yearMMDD = yearMMDD+"01"
-                return  yearMMDD
-            },
-            async downLoadByPdf() {
-                console.log(this.empName)
-                if (this.errorCheck()){
+                },
+                async getOrgTree() {
                     try {
-                        this.pdfDownloadLoading = true
-                        const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO,true)
-                        Utils.downloadFile(data,decodeURI(headers.filename,"UTF-8"),'application/pdf')
-                    } catch (e) {
-                        this.pdfDownloadLoading = false
-                        this.isSearchHistory = false
+                        const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+                        // 先将数据转为标准格式，再转为可用数据
+                        this.treeData = Utils.convertTreeData(orgList)
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                        this.ledgerParamVO.psSecurityDate = recordDate
+                    } catch (error) {
                         return
                     } finally {
-                        this.errorInfo = false
-                        this.pdfDownloadLoading = false
-                        this.isSearchHistory = false
+                        this.loading = false
                     }
-                }
-            },
-            handleRestType(e) {
-              console.log("handleRestType")
-              console.log(e)
-                this.restType = e
-                this.ledgerParamVO.txtLedgerSheetId = this.curFileTypeInfo.mgdLedgerSheetId
-                this.ledgerParamVO.selLedgerSheet = this.curFileTypeInfo.mgdLedgerSheetId
-            },
-            handleTargetYear: Debounce(async function (e) {
-                this.ledgerParamVO.txtYYYY = e
-                this.ledgerParamVO.selYear = e
+                },
+                async handleDeptDateChange(e) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    this.isSearchHistory = true
+                    await this.getOrgTree()
+                    if (this.treeData.length !== 0) {
+                        this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                    }
+                },
+                rowClass(row) {
+                    // 表格变色
+                    if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
+                        return ''
+                    }
+                    return 'sat'
+                },
+                showDay: Debounce(function () {
+                    this.isShow = true
+                }),
+                convertTreeData(treeData = []) {
+                    return treeData.map(e => {
+                        const children = e.child || e.children
+                        if (children) {
+                            return {
+                                ...e.data,
+                                title: e.data.label,
+                                // 前两层级默认展开方便查看
+                                expand: e.data.level < 2 || !e.data.level,
+                                children: this.convertTreeData(children)
+                            }
+                        } else {
+                            return {
+                                ...e.data,
+                                title: e.data.label
+                            }
+                        }
+                    })
+                },
+                async handleClickLeafDept(e) {
+                    //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                    //よって、二回目クリックすると、何もしない
+                    if (!e[0]) return
 
-            }),
-            handleTargetYearMonth: Debounce(async function (e) {
-                this.ledgerParamVO.txtYYYYMM = e + "/01"
-                this.ledgerParamVO.selMonth = e + "/01"
-            }),
-            handleStartMonth: Debounce(async function (e) {
-                this.ledgerParamVO.txtAtdBookTermFrom = e
-            }),
-            async handleTermFromDateChange(e) {
-                this.ledgerParamVO.txtTermFrom = e
-            },
-            async handleTermToDateChange(e) {
-                this.ledgerParamVO.txtTermTo = e
-            },
-            changeModel(e) {
-                console.log("changeModel")
-                console.log(e)
-                this.ledgerParamVO.txtIncludeOt100Flg = `${e}`
-            },
-            errorCheck() {
-                if (this.curFileTypeInfo.mgdOutputTargetType=='EMP'){
-                    if (!this.selectEmpNameFlg) {
-                        this.errorInfo = true
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象職員が未選択です、職員を指定して下さい。'
-                        });
+                    console.log('handleClickLeafDept')
+                    console.log(e)
+                    this.deptDrawShow = false
+                    this.deptName = e[0].secnic
+                    this.selectDeptNameFlg = true
+                    this.ledgerParamVO.hidOrgId = e[0].secid
+                },
+                async handleClickLeafDeptEmp(e) {
+                    //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                    //よって、二回目クリックすると、何もしない
+                    if (!e[0]) return
+
+                    console.log('handleClickLeafDeptEmp')
+                    console.log(e)
+
+                    const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                    this.referListObject[section] = e[0].secid
+                    // this.deptName = e[0].secnic
+
+                    this.getEmpList()
+
+                },
+                handleClickEmpLeaf(e) {
+                    console.log("handleClickEmpLeaf")
+                    console.log(e)
+                    this.deptDrawShow = false
+
+                    this.ledgerParamVO.hidEmpId = e[0].empid
+                    this.empName = e[0].empname
+
+                    this.selectEmpNameFlg = true
+
+                    //組織図のロック解除
+                    this.isSearchHistory = false
+                },
+
+                async getEmpList() {
+                    try {
+                        this.emplistLoading = true
+                        //初期化及び前回データをクリアする
+                        this.empTreeData = []
+                        this.referListObject.type = '11'
+                        const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
+                        this.empTreeData = Utils.convertTreeData(empList[0].child)
+                        this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                    } catch (error) {
                         return
+                    } finally {
+                        this.emplistLoading = false
                     }
-                } else if (this.curFileTypeInfo.mgdOutputTargetType=='ORG'){
-                    if (!this.selectDeptNameFlg) {
-                        this.errorInfo = true
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象部署が未選択です、部署を指定して下さい。'
-                        });
-                        return
+                },
+                dateFormat(e) {
+                    //YYYY年MM月からYYYY/MM/01へ変換する
+                    let yearMMDD = e.replace("年", "/")
+                    yearMMDD = yearMMDD.replace("月", "/")
+                    yearMMDD = yearMMDD + "01"
+                    return yearMMDD
+                },
+                async downLoadByPdf() {
+                    console.log(this.empName)
+                    if (this.errorCheck()) {
+                        try {
+                            this.pdfDownloadLoading = true
+                            const { data, headers } = await this.http.post('sys/tmgLedger/pdfDownload', this.ledgerParamVO, true)
+                            Utils.downloadFile(data, decodeURI(headers.filename, "UTF-8"), 'application/pdf')
+                        } catch (e) {
+                            this.pdfDownloadLoading = false
+                            this.isSearchHistory = false
+                            return
+                        } finally {
+                            this.errorInfo = false
+                            this.pdfDownloadLoading = false
+                            this.isSearchHistory = false
+                        }
                     }
-                }
+                },
+                handleRestType(e) {
+                    console.log("handleRestType")
+                    console.log(e)
+                    this.restType = e
+                    this.ledgerParamVO.txtLedgerSheetId = this.curFileTypeInfo.mgdLedgerSheetId
+                    this.ledgerParamVO.selLedgerSheet = this.curFileTypeInfo.mgdLedgerSheetId
+                },
+                handleTargetYear: Debounce(async function (e) {
+                    this.ledgerParamVO.txtYYYY = e
+                    this.ledgerParamVO.selYear = e
+
+                }),
+                handleTargetYearMonth: Debounce(async function (e) {
+                    this.ledgerParamVO.txtYYYYMM = e + "/01"
+                    this.ledgerParamVO.selMonth = e + "/01"
+                }),
+                handleStartMonth: Debounce(async function (e) {
+                    this.ledgerParamVO.txtAtdBookTermFrom = e
+                }),
+                async handleTermFromDateChange(e) {
+                    this.ledgerParamVO.txtTermFrom = e
+                },
+                async handleTermToDateChange(e) {
+                    this.ledgerParamVO.txtTermTo = e
+                },
+                changeModel(e) {
+                    console.log("changeModel")
+                    console.log(e)
+                    this.ledgerParamVO.txtIncludeOt100Flg = `${e}`
+                },
+                errorCheck() {
+                    if (this.curFileTypeInfo.mgdOutputTargetType == 'EMP') {
+                        if (!this.selectEmpNameFlg) {
+                            this.errorInfo = true
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '対象職員が未選択です、職員を指定して下さい。'
+                            });
+                            return
+                        }
+                    } else if (this.curFileTypeInfo.mgdOutputTargetType == 'ORG') {
+                        if (!this.selectDeptNameFlg) {
+                            this.errorInfo = true
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '対象部署が未選択です、部署を指定して下さい。'
+                            });
+                            return
+                        }
+                    }
 
 
-                let date = this.ledgerParamVO.txtTermFrom
-                let date1 = this.ledgerParamVO.txtTermTo
+                    let date = this.ledgerParamVO.txtTermFrom
+                    let date1 = this.ledgerParamVO.txtTermTo
 
-                // 対象期間（開始日）チェック
-                if (this.restType == 2 || this.restType == 3) {
-                    if (date == "" ||  date == null) {
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象期間（開始日）が未指定です、期間（開始日）を指定してください。'
-                        });
-                        return
-                    }
-                    // 対象期間（終了日）チェック
-                    if (date1 == "" ||  date1 == null) {
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象期間（終了日）が未指定です、期間（終了日）を指定してください。'
-                        });
-                        return
-                    }
+                    // 対象期間（開始日）チェック
+                    if (this.restType == 2 || this.restType == 3) {
+                        if (date == "" || date == null) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '対象期間（開始日）が未指定です、期間（開始日）を指定してください。'
+                            });
+                            return
+                        }
+                        // 対象期間（終了日）チェック
+                        if (date1 == "" || date1 == null) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '対象期間（終了日）が未指定です、期間（終了日）を指定してください。'
+                            });
+                            return
+                        }
 
-                    if(date > date1) {
-                        this.$Message.error({
-                            background: true,
-                            closable: true,
-                            duration: 0,
-                            content: '対象期間終了日は対象期間開始日より後の日付を指定してください。'
-                        });
-                        return
+                        if (date > date1) {
+                            this.$Message.error({
+                                background: true,
+                                closable: true,
+                                duration: 0,
+                                content: '対象期間終了日は対象期間開始日より後の日付を指定してください。'
+                            });
+                            return
+                        }
                     }
-                }
-                return true;
-            },
-        }
-    })
-</script>
+                    return true;
+                },
+            }
+        })
+    </script>
 </body>
 
 </html>
