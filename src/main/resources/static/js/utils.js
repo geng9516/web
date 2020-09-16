@@ -29,7 +29,15 @@ const Utils = {
    * @param {Date} date 日付
    * @param {String} format フォーマット
    */
-  formatDate: function (date, format = 'YYYY-MM-DD hh:mm:ss') {
+  formatDate: function (date, format) {
+    if(!date) {
+      date = new Date()
+    }
+
+    if(!format) {
+      format = 'YYYY-MM-DD hh:ff:ss'
+    }
+
     if (typeof date !== Date) {
       date = new Date(date)
     }
@@ -126,7 +134,15 @@ const Utils = {
    *
    */
   convertTreeData(treeData, fristDisable) {
-    if(!treeData) treeData = []
+    if(!treeData) {
+      Vue.prototype.$Message.error({
+        background:true,
+        closable: true,
+        duration: 6.5,
+        content: '参照できる組織図が存在しません。'
+      });
+      return []
+    }
     return treeData.map((e, i) => {
       const children = e.child || e.children
       if (children) {
