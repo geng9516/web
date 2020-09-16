@@ -838,12 +838,12 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
-                        if(data.list.length === 0) {
+                        if(this.treeData.length !== 0 && this.data.list.length === 0) {
                             this.$Message.error({
                                 background:true,
                                 closable: true,
                                 duration: 6.5,
-                                content: '指定した改訂日のデータはありません。或は選択した所属にデータはありません。'
+                                content: '選択した所属に存在している職員はありません。'
                             });
                         }
                         // 操作按钮
