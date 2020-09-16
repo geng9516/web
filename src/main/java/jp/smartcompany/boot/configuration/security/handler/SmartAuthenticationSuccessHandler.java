@@ -68,25 +68,7 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
       GlobalResponse r = GlobalResponse.ok("ログイン成功");
       resp.getWriter().write(JSONUtil.toJsonStr(r));
     } else {
-//      System.out.println(req.getRequestURI());
-//      System.out.println(req.getRequestURL());
-//      System.out.println(req.getQueryString());
-//      if (StrUtil.equalsAny(req.getRequestURI(),"/",securityProperties.getLoginSuccessUrl(),"/login")) {
-//        resp.sendRedirect(securityProperties.getLoginSuccessUrl());
-//      } else {
-//        RequestDispatcher dispatcher = req.getRequestDispatcher(req.getRequestURI()+"?"+req.getQueryString());
-//        dispatcher.forward(req, resp);
-//      }
-      Boolean passwordExpired = (Boolean)lruCache.get(auth.getName()+"passwordExpired",true);
-      // 如果密码过期则跳转到密码过期页面
-      if (passwordExpired!=null && passwordExpired) {
-        resp.sendRedirect("/expirePassword?username="+auth.getName());
-      } else {
-        if (passwordExpired!=null) {
-          lruCache.remove(auth.getName() + "passwordExpired");
-        }
-        resp.sendRedirect(securityProperties.getLoginSuccessUrl());
-      }
+      resp.sendRedirect(securityProperties.getLoginSuccessUrl());
     }
   }
 

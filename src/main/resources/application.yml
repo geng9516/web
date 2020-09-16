@@ -19,7 +19,8 @@ server:
       - application/octet-stream
   servlet:
     session:
-      timeout: 1800000
+      # session过期时间默认为600秒，即10分钟
+      timeout: 600
     encoding:
       charset: utf-8
       force: on
