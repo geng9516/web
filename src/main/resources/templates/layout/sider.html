@@ -67,7 +67,7 @@
                 handleSubMenuClick(e, i) {
                     var pageId = e.pageId
                     this.showSider = false
-                    location.href = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}&t=${new Date().getTime()}`
+                    location.href = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}&t=${Date.now()}`
                 },
                 handleClickMenuOutSide() {
                     this.showSider = false

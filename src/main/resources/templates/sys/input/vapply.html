@@ -736,7 +736,6 @@
                         this.$Message.success('申请完了')
                         this.uploadFiles = []
                     } catch (error) {
-                        console.dir(error)
                         if(error.config || error.response && error.response.status === 500) return
                         this.errorInfo = true
                         const _error = JSON.parse(error)
