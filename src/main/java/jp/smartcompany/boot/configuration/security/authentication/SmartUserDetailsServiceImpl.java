@@ -55,13 +55,13 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
         String sPasswordValid = scCacheUtil.getSystemProperty("PasswordValidPeriod");
         //パスワードﾞ有効日数が設定されていない場合
         if (sPasswordValid == null) {
-            throw new AuthenticationCredentialsNotFoundException("PasswordValidPeriod");
+            throw new AuthenticationCredentialsNotFoundException(SecurityConstant.PASSWORD_INVALID_DAYS_ERROR);
         }
         //パスワード入力最大許容回数取得
         String sLoginRetry = scCacheUtil.getSystemProperty("LoginRetry");
         //パスワード入力最大許容回数が設定されていない場合
         if (sLoginRetry == null) {
-            throw new AuthenticationCredentialsNotFoundException("LoginRetry");
+            throw new AuthenticationCredentialsNotFoundException(SecurityConstant.LOGIN_TRY_COUNT_ERROR);
         }
         String encodePassword = (String)lruCache.get(username+"password");
 

@@ -21,6 +21,9 @@ public interface SecurityConstant {
     String PASSWORD_ERROR = "ログインできませんでした。アカウント、パスワードを確認してください。";
     String UNKNOWN_LOGIN_ERROR = "登録処理中に想定外のエラーが発生しました。システム管理者までお問い合わせください。";
     String PASSWORD_EXPIRED = "パスワードの有効期限が切れています。新しいパスワードを設定してください。";
-    String INCORRECT_CONTENT_TYPE ="ログインContent-Typeはまちがいます";
+    String INCORRECT_CONTENT_TYPE ="ログインContent-Typeはまちがいます。";
+
+    String LOGIN_TRY_COUNT_ERROR = "パスワード入力最大許容回数が設定されていない。";
+    String PASSWORD_INVALID_DAYS_ERROR = "パスワードﾞ有効日数が設定されていない";
 
 }
