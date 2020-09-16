@@ -722,12 +722,6 @@
             },
             methods: {
                 async getInit() {
-                    this.$Message.error({
-                                background:true,
-                                closable: true,
-                                duration: 0,
-                                content: '指定した改訂日のデータはありません。或は選択した所属にデータはありません。'
-                            });
                     this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     this.referListObject.txtDYYYYMMDD = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
