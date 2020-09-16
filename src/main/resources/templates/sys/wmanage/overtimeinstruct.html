@@ -931,7 +931,7 @@
                         this.getLimit()
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
-                        if(data.length === 0) {
+                        if( this.treeData.length !== 0 && data.length === 0) {
                             this.$Message.error({
                             background: true,
                             closable: true,

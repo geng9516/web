@@ -727,12 +727,14 @@
                         this.selectDisabled = false
                         this.preMonthShow = false
                         this.nextMonthShow = false
-                        this.$Message.error({
+                        if( this.treeData.length !== 0 && data.length === 0) {
+                            this.$Message.error({
                             background: true,
                             closable: true,
                             duration: 6,
                             content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
-                        });
+                            });
+                        }
                     }
                 },
                 async getTableHead() {
