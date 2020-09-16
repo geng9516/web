@@ -50,7 +50,7 @@
                         <Row class="tl mb5">
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
-                                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" transfer
                                     placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"
                                     @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
@@ -790,7 +790,9 @@
                     this.curDate = e
                     this.referListObject.txtDYYYYMMDD = Utils.formatDate(this.curDate, 'yyyy/MM/dd')
                     await this.getOrgTree()
-                    this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                    if(this.treeData.length !== 0) {
+                       this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+                    }
                 },
                 async handleClickLeaf(e) {
                     if (!e[0]) return
@@ -842,12 +844,12 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
-                        if(data.list.length === 0) {
+                        if(this.treeData.length !== 0 && data.list.length === 0) {
                             this.$Message.error({
                                 background:true,
                                 closable: true,
                                 duration: 6.5,
-                                content: '指定した改訂日のデータはありません。或は選択した所属にデータはありません。'
+                                content: '選択した所属に存在している職員はありません。'
                             });
                         }
                         // 操作按钮

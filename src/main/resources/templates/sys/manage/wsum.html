@@ -43,11 +43,11 @@
                 <Row class="tl mb5">
                   <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                   <i-col span="7" class="no-border-radius">
-                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
+                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false" transfer
                                  format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
                   </i-col>
                 </Row>
-                ​
+
                 <div style="position: relative;">
                   <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                         empty-text="所属データなし"></Tree>
@@ -226,13 +226,14 @@
                     this.selectDisabled = false
                     this.tableHead2= []
                     this.tableData2= []
-
-                    this.$Message.error({
+                    if(this.treeData.length !== 0) {
+                        this.$Message.error({
                         background: true,
                         closable: true,
                         duration: 6,
                         content: '指定した年月の就業シートはありません。或は選択した所属に存在している職員はありません。'
-                    });
+                        })
+                    }
                 }
             },
             async getTableData() {
@@ -270,7 +271,9 @@
                 this.referListObject.txtTmgReferListTreeViewRecordDate = e
                 this.isSearchHistory = true
                 await this.getOrgTree()
-                this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                if(this.treeData.length !== 0) {
+                       this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+                    }
             },
             rowClass(row) {
                 // 表格变色

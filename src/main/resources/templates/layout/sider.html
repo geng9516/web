@@ -40,7 +40,6 @@
                     baseUrl: [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]],
                     curPageId: Utils.getUrlParam(location.href, 'psApp') + Utils.getUrlParam(location.href, 'menuId'),
                     curMenu: Utils.getUrlParam(location.href, 'psSite'),
-                    toUrl: '',
                     showSider: false,
                     _forDoubleclickSiderIconCloseSider:'',
                     siteId: Utils.getUrlParam(location.href, 'psSite')
@@ -67,9 +66,8 @@
                 },
                 handleSubMenuClick(e, i) {
                     var pageId = e.pageId
-                    this.toUrl = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}`
                     this.showSider = false
-                    location.href = this.toUrl
+                    location.href = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}&t=${new Date().getTime()}`
                 },
                 handleClickMenuOutSide() {
                     this.showSider = false

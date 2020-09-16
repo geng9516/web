@@ -21,8 +21,9 @@
             <li class="group-info" v-for="(t, j) of item" :key="j">{{ t.groupName }}</li>
           </div>
         </ul>
-        <div class="group-info-wrap" style="margin-top: -5px;border-top:0">
-          <li class="group-info">{{ session.psSession.workTypeName }}</li>
+        <Divider size="small" style="margin: 6px 0;">職種</Divider>
+        <div class="group-info-wrap">
+          <li class="group-info">{{ session.psSession.workTypeName }} </li>
         </div>
         <dropdown-item style="border-bottom: 1px solid #d2d2d2;" @click.native="alterPasswordModal = true">パスワード変更</dropdown-item>
         <dropdown-item @click.native="logout">ログアウト</dropdown-item>
@@ -111,7 +112,7 @@
             await this.http.post('/changePassword', this.password)
             this.$Message.success('更新完了')
             setTimeout(() => {
-              location.href = '/login'
+              location.href = '/logout'
             }, 1000);
           } catch (error) {
             this.passwordLoading = false

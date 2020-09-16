@@ -25,7 +25,8 @@ public class BeanConfiguration {
 
     @Bean
     public TimedCache<String,Object> timedCache() {
-        TimedCache<String,Object> timedCache = CacheUtil.newTimedCache(1000 * 30 * 10);
+        // 数据缓存过期时间默认为10分钟
+        TimedCache<String,Object> timedCache = CacheUtil.newTimedCache(1000 * 60 * 10);
         // 设置定时清理的间隔时间为2秒
         timedCache.schedulePrune(1000 * 2);
         return timedCache;

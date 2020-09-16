@@ -139,15 +139,14 @@ public class AuthController {
     @PostMapping("changeExpirePassword")
     @ResponseBody
     public String changeExpirePassword(@RequestBody @Valid ChangePasswordDTO dto) {
-        authBusiness.changePassword(dto,true);
+        authBusiness.changePassword(dto);
         return "パスワード変更成功";
     }
 
     @PostMapping("changePassword")
     @ResponseBody
     public String changePassword(@RequestBody @Valid ChangePasswordDTO dto) {
-        authBusiness.changePassword(dto,false);
-        authBusiness.logout(ContextUtil.getHttpRequest());
+        authBusiness.changePassword(dto);
         return "パスワード変更成功";
     }
 

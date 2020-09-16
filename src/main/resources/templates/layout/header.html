@@ -8,21 +8,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
     <title th:text="${title}"></title>
-
     <!--系统默认资源及公用css文件 Start-->
-    <link rel="icon" type="image/x-icon" th:href="${baseUrl + '/static/favicon.ico'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/iview.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/color.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/reset.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/button.min.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/form.min.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/table.min.css'}">
-    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/utils.min.css'}">
+    <link rel="icon" type="image/x-icon" th:href="${baseUrl + '/static/favicon.ico?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/iview.css' }">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/color.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/reset.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/button.min.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/form.min.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/table.min.css?t='+ new java.util.Date().getTime()}">
+    <link rel="stylesheet" th:href="${baseUrl + '/static/css/pages/utils.min.css?t='+ new java.util.Date().getTime()}">
     <!--系统默认资源及公用css文件 End-->
 
     <!--各页面独自引入的CSS Start-->
     <th:block th:if="cssPaths!=null">
-        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath}">
+        <link rel="stylesheet" th:each="cssPath,status:${#strings.setSplit(cssPaths,',')}" th:href="${baseUrl + '/static/css' + cssPath + '?t=' + new java.util.Date().getTime()}">
     </th:block>
     <!--各页面独自引入的CSS End-->
 

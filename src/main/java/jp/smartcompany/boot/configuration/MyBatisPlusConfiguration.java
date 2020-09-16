@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.OptimisticLockerInnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
-import jp.smartcompany.boot.interceptor.SqlParameter2NullInterceptor;
+import jp.smartcompany.boot.interceptor.Parameter2NullInnerInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,6 +25,8 @@ public class MyBatisPlusConfiguration {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.ORACLE_12C));
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        // 只有oracle数据库才需要加入此拦截器
+        interceptor.addInnerInterceptor(new Parameter2NullInnerInterceptor());
         return interceptor;
     }
 
@@ -36,11 +38,6 @@ public class MyBatisPlusConfiguration {
     @Bean
     public OracleKeyGenerator oracleKeyGenerator(){
         return new OracleKeyGenerator();
-    }
-
-    @Bean
-    public SqlParameter2NullInterceptor sqlParameter2NullInterceptor() {
-        return new SqlParameter2NullInterceptor();
     }
 
 }
