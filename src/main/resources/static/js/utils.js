@@ -29,10 +29,15 @@ const Utils = {
    * @param {Date} date 日付
    * @param {String} format フォーマット
    */
-  formatDate: function (date, format = 'YYYY-MM-DD hh:mm:ss') {
+  formatDate: function (date, format) {
     if(!date) {
       date = new Date()
     }
+
+    if(!format) {
+      format = 'YYYY-MM-DD hh:ff:ss'
+    }
+
     if (typeof date !== Date) {
       date = new Date(date)
     }
