@@ -110,7 +110,7 @@
             </div>
             <Alert class="primary-info">日付をクリックすると、命令画面を表示します。</Alert>
             <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
-                :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+                :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>
                 </template>
@@ -963,6 +963,14 @@
                         this.getLimit()
                         const { data } = await this.http.get(url, this.query)
                         this.tableData = data
+                        if( this.treeData.length !== 0 && data.length === 0) {
+                            this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                            });
+                        }
                     } catch (error) {
                         return
                     } finally {
