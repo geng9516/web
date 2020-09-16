@@ -788,7 +788,9 @@
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
                     this.isSearchHistory = true
                     await this.getOrgTree()
-                    this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
+                    if(this.treeData.length !== 0) {
+                       this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+                    }
                 },
                 async getOrgTree() {
                     this.empDeptLoading = true
