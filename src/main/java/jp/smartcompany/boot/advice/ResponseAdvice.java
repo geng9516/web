@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.advice;
 
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.HttpStatus;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.annotation.IgnoreResponseSerializable;
@@ -27,9 +28,11 @@ public class ResponseAdvice implements ResponseBodyAdvice<Object> {
 
     @Override
     public boolean supports(MethodParameter methodParameter, Class aClass) {
-        return !(methodParameter.getDeclaringClass().isAnnotationPresent(
-                IgnoreResponseSerializable.class
-        ) || (methodParameter.getMethod() !=null && methodParameter.getMethod().isAnnotationPresent(IgnoreResponseSerializable.class)));
+        return !(
+                methodParameter.getDeclaringClass().isAnnotationPresent(IgnoreResponseSerializable.class) ||
+                        (methodParameter.getMethod() !=null && methodParameter.getMethod().isAnnotationPresent(IgnoreResponseSerializable.class))
+                        || StrUtil.containsAny(methodParameter.getDeclaringClass().getName(),"WebMvcEndpointHandlerMapping")
+        );
     }
 
     @Override
