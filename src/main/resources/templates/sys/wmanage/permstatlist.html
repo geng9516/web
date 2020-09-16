@@ -100,7 +100,7 @@
                     <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle undo" v-if="row[item] === 'エ'">エ</span>
                     <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle ing" v-if="row[item] === '待'">待</span>
                     <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle" v-if="row[item] === '済'">済</span>
-                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle" v-if="row[item] === '確'">確</span>
+                    <span @click="showDay(row.empid,item,row.tmoCstatusflg)" class="cursor confirm-sytle rest" v-if="row[item] === '確'">確</span>
                 </template>
             </i-table>
             <FormDrawer
@@ -128,7 +128,7 @@
                             <span class="confirm-sytle undo" v-if="row[item] === 'エ'">エ</span>
                             <span class="confirm-sytle ing" v-if="row[item] === '待'">待</span>
                             <span class="confirm-sytle" v-if="row[item] === '済'">済</span>
-                            <span class="confirm-sytle" v-if="row[item] === '確'">確</span>
+                            <span class="confirm-sytle rest" v-if="row[item] === '確'">確</span>
                         </span>
                         <span v-else>{{ row[item] | turnLine | whiteSpace}}</span>
                     </template>
