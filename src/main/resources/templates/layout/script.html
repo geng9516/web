@@ -14,18 +14,18 @@
   </script>
 
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/theme.js'}"></script>
+  <script th:src="${baseUrl + '/static/js/theme.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/libs/iview.min.js'}"></script>
-  <script th:src="${baseUrl + '/static/libs/ja-JP.js'}"></script>
+  <script th:src="${baseUrl + '/static/libs/ja-JP.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/libs/axios-0.19.2.min.js'}"></script>
   <script th:src="${baseUrl + '/static/libs/stringify.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/http.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/filter.js'}"></script>
-  <script th:src="${baseUrl + '/static/js/utils.js'}"></script>
+  <script th:src="${baseUrl + '/static/js/http.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/js/filter.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/js/utils.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/js/live2d/device.min.js'}"></script>
   <script th:src="${baseUrl + '/static/js/live2d/script.js'}"></script>
   <!--默认资源 End-->
   <th:block th:if="jsPaths!=null">
-    <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath}"></script>
+    <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath+ '?t=' + new java.util.Date().getTime()}"></script>
   </th:block>
 </th:block>
