@@ -393,7 +393,7 @@
                         txtTmgReferListTreeViewPermTargetGroup: '',
                         txtTmgReferListTreeViewPermTargetEmp: '',
                         txtTmgReferListTreeViewPermSelectedView: 'section',
-                        txtDYYYYMMDD: Utils.formatDate(new Date(), 'yyyy/mm/dd'),
+                        txtDYYYYMMDD: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 31
@@ -722,8 +722,15 @@
             },
             methods: {
                 async getInit() {
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd') || ''
-                    this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate || new Date()
+                    this.$Message.error({
+                                background:true,
+                                closable: true,
+                                duration: 0,
+                                content: '指定した改訂日のデータはありません。或は選択した所属にデータはありません。'
+                            });
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    this.referListObject.txtDYYYYMMDD = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     await this.getOrgTree()
                     const historyReferListSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                     //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
