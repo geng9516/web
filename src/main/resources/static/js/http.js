@@ -1,6 +1,7 @@
 // import axios from 'axios'
 axios.defaults.baseURL = BASE_URL
 axios.defaults.headers= {'X-Requested-With': 'XMLHttpRequest'},
+axios.defaults.timeout= 300 * 1000,
 // 请求需要携带cookie时
 // axios.defaults.withCredentials = true
 
@@ -17,10 +18,10 @@ axios.interceptors.response.use(
   error => {
     Vue.prototype.$Notice.error({
       title: 'Error!',
-      desc: `${error.response && error.response.data.msg}`,
+      desc: error.code === 'ECONNABORTED' ? 'タイムアウトしました。' : `${error.response && error.response.data.msg}`,
       duration: 6.5
     })
-    return Promise.reject(error.response)
+    return Promise.reject(error)
   }
 )
 
