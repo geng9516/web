@@ -120,10 +120,7 @@
                 </Tooltip>
                 </span>
         </div>
-
     </div>
-
-
 
     <div class="content_body" style="position: relative">
         <Alert type="error" class="error-info" v-show="flexTime !='0:00' && dailyDataList != '' && countNotApprovalDay ==='0' && isConfirm != 'TMG_DATASTATUS|5' ">月の勤務実績が「 {{ flexTime }}  時間」不足しています、勤務実績をご確認ください。</Alert>
@@ -300,6 +297,7 @@
                             </i-input>
                             <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  :value="dailyEdit.tdaCbosscommentR" v-if="row.isBSComment && bFixed"></span>
                         </div>
+                        <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                         <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
                     </template>
@@ -322,14 +320,11 @@
                 非勤務
             </div>
             <div class="mb15 tr" v-if="!bHoliday && !bFixed ">
-                <i-select v-model="categoryNonduty" class="mr10" style="display: inline-block;width: 200px;" ref="select3" v-if="!bDisable">
+                <i-select v-model="categoryNonduty" class="mr10" style="display: inline-block;width: 200px;" ref="select3" v-if="!bDisable && categoryNondutyList.length>0 ">
                     <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName" :value="item.itemCode">
                     </i-option>
                 </i-select>
-                <i-select v-model="categoryNonduty" class="mr10" style="display: inline-block;width: 200px;" disabled v-else>
-                    <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName" :value="item.itemCode">
-                    </i-option>
-                </i-select>
+                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>
                 <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
                 <i-button  disabled v-else>追加</i-button>
             </div>
@@ -371,14 +366,12 @@
                     超過勤務
                 </div>
                 <div class="mb15 tr" v-if="!bHoliday && !bFixed ">
-                    <i-select v-model="categoryOverhours" class="mr10" style="display: inline-block;width: 200px;" @on-change="" ref="select4" v-if="!bDisable">
+                    <i-select v-model="categoryOverhours" class="mr10" style="display: inline-block;width: 200px;" @on-change="" ref="select4" v-if="!bDisable && categoryOverhoursList.length>0">
                         <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName" :value="item.itemCode">
                         </i-option>
                     </i-select>
-                    <i-select v-model="categoryOverhours" class="mr10" style="display: inline-block;width: 200px;" @on-change="" disabled v-else>
-                        <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName" :value="item.itemCode">
-                        </i-option>
-                    </i-select>
+
+                    <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>
                     <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
                     <i-button disabled v-else>追加</i-button>
     <!--                <i-col span="4">-->
@@ -928,7 +921,6 @@
                     if (data.monthLy.length > 0) {
                         let check　= false
                          check =  this.dispMonthlyList.some(e =>{
-
                             if(this.query.txtDYYYYMM === e.code){
                                 return true
                             }
@@ -1127,11 +1119,15 @@
 
                 // 非勤務ドロップダウン
                 this.categoryNondutyList = data.categoryNondutyList
-                this.categoryNonduty = this.categoryNondutyList[0].itemCode
+                if(this.categoryNondutyList.length>0){
+                    this.categoryNonduty = this.categoryNondutyList[0].itemCode
+                }
 
                 // 超過勤務ドロップダウン
                 this.categoryOverhoursList = data.categoryOverhoursList
-                this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+                if(this.categoryOverhoursList.length>0){
+                    this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+                }
                 this.mgdCsparechar4VOList = data.mgdCsparechar4VOList
 
                 // 詳細:欠勤離籍以外
