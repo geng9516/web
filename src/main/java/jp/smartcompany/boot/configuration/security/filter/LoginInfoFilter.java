@@ -30,6 +30,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -88,6 +89,17 @@ public class LoginInfoFilter extends OncePerRequestFilter {
       if (timedCache.get(Constant.TOP_NAVS+"_"+httpSession.getId(),true) == null) {
         loadMenus(systemCode, systemList,httpSession);
       }
+
+//      Boolean passwordExpired = (Boolean)lruCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
+//      Boolean passwordExpired = true;
+//      // 如果密码过期则跳转到密码过期页面
+//      if (passwordExpired!=null && passwordExpired) {
+//        req.setAttribute("username",SecurityUtil.getUsername());
+//        if (!req.getRequestURI().contains("expirePassword")) {
+//          RequestDispatcher dispatcher = req.getRequestDispatcher("/expirePassword");
+//          dispatcher.forward(req, resp);
+//        }
+//      }
     }
     chain.doFilter(req, resp);
   }
@@ -110,6 +122,7 @@ public class LoginInfoFilter extends OncePerRequestFilter {
         session.setLoginCustomer(account.getHdCcustomeridCk());
         session.setLoginKanjiName(account.getMeCemployeename());
         session.setLoginEmployee(account.getHdCemployeeidCk());
+        session.setWorkTypeName(account.getWorkTypeName());
         List<Designation> designationList = getDesignationList(CollUtil.newArrayList(account));
         session.setLoginDesignation(designationList);
       }

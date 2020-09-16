@@ -45,6 +45,7 @@ public class SmartUserDetails implements UserDetails {
     private String hdCifkeyoradditionalrole; //HD_CIFKEYORADDITIONALROLE
     private Date hdDstartdateCk; //HD_DSTARTDATE_CK
     private String hdCbossornot; //HD_CBOSSORNOT
+    private String workTypeName;
 
     private String password;
     private boolean locked;
@@ -77,6 +78,7 @@ public class SmartUserDetails implements UserDetails {
             this.hdDstartdateCk = user.getHdDstartdateCk();
             this.hdCbossornot = user.getHdCbossornot();
             this.moCsectionname = user.getMoCsectionname();
+            this.workTypeName = user.getWorkTypeName();
         }
     }
 

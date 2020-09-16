@@ -35,5 +35,6 @@ public class LoginAccountBO implements Serializable {
     private Date hdDstartdateCk; //HD_DSTARTDATE_CK
     private String hdCbossornot; //HD_CBOSSORNOT
     private String maCuserid; //MA_CUSERID
+    private String workTypeName;
 
 }

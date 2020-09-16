@@ -57,6 +57,8 @@ public class PsSession implements Serializable {
     private boolean useBehaviorForV3Compatible;
     /** 言語区分(リソースバンドルファイル用) */
     private String locale;
+    /**新增 员工职种类**/
+    private String workTypeName;
 
     private PsDesignationCache designationCache;
     private PsEmpRelationCache loginEmpRelationCache;
