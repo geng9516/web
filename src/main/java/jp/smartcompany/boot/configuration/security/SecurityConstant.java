@@ -24,6 +24,6 @@ public interface SecurityConstant {
     String INCORRECT_CONTENT_TYPE ="ログインContent-Typeはまちがいます。";
 
     String LOGIN_TRY_COUNT_ERROR = "パスワード入力最大許容回数が設定されていない。";
-    String PASSWORD_INVALID_DAYS_ERROR = "パスワードﾞ有効日数が設定されていない";
+    String PASSWORD_INVALID_DAYS_ERROR = "パスワードﾞ有効日数が設定されていない。";
 
 }
