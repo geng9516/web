@@ -90,16 +90,14 @@ public class LoginInfoFilter extends OncePerRequestFilter {
         loadMenus(systemCode, systemList,httpSession);
       }
 
-//      Boolean passwordExpired = (Boolean)lruCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
-//      Boolean passwordExpired = true;
-//      // 如果密码过期则跳转到密码过期页面
-//      if (passwordExpired!=null && passwordExpired) {
-//        req.setAttribute("username",SecurityUtil.getUsername());
-//        if (!req.getRequestURI().contains("expirePassword")) {
-//          RequestDispatcher dispatcher = req.getRequestDispatcher("/expirePassword");
-//          dispatcher.forward(req, resp);
-//        }
-//      }
+      Boolean passwordExpired = (Boolean)timedCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
+      // 如果密码过期且不是访问修改密码的接口则跳转到密码过期页面
+      if (passwordExpired!=null && passwordExpired && !req.getRequestURI().contains("changeExpirePassword")) {
+          req.setAttribute("username",SecurityUtil.getUsername());
+          RequestDispatcher dispatcher = req.getRequestDispatcher("/expirePassword");
+          dispatcher.forward(req, resp);
+          return;
+      }
     }
     chain.doFilter(req, resp);
   }

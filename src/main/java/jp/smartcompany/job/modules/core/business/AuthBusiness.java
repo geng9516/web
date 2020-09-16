@@ -86,7 +86,7 @@ public class AuthBusiness {
      * 登录密码
      */
     @Transactional(rollbackFor = GlobalException.class)
-    public void changePassword(ChangePasswordDTO dto,boolean execLogin) {
+    public void changePassword(ChangePasswordDTO dto) {
         // 当日：パスワード変更を行っているか。（最新のパスワード 1件取得）
         List<MastPasswordDO> lMastPasswordList = iMastPasswordService.selectSinglePassword(dto.getUsername(), "1");
         MastPasswordDO passwordEntity =  lMastPasswordList.get(0);
@@ -119,13 +119,7 @@ public class AuthBusiness {
             // パスワードマスタ 新規登録
             iMastPasswordService.save(setData(dto.getUsername(), DigestUtil.md5Hex(dto.getNewPassword())));
         }
-        if (execLogin) {
-            // 修改完密码后进行登录
-            LoginDTO loginDTO = new LoginDTO();
-            loginDTO.setUsername(dto.getUsername());
-            loginDTO.setPassword(dto.getNewPassword());
-//            login(loginDTO);
-        }
+        timedCache.remove(SecurityUtil.getUsername()+"passwordExpired");
     }
 
     public void logout(HttpServletRequest req) {
@@ -135,13 +129,6 @@ public class AuthBusiness {
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (psSession!=null) {
             saveLoginInfo(false, psSession.getLoginUser());
-//            Enumeration e=session.getAttributeNames();
-//            while(e.hasMoreElements()){ String sessionName=(String)e.nextElement();
-//               log.debug("清除session key：{}",sessionName);
-//                session.removeAttribute(sessionName);
-//            }
-//            SecurityUtils.getSecurityManager().createSubject(new DefaultSubjectContext()).logout();
-//            ShiroUtil.getSubject().logout();
         }
     }
 

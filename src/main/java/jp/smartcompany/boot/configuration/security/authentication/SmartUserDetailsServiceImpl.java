@@ -1,6 +1,7 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
 import cn.hutool.cache.impl.LRUCache;
+import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.Constant;
@@ -36,6 +37,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
     private final ScCacheUtil scCacheUtil;
     private final IMastPasswordService passwordService;
     private final LRUCache<Object,Object> lruCache;
+    private final TimedCache<String,Object> timedCache;
     private final GroupBusiness groupBusiness;
     private final IMastSystemService systemService;
 
@@ -100,7 +102,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
             }
         }
         // 密码是否过期标识位，
-        lruCache.put(username+"passwordExpired",passwordExpired);
+        timedCache.put(username+"passwordExpired",passwordExpired);
         // 通常ログイン時のみ、認証ＯＫでパスワード間違い回数1以上の場合、0クリア
         // アカウントマスタを更新
         if (account.getMaNretrycounter() > 0) {
