@@ -5,9 +5,9 @@
   <svg th:replace="layout/logos::svg_logos"></svg>
   <i-menu mode="horizontal" theme="light" class="header-wrap" @click.native="handleClickMenuOutSide">
     <link rel="stylesheet" :href="`${baseUrl}/static/css/pages/header.min.css`">
-    <svg class="head-logo">
+    <a href="/"><svg class="head-logo">
       <use xlink:href="#logo"></use>
-    </svg>
+    </svg></a>
     <!-- 注意这里是row-reverse，要反着方 -->
     <dropdown class="head-dropdown" trigger="click" placement="bottom-start">
       <a>
