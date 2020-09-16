@@ -106,16 +106,20 @@
                     <!-- 共通組織図画面 end-->
                 </span>
                 <span class="label">氏名</span>
-                <span class="input-like-span width15">
+                <span class="input-like-span width15 mr30">
                     <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{kanjiName}}
                         <div slot="content">{{kanjiName}}</div>
                     </Tooltip>
                 </span>
+
+                <span class="label">種別</span>
+                <span class="input-like-span width15">
+                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer v-if="workTypeName">{{workTypeName}}
+                    <div slot="content">{{workTypeName}}</div>
+                </Tooltip>
+                </span>
             </div>
-
         </div>
-
-
 
         <div class="content_body" style="position: relative">
             <Alert type="error" class="error-info" v-show="flexTime !='0:00' && dailyDataList != '' && countNotApprovalDay ==='0' && isConfirm != 'TMG_DATASTATUS|5'  ">月の勤務実績が「 {{ flexTime }}  時間」不足しています、勤務実績をご確認ください。</Alert>
@@ -274,30 +278,34 @@
                     <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
                         <template slot-scope="{ row, index }" slot="workStart">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
-                                <span v-else>{{ row.workStart }}</span>
+                                <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ row.workStart }}</span>
                             </div>
-                            <div  v-if="row.isInput" >
+                            <div  v-if="row.isInput && !bFixed" >
                                 <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                             </div>
+
+
                               <!-- 本人comment -->
-                              <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
-                              <span v-if="row.isOwnComment && bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
+                              <span v-if="row.isOwnComment" class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  >{{ dailyEdit.tdaCowncommentR}}</span>
 
                               <!-- 承认者comment -->
-                              <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bApproved">
+                              <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment  && !bFixed">
                               </i-input>
-                            <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
+                              <span  :value="dailyEdit.tdaCbosscommentR" style="border-radius: 5px; white-space: pre-line;"
+                                     class="tl input-like-span" v-if="row.isBSComment  && bFixed">
+                              </span>
+
+
+                            <span v-if="!row.isInput">{{ row.workStart }}</span>
                         </template>
                         <template slot-scope="{ row, index }" slot="workEnd">
                             <div v-if="row.isInput && bFixed" >
-                                <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
-                                <span v-else>{{ row.workEnd }}</span>
+                                <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ row.workEnd }}</span>
                             </div>
-                            <div v-if="row.isInput" >
+                            <div v-if="row.isInput && !bFixed" >
                                 <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             </div>
-                            <span v-if="!row.isInput && !bFixed">{{ row.workEnd }}</span>
+                            <span v-if="!row.isInput">{{ row.workEnd }}</span>
                         </template>
                     </i-table>
                 </div>
@@ -432,6 +440,7 @@
                     dispMonthlyList: [],       //年月リスト
                     deptName: '選んでください',   //選択した職員の所属
                     kanjiName: '',
+                    workTypeName:'',
                     monthlyLoading:false, //承认状态刷新
                     isConfirm: '', // 承認ステータス
                     isFixed:'', //月次確定情報
@@ -698,12 +707,10 @@
                         this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                     }
                     await this.getOrgTree()
-                    console.log([[${ session }]])
-                    console.log(this.treeData)
+
                     //　初回サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getEmpCode=this.getEmpCode(this.treeData,targetPermEmp,targetPermSection,targetPermGroup)
-                        console.log(getEmpCode)
                         if (getEmpCode) {
                             console.log(1)
                             this.getDeptName(this.treeData,targetPermSection,targetPermGroup)
@@ -764,21 +771,19 @@
                         }
                     }else{
                         data.forEach(e => {
-                            console.log(e)
                             if (e.secid === sectionId || e.groupid === groupId) {
                                 e.children.forEach(j => {
                                     if (j.empid === empId) {
-                                        console.log(j)
                                         dept=true
                                     }
                                 })
                                 if(!dept){
-                                    console.log(e.children[0].empid)
                                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
                                 }
                             }
 
                         })
+
                     }
 
                     return dept
@@ -787,13 +792,11 @@
                     // idによりループ処理でdeptNameを取得する
                     data.forEach(e => {
                         if (e.secid === section || e.groupid === group) {
-                            console.log(e)
                             if(this.selectedDeptViewType==='all'){
                                 this.deptName = e.secnic
                             }else{
                                 this.deptName = e.label
                             }
-
                         }
                     })
                 },
@@ -803,6 +806,7 @@
                         data.forEach(e => {
                                 if (e.empid === empId) {
                                     this.kanjiName = e.empname
+                                    this.workTypeName=e.wokertypename
                                 }
                         })
                     }else{
@@ -810,6 +814,7 @@
                             e.children.forEach(j => {
                                 if (j.empid === empId) {
                                     this.kanjiName = j.empname
+                                    this.workTypeName=j.wokertypename
                                 }
                             })
                         })
@@ -870,7 +875,6 @@
                     this.deptDrawShow = false
                     const section = [[${ TREEVIEW_KEY_PERM_TARGET_SECTION }]]
                     const group = [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]
-                    console.log(e)
                     this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
                     this.referListObject[section] = e[0].secid
 
@@ -881,6 +885,7 @@
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.kanjiName = e[0].empname
+                    this.workTypeName=e[0].wokertypename
                     this.selectDisabled = true
                     await this.getWorkDateList()
 
@@ -936,8 +941,7 @@
                         this.dispMonthlyList = data.monthLy
                         if (data.monthLy.length > 0) {
                             let check　= false
-                            check =  this.dispMonthlyList.map(e =>{
-
+                            check =  this.dispMonthlyList.some(e =>{
                                 if(this.query.txtDYYYYMM === e.code){
                                     return true
                                 }
@@ -1284,6 +1288,7 @@
                     this.otDaily = limitOfBasedateVO.otDaily
                     this.targetForOverTime = data.targetForOverTime
                     this.changeWorkingID(this.workingId)
+                    console.log(this.workData)
                     if(data.dailyEditVO.tdaCstatusflg==='TMG_DATASTATUS|5' && 'TMG_DATASTATUS|0'===this.monthlyMap.TMO_CSTATUSFLG ){
                         this.notapproval=true
                     }else{
