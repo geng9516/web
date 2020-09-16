@@ -76,6 +76,7 @@ public class SmartUserDetails implements UserDetails {
             this.hdCifkeyoradditionalrole = user.getHdCifkeyoradditionalrole();
             this.hdDstartdateCk = user.getHdDstartdateCk();
             this.hdCbossornot = user.getHdCbossornot();
+            this.moCsectionname = user.getMoCsectionname();
         }
     }
 

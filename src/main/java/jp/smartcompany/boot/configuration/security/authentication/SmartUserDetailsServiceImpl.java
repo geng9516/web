@@ -99,6 +99,8 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
                 }
             }
         }
+        // 密码是否过期标识位，
+        lruCache.put(username+"passwordExpired",passwordExpired);
         // 通常ログイン時のみ、認証ＯＫでパスワード間違い回数1以上の場合、0クリア
         // アカウントマスタを更新
         if (account.getMaNretrycounter() > 0) {
@@ -119,7 +121,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
             lruCache.put(Constant.SYSTEM_LIST,systemList);
         }
         Map<String, List<LoginGroupBO>> loginGroups = groupBusiness.getGroupInfos(username,"multiple","ja",systemList);
-        return new SmartUserDetails(loginAccountBO,loginGroups,encodePassword,isLocked,passwordExpired);
+        return new SmartUserDetails(loginAccountBO,loginGroups,encodePassword,isLocked,true);
     }
 
 }

@@ -1,9 +1,11 @@
 package jp.smartcompany.boot.configuration.security.filter;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -18,7 +20,10 @@ import java.io.IOException;
  * @author Xiao Wenpeng
  */
 @Component
+@RequiredArgsConstructor
 public class SmartParameterFilter extends OncePerRequestFilter {
+
+    private final LRUCache<Object,Object> lruCache;
 
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {

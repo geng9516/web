@@ -101,6 +101,9 @@ security:
     - /
     - /sys/**
     - /index
+    - /expirePassword
+    - /changeExpirePassword
+    - /changePassword
   # 需要忽略的静态资源url
   resourceList:
     - /favicon.ico

@@ -25,7 +25,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -48,7 +47,7 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp,
-                                      Authentication auth) throws IOException, ServletException {
+                                      Authentication auth) throws IOException {
     HttpSession httpSession = req.getSession();
     String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);
     List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
@@ -61,7 +60,7 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
     baseSectionBusiness.getBaseSectionList(httpSession);
     loadMenus(systemCode,  systemList,req);
 
-    lruCache.remove(auth.getPrincipal()+"password");
+    lruCache.remove(auth.getName()+"password");
 
     if (SysUtil.isAjaxRequest(req)) {
       resp.setCharacterEncoding("UTF-8");
@@ -78,7 +77,16 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
 //        RequestDispatcher dispatcher = req.getRequestDispatcher(req.getRequestURI()+"?"+req.getQueryString());
 //        dispatcher.forward(req, resp);
 //      }
-      resp.sendRedirect(securityProperties.getLoginSuccessUrl());
+      Boolean passwordExpired = (Boolean)lruCache.get(auth.getName()+"passwordExpired",true);
+      // 如果密码过期则跳转到密码过期页面
+      if (passwordExpired!=null && passwordExpired) {
+        resp.sendRedirect("/expirePassword?username="+auth.getName());
+      } else {
+        if (passwordExpired!=null) {
+          lruCache.remove(auth.getName() + "passwordExpired");
+        }
+        resp.sendRedirect(securityProperties.getLoginSuccessUrl());
+      }
     }
   }
 
