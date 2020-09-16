@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
+import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +23,6 @@ public class SmartAuthenticationManager implements AuthenticationManager {
     if (Objects.nonNull(result)) {
       return result;
     }
-    throw new ProviderNotFoundException("providerNotFound");
+    throw new ProviderNotFoundException(SecurityConstant.PROVIDER_NOT_FOUND);
   }
 }

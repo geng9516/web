@@ -3,8 +3,8 @@ package jp.smartcompany.boot.configuration.security.authentication;
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
-import jp.smartcompany.boot.util.ContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -31,7 +31,7 @@ public class SmartAuthenticationProvider implements AuthenticationProvider {
 
         SmartUserDetails userDetails = (SmartUserDetails) userDetailsService.loadUserByUsername(username);
         if (!StrUtil.equals(md5Password, userDetails.getPassword())) {
-            throw new BadCredentialsException("incorrectPassword");
+            throw new BadCredentialsException(SecurityConstant.PASSWORD_ERROR);
         }
         return new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
     }
