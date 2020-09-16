@@ -6,10 +6,10 @@
       <section class="error-wrap">
         <figure class="error-img" th:style="${'background-image: url('+
           #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort()  + #request.getContextPath() +
-        '/static/svg/404.svg)'}"></figure>
+        '/static/svg/403.svg)'}"></figure>
         <section class="error-content">
           <h1 class="mb20">403</h1>
-          <p class="p mb15">Access Denied</p>
+          <p class="p mb15">禁止されたアクセス</p>
           <button class="action" @click="goHomepage">ホームページへ</button>
         </section>
       </section>
@@ -18,16 +18,11 @@
     <script>
         var page505 = new Vue({
             el: '.error-page',
-            data() {
-                return {
-                    errorMessage: 'Page not found'
-                }
-            },
             methods: {
                 goHomepage() {
                   top.location.href="/";
                 }
-            },
+            }
         })
     </script>
   </body>

@@ -2,6 +2,7 @@ package jp.smartcompany.boot.configuration.security.authentication;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.configuration.security.handler.SmartAuthenticationFailureHandler;
 import jp.smartcompany.boot.configuration.security.handler.SmartAuthenticationSuccessHandler;
 import jp.smartcompany.boot.util.MultiReadHttpServletRequest;
@@ -32,7 +33,7 @@ public class AuthenticationProcessingFilter extends AbstractAuthenticationProces
   public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
     String contentType = request.getContentType();
     if (StrUtil.isBlank(contentType) || !contentType.contains(MediaType.APPLICATION_JSON_VALUE)) {
-      throw new AuthenticationServiceException("ログインContent-Typeはまちがいます");
+      throw new AuthenticationServiceException(SecurityConstant.INCORRECT_CONTENT_TYPE);
     }
     UsernamePasswordAuthenticationToken authRequest;
     try {

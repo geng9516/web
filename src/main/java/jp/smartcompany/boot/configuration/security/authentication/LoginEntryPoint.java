@@ -27,7 +27,7 @@ public class LoginEntryPoint implements AuthenticationEntryPoint {
         if (SysUtil.isAjaxRequest(req)) {
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(), "ログイン失敗しました")));
+            resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(), e.getMessage())));
         } else {
             RequestDispatcher dispatcher = req.getRequestDispatcher("/login");
             dispatcher.forward(req, resp);

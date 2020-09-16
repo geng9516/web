@@ -2,6 +2,7 @@ package jp.smartcompany.boot.configuration.security.handler;
 
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.configuration.security.SecurityProperties;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
@@ -47,15 +48,15 @@ public class SmartAuthenticationFailureHandler implements AuthenticationFailureH
     if (e instanceof UsernameNotFoundException || e instanceof BadCredentialsException) {
       msg = e.getMessage();
     } else if (e instanceof LockedException) {
-      msg = "accountLocked";
+      msg = SecurityConstant.ACCOUNT_LOCKED;
     } else if (e instanceof CredentialsExpiredException) {
-      msg = "passwordExpired";
+      msg = SecurityConstant.PASSWORD_EXPIRED;
     } else if (e instanceof AccountExpiredException) {
-      msg = "accountExpired";
+      msg = SecurityConstant.ACCOUNT_EXPIRED;
     } else if (e instanceof DisabledException) {
-      msg = "accountForbidden";
+      msg = SecurityConstant.ACCOUNT_DISABLED;
     } else {
-      msg = "unknownLoginFailedError";
+      msg = SecurityConstant.UNKNOWN_LOGIN_ERROR;
     }
     return msg;
   }
