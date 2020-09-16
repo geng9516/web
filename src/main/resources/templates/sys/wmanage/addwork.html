@@ -112,6 +112,13 @@
                     <div slot="content">{{kanjiName}}</div>
                 </Tooltip>
             </span>
+
+            <span class="label">種別</span>
+            <span class="input-like-span width15">
+                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer v-if="workTypeName">{{workTypeName}}
+                    <div slot="content">{{workTypeName}}</div>
+                </Tooltip>
+                </span>
         </div>
 
     </div>
@@ -284,12 +291,16 @@
                             <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         </div>
                           <!-- 本人comment -->
-                          <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
-                          <span v-if="row.isOwnComment && bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
+                          <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  :value="dailyEdit.tdaCowncommentR" v-if="row.isOwnComment"></span>
+
 
                           <!-- 承认者comment -->
-                          <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bApproved">
-                          </i-input>
+                        <div>
+                            <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bFixed">
+                            </i-input>
+                            <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  :value="dailyEdit.tdaCbosscommentR" v-if="row.isBSComment && bFixed"></span>
+                        </div>
+
                         <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
                     </template>
                     <template slot-scope="{ row, index }" slot="workEnd">
@@ -434,6 +445,7 @@
                 dispMonthlyList: [],       //年月リスト
                 deptName: '選んでください',   //選択した職員の所属
                 kanjiName: '',
+                workTypeName:'',
                 monthlyLoading:false, //承认状态刷新
                 isConfirm: '', // 承認ステータス
                 isFixed:'', //月次確定情報
@@ -701,7 +713,6 @@
                 if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                     this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
-                console.log([[${ session }]])
                 await this.getOrgTree()
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
@@ -765,11 +776,10 @@
                 if(empId){
                     this.empTreeData.forEach(e => {
                         if (e.empid === empId) {
-                            console.log(e)
                             this.EmpFlag=true
                             this.kanjiName=e.empname
+                            this.workTypeName=e.wokertypename
                             this.EmpSelect=true
-                            console.log(e.empid)
                             return
                         }
                     })
@@ -778,6 +788,7 @@
                     this.EmpFlag=true
                     this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = this.empTreeData[0].empid
                     this.kanjiName=this.empTreeData[0].empname
+                    this.workTypeName=this.empTreeData[0].wokertypename
                 }
             },
             getSecCode(data,sectionId){
@@ -891,6 +902,7 @@
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.kanjiName = e[0].empname
+                this.workTypeName=e[0].wokertypename
                 this.selectDisabled = true
                 this.remarksDisabled = true
                 await this.getWorkDateList()
@@ -915,7 +927,7 @@
                     this.dispMonthlyList = data.monthLy
                     if (data.monthLy.length > 0) {
                         let check　= false
-                         check =  this.dispMonthlyList.map(e =>{
+                         check =  this.dispMonthlyList.some(e =>{
 
                             if(this.query.txtDYYYYMM === e.code){
                                 return true
@@ -953,7 +965,6 @@
                         this.hatuReiDisp=false
                     }
                 } catch (error) {
-                    console.log(error)
                     return
                 }finally {
 

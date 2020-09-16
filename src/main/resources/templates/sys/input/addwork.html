@@ -168,10 +168,10 @@
                     <template slot-scope="{ row, index }" slot="workStart">
                         <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
-                        <span v-if="row.isOwnComment && bFixed">{{ dailyEdit.tdaCowncommentR}}</span>
+                        <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
-                        <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bApproved">
-                        </i-input>
+                        <span class="tl input-like-span" v-model="dailyEdit.tdaCbosscommentR" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment && !bApproved">
+                        </span>
                         <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                         <span v-else>{{ row.workStart }}</span>
