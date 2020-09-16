@@ -5,6 +5,7 @@ import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.configuration.security.SecurityConstant;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import jp.smartcompany.boot.enums.ErrorMessage;
 import jp.smartcompany.boot.util.ScCacheUtil;
@@ -83,7 +84,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
                 account.setMaDmodifieddate(loginTime);
                 accountService.updateById(account);
                 //認証エラー（パスワード間違い）
-                throw new BadCredentialsException("incorrectPassword");
+                throw new BadCredentialsException(SecurityConstant.PASSWORD_ERROR);
             }
         } else {
             for (MastPasswordDO oPasswordEntity : passwordHistories) {
