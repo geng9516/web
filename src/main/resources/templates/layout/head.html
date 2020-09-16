@@ -112,7 +112,7 @@
             await this.http.post('/changePassword', this.password)
             this.$Message.success('更新完了')
             setTimeout(() => {
-              location.href = '/login'
+              location.href = '/logout'
             }, 1000);
           } catch (error) {
             this.passwordLoading = false
