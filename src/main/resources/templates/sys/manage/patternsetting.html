@@ -67,29 +67,24 @@
                         </div>
                       </Drawer>
                 </span>
-            <span style="padding-left: 8px; padding-right: 8px;">
-                 選択された所属にいる社員：
-                <i-button type="button" class="ivu-btn ivu-btn-default" disabled v-if="btn_sk_show===false"><span>照会</span></i-button>
-                <i-button type="button" class="ivu-btn ivu-btn-default" @click="selectTmgPatternApplies" v-else><span>照会</span></i-button>
-                <Drawer class="tc" :title="deptName" placement="right" width="700" :closable="true" :mask-closable="!isSearchHistory" v-model="empDrawShow">
-                      <i-table :class="tableHeadFixed ? 'table-head-fixed sum-table' : 'sum-table'" :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="">
-                      </i-table>
-                </Drawer>
-            </span>
             <span style="flex:1"></span>
         </div>
     </div>
     <div class="content_body">
         <Alert class="primary-info tl" v-if="periodDate !== ''">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
-        <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true">
+        <Row :gutter="8">
+            <i-col span="7" v-if="btn_sk_show">
+                <i-table :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="" :row-class-name="() => 'select-col'">
+                </i-table>
+            </i-col>
+            <i-col :span="btn_sk_show ? 17 : 24">
+        <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
             <!-- 勤務時間 -->
             <template slot-scope="{ row }" slot="dutyTime">
                 <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
             </template>
             <!-- 休憩時間 -->
-            <template v-for="(item,i) of planRest" slot-scope="{row}" :slot="item">
-                <span v-if="row.planRest[i] != undefined && row.planRest[i] != null  && row.planRest[i].NOPEN != '' && row.planRest[i].NCLOSE != '' ">{{row.planRest[i].NOPEN|handleTime}}～{{row.planRest[i].NCLOSE|handleTime}}</span>
-            </template>
+            <template slot-scope="{row}" slot="restTime">{{handleRestTime(row.planRest)}}</template>
 
             <template slot-scope="{ row }" slot="action">
                 <div>
@@ -106,12 +101,11 @@
             </template>
 
         </i-table>
-
+            </i-col>
+        </Row>
     </div>
     <back-top></back-top>
     <!-- 勤務パターンSTART -->
-    <template>
-      <span>
         <Modal v-model="isShow" :title="pageTitle" footer-hide :mask-closable="false" @on-cancel="cancel">
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
           <i-form :label-width="120" ref="localValue" :model="localValue">
@@ -234,8 +228,6 @@
           </div>
           <Spin size="large" fix v-if="mergePatternLoading"></Spin>
         </Modal>
-      </span>
-    </template>
     <!-- 勤務パターン追加END -->
     <!-- CSVファイル取込STARD -->
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
@@ -251,7 +243,7 @@
         <div slot="footer">
             <i-button type="text" @click="uploadCancel">キャンセル</i-button>
             <i-button icon="md-arrow-round-up" type="primary" @click="upload" :loading="loadingStatus" v-if="file != null">アップロード</i-button>
-            <i-button icon="md-arrow-round-up" type="primary" disabled :loading="loadingStatus" v-if="file === null">アップロード</i-button>
+            <i-button icon="md-arrow-round-up" disabled v-if="file === null">アップロード</i-button>
         </div>
     </Modal>
     <!-- CSVファイル取込END -->
@@ -271,7 +263,6 @@
                 errorMsg: '',
                 selectedDeptViewType: 3, //組織ツリー用
                 hasPassedTimeCheck: true,
-                planRest: ['one', 'two', 'three', 'four'],
                 isAdd: Boolean,
                 localValue: {
                     name: '',
@@ -416,46 +407,40 @@
                 columns: [
                     {
                         title: '勤務パターン',
+                        minWidth:100,
                         key: 'tpa_cpatternname',
                         align: 'right'
                     },
                     {
+                        title: 'オーナー',
+                        minWidth:80,
+                        key: 'tpa_csectionname',
+                        align: 'center'
+                    },
+                    {
                         title: '勤務時間',
+                        minWidth: 100,
+                        maxWidth: 120,
                         slot: 'dutyTime',
                         align: 'center'
                     },
                     {
                         title: '休憩時間',
-                        children: [
-                            {
-                                title: '1',
-                                slot: 'one',
-                                align: 'center'
-                            },
-                            {
-                                title: '2',
-                                slot: 'two',
-                                align: 'center'
-                            },
-                            {
-                                title: '3',
-                                slot: 'three',
-                                align: 'center'
-                            },
-                            {
-                                title: '4',
-                                slot: 'four',
-                                align: 'center'
-                            }
-                        ]
+                        minWidth: 180,
+                        slot: 'restTime',
+                        align: 'center'
                     },
                     {
                         title: '日付切替時刻',
+                        minWidth: 50,
+                        maxWidth: 130,
                         key: 'tpa_ndate_change_time',
                         align: 'center'
                     },
                     {
                         title: '翌日勤務パターン',
+                        minWidth: 140,
+                        maxWidth: 200,
                         key: 'cnextptname',
                         align: 'center'
                     },
@@ -471,10 +456,12 @@
                     {
                         title: '氏名',
                         key: 'empname',
-                        align: 'right'
+                        minWidth:100,
+                        align: 'center'
                     },
                     {
                         title: '勤務パターン',
+                        minWidth:200,
                         key: 'tpa_cpatternname',
                         align: 'left'
                     }
@@ -489,10 +476,7 @@
         async mounted() {
             //await this.getOrgTree()
             await this.getInit()
-            window.addEventListener('scroll', this.handleScroll, {passive: true})
-        },
-        beforeDestroy() {
-            window.removeEventListener('scroll', this.handleScroll, {passive: true})
+            this.selectTmgPatternApplies()
         },
         computed: {
             tableHeadFixed() {
@@ -560,36 +544,6 @@
                 if(this.treeData.length !== 0) {
                    this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
                 }
-            },
-            rowClass(row) {
-                // 表格变色
-                if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-                    return ''
-                }
-                return 'sat'
-            },
-            handleScroll: Throttle(function (e) {
-                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-            }, 50),
-
-            convertTreeData(treeData = []) {
-                return treeData.map(e => {
-                    const children = e.child || e.children
-                    if (children) {
-                        return {
-                            ...e.data,
-                            title: e.data.label,
-                            // 前两层级默认展开方便查看
-                            expand: e.data.level < 2 || !e.data.level,
-                            children: this.convertTreeData(children)
-                        }
-                    } else {
-                        return {
-                            ...e.data,
-                            title: e.data.label
-                        }
-                    }
-                })
             },
 
             // 改訂日を変更すると　所属リストを更新する
@@ -1301,6 +1255,21 @@
                         }
                     }
                 })
+            },
+            handleRestTime(list) {
+                if(!list) return
+                const handleTime = Vue.filter('handleTime')
+                let _e = list.filter(e => e.NOPEN && e.NCLOSE)
+                if(_e.length === 1) return `${handleTime(_e[0].NOPEN)}～${handleTime(_e[0].NCLOSE)}`
+                let result = ''
+                _e.forEach((e, i)=> {
+                    if(i % 2 !== 0) {
+                            result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}\n`)
+                    } else {
+                            result = result.concat(`${handleTime(e.NOPEN)}～${handleTime(e.NCLOSE)}/`)
+                    }
+                })
+                return result
             }
         }
     })
