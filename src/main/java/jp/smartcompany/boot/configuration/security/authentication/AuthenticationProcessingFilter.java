@@ -37,8 +37,6 @@ public class AuthenticationProcessingFilter extends AbstractAuthenticationProces
     }
     UsernamePasswordAuthenticationToken authRequest;
     try {
-//        String username = request.getParameter("username");
-//        String password = request.getParameter("password");
         MultiReadHttpServletRequest wrappedRequest = new MultiReadHttpServletRequest(request);
       // 将前端传递的数据转换成jsonBean数据格式
       LoginDTO form = JSONUtil.toBean(wrappedRequest.getBodyJsonStrByJson(wrappedRequest), LoginDTO.class);
