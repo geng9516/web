@@ -32,6 +32,7 @@ public class UrlAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest req, HttpServletResponse resp, AccessDeniedException e) throws ServletException, IOException {
         if (SysUtil.isAjaxRequest(req)) {
+            resp.setStatus(HttpStatus.HTTP_FORBIDDEN);
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
             GlobalResponse r = GlobalResponse.error(HttpStatus.HTTP_FORBIDDEN,e.getMessage());
