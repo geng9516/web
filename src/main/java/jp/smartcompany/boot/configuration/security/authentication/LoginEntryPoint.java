@@ -26,10 +26,10 @@ public class LoginEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest req, HttpServletResponse resp, AuthenticationException e) throws ServletException, IOException {
         if (SysUtil.isAjaxRequest(req)) {
-            resp.setStatus(HttpStatus.UNAUTHORIZED.value());
+            resp.setStatus(HttpStatus.REQUEST_TIMEOUT.value());
             resp.setCharacterEncoding("UTF-8");
             resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
-            resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.UNAUTHORIZED.value(), SecurityConstant.LOGIN_TIMEOUT)));
+            resp.getWriter().write(JSONUtil.toJsonStr(GlobalResponse.error(HttpStatus.REQUEST_TIMEOUT.value(), SecurityConstant.LOGIN_TIMEOUT)));
         } else {
             RequestDispatcher dispatcher = req.getRequestDispatcher("/login");
             dispatcher.forward(req, resp);
