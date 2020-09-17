@@ -86,7 +86,7 @@
                 </Row>
             </div>
             <Alert class="primary-info tl" v-show="this.tableData.length>0">※日付をクリックすると、一括承認画面を表示します。※承認ステータスをクリックすると、就業承認コンテンツを表示します。</Alert>
-            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange"
+            <i-table class="long-table" border ref="selection" :columns="columns" :data="tableData" @on-select="tableSelect" @on-selection-change="tableSelectChange" :row-class-name="() => 'select-col'"
                 :disabled-hover="true" :loading="listLoading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>
