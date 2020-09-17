@@ -454,24 +454,24 @@
         el: '.tmgschedule-warp',
         data() {
             return {
-                resetMonthSelectForBtnEditable:false,
-                editErrMsg:'',
+                resetMonthSelectForBtnEditable:false,//年月下拉框切换标记
+                editErrMsg:'', //年月下拉不能编辑时 后端返回的错误信息
                 defaultDate: '', //年月选择（Date）
                 dispMonthlyList: [],       //年月リスト
-                editable:false,
+                editable:false, //年月下拉不能编辑时 后端返回的标志
                 isSearchHistory: false,
-                nextMonthFirstDay:new Date(new Date().getFullYear(), new Date().getMonth()+1, 1),
+                nextMonthFirstDay:new Date(new Date().getFullYear(), new Date().getMonth()+1, 1),//下个月第一天
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
                 postScheduleLoading:false,
-                hatuReiName:'',
-                hatuResTimeRange:'',
+                hatuReiName:'', //发令数据
+                hatuResTimeRange:'', //发令数据
                 weekPatternloading2:false,
                 weekPatternloading:false,
-                valuebak:[],
+                valuebak:[],  //备份的页面显示数据
                 patternDisabled:false,
                 emplistLoading: false,  //職員番号ローディング用動画
-                applyStartTime:'',
-                applyEndTime:'',
+                applyStartTime:'', //周勤务pattern参照適用开始时间
+                applyEndTime:'',//周勤务pattern参照適用结束时间
                 showWeekHistory: false,
                 value2:{"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
                         let id='TMG_WORK|000'
@@ -482,9 +482,9 @@
                             id='TMG_WORK|570'
                         }
                         return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
-                    })},
+                    })},//週勤務パターン新規数据
                 wokertypename:'',
-                workDivisionList:[],
+                workDivisionList:[],//周勤务pattern列表
                 columns2: [
                     {
                         title: '曜日',
@@ -514,7 +514,7 @@
                         slot: 'rest',
                         align: 'center'
                     }
-                ],
+                ], //週勤務パターン 新規
                 tableData2: [
                     {intDay:'日曜',},
                     {intDay: '月曜'},
@@ -523,11 +523,11 @@
                     {intDay: '木曜'},
                     {intDay: '金曜'},
                     {intDay: '土曜'}
-                ],
-                tableData3:[],
+                ],//週勤務パターン曜日列
+                tableData3:[],//週勤務パターン参照
                 showWeekHistory: false,
-                tableDataUsed: [],
-                tableDataUsedbak: [],
+                tableDataUsed: [],//週勤務パターン適用list
+                tableDataUsedbak: [],//备份的週勤務パターン適用list
                 columnsUsed: [
                     {
                         title: '適用開始日',
@@ -557,14 +557,14 @@
                         width: 120,
                         align: 'center'
                     }
-                ],
+                ],//週勤務パターン適用表头
                 showWeek: false,
                 yyyyMMdd:'',
-                pattern:{nclose:"",nopen:"",workId:"TMG_WORK|",bussinessTripid:"TMG_BUSINESS_TRIP|",restList:[]},
-                value: [],
-                valueMap:[],
+                pattern:{nclose:"",nopen:"",workId:"TMG_WORK|",bussinessTripid:"TMG_BUSINESS_TRIP|",restList:[]},//勤務パターン
+                value: [],//页面显示数据
+                valueMap:[],//勾选的数据索引
                 selectDisabled:false,
-                workPatternSelected: "TMG_PATTERN|",
+                workPatternSelected: "TMG_PATTERN|", //默认workPattern选择
                 columnsAction: [
                     {
                         title: '区分',
@@ -602,18 +602,18 @@
                         slot: 'apply',
                         align: 'center'
                     }
-                ],
-                columnsActionData: [{ JSON: {} }],
+                ],//编辑状态 一括適用 表格
+                columnsActionData: [{ JSON: {} }],//编辑状态 一括適用 表格数据
                 isEditable: false,
-                selectScheduleInfo:{},
-                selectIkkaInfo:{},
-                workPatternList:[],
-                kubunnList:[],
-                kubunnListbak:[],
-                syuccyouList:[],
-                syuccyouListbak:[],
-                paidHolidayVO:{},
-                scheduleDataDTOList:[],
+                selectScheduleInfo:{}, //预定做成原始数据
+                selectIkkaInfo:{},//勤務パターン列表 区分列表 出張列表 原始数据
+                workPatternList:[],//勤務パターン列表
+                kubunnList:[],//区分列表
+                kubunnListbak:[],//区分列表备份
+                syuccyouList:[],//出张列表
+                syuccyouListbak:[],//出张列表备份
+                paidHolidayVO:{},//公休日数  基準日数 等等
+                scheduleDataDTOList:[],//预定做成显示数据
                 loading: false,             //ローディングアクション-->
                 contentScrollTop: 0,
                 kanjiName: '',　         　 //選択した職員の氏名
@@ -656,6 +656,7 @@
         async mounted() {
             console.log([[${ session }]])
             await this.getInit()
+            //初始化週勤務パターン参照曜日
             this.tableData3 = Array(7).fill().map((e,index)=>({"intDay":this.tableData2[index].intDay,"workname":'',"twp_copen":'',"twp_cclose":'',"rest":['','']}))
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
@@ -740,8 +741,8 @@
             }
         },
         methods: {
+            //页面初始化
             async getInit() {
-
                 let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 let targetAdminEmp = [[${ session.txtTmgReferListTreeViewAdminTargetEmp }]]
                 let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
@@ -761,13 +762,12 @@
                     if (this.EmpSelect) {
                         console.log("1")
                         this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = targetAdminEmp
-
+                        //页面请求参数设置
                         this.query.EmployeeCode = targetAdminEmp
                         this.query.sectionid=targetAdminSection
-
-
                     }else{
                         console.log("2")
+                        //页面请求参数设置
                         this.query.sectionid = this.referListObject.txtTmgReferListTreeViewAdminTargetSection
                         this.query.EmployeeCode = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
                     }
@@ -778,28 +778,923 @@
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = [[${ session.psSession.loginDesignation[0].employee }]]
-
+                        //页面请求参数设置
                         this.query.EmployeeCode = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
                         this.query.sectionid=this.referListObject.txtTmgReferListTreeViewAdminTargetSection
-
                     } else {
                         console.log("4")
                         this.deptName = this.treeData[0].children[0].secnic
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
-
+                        //页面请求参数设置
                         this.query.EmployeeCode = this.referListObject.txtTmgReferListTreeViewAdminTargetEmp
                         this.query.sectionid=this.referListObject.txtTmgReferListTreeViewAdminTargetSection
 
                     }
                 }
-                //一覧画面取得
+                 await this.getSearchCondition()
+                //获取年月下拉列表
                 await this.selectScheduleDateList()
-                await this.selectWeekPtn()
-                await this.selectTmgWeekPatternList()
+                //获取预定做成数据
                 await this.getSelectScheduleInfo()
+                //获取 勤務パターン列表  区分列表 出張列表
                 await this.getSelectIkkaInfo()
+                //获取发令信息
                 await this.getHatuRei()
+                //获取周勤务pattern列表
+                await this.selectWeekPtn()
+                //获取周勤务pattern适用列表
+                await this.selectTmgWeekPatternList()
+                //判断选择的年月能不能编辑
                 this.isEditable4Schedule()
+            },
+            //获取年月下拉列表
+            async selectScheduleDateList() {
+                try {
+                    const query = {
+                        EmployeeCode:this.query.EmployeeCode,
+                        psSite:this.query.psSite,
+                        psApp:this.query.psApp,
+                        //请求基准日
+                        baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
+                    const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+                    this.dispMonthlyList = data
+                    if(this.dispMonthlyList.length>0){
+                        //有下拉年月时 取第一个作为默认显示预定数据  并且可以编辑
+                        this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
+                        this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
+                        this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
+                        this.selectDisabled = true
+                    }else{
+                        //没有下拉年月时 清空上一次获取的数据 并且页面进行错误提示
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6.5,
+                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                        });
+                        this.defaultDate=''
+                        this.query.txtBaseDate=''
+                        this.query.txtEndDate=''
+                    }
+                } catch (error) {
+                    return
+                }
+            },
+            //年月下拉框选择处理
+            async handleStartMonth(e) {
+                if(!e){
+                    return
+                }
+                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
+                this.query.txtBaseDate=select.tda_firstDay
+                this.query.txtEndDate=select.tda_endDay
+                await this.isEditable4Schedule()
+                //在编辑页面中当选中不能编辑的月份时 提示信息
+                if(this.editErrMsg && this.isEditable){
+                    return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
+                }
+                this.defaultDate = e
+                //获取选择的月份的预定做成数据
+                await this.getSelectScheduleInfo()
+                //获取选择的月份的勤務パターン列表  区分列表 出張列表
+                await this.getSelectIkkaInfo()
+                //获取选择的月份的发令数据
+                await this.getHatuRei()
+                //获取周勤务pattern列表
+                await this.selectWeekPtn()
+                //获取周勤务pattern适用列表
+                await this.selectTmgWeekPatternList()
+            },
+            //判断选择月份是否可以编辑
+            async isEditable4Schedule(){
+                if( this.defaultDate==''){
+                    return
+                }
+                this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
+                try{
+                    const query = {
+                        EmployeeCode:this.query.EmployeeCode,
+                        psSite:this.query.psSite,
+                        psApp:this.query.psApp,
+                        //选择的年月
+                        baseDate: this.query.txtBaseDate
+                    }
+                    await  this.http.get(`sys/schedule/isEditable`,query)
+                    //选择的年月能编辑
+                    this.editable=true
+                    this.editErrMsg=''
+                    console.log("success")
+                }catch (e) {
+                    //选择的年月不能编辑 后端接口返回如下  进入catch
+                    //{"msg":"該当職員「2020年06月」の勤怠はすでに確認済みになりました。\n予定変更することができません。","sysDate":"2020/09/17","code":500}
+                    console.log("fail")
+                    //不在编辑状态中
+                    if(!this.isEditable){
+                        this.editable=false
+                    }
+                    this.editErrMsg=e
+                }
+            },
+            //发令接口
+            async getHatuRei() {
+                    if( this.defaultDate==''){
+                        return
+                    }
+                    let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
+                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
+                    if(data){
+                        this.hatuReiName=data.name
+                        this.hatuResTimeRange=data.timerange
+                    }
+            },
+            //输入框check
+            handleInputChange(i,object,value,el) {
+                if(object) {
+                    this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
+                }
+            },
+            //选择框的勾选处理
+            handleSelectAll(selection){
+                let temp=selection.map(item=> {
+                    return item.tda_ccustomerid
+                })
+                let that=this
+                //valueMap 为选择的数据
+                this.valueMap=temp.map(e=>{
+                    return that.valuebak.findIndex((e1)=>e1.dyyyymmdd==e)
+                })
+                console.log("valueMap"+JSON.stringify(this.valueMap))
+
+            },
+            //适用button处理
+            handleSelectApply(){
+                //选择了数据才能适用
+                if(this.valueMap.length==0){
+                    this.$Notice.error({
+                        title: '注意',
+                        desc: '適用先が未選択です。',
+                        duration: 6.5
+                    })
+                    return
+                }
+                //当区分和出張为(変更しない)时不允许适用
+                if(this.pattern.workId=='TMG_WORK|' && this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
+                    return
+                }
+                //count：勤务时间
+                let count=Utils.timeToMinute(this.pattern.nclose)-Utils.timeToMinute(this.pattern.nopen)
+                let result=false
+                //当区分为出勤时 勤务时间进行check
+                if(this.pattern.workId=="TMG_WORK|000"){
+                    if (!this.pattern.nopen) {
+                        this.$Notice.warning({ title: '注意', desc:' 開始時間を入力してください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if (!this.pattern.nclose) {
+                        this.$Notice.warning({ title: '注意', desc:' 終了時間を入力してください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if(0>=count ){
+                        this.$Notice.warning({ title: '注意', desc:' 開始時間＜終了時間となるようにしてください。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+
+
+                    let countRest=0;
+                    //过滤后端可能会返回的为空的休息时间
+                    this.pattern.restList= this.pattern.restList.filter(e=>e.restOpen!=''||e.restClose!='')
+                    let that=this
+                    //勤务时间大于360时休息时间check
+                    if(count >=360 && this.pattern.restList.some(e1=>{
+
+                        if (!e1.restOpen) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e1.restClose) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
+                            that.$Notice.warning({ title: '注意', desc:' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+
+                    })){
+                        result=true
+                        return result
+                    }
+                    //勤务时间小于360时休息时间check
+                    if(360 >=count  && this.pattern.restList.some(e1=>{
+
+                        if (e1.restOpen=='' && e1.restClose!='') {
+                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (e1.restOpen!='' && e1.restClose=='') {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (e1.restOpen!='' && e1.restClose!=''&& !Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
+                            that.$Notice.warning({ title: '注意', desc: ' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                        //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
+
+                    })){
+                        result=true
+                        return result
+                    }
+
+
+
+                    console.log("countRest"+countRest)
+                    //cc:工作时间
+                    let cc=count-countRest
+                    if(480>=cc && cc >360 &&  45>countRest){
+                        that.$Notice.warning({ title: '注意', desc:' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+                    if(cc >480 &&  60>countRest){
+                        that.$Notice.warning({ title: '注意', desc: ' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                        result=true
+                        return result
+                    }
+
+                    result = Utils.multipleTimeOverlap(this.pattern.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
+                }
+
+                if(result){
+                    return
+                }
+
+                const that = this
+                //针对选择的行进行数据拷贝
+                this.valueMap.map(Number).forEach(e=>{
+                    let index=e
+                    Object.keys(that.value[index]).forEach(function(key) {
+                        if(key in that.pattern) {
+                            if(that.pattern[key] === 'TMG_WORK|' || that.pattern[key] === 'TMG_BUSINESS_TRIP|') return
+                            that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
+                        }
+                    })
+                })
+            },
+            //全选button和取消button的勾选处理
+            handleSelectAll2(status) {
+                this.$refs.selection2.selectAll(status)
+                //取消button时还原数据
+                if(!status){
+                    this.value=JSON.parse(JSON.stringify(this.valuebak))
+                }
+            },
+            //休息时间的减号处理
+            handleMinusRest(e, i) {
+                e.splice(i, 1)
+            },
+            //休息时间的加号处理
+            handleAddRest(e) {
+                e.push({ restOpen: '', restClose: '' })
+            },
+            //一括適用区分选择处理
+            handleChangeDivision(e){
+                console.log("handleChangeDivision"+e)
+                // 区分选择しない时，将勤務パターン也置为変更しない
+                if(e === 'TMG_WORK|') {
+                    this.workPatternSelected = this.workPatternList[0].CPATTERNID
+                }
+                if("TMG_WORK|000"!=e){
+                    this.pattern.nclose=''
+                    this.pattern.nopen=''
+                    this.pattern.restList=[]
+                }
+
+
+                "TMG_WORK|000"==e ?this.patternDisabled=true:this.patternDisabled=false
+            },
+            //勤務予定区分选择处理
+            handleChangeDivision2(index,name){
+                console.log("handleChangeDivision2"+index)
+                if(name=="value" && this.value[index].workId!='TMG_WORK|000'){
+                    this.value[index].nopen=''
+                    this.value[index].nclose=''
+                    this.value[index].restList=[]
+                }
+                if(name== 'value2' && this.value2.applyList[index].workDivisionId!="TMG_WORK|000"){
+                    this.value2.applyList[index].startTime=''
+                    this.value2.applyList[index].endTime=''
+                    this.value2.applyList[index].restStartTime=''
+                    this.value2.applyList[index].restEndTime=''
+                }
+            },
+            //勤務パターン选择处理
+            handleChangeWorkPattern() {
+                const handleTime = Vue.filter('handleTime');
+                this.columnsActionData[0].JSON= this.curSelectedWorkPattern.JSON
+
+
+                let nopen=this.columnsActionData[0].JSON.dutyArray.length === 0?'':this.curSelectedWorkPattern.JSON.dutyArray[0].NOPEN
+                let nclose=this.columnsActionData[0].JSON.dutyArray.length === 0?'':this.curSelectedWorkPattern.JSON.dutyArray[0].NCLOSE
+
+                let restList=this.columnsActionData[0].JSON.restArray.map(item=>{
+                    return {
+                        restOpen:handleTime(item.NOPEN),
+                        restClose:handleTime(item.NCLOSE)
+                    }
+                })
+                this.pattern.nopen=handleTime(nopen)
+                this.pattern.nclose=handleTime(nclose)
+                this.pattern.restList=restList
+
+            },
+            //获取预定做成数据
+            async getSelectScheduleInfo() {
+                const handleTime = Vue.filter('handleTime');
+                this.loading=true
+                try {
+                    //当年月为空时 不请求后端接口 清空页面数据
+                    if( this.defaultDate==''){
+                        this.selectDisabled=false
+                        this.paidHolidayVO=''
+                        this.scheduleDataDTOList=[]
+                        return
+                    }
+                    const { data } =  await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
+
+                    this.selectScheduleInfo=data
+                    // paidHolidayVO 为公休日数 基准日数 等等显示数据
+                    this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
+                    //根据tda_nlock_p 判断该行数据能不能选择
+                    this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList.map(item=>{
+                        if(item.tda_nlock_p==1){
+                            item._disabled=true;
+                        }else if(item.tda_nlock_p==0){
+                            item._disabled=false;
+                        }
+                        return item;
+                    })
+                    this.yyyyMMdd=this.selectScheduleInfo.period
+                    //处理后端返回的数据为页面需要显示的数据
+                    this.value=this.scheduleDataDTOList.map(item=>{
+                        let restList=item.timerange_arr.map(r=>{
+                            return {
+                                restClose:handleTime(r.NCLOSE),
+                                restOpen:handleTime(r.NOPEN)
+                            }
+                        })
+                        return {
+                            "workMM":item.tda_cworkingid_mm,
+                            "workId":item.tda_cworkingid_p,
+                            "bussinessTripid":item.tda_cbusinesstripid_p,
+                            "nclose":item.tda_nclose_p.trim(),
+                            "dyyyymmdd":item.tda_ccustomerid,
+                            "nopen":item.tda_nopen_p.trim(),
+                            "comment":item.tda_ccomment_p,
+                            "restList":restList
+                        }
+                    })
+                    //备份原始的页面显示数据
+                    this.valuebak=JSON.parse(JSON.stringify(this.value))
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                }
+            },
+            //获取周勤务pattern适用列表
+            async selectTmgWeekPatternList(){
+                this.weekPatternloading2=true
+                try{
+                    const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
+                    this.tableDataUsed=data
+                    this.tableDataUsedbak=JSON.parse(JSON.stringify(data))
+                }catch (e) {
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+                }
+
+            },
+            //获取周勤务pattern列表
+            async selectWeekPtn(){
+                this.weekPatternloading2=true
+                try{
+                    const { data } = await this.http.get(`sys/schedule/selectWeekPtn`, this.query)
+                    this.workDivisionList=data
+                }catch (e) {
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+                }
+
+            },
+            //周勤务pattern参照处理
+            async selectWeekPatternInfo(i){
+                this.weekPatternloading = true
+                try{
+                    const query ={...this.query,twp_nid:this.tableDataUsed[i].twp_nid}
+                    const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, query)
+                    this.applyStartTime=data.twp_dstartdate
+                    this.applyEndTime=data.twp_denddate
+                    let index=-1;
+                    Object.keys(data).map(e=>{
+                        if(e.startsWith("workname")){
+                            index++
+                            this.tableData3[index].workname=data[e]
+                        }
+                        if(e.startsWith("twp_copen")){
+                            this.tableData3[index].twp_copen=data[e]
+                        }
+                        if(e.startsWith("twp_cclose")){
+                            this.tableData3[index].twp_cclose=data[e]
+                        }
+                        if(e.startsWith("rest")){
+                            this.tableData3[index].rest=data[e].split('-')
+                        }
+
+                    })
+                }catch (error) {
+                    return
+                }finally {
+                    this.weekPatternloading = false
+                }
+            },
+            //周勤务pattern更新处理
+            async updateWeekPatternInfo(index){
+                //週勤務パターン適用済时间check
+                let dateArr=this.tableDataUsed.map(e=>{
+                    return {"start":e.twp_dstartdate,"end":e.twp_denddate}
+                })
+                console.log("dateArr"+JSON.stringify(dateArr))
+                if(Utils.multipleDateRangeOverlaps(dateArr)){
+                    this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
+                    return
+                }
+
+                if(JSON.stringify(this.tableDataUsed[index])==JSON.stringify(this.tableDataUsedbak[index])){
+                    this.$Message.error("データは変更されません")
+                    return
+                }
+                let startdate=this.tableDataUsed[index].twp_dstartdate
+                let enddate=this.tableDataUsed[index].twp_denddate
+                let nid=this.tableDataUsed[index].twp_nid
+                if(new Date(startdate)>=new Date(enddate)){
+                    this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
+                    return
+                }
+
+                let curDate=Utils.formatDate(new Date(),"YYYY/MM/DD")
+                let msg=`は${curDate}以降を入力してください。`
+                if(new Date()>new Date(enddate)){
+                    this.$Message.error('適用終了日'+msg)
+                    return
+                }
+
+                if(startdate!=this.tableDataUsedbak[index].twp_dstartdate){
+                    if(new Date()>new Date(startdate)){
+                        this.$Message.error('適用開始日'+msg)
+                        return
+                    }
+                }
+                this.weekPatternloading2=true
+                try{
+                    const  query={...this.query,txtACTION:"ACT_MakeWeekPattern_UWPtn",twp_dstartdate:startdate,twp_denddate:enddate,twp_nid:nid}
+                    const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, query)
+                    if(data){
+                        this.$Message.success('更新完了')
+                    }
+                }catch (e) {
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+                }
+                this.selectTmgWeekPatternList()
+                this.getSelectScheduleInfo()
+
+
+            },
+            //周勤务pattern删除处理
+            async deleteWeekPtn(index){
+                this.weekPatternloading2=true
+                const query ={...this.query,twp_nid:this.tableDataUsed[index].twp_nid}
+                try{
+                    const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, query)
+                }catch(e){
+                    return
+                }finally {
+                    this.weekPatternloading2=false
+
+                }
+                this.selectTmgWeekPatternList()
+                this.getSelectScheduleInfo()
+            },
+            //周勤务pattern登陆处理
+            async executeMakeWeekPattern(){
+                //週勤務パターン適用期間开始时间check
+                if(!this.value2.applyStart){
+                    this.$Message.error(" 適用開始日が未入力です。")
+                    return
+                }
+                //週勤務パターン適用期間结束时间check
+                if(!this.value2.applyEnd){
+                    this.$Message.error("適用終了日が未入力です。")
+                    return
+                }
+                //週勤務パターン適用期間和適用済check
+                let dateArr=this.tableDataUsed.map(e=>{
+                    return {"start":e.twp_dstartdate,"end":e.twp_denddate}
+                })
+                dateArr.push({"start":this.value2.applyStart,"end":this.value2.applyEnd})
+                console.log("dateArr"+JSON.stringify(dateArr))
+                if(Utils.multipleDateRangeOverlaps(dateArr)){
+                    this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
+                    return
+                }
+
+                //週勤務パターン適用期間开始时间check
+                let nextMonthStr=Utils.formatDate(this.nextMonthFirstDay,"YYYY/MM/DD")
+                let msg=`は${nextMonthStr}以降を入力してください。`
+                if(this.nextMonthFirstDay>new Date(this.value2.applyStart)){
+                    this.$Message.error('適用開始日'+msg)
+                    return
+                }
+
+                if(this.nextMonthFirstDay>new Date(this.value2.applyEnd)){
+                    this.$Message.error('適用終了日'+msg)
+                    return
+                }
+                if(new Date(this.value2.applyStart)>new Date(this.value2.applyEnd)){
+                    this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
+                    return
+                }
+                let result=false
+                let that=this
+                this.value2.applyList.some(e=>{
+                    let count=Utils.timeToMinute(e.endTime)-Utils.timeToMinute(e.startTime)
+                    console.log("applyList"+JSON.stringify(e))
+                    //週勤務パターン新规当区分为出勤 时间check
+                    if(e.workDivisionId=='TMG_WORK|000'){
+                        if (!e.startTime) {
+                            that.$Notice.warning({ title: '注意', desc:'始業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e.endTime) {
+                            that.$Notice.warning({ title: '注意', desc:'終業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=count){
+                            that.$Notice.warning({ title: '注意', desc:'始業時刻は、終業時刻より前の時刻を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(e.restStartTime!='' && e.restEndTime==''){
+                            that.$Notice.warning({ title: '注意', desc:'休憩終了時刻を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(e.restStartTime=='' && e.restEndTime!=''){
+                            that.$Notice.warning({ title: '注意', desc:'休憩開始時刻を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        let countRest=Utils.timeToMinute(e.restEndTime)-Utils.timeToMinute(e.restStartTime)
+
+                        let cc=count-countRest
+                        if(480>=cc && cc >360 &&  45>countRest){
+                            that.$Notice.warning({ title: '注意', desc: ' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(cc >480 &&  60>countRest){
+                            that.$Notice.warning({ title: '注意', desc: ' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(e.restStartTime!='' && e.restEndTime!=''){
+                            if (!Utils.timeOverlap(e.startTime, e.endTime, e.restStartTime, e.restEndTime)) {
+                                that.$Notice.warning({ title: '注意', desc:' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                        }
+
+
+                        if(e.restStartTime!='' && e.restEndTime!=''){
+                            let count=Utils.timeToMinute(e.restEndTime)-Utils.timeToMinute(e.restStartTime)
+                            if(0>=count){
+                                that.$Notice.warning({ title: '注意', desc:'休憩開始時刻は、休憩終了時刻より前の時刻を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                        }
+
+                    }
+                })
+                if(result){
+                    return
+                }
+                this.weekPatternloading2=true
+                const query={...this.query,content:JSON.stringify(this.value2) }
+
+                try{
+                    await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,query)
+                }catch (e) {
+                    this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
+                }finally {
+                    this.weekPatternloading2=false
+                }
+                this.selectTmgWeekPatternList()
+                this.getSelectScheduleInfo()
+                this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
+                        let id='TMG_WORK|000'
+                        if(index==0){
+                            id='TMG_WORK|500'
+                        }
+                        if(index==6){
+                            id='TMG_WORK|570'
+                        }
+                        return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
+                    })}
+            },
+            //提交预定做成数据处理
+            postExecuteEditMonthlyUSchedule: Debounce( async function() {
+
+                let that=this
+                //获取用户有改动的数据
+                let postValue= this.value.filter(function(obj) {
+                    return !that.valuebak.some(function(obj2) {
+                        return JSON.stringify(obj) == JSON.stringify(obj2)
+                    });
+                });
+
+                console.log("postValue"+JSON.stringify(postValue))
+                let result=false
+                //数据提交前check
+                postValue.some(e=>{
+                    //count:勤务时间
+                    let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
+                    console.log("count"+count)
+                    let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
+                    //区分为出勤时进行时间check
+                    if(e.workId=="TMG_WORK|000"){
+                        if (!e.nopen) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if (!e.nclose) {
+                            that.$Notice.warning({ title: '注意', desc: day+' 終業時間を入力してください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(0>=count ){
+                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間＜終業時間となるようにしてください。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+
+                        let countRest=0;
+                        //过滤空值
+                        e.restList= e.restList.filter(e=>e.restOpen!=''||e.restClose!='')
+                        //勤务时间大于360check
+                        if(count >=360 && e.restList.some(e1=>{
+                            if (!e1.restOpen) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!e1.restClose) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                        })){
+                            result=true
+                            return result
+                        }
+                        //勤务时间小于360check
+                        if(360 >=count  && e.restList.some(e1=>{
+                            if (e1.restOpen=='' && e1.restClose!='') {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (e1.restOpen!='' && e1.restClose=='') {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            if (e1.restOpen!='' && e1.restClose!=''&&!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
+                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
+                                result=true
+                                return result
+                            }
+                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
+                        })){
+                            result=true
+                            return result
+                        }
+
+                        console.log("countRest"+countRest)
+                        let cc=count-countRest
+                        //休息时间check
+                        if(480>=cc && cc >360 &&  45>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        if(cc >480 &&  60>countRest){
+                            that.$Notice.warning({ title: '注意', desc: day+' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                        result = Utils.multipleTimeOverlap(e.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
+
+                    }
+                })
+
+                if(result){
+                    return
+                }
+
+
+                let endDispDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                let baseDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+
+                let content={
+                    monthlyScheduleEmpInfoDTOS:postValue,
+                    endDispDate:endDispDate,
+                    baseDate:baseDate,
+                    dispStartDate:Utils.formatDate(Date.now(),'YYYY/MM/DD'),
+                    targetUserId:this.query.EmployeeCode,
+                    loginUserId: [[${ session.psSession.loginEmployee }]]
+                }
+
+                const query = {...this.query,content:JSON.stringify(content) }
+                console.log("postExecuteEditMonthlyUSchedule"+query)
+                try{
+                    this.postScheduleLoading=true
+                    this.loading=true
+                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
+                    this.$Message.success('登録完了')
+                }catch (e) {
+                    return
+                }finally {
+                    this.isEditable=false
+                    this.valueMap=[]
+                    this.postScheduleLoading=false
+                    this.loading=false
+                }
+                await this.getSelectScheduleInfo()
+                this.getSelectIkkaInfo()
+
+            }),
+            //获取勤務パターン列表  区分列表 出張列表接口
+            async getSelectIkkaInfo() {
+                if( this.defaultDate==''){
+                    return
+                }
+                const query = {
+                    EmployeeCode:this.query.EmployeeCode,
+                    psSite:this.query.psSite,
+                    psApp:this.query.psApp,
+                    //该参数后端要求传一个为空的过去
+                    baseDateIkka:'',
+                    sectionid:this.query.sectionid,
+                    groupid:this.query.groupid,
+                }
+                const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, query)
+                this.selectIkkaInfo=data
+                //勤務パターン列表
+                this.workPatternList=this.selectIkkaInfo.workPatternList
+                //区分列表
+                this.kubunnList=this.selectIkkaInfo.kubunnList
+                //区分列表备份
+                this.kubunnListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.kubunnList))
+                //前端加入 変更しない 选项
+                this.kubunnList.unshift({"MGD_CMASTERCODE":"TMG_WORK|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+                //出張列表
+                this.syuccyouList=this.selectIkkaInfo.syuccyouList
+                //出張列表备份
+                this.syuccyouListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.syuccyouList))
+                //前端加入 変更しない 选项
+                this.syuccyouList.unshift({"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|","MGD_CGENERICDETAILDESC":"(変更しない)"})
+            },
+            //cancel按钮处理
+            restPattern(){
+                this.pattern.workId='TMG_WORK|'
+                this.pattern.bussinessTripid='TMG_BUSINESS_TRIP|'
+                this.workPatternSelected='TMG_PATTERN|'
+                this.handleChangeWorkPattern()
+                this.patternDisabled=false
+
+            },
+
+            async handleClickLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
+                this.referListObject[section] = e[0].secid
+                this.deptName = e[0].secnic
+
+                this.getEmpList()
+            },
+            async getEmpList() {
+                try {
+                    this.emplistLoading = true
+                    //初期化及び前回データをクリアする
+                    this.empTreeData = []
+                    const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
+                    this.empTreeData = Utils.convertTreeData(empList[0].child)
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            async handleClickEmpLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+                this.deptDrawShow = false
+
+                this.loginEmployee = e[0].empid
+                this.sectionName = e[0].secnic
+
+                this.kanjiName = e[0].empname
+                this.deptName = e[0].secnic
+                this.wokertypename=e[0].wokertypename
+                //其他页面需要参数
+                this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                //当前页面请求参数
+                this.query.EmployeeCode = e[0].empid
+                this.query.sectionid= e[0].secid
+
+                //获取年月下拉列表
+                await this.selectScheduleDateList()
+                //获取预定做成数据
+                await this.getSelectScheduleInfo()
+                //获取 勤務パターン列表  区分列表 出張列表
+                await this.getSelectIkkaInfo()
+                //获取发令信息
+                await this.getHatuRei()
+                //获取周勤务pattern列表
+                await this.selectWeekPtn()
+                //获取周勤务pattern适用列表
+                await this.selectTmgWeekPatternList()
+                //判断选择的年月能不能编辑
+                this.isEditable4Schedule()
+
+
+
             },
             async getEmpCode(data, empId, sectionId) {
                 this.EmpSelect=false
@@ -841,798 +1736,6 @@
                     }
                 })
             },
-
-            async isEditable4Schedule(){
-                this.resetMonthSelectForBtnEditable = !this.resetMonthSelectForBtnEditable
-                try{
-                    const query = {
-                        EmployeeCode:this.query.EmployeeCode,
-                        psSite:this.query.psSite,
-                        psApp:this.query.psApp,
-                        baseDate: this.query.txtBaseDate}
-                    await  this.http.get(`sys/schedule/isEditable`,query)
-                    this.editable=true
-                    this.editErrMsg=''
-                    console.log("success")
-                }catch (e) {
-                    console.log("fail")
-                    if(!this.isEditable){
-                        this.editable=false
-                    }
-
-                    this.editErrMsg=e
-
-                }
-            },
-            async getHatuRei() {
-                try {
-                    let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
-                    const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
-                    this.hatuReiName=data.name
-                    this.hatuResTimeRange=data.timerange
-                } catch (error) {
-                    return
-                }finally {
-                }
-            },
-            handleInputChange(i,object,value,el) {
-                if(object) {
-                    this.hasPassedTimeCheck =   Utils.checkTime(object, value,el)
-                }
-            },
-            handleSelectAll(selection){
-                let temp=selection.map(item=> {
-                    return item.tda_ccustomerid
-                })
-                console.log("valueMap"+JSON.stringify(temp))
-                let that=this
-                this.valueMap=temp.map(e=>{
-                    return that.valuebak.findIndex((e1)=>e1.dyyyymmdd==e)
-                })
-                console.log("valueMap"+JSON.stringify(this.valueMap))
-
-            },
-            handleSelectApply(){
-                console.log(JSON.stringify(this.pattern))
-
-                if(this.valueMap.length==0){
-                    this.$Notice.error({
-                        title: '注意',
-                        desc: '適用先が未選択です。',
-                        duration: 3.5
-                    })
-                    return
-                }
-                if(this.pattern.workId=='TMG_WORK|' && this.pattern.bussinessTripid=='TMG_BUSINESS_TRIP|'){
-                    return
-                }
-
-                let count=Utils.timeToMinute(this.pattern.nclose)-Utils.timeToMinute(this.pattern.nopen)
-                let result=false
-                console.log("count"+count)
-                if(this.pattern.workId=="TMG_WORK|000"){
-                    if (!this.pattern.nopen) {
-                        this.$Notice.warning({ title: '注意', desc:' 開始時間を入力してください。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
-                    if (!this.pattern.nclose) {
-                        this.$Notice.warning({ title: '注意', desc:' 終了時間を入力してください。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
-                    if(0>=count ){
-                        this.$Notice.warning({ title: '注意', desc:' 開始時間＜終了時間となるようにしてください。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
-
-
-                    let countRest=0;
-                    let checkArr = []
-                    this.pattern.restList= this.pattern.restList.filter(e=>e.restOpen!=''||e.restClose!='')
-                    let that=this
-                    if(count >=360 && this.pattern.restList.some(e1=>{
-
-                        if (!e1.restOpen) {
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if (!e1.restClose) {
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if (!Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
-                            that.$Notice.warning({ title: '注意', desc:' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-
-                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                        //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
-
-                    })){
-                        result=true
-                        return result
-                    }
-
-                    if(360 >=count  && this.pattern.restList.some(e1=>{
-
-                        if (e1.restOpen=='' && e1.restClose!='') {
-                            that.$Notice.warning({ title: '注意', desc:' 休憩開始時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if (e1.restOpen!='' && e1.restClose=='') {
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩終了時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if (e1.restOpen!='' && e1.restClose!=''&& !Utils.timeOverlap(that.pattern.nopen, that.pattern.nclose, e1.restOpen, e1.restClose)) {
-                            that.$Notice.warning({ title: '注意', desc: ' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                        //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
-
-                    })){
-                        result=true
-                        return result
-                    }
-
-
-
-                    console.log("countRest"+countRest)
-                    let cc=count-countRest
-                    if(480>=cc && cc >360 &&  45>countRest){
-                        that.$Notice.warning({ title: '注意', desc:' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
-                    if(cc >480 &&  60>countRest){
-                        that.$Notice.warning({ title: '注意', desc: ' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
-                        result=true
-                        return result
-                    }
-
-                    result = Utils.multipleTimeOverlap(this.pattern.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
-                }
-
-                if(result){
-                    return
-                }
-
-                const that = this
-
-                this.valueMap.map(Number).forEach(e=>{
-                    let index=e
-                    Object.keys(that.value[index]).forEach(function(key) {
-                        if(key in that.pattern) {
-                            if(that.pattern[key] === 'TMG_WORK|' || that.pattern[key] === 'TMG_BUSINESS_TRIP|') return
-                            that.value[index][key]=JSON.parse(JSON.stringify(that.pattern[key]))
-                        }
-                    })
-                })
-            },
-            handleSelectAll2(status) {
-                this.$refs.selection2.selectAll(status)
-                if(!status){
-                    this.value=JSON.parse(JSON.stringify(this.valuebak))
-                }
-            },
-            handleMinusRest(e, i) {
-                e.splice(i, 1)
-            },
-            handleAddRest(e) {
-                e.push({ restOpen: '', restClose: '' })
-            },
-            handleChangeDivision(e){
-                console.log("handleChangeDivision"+e)
-                // 区分选择しない时，将勤務パターン也置为変更しない
-                if(e === 'TMG_WORK|') {
-                    this.workPatternSelected = this.workPatternList[0].CPATTERNID
-                }
-                if("TMG_WORK|000"!=e){
-                    this.pattern.nclose=''
-                    this.pattern.nopen=''
-                    this.pattern.restList=[]
-                }
-
-
-                "TMG_WORK|000"==e ?this.patternDisabled=true:this.patternDisabled=false
-            },
-            handleChangeDivision2(index,name){
-                console.log("handleChangeDivision2"+index)
-
-                if(name=="value" && this.value[index].workId!='TMG_WORK|000'){
-                    this.value[index].nopen=''
-                    this.value[index].nclose=''
-                    this.value[index].restList=[]
-                }
-                if(name== 'value2' && this.value2.applyList[index].workDivisionId!="TMG_WORK|000"){
-                    this.value2.applyList[index].startTime=''
-                    this.value2.applyList[index].endTime=''
-                    this.value2.applyList[index].restStartTime=''
-                    this.value2.applyList[index].restEndTime=''
-                }
-
-
-
-
-            },
-            handleChangeWorkPattern() {
-                const handleTime = Vue.filter('handleTime');
-                this.columnsActionData[0].JSON= this.curSelectedWorkPattern.JSON
-
-
-                let nopen=this.columnsActionData[0].JSON.dutyArray.length === 0?'':this.curSelectedWorkPattern.JSON.dutyArray[0].NOPEN
-                let nclose=this.columnsActionData[0].JSON.dutyArray.length === 0?'':this.curSelectedWorkPattern.JSON.dutyArray[0].NCLOSE
-
-                let restList=this.columnsActionData[0].JSON.restArray.map(item=>{
-                    return {
-                        restOpen:handleTime(item.NOPEN),
-                        restClose:handleTime(item.NCLOSE)
-                    }
-                })
-                this.pattern.nopen=handleTime(nopen)
-                this.pattern.nclose=handleTime(nclose)
-                this.pattern.restList=restList
-
-            },
-            async handleClickLeaf(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
-
-                const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                this.referListObject[section] = e[0].secid
-                this.deptName = e[0].secnic
-
-                this.getEmpList()
-            },
-            async getEmpList() {
-                try {
-                    this.emplistLoading = true
-                    //初期化及び前回データをクリアする
-                    this.empTreeData = []
-                    const { empList, recordDate } = await this.http.get('sys/tree/emplist', this.referListObject)
-                    this.empTreeData = Utils.convertTreeData(empList[0].child)
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-                } catch (error) {
-                    return
-                } finally {
-                    this.emplistLoading = false
-                }
-            },
-            async handleClickEmpLeaf(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
-                this.deptDrawShow = false
-
-                this.loginEmployee = e[0].empid
-                this.sectionName = e[0].secnic
-
-                this.kanjiName = e[0].empname
-                this.deptName = e[0].secnic
-                this.wokertypename=e[0].wokertypename
-
-                this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
-
-                this.query.EmployeeCode = e[0].empid
-                this.query.sectionid= e[0].secid
-                await this.selectScheduleDateList()
-                await this.selectWeekPtn()
-                await this.selectTmgWeekPatternList()
-                await this.getSelectScheduleInfo()
-                await this.getSelectIkkaInfo()
-                await this.getHatuRei()
-                this.isEditable4Schedule()
-
-            },
-            async getSelectScheduleInfo() {
-                const handleTime = Vue.filter('handleTime');
-                this.loading=true
-                try {
-                    if( this.defaultDate==''){
-                        this.selectDisabled=false
-                        this.paidHolidayVO=''
-                        this.scheduleDataDTOList=[]
-                        return
-                    }
-                    const { data } =  await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
-
-                    this.selectScheduleInfo=data
-                    this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
-                    this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList.map(item=>{
-                        if(item.tda_nlock_p==1){
-                            item._disabled=true;
-                        }else if(item.tda_nlock_p==0){
-                            item._disabled=false;
-                        }
-                        return item;
-                    })
-                    this.yyyyMMdd=this.selectScheduleInfo.period
-                    this.value=this.scheduleDataDTOList.map(item=>{
-                        let restList=item.timerange_arr.map(r=>{
-                            return {
-                                restClose:handleTime(r.NCLOSE),
-                                restOpen:handleTime(r.NOPEN)
-                            }
-                        })
-                        return {
-                            "workMM":item.tda_cworkingid_mm,
-                            "workId":item.tda_cworkingid_p,
-                            "bussinessTripid":item.tda_cbusinesstripid_p,
-                            "nclose":item.tda_nclose_p.trim(),
-                            "dyyyymmdd":item.tda_ccustomerid,
-                            "nopen":item.tda_nopen_p.trim(),
-                            "comment":item.tda_ccomment_p,
-                            "restList":restList
-                        }
-                    })
-                    this.valuebak=JSON.parse(JSON.stringify(this.value))
-                } catch (error) {
-                    return
-                } finally {
-                    this.loading = false
-                }
-            },
-            async selectTmgWeekPatternList(){
-                this.weekPatternloading2=true
-                try{
-                    const { data } = await this.http.get(`sys/schedule/selectTmgWeekPatternList`, this.query)
-                    this.tableDataUsed=data
-                    this.tableDataUsedbak=JSON.parse(JSON.stringify(data))
-                }catch (e) {
-                    return
-                }finally {
-                    this.weekPatternloading2=false
-                }
-
-            },
-            async selectWeekPtn(){
-                this.weekPatternloading2=true
-                try{
-                    const { data } = await this.http.get(`sys/schedule/selectWeekPtn`, this.query)
-                    this.workDivisionList=data
-                }catch (e) {
-                    return
-                }finally {
-                    this.weekPatternloading2=false
-                }
-
-            },
-            async selectWeekPatternInfo(i){
-                this.weekPatternloading = true
-                try{
-                        const query ={...this.query,twp_nid:this.tableDataUsed[i].twp_nid}
-                        const { data } = await this.http.get(`sys/schedule/selectWeekPatternInfo`, query)
-                        this.applyStartTime=data.twp_dstartdate
-                        this.applyEndTime=data.twp_denddate
-                        let index=-1;
-                        Object.keys(data).map(e=>{
-                            if(e.startsWith("workname")){
-                                index++
-                                this.tableData3[index].workname=data[e]
-                            }
-                            if(e.startsWith("twp_copen")){
-                                this.tableData3[index].twp_copen=data[e]
-                            }
-                            if(e.startsWith("twp_cclose")){
-                                this.tableData3[index].twp_cclose=data[e]
-                            }
-                            if(e.startsWith("rest")){
-                                this.tableData3[index].rest=data[e].split('-')
-                            }
-
-                        })
-                    }catch (error) {
-                        return
-                    }finally {
-                        this.weekPatternloading = false
-                    }
-            },
-            async updateWeekPatternInfo(index){
-
-                let dateArr=this.tableDataUsed.map(e=>{
-                    return {"start":e.twp_dstartdate,"end":e.twp_denddate}
-                })
-                console.log("dateArr"+JSON.stringify(dateArr))
-                if(Utils.multipleDateRangeOverlaps(dateArr)){
-                    this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
-                    return
-                }
-
-                if(JSON.stringify(this.tableDataUsed[index])==JSON.stringify(this.tableDataUsedbak[index])){
-                    this.$Message.error("データは変更されません")
-                    return
-                }
-                let startdate=this.tableDataUsed[index].twp_dstartdate
-                let enddate=this.tableDataUsed[index].twp_denddate
-                let nid=this.tableDataUsed[index].twp_nid
-                if(new Date(startdate)>=new Date(enddate)){
-                    this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
-                    return
-                }
-
-                let curDate=Utils.formatDate(new Date(),"YYYY/MM/DD")
-                let msg=`は${curDate}以降を入力してください。`
-                if(new Date()>new Date(enddate)){
-                    this.$Message.error('適用終了日'+msg)
-                    return
-                }
-
-                if(startdate!=this.tableDataUsedbak[index].twp_dstartdate){
-                    if(new Date()>new Date(startdate)){
-                        this.$Message.error('適用開始日'+msg)
-                        return
-                    }
-                }
-
-
-                this.weekPatternloading2=true
-                try{
-                    const  query={...this.query,txtACTION:"ACT_MakeWeekPattern_UWPtn",twp_dstartdate:startdate,twp_denddate:enddate,twp_nid:nid}
-                    const { data } = await this.http.postForm(`sys/schedule/executeUpdateWeekPattern`, query)
-                    if(data){
-                        this.$Message.success('更新完了')
-                    }
-                    this.selectTmgWeekPatternList()
-                }catch (e) {
-                    return
-                }finally {
-                    this.weekPatternloading2=false
-                }
-
-                this.getSelectScheduleInfo()
-
-
-            },
-            async deleteWeekPtn(index){
-                this.weekPatternloading2=true
-                const query ={...this.query,twp_nid:this.tableDataUsed[index].twp_nid}
-                try{
-                    const { data } = await this.http.get(`sys/schedule/deleteWeekPtn`, query)
-                }catch(e){
-                    return
-                }finally {
-                    this.weekPatternloading2=false
-
-                }
-                this.tableDataUsed.splice(index,1)
-                this.getSelectScheduleInfo()
-            },
-            async executeMakeWeekPattern(){
-                    if(!this.value2.applyStart){
-                        this.$Message.error(" 適用開始日が未入力です。")
-                        return
-                    }
-                    if(!this.value2.applyEnd){
-                        this.$Message.error("適用終了日が未入力です。")
-                        return
-                    }
-
-                    let dateArr=this.tableDataUsed.map(e=>{
-                        return {"start":e.twp_dstartdate,"end":e.twp_denddate}
-                    })
-                    dateArr.push({"start":this.value2.applyStart,"end":this.value2.applyEnd})
-                    console.log("dateArr"+JSON.stringify(dateArr))
-                    if(Utils.multipleDateRangeOverlaps(dateArr)){
-                        this.$Message.error("既存の入力欄および新規入力欄について、適用期間が重複しています。")
-                        return
-                    }
-
-                    let nextMonthStr=Utils.formatDate(this.nextMonthFirstDay,"YYYY/MM/DD")
-                    let msg=`は${nextMonthStr}以降を入力してください。`
-                    if(this.nextMonthFirstDay>new Date(this.value2.applyStart)){
-                        this.$Message.error('適用開始日'+msg)
-                        return
-                    }
-
-                    if(this.nextMonthFirstDay>new Date(this.value2.applyEnd)){
-                        this.$Message.error('適用終了日'+msg)
-                        return
-                     }
-                    if(new Date(this.value2.applyStart)>new Date(this.value2.applyEnd)){
-                        this.$Message.error("適用開始日は、適用終了日より前の日付を入力してください。")
-                        return
-                    }
-                    console.log("value2"+JSON.stringify(this.value2))
-                    let result=false
-                    let that=this
-                    this.value2.applyList.some(e=>{
-                        let count=Utils.timeToMinute(e.endTime)-Utils.timeToMinute(e.startTime)
-
-
-                        console.log("applyList"+JSON.stringify(e))
-                        if(e.workDivisionId=='TMG_WORK|000'){
-                            if (!e.startTime) {
-                                that.$Notice.warning({ title: '注意', desc:'始業時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if (!e.endTime) {
-                                that.$Notice.warning({ title: '注意', desc:'終業時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(0>=count){
-                                that.$Notice.warning({ title: '注意', desc:'始業時刻は、終業時刻より前の時刻を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(e.restStartTime!='' && e.restEndTime==''){
-                                that.$Notice.warning({ title: '注意', desc:'休憩終了時刻を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(e.restStartTime=='' && e.restEndTime!=''){
-                                that.$Notice.warning({ title: '注意', desc:'休憩開始時刻を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            let countRest=Utils.timeToMinute(e.restEndTime)-Utils.timeToMinute(e.restStartTime)
-
-                            let cc=count-countRest
-                            if(480>=cc && cc >360 &&  45>countRest){
-                                that.$Notice.warning({ title: '注意', desc: ' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(cc >480 &&  60>countRest){
-                                that.$Notice.warning({ title: '注意', desc: ' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(e.restStartTime!='' && e.restEndTime!=''){
-                                if (!Utils.timeOverlap(e.startTime, e.endTime, e.restStartTime, e.restEndTime)) {
-                                    that.$Notice.warning({ title: '注意', desc:' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
-                                    result=true
-                                    return result
-                                }
-                            }
-
-
-                            if(e.restStartTime!='' && e.restEndTime!=''){
-                                let count=Utils.timeToMinute(e.restEndTime)-Utils.timeToMinute(e.restStartTime)
-                                if(0>=count){
-                                    that.$Notice.warning({ title: '注意', desc:'休憩開始時刻は、休憩終了時刻より前の時刻を入力してください。', duration: 6.5 })
-                                    result=true
-                                    return result
-                                }
-                            }
-
-                        }
-
-
-                    })
-                    console.log("result"+result)
-                    if(result){
-                        return
-                    }
-                    this.weekPatternloading2=true
-                    const query={...this.query,content:JSON.stringify(this.value2) }
-
-                    try{
-                        await this.http.postForm(`sys/schedule/executeMakeWeekPattern`,query)
-                    }catch (e) {
-                        this.$Notice.warning({ title: '注意', desc: e, duration: 6.5 })
-                    }finally {
-                        this.weekPatternloading2=false
-                    }
-                    this.selectTmgWeekPatternList()
-                    this.getSelectScheduleInfo()
-                    this.value2={"applyStart":'',"applyEnd":'',applyList:Array(7).fill().map((e,index)=>{
-                            let id='TMG_WORK|000'
-                            if(index==0){
-                                id='TMG_WORK|500'
-                            }
-                            if(index==6){
-                                id='TMG_WORK|570'
-                            }
-                            return  {"workFlag":index,"workDivisionId":id,"startTime":'',"endTime":'',"restStartTime":'',"restEndTime":''}
-                        })}
-            },
-            postExecuteEditMonthlyUSchedule: Debounce( async function() {
-
-                let that=this
-                let postValue= this.value.filter(function(obj) {
-                    return !that.valuebak.some(function(obj2) {
-                        return JSON.stringify(obj) == JSON.stringify(obj2)
-                    });
-                });
-
-                console.log("postValue"+JSON.stringify(postValue))
-                let result=false
-                postValue.some(e=>{
-                    console.log("workId"+e.workId)
-                    console.log("nopen"+e.nopen)
-                    console.log("nclose"+e.nclose)
-                    console.log("restList"+JSON.stringify(e.restList))
-                    let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
-                    console.log("count"+count)
-                    let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
-                    if(e.workId=="TMG_WORK|000"){
-                        if (!e.nopen) {
-                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if (!e.nclose) {
-                            that.$Notice.warning({ title: '注意', desc: day+' 終業時間を入力してください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if(0>=count ){
-                            that.$Notice.warning({ title: '注意', desc: day+' 始業時間＜終業時間となるようにしてください。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-
-
-                        let countRest=0;
-                        let checkArr = []
-                        e.restList= e.restList.filter(e=>e.restOpen!=''||e.restClose!='')
-                        if(count >=360 && e.restList.some(e1=>{
-
-                            if (!e1.restOpen) {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if (!e1.restClose) {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if (!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-
-                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
-
-                        })){
-                            result=true
-                            return result
-                        }
-
-                        if(360 >=count  && e.restList.some(e1=>{
-
-                            if (e1.restOpen=='' && e1.restClose!='') {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if (e1.restOpen!='' && e1.restClose=='') {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩終了時間を入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if(e1.restOpen!='' && e1.restClose!='' && 0>=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)){
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            if (e1.restOpen!='' && e1.restClose!=''&&!Utils.timeOverlap(e.nopen, e.nclose, e1.restOpen, e1.restClose)) {
-                                that.$Notice.warning({ title: '注意', desc: day+' 休憩時間は勤務時間内で入力してください。', duration: 6.5 })
-                                result=true
-                                return result
-                            }
-                            countRest+=Utils.timeToMinute(e1.restClose)-Utils.timeToMinute(e1.restOpen)
-                            //checkArr = checkArr.concat(Utils.getNumArray(Utils.timeToMinute(e1.restOpen), Utils.timeToMinute(e1.restClose)).slice(1, -1))
-
-                        })){
-                            result=true
-                            return result
-                        }
-
-                        console.log("countRest"+countRest)
-                        let cc=count-countRest
-                        if(480>=cc && cc >360 &&  45>countRest){
-                            that.$Notice.warning({ title: '注意', desc: day+' 6時間を超える勤務に対して45分以上の休憩が必要です。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        if(cc >480 &&  60>countRest){
-                            that.$Notice.warning({ title: '注意', desc: day+' 8時間を超える勤務に対して1時間以上の休憩が必要です。', duration: 6.5 })
-                            result=true
-                            return result
-                        }
-                        result = Utils.multipleTimeOverlap(e.restList, 'restOpen', 'restClose', '休憩時刻が重複しています。')
-                        // console.log("checkArr2"+checkArr)
-                        // const checkArr2 = new Set([...checkArr])
-                        // if (checkArr.length !== checkArr2.size) {
-                        //     that.$Notice.warning({ title: '注意', desc: day+' 休憩時刻が重複しています。', duration: 6.5 })
-                        //     result=true
-                        //     return result
-                        // }
-                    }
-                })
-
-                if(result){
-                    return
-                }
-
-
-                let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                let txtEndDate=this.yyyyMMdd.split('～')[1].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-
-                let content={
-                    monthlyScheduleEmpInfoDTOS:postValue,
-                    endDispDate:txtBaseDate,
-                    baseDate:txtEndDate,
-                    dispStartDate:Utils.formatDate(Date.now(),'YYYY/MM/DD'),
-                    targetUserId:this.query.EmployeeCode,
-                    loginUserId: [[${ session.psSession.loginEmployee }]]
-                }
-
-
-
-
-                const query = {...this.query,content:JSON.stringify(content) }
-
-                console.log(JSON.stringify(query))
-                try{
-                    this.postScheduleLoading=true
-                    this.loading=true
-                    await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
-                    this.$Message.success('登録完了')
-                }catch (e) {
-                    return
-                }finally {
-                    this.isEditable=false
-                    this.valueMap=[]
-                    this.postScheduleLoading=false
-                    this.loading=false
-                }
-                this.getSelectScheduleInfo()
-                this.getSelectIkkaInfo()
-
-
-
-            }),
-            async getSelectIkkaInfo() {
-                    const query = {
-                        EmployeeCode:this.query.EmployeeCode,
-                        psSite:this.query.psSite,
-                        psApp:this.query.psApp,
-                        baseDateIkka:'',
-                        sectionid:this.query.sectionid,
-                        groupid:this.query.groupid,
-                    }
-                    const { data } = await this.http.get(`sys/schedule/selectIkkaInfo`, query)
-                    this.selectIkkaInfo=data
-                    this.workPatternList=this.selectIkkaInfo.workPatternList
-                    this.kubunnList=this.selectIkkaInfo.kubunnList
-                    this.kubunnListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.kubunnList))
-                    this.kubunnList.unshift({"MGD_CMASTERCODE":"TMG_WORK|","MGD_CGENERICDETAILDESC":"(変更しない)"})
-                    this.syuccyouList=this.selectIkkaInfo.syuccyouList
-                    this.syuccyouListbak=JSON.parse(JSON.stringify(this.selectIkkaInfo.syuccyouList))
-                    this.syuccyouList.unshift({"MGD_CMASTERCODE":"TMG_BUSINESS_TRIP|","MGD_CGENERICDETAILDESC":"(変更しない)"})
-            },
             async getOrgTree() {
                 try {
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
@@ -1669,10 +1772,21 @@
                     this.empDeptLoading = false
                 }
             }),
-
             handleScroll: Throttle(function(e) {
                 this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
             }, 50),
+            currentTabChanged(name) {
+                if (name=="organisationTree") {
+                    this.query.hidSelectTab='0'
+                } else if (name=="organisationSearch") {
+                    this.query.hidSelectTab='1'
+                }
+            },
+            async handleDeptViewTypeChange() {
+                await this.getOrgTree()
+                this.$Notice.success({ title:'所属図更新完了' })
+            },
+
             dayRed(e) {
                 const dayOfWeek = e.holflgCalendar
                 if (!dayOfWeek) {
@@ -1685,71 +1799,7 @@
                     return 'brown'
                 }
             },
-            currentTabChanged(name) {
-                if (name=="organisationTree") {
-                    this.query.hidSelectTab='0'
-                } else if (name=="organisationSearch") {
-                    this.query.hidSelectTab='1'
-                }
-            },
-            async handleDeptViewTypeChange() {
-                await this.getOrgTree()
-                this.$Notice.success({ title:'所属図更新完了' })
-            },
-            restPattern(){
-                 this.pattern.workId='TMG_WORK|'
-                 this.pattern.bussinessTripid='TMG_BUSINESS_TRIP|'
 
-                 this.workPatternSelected='TMG_PATTERN|'
-                 this.handleChangeWorkPattern()
-                 this.patternDisabled=false
-
-            },
-            async selectScheduleDateList() {
-                try {
-                    const query = {
-                        EmployeeCode:this.query.EmployeeCode,
-                        psSite:this.query.psSite,
-                        psApp:this.query.psApp,
-                        baseDate:this.referListObject.txtTmgReferListTreeViewRecordDate}
-                    const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
-                    this.dispMonthlyList = data
-                    if(this.dispMonthlyList.length>0){
-                        this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
-                        this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
-                        this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
-                    }else{
-                        this.defaultDate=''
-                        this.query.txtBaseDate=''
-                        this.query.txtEndDate=''
-                    }
-
-
-
-                    this.selectDisabled = true
-
-                } catch (error) {
-                    console.log(error)
-                }
-            },
-            async handleStartMonth(e) {
-                if(!e){
-                    return
-                }
-                let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
-                this.query.txtBaseDate=select.tda_firstDay
-                this.query.txtEndDate=select.tda_endDay
-                await this.isEditable4Schedule()
-                if(this.editErrMsg && this.isEditable){
-                    return this.$Notice.error({ title: '注意', desc: this.editErrMsg, duration: 6.5 })
-                }
-                this.defaultDate = e
-                await this.getSelectScheduleInfo()
-                await this.getSelectIkkaInfo()
-                await this.getHatuRei()
-
-
-            },
 
         }
     })

@@ -331,7 +331,7 @@
                 value: [],   //页面显示数据
                 valueMap:[], //勾选的数据索引
                 selectDisabled:false,
-                resetMonthSelectForBtnEditable:false,
+                resetMonthSelectForBtnEditable:false,//年月下拉框切换标记
                 workPatternSelected: "TMG_PATTERN|",
                 columnsAction: [
                     {
@@ -1077,7 +1077,6 @@
                     this.postScheduleLoading=true
                     this.loading=true
                     await this.http.postForm(`sys/schedule/executeEditMonthlyUSchedule`,query)
-                    await this.getSelectScheduleInfo()
                     this.$Message.success('登録完了')
                 }catch (e) {
                     return
@@ -1087,6 +1086,8 @@
                     this.postScheduleLoading=false
                     this.loading=false
                 }
+                await this.getSelectScheduleInfo()
+                this.getSelectIkkaInfo()
             }),
             //获取勤務パターン列表  区分列表 出張列表接口
             async getSelectIkkaInfo() {
