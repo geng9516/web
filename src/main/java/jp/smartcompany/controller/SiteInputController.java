@@ -21,32 +21,20 @@ public class SiteInputController {
 
     /**
      * 跳转到打刻界面
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("sign")
-    public String toInputSign(@RequestParam("moduleIndex") Integer moduleIndex,
-                          @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-      modelMap.addAttribute("moduleIndex",moduleIndex)
-            .addAttribute("menuId",menuId);
+    public String toInputSign(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+      modelMap.addAttribute("moduleIndex",moduleIndex);
       return "sys/input/sign";
     }
 
     /**
      * 跳转到就業登録界面
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("addwork")
-    public String toInputAddWork(@RequestParam("moduleIndex") Integer moduleIndex,
-                                 @RequestParam("menuId") Long menuId, ModelMap modelMap,
+    public String toInputAddWork(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                                  @RequestAttribute("isMobile")Boolean isMobile) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+        modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
             return "mobile/index";
         }
@@ -55,17 +43,11 @@ public class SiteInputController {
 
     /**
      * 跳转到休暇・休業申請
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("vapply")
-    public String toInputVApply(@RequestParam("moduleIndex") Integer moduleIndex,
-                                @RequestParam("menuId") Long menuId, ModelMap modelMap,
+    public String toInputVApply(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                                 @RequestAttribute("isMobile")Boolean isMobile) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+        modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
             return "mobile/restapply";
         }
@@ -74,33 +56,21 @@ public class SiteInputController {
 
     /**
      * 跳转到出勤簿
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("wschedule")
     public String toInputWSchedule(
-            @RequestParam("moduleIndex") Integer moduleIndex,
-            @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/input/wschedule";
     }
 
     /**
      * 予定確認
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("oconfirm")
-    public String oConfirm(@RequestParam("moduleIndex") Integer moduleIndex,
-                           @RequestParam("menuId") Long menuId, ModelMap modelMap,
+    public String oConfirm(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                            @RequestAttribute("isMobile")Boolean isMobile) {
-        modelMap.addAttribute("moduleIndex",moduleIndex)
-                .addAttribute("menuId",menuId);
+        modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
             return "mobile/scheduleconfirm";
         }

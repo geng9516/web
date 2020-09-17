@@ -20,19 +20,19 @@
 </button>
   <div :class="navIcon ? 'active mobile-nav' : 'mobile-nav'">
     <ul style="font-size: 24px; font-weight: 800; text-align: right;color: white;margin-top: 55px;">
-      <li :class="curMenu === 'TmgResults' ? 'active menu-li' : 'menu-li'"  @click="()=> location.href = `${BASE_URL}/sys/input/addwork?menuId=1642&moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">
+      <li :class="curMenu === 'TmgResults' ? 'active menu-li' : 'menu-li'"  @click="()=> location.href = `${BASE_URL}/sys/input/addwork?moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">
         就業登録
         <svg class="menu-li-logo">
           <use xlink:href="#WorkRegistration01"></use>
         </svg>
       </li>
-      <li :class="curMenu === 'TmgNotification' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/vapply?menuId=1644&moduleIndex=3&psSite=TMG_INP&psApp=TmgNotification`">
+      <li :class="curMenu === 'TmgNotification' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/vapply?moduleIndex=3&psSite=TMG_INP&psApp=TmgNotification`">
         休暇休業申請
         <svg class="menu-li-logo">
           <use xlink:href="#VacationApplication08"></use>
         </svg>
       </li>
-      <li :class="curMenu === 'TmgScheduleCheck' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/oconfirm?menuId=1648&moduleIndex=5&psSite=TMG_INP&psApp=TmgScheduleCheck`">
+      <li :class="curMenu === 'TmgScheduleCheck' ? 'active menu-li' : 'menu-li'" @click="()=> location.href = `${BASE_URL}/sys/input/oconfirm?moduleIndex=5&psSite=TMG_INP&psApp=TmgScheduleCheck`">
         予定確認
         <svg class="menu-li-logo">
           <use xlink:href="#ScheduleConfirmation09"></use>
