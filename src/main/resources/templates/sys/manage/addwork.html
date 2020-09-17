@@ -1452,6 +1452,7 @@
                         } else {
                             this.bDisable = true;
                             this.workTimeDisable=true
+
                         }
                     }
                     if (this.bDisable === true) {
@@ -1459,7 +1460,11 @@
                         this.workData[2].workEnd=''
                         this.detailNonDutyVOList = []
                         this.detailOverhoursVOList = []
-
+                        if(this.businessTripList[0].mgdCmastercode){
+                            this.businessTrip=this.businessTripList[0].mgdCmastercode
+                        }else{
+                            this.businessTrip=''
+                        }
                     }
                 },
                 // エラーチェック
