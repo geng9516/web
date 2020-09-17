@@ -1709,11 +1709,10 @@
                 if(empId){
                     this.empTreeData.forEach(e => {
                         if (e.empid === empId) {
-                            console.log(e)
                             this.EmpFlag=true
                             this.kanjiName=e.empname
+                            this.wokertypename=e.wokertypename
                             this.EmpSelect=true
-                            console.log(e.empid)
                             return
                         }
                     })
@@ -1722,6 +1721,7 @@
                     this.EmpFlag=true
                     this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = this.empTreeData[0].empid
                     this.kanjiName=this.empTreeData[0].empname
+                    this.wokertypename=this.empTreeData[0].wokertypename
                 }
             },
             getSecCode(data,sectionId){

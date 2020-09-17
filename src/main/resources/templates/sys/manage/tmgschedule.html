@@ -1186,21 +1186,19 @@
                     }
                 }else{
                     data.forEach(e => {
-                        console.log(e)
                         if (e.secid === sectionId || e.groupid === groupId) {
                             e.children.forEach(j => {
                                 if (j.empid === empId) {
-                                    console.log(j)
                                     dept=true
                                 }
                             })
                             if(!dept){
-                                console.log(e.children[0].empid)
                                 this.referListObject.txtTmgReferListTreeViewPermTargetEmp=e.children[0].empid
                             }
                         }
 
                     })
+
                 }
 
                 return dept
@@ -1209,13 +1207,11 @@
                 // idによりループ処理でdeptNameを取得する
                 data.forEach(e => {
                     if (e.secid === section || e.groupid === group) {
-                        console.log(e)
                         if(this.selectedDeptViewType==='all'){
                             this.deptName = e.secnic
                         }else{
                             this.deptName = e.label
                         }
-
                     }
                 })
             },
@@ -1225,6 +1221,7 @@
                     data.forEach(e => {
                         if (e.empid === empId) {
                             this.kanjiName = e.empname
+                            this.wokertypename=e.wokertypename
                         }
                     })
                 }else{
@@ -1232,6 +1229,7 @@
                         e.children.forEach(j => {
                             if (j.empid === empId) {
                                 this.kanjiName = j.empname
+                                this.wokertypename=j.wokertypename
                             }
                         })
                     })
