@@ -7,6 +7,7 @@
         <result column="tpa_ccustomerid" property="tpa_ccustomerid"/>
         <result column="tpa_ccompanyid" property="tpa_ccompanyid"/>
         <result column="tpa_csectionid" property="tpa_csectionid"/>
+        <result column="tpa_csectionname" property="tpa_csectionname"/>
         <result column="tpa_cgroupid" property="tpa_cgroupid"/>
         <result column="tpa_dstartdate" property="tpa_dstartdate"/>
         <result column="tpa_denddate" property="tpa_denddate"/>
@@ -81,6 +82,7 @@
         select tab1.ccustomerid as tpa_ccustomerid
             ,tab1.ccompanyid as tpa_ccompanyid
             ,tab1.csectionid as tpa_csectionid
+            ,tab1.csectionname as tpa_csectionname
             ,tab1.cgroupid as tpa_cgroupid
             ,tab1.dstartdate as tpa_dstartdate
             ,tab1.denddate as tpa_denddate
