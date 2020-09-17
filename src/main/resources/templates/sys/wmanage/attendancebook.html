@@ -718,6 +718,7 @@
                 }
                 console.log([[${ session }]])
                 await this.getOrgTree()
+                this.getSearchCondition()
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
@@ -760,7 +761,6 @@
                     }
                 }
                 //一覧画面取得
-                await this.getSearchCondition()
                 if(this.EmpFlag){
 
                     this.deptDrawShow = false
