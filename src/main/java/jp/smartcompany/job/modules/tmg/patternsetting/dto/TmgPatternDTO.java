@@ -21,6 +21,7 @@ public class TmgPatternDTO {
     private String tpa_ccustomerid;
     private String tpa_ccompanyid;
     private String tpa_csectionid;
+    private String tpa_csectionname;
     private String tpa_cgroupid;
     private String tpa_dstartdate;
     private String tpa_denddate;

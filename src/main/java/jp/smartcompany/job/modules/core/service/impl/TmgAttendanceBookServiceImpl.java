@@ -124,6 +124,18 @@ public class TmgAttendanceBookServiceImpl extends ServiceImpl<TmgAttendanceBookM
     }
 
     @Override
+    public String selectExistsAttendanceBookCheck(String baseDate, String employeeId, String compCode, String custId){
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("baseDate", baseDate);
+        params.put("compCode", compCode);
+        params.put("custId", custId);
+        return baseMapper.selectExistsAttendanceBookCheck(params);
+    }
+
+
+
+    @Override
     public List<String> selectWorkTime(String sqlStr, String employeeId, String monthStartDate, String monthEndDate, String compCode, String custId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("sqlStr", sqlStr);

@@ -134,6 +134,17 @@ public interface ITmgAttendanceBookService extends IService<TmgAttendanceBookDO>
     AttendanceExistsVO selectExistsAttendanceBook(String baseDate, String employeeId, String compCode, String custId);
 
     /**
+     * 出勤簿が存在かとうか
+     * @param baseDate
+     * @param employeeId
+     * @param compCode
+     * @param custId
+     * @return
+     */
+    String selectExistsAttendanceBookCheck(String baseDate, String employeeId, String compCode, String custId);
+
+
+    /**
      * 月間実働時間
      *
      * @param sqlStr
