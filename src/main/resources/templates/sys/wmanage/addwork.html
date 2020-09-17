@@ -284,7 +284,7 @@
                             <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
                             <span v-else>{{ row.workStart }}</span>
                         </div>
-                        <div  v-if="row.isInput" >
+                        <div  v-if="row.isInput && !bFixed" >
                             <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         </div>
                           <!-- 本人comment -->
@@ -306,7 +306,7 @@
                             <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             <span v-else>{{ row.workEnd }}</span>
                         </div>
-                        <div v-if="row.isInput" >
+                        <div v-if="row.isInput  && !bFixed" >
                             <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                         </div>
                         <span v-if="!row.isInput && !bFixed">{{ row.workEnd }}</span>
@@ -1144,8 +1144,8 @@
                 this.dailyEdit = data.dailyEditVO
 
                 if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
-                    && '' !== this.dailyEdit.tdaCmodifieruseridR
-                    && '' !== this.dailyEdit.tdaDmodifieddateR
+                    &&  this.dailyEdit.tdaCmodifieruseridR
+                    &&  this.dailyEdit.tdaDmodifieddateR
                 ) {
                     this.bApproved = true
                 } else {
