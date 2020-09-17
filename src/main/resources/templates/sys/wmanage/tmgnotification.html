@@ -92,7 +92,7 @@
         </Row>
       </div>
       <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
-        :data="tableData" :loading="loading" ref="table">
+        :data="tableData" :loading="loading" ref="table" :row-class-name="() => 'select-col'">
         <template slot-scope="{ row }" slot="dateList">
           <span>{{row.tntfDbegin === row.tntfDend ? row.tntfDbegin :  `${row.tntfDbegin} ～ ${row.tntfDend}`}}</span>
         </template>

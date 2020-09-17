@@ -49,7 +49,7 @@
         <Icon type="logo-buffer"></Icon>
         有効なグループ
       </div>
-      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading">
+      <i-table border class="mb10" :columns="columns" :data="tableData" :loading="loading" :row-class-name="() => 'select-col'">
         <template slot-scope="{ row }" slot="date">
           <span class="mr10 pt2 pb2 pl10 pr10 cursor row-label-primary" @click="editDate">{{ `${Utils.formatDate(row.mgDstartdate, 'yyyy/mm/dd')} ～ ${Utils.formatDate(row.mgDenddate, 'yyyy/mm/dd')}` }}</span>
         </template>

@@ -68,7 +68,7 @@
         </div>
         <div class="content_body">
             <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
-            <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
+            <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading" :row-class-name="() => 'select-col'"
                 no-data-text="" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
@@ -123,11 +123,11 @@
                     <span class="input-like-span">{{ deptName }}</span>
                 </i-col>
             </Row>
-            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData"
+            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" :row-class-name="() => 'select-col'"
                 :span-method="handleSpanForAdminAdd" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="group">
-                    <i-select v-model="permissionAdminValue[row._index].groupId" v-if="!PermissionAdminEditer" transfer> 
-                        <i-option v-for="(item, i) of addPermissionAdminGroupList" :key="i" :label="item.groupName" :value="item.groupId"></i-option> 
+                    <i-select v-model="permissionAdminValue[row._index].groupId" v-if="!PermissionAdminEditer" transfer>
+                        <i-option v-for="(item, i) of addPermissionAdminGroupList" :key="i" :label="item.groupName" :value="item.groupId"></i-option>
                     </i-select>
                     <span v-else>{{ row.groupName }}</span>
                 </template>
@@ -229,7 +229,7 @@
                 <Icon type="logo-buffer"></Icon>
                 メンバー割付
             </div>
-            <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData">
+            <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData" :row-class-name="() => 'select-col'">
                 <template slot-scope="{ row }" slot="group">
                     <i-select v-model="memberAssignValue[row._index].groupId" transfer>
                         <i-option v-for="(item, i) of row.groupList" :value="item.value" :key="i">{{ item.name }}
@@ -838,13 +838,13 @@
                     this.loading = true
                     try {
                         const { data } = await this.http.postForm('sys/evaluatorsetting/disp', this.referListObject)
-                        if(this.treeData.length !== 0 && this.data.list.length === 0) {
+                        if(this.treeData.length !== 0 && data.list.length === 0) {
                             this.$Message.error({
                                 background:true,
                                 closable: true,
                                 duration: 6.5,
                                 content: '選択した所属に存在している職員はありません。'
-                            });
+                            })
                         }
                         // 操作按钮
                         this.btnAddEval = data.btnAddEval
@@ -854,7 +854,6 @@
                         this.curDate = data.YYYYMMDD
                         this.data = data.list
                     } catch (error) {
-
                     } finally {
                         this.loading = false
                     }
