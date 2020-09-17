@@ -48,7 +48,7 @@
                             <h2>対象職員</h2>
                         </i-col>
                         <i-col span="9" offset="1">
-                            <p @click="deptDrawShow = true" style="width: 450px;" class="input-like-span">{{ empName }}</p>
+                            <p @click="deptDrawShow = true" style="width: 450px;color: var(--dept-select);  border: 1px dashed var(--dept-select);" class="input-like-span cursor">{{ empName }}</p>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 title="所属職員を選択してください" v-model="deptDrawShow" width="700">
@@ -89,7 +89,7 @@
                             <h2>対象部署</h2>
                         </i-col>
                         <i-col span="9" offset="1">
-                            <p @click="deptDrawShow = true" class="input-like-span">{{ deptName }}</p>
+                            <p @click="deptDrawShow = true" class="input-like-span cursor" style="width: 450px;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 v-model="deptDrawShow" width="700">

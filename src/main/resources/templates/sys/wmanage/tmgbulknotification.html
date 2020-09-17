@@ -37,7 +37,7 @@
                     :disabled-hover="true">
                     <template slot-scope="{ row }" slot="moCsectionname">
                         <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
-                        <span @click="SectionDetailShow(row.tbnNtbnid)" v-else>{{ row.moCsectionname }} [全て表示]
+                        <span @click="SectionDetailShow(row.tbnNtbnid)" v-else>{{ row.moCsectionname }} <span style="color: var(--row-label-primary);">[全て表示]</span>
                         </span>
                     </template>
                     <template slot-scope="{ row }" slot="tbnNcount">
@@ -51,7 +51,7 @@
                     </template>
                     <template slot-scope="{ row }" slot="cntErr">
                         <span v-if="row.tbndCount==='0'">0人</span>
-                        <span @click="errDetail(row.tbnNtbnid)" v-else>{{ `${row.cntErr}人` }} [※詳細]
+                        <span @click="errDetail(row.tbnNtbnid)" v-else>{{ `${row.cntErr}人` }} <span style="color: var(--row-label-primary);">[※詳細]</span>
                         </span>
                     </template>
                     <!-- todo: 需要在这里加取消按钮 -->
@@ -97,7 +97,7 @@
                             <h2>対象部署</h2>
                         </i-col>
                         <i-col span="6" offset="1">
-                            <p @click="deptDrawShow = true" class="input-like-span">{{ deptName }}</p>
+                            <p @click="deptDrawShow = true" class="input-like-span cursor" style="white-space: pre-line;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 v-model="deptDrawShow" width="700">
@@ -154,7 +154,7 @@
                 </div>
             </div>
         </div>
-
+        <back-top></back-top>
     </main>
     <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
@@ -407,9 +407,9 @@
                     this.$nextTick(() => {
                         const selectedTreeNodes = this.$refs.tree.getCheckedNodes()
                         if (selectedTreeNodes.length > 0) {
-                            this.deptName = selectedTreeNodes.map(e => e.secname).join(',')
+                            this.deptName = selectedTreeNodes.map(e => e.secname).join('\n')
                         } else {
-                            this.deptName = ''
+                            this.deptName = 'クリックした組織選択'
                         }
                     })
                     // this.deptName=""
