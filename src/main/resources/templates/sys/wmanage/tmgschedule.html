@@ -166,7 +166,7 @@
             </i-col>
         </Row>
 
-            <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable">
+            <i-table :columns="columnsAction" :data="columnsActionData" v-if=" isEditable" :row-class-name="() => 'select-col'">
             <template slot-scope="{ row }" slot="workDivision">
                 <i-select  transfer v-model="pattern.workId"　@on-change="handleChangeDivision($event)">
                     <i-option v-for="(item, i) of kubunnList" :key="i" :value="item.MGD_CMASTERCODE">{{ item.MGD_CGENERICDETAILDESC }}</i-option>
@@ -232,7 +232,7 @@
             </div>
 
             <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'"  border :columns="columns"
-                 :row-class-name="rowClass" :disabled-hover="true" :data="scheduleDataDTOList"
+            :row-class-name="() => 'select-col'" :disabled-hover="true" :data="scheduleDataDTOList"
                  ref="selection2"  @on-selection-change="handleSelectAll($event)" no-data-text="所属から職員を選んでください"
         >
 
@@ -1684,9 +1684,6 @@
                 if (e.tda_ccustomerid == this.today) {
                     return 'brown'
                 }
-            },
-
-            rowClass(row) {
             },
             currentTabChanged(name) {
                 if (name=="organisationTree") {

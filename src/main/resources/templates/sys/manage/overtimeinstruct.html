@@ -109,7 +109,7 @@
                 </i-select>
             </div>
             <Alert class="primary-info">日付をクリックすると、命令画面を表示します。</Alert>
-            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
+            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
                 :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>

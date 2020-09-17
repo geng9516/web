@@ -68,7 +68,7 @@
         </div>
         <div class="content_body">
             <Alert class="primary-info tl" v-show="bottomMessage">{{ bottomMessage }}</Alert>
-            <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading"
+            <i-table border :columns="columns" :data="tableData" :span-method="handleSpan" :loading="loading" :row-class-name="() => 'select-col'"
                 no-data-text="" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="group">
                     <span v-if="!row.enableEditGroup && !row.enableEditGroupName"
@@ -123,7 +123,7 @@
                     <span class="input-like-span">{{ deptName }}</span>
                 </i-col>
             </Row>
-            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData"
+            <i-table border :columns="permissionAdminAddColumns" :data="permissionAdminAddData" :row-class-name="() => 'select-col'"
                 :span-method="handleSpanForAdminAdd" class="mt15 mb20">
                 <template slot-scope="{ row }" slot="group">
                     <i-select v-model="permissionAdminValue[row._index].groupId" v-if="!PermissionAdminEditer" transfer>
@@ -229,7 +229,7 @@
                 <Icon type="logo-buffer"></Icon>
                 メンバー割付
             </div>
-            <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData">
+            <i-table border :columns="PermissionMemberAssignColumns" :data="PermissionMemberAssignData" :row-class-name="() => 'select-col'">
                 <template slot-scope="{ row }" slot="group">
                     <i-select v-model="memberAssignValue[row._index].groupId" transfer>
                         <i-option v-for="(item, i) of row.groupList" :value="item.value" :key="i">{{ item.name }}
@@ -270,7 +270,7 @@
                 </i-col>
             </Row>
 
-            <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20">
+            <i-table border :columns="overFlagColumns" :data="overFlagData" :loading="loading" class="mt15 mb20" :row-class-name="() => 'select-col'">
                 <template slot-scope="{ row }" slot="time">
                     <input-number :max="99999999" :min="0" class="tl" v-model="permissionFlagValues[permisssionFlagKeyValueHelper[row.name]['key']]" />
                 </template>

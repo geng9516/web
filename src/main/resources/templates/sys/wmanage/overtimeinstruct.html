@@ -99,7 +99,7 @@
                     <i-option :value="3">超過勤務状況[実績時間（法定内含む）]</i-option>
                 </i-select>
             </div>
-            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true"
+            <i-table border class="long-table" :columns="columns" :data="tableData" :disabled-hover="true" :row-class-name="() => 'select-col'"
                 :loading="loading" no-data-text="">
                 <template slot-scope="{ row }" slot="name">
                     <span>{{ row.empname }}</span>
