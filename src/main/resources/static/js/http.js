@@ -23,6 +23,10 @@ axios.interceptors.response.use(
     return Promise.reject(response.data.msg)
   },
   error => {
+    if (error.response.status === 401) {
+      location.href = '/login'
+      return
+    }
     Vue.prototype.$Notice.error({
       title: 'Error!',
       desc: error.code === 'ECONNABORTED' ? 'タイムアウトしました。' : `${error.response && error.response.data.msg}`,

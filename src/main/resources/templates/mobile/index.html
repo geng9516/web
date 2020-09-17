@@ -133,17 +133,12 @@
         </div>
         <div class="mb10 tr" v-if="!bHoliday && !bFixed">
           <i-select style="display: inline-block;" v-model="categoryNonduty" class="mr15 width50" ref="select3"
-            clearable v-if="!bDisable">
+            clearable v-if="!bDisable && categoryNondutyList.length > 0 ">
             <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
               　:value="item.itemCode">
             </i-option>
           </i-select>
-          <i-select style="display: inline-block;" v-model="categoryNonduty" class="mr15 width50" disabled
-            v-if="bDisable">
-            <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName"
-              　:value="item.itemCode">
-            </i-option>
-          </i-select>
+          <!--                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>-->
           <i-button style="display: inline-block;" type="primary" ghost @click="addNotWork" v-if="!bDisable">追加
           </i-button>
           <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
@@ -175,17 +170,12 @@
           </div>
           <div class="mb10 tr" v-if="!bHoliday && !bFixed">
             <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
-              ref="select4" clearable v-if="!bDisable">
+              ref="select4" clearable v-if="!bDisable && categoryOverhoursList.length>0 ">
               <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
                 　:value="item.itemCode">
               </i-option>
             </i-select>
-            <i-select style="display: inline-block;" v-model="categoryOverhours" class="mr15 width50" @on-change=""
-              disabled v-if="bDisable">
-              <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName"
-                　:value="item.itemCode">
-              </i-option>
-            </i-select>
+            <!--                <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>-->
             <i-button style="display: inline-block;" type="primary" ghost @click="addOverWork" v-if="!bDisable">追加
             </i-button>
             <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
@@ -211,7 +201,6 @@
                          @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
                 <span v-else>{{ row.tdadNopen | toTime }}</span>
               </div>
-
             </template>
 
 
@@ -533,11 +522,15 @@
 
           // 非勤務ドロップダウン
           this.categoryNondutyList = data.categoryNondutyList
-          this.categoryNonduty = this.categoryNondutyList[0].itemCode
+          if(this.categoryNondutyList.length>0){
+            this.categoryNonduty = this.categoryNondutyList[0].itemCode
+          }
 
           // 超過勤務ドロップダウン
           this.categoryOverhoursList = data.categoryOverhoursList
-          this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+          if(this.categoryNondutyList.length>0){
+            this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+          }
           this.mgdCsparechar4VOList = data.mgdCsparechar4VOList
 
           // 詳細:欠勤離籍以外

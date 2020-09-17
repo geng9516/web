@@ -423,6 +423,9 @@
                     this.defaultDate = data
                     this.query.month = +this.defaultDate.mgd_ndefault_month
                     this.query.year = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy')
+                    if(this.query.year != Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')){
+                        this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                    }
                     this.fromYYYYMM = Utils.formatDate(this.defaultDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.defaultDate.dispterm_end, 'yyyy年mm月')
                     this.query.txtDYYYYMM = Utils.formatDate(this.query.year + "/"+ this.query.month + "/" + "01", 'yyyy/mm/dd')
@@ -438,6 +441,9 @@
                     this.query.month = +Utils.formatDate(this.queryDate.dispterm_start, 'mm')
 
                     this.query.year = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy')
+                    if(this.query.year != Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')){
+                        this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                    }
                     this.fromYYYYMM = Utils.formatDate(this.queryDate.dispterm_start, 'yyyy年mm月')
                     this.toYYYYMM = Utils.formatDate(this.queryDate.dispterm_end, 'yyyy年mm月')
 
@@ -536,6 +542,7 @@
                 }),
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    this.query.txtTmgReferListTreeViewRecordDate = e
                     this.isSearchHistory = true
                     await this.getOrgTree()
                     if(this.treeData.length !== 0) {
