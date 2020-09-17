@@ -32,20 +32,10 @@
                     <div slot="content">{{ sectionName }}</div>
                 </Tooltip>
             </span>
-            <span class="ml15 label">氏名</span>
-            <span class="input-like-span width15">
-                <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{ kanjiName }}
-                    <div slot="content">{{ kanjiName }}</div>
-                </Tooltip>
-            </span>
         </div>
     </div>
     <div class="content_body">
         <div class="table-top">
-            <Row :gutter="16">
-                <Col span="11">
-                </Col>
-            </Row>
         </div>
 
         <div style="position: relative;">
@@ -64,6 +54,10 @@
                 <div class="label">基準時間</div>
                 <div class="person-info tc">{{paidHolidayVO.dateOfRecord}}</div>
             </i-col>
+                <i-col span="4">
+                    <div class="label">基準平均勤務時間</div>
+                    <div class="person-info tc">{{paidHolidayVO.avgWorkTime?`${Math.trunc(paidHolidayVO.avgWorkTime/60)}時間 ${paidHolidayVO.avgWorkTime%60}分`:''}}</div>
+                </i-col>
             <i-col span="4">
                 <div class="label">年次休暇残</div>
                 <div class="person-info tc">{{paidHolidayVO.npaidRestDaysHour}}</div>
@@ -122,13 +116,10 @@
                 hatuReiName:'',
                 hatuResTimeRange:'',
                 today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
-                preMonthDisable:false,
-                nextMonthDisable:false,
                 scheduleDataDTOList:[],
                 yyyyMMdd:'',
                 paidHolidayVO:{},
                 selectScheduleInfo:{},
-                selectDisabled:true,
                 loading: false,　       //ローディングアクション
                 index: 0,
                 contentScrollTop: 0,
@@ -226,7 +217,6 @@
                     this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
                     this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList
                     this.yyyyMMdd=this.selectScheduleInfo.period
-
                 } catch (error) {
                     return
                 } finally {
@@ -235,7 +225,12 @@
             },
             async selectScheduleDateList() {
                 try {
-                    const query = {...this.query,baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')}
+                    const query = {
+                        employeeId:this.query.employeeId,
+                        psSite:this.query.psSite,
+                        psApp:this.query.psApp,
+                        baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
+                    }
                     const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
                     this.dispMonthlyList = data
                     this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
@@ -270,7 +265,7 @@
             async getHatuRei() {
                 try {
                     let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
-                    const query = {...this.referListObject,txtBaseDate:txtBaseDate}
+                    const query = {txtBaseDate:txtBaseDate}
                     const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
                     this.hatuReiName=data.name
                     this.hatuResTimeRange=data.timerange

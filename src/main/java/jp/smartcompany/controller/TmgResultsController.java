@@ -41,10 +41,11 @@ public class TmgResultsController {
      */
     @GetMapping("workDateList")
     @ResponseBody
-    public Map getWorkDateList(@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+    public Map getWorkDateList(@RequestParam(value = "txtDYYYYMM",required = false) String txtDYYYYMM,
+                               @RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
 
         //初期化対象
-        List<DispMonthlyVO> monthLy =tmgResultsBean.tmgInpInit(psDBBean);
+        List<DispMonthlyVO> monthLy =tmgResultsBean.tmgInpInit(txtDYYYYMM,psDBBean);
 
         Map<String, Object> todayMonthLy = MapUtil.newHashMap();
         todayMonthLy.put("today",tmgResultsBean.getToday());
