@@ -39,10 +39,10 @@ public class SysUtil {
     public static String replaceString(String psString, String psPattern, String psReplace) {
 
         int s = 0;
-        int e = 0;
-        StringBuffer result = new StringBuffer();
+        int e;
+        StringBuilder result = new StringBuilder();
         while ((e = psString.indexOf(psPattern, s)) >= 0) {
-            result.append(psString.substring(s, e));
+            result.append(psString, s, e);
             result.append(psReplace);
             s = e + psPattern.length();
         }
@@ -52,14 +52,14 @@ public class SysUtil {
     }
 
     public static String transDateNullToDB(String psDate) {
-        if ((psDate == null) || (psDate.equals(""))) {
+        if (StrUtil.isBlank(psDate)) {
             return "NULL";
         }
         return "to_date('" + psDate + "','yyyy/mm/dd')";
     }
 
     public static String transStringNullToDB(String psString) {
-        if ((psString == null) || (psString.equals(""))) {
+        if (StrUtil.isBlank(psString)) {
             return "NULL";
         }
         return "'" + psString + "'";
@@ -75,7 +75,7 @@ public class SysUtil {
             if (psSourceStr.charAt(i) == '\'') {
                 sbResult.append("''");
             } else {
-                sbResult.append(psSourceStr.substring(i, i + 1));
+                sbResult.append(psSourceStr.charAt(i));
             }
         }
         return sbResult.toString();
@@ -85,8 +85,8 @@ public class SysUtil {
         if (pvReplaceStrings == null) {
             return null;
         }
-        String value = "";
-        String replacevalue = "";
+        String value;
+        String replacevalue;
         for (int i = 0; i < pvReplaceStrings.size(); i++) {
             if (pvReplaceStrings.get(i) != null) {
                 value = (String) pvReplaceStrings.get(i);
@@ -100,8 +100,7 @@ public class SysUtil {
 
     public static String escape(String psSourceStr) {
         StringBuilder sbResult = new StringBuilder();
-        int i = 0;
-        String sDest = "";
+        int i;
         if (psSourceStr == null) {
             return null;
         }
@@ -109,7 +108,7 @@ public class SysUtil {
             if (psSourceStr.charAt(i) == '\'') {
                 sbResult.append("''");
             } else {
-                sbResult.append(psSourceStr.substring(i, i + 1));
+                sbResult.append(psSourceStr.charAt(i));
             }
         }
         return sbResult.toString();
@@ -123,7 +122,7 @@ public class SysUtil {
      */
     public static String transNumberNullToDB(String psNumber) {
 
-        if (psNumber == null || psNumber.equals("")) {
+        if (StrUtil.isBlank(psNumber)) {
             return "0";
         } else {
             return psNumber;
@@ -152,14 +151,13 @@ public class SysUtil {
      *
      * @param psDate 日付(yyyy/MM/dd)
      * @return Date
-     * @throws ParseException 変換出来なかった場合
      */
     public static Date transStringToDate(String psDate)  {
 
         if (psDate == null) {
             return null;
         }
-        Date dDate = new Date();
+        Date dDate;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         try {
             dDate = sdf.parse(psDate);
@@ -208,9 +206,8 @@ public class SysUtil {
 
         Date dateToday = new Date();
         SimpleDateFormat fFormat = new SimpleDateFormat(psFormat);
-        String sSysdate = fFormat.format(dateToday);
 
-        return sSysdate;
+        return fFormat.format(dateToday);
     }
 
     /***********************************************************************************************
@@ -224,10 +221,10 @@ public class SysUtil {
     public static String replaceStringIgnoreCase(String psString, String psPattern, String psReplace) {
 
         int s = 0;
-        int e = 0;
+        int e;
         StringBuilder result = new StringBuilder();
         while ((e = psString.toUpperCase().indexOf(psPattern.toUpperCase(), s)) >= 0) {
-            result.append(psString.substring(s, e));
+            result.append(psString, s, e);
             result.append(psReplace);
             s = e + psPattern.length();
         }
@@ -290,11 +287,11 @@ public class SysUtil {
             }
 
             // ローカルの設定
-            Locale locale = null;
-            if (psLanguage.equalsIgnoreCase("en-us")) {
+            Locale locale;
+            if (StrUtil.equalsIgnoreCase("en-us",psLanguage)) {
                 // 言語区分:英 語
                 locale = Locale.US;
-            } else if (psLanguage.equalsIgnoreCase("ja")) {
+            } else if (StrUtil.equalsIgnoreCase(psLanguage,"ja")) {
                 // 言語区分:日本語
                 locale = Locale.JAPAN;
             } else {
@@ -304,7 +301,7 @@ public class SysUtil {
 
             // ローカルが日本語の場合にキャラクタネームを指定
             rb = ResourceBundle.getBundle("PS", locale);
-            if (psLanguage.equalsIgnoreCase("ja")) {
+            if (StrUtil.equalsIgnoreCase(psLanguage,"ja")) {
                 // 日本語の場合はJDKのバージョンによってエンコード方式を変える
                 if (isUpper141()) {
                     return new String(rb.getString(psValue).getBytes("8859_1"), "Windows-31J");
@@ -347,19 +344,19 @@ public class SysUtil {
 
         String sVersion = System.getProperty("java.vm.version");
         // ハイフンつきのバージョンに対応
-        if (sVersion.indexOf("-") > -1) {
+        if (sVersion.contains("-")) {
             sVersion = sVersion.substring(0, sVersion.indexOf("-"));
         }
         // アンダーバーつきのバージョンに対応
-        if (sVersion.indexOf("_") > -1) {
+        if (sVersion.contains("_")) {
             sVersion = sVersion.substring(0, sVersion.indexOf("_"));
         }
 
-        String sMajorVersion = null;
-        String sMinorVersion = null;
-        String sReleaseVersion = null;
+        String sMajorVersion;
+        String sMinorVersion;
+        String sReleaseVersion;
         // メジャーバージョン、マイナーバージョン、リリースバージョンを取得
-        if (sVersion.indexOf(".") > -1) {
+        if (sVersion.contains(".")) {
             sMajorVersion = sVersion.substring(0, sVersion.indexOf("."));
             if (sVersion.indexOf(".") != sVersion.lastIndexOf(".")) {
                 sMinorVersion =
@@ -382,11 +379,9 @@ public class SysUtil {
         } else if (Integer.parseInt(sMinorVersion) > 4) {
             return true;
             // マイナーバージョンが４でリリースバージョンが１以上ならバージョン1.4.1以上なのでtrue
-        } else if (Integer.parseInt(sMinorVersion) == 4 && Integer.parseInt(sReleaseVersion) >= 1) {
-            return true;
+        } else {
+            return Integer.parseInt(sMinorVersion) == 4 && Integer.parseInt(sReleaseVersion) >= 1;
         }
-
-        return false;
     }
 
     /***********************************************************************************************
@@ -410,16 +405,16 @@ public class SysUtil {
             if (index != -1) {
                 psLanguage = psLanguage.substring(0, index);
             }
-            Locale locale = null;
-            if (psLanguage.equalsIgnoreCase("en-us")) {
+            Locale locale;
+            if (StrUtil.equalsIgnoreCase(psLanguage,"en-us")) {
                 locale = Locale.US;
-            } else if (psLanguage.equalsIgnoreCase("ja")) {
+            } else if (StrUtil.equalsIgnoreCase(psLanguage,"ja")) {
                 locale = Locale.JAPAN;
             } else {
                 locale = Locale.US;
             }
             rb = ResourceBundle.getBundle(psApplicationName, locale);
-            if (psLanguage.equalsIgnoreCase("ja")) {
+            if (StrUtil.equalsIgnoreCase(psLanguage,"ja")) {
                 if (isUpper141()) {
                     return new String(rb.getString(psValue).getBytes("8859_1"),
                             "Windows-31J");
@@ -450,7 +445,7 @@ public class SysUtil {
      */
     public static String separateList(String psColumn, List < String > plIdList) {
         String sReturn = "";
-        if (psColumn != null && !psColumn.equals("")
+        if (StrUtil.isNotBlank(psColumn)
                 && plIdList != null && plIdList.size() != 0) {
             StringBuilder sb = new StringBuilder(psColumn + " IN (");
             Iterator < String > ite = plIdList.iterator();
@@ -460,7 +455,7 @@ public class SysUtil {
                 sb.append("'").append(escapeQuote(ite.next())).append("'");
                 if (cnt >= 1000) {
                     if (ite.hasNext()) {
-                        sb.append(") OR " + psColumn + " IN (");
+                        sb.append(") OR ").append(psColumn).append(" IN (");
                     } else {
                         sb.append(",");
                     }
