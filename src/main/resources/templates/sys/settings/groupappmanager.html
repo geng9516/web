@@ -96,7 +96,7 @@
         </template>
       </i-table>
 
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :show-header="!isEditing"
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :show-header="!isEditing" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
         <!-- type: "0" トップページ   <Icon type="md-compass" />

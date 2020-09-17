@@ -68,7 +68,7 @@
             統計情報
         </div>
         <div >
-            <i-table :show-header="tableHead2.length > 0" :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" border ref="selection" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" no-data-text="">
+            <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns2" :data="tableData" :disabled-hover="true" :loading="loading" :row-class-name="() => 'select-col'" :show-header="tableHead2.length > 0" border no-data-text="" ref="selection">
                 <template slot-scope="{ row }" slot="EMPNAME" v-if="tableHead2.length > 0"><span>{{ row.EMPNAME }}</span></template>
                 <template v-for="item of slotList" slot-scope="{ row }" :slot="item" v-if="tableHead2.length > 0"><span>{{ row[item] }}</span></template>
             </i-table>
@@ -78,7 +78,7 @@
             個人別情報
         </div>
         <div v-show="tableData2.length > 0">
-            <i-table :show-header="false" class="long-table" border ref="selection" :columns="columns2" :data="tableData2"
+            <i-table :show-header="false" class="long-table" border ref="selection" :columns="columns2" :data="tableData2" :row-class-name="() => 'select-col'"
                      :disabled-hover="true" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
                 <template slot-scope="{ row }" slot="EMPNAME"><span>{{row.EMPNAME}}</span></template>
                 <template v-for="item of slotList2" slot-scope="{ row }" :slot="item"><span>{{row[item]}}</span></template>

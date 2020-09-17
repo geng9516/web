@@ -485,7 +485,6 @@
             }
         },
         async mounted() {
-            await this.getOrgTree()
             await this.getInit()
             window.addEventListener('scroll', this.handleScroll, {passive: true})
         },
@@ -655,7 +654,7 @@
                     } else {
                         this.$set(this.rawData, 'planRest1', ['', ''])
                     }
-                    console.log(this.rawData.planRest1)
+                    //console.log(this.rawData.planRest1)
                     if (row.planRest[1] !== undefined) {
                         const rest_start = handleTime(row.planRest[1].NOPEN)
                         const rest_end = handleTime(row.planRest[1].NCLOSE)
@@ -1180,26 +1179,23 @@
             },
             //初期化処理
             async getInit() {
-                this.targetAdminSection = ''
+                this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                await this.getOrgTree()
                 this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
+
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                //console.log("getDeptCode")
-                //console.log(this.loginDesignationSection)
-                //console.log(this.targetAdminSection)
-                //console.log('session:',[[${session}]])
                 if (this.targetAdminSection == null || this.targetAdminSection == '') {
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
-                        // console.log("getDeptCode_true")
-                        //console.log('section',[[${ session.psSession.loginDesignation}]])
                         this.deptName = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
+                        this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.rawData.tpa_csectionid = [[${ session.psSession.loginDesignation[0].sectionName }]]
                         this.rawData.tpa_cgroupid = ''
                         this.query_upload.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
@@ -1217,6 +1213,7 @@
                         this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
+                        this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.rawData.tpa_csectionid = this.treeData[0].secid
                         this.rawData.tpa_cgroupid = ''
                         this.query_upload.sectionId = this.treeData[0].secid
@@ -1234,6 +1231,7 @@
                     this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
+                    this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.rawData.tpa_csectionid = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     this.rawData.tpa_cgroupid = ''
                     this.query_upload.sectionId = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]

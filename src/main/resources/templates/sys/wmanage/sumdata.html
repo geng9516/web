@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="content_body">
-            <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。">
+            <i-table border :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text="教職員が存在している所属を選択して下さい。" :row-class-name="() => 'select-col'">
 
                 <template slot-scope="{ row }" slot="approval" v-if="row.notApproval === 1 ">
                     <i-button type="primary" ghost size="small" long @click="notApprovalList(row.yyyymm)">未承認者状況</i-button>
