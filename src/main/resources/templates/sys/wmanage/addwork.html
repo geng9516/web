@@ -681,6 +681,7 @@
                 SecFlag:false,
                 EmpFlag:false,
                 EmpSelect:false,
+                mgdCsparechar4VOList: [],
                 }
         },
         async mounted() {
@@ -968,11 +969,20 @@
             },
             // 就業実績のタイトルとデータを取得
             async getTitleData() {
-
-                this.getHatuRei()
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
                 this.dailyDataList = []
+                if( !this.selectDisabled){
+                    this.$Message.error({
+                        background: true,
+                        closable: true,
+                        duration: 6,
+                        content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                    });
+                    return;
+                }
+                this.getHatuRei()
+
                 try {
                     this.monthlyLoading=true
                     this.updateMonthloading=true
@@ -997,6 +1007,15 @@
                         }
                     })
                     this.dailyDataList = data.dailyMapList
+                    if( this.dailyDataList.length===0){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                        });
+                        return;
+                    }
                 } catch (error) {
                     return
                 }finally {
@@ -1434,6 +1453,7 @@
                     } else {
                         this.bDisable = true;
                         this.workTimeDisable=true
+
                     }
                 }
                 if (this.bDisable === true) {
@@ -1441,14 +1461,18 @@
                     this.workData[2].workEnd=''
                     this.detailNonDutyVOList = []
                     this.detailOverhoursVOList = []
-
+                    if(this.businessTripList[0].mgdCmastercode){
+                        this.businessTrip=this.businessTripList[0].mgdCmastercode
+                    }else{
+                        this.businessTrip=''
+                    }
                 }
             },
             // エラーチェック
             errorCheck(workingid) {
                 let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                 // 出勤 or 休日出勤
-                if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
+                if (!mgdCsparechar4VO || mgdCsparechar4VO.mgdCsparechar5 != '0') {
                     return true;
                 }
                 // 修正出社時刻形式

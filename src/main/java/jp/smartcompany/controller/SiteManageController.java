@@ -23,22 +23,15 @@ public class SiteManageController {
 
     /**
      * 跳转到部署別統計情報確認界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("wsum")
     public String toManageWSum(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam("moduleIndex") Integer moduleIndex,
-            @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST_SEC, true,
                 true, false, false, true);
         modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
@@ -49,33 +42,11 @@ public class SiteManageController {
     }
 
     /**
-     * 跳转到勤務パターン設定界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
-     */
-/*    @GetMapping("wpattern")
-    public String toManageAddWork(@RequestParam("moduleIndex") Integer moduleIndex,
-                                  @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId);
-        return "sys/manage/wpattern";
-    }*/
-
-    /**
      * 跳转到年5日時季指定取得確認界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @RequestMapping("require5days")
     public String toTmgAcquired5DaysHoliday(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
-            @RequestParam(value = "menuId") Long menuId,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             ModelMap modelMap
     ) throws Exception {
@@ -84,7 +55,6 @@ public class SiteManageController {
                 true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
@@ -97,14 +67,12 @@ public class SiteManageController {
     @GetMapping("attendancebook")
     public String toAttendanceBook(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam("moduleIndex") Integer moduleIndex,
-            @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                 true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute("targetGroup", referList.getTargetGroup())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
@@ -118,14 +86,12 @@ public class SiteManageController {
     @GetMapping("tmgschedule")
     public String toTmgSchedule(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam("moduleIndex") Integer moduleIndex,
-            @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_EMP, true,
                 true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute("targetGroup", referList.getTargetGroup())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
@@ -138,22 +104,15 @@ public class SiteManageController {
 
     /**
      * 跳转到承認状況一覧界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("permstatlist")
     public String toManagePermstatList(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
-            @RequestParam("moduleIndex") Integer moduleIndex,
-            @RequestParam("menuId") Long menuId, ModelMap modelMap) throws Exception {
+            @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 true, false, false, true);
         modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
@@ -165,34 +124,20 @@ public class SiteManageController {
 
     /**
      * 跳转到休暇承認界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("tmgnotification")
-    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex,
-                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId);
+    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/tmgnotification";
     }
 
 
     /**
      * 跳转到就業承認界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("tmgresults")
-    public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex,
-                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId);
+    public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/addwork";
     }
 
@@ -200,33 +145,19 @@ public class SiteManageController {
 
     /**
      * 跳转到权限设定
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("perms")
-    public String toPerms(
-                          @RequestAttribute("BeanName") PsDBBean psDBBean,
-                          @RequestParam("moduleIndex") Integer moduleIndex,
-                          @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId);
+    public String toPerms(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/perms";
     }
 
     /**
      * 跳转到 勤務パターン
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @return
      */
     @RequestMapping("wpattern")
     public String patternSetting(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
-            @RequestParam(value = "menuId") Long menuId,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             ModelMap modelMap
     ) throws Exception {
@@ -234,7 +165,6 @@ public class SiteManageController {
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 true, false, false, true);
         modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)
@@ -247,15 +177,10 @@ public class SiteManageController {
 
     /**
      * 跳转到 超過勤務命令
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @return
      */
     @RequestMapping("overtimeinstruct")
     public String toManageOvertimeInstruct(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
-            @RequestParam(value = "menuId") Long menuId,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             ModelMap modelMap
     ) throws Exception {
@@ -264,7 +189,6 @@ public class SiteManageController {
                 true, false, false, true);
         modelMap
                 .addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId)
                 .addAttribute("targetSection", referList.getTargetSec())
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_RECORD_DATE, TmgReferList.TREEVIEW_KEY_RECORD_DATE)
                 .addAttribute(TmgReferList.ATTR_TREEVIEW_REFRESH_FLG, TmgReferList.TREEVIEW_KEY_REFRESH_FLG)

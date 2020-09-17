@@ -45,9 +45,6 @@
                     siteId: Utils.getUrlParam(location.href, 'psSite')
                 }
             },
-            mounted() {
-                console.log(this.topNavs)
-            },
             watch: {
                 showSider(newValue) {
                     // clickoutside关闭菜单时重置高亮的菜单大分类
@@ -65,9 +62,8 @@
                     this.curMenu = item.pageId
                 },
                 handleSubMenuClick(e, i) {
-                    var pageId = e.pageId
                     this.showSider = false
-                    location.href = `${this.baseUrl}/${e.url}?menuId=${e.menuId}&moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${pageId}&t=${Date.now()}`
+                    location.href = `${this.baseUrl}/${e.url}?moduleIndex=${i + 1}&psSite=${this.siteId}&psApp=${e.pageId}&t=${Date.now()}`
                 },
                 handleClickMenuOutSide() {
                     this.showSider = false
