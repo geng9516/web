@@ -2,8 +2,9 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head
-        th:replace="layout/header::common_header(title='休暇・休業登録',cssPaths='/pages/content.min.css,' + '/pages/restapplyconfirm.min.css')">
+    th:replace="layout/header::common_header(title='休暇・休業登録',cssPaths='/pages/content.min.css,' + '/pages/restapplyconfirm.min.css')">
 </head>
+
 <body>
     <div th:replace="layout/loadingBar::loadingBar"></div>
     <div th:replace="layout/sider"></div>
@@ -19,196 +20,150 @@
                 </div>
                 <div class="btnbox">
                     <span style="flex:1"></span>
-                    <i-button type="primary"  @click="ntfUpload" v-if="!newOrDisp">登録
+                    <i-button type="primary" @click="newBulkNtf" v-if="newOrDisp" icon="md-add">新規
                     </i-button>
-                    <i-button type="primary"  @click="newBulkNtf" v-if="newOrDisp">新規
-                    </i-button>
-                    <i-button type="primary"  @click="newBulkNtf" v-else>キャンセル
+                    <i-button @click="newBulkNtf" v-else>キャンセル
                     </i-button>
                 </div>
             </div>
         </div>
         <div class="content_body">
             <div v-if="newOrDisp">
-                <Alert class="primary-info tl" >※休暇・休業一括登録(および取消)は、{{useTime}} の時間帯のみ使用できます。</Alert>
-                <i-table border :columns="columns" :data="tableData" :loading="loading"
-                         no-data-text="休暇休業一括登録データがない" :disabled-hover="true">
-                    <template slot-scope="{ row }" slot="tbnCbulkntftype">
-                        <span  @click="handleCickNtfType(row.tbnNtbnid)" style="text-decoration: underline"> {{ row.tbnCbulkntftype }}</span>
-                    </template>
+                <Alert class="primary-info tl">
+                    <div>※休暇・休業一括登録(および取消)は、{{useTime}} の時間帯のみ使用できます。</div>
+                    <div class="mt5">※処理状態が［エラー］の場合は反映処理中に想定外の問題が発生しました。詳細は システム管理者までお問合せください。</div>
+                </Alert>
+                <i-table border :columns="columns" :data="tableData" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
+                    :disabled-hover="true">
                     <template slot-scope="{ row }" slot="moCsectionname">
                         <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
-                        <span v-else> {{ row.moCsectionname }}
-                         <p @click="SectionDetailShow(row.tbnNtbnid)" class="csv-p pb5">[全て表示]</p>
+                        <span @click="SectionDetailShow(row.tbnNtbnid)" v-else>{{ row.moCsectionname }} <span style="color: var(--row-label-primary);">[全て表示]</span>
                         </span>
                     </template>
-                    <template slot-scope="{ row }" slot="tbnDbegin">
-                        <span> {{ row.tbnDbegin }}</span>
+                    <template slot-scope="{ row }" slot="tbnNcount">
+                        <span> {{ `${row.tbnNcount}人` }}</span>
                     </template>
+                    <template slot-scope="{ row }" slot="cntFinish">
+                        <span> {{ `${row.cntFinish}人` }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="cntCancel">
+                        <span> {{ `${row.cntCancel}人` }}</span>
+                    </template>
+                    <template slot-scope="{ row }" slot="cntErr">
+                        <span v-if="row.tbndCount==='0'">0人</span>
+                        <span @click="errDetail(row.tbnNtbnid)" v-else>{{ `${row.cntErr}人` }} <span style="color: var(--row-label-primary);">[※詳細]</span>
+                        </span>
+                    </template>
+                    <!-- todo: 需要在这里加取消按钮 -->
                     <template slot-scope="{ row }" slot="tbnCstatus">
                         <span> {{ row.tbnCstatus }}</span>
                     </template>
                 </i-table>
 
-
-
-
-
-                <Drawer v-model="isShow" title="一括登録内容詳細" width="500"  :mask-closable="false" footer-hide mask-closable>
-                    <div  class="tr">
-                        <i-button type="primary" @click="bulkNtfCancel(detailInfo.tbnNtbnid)" v-if="cancelBotton">取消
-                        </i-button>
-                    </div>
-                    <Alert class="error-info" type="error" v-show="detailInfo.tbnCstatusid === 'TMG_BULKNTFSTATUS|910'">
-                        反映処理中に想定外のエラーが発生しました。
-                        システム管理者までお問合せください。
-                    </Alert>
-
-                    <div class="titlenorm mb10">
-                        <Icon type="logo-buffer"></Icon>
-                        休暇・休業一括登録
-                    </div>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">一括登録区分</div>
-                                <div class="person-info">{{ detailInfo.tbnCbulkntftype }}</div>
-                            </i-col>
-                        </Row>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">対象部署</div>
-                                <div class="person-info">
-                                    <span v-if="detailInfo.tbndCount==='1'"> {{ detailInfo.tbnCsectionid }}</span>
-                                    <span v-else> {{ detailInfo.tbnCsectionid }}
-                                    <p @click="SectionDetailShow(detailInfo.tbnNtbnid)" class="csv-p pb5">[全て表示]</p>
-                                    </span>
-                                </div>
-                        </span>
-                            </i-col>
-                        </Row>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">対象期間</div>
-                                <div class="person-info">{{ detailInfo.tbnDbegin }}</div>
-                            </i-col>
-                        </Row>
-                    <div class="titlenorm mb10">
-                        <Icon type="logo-buffer"></Icon>
-                        処理結果 ( {{ detailInfo.tbnCstatus }} )
-                    </div>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">対象人数</div>
-                                <div class="person-info">{{ detailInfo.tbnNcount }}</div>
-                            </i-col>
-                        </Row>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">処理済</div>
-                                <div class="person-info">{{ detailInfo.cntFinish }}</div>
-                            </i-col>
-                        </Row>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">取消済</div>
-                                <div class="person-info">{{ detailInfo.cntCancel }}</div>
-                            </i-col>
-                        </Row>
-                        <Row :gutter="24">
-                            <i-col span="24">
-                                <div class="label">反映エラー</div>
-                                <div class="person-info">
-                                    {{ detailInfo.cntErr }}
-                                    <i-button   @click="errDetail(detailInfo.tbnNtbnid)" v-if="detailInfo.cntErr !='0'">詳細
-                                    </i-button>
-                                </div>
-                            </i-col>
-                        </Row>
-                </Drawer>
-                <Drawer :closable="false"  class="tc" placement="right" title="反映エラー職員一覧"
-                        v-model="errDetailShow" width="700">
-                    <i-table border :columns="columns2" :data="tableData2" :loading="loading"
-                             no-data-text="休暇休業一括登録データがない" :disabled-hover="true">
-                        <template slot-scope="{ row }" slot="tgrmCsectionid">
-                            <span> {{ row.tgrmCsectionid }}</span>
-                        </template>
-                        <template slot-scope="{ row }" slot="tbnlCemployeeid">
-                            <span> {{ row.tbnlCemployeeid }}</span>
-                        </template>
-                        <template slot-scope="{ row }" slot="tbnlCerrcode">
-                            <span> {{ row.tbnlCerrcode }}</span>
-                        </template>
+                <Drawer :closable="false" class="tc" placement="right" title="反映エラー職員一覧" v-model="errDetailShow"
+                    width="700">
+                    <i-table border :columns="columns2" :data="tableData2" :loading="loading" no-data-text=""
+                        :disabled-hover="true">
                     </i-table>
                 </Drawer>
-                <Drawer :closable="false"  class="tc" placement="right" title="対象部署"
-                        v-model="sectionDetailShow">
-                    <div class="titlenorm mb10">
-                        <Icon type="logo-buffer"></Icon>
-                        対象部署
-                    </div>
-                    <Row v-for="e of sectionList">
-                        <i-col>
-                            {{e.moCsectionname}}
-                        </i-col>
-                    </Row>
+                <Drawer :closable="false" width="400" class="tc" placement="right" title="対象部署"
+                    v-model="sectionDetailShow">
+                    <i-table border :columns="columns3" :data="sectionList" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
+                        :disabled-hover="true">
+                    </i-table>
                 </Drawer>
 
             </div>
-            <div v-else>
-                <Row>
-                    <i-col span="15">
-                        <Card  class="card"  title="休暇・休業一括登録">
-                            <!--            <Alert class="error-info mt10" type="error" v-if="errorInfo">{{ errorMsg }}</Alert>-->
-                            <span>
-                        <Divider class="mb10" orientation="left" size="default">一括登録区分</Divider>
-                        <i-select class="mb20 non-border-input" placeholder="一括登録区分" style="width: 450px" v-model="ntfType">
-                            <i-option v-for="(item,index) of ntfTypeList" :key="index" :value="item.id"  :label="item.name"></i-option>
-                        </i-select>
-                    </span>
-                            <span>
-                        <Divider class="mb10" orientation="left" size="default">対象部署</Divider>
-                        <p @click="deptDrawShow = true" class="csv-p pb5" style="text-decoration: underline">{{ deptName }}</p>
-                                <!-- 共通組織図画面 start-->
-                        <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
-                                v-model="deptDrawShow" width="700">
-                            <div class="titlenorm mt15">
-                                <Icon type="logo-buffer"></Icon>
-                                所属
-                            </div>
-                           <Row class="tl mb5">
-                                <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
-                                <i-col class="no-border-radius" span="7">
-                                <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange" transfer
-                                             format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" type="date"></date-picker>
+            <div class="tl" v-else>
+                <div class="ml20">
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>一括登録区分</h2>
+                        </i-col>
+                        <i-col span="9" offset="1">
+                            <i-select class="mb20 non-border-input" placeholder="一括登録区分" style="width: 450px"
+                                v-model="ntfType">
+                                <i-option v-for="(item,index) of ntfTypeList" :key="index" :value="item.id"
+                                    :label="item.name"></i-option>
+                            </i-select>
+                        </i-col>
+                    </Row>
+                </div>
+
+                <div class="ml20 pt20">
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象部署</h2>
+                        </i-col>
+                        <i-col span="6" offset="1">
+                            <Row :gutter="8">
+                                <i-col :span="deptNameList.length > 0 ? 12 : 24">
+                                    <p @click="deptDrawShow = true" class="input-like-span cursor" style="white-space: pre-line;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
                                 </i-col>
-                           </Row>
-                        <Tree :data="treeData" @on-check-change="handleDeptChange"  class="tree mt2" empty-text="所属データなし"
-                              ref="tree" show-checkbox multiple check-strictly check-directly></Tree>
+                                <i-col span="12" v-if="deptNameList.length > 0"><i-button style="top: -5px;" @click="isShow = true" type="primary" ghost long>選択した部署参照</i-button></i-col>
+                            </Row>
+                            <!-- 共通組織図画面 start-->
+                            <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
+                                v-model="deptDrawShow" width="700">
+                                <div class="titlenorm mt15">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+                                <Row class="tl mb5">
+                                    <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                                    <i-col class="no-border-radius" span="7">
+                                        <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                            @on-change="handleDeptDateChange" transfer format="yyyy/MM/dd"
+                                            placeholder="基準日" ref="datePicker" type="date"></date-picker>
+                                    </i-col>
+                                </Row>
+                                <Tree :data="treeData" @on-check-change="handleDeptChange" class="tree mt2"
+                                    empty-text="所属データなし" ref="tree" show-checkbox multiple check-strictly
+                                    check-directly></Tree>
+                            </Drawer>
+                            <Drawer  class="tc" placement="right" v-model="isShow" width="700" title="選択した部署">
+                                <i-table border :columns="columns4" :data="deptNameList" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'" :disabled-hover="true">
+                            </i-table>
                         </Drawer>
-                                <!-- 共通組織図画面 end-->
-                    </span>
-                    <span>
-                      <Divider class="mb10" orientation="left" size="small">対象期間</Divider>
-                      <date-picker v-model="fromDate" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-                      <date-picker v-model="toDate" format="yyyy/MM/dd" placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-                    </span>
+                        </i-col>
+                    </Row>
+                </div>
 
-                   </Card>
-                    </i-col>
-
-                    <i-col span="8" offset="1">
-                        <Card  class="card"  title="対象部署">
+                <div class="ml20 pt20">
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" offse="1">
+                            <h2>対象期間</h2>
+                        </i-col>
+                        <i-col span="6" offset="1">
                             <Row>
-                                <i-col v-for="e of deptNameList">
-                                    {{e}}
+                                <i-col span="11">
+                                    <date-picker v-model="fromDate" format="yyyy/MM/dd" placement="bottom-end"
+                                    transfer type="date"></date-picker>
+                                </i-col>
+                                <i-col span="1" offset="1">
+                                    <span style="position: relative;left: -5px; top: 5px;">-</span>
+                                </i-col>
+                                <i-col span="11">
+                                    <date-picker v-model="toDate" format="yyyy/MM/dd" placement="bottom-end"
+                                    transfer type="date"></date-picker>
                                 </i-col>
                             </Row>
-                        </Card>
-                    </i-col>
-                </Row>
+                        </i-col>
+                    </Row>
+
+                    <Divider></Divider>
+                    <Row>
+                        <i-col span="6" style="margin-left: 28.933333%">
+                            <i-button class="mt10" type="success" @click="ntfUpload" v-if="!newOrDisp" long icon="md-create">登録
+                            </i-button>
+                        </i-col>
+                    </Row>
+                </div>
             </div>
         </div>
-
+        <back-top></back-top>
     </main>
     <div th:replace="layout/head::header"></div>
     <script type="text/babel" th:inline="javascript">
@@ -216,8 +171,8 @@
             el: '.tmgbulknotification-warp',
             data() {
                 return {
-                    errDetailShow:false,
-                    sectionDetailShow:false,
+                    errDetailShow: false,
+                    sectionDetailShow: false,
                     referListObject: {
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                         [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
@@ -228,31 +183,53 @@
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 11
                     },
-                    newOrDisp:true,
-                    useTime:'',
-                    loading:false,
+                    newOrDisp: true,
+                    useTime: '',
+                    loading: false,
                     columns: [
                         {
                             title: '一括登録区分',
                             width: 280,
-                            align: 'right',
-                            slot: 'tbnCbulkntftype'
+                            align: 'center',
+                            key: 'tbnCbulkntftype'
                         },
                         {
                             title: '対象部署',
-                            minWidth: 280,
-                            align: 'center',
+                            minWidth: 100,
+                            maxWidth: 280,
+                            align: 'left',
                             slot: 'moCsectionname'
                         },
                         {
                             title: '対象期間',
-                            width: 280,
+                            minWidth: 130,
+                            maxWidth: 280,
                             align: 'center',
-                            slot: 'tbnDbegin'
+                            key: 'tbnDbegin'
+                        },
+                        {
+                            title: '対象人数',
+                            align: 'center',
+                            slot: 'tbnNcount'
+                        },
+                        {
+                            title: '処理済',
+                            align: 'center',
+                            slot: 'cntFinish'
+                        },
+                        {
+                            title: '取消済',
+                            align: 'center',
+                            slot: 'cntCancel'
+                        },
+                        {
+                            title: '反映エラー',
+                            align: 'center',
+                            slot: 'cntErr'
                         },
                         {
                             title: '状態',
-                            width: 150,
+                            width: 130,
                             align: 'center',
                             slot: 'tbnCstatus'
                         }
@@ -262,50 +239,61 @@
                             title: '部署',
                             width: 150,
                             align: 'center',
-                            slot: 'tgrmCsectionid'
+                            key: 'tgrmCsectionid'
                         },
                         {
                             title: '氏名',
-                            minWidth: 150,
+                            width: 150,
                             align: 'center',
-                            slot: 'tbnlCemployeeid'
+                            key: 'tbnlCemployeeid'
                         },
                         {
                             title: '反映エラーの原因',
-                            width: 400,
                             align: 'center',
-                            slot: 'tbnlCerrcode'
+                            tooltip: true,
+                            key: 'tbnlCerrcode'
                         }
                     ],
-                    tableData:[],
-                    tableData2:[],
-                    ntfTypeList:[],
-                    ntfType:'', //一括登録区分
-                    fromDate:'', //対象期間
-                    toDate:'', //対象期間
-                    deptName:'クリックした組織選択', //対象部署名称
-                    deptNameList:[], //対象部署
-                    deptId:'', //対象部署Id
-                    isShow:false,
-                    deptDrawShow:false,  //対象部署選択画面制御
+                    columns3: [
+                        {
+                            title: '部署',
+                            key: 'moCsectionname'
+                        }
+                    ],
+                    columns4: [
+                        {
+                            title: '部署',
+                            key: 'name'
+                        }
+                    ],
+                    tableData: [],
+                    tableData2: [],
+                    ntfTypeList: [],
+                    ntfType: '', //一括登録区分
+                    fromDate: '', //対象期間
+                    toDate: '', //対象期間
+                    deptName: '対象部署選択', //対象部署名称
+                    deptNameList: [], //対象部署
+                    deptId: '', //対象部署Id
+                    isShow: false,
+                    deptDrawShow: false,  //対象部署選択画面制御
                     treeData: [],                //組織ツリー用
                     isSearchHistory: false,
-                    detailInfo:{},
                     cancelBotton: false,
                     opts: {
-                        baseDate:'',
-                        ntfId:'',
+                        baseDate: '',
+                        ntfId: '',
                         psSite: Utils.getUrlParam(location.href, 'psSite'),
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                     },
-                    UploadDto:{
-                        seq:'',
-                        sectionId:'',
-                        bulkNtfId:'',
-                        beginDate:'',
-                        endDate:'',
+                    UploadDto: {
+                        seq: '',
+                        sectionId: '',
+                        bulkNtfId: '',
+                        beginDate: '',
+                        endDate: '',
                     },
-                    sectionList:{},
+                    sectionList: [],
                 }
             },
             async mounted() {
@@ -318,16 +306,15 @@
 
             },
             methods: {
-                async ntfUpload(){
+                async ntfUpload() {
                     this.UploadDto.sectionId = this.deptId
                     this.UploadDto.bulkNtfId = this.ntfType
                     this.UploadDto.beginDate = this.fromDate
                     this.UploadDto.endDate = this.toDate
-                    try{
-                        const {msg} = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
-                        if(msg === '0'){
-                            this.isShow = false
-                            this.newOrDisp=true
+                    try {
+                        const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
+                        if (msg === '0') {
+                            this.newOrDisp = true
                             this.getHistoryDisp()
                             return
                         }
@@ -335,35 +322,35 @@
                         let errMsg20
                         let check = Object.keys(this.errMsg).some(e => {
                             if (e === 'ERRTYPE_10') {
-                                this.$Notice.error({desc: this.errMsg.ERRTYPE_10[0].ERRMSG})
+                                this.$Notice.error({ desc: this.errMsg.ERRTYPE_10[0].ERRMSG })
                                 return true
                             }
                             if (e === 'ERRTYPE_20') {
                                 this.errMsg.ERRTYPE_20.forEach(e20 => {
                                     errMsg20 = errMsg20 + e20.ERRMSG + '/n'
                                 })
-                                this.$Notice.error({desc: errMsg20})
+                                this.$Notice.error({ desc: errMsg20 })
                             }
 
                         })
                         if (check) {
                             return false
                         }
-                    }catch (e) {
+                    } catch (e) {
                         return
                     }
 
                 },
-                async bulkNtfCancel(e){
-                    const {msg} = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', {seq:e})
+                async bulkNtfCancel(e) {
+                    const { msg } = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', { seq: e })
 
                 },
                 async getNtfType() {
                     this.opts.baseDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     try {
-                        const {data} = await this.http.get('sys/tmgbulknotification/getNtfType', this.opts)
-                        this.ntfTypeList=data
-                    }catch (error) {
+                        const { data } = await this.http.get('sys/tmgbulknotification/getNtfType', this.opts)
+                        this.ntfTypeList = data
+                    } catch (error) {
                         return
                     } finally {
 
@@ -372,49 +359,28 @@
                 async getHistoryDisp() {
                     this.opts.baseDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     try {
-                        const {data} = await this.http.get('sys/tmgbulknotification/Disp', this.opts)
-                        this.tableData=data.historyList
-                        this.useTime=data.timeRange
-                    }catch (error) {
-                        return
-                    } finally {
-
-                    }
-                },
-                newBulkNtf(){
-                    if(this.newOrDisp){
-                        this.newOrDisp=false
-                    }else{
-                        this.newOrDisp=true
-                    }
-                },
-                async handleCickNtfType(e) {
-                    if (!e) {
-                        return
-                    }
-                    this.opts.ntfId = e
-                    try {
-                        const {data} = await this.http.get('sys/tmgbulknotification/getDetail', this.opts)
-                        this.detailInfo=data
-                        this.isShow=true
-                        if(this.detailInfo.tbnCstatusid === 'TMG_BULKNTFSTATUS|130'){
-                            this.cancelBotton=true
-                        }else{
-                            this.cancelBotton=false
-                        }
-                        console.log(data)
+                        const { data } = await this.http.get('sys/tmgbulknotification/Disp', this.opts)
+                        this.tableData = data.historyList
+                        this.useTime = data.timeRange
                     } catch (error) {
                         return
                     } finally {
 
                     }
                 },
+                newBulkNtf() {
+                    if (this.newOrDisp) {
+                        this.newOrDisp = false
+                    } else {
+                        this.newOrDisp = true
+                    }
+                },
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
                     this.isSearchHistory = true
                     await this.getOrgTree()
-                    if(this.treeData.length !== 0) {
-                       this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+                    if (this.treeData.length !== 0) {
+                        this.$Notice.warning({ title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください" })
                     }
                 },
                 async getOrgTree() {
@@ -432,32 +398,36 @@
                 },
                 treeChangeExpand(treeData) {
                     let _this = this
-                    treeData.forEach((e, i)=>{
+                    treeData.forEach((e, i) => {
                         treeData[i].expand = true
-                        if(e.children && e.children.length > 0) {
+                        if (e.children && e.children.length > 0) {
                             _this.treeChangeExpand(e.children);
                         }
                     })
                 },
-                async handleDeptChange(e,current){
-                    if(!e[0] ){
-                        this.deptName="クリックした組織選択"
-                        this.deptId=""
-                        this.deptNameList=[]
+                async handleDeptChange(e, current) {
+                    if (!e[0]) {
+                        this.deptName = "対象部署選択"
+                        this.deptId = ""
+                        this.deptNameList = []
                         return
                     }
                     // 如果有子节点，则遍历影响
-                    if(current.children && current.children.length > 0) {
+                    if (current.children && current.children.length > 0) {
                         this.treeCheckHack(current.children, current.checked)
                     }
 
                     // 在这里显示选中的名字
-                    this.$nextTick(()=>{
+                    this.$nextTick(() => {
                         const selectedTreeNodes = this.$refs.tree.getCheckedNodes()
-                        if(selectedTreeNodes.length > 0) {
-                            this.deptName = selectedTreeNodes.map(e=> e.secname).join(',')
+                        if (selectedTreeNodes.length > 0) {
+                            this.deptNameList = selectedTreeNodes.map(e => {
+                                return {
+                                    name: e.secname
+                                }
+                            })
                         } else {
-                            this.deptName = ''
+                            this.deptNameList = []
                         }
                     })
                     // this.deptName=""
@@ -486,31 +456,31 @@
                         }
                     })
                 },
-                async errDetail(e){
+                async errDetail(e) {
                     if (!e) {
                         return
                     }
                     this.opts.ntfId = e
                     try {
-                        const {data} = await this.http.get('sys/tmgbulknotification/errorDetail', this.opts)
-                        this.tableData2=data
-                        this.errDetailShow=true
+                        const { data } = await this.http.get('sys/tmgbulknotification/errorDetail', this.opts)
+                        this.tableData2 = data
+                        this.errDetailShow = true
                     } catch (error) {
                         return
                     } finally {
 
                     }
                 },
-                async SectionDetailShow(e){
+                async SectionDetailShow(e) {
                     if (!e) {
                         return
                     }
                     this.opts.ntfId = e
                     try {
-                        const {data} = await this.http.get('sys/tmgbulknotification/sectionDetail', this.opts)
+                        const { data } = await this.http.get('sys/tmgbulknotification/sectionDetail', this.opts)
                         console.log()
-                        this.sectionDetailShow=true
-                        this.sectionList=data
+                        this.sectionDetailShow = true
+                        this.sectionList = data
                     } catch (error) {
                         return
                     } finally {
@@ -521,4 +491,5 @@
         })
     </script>
 </body>
+
 </html>

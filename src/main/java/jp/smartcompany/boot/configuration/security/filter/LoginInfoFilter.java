@@ -56,6 +56,10 @@ public class LoginInfoFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
+    if (StrUtil.endWithAny(req.getRequestURI(),".js",".css",".ico",".json",".moc","mtn")) {
+      chain.doFilter(req, resp);
+      return;
+    }
     ContextUtil.add(new PsDBBean());
     HttpSession httpSession = req.getSession();
     String systemCode = (String)httpSession.getAttribute(Constant.SYSTEM_CODE);

@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.configuration.security.filter;
 
-import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
@@ -23,10 +22,12 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class SmartParameterFilter extends OncePerRequestFilter {
 
-    private final LRUCache<Object,Object> lruCache;
-
     @Override
     protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
+        if (StrUtil.endWithAny(req.getRequestURI(),".js",".css",".ico",".json",".moc","mtn")) {
+            chain.doFilter(req, resp);
+            return;
+        }
         String uaStr = req.getHeader("User-Agent");
         UserAgent ua = UserAgentUtil.parse(uaStr);
         req.setAttribute("isMobile",ua.isMobile());

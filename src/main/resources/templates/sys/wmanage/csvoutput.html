@@ -40,7 +40,7 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10" v-if="curFileTypeInfo.mgdOutputTargetType=='EMP'">
+                <div class="ml20 pt20" v-if="curFileTypeInfo.mgdOutputTargetType=='EMP'">
                     <!-- 対象職員 -->
                     <Divider></Divider>
                     <Row>
@@ -48,7 +48,7 @@
                             <h2>対象職員</h2>
                         </i-col>
                         <i-col span="9" offset="1">
-                            <p @click="deptDrawShow = true" style="width: 450px;" class="input-like-span">{{ empName }}</p>
+                            <p @click="deptDrawShow = true" style="width: 450px;color: var(--dept-select);  border: 1px dashed var(--dept-select);" class="input-like-span cursor">{{ empName }}</p>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 title="所属職員を選択してください" v-model="deptDrawShow" width="700">
@@ -81,7 +81,7 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10" v-if="curFileTypeInfo.mgdOutputTargetType=='ORG'">
+                <div class="ml20 pt20" v-if="curFileTypeInfo.mgdOutputTargetType=='ORG'">
                     <!-- パスワード -->
                     <Divider></Divider>
                     <Row>
@@ -89,7 +89,7 @@
                             <h2>対象部署</h2>
                         </i-col>
                         <i-col span="9" offset="1">
-                            <p @click="deptDrawShow = true" class="csv-p pb5">{{ deptName }}</p>
+                            <p @click="deptDrawShow = true" class="input-like-span cursor" style="width: 450px;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 v-model="deptDrawShow" width="700">
@@ -113,7 +113,7 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10" v-if="curFileTypeInfo.mgdOutputTermType=='YEAR'">
+                <div class="ml20 pt20" v-if="curFileTypeInfo.mgdOutputTermType=='YEAR'">
                     <!-- パスワード -->
                     <Divider></Divider>
                     <Row>
@@ -131,7 +131,7 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10"
+                <div class="ml20 pt20"
                     v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'EMP'">
                     <!-- 表示開始月 -->
                     <Divider></Divider>
@@ -150,7 +150,7 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10" v-if="curFileTypeInfo.mgdOutputTermType=='MONTH'">
+                <div class="ml20 pt20" v-if="curFileTypeInfo.mgdOutputTermType=='MONTH'">
                     <!-- 対象年月 -->
                     <Divider></Divider>
                     <Row>
@@ -167,23 +167,32 @@
                     </Row>
                 </div>
 
-                <div class="ml20 mt10" v-if="curFileTypeInfo.mgdOutputTermType=='TERM'">
+                <div class="ml20 pt20" v-if="curFileTypeInfo.mgdOutputTermType=='TERM'">
                     <!-- 対象期間 -->
                     <Divider></Divider>
                     <Row>
                         <i-col span="6" offse="1">
                             <h2>対象期間</h2>
                         </i-col>
-                        <i-col span="9" offset="1">
-                            <date-picker @on-change="handleTermFromDateChange" format="yyyy/MM/dd"
-                                placement="bottom-end" style="width:47%" transfer type="date"></date-picker>
-                            <date-picker @on-change="handleTermToDateChange" format="yyyy/MM/dd" placement="bottom-end"
-                                style="width:47%" transfer type="date"></date-picker>
+                        <i-col span="6" offset="1">
+                            <Row>
+                                <i-col span="11">
+                                    <date-picker @on-change="handleTermFromDateChange" format="yyyy/MM/dd"
+                                    placement="bottom-end" transfer type="date"></date-picker>
+                                </i-col>
+                                <i-col span="1" offset="1">
+                                    <span style="position: relative;left: -5px; top: 5px;">-</span>
+                                </i-col>
+                                <i-col span="11">
+                                    <date-picker @on-change="handleTermToDateChange" format="yyyy/MM/dd" placement="bottom-end"
+                                     transfer type="date"></date-picker>
+                                </i-col>
+                            </Row>
                         </i-col>
                     </Row>
                 </div>
 
-                <div class="ml20 mt10"
+                <div class="ml20 pt20"
                     v-if="curFileTypeInfo.mgdOutputTermType=='YEAR' && curFileTypeInfo.mgdOutputTargetType == 'ORG'">
                     <!-- 法定内超勤を含める -->
                     <Divider></Divider>
@@ -200,15 +209,16 @@
                     </Row>
                 </div>
 
+                <Divider></Divider>
                 <Row>
                     <i-col span="9" style="margin-left: 29.933333%">
-                        <i-button :loading="pdfDownloadLoading" @click="downLoadByPdf" class="mt30 mr10" ghost
+                        <i-button :loading="pdfDownloadLoading" @click="downLoadByPdf" class="mt10 mr10" ghost
                             icon="md-download" type="primary" style="width: 450px;"
                             v-if="curFileTypeInfo.mgdPdfDlflg=='TMG_ONOFF|1'">
                             PDFダウンロード
                         </i-button>
 
-                        <i-button :loading="csvDownloadLoading" @click="downLoadByPdf" class="mt30" ghost
+                        <i-button :loading="csvDownloadLoading" @click="downLoadByPdf" class="mt10" ghost
                             icon="md-download" type="primary" style="width: 450px;"
                             v-if="curFileTypeInfo.mgdCsvDlflg=='TMG_ONOFF|1'">
                             CSVダウンロード
