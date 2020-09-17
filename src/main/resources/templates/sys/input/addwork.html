@@ -170,7 +170,7 @@
                         <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
                         <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
-                        <span class="tl input-like-span" v-model="dailyEdit.tdaCbosscommentR" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment && !bApproved">
+                        <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment && !bApproved">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
                         <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                         <span v-else>{{ row.workStart }}</span>
@@ -194,7 +194,7 @@
                     <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName" :value="item.itemCode">
                     </i-option>
                 </i-select>
-                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>
+<!--                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>-->
                 <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
                 <i-button  disabled v-else>追加</i-button>
             </div>
@@ -239,7 +239,7 @@
                     <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName" :value="item.itemCode">
                     </i-option>
                 </i-select>
-                <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>
+<!--                <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>-->
                 <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
                 <i-button disabled v-else>追加</i-button>
 <!--                <i-col span="4">-->
@@ -282,7 +282,7 @@
                 <Icon type="logo-buffer"></Icon>
                 更新履歴
             </div>
-            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
+            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"  no-data-text="">
             </i-table>
             <Spin size="large" fix v-if="dailyloading"></Spin>
         </div>

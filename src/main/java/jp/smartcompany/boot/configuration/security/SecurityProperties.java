@@ -22,6 +22,7 @@ public class SecurityProperties {
     private String[] whiteList;
     private String[] resourceList;
     private String[] onlyAuthenticationList;
+    private String[] csrfWhiteList;
 
     private String logoutSuccessUrl;
     private String loginSuccessUrl;

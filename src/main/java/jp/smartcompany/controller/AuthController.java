@@ -1,6 +1,5 @@
 package jp.smartcompany.controller;
 
-import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.dto.ChangePasswordDTO;

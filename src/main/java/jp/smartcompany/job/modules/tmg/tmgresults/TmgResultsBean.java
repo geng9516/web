@@ -1043,21 +1043,27 @@ public class TmgResultsBean {
      * @param psDBBean
      * @return
      */
-    public List<DispMonthlyVO> tmgInpInit(PsDBBean psDBBean) {
+    public List<DispMonthlyVO> tmgInpInit(String Date ,PsDBBean psDBBean) {
 
-        // 対象月リスト一覧取得
-        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
-
+        String baseDate=null;
+        if(StrUtil.hasEmpty(Date)){
+            baseDate=TmgUtil.getSysdate();
+        }else{
+            baseDate=Date;
+        }
+//        // 対象月リスト一覧取得
+//        TodayThisMonthVO todayThisMonthVO = iMastGenericDetailService.buildSQLForSelectDate();
+//
         // 今日の日付
-        setToday(todayThisMonthVO.getToday());
-        setThisMonth(todayThisMonthVO.getThisMonth());
+        setToday(baseDate);
+        setThisMonth(baseDate.substring(0,7) + "/01");
 
         // 12 表示月遷移リスト情報取得
         List<DispMonthlyVO> dispMonthlyVOList = iTmgMonthlyService.buildSQLForSelectDispMonthlyList(
                 psDBBean.getCustID(),
                 psDBBean.getCompCode(),
                 psDBBean.getTargetUser(),
-                getToday()
+                baseDate
         );
         return dispMonthlyVOList;
     }
