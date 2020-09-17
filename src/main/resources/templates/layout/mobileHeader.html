@@ -48,7 +48,7 @@
         <i-button class="tr" type="primary" size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable"  ghost long>{{ clockBtn.exit }}</i-button>
       </li>
       <li class="menu-li" style="margin-top: -5px;">
-        <i-button class="tr" type="primary" size="large"  @click="()=> location.href = '/logout'" ghost long>ログアウト</i-button>
+        <i-button class="tr" type="primary" size="large"  @click="logout" ghost long>ログアウト</i-button>
       </li>
     </ul>
     <dropdown class="head-dropdown" style="position: absolute; top: 0; left: 0;" trigger="click" placement="bottom-start">
@@ -132,9 +132,13 @@
         this.getClockInfo()
       },
       methods: {
-        logout() {
-          location.href = '/logout'
-        },
+        logout: Debounce(async function () {
+          try {
+            await this.http.post('/logout', {})
+            location.href = '/login'
+          } catch (error) {
+          }
+        }),
         updatePassword: Debounce(async function () {
           if (!this.password.oldPassword) {
             return this.$Notice.warning({ title: '注意', desc: '現在のパスワードを入力してください。', duration: 6.5 })
@@ -153,7 +157,9 @@
             await this.http.post('/changePassword', this.password)
             this.$Message.success('更新完了')
             setTimeout(() => {
-              location.href = '/login'
+              this.http.post('/logout', {}).then(function() {
+                location.href = '/login'
+              })
             }, 1000);
           } catch (error) {
             this.passwordLoading = false

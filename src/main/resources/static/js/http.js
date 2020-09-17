@@ -1,6 +1,13 @@
+const tokenKey = document.getElementsByTagName('meta')['_csrf_header'].content
+const tokenValue = document.getElementsByTagName('meta')['_csrf'].content
+
+const commRequestHeaders = {
+  'X-Requested-With': 'XMLHttpRequest',
+  [tokenKey]: tokenValue
+}
 // import axios from 'axios'
 axios.defaults.baseURL = BASE_URL
-axios.defaults.headers= {'X-Requested-With': 'XMLHttpRequest'}
+axios.defaults.headers= commRequestHeaders
 axios.defaults.timeout= 300 * 1000
 // 请求需要携带cookie时
 // axios.defaults.withCredentials = true

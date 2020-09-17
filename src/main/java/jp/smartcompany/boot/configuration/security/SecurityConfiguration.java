@@ -48,10 +48,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        // 禁用CSRF 开启跨域
-        http.csrf().disable().cors()
+          http.csrf().ignoringAntMatchers(securityProperties.getCsrfWhiteList())
+                .and().cors()
                 .and().formLogin().usernameParameter("username").passwordParameter("password")
-                .and().logout().addLogoutHandler(logoutHandler).logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true).deleteCookies().clearAuthentication(true).permitAll()
+                .and().logout().logoutUrl("/logout").addLogoutHandler(logoutHandler).logoutSuccessHandler(logoutSuccessHandler).invalidateHttpSession(true).deleteCookies().clearAuthentication(true).permitAll()
                 // 防止iframe 造成跨域
                 .and()
                 .headers().frameOptions().disable()
