@@ -256,13 +256,9 @@
                     this.clockDisable = true
                     try {
                         // 采用ajax发送表单，事后跳转到请求地址，即可模拟form提交
-                        await this.http.postForm('/login', this.login)
-                        location.href = '/login'
+                        await this.http.post('/login', this.login)
+                        location.href = '/'
                     } catch (error) {
-                        // 账户过期
-                        if (error.status === 303) {
-                            location.href = '/expirePassword?username=' + error.data.msg
-                        }
                         this.loading = false
                         this.clockDisable = false
                     }
