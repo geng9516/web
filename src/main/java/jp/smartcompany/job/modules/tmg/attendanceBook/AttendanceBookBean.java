@@ -388,6 +388,15 @@ public class AttendanceBookBean {
 
         List<AttendanceBookDTO> attendanceBookDTOS = this.selectAttendanceBookDto(employeeId, year, month);
         List<LinkedHashMap<String, String>> resultListConverted = new ArrayList<LinkedHashMap<String, String>>();
+        //出勤簿が存在かとうかチャック
+        if (null == psDBBean) {
+            logger.error("出勤簿リスト中で　psDBBean対象が空です！");
+            return  new ArrayList();
+        }
+        if (this.selectExistsAttendanceBookCheck(psDBBean.getCompCode(), psDBBean.getCustID(), employeeId, year, month)) {
+            logger.info("職員「" + employeeId + "」の「" + year + "/" + month + "」の出勤簿がないです");
+            return new ArrayList();
+        }
         int MONTH_DAY = 1;
         for (int j = 0; j < 43; j++) {
             LinkedHashMap listHashMap = new LinkedHashMap();
@@ -660,6 +669,26 @@ public class AttendanceBookBean {
         return attendanceExistsVO;
 
     }
+
+    /**
+     * 出勤簿が存在かとうか
+     *
+     * @param compCode
+     * @param custId
+     * @param employeeId
+     * @param year
+     * @param month
+     * @return
+     */
+    private boolean selectExistsAttendanceBookCheck(String compCode, String custId, String employeeId, String year, String month) {
+        if (month.length() == 1) {
+            month = "0" + month;
+        }
+        String baseDate = year + "/" + month + "/01";
+        String flag = iTmgAttendanceBookService.selectExistsAttendanceBookCheck(baseDate, employeeId, compCode, custId);
+        return "0".equals(flag);
+    }
+
 
     /**
      * 月間実働時間
