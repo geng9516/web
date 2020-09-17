@@ -61,7 +61,7 @@
                        <Row class="tl mb5">
                             <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                             <i-col span="7" class="no-border-radius">
-                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" transfer
+                            <date-picker type="date" v-model="referListObject.txtTmgReferListTreeViewRecordDate" transfer
                                          placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
                             </i-col>
                         </Row>
@@ -284,7 +284,7 @@
                             <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
                             <span v-else>{{ row.workStart }}</span>
                         </div>
-                        <div  v-if="row.isInput" >
+                        <div  v-if="row.isInput && !bFixed" >
                             <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         </div>
                           <!-- 本人comment -->
@@ -295,7 +295,7 @@
                         <div>
                             <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment && !bFixed">
                             </i-input>
-                            <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  :value="dailyEdit.tdaCbosscommentR" v-if="row.isBSComment && bFixed"></span>
+                            <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isBSComment && bFixed">{{dailyEdit.tdaCbosscommentR}}</span>
                         </div>
                         <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
@@ -306,7 +306,7 @@
                             <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             <span v-else>{{ row.workEnd }}</span>
                         </div>
-                        <div v-if="row.isInput" >
+                        <div v-if="row.isInput  && !bFixed" >
                             <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                         </div>
                         <span v-if="!row.isInput && !bFixed">{{ row.workEnd }}</span>
@@ -324,7 +324,7 @@
                     <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName" :value="item.itemCode">
                     </i-option>
                 </i-select>
-                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>
+<!--                <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>-->
                 <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
                 <i-button  disabled v-else>追加</i-button>
             </div>
@@ -371,7 +371,7 @@
                         </i-option>
                     </i-select>
 
-                    <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>
+<!--                    <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>-->
                     <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
                     <i-button disabled v-else>追加</i-button>
     <!--                <i-col span="4">-->
@@ -414,7 +414,7 @@
                 <Icon type="logo-buffer"></Icon>
                 更新履歴
             </div>
-            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
+            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"  no-data-text="">
             </i-table>
             <Spin size="large" fix v-if="dailyloading"></Spin>
         </div>
@@ -706,10 +706,12 @@
                 if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
                     this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 }
+                console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                 await this.getOrgTree()
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log(this.referListObject.txtTmgReferListTreeViewRecordDate)
                 if (targetAdminSection){
                     this.deptName = [[${ session.txtTmgReferListTreeViewAdminTargetSectionName }]]
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = targetAdminSection
@@ -803,7 +805,7 @@
                     const { orgList, recordDate } = await this.http.get('sys/tree', this.referListObject)
                     // 先将数据转为标准格式，再转为可用数据
                     this.treeData = Utils.convertTreeData(orgList)
-                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                    this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate(recordDate, 'yyyy/mm/dd')
                 } catch (error) {
                     return
                 } finally {
@@ -886,7 +888,6 @@
                 //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
-
                 this.deptDrawShow = false
 
                 this.loginEmployee = e[0].empid
@@ -898,6 +899,9 @@
                 this.workTypeName=e[0].wokertypename
                 this.selectDisabled = true
                 this.remarksDisabled = true
+                if(this.referListObject.txtTmgReferListTreeViewRecordDate){
+                    this.query.txtDYYYYMM=this.referListObject.txtTmgReferListTreeViewRecordDate
+                }
                 await this.getWorkDateList()
                 if (!this.query.txtDYYYYMM) {
                     this.$Notice.warning({title: '年月を選択して下さい'})
@@ -1121,12 +1125,16 @@
                 this.categoryNondutyList = data.categoryNondutyList
                 if(this.categoryNondutyList.length>0){
                     this.categoryNonduty = this.categoryNondutyList[0].itemCode
+                }else{
+                    this.categoryNonduty=''
                 }
 
                 // 超過勤務ドロップダウン
                 this.categoryOverhoursList = data.categoryOverhoursList
                 if(this.categoryOverhoursList.length>0){
                     this.categoryOverhours = this.categoryOverhoursList[0].itemCode
+                }else{
+                    this.categoryOverhours=''
                 }
                 this.mgdCsparechar4VOList = data.mgdCsparechar4VOList
 
@@ -1136,8 +1144,8 @@
                 this.dailyEdit = data.dailyEditVO
 
                 if (('TMG_DATASTATUS|9' === this.dailyEdit.tdaCstatusflg || 'TMG_DATASTATUS|5' === this.dailyEdit.tdaCstatusflg)
-                    && '' !== this.dailyEdit.tdaCmodifieruseridR
-                    && '' !== this.dailyEdit.tdaDmodifieddateR
+                    &&  this.dailyEdit.tdaCmodifieruseridR
+                    &&  this.dailyEdit.tdaDmodifieddateR
                 ) {
                     this.bApproved = true
                 } else {

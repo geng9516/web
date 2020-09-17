@@ -291,8 +291,8 @@
                               <!-- 承认者comment -->
                               <i-input class="tl" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="row.isBSComment  && !bFixed">
                               </i-input>
-                              <span  :value="dailyEdit.tdaCbosscommentR" style="border-radius: 5px; white-space: pre-line;"
-                                     class="tl input-like-span" v-if="row.isBSComment  && bFixed">
+                              <span  style="border-radius: 5px; white-space: pre-line;" class="tl input-like-span" v-if="row.isBSComment  && bFixed">
+                                {{dailyEdit.tdaCbosscommentR}}
                               </span>
 
                             <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
@@ -321,7 +321,7 @@
                         <i-option v-for="(item, index) of categoryNondutyList" :key="index" :label="item.itemName" :value="item.itemCode">
                         </i-option>
                     </i-select>
-                    <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>
+<!--                    <p class="input-like-span tc" v-else>{{categoryNonduty}}</p>-->
                     <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
                     <i-button  disabled v-else>追加</i-button>
                 </div>
@@ -367,7 +367,7 @@
                             <i-option v-for="(item, index) of categoryOverhoursList" :key="index" :label="item.itemName" :value="item.itemCode">
                             </i-option>
                         </i-select>
-                        <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>
+<!--                        <p class="input-like-span tc" v-else>{{categoryOverhours}}</p>-->
                         <i-button type="primary" ghost @click="addOverWork" v-if="!bDisable">追加</i-button>
                         <i-button disabled v-else>追加</i-button>
         <!--                <i-col span="4">-->
@@ -411,7 +411,7 @@
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
-                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20">
+                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"   no-data-text="">
                 </i-table>
                 <Spin size="large" fix v-if="dailyloading"></Spin>
             </div>
@@ -698,8 +698,8 @@
                     let targetPermEmp = [[${ session.txtTmgReferListTreeViewPermTargetEmp }]]
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                     let targetPermGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-                    if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
-                        this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                    if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/MM/dd')){
+                        this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/MM/dd')
                     }
                     await this.getOrgTree()
 
@@ -882,6 +882,9 @@
                     this.kanjiName = e[0].empname
                     this.workTypeName=e[0].wokertypename
                     this.selectDisabled = true
+                    if(this.referListObject.txtTmgReferListTreeViewRecordDate){
+                        this.query.txtDYYYYMM=this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
                     await this.getWorkDateList()
 
 

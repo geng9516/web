@@ -11,7 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,8 +26,8 @@ public class SmartLogoutSuccessHandler implements LogoutSuccessHandler {
     private final SecurityProperties securityProperties;
 
     @Override
-    public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException, ServletException {
-       if (SysUtil.isAjaxRequest(req)){
+    public void onLogoutSuccess(HttpServletRequest req, HttpServletResponse resp, Authentication authentication) throws IOException {
+        if (SysUtil.isAjaxRequest(req)){
            resp.setCharacterEncoding("UTF-8");
            resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
            GlobalResponse r = GlobalResponse.ok("ログアウト成功");

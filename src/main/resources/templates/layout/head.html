@@ -91,9 +91,13 @@
         this.password.username = this.session.psSession.loginUser
       },
       methods: {
-        logout() {
-           location.href = '/logout'
-        },
+        logout: Debounce(async function () {
+          try {
+            await this.http.post('/logout', {})
+            location.href = '/login'
+          } catch (error) {
+          }
+        }),
         updatePassword: Debounce(async function () {
           if (!this.password.oldPassword) {
             return this.$Notice.warning({ title: '注意', desc: '現在のパスワードを入力してください。', duration: 6.5 })
@@ -112,7 +116,9 @@
             await this.http.post('/changePassword', this.password)
             this.$Message.success('更新完了')
             setTimeout(() => {
-              location.href = '/logout'
+              this.http.post('/logout', {}).then(function() {
+                location.href = '/login'
+              })
             }, 1000);
           } catch (error) {
             this.passwordLoading = false
