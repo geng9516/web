@@ -33,7 +33,7 @@
                     <div>※休暇・休業一括登録(および取消)は、{{useTime}} の時間帯のみ使用できます。</div>
                     <div class="mt5">※処理状態が［エラー］の場合は反映処理中に想定外の問題が発生しました。詳細は システム管理者までお問合せください。</div>
                 </Alert>
-                <i-table border :columns="columns" :data="tableData" :loading="loading" no-data-text=""
+                <i-table border :columns="columns" :data="tableData" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
                     :disabled-hover="true">
                     <template slot-scope="{ row }" slot="moCsectionname">
                         <span v-if="row.tbndCount==='1'"> {{ row.moCsectionname }}</span>
@@ -68,7 +68,7 @@
                 </Drawer>
                 <Drawer :closable="false" width="400" class="tc" placement="right" title="対象部署"
                     v-model="sectionDetailShow">
-                    <i-table border :columns="columns3" :data="sectionList" :loading="loading" no-data-text=""
+                    <i-table border :columns="columns3" :data="sectionList" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'"
                         :disabled-hover="true">
                     </i-table>
                 </Drawer>
@@ -97,7 +97,12 @@
                             <h2>対象部署</h2>
                         </i-col>
                         <i-col span="6" offset="1">
-                            <p @click="deptDrawShow = true" class="input-like-span cursor" style="white-space: pre-line;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
+                            <Row :gutter="8">
+                                <i-col :span="deptNameList.length > 0 ? 12 : 24">
+                                    <p @click="deptDrawShow = true" class="input-like-span cursor" style="white-space: pre-line;color: var(--dept-select);  border: 1px dashed var(--dept-select);">{{ deptName }}</p>
+                                </i-col>
+                                <i-col span="12" v-if="deptNameList.length > 0"><i-button style="top: -5px;" @click="isShow = true" type="primary" ghost long>選択した部署参照</i-button></i-col>
+                            </Row>
                             <!-- 共通組織図画面 start-->
                             <Drawer :closable="false" :mask-closable="!isSearchHistory" class="tc" placement="right"
                                 v-model="deptDrawShow" width="700">
@@ -117,6 +122,10 @@
                                     empty-text="所属データなし" ref="tree" show-checkbox multiple check-strictly
                                     check-directly></Tree>
                             </Drawer>
+                            <Drawer  class="tc" placement="right" v-model="isShow" width="700" title="選択した部署">
+                                <i-table border :columns="columns4" :data="deptNameList" :loading="loading" no-data-text="" :row-class-name="() => 'select-col'" :disabled-hover="true">
+                            </i-table>
+                        </Drawer>
                         </i-col>
                     </Row>
                 </div>
@@ -251,13 +260,19 @@
                             key: 'moCsectionname'
                         }
                     ],
+                    columns4: [
+                        {
+                            title: '部署',
+                            key: 'name'
+                        }
+                    ],
                     tableData: [],
                     tableData2: [],
                     ntfTypeList: [],
                     ntfType: '', //一括登録区分
                     fromDate: '', //対象期間
                     toDate: '', //対象期間
-                    deptName: 'クリックした組織選択', //対象部署名称
+                    deptName: '対象部署選択', //対象部署名称
                     deptNameList: [], //対象部署
                     deptId: '', //対象部署Id
                     isShow: false,
@@ -299,7 +314,6 @@
                     try {
                         const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
                         if (msg === '0') {
-                            this.isShow = false
                             this.newOrDisp = true
                             this.getHistoryDisp()
                             return
@@ -393,7 +407,7 @@
                 },
                 async handleDeptChange(e, current) {
                     if (!e[0]) {
-                        this.deptName = "クリックした組織選択"
+                        this.deptName = "対象部署選択"
                         this.deptId = ""
                         this.deptNameList = []
                         return
@@ -407,9 +421,13 @@
                     this.$nextTick(() => {
                         const selectedTreeNodes = this.$refs.tree.getCheckedNodes()
                         if (selectedTreeNodes.length > 0) {
-                            this.deptName = selectedTreeNodes.map(e => e.secname).join('\n')
+                            this.deptNameList = selectedTreeNodes.map(e => {
+                                return {
+                                    name: e.secname
+                                }
+                            })
                         } else {
-                            this.deptName = 'クリックした組織選択'
+                            this.deptNameList = []
                         }
                     })
                     // this.deptName=""
