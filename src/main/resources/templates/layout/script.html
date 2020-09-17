@@ -9,10 +9,15 @@
   <!--支持ES6余下语法，如Promise-->
   <script th:src="${baseUrl + '/static/libs/browser-polyfill.min.js' }"></script>
   <!--全局引入baseURL-->
-  <script th:inline="javascript" type="text/javascript">
-    var BASE_URL = [[${ #httpServletRequest.getScheme() + '://' + #httpServletRequest.getServerName() + ':' + #request.getServerPort() + #request.getContextPath() }]]
+  <script>
+    const {protocol,hostname,port,pathname} = location
+    let BASE_URL
+    if (parseInt(port) !== 80) {
+      BASE_URL = protocol + '//' + hostname + ':' + port
+    } else {
+      BASE_URL = protocol + '//' + hostname
+    }
   </script>
-
   <script th:src="${baseUrl + '/static/libs/vue-2.6.11.min.js'}"></script>
   <script th:src="${baseUrl + '/static/js/theme.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/libs/iview.min.js'}"></script>

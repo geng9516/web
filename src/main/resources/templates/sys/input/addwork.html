@@ -1082,7 +1082,7 @@
             errorCheck(workingid) {
                 let mgdCsparechar4VO = this.mgdCsparechar4VOList.find(e => e.mgdCmastercode === workingid)
                 // 出勤 or 休日出勤
-                if (mgdCsparechar4VO.mgdCsparechar5 != '0') {
+                if (!mgdCsparechar4VO || mgdCsparechar4VO.mgdCsparechar5 != '0') {
                     return true;
                 }
                 // 修正出社時刻形式
