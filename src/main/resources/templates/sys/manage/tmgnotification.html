@@ -747,6 +747,7 @@
       methods: {
         //初期化処理
         async getInit() {
+          console.log([[${ session }]])
           let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
           if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
             this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
@@ -763,6 +764,14 @@
               this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
               this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
             }
+          }else{
+            this.deptName = this.treeData[0].label
+            this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
+            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+            this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
+            this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+            this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
+            this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
           }
           //一覧画面取得
           this.getTableData(true)
