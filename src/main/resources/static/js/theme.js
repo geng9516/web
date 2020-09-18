@@ -135,7 +135,8 @@ var THEME_CONFIG  = {
   }
 }
 
-var Changetheme = function(e = APP_THEME) {
+var Changetheme = function(e = APP_THEME, context) {
+  if(context) context.curTheme = e
   if(e === 'default') {
     localStorage.setItem('APP_THEME', e)
     Object.keys(THEME_CONFIG.orange).forEach(e=>{

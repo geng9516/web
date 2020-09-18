@@ -342,6 +342,14 @@
   color: var(--primary-info);
   background-color: var(--primary-info-bg);
 }
+.ivu-dropdown-item-selected {
+  color: var(--primary-info);
+  background-color: var(--primary-info-bg);
+  &:hover {
+    color: var(--primary-info);
+    background-color: var(--primary-info-bg);
+  }
+}
 .footer {
   position: relative;
   margin-top: -32px;

@@ -41,16 +41,16 @@ public class TmgBulkNotificationController {
         return tmgBulkNotificationBean.execRMakeBulkNtf(baseDate,psDBBean);
     }
 
-    /**
-     * 詳細画面表示処理
-     * @return DetailDataVo
-     */
-    @GetMapping("getDetail")
-    public DetailDataVo getDetail(@RequestParam("ntfId")String ntfId,
-                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
-
-        return tmgBulkNotificationBean.execRDetail(ntfId,psDBBean);
-    }
+//    /**
+//     * 詳細画面表示処理
+//     * @return DetailDataVo
+//     */
+//    @GetMapping("getDetail")
+//    public DetailDataVo getDetail(@RequestParam("ntfId")String ntfId,
+//                                  @RequestAttribute("BeanName") PsDBBean psDBBean) {
+//
+//        return tmgBulkNotificationBean.execRDetail(ntfId,psDBBean);
+//    }
 
     /**
      * 登録処理を実行します

@@ -60,6 +60,18 @@ public class TmgBulkNotificationBean {
     }
 
 
+//
+//
+//    /**
+//     * 詳細画面表示処理を実行します
+//     * 詳細画面の表示に必要なクエリを実行し、詳細画面のJSPページをセットします
+//     */
+//    public DetailDataVo execRDetail(String Seq ,PsDBBean psDBBean) {
+//
+//        DetailDataVo detailDataVo =iTmgBulkNotificationService.selectDetail(Seq,psDBBean.getLanguage());
+//        return detailDataVo;
+//    }
+
 
     /**
      * 新規登録画面表示処理を実行します(一括登録区分取得)
@@ -106,18 +118,6 @@ public class TmgBulkNotificationBean {
         }
     }
 
-
-
-
-    /**
-     * 詳細画面表示処理を実行します
-     * 詳細画面の表示に必要なクエリを実行し、詳細画面のJSPページをセットします
-     */
-    public DetailDataVo execRDetail(String Seq ,PsDBBean psDBBean) {
-
-        DetailDataVo detailDataVo =iTmgBulkNotificationService.selectDetail(Seq,psDBBean.getLanguage());
-        return detailDataVo;
-    }
 
 
     /**
