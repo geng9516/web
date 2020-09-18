@@ -334,6 +334,14 @@
 .ivu-drawer-header-inner {
   text-align: center;
 }
+.bs-comment-approved {
+  display: inline-block;
+  width: 100%;
+  margin-top: 5px;
+  padding: 2px;
+  color: var(--primary-info);
+  background-color: var(--primary-info-bg);
+}
 .footer {
   position: relative;
   margin-top: -32px;
