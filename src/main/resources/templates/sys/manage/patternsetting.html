@@ -19,21 +19,21 @@
             </div>
             <div class="btnbox">
                 <span style="flex:1"></span>
-                <i-button disabled v-if="!addPatternShow">
+                <i-button icon="md-create" disabled v-if="!addPatternShow">
                     新規
                 </i-button>
                 <i-button icon="ios-cloud-upload-outline" v-if="!addPatternShow" disabled>
                     CSVファイル取込
                 </i-button>
-                <i-button type="primary" icon="md-add" @click="mergePattern(null)" :loading="bulkApprovalLoading" v-if="addPatternShow">新規</i-button>
+                <i-button type="success" icon="md-create" 　@click="mergePattern(null)" :loading="bulkApprovalLoading" v-if="addPatternShow">新規</i-button>
                 <i-button type="primary" ghost icon="ios-cloud-upload-outline" v-if="addPatternShow" @click="csvuploadModal = true">
                     CSVファイル取込
                 </i-button>
             </div>
         </div>
         <div class="searchwrap">
-            <span class="label">改訂日</span>
-            <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false" @on-change="handleDatePicker" format="yyyy年MM月dd日"></date-picker>
+            <!--<span class="label">改訂日</span>
+            <date-picker class="mar" v-model="curDate" type="date" :editable="false" :clearable="false" @on-change="handleDatePicker" format="yyyy年MM月dd日" ></date-picker>-->
             <span style="display:flex;width: calc(15% + 200px);">
                <span class="label">所属</span>
                <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
@@ -49,7 +49,7 @@
                    <Row class="tl mb5">
                        <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                        <i-col span="7" class="no-border-radius">
-                          <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" format="yyyy/MM/dd" :options="startLimit" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange" transfer></date-picker>
+                          <date-picker type="date"　v-model="curDate" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange" transfer></date-picker>
                        </i-col>
                         <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                           <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
@@ -71,13 +71,10 @@
         </div>
     </div>
     <div class="content_body">
-        <Alert class="primary-info tl">
-            <div>※選んだ所属で作成した勤務パターンのみ編集が可能。</div>
-            <div class="mt5" v-if="periodDate !== ''">※適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</div>
-        </Alert>
+        <Alert class="primary-info tl">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
         <Row :gutter="8">
             <i-col span="7" v-if="btn_sk_show">
-                <i-table :columns="sk_column" :data="sk_list" border :loading="empTableLoading" no-data-text="" :row-class-name="() => 'select-col'">
+                <i-table :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="データなし" :row-class-name="() => 'select-col'">
                 </i-table>
             </i-col>
             <i-col :span="btn_sk_show ? 17 : 24">
@@ -417,7 +414,6 @@
                     {
                         title: 'オーナー',
                         minWidth:80,
-                        tooltip: true,
                         key: 'tpa_csectionname',
                         align: 'center'
                     },
@@ -479,6 +475,10 @@
         },
         async mounted() {
             //await this.getOrgTree()
+            //適用時間を取得する
+            if (!this.periodDate) {
+                await this.getPeriodDate()
+            }
             await this.getInit()
             this.selectTmgPatternApplies()
         },
@@ -603,6 +603,10 @@
                 }
                 //リストの取得
                 await this.getTmgPatternList()
+
+                //部署社員リスト
+                await　this.selectTmgPatternApplies()
+
                 //新規ボタンを有効にする
                 this.addPatternShow = true
                 this.btn_sk_show = true
@@ -1102,9 +1106,9 @@
                 var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
                 if (fail_count > 0) {
                     //情報提示
-                    this.$Notice.error({title: 'アップロード結果', desc: msg, duration: 0})
+                    this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
                 } else {
-                    this.$Notice.success({title: 'アップロード結果', desc: msg, duration: 0})
+                    this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
                 }
 
                 //リストの取得
