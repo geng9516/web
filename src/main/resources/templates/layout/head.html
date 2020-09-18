@@ -35,8 +35,8 @@
         <avatar class="white-avatar" style="background-color: var(--theme-mark)">テーマ</avatar>
       </a>
       <dropdown-menu slot="list">
-        <dropdown-item v-for="(item, i) of themeList" :value="item.value" :name="item.name" :key="i" style="border-bottom: 1px solid #d2d2d2;"
-          @click.native="Changetheme(item.value)">
+        <dropdown-item v-for="(item, i) of themeList" :value="item.value" :name="item.name" :selected="curTheme === item.value" :key="i" style="border-bottom: 1px solid #d2d2d2;"
+          @click.native="Changetheme(item.value, HEADER)">
           {{ item.name }}
         </dropdown-item>
       </dropdown-menu>
@@ -77,6 +77,7 @@
             { name: 'クラシック', value: 'classical'},
             { name: 'ナイト', value: 'dark'}
           ],
+          curTheme: localStorage.getItem('APP_THEME') || 'default',
           password:{},
           passwordLoading: false,
           alterPasswordModal: false
