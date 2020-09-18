@@ -288,7 +288,7 @@
                             <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         </div>
                           <!-- 本人comment -->
-                          <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  :value="dailyEdit.tdaCowncommentR" v-if="row.isOwnComment"></span>
+                          <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isOwnComment">{{dailyEdit.tdaCowncommentR}}</span>
 
 
                           <!-- 承认者comment -->

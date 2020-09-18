@@ -984,6 +984,10 @@
                 },
                 // 就業実績のタイトルとデータを取得
                 async getTitleData() {
+                    this.getHatuRei()
+                    this.query.txtAction = 'ACT_EDITINP_RDAILY'
+                    this.monthlyMap = ''
+                    this.dailyDataList = []
                     if( !this.selectDisabled){
                             this.$Message.error({
                                 background: true,
@@ -993,10 +997,7 @@
                             });
                             return;
                     }
-                    this.getHatuRei()
-                    this.query.txtAction = 'ACT_EDITINP_RDAILY'
-                    this.monthlyMap = ''
-                    this.dailyDataList = []
+
                     try {
                         this.monthlyLoading=true
                         this.updateMonthloading=true
