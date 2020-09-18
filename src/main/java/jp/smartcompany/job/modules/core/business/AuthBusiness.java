@@ -201,7 +201,7 @@ public class AuthBusiness {
         List<Object> commonParams = CollUtil.newArrayList();
         String sql = "SELECT DISTINCT MGP_CGROUPID,NVL(MGP_COBJECTID, MTR_COBJECTID) MGP_COBJECTID,NVL(MGP_CSITE, MTR_CSITEID) MGP_CSITE,NVL(MGP_CAPP, MTR_CAPPID) MGP_CAPP,NVL(MGP_CSUBAPP, MTR_CSUBAPPID) MGP_CSUBAPP," +
                 "NVL(MGP_CBUTTON, MTR_CBUTTONID) MGP_CBUTTON,NVL(MGP_CSCREEN, MTR_CSCREENID) MGP_CSCREEN,DECODE(MGP_CPERMISSION, '1', DECODE(MGP_CREJECT, '1', '2', '1'), '0') PERMISSION," +
-                "PSMASTER.FUNC_GET_OBJ_NAME (MTR_CSITEID,MTR_CAPPID,MTR_CSUBAPPID,MTR_CSCREENID,MTR_CBUTTONID,'"+language+"') OBJECTNAME, MTR_CTYPE TYPE,MG_NWEIGHTAGE,MTR_NSEQ,MTR_CURL2,MTR_ICON,MTR_ID " +
+                "PSMASTER.FUNC_GET_OBJ_NAME (MTR_CSITEID,MTR_CAPPID,MTR_CSUBAPPID,MTR_CSCREENID,MTR_CBUTTONID,'"+language+"') OBJECTNAME, MTR_CTYPE TYPE,MG_NWEIGHTAGE,MTR_NSEQ,MTR_ID,MTR_CURL,MTR_CIMAGEURL " +
                 "FROM " +
                 "(" +
                     "MAST_APPTREE " +
@@ -408,7 +408,7 @@ public class AuthBusiness {
             menuGroupBO.setPageId(topMenu.getMgpCsite());
             menuGroupBO.setPerms(topMenu.getMgpCobjectid());
             menuGroupBO.setOrderNum(topMenu.getMtrNseq());
-            menuGroupBO.setUrl(topMenu.getMtrCurl2());
+            menuGroupBO.setUrl(topMenu.getMtrCurl());
             menuGroupBO.setJaName(topMenu.getObjectName());
             menuGroupBO.setIcon(topMenu.getMtrIcon());
             menuGroupBO.setType(topMenu.getType());
@@ -450,7 +450,7 @@ public class AuthBusiness {
                         secondMenuDO.setPageId(groupPerm.getMgpCapp());
                         secondMenuDO.setPerms(groupPerm.getMgpCobjectid());
                         secondMenuDO.setOrderNum(groupPerm.getMtrNseq());
-                        secondMenuDO.setUrl(groupPerm.getMtrCurl2());
+                        secondMenuDO.setUrl(groupPerm.getMtrCurl());
                         secondMenuDO.setJaName(groupPerm.getObjectName());
                         secondMenuDO.setIcon(groupPerm.getMtrIcon());
                         secondMenuDO.setType(groupPerm.getType());
@@ -524,8 +524,8 @@ public class AuthBusiness {
                 GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
                 dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
                 dto.setPermission((String)entity.get("PERMISSION"));
-                dto.setMtrIcon((String)entity.get("MTR_ICON"));
-                dto.setMtrCurl2((String)entity.get("MTR_CURL2"));
+                dto.setMtrIcon((String)entity.get("MTR_CIMAGEURL"));
+                dto.setMtrCurl((String)entity.get("MTR_CURL"));
                 dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
                 if (entity.get("MG_NWEIGHTAGE")!=null) {
                     dto.setMgNweightage(((BigDecimal) entity.get("MG_NWEIGHTAGE")).longValue());

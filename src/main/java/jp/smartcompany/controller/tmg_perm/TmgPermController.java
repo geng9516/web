@@ -1,4 +1,4 @@
-package jp.smartcompany.controller;
+package jp.smartcompany.controller.tmg_perm;
 
 import cn.hutool.core.date.DateUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -17,15 +17,15 @@ import org.springframework.web.bind.annotation.RequestParam;
  * 就業承認・管理Controller
  */
 @Controller
-@RequestMapping("sys/manage")
+@RequestMapping("tmg_perm")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SiteManageController {
+public class TmgPermController {
 
     /**
      * 跳转到部署別統計情報確認界面
      */
-    @GetMapping("wsum")
-    public String toManageWSum(
+    @GetMapping("DeptStatList")
+    public String toDeptStatList(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
@@ -44,7 +44,7 @@ public class SiteManageController {
     /**
      * 跳转到年5日時季指定取得確認界面
      */
-    @RequestMapping("require5days")
+    @RequestMapping("TmgAcquired5DaysHoliday")
     public String toTmgAcquired5DaysHoliday(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -64,7 +64,10 @@ public class SiteManageController {
         return "sys/manage/require5days";
     }
 
-    @GetMapping("attendancebook")
+    /**
+     * 跳转到出勤簿界面
+     */
+    @GetMapping("AttendanceBook")
     public String toAttendanceBook(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
@@ -83,7 +86,10 @@ public class SiteManageController {
         return "sys/manage/attendancebook";
     }
 
-    @GetMapping("tmgschedule")
+    /**
+     * 跳转到预定做成
+     */
+    @GetMapping("TmgSchedule")
     public String toTmgSchedule(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
@@ -105,8 +111,8 @@ public class SiteManageController {
     /**
      * 跳转到承認状況一覧界面
      */
-    @GetMapping("permstatlist")
-    public String toManagePermstatList(
+    @GetMapping("PermStatList")
+    public String toPermStatList(
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) throws Exception {
         String baseDate = DateUtil.format(DateUtil.date(), TmgReferList.DEFAULT_DATE_FORMAT);
@@ -125,7 +131,7 @@ public class SiteManageController {
     /**
      * 跳转到休暇承認界面
      */
-    @GetMapping("tmgnotification")
+    @GetMapping("TmgNotification")
     public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/tmgnotification";
@@ -135,7 +141,7 @@ public class SiteManageController {
     /**
      * 跳转到就業承認界面
      */
-    @GetMapping("tmgresults")
+    @GetMapping("TmgResults")
     public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/addwork";
@@ -146,8 +152,8 @@ public class SiteManageController {
     /**
      * 跳转到权限设定
      */
-    @GetMapping("perms")
-    public String toPerms(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+    @GetMapping("EvaluaterSetting")
+    public String toEvaluaterSetting(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/manage/perms";
     }
@@ -155,7 +161,7 @@ public class SiteManageController {
     /**
      * 跳转到 勤務パターン
      */
-    @RequestMapping("wpattern")
+    @RequestMapping("PatternSetting")
     public String patternSetting(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
@@ -178,8 +184,8 @@ public class SiteManageController {
     /**
      * 跳转到 超過勤務命令
      */
-    @RequestMapping("overtimeinstruct")
-    public String toManageOvertimeInstruct(
+    @RequestMapping("OvertimeInstruct")
+    public String toOvertimeInstruct(
             @RequestParam(value = "moduleIndex") Integer moduleIndex,
             @RequestAttribute("BeanName") PsDBBean psDBBean,
             ModelMap modelMap

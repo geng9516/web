@@ -16,6 +16,8 @@ import java.util.Date;
 @EqualsAndHashCode(of={"mgpCsite","mgpCsubapp"})
 public class GroupAppManagerPermissionDTO {
 
+    private String mtrIcon;
+    private String mtrCurl;
     private String mgpCpermission;
     private String mgpCreject;
     private Long mtrId;
@@ -36,8 +38,6 @@ public class GroupAppManagerPermissionDTO {
     private String type;
     private Long mtrNseq;
     private Long mgNweightage;
-    private String mtrCurl2;
-    private String mtrIcon;
     /** セルの背景色 */
     private String bgColor;
     private Date mgpDstartdate; //MGP_DSTARTDATE

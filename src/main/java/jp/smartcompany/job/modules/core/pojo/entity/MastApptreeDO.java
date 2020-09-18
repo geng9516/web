@@ -248,8 +248,5 @@ private static final long serialVersionUID=1L;
          */
     @TableField("versionno")
         private Long versionno;
-    @TableField("mtr_curl2")
-        private String mtrCurl2;
-    @TableField("mtr_icon")
-    private String mtrIcon;
+
 }
