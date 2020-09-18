@@ -38,17 +38,4 @@ public class SiteController {
         return "index";
     }
 
-    /**
-     * 控制台首页
-     * @return String
-     */
-//    @GetMapping("sys")
-//    public String toIndex(@RequestAttribute("isMobile")Boolean isMobile) {
-//        request.setAttribute(Constant.SITE_INDEX, 1);
-//        if (isMobile) {
-//            return "mobile/index";
-//        }
-//        return "index";
-//    }
-
 }
