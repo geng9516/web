@@ -27,7 +27,7 @@
       </div>
       <div class="searchwrap">
         <span class="label">年</span>
-        <date-picker type="year" format="yyyy年" class="mr15" :value="curYear" @on-change="handleDatePicker">
+        <date-picker type="year" format="yyyy年" class="mr15" :value="curYear" :options="startLimit" @on-change="handleDatePicker">
         </date-picker>
         <!-- 共通組織図画面 start-->
         <span style="display:flex;width: calc(15% + 200px);">
@@ -47,7 +47,7 @@
             <Row class="tl mb5">
               <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
               <i-col span="7" class="no-border-radius">
-                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
+                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :options="startLimit" :clearable="false"
                   format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
               <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
@@ -267,7 +267,7 @@
             <Row class="tl mb5">
               <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
               <i-col span="7" class="no-border-radius">
-                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" transfer
+                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :options="startLimit" transfer
                   format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
               </i-col>
               <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>

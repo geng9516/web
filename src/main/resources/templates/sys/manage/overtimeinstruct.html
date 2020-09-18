@@ -23,7 +23,7 @@
             </div>
             <div class="searchwrap">
                 <span class="label">年月</span>
-                <date-picker class="mar" v-model="curDate" type="month" :editable="false" :clearable="false"
+                <date-picker class="mar" v-model="curDate" type="month" :editable="false" :options="startLimit" :clearable="false"
                     @on-change="handleDatePicker" format="yyyy年MM月度"></date-picker>
                 <!-- 共通組織図画面 start-->
                 <span style="display:flex;width: calc(15% + 200px);">
@@ -45,7 +45,7 @@
                                 <Row class="tl mb5">
                                     <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
                                     <i-col span="7" class="no-border-radius">
-                                        <date-picker type="date"
+                                        <date-picker type="date" :options="startLimit"
                                             :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :clearable="false"
                                             format="yyyy/MM/dd" ref="datePicker" transfer
                                             @on-change="handleDeptDateChange">
