@@ -20,4 +20,14 @@ public class HistoryDto {
     private String tbnDbegin; // 4 一括申請期間
 
     private String tbndCount; // 5 対象部署数カウント
+
+
+    private String tbnCsectionid;
+
+    private String tbnNcount;
+    private String cntFinish;
+    private String cntCancel;
+    private String cntErr;
+    private String tbnCstatusid;
+
 }

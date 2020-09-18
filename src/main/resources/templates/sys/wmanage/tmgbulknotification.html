@@ -50,13 +50,17 @@
                         <span> {{ `${row.cntCancel}人` }}</span>
                     </template>
                     <template slot-scope="{ row }" slot="cntErr">
-                        <span v-if="row.tbndCount==='0'">0人</span>
+                        <span v-if="row.cntErr==='0'">0人</span>
                         <span @click="errDetail(row.tbnNtbnid)" v-else>{{ `${row.cntErr}人` }} <span class="cursor" style="color: var(--row-label-primary);">[※詳細]</span>
                         </span>
                     </template>
                     <!-- todo: 需要在这里加取消按钮 -->
                     <template slot-scope="{ row }" slot="tbnCstatus">
-                        <span> {{ row.tbnCstatus }}</span>
+                        <span style="position: relative;top: 2px;" v-if="row.tbnCstatusid ==='TMG_BULKNTFSTATUS|120' || row.tbnCstatusid=== 'TMG_BULKNTFSTATUS|130'"> {{ row.tbnCstatus }}</span>
+                        <span v-else> {{ row.tbnCstatus }}</span>
+                        <i-button size="small"
+                                  v-if="row.tbnCstatusid ==='TMG_BULKNTFSTATUS|120' || row.tbnCstatusid=== 'TMG_BULKNTFSTATUS|130'"
+                                  @click="bulkNtfCancel(row.tbnNtbnid)">取消</i-button>
                     </template>
                 </i-table>
 
@@ -274,7 +278,6 @@
                     toDate: '', //対象期間
                     deptName: '対象部署選択', //対象部署名称
                     deptNameList: [], //対象部署
-                    deptId: '', //対象部署Id
                     isShow: false,
                     deptDrawShow: false,  //対象部署選択画面制御
                     treeData: [],                //組織ツリー用
@@ -307,10 +310,24 @@
             },
             methods: {
                 async ntfUpload() {
-                    this.UploadDto.sectionId = this.deptId
                     this.UploadDto.bulkNtfId = this.ntfType
                     this.UploadDto.beginDate = this.fromDate
                     this.UploadDto.endDate = this.toDate
+
+                    let secid=''
+                    this.deptNameList.forEach(e=>{
+                        console.log(e)
+                        secid=secid+e.id+','
+                    })
+                    this.UploadDto.sectionId = secid.slice(0,-1)
+                    if(!this.UploadDto.sectionId){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '対象部署選択してください。'
+                        });
+                    }
                     try {
                         const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
                         if (msg === '0') {
@@ -343,7 +360,7 @@
                 },
                 async bulkNtfCancel(e) {
                     const { msg } = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', { seq: e })
-
+                    this.getNtfType()
                 },
                 async getNtfType() {
                     this.opts.baseDate = this.referListObject.txtTmgReferListTreeViewRecordDate
@@ -408,7 +425,6 @@
                 async handleDeptChange(e, current) {
                     if (!e[0]) {
                         this.deptName = "対象部署選択"
-                        this.deptId = ""
                         this.deptNameList = []
                         return
                     }
@@ -423,7 +439,8 @@
                         if (selectedTreeNodes.length > 0) {
                             this.deptNameList = selectedTreeNodes.map(e => {
                                 return {
-                                    name: e.secname
+                                    name: e.secname,
+                                    id:e.secid
                                 }
                             })
                         } else {
