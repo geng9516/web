@@ -1,4 +1,4 @@
-package jp.smartcompany.controller;
+package jp.smartcompany.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam;
  * システム管理メニューController
  */
 @Controller
-@RequestMapping("sys/settings")
+@RequestMapping("admin")
 @RequiredArgsConstructor
-public class SiteSettingsController {
+public class AdminController {
 
     /**
      * 跳转到ユーザ管理界面
      */
-    @GetMapping("usersettings")
-    public String toSettingsUserSettings(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+    @GetMapping("usermanager")
+    public String toUserManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
       modelMap.addAttribute("moduleIndex",moduleIndex);
       return "sys/settings/usersettings";
     }
@@ -28,8 +28,8 @@ public class SiteSettingsController {
     /**
      * 跳转到グループ定義界面
      */
-    @GetMapping("groupsettings")
-    public String toSettingsGroupSettings(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+    @GetMapping("groupmanager")
+    public String toGroupManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/settings/groupsettings";
     }

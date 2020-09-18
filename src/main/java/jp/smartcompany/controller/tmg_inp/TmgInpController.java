@@ -1,4 +1,4 @@
-package jp.smartcompany.controller;
+package jp.smartcompany.controller.tmg_inp;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +15,15 @@ import org.springframework.web.bind.annotation.RequestAttribute;
  * 就業承認・管理Controller
  */
 @Controller
-@RequestMapping("sys/input")
+@RequestMapping("tmg_inp")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
-public class SiteInputController {
+public class TmgInpController {
 
     /**
      * 跳转到打刻界面
      */
-    @GetMapping("sign")
-    public String toInputSign(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+    @GetMapping("TmgTimePunch")
+    public String toTmgTimePunch(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
       modelMap.addAttribute("moduleIndex",moduleIndex);
       return "sys/input/sign";
     }
@@ -31,8 +31,8 @@ public class SiteInputController {
     /**
      * 跳转到就業登録界面
      */
-    @GetMapping("addwork")
-    public String toInputAddWork(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
+    @GetMapping("TmgResults")
+    public String toTmgResults(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                                  @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
@@ -44,8 +44,8 @@ public class SiteInputController {
     /**
      * 跳转到休暇・休業申請
      */
-    @GetMapping("vapply")
-    public String toInputVApply(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
+    @GetMapping("TmgNotification")
+    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                                 @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
@@ -57,8 +57,8 @@ public class SiteInputController {
     /**
      * 跳转到出勤簿
      */
-    @GetMapping("wschedule")
-    public String toInputWSchedule(
+    @GetMapping("AttendanceBook")
+    public String toAttendanceBook(
             @RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         return "sys/input/wschedule";
@@ -67,8 +67,8 @@ public class SiteInputController {
     /**
      * 予定確認
      */
-    @GetMapping("oconfirm")
-    public String oConfirm(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
+    @GetMapping("TmgScheduleCheck")
+    public String toTmgScheduleCheck(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap,
                            @RequestAttribute("isMobile")Boolean isMobile) {
         modelMap.addAttribute("moduleIndex",moduleIndex);
         if (isMobile) {
