@@ -388,15 +388,16 @@ public class AttendanceBookBean {
 
         List<AttendanceBookDTO> attendanceBookDTOS = this.selectAttendanceBookDto(employeeId, year, month);
         List<LinkedHashMap<String, String>> resultListConverted = new ArrayList<LinkedHashMap<String, String>>();
-        //出勤簿が存在かとうかチャック
+
         if (null == psDBBean) {
             logger.error("出勤簿リスト中で　psDBBean対象が空です！");
             return  new ArrayList();
         }
-        if (this.selectExistsAttendanceBookCheck(psDBBean.getCompCode(), psDBBean.getCustID(), employeeId, year, month)) {
+        //出勤簿が存在かとうかチャック
+        /*if (this.selectExistsAttendanceBookCheck(psDBBean.getCompCode(), psDBBean.getCustID(), employeeId, year, month)) {
             logger.info("職員「" + employeeId + "」の「" + year + "/" + month + "」の出勤簿がないです");
             return new ArrayList();
-        }
+        }*/
         int MONTH_DAY = 1;
         for (int j = 0; j < 43; j++) {
             LinkedHashMap listHashMap = new LinkedHashMap();
