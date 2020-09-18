@@ -69,7 +69,79 @@ var THEME_CONFIG  = {
   },
   blue: {
     '--login-svg-fill': 'var(--theme-blue)',
-    '--login-left-part-bg': 'radial-gradient(rgb(135 177 252), rgb(48, 118, 242))',
+    '--login-left-part-bg': 'radial-gradient(rgb(135, 177, 252), rgb(48, 118, 242))',
+    '--login-right-part-bg': 'var(--blue15)',
+    '--theme-mark': 'var(--theme-blue)',
+    '--filter-svg-icon': 'none',
+    '--dept-select': 'var(--theme-blue)',
+    '--sider-background': 'var(--theme-blue)',
+    '--sider-background-actived': 'rgb(240, 250, 255)',
+    '--sider-memu-background': 'rgb(240,250,255)',
+    '--sider-memu-icon-color': 'var(--theme-blue)',
+    '--sider-memu-icon-bg': 'rgba(236, 239, 241, .7)',
+    '--sider-memu-title-background': 'rgb(125, 169, 247)',
+    '--sider-memu-item-border-top': 'var(--primary)',
+    '--sider-memu-item-border-bottom': 'var(--text-green)',
+    '--form-label': 'rgb(103, 168, 255)',
+    '--table-head': 'rgb(110, 165, 238)',
+    '--table-head-border': 'var(--blue25)',
+    '--table-td-sat': 'var(--blue25)',
+    '--table-td-hover': 'rgb(232, 247, 233)',
+    '--table-checkin': 'var(--table-th-checkin)',
+    '--table-checkin-bg': 'var(--light-blue)',
+    '--spin': 'var(--theme-blue)',
+    '--spin-bg': 'rgba(255, 255, 255, .9)',
+    '--tree-hover': 'rgb(213, 232, 252)',
+    '--tree-select': 'rgb(234, 244, 254)',
+    '--tree-bg': 'var(--light-grey)',
+    '--tree-border': 'var(--blue25)',
+    '--primary-info': 'var(--primary)',
+    '--primary-info-bg': 'rgb(240, 250, 255)',
+    '--primary-info-border': '1px solid rgb(171, 220, 255)',
+    '--row-label-primary': 'var(--primary)',
+    '--row-label-primary-border': 'rgb(53, 173, 255)',
+    // header
+    '--header': 'rgb(10, 91, 176)',
+    '--header-border': 'rgb(171, 220, 255)',
+    '--header-bg': 'rgb(240, 250, 255)',
+    // 打卡页
+    '--card-title': 'var(--primary)',
+    '--card-date-bg': 'linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255))',
+    '--card-plan-bg': 'var(--label-blue)',
+    '--card-plan-title-border-b': 'var(--blue25)',
+    '--real-schedule': 'var(--primary)',
+    '--real-schedule-bg': 'rgba(45, 140, 240,.17)',
+    '--offwork-btn-border': 'var(--ghost-primary-border)',
+    '--offwork-btn': 'var(--primary)',
+    '--offwork-btn-bg': 'white',
+    // 按钮
+    '--primary-border': 'rgb(53, 173, 255)',
+    '--primary-background': 'linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255))',
+    '--primary-hover': 'linear-gradient(90deg, rgb(72, 191, 255), rgb(84, 133, 255))',
+    '--primary-active': 'linear-gradient(90deg, rgb(33, 167, 240), rgb(36, 95, 245))',
+    '--ghost-primary-color': 'var(--primary)',
+    '--ghost-primary-hover': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
+    '--ghost-primary-active': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
+    // 小标题样式
+    '--titlenorm-border-t': '1px solid var(--form-title-border)',
+    '--titlenorm-border-b': 'var(--form-title-border)',
+    '--titlenorm-bg': 'var(--table-td-hover)',
+    '--titlenorm-i': 'rgb(91, 208, 41)',
+    // checkbox
+    '--checkbox-border': 'var(--primary)',
+    '--checkbox-bg': 'var(--primary)',
+    // mobile login
+    '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
+  },
+  dark: {
+    // '--login-svg-fill': 'rgb(251, 251, 251)',
+    // '--login-left-part-bg': 'radial-gradient(rgb(47,49,54), rgb(42,44,49))',
+    // '--login-right-part-bg': 'rgb(42,44,49)',
+    // '--grey': 'rgb(251, 251, 251)',
+    // '--white': 'rgb(47,49,54)',
+    // '--theme-mark': 'rgb(42,44,49)',
+    '--login-svg-fill': 'var(--theme-blue)',
+    '--login-left-part-bg': 'radial-gradient(rgb(135, 177, 252), rgb(48, 118, 242))',
     '--login-right-part-bg': 'var(--blue15)',
     '--theme-mark': 'var(--theme-blue)',
     '--filter-svg-icon': 'none',
@@ -147,6 +219,12 @@ var Changetheme = function(e = APP_THEME, context) {
     localStorage.setItem('APP_THEME', e)
     Object.keys(THEME_CONFIG.blue).forEach(e=>{
       document.documentElement.style.setProperty(e,THEME_CONFIG.blue[e])
+    })
+  }
+  if(e=== 'dark') {
+    localStorage.setItem('APP_THEME', e)
+    Object.keys(THEME_CONFIG.dark).forEach(e=>{
+      document.documentElement.style.setProperty(e,THEME_CONFIG.dark[e])
     })
   }
 }
