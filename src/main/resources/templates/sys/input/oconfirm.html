@@ -136,7 +136,6 @@
             }
         },
         async mounted() {
-            console.log([[${ session }]])
             this.selectScheduleDateList()
             window.addEventListener('scroll',this.handleScroll,{ passive: true })
         },
@@ -250,7 +249,6 @@
                 await this.getSelectScheduleInfo()
             },
             dayRed(e) {
-                console.log(e)
                 const dayOfWeek = e.holflgCalendar
                 if (!dayOfWeek) {
                     return

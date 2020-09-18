@@ -27,14 +27,14 @@ public class AuditInterceptor implements HandlerInterceptor {
     private final AccessAuditService accessAuditService;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         long requestTime = System.currentTimeMillis();
         request.setAttribute(REQUEST_TIME ,requestTime);
         return true;
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         AccessAuditDO accessAuditDO = new AccessAuditDO();
         long requestTime = (long)request.getAttribute(REQUEST_TIME);
         long responseTime = System.currentTimeMillis();
