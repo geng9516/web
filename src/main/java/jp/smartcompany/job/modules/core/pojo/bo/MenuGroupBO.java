@@ -17,6 +17,9 @@ import java.util.List;
 @Accessors(chain = true)
 public class MenuGroupBO {
 
+    private String siteId;
+    private Integer moduleIndex;
+
     private String url;
 
 
@@ -59,15 +62,8 @@ public class MenuGroupBO {
      */
     private String companyId;
 
-    /**
-     * 备注
-     */
-    private String remark;
-
-
     private String pageId;
 
-    private Long menuId;
 
     private List<MenuBO> secondMenuList;
 
