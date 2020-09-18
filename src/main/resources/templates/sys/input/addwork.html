@@ -170,7 +170,7 @@
                         <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
                         <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
-                        <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment && !bApproved">{{ dailyEdit.tdaCbosscommentR}}
+                        <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
                         <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                         <span v-else>{{ row.workStart }}</span>
