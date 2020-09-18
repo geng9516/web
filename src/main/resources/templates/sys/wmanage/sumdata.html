@@ -320,7 +320,7 @@
             methods: {
                 //初期化処理
                 async getInit() {
-
+                    console.log([[${ session }]])
                     let targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     let loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                     if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){

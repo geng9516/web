@@ -4,18 +4,42 @@
 
     <select id="selectHistoryList"
             resultType="jp.smartcompany.job.modules.tmg.tmgbulknotification.dto.HistoryDto">
-        SELECT
+SELECT
              A.TBN_NTBNID
             ,TMG_F_GET_MGD(A.TBN_CBULKNTFTYPE, A.TBN_DBEGIN, A.TBN_CCUSTOMERID,A.TBN_CCOMPANYID, #{language})
                 AS TBN_CBULKNTFTYPE
             ,O.MO_CSECTIONNAME
+              ,TMG_F_GET_MO(A.TBN_CSECTIONID, A.TBN_DBEGIN, 0, A.TBN_CCUSTOMERID,
+                A.TBN_CCOMPANYID, #{language}) AS TBN_CSECTIONID
             ,TMG_F_GET_MGD(A.TBN_CSTATUS, A.TBN_DBEGIN, A.TBN_CCUSTOMERID, A.TBN_CCOMPANYID,
                 #{language}) AS TBN_CSTATUS
             ,TO_CHAR(A.TBN_DBEGIN, 'YYYY/MM/DD') || ' - ' || TO_CHAR(A.TBN_DEND,
                 'YYYY/MM/DD') AS TBN_DBEGIN
+            , A.TBN_NCOUNT
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+              WHERE
+                B.TBNL_NTBNID = A.TBN_NTBNID) AS CNT_FINISH
             ,(SELECT COUNT(1)
                 FROM TMG_BULK_NTF_DETAIL
                 WHERE TBND_NTBNID_FK = A.TBN_NTBNID) AS TBND_COUNT
+
+
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = A.TBN_NTBNID
+               AND B.TBNL_CSTATUS = 'TMG_BULKNTFSTATUS|230') AS CNT_CANCEL
+            ,(SELECT
+                COUNT(DISTINCT TBNL_CEMPLOYEEID)
+              FROM
+                TMG_BULK_NOTIFICATION_LOG B
+             WHERE B.TBNL_NTBNID = A.TBN_NTBNID
+               AND B.TBNL_CERRCODE != '0') AS CNT_ERR
+            ,A.TBN_CSTATUS as TBN_CSTATUSID
         FROM
             TMG_BULK_NOTIFICATION A,
             MAST_ORGANISATION O

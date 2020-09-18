@@ -85,6 +85,9 @@
                                     <!-- 申请休假的时间的显示 -->
                                     <i-col span="7" style="margin-left: 4.5%" class="title">
                                         {{ handleApplyDayShow(item.tntfDbegin, item.tntfDend) }}</i-col>
+                                        <!-- todo: 需要判断显示振替 -->
+                                        <!-- <i-col span="7" style="margin-left: 4.5%" class="title">
+                                            {{ item.tntfDbegin }}<span style="color: var(--primary-info)"> ↔ </span>{{ item.tntfDend }} </i-col> -->
                                     <i-col span="12" style="position: absolute;left: 33%;top:-5px" class="title" v-if="item.status !== 3">
                                         <Poptip trigger="hover" class="cursor tl" placement="right-start" title="次の承認者" transfer>
                                             <ul style="display:flex" v-if="item.ntfapprover">

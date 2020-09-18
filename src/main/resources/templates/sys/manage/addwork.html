@@ -295,7 +295,7 @@
                                 {{dailyEdit.tdaCbosscommentR}}
                               </span>
 
-                            <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                            <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                             <span v-if="!row.isInput">{{ row.workStart }}</span>
                         </template>
@@ -987,7 +987,7 @@
                     this.getHatuRei()
                     this.query.txtAction = 'ACT_EDITINP_RDAILY'
                     this.monthlyMap = ''
-                    this.dailyDataList = []
+
                     if( !this.selectDisabled){
                             this.$Message.error({
                                 background: true,
@@ -1024,6 +1024,7 @@
                         })
                         this.dailyDataList = data.dailyMapList
                         if( this.dailyDataList.length===0){
+                            this.dailyDataList = []
                             this.$Message.error({
                                 background: true,
                                 closable: true,
@@ -1477,13 +1478,13 @@
                     }
                     // 修正出社時刻形式
                     if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
-                        this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
+                        this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                         return false;
                     }
 
                     // 修正退社時刻形式
                     if (this.workData[2].workEnd ===null || !this.time_check(this.workData[2].workEnd)) {
-                        this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
+                        this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                         return false;
                     }
 
@@ -1496,11 +1497,11 @@
                     const checkNonDuty = this.detailNonDutyVOList.some(e => {
 
                         if (e.tdadNopen ===null ||  !this.time_check(e.tdadNopen)) {
-                            this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
+                            this.$Notice.error({desc: "非勤務の開始時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                             return true;
                         }
                         if (e.tdadNclose ===null ||  !this.time_check(e.tdadNclose)) {
-                            this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
+                            this.$Notice.error({desc: "非勤務の終了時刻は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                             return true;
                         }
                         if (e.tdadCsparechar1 !== null && this.getLengthB(e.tdadCsparechar1) > 100) {

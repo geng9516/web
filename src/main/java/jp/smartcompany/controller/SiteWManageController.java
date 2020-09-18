@@ -135,10 +135,6 @@ public class SiteWManageController {
 
     /**
      * 跳转到 超過勤務命令
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @return
      */
     @RequestMapping("overtimeinstruct")
     public String toWManageOvertimeInstruct(
@@ -162,11 +158,6 @@ public class SiteWManageController {
 
     /**
      * 跳转到承認状況一覧界面
-     *
-     * @param moduleIndex
-     * @param menuId
-     * @param modelMap
-     * @return
      */
     @GetMapping("deptstatlist")
     public String toDeptStatList(
@@ -189,10 +180,8 @@ public class SiteWManageController {
      * 跳转到休暇承認界面
      */
     @GetMapping("tmgnotification")
-    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex,
-                                    @RequestParam("menuId") Long menuId, ModelMap modelMap) {
-        modelMap.addAttribute("moduleIndex", moduleIndex)
-                .addAttribute("menuId", menuId);
+    public String toTmgNotification(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex", moduleIndex);
         return "sys/wmanage/tmgnotification";
     }
 
