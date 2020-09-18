@@ -20,22 +20,16 @@
     <div class="content_head">
       <div class="header">
         <div class="title1">
-          <h1>予定確認<span class="title-timerange">{{ yyyyMMdd ? `（${yyyyMMdd})` : ''}}</span>
-          </h1>
+          <h1>予定確認</h1>
         </div>
       </div>
-      <div class="mt10 tr">
-        <i-button style="display: inline-block;" type="primary" size="small" ghost class="mr15" @click="preMonth"
-          :disabled="!selectDisabled || !preMonthDisable">
-          <Icon type="ios-arrow-back"></Icon>
-          前月
-        </i-button>
-        <i-button style="display: inline-block;" type="primary" size="small" ghost @click="nextMonth"
-          :disabled="!selectDisabled || !nextMonthDisable">
-          翌月
-          <Icon type="ios-arrow-forward"></Icon>
-        </i-button>
-      </div>
+      <div class="searchwrap">
+        <span class="label">年月</span>
+        <i-select v-model="defaultDate" style="flex: 1;" @on-change="handleStartMonth($event)" placeholder="選択ください">
+            <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.tda_dyyyymm" :value="item.tda_dyyyymm">
+            </i-option>
+        </i-select>
+    </div>
     </div>
     <div class="content_body" style="position: relative">
       <i-table :class="tableHeadFixed ? 'table-head-fixed long-table' : 'long-table'" :columns="columns" border
@@ -86,49 +80,48 @@
 </body>
 <script type="text/babel" th:inline="javascript">
   new Vue({
-    el: '.mobile-warp',
-    data() {
-      return {
-        hatuReiName: '',
-        hatuResTimeRange: '',
-        today: Utils.formatDate(new Date(), 'YYYY/MM/DD'),
-        preMonthDisable: false,
-        nextMonthDisable: false,
-        scheduleDataDTOList: [],
-        yyyyMMdd: '',
-        paidHolidayVO: {},
-        selectScheduleInfo: {},
-        selectDisabled: true,
-        loading: false,　       //ローディングアクション
-        index: 0,
-        contentScrollTop: 0,
-        kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
-        loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
-        sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
-        query: {
-          employeeId: [[${ session.psSession.loginEmployee }]],　 //組織ツリーで選択した職員番号
-          psSite: Utils.getUrlParam(location.href, 'psSite'),
-          psApp: Utils.getUrlParam(location.href, 'psApp'),
-          txtBaseDate: '',
-          txtEndDate: '',
-        }
-      }
-    },
-    async mounted() {
-      console.log([[${ session }]])
-      this.getSelectScheduleInfo()
-      window.addEventListener('scroll', this.handleScroll, { passive: true })
-    },
-    beforeDestroy() {
-      window.removeEventListener('scroll', this.handleScroll, { passive: true })
-    },
-    computed: {
-      tableHeadFixed() {
-        if (this.contentScrollTop > 122) return true
-        else return false
+      el: '.mobile-warp',
+      data() {
+          return {
+              defaultDate: '', //年月选择（Date）
+              dispMonthlyList: [],       //年月リスト
+              hatuReiName:'',
+              hatuResTimeRange:'',
+              today:Utils.formatDate(new Date(),'YYYY/MM/DD'),
+              scheduleDataDTOList:[],
+              yyyyMMdd:'',
+              paidHolidayVO:{},
+              selectScheduleInfo:{},
+              loading: false,　       //ローディングアクション
+              index: 0,
+              contentScrollTop: 0,
+              kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
+              loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
+              sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
+              query: {
+                  employeeId: [[${ session.psSession.loginEmployee }]],　 //組織ツリーで選択した職員番号
+                  psSite: Utils.getUrlParam(location.href, 'psSite'),
+                  psApp: Utils.getUrlParam(location.href,'psApp'),
+                  txtBaseDate:'',
+                  txtEndDate:'',
+              }
+          }
       },
-      columns() {
-        return [
+      async mounted() {
+          console.log([[${ session }]])
+          this.selectScheduleDateList()
+          window.addEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+      beforeDestroy() {
+          window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+      computed: {
+          tableHeadFixed() {
+              if (this.contentScrollTop > 300) return true
+              else return false
+          },
+          columns() {
+              return [
           {
             title: '曜日',
             slot: 'week',
@@ -169,70 +162,80 @@
             align: 'center'
           },
         ]
+          }
+      },
+      methods: {
+          async getSelectScheduleInfo() {
+              this.loading=true
+              try {
+                  const { data } = await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
+                  this.selectScheduleInfo=data
+                  this.paidHolidayVO=this.selectScheduleInfo.paidHolidayVO
+                  this.scheduleDataDTOList=this.selectScheduleInfo.scheduleDataDTOList
+                  this.yyyyMMdd=this.selectScheduleInfo.period
+              } catch (error) {
+                  return
+              } finally {
+                  this.loading = false
+              }
+          },
+          async selectScheduleDateList() {
+              try {
+                  const query = {
+                      employeeId:this.query.employeeId,
+                      psSite:this.query.psSite,
+                      psApp:this.query.psApp,
+                      baseDate:Utils.formatDate(new Date(),'YYYY-MM-DD')
+                  }
+                  const {data}=await  this.http.get(`sys/schedule/selectScheduleDateList`,query)
+                  this.dispMonthlyList = data
+                  this.defaultDate=this.dispMonthlyList[0].tda_dyyyymm
+                  this.query.txtBaseDate=this.dispMonthlyList[0].tda_firstDay
+                  this.query.txtEndDate=this.dispMonthlyList[0].tda_endDay
+                  await this.getSelectScheduleInfo()
+                  this.getHatuRei()
+              } catch (error) {
+                  return
+              }
+          },
+          async handleStartMonth(e) {
+              let select=this.dispMonthlyList.find(item=> item.tda_dyyyymm==e )
+              this.query.txtBaseDate=select.tda_firstDay
+              this.query.txtEndDate=select.tda_endDay
+
+              await this.getSelectScheduleInfo()
+          },
+          dayRed(e) {
+              console.log(e)
+              const dayOfWeek = e.holflgCalendar
+              if (!dayOfWeek) {
+                  return
+              }
+              if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
+                  return 'blue'
+              }
+              if (e.tda_ccustomerid == this.today) {
+                  return 'brown'
+              }
+          },
+          async getHatuRei() {
+              try {
+                  let txtBaseDate= this.yyyyMMdd.split('～')[0].replace(/(.+?)\年(.+?)\月(.+)\日/,"$1/$2/$3")
+                  const query = {txtBaseDate:txtBaseDate}
+                  const { data } =  await this.http.get(`sys/schedule/hatuRei`, query)
+                  this.hatuReiName=data.name
+                  this.hatuResTimeRange=data.timerange
+              } catch (error) {
+                  return
+              }finally {
+
+              }
+          },
+
+          handleScroll: Throttle(function(e) {
+              this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+          }, 50)
       }
-    },
-    methods: {
-      async getSelectScheduleInfo() {
-        this.loading = true
-        try {
-          const { data } = await this.http.get(`sys/schedule/selectScheduleInfo`, this.query)
-          this.selectScheduleInfo = data
-          this.paidHolidayVO = this.selectScheduleInfo.paidHolidayVO
-          this.scheduleDataDTOList = this.selectScheduleInfo.scheduleDataDTOList
-          this.yyyyMMdd = this.selectScheduleInfo.period
-
-          if (this.selectScheduleInfo.nextStart == '' || this.selectScheduleInfo.nextEnd == '') {
-            this.nextMonthDisable = false
-          } else {
-            this.nextMonthDisable = true
-          }
-          if (this.selectScheduleInfo.preStart == '' || this.selectScheduleInfo.preEnd == '') {
-            this.preMonthDisable = false
-          } else {
-            this.preMonthDisable = true
-          }
-        } catch (error) {
-          return
-        } finally {
-          this.loading = false
-        }
-      },
-      async preMonth() {
-        this.query.txtBaseDate = this.selectScheduleInfo.preStart
-        this.query.txtEndDate = this.selectScheduleInfo.preEnd
-        await this.getSelectScheduleInfo()
-      },
-      async nextMonth() {
-        this.query.txtBaseDate = this.selectScheduleInfo.nextStart
-        this.query.txtEndDate = this.selectScheduleInfo.nextEnd
-        await this.getSelectScheduleInfo()
-      },
-
-
-      rowClass(row) {
-        // 表格变色
-        if (!row.dayDivisionCode || row.dayDivisionCode === '1') {
-          return ''
-        }
-        return 'sat'
-      },
-      dayRed(e) {
-        console.log(e)
-        const dayOfWeek = e.holflgCalendar
-        if (!dayOfWeek) {
-          return
-        }
-        if (dayOfWeek.trim() != 'TMG_HOLFLG|0') {
-          return 'blue'
-        }
-        if (e.tda_ccustomerid == this.today) {
-          return 'brown'
-        }
-      },
-      handleScroll: Throttle(function (e) {
-        this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-      }, 50)
-    }
   })
 </script>
 
