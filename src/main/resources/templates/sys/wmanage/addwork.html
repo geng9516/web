@@ -297,7 +297,7 @@
                             </i-input>
                             <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isBSComment && bFixed">{{dailyEdit.tdaCbosscommentR}}</span>
                         </div>
-                        <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                        <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                         <span v-if="!row.isInput && !bFixed">{{ row.workStart }}</span>
                     </template>
@@ -971,7 +971,6 @@
             async getTitleData() {
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
-                this.dailyDataList = []
                 if( !this.selectDisabled){
                     this.$Message.error({
                         background: true,
@@ -1008,6 +1007,7 @@
                     })
                     this.dailyDataList = data.dailyMapList
                     if( this.dailyDataList.length===0){
+                        this.dailyDataList = []
                         this.$Message.error({
                             background: true,
                             closable: true,

@@ -295,7 +295,7 @@
                                 {{dailyEdit.tdaCbosscommentR}}
                               </span>
 
-                            <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                            <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
 
                             <span v-if="!row.isInput">{{ row.workStart }}</span>
                         </template>
@@ -987,7 +987,7 @@
                     this.getHatuRei()
                     this.query.txtAction = 'ACT_EDITINP_RDAILY'
                     this.monthlyMap = ''
-                    this.dailyDataList = []
+
                     if( !this.selectDisabled){
                             this.$Message.error({
                                 background: true,
@@ -1024,6 +1024,7 @@
                         })
                         this.dailyDataList = data.dailyMapList
                         if( this.dailyDataList.length===0){
+                            this.dailyDataList = []
                             this.$Message.error({
                                 background: true,
                                 closable: true,

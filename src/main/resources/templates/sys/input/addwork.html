@@ -172,7 +172,7 @@
 
                         <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
-                        <span v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
+                        <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                         <span v-else>{{ row.workStart }}</span>
                     </template>
                     <template slot-scope="{ row , index}" slot="workEnd">
@@ -622,7 +622,6 @@
 
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
                 this.monthlyMap = ''
-                this.dailyDataList = []
                 try {
                     this.monthlyLoading=true
                     const {data,sysDate} = await this.http.get('sys/tmgResults/getTitleData', this.query)
@@ -643,6 +642,16 @@
                         }
                     })
                     this.dailyDataList = data.dailyMapList
+                    if( this.dailyDataList.length===0){
+                        this.dailyDataList = []
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                        });
+                        return;
+                    }
                 } catch (error) {
                     return
                 }finally {
