@@ -62,15 +62,10 @@ public class MenuBO implements Serializable {
          */
         private String companyId;
 
-        /**
-         * 备注
-         */
-        private String remark;
-
 
         private String pageId;
 
-        private Long menuId;
-
+        private String siteId;
+        private Integer menuIndex;
 
 }

@@ -397,7 +397,10 @@ public class AuthBusiness {
         // 加载topMenu End
         // 加载前端显示菜单
         List<MenuGroupBO> menuGroupList = CollUtil.newArrayList();
-        for (GroupAppManagerPermissionDTO topMenu : topMenus) {
+
+        for ( int i = 0; i < topMenus.size(); i++) {
+            int moduleIndex=  i+1;
+            GroupAppManagerPermissionDTO topMenu = topMenus.get(i);
             // 加载主菜单
             MenuGroupBO menuGroupBO = new MenuGroupBO();
 
@@ -411,6 +414,10 @@ public class AuthBusiness {
             menuGroupBO.setType(topMenu.getType());
             menuGroupBO.setCompanyId("01");
             menuGroupBO.setCustomerId("01");
+
+            menuGroupBO.setModuleIndex(moduleIndex);
+            menuGroupBO.setSiteId(topMenu.getMgpCsite());
+
             // 加载二级导航
             List<GroupAppManagerPermissionDTO> appList = CollUtil.newArrayList();
             if (StrUtil.equals(topMenu.getMgpCsite(), TmgUtil.Cs_SITE_ID_TMG_INP)) {
@@ -449,10 +456,18 @@ public class AuthBusiness {
                         secondMenuDO.setType(groupPerm.getType());
                         secondMenuDO.setCompanyId("01");
                         secondMenuDO.setCustomerId("01");
-                        secondMenuDO.setMenuId(groupPerm.getMtrId());
+
+                        secondMenuDO.setSiteId(groupPerm.getMgpCsite());
+
                         CollUtil.addAllIfNotContains(secondMenuList,CollUtil.newArrayList(secondMenuDO));
                     }
                 }
+            }
+
+            for (int i1 = 0; i1 < secondMenuList.size(); i1++) {
+                MenuBO secondMenuDO = secondMenuList.get(i1);
+                int menuIndex = i1+1;
+                secondMenuDO.setMenuIndex(menuIndex);
             }
 
             menuGroupBO.setSecondMenuList(secondMenuList);
