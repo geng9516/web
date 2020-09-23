@@ -9,11 +9,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestAttribute;
 
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
 /**
  * 首页控制器
@@ -26,14 +21,13 @@ public class SiteController {
     private final ScCacheUtil cacheUtil;
 
     @GetMapping
-    public String index(@RequestAttribute("isMobile")Boolean isMobile, HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public String index(@RequestAttribute("isMobile")Boolean isMobile) {
         if (isMobile) {
             return "mobile/index";
         }
         String homeUrl = cacheUtil.getSystemProperty("DEFAULT_HOME_URL");
         if (StrUtil.isNotBlank(homeUrl)) {
-            RequestDispatcher dispatcher = req.getRequestDispatcher(homeUrl);
-            dispatcher.forward(req, resp);
+            return "forward:" + homeUrl;
         }
         return "index";
     }
