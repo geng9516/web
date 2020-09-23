@@ -30,7 +30,6 @@ public class BaseControllerAdvice {
         HttpSession session = ContextUtil.getHttpRequest().getSession();
         String navKey = Constant.TOP_NAVS+"_"+ session.getId();
         model.addAttribute(Constant.TOP_NAVS, timedCache.get(navKey,false));
-        ContextUtil.removeDbBean();
     }
 
 }

@@ -278,7 +278,7 @@
                     <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
                         <template slot-scope="{ row, index }" slot="workStart">
                             <div v-if="row.isInput && bFixed" >
-                                <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ row.workStart }}</span>
+                                <span class="input-like-span tc" style="border-radius: 5px; white-space: pre-line;">{{ row.workStart }}</span>
                             </div>
                             <div  v-if="row.isInput && !bFixed" >
                                 <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
@@ -301,7 +301,7 @@
                         </template>
                         <template slot-scope="{ row, index }" slot="workEnd">
                             <div v-if="row.isInput && bFixed" >
-                                <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ row.workEnd }}</span>
+                                <span class="input-like-span tc" style="border-radius: 5px; white-space: pre-line;">{{ row.workEnd }}</span>
                             </div>
                             <div v-if="row.isInput && !bFixed" >
                                 <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>

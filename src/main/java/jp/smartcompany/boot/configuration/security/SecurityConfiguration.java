@@ -4,8 +4,6 @@ import jp.smartcompany.boot.configuration.security.authentication.Authentication
 import jp.smartcompany.boot.configuration.security.authentication.LoginEntryPoint;
 import jp.smartcompany.boot.configuration.security.authorization.SmartAccessDecisionManager;
 import jp.smartcompany.boot.configuration.security.authorization.SmartFilterInvocationSecurityMetadataSource;
-import jp.smartcompany.boot.configuration.security.filter.LoginInfoFilter;
-import jp.smartcompany.boot.configuration.security.filter.SmartParameterFilter;
 import jp.smartcompany.boot.configuration.security.handler.SmartLogoutHandler;
 import jp.smartcompany.boot.configuration.security.handler.SmartLogoutSuccessHandler;
 import jp.smartcompany.boot.configuration.security.handler.UrlAccessDeniedHandler;
@@ -20,7 +18,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.context.SecurityContextPersistenceFilter;
 
 /**
  * Spring Security核心配置文件
@@ -37,9 +34,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     private final SmartLogoutSuccessHandler logoutSuccessHandler;
 
     private final AuthenticationProcessingFilter authenticationProcessingFilter;
-
-    private final LoginInfoFilter loginInfoFilter;
-    private final SmartParameterFilter smartParameterFilter;
 
     private final SmartAccessDecisionManager accessDecisionManager;
     private final SmartFilterInvocationSecurityMetadataSource filterInvocationSecurityMetadataSource;
@@ -67,8 +61,6 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     }
                 })
                 .and()
-                .addFilterBefore(smartParameterFilter, SecurityContextPersistenceFilter.class)
-                .addFilterAfter(loginInfoFilter,SecurityContextPersistenceFilter.class)
                 .addFilterAt(authenticationProcessingFilter, UsernamePasswordAuthenticationFilter.class)
                 // 自定义过滤器在登录时认证用户名、密码
                 .exceptionHandling()

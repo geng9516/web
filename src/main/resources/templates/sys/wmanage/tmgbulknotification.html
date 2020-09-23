@@ -54,7 +54,6 @@
                         <span @click="errDetail(row.tbnNtbnid)" v-else>{{ `${row.cntErr}人` }} <span class="cursor" style="color: var(--row-label-primary);">[※詳細]</span>
                         </span>
                     </template>
-                    <!-- todo: 需要在这里加取消按钮 -->
                     <template slot-scope="{ row }" slot="tbnCstatus">
                         <span style="position: relative;top: 2px;" v-if="row.tbnCstatusid ==='TMG_BULKNTFSTATUS|120' || row.tbnCstatusid=== 'TMG_BULKNTFSTATUS|130'"> {{ row.tbnCstatus }}</span>
                         <span v-else> {{ row.tbnCstatus }}</span>
