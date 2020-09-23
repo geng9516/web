@@ -34,9 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +64,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
     private final BaseSectionBusiness baseSectionBusiness;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
         HttpSession httpSession = request.getSession();
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
@@ -96,6 +99,16 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
             if (timedCache.get(Constant.TOP_NAVS+"_"+httpSession.getId(),false) == null) {
                 loadMenus(systemCode, systemList,httpSession);
             }
+
+            Boolean passwordExpired = (Boolean)timedCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
+            // 如果密码过期且不是访问修改密码的接口则跳转到密码过期页面
+            if (passwordExpired!=null && passwordExpired && !request.getRequestURI().contains("changeExpirePassword")) {
+                request.setAttribute("username",SecurityUtil.getUsername());
+                RequestDispatcher dispatcher = request.getRequestDispatcher("/expirePassword");
+                dispatcher.forward(request, response);
+                return false;
+            }
+
         }
         return true;
     }

@@ -6,7 +6,6 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.configuration.security.SecurityProperties;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.business.AuthBusiness;
-import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -25,7 +24,6 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
   private final SecurityProperties securityProperties;
   private final AuthBusiness authBusiness;
   private final LRUCache<Object,Object> lruCache;
-  private final IMastSystemService systemService;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp,
