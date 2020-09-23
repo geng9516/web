@@ -80,4 +80,6 @@ public class NotificationDispDetailVo {
     private List<TmgNtfAttachedfileDO> tmgNtfAttachedfileDoList = new ArrayList<TmgNtfAttachedfileDO>();
     //  申請ログ
     private List<NtfActionLogVo> tmgNtfactionlogDOList = new ArrayList<NtfActionLogVo>();
+    //振替flag
+    private boolean isSubstituted;
 }

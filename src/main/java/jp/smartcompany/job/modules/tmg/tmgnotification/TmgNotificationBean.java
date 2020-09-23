@@ -246,6 +246,7 @@ public class TmgNotificationBean {
 //            }
             if(!StrUtil.hasEmpty(nlVo.getTntfCntfNo())&&param.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)){
                 param.setNtfNo(nlVo.getTntfCntfNo());
+                param.setTypeNew(nlVo.getTntfCtypeCode());
                 //详细数据取得
                 NotificationDetailVo notificationDetailVo = iTmgNotificationService.selectNotificationDetail(param);
                 // 承認者コメント
@@ -261,6 +262,8 @@ public class TmgNotificationBean {
                 nddVo.setTmgNtfAttachedfileDoList(iTmgNtfAttachedfileService.selectFileDisp(param.getCustId(), param.getCompId(), param.getNtfNo()));
                 // 7 申請ログ
                 nddVo.setTmgNtfactionlogDOList(iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo()));
+                //振替
+                nddVo.setSubstituted(isSubstituted(param));
             }
 
             dispVo.add(nddVo);

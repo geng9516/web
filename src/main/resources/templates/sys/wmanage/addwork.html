@@ -216,7 +216,7 @@
 
     <!--日次就業実績-->
     <Drawer class="tc"  :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
-        <div class="tl" style="position: relative">
+        <div style="position: relative">
             <Alert type="primary-info" v-if="query.txtAction === 'ACT_EDITPERM_EDIT'">締め済データの編集中</Alert>
             <Alert type="error" class="error-info" v-show="errorFlag">{{ errorMsg }}</Alert>
             <div class="mb10 tr">
@@ -281,11 +281,11 @@
                 <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
                     <template slot-scope="{ row, index }" slot="workStart">
                         <div v-if="row.isInput && bFixed" >
-                            <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
+                            <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
                             <span v-else>{{ row.workStart }}</span>
                         </div>
                         <div  v-if="row.isInput && !bFixed" >
-                            <i-input v-model="workData[index].workStart" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
+                            <i-input v-model="workData[index].workStart"  :disabled="workTimeDisable" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
                         </div>
                           <!-- 本人comment -->
                           <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;"  v-if="row.isOwnComment">{{dailyEdit.tdaCowncommentR}}</span>
@@ -303,11 +303,11 @@
                     </template>
                     <template slot-scope="{ row, index }" slot="workEnd">
                         <div v-if="row.isInput && bFixed" >
-                            <i-input v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                            <i-input class="tc" v-model="workData[index].workEnd" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                             <span v-else>{{ row.workEnd }}</span>
                         </div>
                         <div v-if="row.isInput  && !bFixed" >
-                            <i-input v-model="workData[index].workEnd" class="tc" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
+                            <i-input  class="tc" v-model="workData[index].workEnd" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workEnd', $event.target)"></i-input>
                         </div>
                         <span v-if="!row.isInput && !bFixed">{{ row.workEnd }}</span>
                     </template>
@@ -329,10 +329,10 @@
                 <i-button  disabled v-else>追加</i-button>
             </div>
 
-            <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
+            <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 tl"
                      no-data-text="">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
-                    <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
+                    <i-input  v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
                     <span v-else>{{  row.tdadNopen | toTime  }}</span>
                 </template>
 
@@ -380,7 +380,7 @@
     <!--                </i-col>-->
                 </div>
 
-                <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 tl"
                          no-data-text="">
                     <template slot-scope="{ row ,index }" slot="tdadNopen">
                         <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
