@@ -256,8 +256,10 @@
                :key="index">
                <Row>
                   <!-- 申请休假的时间的显示 -->
-                  <i-col span="19" style="margin-left: 10.5%" class="title">
+                  <i-col span="19" style="margin-left: 10.5%" class="title" v-if="!item.substituted">
                      {{ handleApplyDayShow(item.tntfDbegin, item.tntfDend) }}</i-col>
+                  <i-col span="19" style="margin-left: 10.5%" class="title" v-if="item.substituted">
+                     {{ item.tntfDbegin }}<span style="color: var(--primary-info)"> ↔ </span>{{ item.tntfDend }} </i-col>
                   <span style="position: absolute;right: 3px;" :class="handleApplyMarkShow(item.tntfCstatusflg)" />
                </Row>
                <Row>
