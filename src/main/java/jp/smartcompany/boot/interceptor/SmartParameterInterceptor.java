@@ -1,33 +1,25 @@
-package jp.smartcompany.boot.configuration.security.filter;
+package jp.smartcompany.boot.interceptor;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
-
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.filter.OncePerRequestFilter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
+import org.springframework.web.servlet.HandlerInterceptor;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 
-/**
- * 自定义过滤器，为后端提供一些公共参数，如判断客户端是否为移动端等
- * @author Xiao Wenpeng
- */
 @Component
-@RequiredArgsConstructor
-public class SmartParameterFilter extends OncePerRequestFilter {
+@Slf4j
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+public class SmartParameterInterceptor implements HandlerInterceptor {
 
     @Override
-    protected void doFilterInternal(HttpServletRequest req, HttpServletResponse resp, FilterChain chain) throws ServletException, IOException {
-        if (StrUtil.endWithAny(req.getRequestURI(),".js",".css",".ico",".json",".moc","mtn")) {
-            chain.doFilter(req, resp);
-            return;
-        }
+    public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object handler) {
         String uaStr = req.getHeader("User-Agent");
         UserAgent ua = UserAgentUtil.parse(uaStr);
         req.setAttribute("isMobile",ua.isMobile());
@@ -48,7 +40,8 @@ public class SmartParameterFilter extends OncePerRequestFilter {
             // 允许浏览器发送的请求消息头
             resp.setHeader("Access-Control-Allow-Headers", allowHeaders);
         }
-        chain.doFilter(req, resp);
+        return true;
     }
+
 
 }
