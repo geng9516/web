@@ -154,13 +154,13 @@
                <!-- 是有氏名的-->
                <section v-show="selectedRestInfo.name" class="tl mt20">
                   <p class="mb5">氏名</p>
-                  <i-input class="mb15" v-model="restApply.txtName" />
+                  <i-input class="mb15" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100桁以内で入力してください。"/>
                </section>
 
                <!-- 是有続柄的-->
                <section v-show="selectedRestInfo.relation" class="tl">
                   <p class="mb5">続柄</p>
-                  <i-input class="mb15" v-model="restApply.txtRelation" />
+                  <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100桁以内で入力してください。"/>
                </section>
 
                <!-- 是有対象の人数的-->
