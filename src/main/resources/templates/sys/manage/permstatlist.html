@@ -143,13 +143,13 @@
                 <Alert class="error-info" type="error" v-show="errorFlag">{{ errorMsg }}</Alert>
                 <div class="mb10 tr">
                     <div v-if="!bFixed">
-                        <i-button :loading="deleteDailyLoading" @click="updateRemandsStatus" class="mr10"  ghost icon="md-hand" type="error" v-if="notapproval">
+                        <i-button :loading="deleteDailyLoading" @click="updateRemandsStatus" class="mr10" ghost icon="md-hand" type="error" v-if="notapproval">
                             差戻
                         </i-button>
-                        <i-button :loading="updateDailyLoading" @click="updateDaily"  ghosttype="primary" v-if="!notapproval" 　icon="md-done-all">
+                        <i-button :loading="updateDailyLoading" @click="updateDaily" ghosttype="primary" v-if="!notapproval" 　icon="md-done-all">
                             承認
                         </i-button>
-                        <i-button :loading="updateDailyLoading" @click="updateDaily"  ghosttype="primary" v-if="notapproval" 　icon="md-done-all">
+                        <i-button :loading="updateDailyLoading" @click="updateDaily" ghosttype="primary" v-if="notapproval" 　icon="md-done-all">
                             承認
                         </i-button>
                     </div>
