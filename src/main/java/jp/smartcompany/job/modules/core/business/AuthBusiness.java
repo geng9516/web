@@ -410,7 +410,7 @@ public class AuthBusiness {
             menuGroupBO.setOrderNum(topMenu.getMtrNseq());
             menuGroupBO.setUrl(topMenu.getMtrCurl());
             menuGroupBO.setJaName(topMenu.getObjectName());
-            menuGroupBO.setIcon(topMenu.getMtrIcon());
+            menuGroupBO.setIcon(topMenu.getMtrCimageurl());
             menuGroupBO.setType(topMenu.getType());
             menuGroupBO.setCompanyId("01");
             menuGroupBO.setCustomerId("01");
@@ -452,7 +452,7 @@ public class AuthBusiness {
                         secondMenuDO.setOrderNum(groupPerm.getMtrNseq());
                         secondMenuDO.setUrl(groupPerm.getMtrCurl());
                         secondMenuDO.setJaName(groupPerm.getObjectName());
-                        secondMenuDO.setIcon(groupPerm.getMtrIcon());
+                        secondMenuDO.setIcon(groupPerm.getMtrCimageurl());
                         secondMenuDO.setType(groupPerm.getType());
                         secondMenuDO.setCompanyId("01");
                         secondMenuDO.setCustomerId("01");
@@ -524,7 +524,7 @@ public class AuthBusiness {
                 GroupAppManagerPermissionDTO dto = new GroupAppManagerPermissionDTO();
                 dto.setMtrId(((BigDecimal)entity.get("MTR_ID")).longValue());
                 dto.setPermission((String)entity.get("PERMISSION"));
-                dto.setMtrIcon((String)entity.get("MTR_CIMAGEURL"));
+                dto.setMtrCimageurl((String)entity.get("MTR_CIMAGEURL"));
                 dto.setMtrCurl((String)entity.get("MTR_CURL"));
                 dto.setMtrNseq(((BigDecimal)entity.get("MTR_NSEQ")).longValue());
                 if (entity.get("MG_NWEIGHTAGE")!=null) {
