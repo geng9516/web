@@ -159,6 +159,22 @@
                         </i-button>
                     </div>
                 </div>
+                <div class="mb10">
+                    <Row :gutter="10">
+                        <i-col span="8">
+                            <div class="label pl10">所属</div>
+                            <div class="person-info">{{ deptName }}</div>
+                        </i-col>
+                        <i-col span="8">
+                            <div class="label pl10">氏名</div>
+                            <div class="person-info">{{ privateInfo.name }}</div>
+                        </i-col>
+                        <i-col span="8">
+                            <div class="label pl10">種別</div>
+                            <div class="person-info">{{ privateInfo.workType }}</div>
+                        </i-col>
+                    </Row>
+                </div>
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
                     就業実績
@@ -613,7 +629,11 @@
 
                 tmoCstatusflg: '',
                 lightDelBtnVisible: [],
-                lightDelBtnVisible2: []
+                lightDelBtnVisible2: [],
+                privateInfo: {
+                    name: '',
+                    workType: ''
+                },
                 //↑↑↑↑↑↑日次実績登録用↓↓↓↓↓↓
             }
         },
@@ -1176,6 +1196,9 @@
                 this.bHoliday = false
                 // 業登録画面データ取得
                 await this.dailyDetail()
+
+                // 職員情報取得
+                await this.getApplyEmployPersonalInfo()
                 this.dailyloading = false
             },
             // 就業登録画面情報取得・設定する
@@ -1695,6 +1718,12 @@
                 } else if (rowIndex === len - 1 && columnIndex === 1) {
                     return [1, 2]
                 }
+            },
+            async getApplyEmployPersonalInfo() {
+                // 職員情報取得
+                const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                this.privateInfo.name = data.name
+                this.privateInfo.workType = data.worktype
             },
              //初期化処理
             async getInit() {
