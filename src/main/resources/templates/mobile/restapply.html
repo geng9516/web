@@ -367,7 +367,7 @@
                }
                // 浏览历史时，将搜索的置空
                this.opts.ntfTypeId = ''
-               if (!this.isReApplyIng) {
+               if (!this.isReApplyIng && this.$refs.select) {
                   return this.$refs.select.clearSingleSelect()
                }
             }
