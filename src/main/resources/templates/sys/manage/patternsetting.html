@@ -71,36 +71,36 @@
         </div>
     </div>
     <div class="content_body">
-        <Alert class="primary-info tl">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
+        <Alert class="primary-info tl" v-if="periodDate != ''">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
         <Row :gutter="8">
-            <i-col span="7" v-if="btn_sk_show">
+            <i-col span="7">
                 <i-table :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="データなし" :row-class-name="() => 'select-col'">
                 </i-table>
             </i-col>
-            <i-col :span="btn_sk_show ? 17 : 24">
-        <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
-            <!-- 勤務時間 -->
-            <template slot-scope="{ row }" slot="dutyTime">
-                <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
-            </template>
-            <!-- 休憩時間 -->
-            <template slot-scope="{row}" slot="restTime">{{handleRestTime(row.planRest)}}</template>
+            <i-col :span="17">
+                <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
+                    <!-- 勤務時間 -->
+                    <template slot-scope="{ row }" slot="dutyTime">
+                        <span v-for="(item,i) of row.planDuty" :key="i">{{item.NOPEN|handleTime}}～{{item.NCLOSE|handleTime}}</span>
+                    </template>
+                    <!-- 休憩時間 -->
+                    <template slot-scope="{row}" slot="restTime">{{handleRestTime(row.planRest)}}</template>
 
-            <template slot-scope="{ row }" slot="action">
-                <div>
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!editPatternShow" v-if="row.edit===false">編集</i-button>
-                    <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="mergePattern(row)" :disabled="editPatternShow" v-else>編集</i-button>
+                    <template slot-scope="{ row }" slot="action">
+                        <div>
+                            <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" :disabled="!editPatternShow" v-if="row.edit===false">編集</i-button>
+                            <i-button type="primary" ghost size="small" icon="ios-create" style="margin-right: 5px" @click="mergePattern(row)" :disabled="editPatternShow" v-else>編集</i-button>
 
-                    <i-button type="error" ghost size="small" icon="ios-trash" class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" 　style="margin-right: 5px"
-                              :disabled="!deletePatternShow" v-if="row.edit===false">削除
-                    </i-button>
-                    <i-button type="error" ghost size="small" icon="ios-trash" 　class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" style="margin-right: 5px"
-                              @click="deletePattern(row)" :disabled="deletePatternShow" v-else>削除
-                    </i-button>
-                </div>
-            </template>
+                            <i-button type="error" ghost size="small" icon="ios-trash" class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" 　style="margin-right: 5px"
+                                      :disabled="!deletePatternShow" v-if="row.edit===false">削除
+                            </i-button>
+                            <i-button type="error" ghost size="small" icon="ios-trash" 　class="collapse-btn ivu-btn ivu-btn-error ivu-btn-small ivu-btn-ghost" style="margin-right: 5px"
+                                      @click="deletePattern(row)" :disabled="deletePatternShow" v-else>削除
+                            </i-button>
+                        </div>
+                    </template>
 
-        </i-table>
+                </i-table>
             </i-col>
         </Row>
     </div>
@@ -1106,7 +1106,7 @@
                 var msg = "トータル件数：" + total + "　　　 \n「成功件数：" + success_count + "     エラー件数：" + fail_count + "」\n" + "詳細情報:" + "\n" + info
                 if (fail_count > 0) {
                     //情報提示
-                    this.$Notice.warning({title: 'アップロード結果', desc: msg, duration: 0})
+                    this.$Notice.warn({title: 'アップロード結果', desc: msg, duration: 0})
                 } else {
                     this.$Notice.info({title: 'アップロード結果', desc: msg, duration: 0})
                 }

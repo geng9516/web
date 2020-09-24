@@ -74,13 +74,13 @@
         </div>
     </div>
     <div class="content_body">
-        <Alert class="primary-info tl">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
+        <Alert class="primary-info tl" v-if="periodDate != ''">※ 適用処理は{{ periodDate }}以降の場合のみ利用する事が出来ます。{{ periodDate }}より前の勤務に対するパターンの適用は、予定作成から行ってください。</Alert>
         <Row :gutter="8">
-            <i-col span="7" v-if="btn_sk_show">
+            <i-col span="7">
                 <i-table :columns="sk_column" :data="sk_list" border :loading="tableLoading" no-data-text="データなし" :row-class-name="() => 'select-col'">
                 </i-table>
             </i-col>
-            <i-col :span="btn_sk_show ? 17 : 24">
+            <i-col :span="17">
                 <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" :columns="columns" :data="tmgPatternList" border :loading="tableLoading" :disabled-hover="true" :row-class-name="() => 'select-col'">
                     <!-- 勤務時間 -->
                     <template slot-scope="{ row }" slot="dutyTime">
@@ -413,46 +413,41 @@
                 columns: [
                     {
                         title: '勤務パターン',
+                        minWidth:100,
                         key: 'tpa_cpatternname',
                         align: 'right'
                     },
                     {
+                        title: 'オーナー',
+                        minWidth:80,
+                        key: 'tpa_csectionname',
+                        tooltip:true,
+                        align: 'center'
+                    },
+                    {
                         title: '勤務時間',
+                        minWidth: 100,
+                        maxWidth: 120,
                         slot: 'dutyTime',
                         align: 'center'
                     },
                     {
                         title: '休憩時間',
-                        children: [
-                            {
-                                title: '1',
-                                slot: 'one',
-                                align: 'center'
-                            },
-                            {
-                                title: '2',
-                                slot: 'two',
-                                align: 'center'
-                            },
-                            {
-                                title: '3',
-                                slot: 'three',
-                                align: 'center'
-                            },
-                            {
-                                title: '4',
-                                slot: 'four',
-                                align: 'center'
-                            }
-                        ]
+                        minWidth: 180,
+                        slot: 'restTime',
+                        align: 'center'
                     },
                     {
                         title: '日付切替時刻',
+                        minWidth: 50,
+                        maxWidth: 130,
                         key: 'tpa_ndate_change_time',
                         align: 'center'
                     },
                     {
                         title: '翌日勤務パターン',
+                        minWidth: 140,
+                        maxWidth: 200,
                         key: 'cnextptname',
                         align: 'center'
                     },
