@@ -45,10 +45,8 @@ public class SmartAuthenticationFailureHandler implements AuthenticationFailureH
 
   private String getLoginErrorMessage(AuthenticationException e) {
     String msg;
-    if (e instanceof UsernameNotFoundException || e instanceof BadCredentialsException || e instanceof AuthenticationCredentialsNotFoundException) {
+    if (e instanceof UsernameNotFoundException || e instanceof BadCredentialsException || e instanceof AuthenticationCredentialsNotFoundException || e instanceof LockedException) {
       msg = e.getMessage();
-    } else if (e instanceof LockedException) {
-      msg = SecurityConstant.ACCOUNT_LOCKED;
     } else if (e instanceof CredentialsExpiredException) {
       msg = SecurityConstant.PASSWORD_EXPIRED;
     } else if (e instanceof AccountExpiredException) {

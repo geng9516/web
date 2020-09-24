@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -49,7 +50,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
         if (account == null) {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_EXIST.msg());
         }
-        boolean isLocked =account.getMaNpasswordlock() == 1;
+        boolean noLocked =account.getMaNpasswordlock() == 0;
         boolean passwordExpired = false;
         //パスワード有効日数取得
         String sPasswordValid = scCacheUtil.getSystemProperty("PasswordValidPeriod");
@@ -66,44 +67,46 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
         String encodePassword = (String)lruCache.get(username+"password");
 
         List<MastPasswordDO> passwordHistories = passwordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),encodePassword);
-        if (CollUtil.isEmpty(passwordHistories)) {
-            int iRetryCount = account.getMaNretrycounter();
-            int retryCount = iRetryCount+1;
-            Date loginTime = DateUtil.date();
-            if (Integer.parseInt(sLoginRetry) < retryCount) {
-                account.setMaNretrycounter(retryCount);
-                account.setMaNpasswordlock(1);
-                account.setMaDmodifieddate(loginTime);
-                //アカウントマスタ更新処理
-                accountService.updateById(account);
-                //認証エラー（ロックアウト）
-                isLocked = true;
+        if (noLocked) {
+            if (CollUtil.isEmpty(passwordHistories)) {
+                int iRetryCount = account.getMaNretrycounter();
+                int retryCount = iRetryCount + 1;
+                Date loginTime = DateUtil.date();
+                if (Integer.parseInt(sLoginRetry) < retryCount) {
+                    account.setMaNretrycounter(retryCount);
+                    account.setMaNpasswordlock(1);
+                    account.setMaDmodifieddate(loginTime);
+                    //アカウントマスタ更新処理
+                    accountService.updateById(account);
+                    //認証エラー（ロックアウト）
+                    noLocked = false;
+                } else {
+                    account.setMaNretrycounter(retryCount);
+                    account.setMaNpasswordlock(0);
+                    account.setMaDmodifieddate(loginTime);
+                    accountService.updateById(account);
+                    //認証エラー（パスワード間違い）
+                    throw new BadCredentialsException(SecurityConstant.PASSWORD_ERROR);
+                }
             } else {
-                account.setMaNretrycounter(iRetryCount);
-                account.setMaNpasswordlock(0);
-                account.setMaDmodifieddate(loginTime);
-                accountService.updateById(account);
-                //認証エラー（パスワード間違い）
-                throw new BadCredentialsException(SecurityConstant.PASSWORD_ERROR);
-            }
-        } else {
-            for (MastPasswordDO oPasswordEntity : passwordHistories) {
-                //パスワード設定日取得
-                Date now = DateUtil.date();
-                //パスワード設定日取得
-                Date oSetDay = oPasswordEntity.getMapDpwddate();
-                oSetDay.setDate(oSetDay.getDate()
-                        + Integer.parseInt(sPasswordValid));
-                // 当前时间大于密码设定日时密码过期
-                if (oSetDay.before(now)) {
-                    //認証エラー（パスワード期間切れ）
-                    passwordExpired = true;
-                    break;
+                for (MastPasswordDO oPasswordEntity : passwordHistories) {
+                    //パスワード設定日取得
+                    Date now = DateUtil.date();
+                    //パスワード設定日取得
+                    Date oSetDay = oPasswordEntity.getMapDpwddate();
+                    oSetDay.setDate(oSetDay.getDate()
+                            + Integer.parseInt(sPasswordValid));
+                    // 当前时间大于密码设定日时密码过期
+                    if (oSetDay.before(now)) {
+                        //認証エラー（パスワード期間切れ）
+                        passwordExpired = true;
+                        break;
+                    }
                 }
             }
+            // 密码是否过期标识位，
+            timedCache.put(username + "passwordExpired", passwordExpired);
         }
-        // 密码是否过期标识位，
-        timedCache.put(username+"passwordExpired",passwordExpired);
         // 通常ログイン時のみ、認証ＯＫでパスワード間違い回数1以上の場合、0クリア
         // アカウントマスタを更新
         if (account.getMaNretrycounter() > 0) {
@@ -111,6 +114,10 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
             account.setMaCmodifieruserid(account.getMaCuserid()); // 最終更新者
             accountService.updateById(account);
         }
+        if (!noLocked) {
+            throw new LockedException(SecurityConstant.ACCOUNT_LOCKED);
+        }
+
         LoginAccountBO loginAccountBO = accountService.getAccountInfo(username);
         if (loginAccountBO == null) {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_EXIST.msg());
@@ -124,7 +131,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
             lruCache.put(Constant.SYSTEM_LIST,systemList);
         }
         Map<String, List<LoginGroupBO>> loginGroups = groupBusiness.getGroupInfos(username,"multiple","ja",systemList);
-        return new SmartUserDetails(loginAccountBO,loginGroups,encodePassword,isLocked,true);
+        return new SmartUserDetails(loginAccountBO,loginGroups,encodePassword,noLocked,true);
     }
 
 }
