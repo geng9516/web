@@ -453,12 +453,12 @@
 
               <!-- 是有氏名的-->
               <form-item label="氏名" v-show="selectedRestInfo.name" >
-                <i-input class="mb5 tl" v-model="restApply.txtName" />
+                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100桁以内で入力してください。"/>
               </form-item>
 
               <!-- 是有続柄的-->
               <form-item label="続柄" v-show="selectedRestInfo.relation" >
-                <i-input class="mb5" v-model="restApply.txtRelation" />
+                <i-input class="mb5" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100桁以内で入力してください。"/>
               </form-item>
 
               <!-- 是有対象の人数的-->
@@ -1286,7 +1286,7 @@
               this.errorMsg = '終了期間を入力してください。'
               return
             }
-            if (this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
+            if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
               this.errorInfo = true
               this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
               return
@@ -1304,7 +1304,7 @@
               this.errorMsg = '開始時間を入力してください。'
               return
             }
-            if (this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+            if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
               this.errorInfo = true
               this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
               return
