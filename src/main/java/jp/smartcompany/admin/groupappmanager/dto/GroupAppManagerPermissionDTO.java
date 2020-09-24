@@ -16,7 +16,7 @@ import java.util.Date;
 @EqualsAndHashCode(of={"mgpCsite","mgpCsubapp"})
 public class GroupAppManagerPermissionDTO {
 
-    private String mtrIcon;
+    private String mtrCimageurl;
     private String mtrCurl;
     private String mgpCpermission;
     private String mgpCreject;
