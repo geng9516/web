@@ -413,6 +413,7 @@
                 param: {
                     txtDate: '',
                     txtUserCode: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
@@ -612,6 +613,10 @@
             // 年次休暇管理
             async getDetailList(tphDyyyymmdd, tphCemployeeid) {
                 this.paidDetailsLoading = true
+
+                //选择职员保存、初期化使用。
+                this.param.txtTmgReferListTreeViewAdminTargetEmp = tphCemployeeid
+
                 try {
                     this.param.txtDate = tphDyyyymmdd
                     this.param.txtUserCode = tphCemployeeid
