@@ -1,7 +1,6 @@
 package jp.smartcompany.boot.util;
 
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
@@ -249,7 +248,7 @@ public class SysUtil {
     public static String getPermissionString() {
         HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
         PsSession psSession = (PsSession)session.getAttribute(Constant.PS_SESSION);
-        ScCacheUtil scCacheUtil = SpringUtil.getBean("scCacheUtil");
+        ScCacheUtil scCacheUtil = (ScCacheUtil)SpringUtil.getBean("scCacheUtil");
         return scCacheUtil.getPermissionString(psSession.getLoginCustomer(),
                 psSession.getLoginCompany(), psSession.getLanguage());
     }

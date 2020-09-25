@@ -3,9 +3,9 @@ package jp.smartcompany.framework.sysboot;
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.sysboot.dto.MastDatadicSeclevelDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatadictionaryDO;
@@ -38,8 +38,8 @@ public class DataDictionaryCache {
      * データディクショナリ情報読込.
      */
     public void loadDataDictionary() {
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
-        IMastDatadictionaryService iMastDatadictionaryService = SpringUtil.getBean("mastDatadictionaryServiceImpl");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
+        IMastDatadictionaryService iMastDatadictionaryService = (IMastDatadictionaryService)SpringUtil.getBean("mastDatadictionaryServiceImpl");
         List<MastDatadictionaryDO> dictionaryList = iMastDatadictionaryService.selectAllDicts();
         if (CollUtil.isEmpty(dictionaryList)) {
             // 必須マスタデータ未登録例外
@@ -57,8 +57,8 @@ public class DataDictionaryCache {
      * データディクショナリ機密レベル情報読込.
      */
     public  void loadDataDicSeclevel() {
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
-        IMastDatadictionaryService iMastDatadictionaryService = SpringUtil.getBean("mastDatadictionaryServiceImpl");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
+        IMastDatadictionaryService iMastDatadictionaryService = (IMastDatadictionaryService)SpringUtil.getBean("mastDatadictionaryServiceImpl");
         List <MastDatadicSeclevelDTO> dicSeclevelList = iMastDatadictionaryService.selectAllDataDicSecLevel();
         for (MastDatadicSeclevelDTO dataDicSeclevel : dicSeclevelList) {
             // キー設定

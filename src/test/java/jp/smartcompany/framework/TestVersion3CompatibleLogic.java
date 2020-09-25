@@ -1,6 +1,6 @@
 package jp.smartcompany.framework;
 
-import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.framework.compatible.business.Version3CompatibleLogic;
 import jp.smartcompany.NextJobApplication;
 import jp.smartcompany.job.modules.core.util.PsResult;
