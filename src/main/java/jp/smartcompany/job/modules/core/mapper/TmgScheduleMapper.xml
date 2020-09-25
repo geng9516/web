@@ -163,7 +163,8 @@
     </resultMap>
 
 
-    <!-- 年次休暇残 -->
+    <!--
+        &lt;!&ndash; 年次休暇残 &ndash;&gt;
     <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
         select tmo_npaid_rest_days,tmo_npaid_rest_hours as tmo_npaid_rest_hours,nvl(tmo_nmonth_chk_flg, 0) as tmo_nmonth_chk_flg
         from tmg_monthly
@@ -173,6 +174,17 @@
         and tmo_ccustomerid = #{custId}
         and tmo_dstartdate <![CDATA[<=]]>  trunc(to_date(#{workYear}), 'mm')
         and tmo_denddate <![CDATA[>=]]> trunc(to_date(#{workYear}), 'mm')
+    </select>
+    -->
+
+    <!-- 年次休暇残 -->
+    <select id="selectTmgMonthly" parameterType="java.util.HashMap" resultMap="selectTmgMonthlyMap">
+        select nrest_days as tmo_npaid_rest_days
+        ,nrest_hours as tmo_npaid_rest_hours
+        from (tmg_select_holiday_rest(#{custId},#{compCode}, #{employeeId}, trunc(to_date(#{workYear}))))
+        where trunc(dbegin) <![CDATA[<=]]> trunc(to_date(#{workYear}))
+        and trunc(dend) >=trunc(to_date(#{workYear}))
+        and ctype = 'TMG_NTFHOLRESTTYPE|010'
     </select>
 
     <!-- [勤怠]日別情報より予定データを取得します -->

@@ -734,7 +734,7 @@
                         console.log(0)
                         console.log(this.treeData)
                         this.deptName = this.treeData[0].label
-                        this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].secid
+                        this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
                         this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
                         this.referListObject.txtTmgReferListTreeViewPermTargetEmp =this.treeData[0].children[0].empid
                         this.getEmpName(this.treeData,this.referListObject.txtTmgReferListTreeViewPermTargetEmp)
@@ -866,6 +866,7 @@
                 async handleClickLeaf(e) {
                     //同一部署を二回目でクリックすると、取消とするためで、エラーあり
                     //よって、二回目クリックすると、何もしない
+                    console.log(e)
                     if(!e[0]) return
                     if(e[0].children) return
                     this.deptDrawShow = false
@@ -876,7 +877,6 @@
 
                     this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
                     this.referListObject[group] = e[0].groupid
-
                     this.deptName = e[0].secnic
                     this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
                     this.referListObject.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
@@ -887,8 +887,6 @@
                         this.query.txtDYYYYMM=this.referListObject.txtTmgReferListTreeViewRecordDate
                     }
                     await this.getWorkDateList()
-
-
                     if (!this.query.txtDYYYYMM){
                         this.$Notice.warning({ title: '年月を選択して下さい' })
                     }else{
@@ -968,7 +966,7 @@
                 // 発令
                 async getHatuRei() {
                     try {
-                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                       const { data } = await this.http.get('sys/tmgResults/hatuRei', this.query)
                         if(data !=null){
                             this.hatuReiDisp=true
                             this.hatuReiName=data.name
@@ -979,7 +977,6 @@
                     } catch (error) {
                         return
                     }finally {
-
                     }
                 },
                 // 就業実績のタイトルとデータを取得
