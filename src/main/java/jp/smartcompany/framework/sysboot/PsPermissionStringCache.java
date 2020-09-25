@@ -3,8 +3,8 @@ package jp.smartcompany.framework.sysboot;
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastGenericDetailDO;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,8 +28,8 @@ public class PsPermissionStringCache {
     }
 
     public void loadPermissionString() {
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
-        IMastGenericDetailService iMastGenericDetailService = SpringUtil.getBean("mastGenericDetailServiceImpl");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
+        IMastGenericDetailService iMastGenericDetailService = (IMastGenericDetailService) SpringUtil.getBean("mastGenericDetailServiceImpl");
         List<MastGenericDetailDO> permStrList = iMastGenericDetailService.selectPermissionString();
         for (MastGenericDetailDO mastGenericDetailDO : permStrList) {
             String keyJa = mastGenericDetailDO.getMgdCcustomerid() + "_"

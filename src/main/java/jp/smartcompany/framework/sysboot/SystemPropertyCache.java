@@ -2,8 +2,8 @@ package jp.smartcompany.framework.sysboot;
 
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.framework.sysboot.dto.SystemPropertyDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
@@ -24,7 +24,7 @@ public class SystemPropertyCache {
 
     /** システムプロパティ情報MAP */
     private Map<String, SystemPropertyDTO> systemPropertyMap = MapUtil.newConcurrentHashMap();
-    LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+    LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>)SpringUtil.getBean("scCache");
 
     /**
      * システムプロパティ情報取得.
@@ -78,7 +78,7 @@ public class SystemPropertyCache {
      * システムプロパティ読み込み.
      */
     private void loadSystemProperty() {
-        IConfSyscontrolService sysControlService = SpringUtil.getBean("confSyscontrolServiceImpl");
+        IConfSyscontrolService sysControlService = (IConfSyscontrolService) SpringUtil.getBean("confSyscontrolServiceImpl");
         // 必要な項目だけ転送
         List<ConfSyscontrolDO> controlList = sysControlService.getProperties();
         List<SystemPropertyDTO> propList = controlList.stream()

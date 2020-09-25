@@ -1,8 +1,8 @@
 package jp.smartcompany.controller;
 
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.NextJobApplication;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
