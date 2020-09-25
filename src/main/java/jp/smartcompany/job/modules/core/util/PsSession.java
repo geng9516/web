@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.core.util;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.appcontrol.TopPageInfo;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;

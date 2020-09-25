@@ -2,8 +2,8 @@ package jp.smartcompany.framework.sysboot;
 
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -34,8 +34,8 @@ public class TableCombinationTypeCache {
      * テーブル結合条件読み込み.
      */
     public void loadTableCombinationType() {
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
-        IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
+        IMastSystemService iMastSystemService = (IMastSystemService) SpringUtil.getBean("mastSystemServiceImpl");
         List<TableCombinationTypeDTO> tableCombinationTypeDTODtoList = iMastSystemService.getTableInfo();
         for (TableCombinationTypeDTO tableCombinationTypeDto : tableCombinationTypeDTODtoList) {
             String sTableName = tableCombinationTypeDto.getTableName();

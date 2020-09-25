@@ -5,8 +5,8 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -49,19 +49,19 @@ public class TmgEmpList {
     public static final int DEFAULT_KEY_SEQ            = 14;
     public static final int DEFAULT_KEY_DEFAULT_APPLEVEL = 15;
 
-    private PsDBBean bean = null;
+    private PsDBBean bean;
     private String beanDesc = null;
     private List dataArray = null;
     private List gvSearchDataArray = null;
-    private String[] keyArray = null;
+    private String[] keyArray;
 
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
-    private String dateFormat = null;
+    private String dateFormat;
 
-    private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
     private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
     /**
      * コンストラクタ

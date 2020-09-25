@@ -3,11 +3,11 @@ package jp.smartcompany.framework.auth.business.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.framework.appcontrol.*;
 import jp.smartcompany.framework.auth.business.AppAuthJudgmentBusiness;
 import jp.smartcompany.framework.auth.entity.AppAuthJudgmentEntity;
@@ -486,7 +486,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
                                        Map<String, AppAuthJudgmentEntity> hAppInfo,
                                        Map<String, AppAuthJudgmentEntity> hDialogAppInfo,
                                        Map<String, AppAuthJudgmentEntity> hSiteInfo) {
-        ScCacheUtil scCacheUtil = SpringUtil.getBean("scCacheUtil");
+        ScCacheUtil scCacheUtil = (ScCacheUtil) SpringUtil.getBean("scCacheUtil");
         TopPageInfo topPageInfo = new TopPageInfo();
         for(List<LoginGroupBO> groupList : hGroups.values()) {
             for (LoginGroupBO loginGroupBO : groupList) {

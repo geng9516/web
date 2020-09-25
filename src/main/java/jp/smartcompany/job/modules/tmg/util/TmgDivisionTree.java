@@ -3,7 +3,7 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandler;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,7 @@ public class TmgDivisionTree {
     private Boolean gbAllDivision;
     private String gsRootSection;
 
-    private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ

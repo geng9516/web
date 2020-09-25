@@ -4,8 +4,8 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import jp.smartcompany.framework.sysboot.dto.SearchRangeInfoDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -58,12 +58,12 @@ public class SearchRangeInfoCache {
      * 検索対象範囲条件作成
      */
     public void loadSearchRangeInfo() {
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object,Object>) SpringUtil.getBean("scCache");
         ghmDataSectionPost = (Map<String, List<SearchRangeInfoDTO>>)lruCache.get(ScCacheUtil.GHM_DATA_SECTION_POST);
         List<SearchRangeInfoDTO> lSecPostList;
         List<SearchRangeInfoDTO> lPermDefsList;
         if (ghmDataSectionPost == null) {
-            IMastDatapermissionService iMastDatapermissionService = SpringUtil.getBean("mastDatapermissionServiceImpl");
+            IMastDatapermissionService iMastDatapermissionService = (IMastDatapermissionService)SpringUtil.getBean("mastDatapermissionServiceImpl");
             lSecPostList = iMastDatapermissionService.selectDataSectionPost();
             lPermDefsList = iMastDatapermissionService.selectDataPermissionDefs();
             // 検索範囲情報を常駐変数に保存する
