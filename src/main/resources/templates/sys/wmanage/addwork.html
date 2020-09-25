@@ -950,7 +950,7 @@
             // 発令
             async getHatuRei() {
                 try {
-                    const { data } = await this.http.get('sys/tmgResults/hatuRei', this.referListObject)
+                    const { data } = await this.http.get('sys/tmgResults/hatuRei', this.query)
 
                     if(data != null ){
                         this.hatuReiDisp=true
