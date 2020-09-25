@@ -462,6 +462,7 @@
                     hidSelectTab:'0',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewAdminTargetSection: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp')
                 },
@@ -555,6 +556,10 @@
                 this.isShow = true
                 this.isSeason = true
                 this.takenDaysDataLoading = true
+
+            //选择职员保存、初期化使用。
+            this.query.txtTmgReferListTreeViewAdminTargetEmp = e.cemployeeid0
+
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
                 this.takenDaysData =data
                 this.takenDaysDataLoading = false
@@ -572,6 +577,10 @@
                 this.query.txtUserCode = e.cemployeeid0
 
                 this.takenDaysDataLoading = true
+
+                //选择职员保存、初期化使用。
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e.cemployeeid0
+
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
                     const addNumDeci = Vue.filter('addNumDeci')
