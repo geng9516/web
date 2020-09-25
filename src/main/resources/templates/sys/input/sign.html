@@ -58,7 +58,7 @@
                 </div>
                 <ul class="time-list">
                     <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
-                    <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style" :title="item.time">
+                    <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
