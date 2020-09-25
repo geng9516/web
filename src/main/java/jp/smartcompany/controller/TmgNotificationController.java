@@ -38,8 +38,6 @@ public class TmgNotificationController {
 
     @Autowired
     private TmgNotificationBean tmgNotificationBean;
-    @Autowired
-    private HttpServletRequest request;
 
 
 
