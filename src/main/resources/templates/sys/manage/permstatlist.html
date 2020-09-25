@@ -783,12 +783,12 @@
                 this.listLoading  = false
                 this.isSearchHistory = false
             },
-            async getTmgMonthlyInfoVOList() {
-                this.queryList.txtAction = 'ACT_DISP_MONTHLY'
-
-                const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.queryList)
-                this.tableData = data
-            },
+            // async getTmgMonthlyInfoVOList() {
+            //     this.queryList.txtAction = 'ACT_DISP_MONTHLY'
+            //
+            //     const { data } = await this.http.get('sys/permStatList/getTmgMonthlyInfoVOList', this.queryList)
+            //     this.tableData = data
+            // },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
                 try {

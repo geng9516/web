@@ -2,7 +2,7 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,15 +56,15 @@ public class TmgGroupList {
     public static final int DEFAULT_KEY_APPROVALLEVEL   = 17;
     public static final int DEFAULT_KEY_APPROVALLEVELNAME   = 18;
 
-    private PsDBBean psDBBean = null;
+    private PsDBBean psDBBean;
     private String beanDesc = null;
     private List dataArray = null;
-    private String[] keyArray = null;
+    private String[] keyArray;
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy/MM/dd";
     private String dateFormat = null;
 
-    private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
 
     /**
      * コンストラクタ

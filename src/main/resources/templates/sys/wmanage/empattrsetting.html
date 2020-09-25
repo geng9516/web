@@ -335,6 +335,7 @@
                     txtTmgReferListTreeViewAdminTargetSection: '',
                     //基准日
                     txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 21,
                     page: '1',
@@ -888,6 +889,9 @@
                 this.sectionName = this.deptName
                 this.workerTypeName = e.temCworktypename
 
+                //选择职员保存、初期化使用。
+                this.opts.txtTmgReferListTreeViewAdminTargetEmp = e.meCemployeeidCk
+
                 try {
                     const { data } = await this.http.get('sys/userprofile/beginDateEditDisp', this.opts)
                     this.referSettingData = [data.beginDate]
@@ -922,6 +926,10 @@
                 this.opts.empId = e.meCemployeeidCk
                 this.empName = e.meCkanjiname
                 this.workerTypeName = e.temCworktypename
+
+                //选择职员保存、初期化使用。
+                this.opts.txtTmgReferListTreeViewAdminTargetEmp = e.meCemployeeidCk
+
                 try {
                     const { data } = await this.http.get('sys/userprofile/avgWorkTimeEditDisp', this.opts)
                     this.averageTimeData = data.historyList

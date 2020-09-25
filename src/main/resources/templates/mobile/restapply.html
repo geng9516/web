@@ -757,6 +757,7 @@
                // 再拿更多详细
                const { data } = await this.http.get('sys/vapply/NotificationDetail', { ntfNo: item.tntfCntfNo })
 
+               this.restApply.ntfNo=item.tntfCntfNo
                // 起算日
                this.restApply.txtPeriod = data.tntfDperiodDate
 

@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.configuration.security.authentication;
 
-import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import jp.smartcompany.boot.configuration.security.SecurityConstant;
@@ -19,7 +18,6 @@ import org.springframework.stereotype.Component;
 public class SmartAuthenticationProvider implements AuthenticationProvider {
 
     private final SmartUserDetailsServiceImpl userDetailsService;
-    private final LRUCache<Object,Object> lruCache;
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -27,9 +25,8 @@ public class SmartAuthenticationProvider implements AuthenticationProvider {
         String username = (String) authentication.getPrincipal();
         String password = (String) authentication.getCredentials();
         String md5Password = DigestUtil.md5Hex(password);
-        lruCache.put(username+"password",md5Password);
 
-        SmartUserDetails userDetails = (SmartUserDetails) userDetailsService.loadUserByUsername(username);
+        SmartUserDetails userDetails = (SmartUserDetails) userDetailsService.loadUserByUsernamePassword(username,md5Password);
         if (!StrUtil.equals(md5Password, userDetails.getPassword())) {
             throw new BadCredentialsException(SecurityConstant.PASSWORD_ERROR);
         }

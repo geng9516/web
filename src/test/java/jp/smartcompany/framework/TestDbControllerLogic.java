@@ -3,7 +3,7 @@ package jp.smartcompany.framework;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.framework.dbaccess.DbControllerLogic;
 import jp.smartcompany.NextJobApplication;
 import org.junit.Before;

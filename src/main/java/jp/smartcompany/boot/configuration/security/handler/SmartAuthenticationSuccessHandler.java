@@ -1,6 +1,5 @@
 package jp.smartcompany.boot.configuration.security.handler;
 
-import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.configuration.security.SecurityProperties;
@@ -23,14 +22,11 @@ public class SmartAuthenticationSuccessHandler implements AuthenticationSuccessH
 
   private final SecurityProperties securityProperties;
   private final AuthBusiness authBusiness;
-  private final LRUCache<Object,Object> lruCache;
 
   @Override
   public void onAuthenticationSuccess(HttpServletRequest req, HttpServletResponse resp,
                                       Authentication auth) throws IOException {
     authBusiness.saveLoginInfo(true,auth.getName());
-    lruCache.remove(auth.getName()+"password");
-
     if (SysUtil.isAjaxRequest(req)) {
       resp.setCharacterEncoding("UTF-8");
       resp.setContentType(MediaType.APPLICATION_JSON_VALUE);

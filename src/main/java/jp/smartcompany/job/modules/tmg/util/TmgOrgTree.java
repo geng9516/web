@@ -2,8 +2,8 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,10 +11,8 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.Vector;
 
 /**
  * @author Wu chenjun
@@ -46,7 +44,7 @@ public class TmgOrgTree {
     /** 検索対象範囲設定を考慮するかどうか */
     private boolean withTarget = true;
 
-    private final DataSource dataSource = SpringUtil.getBean("dataSource");
+    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
     private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     /**

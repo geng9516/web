@@ -4,17 +4,13 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.db.DbUtil;
 import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hutool.json.JSONObject;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMgdMsgSearchTreeView;
 import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
 import jp.smartcompany.job.modules.core.service.ITmgMgdMsgSearchTreeViewService;
@@ -79,9 +75,9 @@ public class TmgReferList {
     public static final String ATTR_TREEVIEW_PERM_TARGET_GROUP = "TREEVIEW_KEY_PERM_TARGET_GROUP";
 
     private PsDBBean psDBBean;
-    private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
-    private final DataSource dataSource = SpringUtil.getBean("dataSource");
-    private final TmgSearchRangeUtil tmgSearchRangeUtil = SpringUtil.getBean("tmgSearchRangeUtil");
+    private final ITmgMgdMsgSearchTreeViewService iTmgMgdMsgSearchTreeViewService = (ITmgMgdMsgSearchTreeViewService)SpringUtil.getBean("tmgMgdMsgSearchTreeViewServiceImpl");
+    private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final TmgSearchRangeUtil tmgSearchRangeUtil = (TmgSearchRangeUtil) SpringUtil.getBean("tmgSearchRangeUtil");
 
     // psApp参数
     private String beanDesc;

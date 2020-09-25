@@ -3,8 +3,8 @@ package jp.smartcompany.framework.sysboot;
 import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.framework.sysboot.dto.AppSearchRangeInfoDTO;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +34,10 @@ public class AppSearchRangeInfoCache {
     }
 
     public void loadAppSearchRangeInfo(){
-        LRUCache<Object,Object> lruCache = SpringUtil.getBean("scCache");
+        LRUCache<Object,Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
         // 初期化
         StringBuilder sb = new StringBuilder();
-        IMastSystemService iMastSystemService = SpringUtil.getBean("mastSystemServiceImpl");
+        IMastSystemService iMastSystemService =(IMastSystemService) SpringUtil.getBean("mastSystemServiceImpl");
         List <AppSearchRangeInfoDTO> lKeyList = iMastSystemService.selectSearchRangeInfo();
         for (AppSearchRangeInfoDTO appSearchRangeInfoEntity : lKeyList) {
             // 初期化
