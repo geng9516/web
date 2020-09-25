@@ -400,6 +400,7 @@
                         txtTmgReferListTreeViewAdminTargetSection: '',
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
+                        txtTmgReferListTreeViewAdminTargetEmp: '',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
                         type: 21,
                         empId: '',
@@ -970,6 +971,10 @@
                 async getAvgTableData(e) {
                     this.averageTableLoading = true
                     this.query.empId = e
+
+                    //选择职员保存、初期化使用。
+                    this.query.txtTmgReferListTreeViewAdminTargetEmp = e
+
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
                         this.monthAverageTableHead = data.tableHeader
