@@ -118,7 +118,7 @@
                 <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer v-if="workTypeName">{{workTypeName}}
                     <div slot="content">{{workTypeName}}</div>
                 </Tooltip>
-                </span>
+            </span>
         </div>
     </div>
 
@@ -137,7 +137,6 @@
                                 <i-button type="primary" ghost size="small" @click="confWork">解除</i-button>
                         </span>
                         <span class="with-split" style="width: 100%;" v-else>現在の状況：未確認 </span>
-
                     </div>
                 </div>
             </i-col>
@@ -149,7 +148,6 @@
                                 <i-select v-model="selHealthStatus" disabled size="small" style="width:80px">
                                     <i-option v-for="(item, index) of selHealthStatusList" :key="index" :label="item.name" :value="item.code"></i-option>
                                 </i-select>ことを報告します。</span>
-
                     </div>
                     <div class="person-info">
                         <span class="with-split" style="width: 70%;" v-if="bHealthChkStatus">現在の状況：確認済</span>
