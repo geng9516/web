@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 @Setter
 public class SmartUserDetails implements UserDetails {
 
-    private LoginAccountBO user;
-
     private String hdCcustomeridCk; //HD_CCUSTOMERID_CK
     private String hdCcompanyidCk; //HD_CCOMPANYID_CK
     private String macClayeredcompanyid; //MAC_CLAYEREDCOMPANYID
@@ -47,16 +45,17 @@ public class SmartUserDetails implements UserDetails {
     private String hdCbossornot; //HD_CBOSSORNOT
     private String workTypeName;
 
+    private String username;
     private String password;
     private boolean locked;
     private boolean passwordExpired;
     private Map<String, List<LoginGroupBO>> loginGroups;
 
-    public SmartUserDetails(LoginAccountBO user, Map<String, List<LoginGroupBO>> loginGroups,String encodePassword,boolean locked,boolean passwordExpired) {
+    public SmartUserDetails(LoginAccountBO user, Map<String, List<LoginGroupBO>> loginGroups,boolean locked,boolean passwordExpired) {
         if (user != null) {
-            this.user = user;
+            this.username = user.getHdCuserid();
             this.loginGroups = loginGroups;
-            this.password = encodePassword;
+            this.password = user.getEncodePassword();
             this.locked = locked;
             this.passwordExpired = passwordExpired;
             this.hdCcustomeridCk = user.getHdCcustomeridCk();
@@ -95,7 +94,7 @@ public class SmartUserDetails implements UserDetails {
         });
         List<String> groupCodes =groupList.stream().map(LoginGroupBO::getGroupCode).collect(Collectors.toList());
         groupCodes.forEach(role -> {
-            SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_"+role.toUpperCase());
+            SimpleGrantedAuthority authority = new SimpleGrantedAuthority(role.toUpperCase());
             authorities.add(authority);
         });
         return authorities;
@@ -108,7 +107,7 @@ public class SmartUserDetails implements UserDetails {
 
     @Override
     public String getUsername() {
-        return user.getHdCuserid();
+        return username;
     }
 
     @Override

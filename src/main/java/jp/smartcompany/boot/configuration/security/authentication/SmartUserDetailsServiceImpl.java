@@ -45,6 +45,10 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+       return null;
+    }
+
+    public UserDetails loadUserByUsernamePassword(String username,String encodePassword) throws UsernameNotFoundException {
         MastAccountDO account = accountService.getByUsername(username);
 
         if (account == null) {
@@ -64,8 +68,6 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
         if (sLoginRetry == null) {
             throw new AuthenticationCredentialsNotFoundException(SecurityConstant.LOGIN_TRY_COUNT_ERROR);
         }
-        String encodePassword = (String)lruCache.get(username+"password");
-
         List<MastPasswordDO> passwordHistories = passwordService.getUpdateDateByUsernamePassword(account.getMaCuserid(),encodePassword);
         if (noLocked) {
             if (CollUtil.isEmpty(passwordHistories)) {
@@ -117,13 +119,12 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
         if (!noLocked) {
             throw new LockedException(SecurityConstant.ACCOUNT_LOCKED);
         }
-
         LoginAccountBO loginAccountBO = accountService.getAccountInfo(username);
         if (loginAccountBO == null) {
             throw new UsernameNotFoundException(ErrorMessage.USER_NOT_EXIST.msg());
         }
+        loginAccountBO.setEncodePassword(encodePassword);
         loginAccountBO.setMaCuserid(username);
-
         // 获取用户组
         List<MastSystemDO> systemList = (List<MastSystemDO>)lruCache.get(Constant.SYSTEM_LIST);
         if (systemList==null) {
@@ -131,7 +132,7 @@ public class SmartUserDetailsServiceImpl implements UserDetailsService {
             lruCache.put(Constant.SYSTEM_LIST,systemList);
         }
         Map<String, List<LoginGroupBO>> loginGroups = groupBusiness.getGroupInfos(username,"multiple","ja",systemList);
-        return new SmartUserDetails(loginAccountBO,loginGroups,encodePassword,noLocked,true);
+        return new SmartUserDetails(loginAccountBO,loginGroups,noLocked,true);
     }
 
 }
