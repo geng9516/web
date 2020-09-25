@@ -166,4 +166,17 @@ public class TimepunchController {
     }
 
 
+    /**
+     * 超過勤務時間を取得する
+     *
+     * @return
+     */
+    @PostMapping("queryOverWorkTime")
+    @ResponseBody
+    public String[] queryOverWorkTime(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        String[] overWorkTime = tmgTimePunchBean.selectOverWorkTime(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
+        return overWorkTime;
+    }
+
+
 }

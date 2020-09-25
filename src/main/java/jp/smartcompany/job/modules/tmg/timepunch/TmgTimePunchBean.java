@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
@@ -15,6 +16,7 @@ import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyDaysAndHoursDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.dto.ScheduleInfoDTO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockInfoVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
+import jp.smartcompany.job.modules.tmg.tmgresults.vo.DetailOverhoursVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,11 +43,13 @@ public class TmgTimePunchBean {
     private final ITmgTimepunchService iTmgTimepunchService;
     private final ITmgScheduleService iTmgScheduleService;
     private final AttendanceBookBean attendanceBookBean;
+    private final ITmgDailyService iTmgDailyService;
     private PsDBBean psDBBean;
     private final String Cs_MINDATE = "1900/01/01";
     private final String Cs_MAXDATE = "2222/12/31";
     private final String BEAN_DESC = "TimePunch";
     private final String DATE_FORMAT = "yyyy/MM/dd";
+    private final String siteId = "TMG_INP";
 
     /**
      * プログラムIDとアクションの間の区切り文字
@@ -662,5 +666,26 @@ public class TmgTimePunchBean {
     public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId) {
         return iTmgTimepunchService.selectClockInfo(custId, compCode, employeeId);
     }
+
+    /**
+     * 超過勤務時間
+     *
+     * @param custId
+     * @param compCode
+     * @param employeeId
+     * @return
+     */
+    public String[] selectOverWorkTime(String custId, String compCode, String employeeId) {
+        List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
+        String[] overWorkTime = new String[detailOverhoursVOList.size()];
+        String timeTmp = "";
+        for (int i = 0; i < detailOverhoursVOList.size(); i++) {
+            DetailOverhoursVO detailOverhoursVO = detailOverhoursVOList.get(i);
+            timeTmp = detailOverhoursVO.getTdadNopen() + "-" + detailOverhoursVO.getTdadNclose();
+            overWorkTime[i] = timeTmp;
+        }
+        return overWorkTime;
+    }
+
 
 }

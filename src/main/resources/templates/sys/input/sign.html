@@ -59,12 +59,18 @@
                 <ul class="time-list">
                     <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
                     <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style" :title="item.time">
-                        {{ item.style.width.split('px')[0] > 100 ? item.time : '0' }}
+                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
+                            <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
+                        </Tooltip>
+                    </abbr>
+                    <abbr :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;" v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
+                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
+                            <div slot="content">超過勤務時間:<br/>{{ item.time }}</div>
+                        </Tooltip>
                     </abbr>
                 </ul>
             </div>
         </i-col>
-        <!--日次就業実績-->
         <!--日次就業実績-->
         <Drawer :title="title" width="850" v-model="isShow" @on-close="handleClose()" :mask-closable="false">
             <div style="position: relative">
@@ -283,7 +289,15 @@
                     employeId: [[${ session.psSession.loginEmployee }]],
                     targetDate: ''
                 },
+                query_overWork: {
+                    custId: [[${ session.psSession.loginCustomer}]],
+                    compCode: [[${ session.psSession.loginCompany}]],
+                    language: [[${ session.psSession.language}]],
+                    employeId: [[${ session.psSession.loginEmployee }]],
+                    userCode:[[${ session.psSession.loginEmployee }]]
+                },
                 scheduleData: ['', ''],
+                overWorkData: [''],
                 scheduleTime: Utils.getNumArray(0, 29).map(e => e),
                 checkInLoading: false,
                 checkOutLoading: false,
@@ -333,8 +347,8 @@
                     selHealthStatus: '',
                     psSite: 'TMG_INP',
                     psApp: 'TmgResults',
-                    EmployeeCode:[[${ session.psSession.loginEmployee }]],
-                    UserCode:[[${ session.psSession.loginEmployee }]],
+                    EmployeeCode: [[${ session.psSession.loginEmployee }]],
+                    UserCode: [[${ session.psSession.loginEmployee }]],
                     txtTmgReferListTreeViewPermSelectedView: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
                     txtTmgReferListTreeViewPermTargetGroup: '',
@@ -351,8 +365,8 @@
                     tdaCowncommentR: '',
                     psSite: 'TMG_INP',
                     psApp: 'TmgResults',
-                    EmployeeCode:[[${ session.psSession.loginEmployee }]],
-                    UserCode:[[${ session.psSession.loginEmployee }]],
+                    EmployeeCode: [[${ session.psSession.loginEmployee }]],
+                    UserCode: [[${ session.psSession.loginEmployee }]],
                     txtTmgReferListTreeViewPermSelectedView: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
                     txtTmgReferListTreeViewPermTargetGroup: '',
@@ -372,8 +386,8 @@
                     hasAuthority: true,
                     psSite: 'TMG_INP',
                     psApp: 'TmgResults',
-                    EmployeeCode:[[${ session.psSession.loginEmployee }]],
-                    UserCode:[[${ session.psSession.loginEmployee }]],
+                    EmployeeCode: [[${ session.psSession.loginEmployee }]],
+                    UserCode: [[${ session.psSession.loginEmployee }]],
                     txtTmgReferListTreeViewPermSelectedView: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
                     txtTmgReferListTreeViewPermTargetGroup: '',
@@ -565,6 +579,7 @@
             this.$refs.clock.showTime()
             this.getClockInfo()
             this.getScheduleInfo()
+            this.getOverTime()
             this.getDutyAndRelaxDate()
         },
         beforeDestroy() {
@@ -575,13 +590,22 @@
                 if (this.data.clockOnTime && !this.data.clockOffTime) return true
                 return false
             },
+            //超過勤務時間表示かどうか
+            isOverActivated() {
+                if (!this.overWorkData[0]) {
+                    if (this.overWorkData[0].length > 0)
+                        return true
+                }
+                return false
+            },
+            //予定時間
             dynamicSchedule() {
                 if (!this.scheduleData[0]) {
                     return
                 }
                 const that = this
                 const leftHelper = Utils.timeToMinute(this.scheduleData[0].split('-')[0])
-                return this.scheduleData.map(e => {
+                return this.scheduleData.map((e, i) => {
                     const startTime = Utils.timeToMinute(e.split('-')[0])
                     const endTime = Utils.timeToMinute(e.split('-')[1])
                     const contentWidth = ((endTime - startTime) / 60) * 46.5
@@ -599,7 +623,31 @@
                     }
                 })
             },
-
+            //超過勤務時間
+            dynamicSchedule2() {
+                if (!this.overWorkData[0]) {
+                    return
+                }
+                const that = this
+                const leftHelper = Utils.timeToMinute(this.overWorkData[0].split('-')[0])
+                return this.overWorkData.map((e, i) => {
+                    const startTime = Utils.timeToMinute(e.split('-')[0])
+                    const endTime = Utils.timeToMinute(e.split('-')[1])
+                    const contentWidth = ((endTime - startTime) / 60) * 46.5
+                    const left = (startTime / 60) * 46.5 + 25
+                    return {
+                        time: e,
+                        style: {
+                            width: `${contentWidth}px`,
+                            lineHeight: `123px`,
+                            left: `${left}px`,
+                            top: '35%',
+                            textDecoration: 'none',
+                            color: contentWidth > 100 ? '#ff0000' : 'var(--real-schedule)'
+                        }
+                    }
+                })
+            }
         },
         methods: {
             async getData() {
@@ -621,6 +669,13 @@
                     this.data.serverTime = Date.now()
                 }
 
+            },
+            //超過勤務時間を取得する
+            async getOverTime(){
+                const {data} = await this.http.post('sys/timePunch/queryOverWorkTime', this.query_overWork)
+                if (data) {
+                    this.overWorkData = data
+                }
             },
             //打刻
             async clock(pAction) {
@@ -751,10 +806,10 @@
                 this.detailOverhoursVOList = []
 
                 this.title = '  '
-                this.query.txtDYYYYMMDD = Utils.formatDate(new Date(),"yyyy/MM/dd")
-                this.txtDYYYYMMDD =  Utils.formatDate(new Date(),"yyyy/MM/dd")
+                this.query.txtDYYYYMMDD = Utils.formatDate(new Date(), "yyyy/MM/dd")
+                this.txtDYYYYMMDD = Utils.formatDate(new Date(), "yyyy/MM/dd")
                 this.query.txtAction = 'ACT_EDITINP_RDAILY'
-                this.query.txtDYYYYMM = Utils.formatDate(new Date(),"yyyy/MM/dd")
+                this.query.txtDYYYYMM = Utils.formatDate(new Date(), "yyyy/MM/dd")
                 this.bFixed = false
                 this.bHoliday = false
                 // 業登録画面データ取得
