@@ -37,4 +37,6 @@ public class LoginAccountBO implements Serializable {
     private String maCuserid; //MA_CUSERID
     private String workTypeName;
 
+    private String encodePassword;
+
 }
