@@ -453,7 +453,7 @@
 
               <!-- 有伤病-->
               <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
-                <i-input v-model="restApply.txtSickName" class="tl"/>
+                <i-input v-model="restApply.txtSickName" class="tl" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
               </form-item>
 
               <form-item label="申請事由等">

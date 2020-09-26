@@ -310,7 +310,7 @@
                                     <!-- 有伤病-->
                                     <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
-                                        <i-input v-model="restApply.txtSickName" />
+                                        <i-input v-model="restApply.txtSickName" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
                                     </section>
 
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
