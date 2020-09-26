@@ -431,12 +431,12 @@
 
               <!-- 是有氏名的-->
               <form-item label="氏名" v-show="selectedRestInfo.name">
-                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100文字以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有続柄的-->
               <form-item label="続柄" v-show="selectedRestInfo.relation">
-                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100文字以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有対象の人数的-->
