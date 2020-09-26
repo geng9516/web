@@ -748,11 +748,11 @@
             valid_length(title, msg) {
                 this.hiddenAlert()
                 if (msg.length < 5) {
-                    this.showAlert(title + 'は半角英数記号文字を5桁以上に入力してください')
+                    this.showAlert(title + 'は半角英数記号文字を5文字以上に入力してください')
                     return false
                 }
                 if (msg.length > 50) {
-                    this.showAlert(title + 'は半角英数記号文字を50桁以下に入力してください')
+                    this.showAlert(title + 'は半角英数記号文字を50文字以下に入力してください')
                     return false
                 }
                 return true

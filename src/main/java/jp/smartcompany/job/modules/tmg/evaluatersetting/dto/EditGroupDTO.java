@@ -17,10 +17,10 @@ public class EditGroupDTO {
   @NotBlank(message = "sectionIdは空白するのを許可されていません")
   private String sectionId;
 
-  private String autoStart;
+  private Boolean autoStart;
   private String dailyOverTime;
-  private String monthlyOverTimeAvg;
-  private String monthlyOverTimeCount;
+  private Double avgOverTime;
+  private Double countOverTime;
 
   private String monthlyOverTimeYellow;
   private String monthlyOverTimeOrange;
