@@ -360,17 +360,17 @@
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.begin" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.end" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period">
-                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
+                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single tl width100"
                   placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
                 </date-picker>
               </form-item>
