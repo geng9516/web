@@ -19,6 +19,7 @@ public class GroupManagerEditDTO {
 
     // グループ定義条件マスタ ID
     private Long mgpId;
+    // groupId 如果是新增则不传，修改时才传入
     private Long mgId;
     @NotBlank
     private String groupId;

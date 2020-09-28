@@ -59,4 +59,6 @@ public interface IMastGroupbasesectionService extends IService<MastGroupbasesect
         List<BaseSectionRowListDTO> selectGroupBaseSectionList(String psCustomerId,
                                                                String psCompanyId, String psSystemId, String psLanguage,
                                                                String psGroupId, Date pdSearchDate);
+
+        List<MastGroupbasesectionDO> selectMastGroupBaseSection(Date startDate, String custId, String systemId, String groupId);
 }

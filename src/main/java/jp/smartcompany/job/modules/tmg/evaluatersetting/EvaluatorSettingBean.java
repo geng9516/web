@@ -786,7 +786,6 @@ public class EvaluatorSettingBean {
         map.put("YYYYMMDD",params.getYYYYMMDD());
         try {
             psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
-            System.out.println(psResult);
             List<EditMemberVO> memberList = CollUtil.newArrayList();
             for (int i = 0;i< bean.getCount(psResult,IDX_MEMBER);i++) {
                 EditMemberVO vo = new EditMemberVO();
@@ -1828,7 +1827,6 @@ public class EvaluatorSettingBean {
             vQuery.add(buildSQLForSelectEvaluaterEmpNum(params));    // 3 グループの承認者ごとに登録されている権限設定の歴数
             try {
                  psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
-                System.out.println(psResult);
                  // グループ・承認者毎の権限設定歴データ数マップデータを作成
                  Map<String,Object> groupEmpDataMap = MapUtil.newHashMap();
                  for (int i=0; i <= psDBBean.getCount(psResult,IDX_EVALEMPNUM); i++) {
