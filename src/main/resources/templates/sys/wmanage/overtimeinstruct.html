@@ -231,7 +231,7 @@
                                     :maxlength="100"
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
                             </i-col>
-                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 0">
                                 <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
@@ -480,7 +480,7 @@
                                     align: 'center'
                                 },
                                 {
-                                    title: '承認',
+                                    title: '状態',
                                     slot: 'workApplyStatus',
                                     width: 80,
                                     align: 'center'
@@ -905,6 +905,8 @@
                         return
                     } finally {
                         this.dailyTableLoading = false
+                        console.log(this.value)
+                        console.log(1)
                     }
                 },
                 async getTableData() {
