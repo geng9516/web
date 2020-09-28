@@ -628,6 +628,7 @@
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
                     txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     type: 11
@@ -643,6 +644,7 @@
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
+                    txtTmgReferListTreeViewAdminTargetEmp:'',
                     EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
@@ -1674,6 +1676,7 @@
                 this.wokertypename=e[0].wokertypename
                 //其他页面需要参数
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 //当前页面请求参数
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
