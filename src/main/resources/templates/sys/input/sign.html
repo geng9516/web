@@ -56,14 +56,15 @@
                     <div class="time-title">時間</div>
                     <div class="plan-title">本日の勤務予定</div>
                 </div>
-                <ul class="time-list">
-                    <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
+                <ul class="time-list" >
+                    <li v-model="scheduleTime" class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
                     <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
                     </abbr>
-                    <abbr v-model="overWorkData"  :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;" v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
+                    <abbr v-model="overWorkData" :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;"
+                          v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">超過勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
@@ -294,7 +295,7 @@
                     compCode: [[${ session.psSession.loginCompany}]],
                     language: [[${ session.psSession.language}]],
                     employeId: [[${ session.psSession.loginEmployee }]],
-                    userCode:[[${ session.psSession.loginEmployee }]]
+                    userCode: [[${ session.psSession.loginEmployee }]]
                 },
                 scheduleData: ['', ''],
                 overWorkData: [''],
@@ -578,14 +579,16 @@
             await this.getData()
             this.$refs.clock.showTime()
             this.getClockInfo()
-            this.getScheduleInfo()
-            this.getOverTime()
+            await this.getScheduleInfo()
+            await this.getOverTime()
             this.getDutyAndRelaxDate()
+            this.dynamicScheduleFit()
         },
         beforeDestroy() {
             this.$refs.clock.cleanClock()
         },
         computed: {
+            //予定時間表示かどうか
             isActivated() {
                 if (this.data.clockOnTime && !this.data.clockOffTime) return true
                 return false
@@ -665,13 +668,13 @@
                     //console.log(this.data.serverTime)
                     return
                 } catch (e) {
-                    console.log(e)
+                    //console.log(e)
                     this.data.serverTime = Date.now()
                 }
 
             },
             //超過勤務時間を取得する
-            async getOverTime(){
+            async getOverTime() {
                 const {data} = await this.http.post('sys/timePunch/queryOverWorkTime', this.query_overWork)
                 if (data) {
                     this.overWorkData = data
@@ -791,6 +794,24 @@
                 this.isShow = false
                 this.$emit('close')
             },
+            //予定時間帯の自動適応（２４、２９、４８）
+            dynamicScheduleFit() {
+                var endTime = "";
+                if (this.overWorkData.length > 0) {
+                    //もし超過勤務時間があれば、超過勤務時間に基く
+                    endTime = Utils.timeToMinute(this.overWorkData[this.overWorkData.length - 1].split('-')[1])
+                } else {
+                    //無ければ、勤務予定時間に基く
+                    endTime = Utils.timeToMinute(this.scheduleData[this.scheduleData.length - 1].split('-')[1])
+                }
+                if (parseInt(endTime) <= 1440)
+                    this.scheduleTime = Utils.getNumArray(0, 24)
+                if (parseInt(endTime) > 1440 && parseInt(endTime) <= 1740)
+                    this.scheduleTime = Utils.getNumArray(0, 29)
+                if (parseInt(endTime) > 1740)
+                    this.scheduleTime = Utils.getNumArray(0, 48)
+
+            },
             //一覧から日次実績をクリックする
             async showDay() {
                 // 業登録画面表示
@@ -842,7 +863,7 @@
 
                 // 非勤務ドロップダウン
                 this.categoryNondutyList = data.categoryNondutyList
-                console.log(this.categoryNondutyList)
+                //console.log(this.categoryNondutyList)
                 if (this.categoryNondutyList.length > 0) {
                     this.categoryNonduty = this.categoryNondutyList[0].itemCode
                 }
@@ -994,11 +1015,10 @@
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
-                this.changeWorkingID(this.workingId),
-
-                    console.log(this.bHoliday)
-                console.log(this.bFixed)
-                console.log(this.isEdiTableResult4Inp)
+                this.changeWorkingID(this.workingId)
+                //console.log(this.bHoliday)
+                //console.log(this.bFixed)
+                //console.log(this.isEdiTableResult4Inp)
 
             },
 
@@ -1090,6 +1110,9 @@
 
                             //超過勤務時間を追加するかもしれないので、データリストを更新する
                             this.getOverTime()
+
+                            //自動で時間帯に適応性する
+                            this.dynamicScheduleFit()
                         }
                     }
                 })
@@ -1170,6 +1193,8 @@
 
                             //超過勤務時間を追加するかもしれないので、データリストを更新する
                             await this.getOverTime()
+                            //自動で時間帯に適応性する
+                            this.dynamicScheduleFit()
                         }
                     }
                 })
@@ -1394,6 +1419,7 @@
                     return [1, 2]
                 }
             }
+
         }
     })
 </script>

@@ -19,7 +19,7 @@
     </svg>
 </button>
   <div :class="navIcon ? 'active mobile-nav' : 'mobile-nav'">
-    <ul style="font-size: 24px; font-weight: 800; text-align: right;color: white;margin-top: 55px;">
+    <ul style="font-size: 24px; font-weight: 800; text-align: right;color: white;margin-top: 55px;" v-show="btnAnimationHideCompo">
       <li :class="curMenu === 'TmgResults' ? 'active menu-li' : 'menu-li'"  @click="()=> location.href = `${BASE_URL}/tmg_inp/TmgResults?moduleIndex=2&psSite=TMG_INP&psApp=TmgResults`">
         就業登録
         <svg class="menu-li-logo">
@@ -56,9 +56,9 @@
         <avatar class="white-avatar" style="background-color: var(--table-head)">テーマ</avatar>
       </a>
       <dropdown-menu slot="list">
-        <dropdown-item v-for="item of themeList" :value="item" :name="item" :key="item" style="border-bottom: 1px solid #d2d2d2;"
-          @click.native="Changetheme(item)">
-          {{ item }}
+        <dropdown-item v-for="(item, i) of themeList" :value="item.value" :name="item.name" :selected="curTheme === item.value" :key="i" style="border-bottom: 1px solid #d2d2d2;"
+          @click.native="Changetheme(item.value, HEADER)">
+          {{ item.name }}
         </dropdown-item>
       </dropdown-menu>
     </dropdown>
@@ -91,7 +91,14 @@
         return {
           baseUrl: BASE_URL,
           session: [[${ session }]],
-          themeList: ['デフォルト', 'クラシック', 'ナイト'],
+          themeList: [
+            { name: 'デフォルト', value: 'default'},
+            { name: 'クラシック', value: 'classical'},
+            { name: 'ナイト', value: 'dark'}
+          ],
+          curTheme: localStorage.getItem('APP_THEME') || 'default',
+          btnAnimationHideCompo: false,
+          btnAnimationHideCompoTimer: '',
           query:{
             psSite: Utils.getUrlParam(location.href, 'psSite') || 'TMG_INP',
             psApp: Utils.getUrlParam(location.href, 'psApp') || 'TmgResults'
@@ -130,6 +137,13 @@
       mounted() {
         this.password.username = this.session.psSession.loginUser
         this.getClockInfo()
+      },
+      watch: {
+        navIcon(newValue) {
+          if(this.btnAnimationHideCompoTimer) clearTimeout(this.btnAnimationHideCompoTimer)
+          if(newValue) this.btnAnimationHideCompo = true
+          else this.btnAnimationHideCompoTimer = setTimeout(()=> this.btnAnimationHideCompo = false, 500)
+        }
       },
       methods: {
         logout: Debounce(async function () {

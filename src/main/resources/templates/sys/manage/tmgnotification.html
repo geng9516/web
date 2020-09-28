@@ -863,6 +863,8 @@
         },
         async handleDeptDateChange(e) {
           this.referListObject.txtTmgReferListTreeViewRecordDate = e
+          this.curYear=e
+          this.opts.year=e.slice(0,4)
           this.isSearchHistory = true
           await this.getOrgTree()
           this.getHasAuthority()

@@ -518,7 +518,7 @@
                         }
                         const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                         this.applyHistoryListData = data.list
-                        this.applyHistoryListAmount = data.count
+                        this.applyHistoryListAmount = data.totalCount
                         if (!isInit) this.$Message.success('再表示完了')
                     } catch (error) {
                         return
