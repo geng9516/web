@@ -97,8 +97,6 @@
 
   --primary-shadow: var(--btn-shadow);
 
-  --ghost-primary-border: var(--primary-border);
-  --ghost-primary-background: var(--white);
   --ghost-primary-shadow: var(--btn-shadow);
 
   --error-border: rgb(251, 146, 140);
@@ -108,7 +106,6 @@
   --error-active: linear-gradient(-45deg, rgb(243, 54, 67), var(--error-border));
 
   --ghost-error-border: rgb(251, 81, 82);
-  --ghost-error-background: var(--white);
   --ghost-error-shadow: var(--btn-shadow);
   --ghost-error-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
   --ghost-error-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
@@ -120,7 +117,6 @@
   --success-active: linear-gradient(-45deg, rgb(11, 189, 70), var(--success-border));
 
   --ghost-success-border: rgb(9, 184, 88);
-  --ghost-success-background: var(--white);
   --ghost-success-shadow: var(--btn-shadow);
   --ghost-success-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
   --ghost-success-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
