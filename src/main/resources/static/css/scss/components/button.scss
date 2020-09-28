@@ -81,7 +81,7 @@
   }
 }
 .ivu-btn-ghost {
-  background: var(--ghost-background);
+  background: var(--ghost-background) !important;
 }
 .ivu-btn-ghost.ivu-btn-primary{
   border-color: var(--ghost-primary-border);

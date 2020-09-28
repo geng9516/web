@@ -1360,7 +1360,7 @@ public class PermStatListBean {
         List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
 
         //  一括承認データを更新する
-        String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
+        String sProgramId = APPLICATION_ID + "_" + _sAction;
         iTmgDailyService.buildSQLForUpdateTmgDaily(psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList);
 
         // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更
