@@ -250,7 +250,7 @@
             </i-option>
          </i-select>
          <!-- PersonalApplyTable -->
-         <ul class="apply-history-list" style="right: unset;">
+         <ul class="apply-history-list" style="right: unset;max-height: unset;">
             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
             <li :class="handleTimelineDotShow(item.tntfCstatusflg)" v-for="(item, index) of applyHistoryListData"
                :key="index">
@@ -292,8 +292,8 @@
             <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 88vh;">
             </Spin>
             <!-- 还有更多数据的时候 -->
-            <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" class="width75"
-               style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>
+            <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" long
+               style="margin-top: 35px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>
                もっと見る</i-button>
          </ul>
          <!-- PersonalApplyTable -->
@@ -467,7 +467,7 @@
                   }
                   const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                   this.applyHistoryListData = data.list
-                  this.applyHistoryListAmount = data.count
+                  this.applyHistoryListAmount = data.totalCount
                   if (!isInit) this.$Message.success('再表示完了')
                } catch (error) {
                   return
