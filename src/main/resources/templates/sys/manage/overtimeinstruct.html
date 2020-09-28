@@ -415,6 +415,7 @@
                         txtTmgReferListTreeViewPermTargetGroup:'',
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
+                        txtTmgReferListTreeViewPermTargetEmp: '',
                         hidSearchItems: 'EMPLOYEEID',
                         hidSearchCondition: 'BROADMATCH',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -1003,6 +1004,7 @@
                 async getAvgTableData(e) {
                     this.averageTableLoading = true
                     this.query.empId = e
+                    this.query.txtTmgReferListTreeViewPermTargetEmp= e
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
                         this.monthAverageTableHead = data.tableHeader
