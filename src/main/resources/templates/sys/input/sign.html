@@ -63,7 +63,7 @@
                             <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
                     </abbr>
-                    <abbr :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;" v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
+                    <abbr v-model="overWorkData"  :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;" v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">超過勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
@@ -1087,13 +1087,15 @@
 
                         } finally {
                             this.isShow = false
+
+                            //超過勤務時間を追加するかもしれないので、データリストを更新する
+                            this.getOverTime()
                         }
                     }
                 })
             }),
             //登録
             async updateDaily() {
-                console.log(this.workData)
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }
@@ -1160,10 +1162,14 @@
                             if (check) {
                                 return false
                             }
+
                         } catch (error) {
                             return
                         } finally {
                             this.updateDailyLoading = false
+
+                            //超過勤務時間を追加するかもしれないので、データリストを更新する
+                            await this.getOverTime()
                         }
                     }
                 })
