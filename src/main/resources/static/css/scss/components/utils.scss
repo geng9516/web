@@ -407,6 +407,9 @@
 .ivu-btn-ghost {
   background: var(--ghost-background);
 }
+.ivu-menu-horizontal.ivu-menu-light:after {
+  background: var(--login-title-border-b);
+}
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}
