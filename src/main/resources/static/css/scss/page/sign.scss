@@ -115,7 +115,7 @@
   display: inline-block;
 }
 .hour-style {
-  background-color: var(--white);
+  background-color: var(--input-bg);
   font-size: 80px;
   height: 127px;
   font-weight: 500;
@@ -127,7 +127,7 @@
 }
 .date-style {
   height: 40px;
-  border-bottom: 1px solid rgb(231, 238, 246);
+  border-bottom: 1px solid var(--login-title-border-b);
   line-height: 40px;
   font-size: 16px;
   border-radius: 5px;
@@ -159,8 +159,8 @@
 .card {
   border-radius: 5px;
   height: 163px;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-  background: white;
+  box-shadow: var(--card-boxshadow);
+  background: var(--login-panel-bg);
   .title {
     text-align: left;
     color: var(--card-title);
