@@ -8,11 +8,14 @@
 <svg th:replace="layout/logos::svg_logos"></svg>
 <style>
     body {
+        position: fixed;
         background: var(--login-right-part-bg);
         overflow-y: hidden;
     }
 
     .login-page {
+        position: relative;
+        width: 100vw;
         height: 100vh;
         animation: scrollToUp 80s linear infinite alternate;
     }
