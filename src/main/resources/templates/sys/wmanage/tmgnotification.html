@@ -377,7 +377,7 @@
 
               <!-- 有加算日-->
               <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
-                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
+                <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
               </form-item>
 
               <!-- 是小时单位的 時間帯 -->
@@ -441,7 +441,7 @@
 
               <!-- 是有対象の人数的-->
               <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber">
-                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
+                <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
                 </i-input>
               </form-item>
 
@@ -1160,7 +1160,9 @@
               noreserved: 1,
               _dateList: '',
               _dateListRange: ['', ''],
-              dateListRange: ['', '']
+              dateListRange: ['', ''],
+              txtAddDate:null,
+              txtTargetNumber:null
             }
             this.errorInfo = false
             this.uploadFiles = []
@@ -1302,6 +1304,7 @@
             this.errorMsg = '続柄を入力してください。'
             return
           }
+          console.log(this.restApply.txtTargetNumber)
           if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
             this.errorInfo = true
             this.errorMsg = '対象の人数を入力してください。'
@@ -1345,7 +1348,9 @@
               noreserved: 1,
               _dateList: '',
               _dateListRange:['', ''],
-              dateListRange:['', '']
+              dateListRange:['', ''],
+              txtAddDate:null,
+              txtTargetNumber:null
             }
             this.$Message.success('申请完了')
             this.agencyApplyShow = false

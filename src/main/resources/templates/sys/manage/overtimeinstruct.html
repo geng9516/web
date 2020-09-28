@@ -174,18 +174,18 @@
                                :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
                     </template>
 
-                    <template slot-scope="{ row }" slot="restTime" v-if="!restTimeSetDisable">
-                        <Row :gutter="10">
-                            <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" class="tl"
-                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestOpen', $event.target)" />
-                            </i-col>
-                            <i-col span="12">
-                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" class="tl"
-                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestClose', $event.target)" />
-                            </i-col>
-                        </Row>
-                    </template>
+<!--                    <template slot-scope="{ row }" slot="restTime" v-if="!restTimeSetDisable">-->
+<!--                        <Row :gutter="10">-->
+<!--                            <i-col span="12">-->
+<!--                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestOpen" class="tl"-->
+<!--                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestOpen', $event.target)" />-->
+<!--                            </i-col>-->
+<!--                            <i-col span="12">-->
+<!--                                <i-input v-model="pattern.updateRestTimeDtoList[0].sNRestClose" class="tl"-->
+<!--                                    @on-blur="handleInputChange(row._index, pattern.updateRestTimeDtoList[0],'sNRestClose', $event.target)" />-->
+<!--                            </i-col>-->
+<!--                        </Row>-->
+<!--                    </template>-->
 
                     <template slot-scope="{ row }" slot="option">
                         <i-button type="primary" class="mr5" ghost @click="changeSelectedDataByGroup(false)">
@@ -249,8 +249,7 @@
                                 <i-button ghost type="error" v-if="hasAuthority"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
-                            </i-col>
-                            <span
+                                <span
                                 v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('0') > -1"
                                 class="confirm-sytle ing">待</span>
                             <span
@@ -259,6 +258,7 @@
                             <span
                                 v-if="value[row._index].updateOverTimeDtoList[i].sStatus && value[row._index].updateOverTimeDtoList[i].sStatus.indexOf('6') > -1"
                                 class="confirm-sytle">命</span>
+                            </i-col>
                         </Row>
                         <i-button class="mt5" size="small" ghost type="success" long
                             @click="handleAddOverTime(value[row._index].updateOverTimeDtoList)" v-if="hasAuthority"
@@ -270,33 +270,33 @@
                     <template slot-scope="{ row }" slot="workApplyStatus">
                     </template>
 
-                    <template slot-scope="{ row }" slot="restTime">
-                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"
-                            class="mb2">
-                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"
-                                    :disabled="restTimeSetDisable" class="tl"
-                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestOpen', $event.target)">
-                                </i-input>
-                            </i-col>
-                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">
-                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"
-                                    :disabled="restTimeSetDisable" class="tl"
-                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestClose', $event.target)">
-                                </i-input>
-                            </i-col>
-                            <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">
-                                <i-button ghost type="error"
-                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)"
-                                    @on-blur="handleInputChange(row._index, false)">-</i-button>
-                            </i-col>
-                        </Row>
-                        <i-button class="mt5" size="small" ghost type="success" long
-                            @click="handleAddRest(value[row._index].updateRestTimeDtoList)"
-                            v-show="value[row._index].updateRestTimeDtoList.length < 4 && !restTimeSetDisable">
-                            +
-                        </i-button>
-                    </template>
+<!--                    <template slot-scope="{ row }" slot="restTime">-->
+<!--                        <Row :gutter="10" v-for="(item, i) of value[row._index].updateRestTimeDtoList" :key="i"-->
+<!--                            class="mb2">-->
+<!--                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">-->
+<!--                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestOpen"-->
+<!--                                    :disabled="restTimeSetDisable" class="tl"-->
+<!--                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestOpen', $event.target)">-->
+<!--                                </i-input>-->
+<!--                            </i-col>-->
+<!--                            <i-col :span="value[row._index].updateRestTimeDtoList.length > 1 ? 8 : 12">-->
+<!--                                <i-input v-model="value[row._index].updateRestTimeDtoList[i].sNRestClose"-->
+<!--                                    :disabled="restTimeSetDisable" class="tl"-->
+<!--                                    @on-blur="handleInputChange(row._index, value[row._index].updateRestTimeDtoList[i],'sNRestClose', $event.target)">-->
+<!--                                </i-input>-->
+<!--                            </i-col>-->
+<!--                            <i-col span="8" v-show="value[row._index].updateRestTimeDtoList.length > 1">-->
+<!--                                <i-button ghost type="error"-->
+<!--                                    @click="handleMinusRest(value[row._index].updateRestTimeDtoList, i)"-->
+<!--                                    @on-blur="handleInputChange(row._index, false)">-</i-button>-->
+<!--                            </i-col>-->
+<!--                        </Row>-->
+<!--                        <i-button class="mt5" size="small" ghost type="success" long-->
+<!--                            @click="handleAddRest(value[row._index].updateRestTimeDtoList)"-->
+<!--                            v-show="value[row._index].updateRestTimeDtoList.length < 4 && !restTimeSetDisable">-->
+<!--                            +-->
+<!--                        </i-button>-->
+<!--                    </template>-->
                     <template slot-scope="{ row }" slot="remark">
                         <span>{{ row.message }}</span>
                     </template>
@@ -415,6 +415,7 @@
                         txtTmgReferListTreeViewPermTargetGroup:'',
                         //基准日
                         txtTmgReferListTreeViewRecordDate: '',
+                        txtTmgReferListTreeViewPermTargetEmp: '',
                         hidSearchItems: 'EMPLOYEEID',
                         hidSearchCondition: 'BROADMATCH',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
@@ -506,12 +507,12 @@
                             ],
                             align: 'center'
                         },
-                        {
-                            title: '休憩',
-                            minWidth: 180,
-                            slot: 'restTime',
-                            align: 'center'
-                        },
+                        // {
+                        //     title: '休憩',
+                        //     minWidth: 180,
+                        //     slot: 'restTime',
+                        //     align: 'center'
+                        // },
                         {
                             title: '備考',
                             minWidth: 70,
@@ -536,11 +537,11 @@
                             slot: 'content',
                             align: 'center'
                         },
-                        {
-                            title: '休憩',
-                            slot: 'restTime',
-                            align: 'center'
-                        },
+                        // {
+                        //     title: '休憩',
+                        //     slot: 'restTime',
+                        //     align: 'center'
+                        // },
                         {
                             title: 'チェックした職員に対し',
                             slot: 'option',
@@ -999,10 +1000,11 @@
                     } finally {
                         this.permissionFlagLoading = false
                     }
-                },
+                },　
                 async getAvgTableData(e) {
                     this.averageTableLoading = true
                     this.query.empId = e
+                    this.query.txtTmgReferListTreeViewPermTargetEmp= e
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
                         this.monthAverageTableHead = data.tableHeader
