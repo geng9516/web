@@ -644,6 +644,7 @@
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
+                    txtTmgReferListTreeViewAdminTargetSection:'',
                     txtTmgReferListTreeViewAdminTargetEmp:'',
                     EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -1677,6 +1678,10 @@
                 //其他页面需要参数
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                console.log("-----------------------------------1------------------------------------")
+                console.log(this.query.txtTmgReferListTreeViewAdminTargetEmp)
+                console.log(this.query.txtTmgReferListTreeViewAdminTargetSection)
                 //当前页面请求参数
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid

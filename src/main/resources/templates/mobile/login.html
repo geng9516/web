@@ -154,6 +154,11 @@
             bottom: -32px;
         }
     }
+    @media all and (orientation: landscape) {
+      .login-page {
+        display: none;
+      }
+    }
 </style>
 <main class="login-page" :style="`background-image:url(${BASE_URL}/static/svg/trademark.svg)`">
     <section class="main-logo">

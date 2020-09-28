@@ -162,7 +162,7 @@
                 </template>
 
                 <template slot-scope="{ row }" slot="level">
-                    <i-select v-model="permissionAdminValue[row._index].level" transfer :disabled="!permissionAdminValue[row._index].restConfirm" placeholder="">
+                    <i-select v-model="permissionAdminValue[row._index].level" disabled placeholder="">
                         <i-option v-for="(item, i) of levelList" :value="item.value" :key="i" :label="item.name"></i-option>
                     </i-select>
                 </template>

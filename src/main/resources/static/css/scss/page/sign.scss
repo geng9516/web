@@ -5,7 +5,6 @@
   display: flex;
   height: 350px;
   font-size: 0;
-  color: white;
   .title-wrap {
     height: 40px;
     .time-title {
@@ -36,7 +35,7 @@
     border-radius: 0 5px 5px 0;
     box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
     color: var(--card-title);
-    background: var(--white);
+    background: var(--card-title-bg);
     overflow-y: hidden;
     .li {
       display: inline-block;
@@ -53,7 +52,7 @@
         left: 45px;
         width: 1px;
         height: 100%;
-        background-image: linear-gradient(to bottom, rgb(206, 206, 206) 0%, rgb(206, 206, 206) 50%, transparent 50%);
+        background-image: linear-gradient(to bottom, var(--login-title-border-b) 0%, var(--login-title-border-b) 50%, transparent 50%);
         background-size: 1px 13px;
       }
       &:after {
@@ -64,11 +63,11 @@
         left: 24px;
         width: 1px;
         height: 100%;
-        border-left: solid 1px rgb(206, 206, 206);
+        border-left: solid 1px var(--login-title-border-b);
       }
     }
   }
-  .real-schedule {
+  .real-schedule,  .real-schedule-overwork{
     display: block;
     position: absolute;
     left: 155px;
@@ -80,6 +79,12 @@
     transition: all 1s;
     border-radius: 8px;
   }
+  .real-schedule{
+    background: var(--real-schedule-bg);
+  }
+  .real-schedule-overwork {
+    background: var(--real-schedule-overwork-bg);
+  }
   &:after {
     content: '';
     display: inline-block;
@@ -88,7 +93,7 @@
     z-index: 1;
     width: 100%;
     height: 1px;
-    border-top: solid 1px rgb(206 ,206, 206);
+    border-top: solid 1px var(--login-title-border-b);
   }
 }
 
@@ -115,7 +120,7 @@
   display: inline-block;
 }
 .hour-style {
-  background-color: var(--white);
+  background-color: var(--login-panel-bg);
   font-size: 80px;
   height: 127px;
   font-weight: 500;
@@ -127,7 +132,7 @@
 }
 .date-style {
   height: 40px;
-  border-bottom: 1px solid rgb(231, 238, 246);
+  border-bottom: 1px solid var(--login-title-border-b);
   line-height: 40px;
   font-size: 16px;
   border-radius: 5px;
@@ -159,8 +164,8 @@
 .card {
   border-radius: 5px;
   height: 163px;
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.1);
-  background: white;
+  box-shadow: var(--card-boxshadow);
+  background: var(--login-panel-bg);
   .title {
     text-align: left;
     color: var(--card-title);

@@ -6,7 +6,6 @@ import jp.smartcompany.admin.groupmanager.dto.GroupManagerDeleteDTO;
 import jp.smartcompany.admin.groupmanager.dto.GroupManagerEditDTO;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerDateEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerGroupEditLogic;
-import jp.smartcompany.admin.groupmanager.logic.GroupManagerHistoryEditLogic;
 import jp.smartcompany.admin.groupmanager.logic.GroupManagerLogic;
 import jp.smartcompany.framework.component.dto.QueryConditionSelectDTO;
 import jp.smartcompany.framework.component.entity.EmployeeInfoSearchEntity;
@@ -36,7 +35,6 @@ public class GroupManagerController {
     private final GroupManagerGroupEditLogic groupManagerGroupEditLogic;
     private final EmployeeInfoSearchLogic employeeInfoSearchLogic;
     private final GroupManagerDateEditLogic groupManagerDateEditLogic;
-    private final GroupManagerHistoryEditLogic groupManagerHistoryEditLogic;
 
     /**
      * ===========================================
@@ -245,19 +243,6 @@ public class GroupManagerController {
         return groupManagerDateEditLogic.sortHandler(groupIds,null);
     }
 
-    /**
-     * ===========================================
-     * GroupManagerHistoryEditAction 整理接口
-     * ===========================================
-     */
-    // http:localhost:6879/sys/groupmanager/historylist?psSite=Admin?groupId=4
-    @GetMapping("historylist")
-    public Map<String,Object> editHistoryList(@RequestParam(value="systemId",required = false) String systemId, @RequestParam("groupId") String groupId) {
-        if (StrUtil.isBlank(systemId)){
-            systemId="01";
-        }
-        return groupManagerHistoryEditLogic.getGroupHistoryList(systemId,groupId);
-    }
 
 }
 

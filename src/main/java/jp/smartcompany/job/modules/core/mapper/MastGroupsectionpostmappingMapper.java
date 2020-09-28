@@ -134,4 +134,9 @@ public interface MastGroupsectionpostmappingMapper extends BaseMapper<MastGroups
                @Param("typeId") String typeId,
                @Param("startDate") String startDate);
 
+     List<MastGroupsectionpostmappingDO> selectMastGroupSectionPostMapping(
+             @Param("searchDate") String searchDate,
+             @Param("custId") String custId,
+             @Param("systemId") String systemId,
+             @Param("groupId") String groupId);
 }
