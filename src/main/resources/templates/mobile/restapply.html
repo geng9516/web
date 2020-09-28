@@ -71,26 +71,26 @@
                      </radio-group>
                   </Row>
                   <Row type="flex" justify="start">
-                     <date-picker type="date" class="datepicker-single" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
+                     <date-picker type="date" class="datepicker-single" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateList = $event" placeholder="日付" ref="datepicker"></date-picker>
                      <span v-if="timerangeType === 2">
-                        <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                        <date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;-&nbsp;<date-picker style="width:47%" type="date" class="datepicker-single" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
                      </span>
                   </Row>
                </section>
                <!-- 有振休 -->
                <section v-show="selectedRestInfo.transfer" class="tl">
                   <p class="mb5">出勤にする休日</p>
-                  <date-picker type="date" :value="restApply.begin" class="datepicker-single mb10" placeholder="日付け"
+                  <date-picker type="date" :value="restApply.begin" class="datepicker-single mb10" placeholder="日付"
                      :editable="false" format="yyyy/MM/dd" @on-change="restApply.begin = $event"></date-picker>
                   <p class="mb5">振休日とする出勤日</p>
-                  <date-picker type="date" :value="restApply.end" class="datepicker-single mb10" placeholder="日付け"
+                  <date-picker type="date" :value="restApply.end" class="datepicker-single mb10" placeholder="日付"
                      :editable="false" format="yyyy/MM/dd" @on-change="restApply.end = $event"></date-picker>
                </section>
 
                <!-- 有起算日-->
                <section v-show="selectedRestInfo.period" class="tl mt20">
                   <p class="mb5">起算日</p>
-                  <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5" placeholder="日付け"
+                  <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5" placeholder="日付"
                      :editable="false" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event"></date-picker>
                </section>
 
@@ -154,13 +154,13 @@
                <!-- 是有氏名的-->
                <section v-show="selectedRestInfo.name" class="tl mt20">
                   <p class="mb5">氏名</p>
-                  <i-input class="mb15" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100桁以内で入力してください。"/>
+                  <i-input class="mb15" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
                </section>
 
                <!-- 是有続柄的-->
                <section v-show="selectedRestInfo.relation" class="tl">
                   <p class="mb5">続柄</p>
-                  <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100桁以内で入力してください。"/>
+                  <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
                </section>
 
                <!-- 是有対象の人数的-->
@@ -174,7 +174,7 @@
                <section v-show="selectedRestInfo.birthday" class="tl">
                   <p class="mb5">生年月日</p>
                   <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb15"
-                     :editable="false" placeholder="日付け" format="yyyy/MM/dd"
+                     :editable="false" placeholder="日付" format="yyyy/MM/dd"
                      @on-change="restApply.txtBirthday = $event"></date-picker>
                </section>
 
@@ -213,7 +213,7 @@
             </div>
             <Divider size="small" orientation="left">申請事由</Divider>
             <i-input v-model="restApply.owncomment" class="tl" :maxlength="100" type="textarea" :autosize="{ minRows: 5 }"
-               placeholder="申請事由は100桁以内で入力してください。"></i-input>
+               placeholder="申請事由は100文字以内で入力してください。"></i-input>
             <i-button v-show="!this.isReApplyIng" class="btn" type="primary" long @click="apply()" icon="md-create"
                :loading="loading">申請
             </i-button>

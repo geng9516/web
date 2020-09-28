@@ -3116,7 +3116,7 @@ public class EvaluatorSettingBean {
 
         // 「デフォルト承認者の自動設定を行う」チェックの処理
         String sDefaultFlg;
-        if ("1".equals(dto.getAutoStart())) {
+        if (dto.getAutoStart()) {
             sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_1;
         } else {
             sDefaultFlg = TmgUtil.Cs_MGD_ONOFF_0;
@@ -3174,14 +3174,14 @@ public class EvaluatorSettingBean {
                 escDBString(dto.getYearlyOverTimePink()) + ", " +
                 escDBString(dto.getYearlyOverTimeRed()) + ", " +
                 escDBString(dto.getYearlyOverTimeBackUp()) + ", " +
-                escDBString(dto.getMonthlyOverTimeCount()) + ", " +
+                escDBString(dto.getCountOverTime()+"") + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel1()) + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel2()) + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel3()) + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel4()) + ", " +
                 escDBString(dto.getMonthlyHolidayTimeLevel5()) + ", " +
                 escDBString(dto.getDailyOverTime()) + ", " +
-                escDBString(dto.getMonthlyOverTimeAvg()) + ")";
+                escDBString(dto.getAvgOverTime()+"") + ")";
     }
 
     /**

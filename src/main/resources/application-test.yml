@@ -1,8 +1,8 @@
 spring:
 #  datasource:
 #    url: jdbc:oracle:thin:@47.74.25.28:1521/orcl
-#    username: tmg_iyaku2
-#    password: tmg_iyakupass
+#    username: SPWM
+#    password: SPWMPASS
 #    driver-class-name: oracle.jdbc.OracleDriver
   datasource:
     url: jdbc:oracle:thin:@192.168.20.160:1521/TMG

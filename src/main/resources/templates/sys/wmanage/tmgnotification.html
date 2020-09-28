@@ -221,7 +221,7 @@
 
           <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1">
             <i-input class="tl" type="textarea" style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCbosscomment"
-                     :maxlength="100" placeholder="文字の長さは１００位以内になっております。"></i-input>
+                     :maxlength="100" placeholder="文字の長さは100文字以内になっております。"></i-input>
           </form-item>
 
           <form-item label="承認者コメント" v-else>
@@ -353,24 +353,24 @@
                 </span>
               </form-item>
               <form-item label="日付" v-show="!selectedRestInfo.transfer">
-                <date-picker type="date" class="datepicker-single width100 tl" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付け" ref="datepicker"></date-picker>
+                <date-picker type="date" class="datepicker-single width100 tl" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付" ref="datepicker"></date-picker>
                 <span v-if="timerangeType === 2">
-                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付け" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -5px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -5px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
                 </span>
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.begin" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.end" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period">
-                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
+                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single tl width100"
                   placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
                 </date-picker>
               </form-item>
@@ -431,12 +431,12 @@
 
               <!-- 是有氏名的-->
               <form-item label="氏名" v-show="selectedRestInfo.name">
-                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100桁以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有続柄的-->
               <form-item label="続柄" v-show="selectedRestInfo.relation">
-                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100桁以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有対象の人数的-->
@@ -453,17 +453,17 @@
 
               <!-- 有伤病-->
               <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
-                <i-input v-model="restApply.txtSickName" class="tl"/>
+                <i-input v-model="restApply.txtSickName" class="tl" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
               </form-item>
 
               <form-item label="申請事由等">
                 <i-input class="tl" v-model="restApply.owncomment" type="textarea" :maxlength="100"  :autosize="{ minRows: 5 }"
-                  placeholder="文字の長さは１００位以内になっております。"></i-input>
+                  placeholder="文字の長さは100文字以内になっております。"></i-input>
               </form-item>
 
               <form-item label="承認者コメント">
                 <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100" class="tl"
-                         placeholder="文字の長さは１００位以内になっております。"></i-input>
+                         placeholder="文字の長さは100文字以内になっております。"></i-input>
               </form-item>
 
               <form-item label="添付ファイル">

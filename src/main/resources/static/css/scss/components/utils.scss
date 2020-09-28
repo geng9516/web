@@ -42,7 +42,7 @@
   }
 }
 .ivu-divider-inner-text {
-  color: var(--grey);
+  color: rgb(104, 109, 116);
 }
 .ivu-form-item-validating .ivu-input-icon-validate {
   display: none;
@@ -392,7 +392,18 @@
 .cursor {
   cursor: pointer;
 }
-
+.ivu-input::placeholder {
+  color:var(--place-holder);
+}
+.ivu-input {
+  color:var(--grey);
+}
+.ivu-modal-header {
+  border-bottom-color: var(--login-title-border-b);
+}
+.ivu-modal-content {
+  background: var(--modal-bg);
+}
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}
