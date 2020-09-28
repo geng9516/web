@@ -1006,7 +1006,9 @@
                         txtDYYYYMMDD: Utils.formatDate(this.curDate, 'yyyy/MM/dd'),
                         sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                         psSite: this.referListObject.psSite,
-                        psApp: this.referListObject.psApp
+                        psApp: this.referListObject.psApp,
+                        //选择职员保存、初期化使用。
+                        txtTmgReferListTreeViewAdminTargetEmp: row.empId
                     }
                     this.groupBtnLoading = true
                     try {
@@ -1201,11 +1203,12 @@
                                 }
                             })
                             const query = {
-                                empId: this.permissionAdminValue[0].empId.split(' ')[0],
+                                empId: this.permissionAdminValue[0].empId,
                                 groupId: this.permissionAdminValue[0].groupId,
                                 sectionId: this.referListObject.txtTmgReferListTreeViewAdminTargetSection,
                                 list: list
                             }
+                            console.log(this.permissionAdminValue[0])
                             try {
                                 this.updatePermissionFlagLoading = true
                                 await this.http.post(`sys/evaluatorsetting/editEval?psSite=${this.referListObject.psSite}&psApp=${this.referListObject.psApp}`, query)
@@ -1320,7 +1323,7 @@
                         this.memberAssignValue = this.PermissionMemberAssignData.map(e=>{
                             return {
                                 ...e,
-                                empId: e.empName.split(' ')[0],
+                                empId: e.empId,
                                 originalGroupId: e.groupId,
                                 sectionId:this.referListObject.txtTmgReferListTreeViewAdminTargetSection
                             }
