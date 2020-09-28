@@ -19,6 +19,7 @@ public class EditMemberVO {
 
   private String groupId;
   private String empName;
+  private String empId;
   private String groupName;
   private List<Map<String,String>> groupList;
 

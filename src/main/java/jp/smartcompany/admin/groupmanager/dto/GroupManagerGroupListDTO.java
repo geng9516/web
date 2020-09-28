@@ -1,7 +1,6 @@
 package jp.smartcompany.admin.groupmanager.dto;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastCompanyDO;
-import jp.smartcompany.job.modules.core.pojo.entity.MastLanguageDO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
