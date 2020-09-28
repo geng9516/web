@@ -77,8 +77,8 @@
                 </template>
                 <template slot-scope="{ row }" slot="name">
                     <span :style="{ fontWeight: row.nameBold ? 'bold' : 'normal'}" style="display: inline-block;" class="tl width100"
-                        v-if="row.empId && !row.enableEmpEdit">{{ `${row.empId} (${row.name}/${row.postName})` }}</span>
-                    <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.empId} (${row.name}/${row.postName})` }}</span>
+                        v-if="row.empId && !row.enableEmpEdit">{{ `${row.name} (${row.groupName}/${row.postName})` }}</span>
+                    <span v-if="row.empId && row.enableEmpEdit" class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click="handleEditData(row)" :style="{ fontWeight: row.nameBold ? 'bold' : 'normal', fontSize: '13px'}"> {{ `${row.name} (${row.groupName}/${row.postName})` }}</span>
 
                     <span v-if="!row.empId" class="grey">未設定</span>
                 </template>
@@ -1194,7 +1194,7 @@
                                 }
                             })
                             const query = {
-                                empId: this.permissionAdminValue[0].empId.split(' ')[0],
+                                empId: this.permissionAdminValue[0].empId,
                                 groupId: this.permissionAdminValue[0].groupId,
                                 sectionId: this.referListObject.txtTmgReferListTreeViewPermTargetSection,
                                 list: list
@@ -1313,7 +1313,7 @@
                         this.memberAssignValue = this.PermissionMemberAssignData.map(e=>{
                             return {
                                 ...e,
-                                empId: e.empName.split(' ')[0],
+                                empId: e.empName,
                                 originalGroupId: e.groupId,
                                 sectionId:this.referListObject.txtTmgReferListTreeViewPermTargetSection
                             }
