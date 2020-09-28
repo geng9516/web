@@ -804,9 +804,7 @@
                     //無ければ、勤務予定時間に基く
                     endTime = Utils.timeToMinute(this.scheduleData[this.scheduleData.length - 1].split('-')[1])
                 }
-                if (parseInt(endTime) <= 1440)
-                    this.scheduleTime = Utils.getNumArray(0, 24)
-                if (parseInt(endTime) > 1440 && parseInt(endTime) <= 1740)
+                if (parseInt(endTime) <= 1740)
                     this.scheduleTime = Utils.getNumArray(0, 29)
                 if (parseInt(endTime) > 1740)
                     this.scheduleTime = Utils.getNumArray(0, 48)
@@ -1251,7 +1249,6 @@
                 }
 
                 // 修正退社時刻形式
-
                 if (this.workData[2].workEnd && !this.time_check(this.workData[2].workEnd)) {
                     this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                     return false;
