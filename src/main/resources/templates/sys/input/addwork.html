@@ -166,11 +166,11 @@
                 </Row>
                 <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
                     <template slot-scope="{ row, index }" slot="workStart">
-                        <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
-                        <i-input class="tc" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
-                        <span class="tc input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
+                        <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tl" @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
+                        <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
+                        <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
-                        <span class="tc input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
+                        <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
                         <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                         <span v-else>{{ row.workStart }}</span>
