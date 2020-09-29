@@ -246,7 +246,8 @@ public class AuthBusiness {
             PreparedStatement preparedStatement = conn.prepareStatement(sql);
             conn.setReadOnly(true);
 
-            String countEvaluater = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '"+employId+"' AND TEV_DSTARTDATE <= SYSDATE AND TEV_DENDDATE >= SYSDATE";
+            String now = SysUtil.transDateToString(DateUtil.date());
+            String countEvaluater = "SELECT COUNT(TEV_CEMPLOYEEID) as count FROM TMG_EVALUATER WHERE TEV_CEMPLOYEEID = '"+employId+"' AND TEV_DSTARTDATE <= '"+now+"' AND TEV_DENDDATE >= '"+now+"'";
             List<Entity> evaluaterCount = SqlExecutor.query(conn,countEvaluater,new EntityListHandler());
             // 为0则表示不是承认者，不显示承认site
             int count = evaluaterCount.get(0).getInt("COUNT");
