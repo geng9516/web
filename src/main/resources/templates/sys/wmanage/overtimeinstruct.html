@@ -231,7 +231,7 @@
                                     :maxlength="100"
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
                             </i-col>
-                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 0">
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
                                 <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
