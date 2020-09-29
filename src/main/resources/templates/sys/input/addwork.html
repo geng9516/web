@@ -134,20 +134,20 @@
                     <i-col span="8" class="label tc">就業区分</i-col>
                     <i-col span="8" class="no-border-radius">
                         <i-select v-model="workingId" ref="select1"
-                                  class="mr30" @on-change="changeWorkingID"
-                                  v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
+                                  class="mr30 tc" @on-change="changeWorkingID"
+                             v-if="isEdiTableResult4Inp && !bFixed">
                             <i-option v-for="(item, index) of workingIdList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
                         </i-select>
-                        <p class="input-like-span" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
+                        <p class="input-like-span tc" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
                     </i-col>
                 </Row>
                 <Row class="mb5">
                     <i-col span="8" class="label tc">出張</i-col>
                     <i-col span="8" class="no-border-radius" v-if="!bDisable">
                         <i-select v-model="businessTrip" ref="select2"
-                                  class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
+                                  class="mr30 tc" @on-change="" v-if="(!bHoliday && !bFixed)">
                             <i-option v-for="(item, index) of businessTripList" :key="index"
                                       :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                             </i-option>
