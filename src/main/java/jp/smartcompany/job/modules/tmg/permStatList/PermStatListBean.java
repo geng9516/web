@@ -18,7 +18,6 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -453,7 +452,7 @@ public class PermStatListBean {
         // 『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態の職員氏名を取得する。（条件に該当しない場合、空文字となる）
 
         // 該当者氏名が取得できた場合、trueを返す。
-        if (StringUtils.isNotEmpty(empName)) {
+        if (StrUtil.isNotEmpty(empName)) {
             return true;
         }
 

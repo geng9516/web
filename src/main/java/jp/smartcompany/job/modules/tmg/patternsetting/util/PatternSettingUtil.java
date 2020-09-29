@@ -1,7 +1,7 @@
 package jp.smartcompany.job.modules.tmg.patternsetting.util;
 
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
@@ -80,7 +80,7 @@ public class PatternSettingUtil {
         boolean flg = false;
         // 時間 24時間表記とは限らないため00-99もしくは0-9を可とする
         // 分 60分表記とするため00-59のみを可とする
-        if (!StringUtils.isBlank(psString) && psString.matches("^([0-9][0-9]|[0-9]):[0-5][0-9]$")) {
+        if (!StrUtil.isBlank(psString) && psString.matches("^([0-9][0-9]|[0-9]):[0-5][0-9]$")) {
             flg = true;
         }
         return flg;

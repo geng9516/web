@@ -12,7 +12,6 @@ import jp.smartcompany.job.modules.core.pojo.entity.TmgMonthlyOutputLogSecDO;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.MonthlyOutPutDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetDateLimit;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.dto.TargetFiscalYearDto;
 import jp.smartcompany.job.modules.tmg.monthlyoutput.vo.*;
@@ -20,12 +19,9 @@ import jp.smartcompany.job.modules.tmg.util.CusomCsvUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.ModelMap;
 
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -284,9 +280,9 @@ public class MonthlyOutputBean {
             for (String col:tmgMoRetroLayout) {
                 String value;
                 if(map.get(col) != null){
-                    value= CSV_CONCAT1+String.valueOf(map.get(col))+CSV_CONCAT1;
+                    value= CSV_CONCAT1+map.get(col)+CSV_CONCAT1;
                 }else{
-                    value=CSV_CONCAT1+StringUtils.defaultString("")+CSV_CONCAT1;
+                    value=CSV_CONCAT1+StrUtil.nullToEmpty("")+CSV_CONCAT1;
                 }
                 rowTilte.add(value);
             }
@@ -716,12 +712,12 @@ public class MonthlyOutputBean {
     public String getSectionId(String action,TmgReferList referList) {
         if(referList != null){
             // 初期表示や組織変更の場合、選択された組織を返す
-            if ("".equals(StringUtils.defaultString(action))
-                    || "".equals(StringUtils.defaultString(referList.getTargetSec()))) {
+            if (StrUtil.isBlank(StrUtil.nullToEmpty(action))
+                    || StrUtil.isBlank(StrUtil.nullToEmpty(referList.getTargetSec()))) {
                 return referList.getTargetSec();
                 // それ以外は表示中組織を返す
             } else {
-                return (StringUtils.defaultString(referList.getTargetSec()).equals(referList.getTargetSec()))
+                return (StrUtil.equals(StrUtil.nullToEmpty(referList.getTargetSec()),referList.getTargetSec()))
                         ? referList.getTargetSec()
                         : referList.getTargetSec();
             }
