@@ -16,7 +16,7 @@
         <menu-group :title="e.jaName" v-for="e of topNavs" :key="e.pageId"　:class="curMenu === e.pageId ? 'actived-menu' : ''" >
             <div style="overflow-x: hidden">
                 <div v-show="curMenu === e.pageId"
-                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 16px;margin-left: 3px;padding-bottom: 60px;">
+                    style="position:relative;height:calc(100vh - 51px);overflow-y:scroll;left: 17px;margin-left: 2px;padding-bottom: 60px;">
                     <menu-item v-for="(t, i) of e.secondMenuList" :key="t.pageId" :name="t.siteId + t.menuIndex" @click.native="handleSubMenuClick(t, i)">
                         <div>
                             <svg class="i-svg" aria-hidden="true" style="width:50px;height:50px;margin-top:12px;position: relative;top:-3px">
