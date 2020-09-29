@@ -61,7 +61,7 @@
                                     <i-col class="no-border-radius" span="7">
                                         <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit"
                                             @on-change="handleDeptDateChange" format="yyyy/MM/dd" placeholder="基準日"
-                                            ref="datePicker" type="date" clearable="false"></date-picker>
+                                            ref="datePicker" type="date" :clearable="false"></date-picker>
                                     </i-col>
                                 </Row>
                                 <Tree :data="treeData" @on-select-change="handleClickLeafDeptEmp" class="tree mt2"
@@ -102,7 +102,7 @@
                                     <i-col class="no-border-radius" span="7">
                                         <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit"
                                             @on-change="handleDeptDateChange" transfer format="yyyy/MM/dd"
-                                            placeholder="基準日" ref="datePicker" type="date" clearable="false"></date-picker>
+                                            placeholder="基準日" ref="datePicker" type="date" :clearable="false"></date-picker>
                                     </i-col>
                                 </Row>
                                 <Tree :data="treeData" @on-select-change="handleClickLeafDept" class="tree mt2"

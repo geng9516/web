@@ -47,7 +47,7 @@
                                     <i-col span="7" class="no-border-radius">
                                         <date-picker type="date" :options="startLimit"
                                             :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
-                                            format="yyyy/MM/dd" ref="datePicker" clearable="false" transfer
+                                            format="yyyy/MM/dd" ref="datePicker" :clearable="false" transfer
                                             @on-change="handleDeptDateChange">
                                         </date-picker>
                                     </i-col>
