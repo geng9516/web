@@ -1139,24 +1139,14 @@
                                             return true
                                         }
                                         // check 超勤时间是否与勤务时间重复
-                                        if(!e.openN){
-                                            e.openN=""
-                                        }
-                                        if(!e.closeN){
-                                            e.closeN=""
-                                        }
-                                        if (Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
-                                            that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
+                                        if (e.openN && e.closeN && Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) { 
+                                            that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 }) 
                                             return true
                                         }
                                     }
                                 })
-
-                                result = Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')
-
-                                if (result) {
-                                    return true
-                                }
+                                if (result) return true
+                                if(Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')) return true 
                             }
                             // if (e.updateRestTimeDtoList.length > 0) {
                             //     let result = false
