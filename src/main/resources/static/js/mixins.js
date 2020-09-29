@@ -4,7 +4,7 @@ Vue.mixin({
       return {
         startLimit: {
           disabledDate: date => {
-          return date.valueOf() < -3600000
+            return date.valueOf() < -3600000 || date.valueOf() > Utils.addMonths(SYS_DATE, 1).getTime()
           }
         }
       }
