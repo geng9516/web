@@ -1,7 +1,11 @@
 package jp.smartcompany.job.modules.core.service;
 
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +17,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IHistGroupdatapermissionService extends IService<HistGroupdatapermissionDO> {
 
-        }
+        List<SearchRangeManagerDataDTO> getSearchRangeTableData(String systemId, String siteId, String appId, Date searchDate,String language,List<String> groupIds);
+
+}
