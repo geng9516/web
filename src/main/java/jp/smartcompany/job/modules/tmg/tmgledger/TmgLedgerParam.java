@@ -1,6 +1,6 @@
 package jp.smartcompany.job.modules.tmg.tmgledger;
 
-import org.apache.commons.lang3.StringUtils;
+import cn.hutool.core.util.StrUtil;
 
 /**
  * 帳票出力アプリケーションの定数を管理するクラス
@@ -37,7 +37,7 @@ public class TmgLedgerParam {
 
     public String getAction() {
         // 初回起動時：権限設定状況表示
-        if(StringUtils.isEmpty(this.sAction)){
+        if(StrUtil.isBlank(this.sAction)){
             return TmgLedgerConst.ACT_LEDGER_SELECT_DISP;
         } else {
             return this.sAction;

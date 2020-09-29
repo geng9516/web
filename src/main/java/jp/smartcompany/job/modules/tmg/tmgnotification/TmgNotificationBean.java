@@ -12,14 +12,11 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1302,7 +1299,7 @@ public class TmgNotificationBean {
         }
         // 対象の人数
         if (!StrUtil.hasEmpty(param.getTxtTargetNumber())) {
-            tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
+            tncDo.setTntfNnumberOfTarget(Long.parseLong(StrUtil.nullToDefault(param.getTxtTargetNumber(), "NULL")));
         }
         tncDo.setTntfCntfnoMoto(null);
 
@@ -1502,7 +1499,7 @@ public class TmgNotificationBean {
         tncDo.setTntfDdateofbirth(param.getTxtBirthday());
         // 対象の人数
         if(!StrUtil.hasEmpty(param.getTxtTargetNumber())){
-            tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
+            tncDo.setTntfNnumberOfTarget(Long.parseLong(StrUtil.nullToDefault(param.getTxtTargetNumber(), "NULL")));
         }
         tncDo.setTntfCntfnoMoto(tnDo.getTntfCntfnoMoto());// 分割前申請番号
 
