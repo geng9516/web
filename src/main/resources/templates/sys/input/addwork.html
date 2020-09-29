@@ -996,7 +996,13 @@
                 this.tmgResultsDto.holiday = this.bHoliday
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
                 if (!this.bDisable) {
-                    this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    console.log()
+                    if (!this.workData[2].workStart ) {
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[0].workStart
+                    }else{
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    }
+
                     if (!this.workData[2].workEnd ) {
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[0].workEnd
                     }else{
@@ -1100,7 +1106,7 @@
                     return true;
                 }
                 // 修正出社時刻形式
-                if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
+                if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                     return false;
                 }
