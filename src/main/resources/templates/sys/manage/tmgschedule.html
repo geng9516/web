@@ -45,7 +45,7 @@
                         <div slot="content">{{deptName}}</div>
                     </Tooltip>
                 </i-button>
-               <Drawer class="tc" placement="right" width="700" :closable="false"
+               <Drawer class="tc" placement="right" width="700" :closable="false"  title="所属職員を選択してください"
                        :mask-closable="!isSearchHistory" v-model="deptDrawShow">
                 <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
                 <tab-pane label="ツリー" name="organisationTree">
@@ -581,6 +581,7 @@
             async selectScheduleDateList() {
                 try {
                     const query = {
+                        ...this.referListObject,
                         EmployeeCode:this.query.EmployeeCode,
                         psSite:this.query.psSite,
                         psApp:this.query.psApp,
@@ -676,6 +677,9 @@
                     if(data){
                         this.hatuReiName=data.name
                         this.hatuResTimeRange=data.timerange
+                    }else{
+                        this.hatuReiName=""
+                        this.hatuResTimeRange=""
                     }
 
             },
@@ -1155,6 +1159,8 @@
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
                 this.query.groupid=e[0].groupid
+
+                this.isSearchHistory=false
 
                 //获取年月下拉列表
                 await this.selectScheduleDateList()

@@ -19,13 +19,16 @@
 .ivu-menu-vertical.ivu-menu-light:after {
   display: none; //虚线
 }
-.ivu-menu-vertical .ivu-menu-item:hover {
-  color: var(--sider-memu-icon-color);
+.ivu-menu-vertical .ivu-menu-item {
+  color: var(--sider-memu-p);
+  &:hover {
+    color: var(--sider-memu-p-hover);
+  }
 }
 .ivu-menu-light.ivu-menu-vertical
   .ivu-menu-item-active:not(.ivu-menu-submenu){
     background: rgba(255, 255, 255, 0.9);
-    color: var(--sider-memu-icon-color);
+    color: var(--sider-memu-p-hover);
     &:before{
       display: none;
     }
@@ -82,7 +85,7 @@
       filter: grayscale(1);
     }
     .i-svg {
-      filter: grayscale(1);
+      filter: var(--sider-memu-icon-filter);
     }
     &:hover {
       &:before {

@@ -170,6 +170,9 @@ const Utils = {
    * @returns {Function}
    */
   addMonths: function (date, months) {
+    if (typeof date !== Date) {
+      date = new Date(date)
+    }
     let d = date.getDate()
     date.setMonth(date.getMonth() + +months)
     if (date.getDate() !== d) {
@@ -178,6 +181,9 @@ const Utils = {
     return new Date(date)
   },
   minusMonths: function (date, months) {
+    if (typeof date !== Date) {
+      date = new Date(date)
+    }
     let d = date.getMonth()
     date.setMonth(date.getMonth() - months)
     if (date.getMonth() === d) {

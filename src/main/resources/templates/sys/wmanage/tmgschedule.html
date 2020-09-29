@@ -653,7 +653,9 @@
                     txtEndDate:'',
                     sectionid:'',
                 },
-
+                SecFlag:false,
+                EmpFlag:false,
+                EmpSelect:false,
             }
         },
         async mounted() {
@@ -795,25 +797,29 @@
                     }
                 }
                  await this.getSearchCondition()
-                //获取年月下拉列表
-                await this.selectScheduleDateList()
-                //获取预定做成数据
-                await this.getSelectScheduleInfo()
-                //获取 勤務パターン列表  区分列表 出張列表
-                await this.getSelectIkkaInfo()
-                //获取发令信息
-                await this.getHatuRei()
-                //获取周勤务pattern列表
-                await this.selectWeekPtn()
-                //获取周勤务pattern适用列表
-                await this.selectTmgWeekPatternList()
-                //判断选择的年月能不能编辑
-                this.isEditable4Schedule()
+                if(this.EmpFlag){
+                    //获取年月下拉列表
+                    await this.selectScheduleDateList()
+                    //获取预定做成数据
+                    await this.getSelectScheduleInfo()
+                    //获取 勤務パターン列表  区分列表 出張列表
+                    await this.getSelectIkkaInfo()
+                    //获取发令信息
+                    await this.getHatuRei()
+                    //获取周勤务pattern列表
+                    await this.selectWeekPtn()
+                    //获取周勤务pattern适用列表
+                    await this.selectTmgWeekPatternList()
+                    //判断选择的年月能不能编辑
+                    this.isEditable4Schedule()
+                }
+
             },
             //获取年月下拉列表
             async selectScheduleDateList() {
                 try {
                     const query = {
+                        ...this.referListObject,
                         EmployeeCode:this.query.EmployeeCode,
                         psSite:this.query.psSite,
                         psApp:this.query.psApp,
@@ -910,6 +916,9 @@
                     if(data){
                         this.hatuReiName=data.name
                         this.hatuResTimeRange=data.timerange
+                    }else{
+                        this.hatuReiName=""
+                        this.hatuResTimeRange=""
                     }
             },
             //输入框check
@@ -1686,6 +1695,8 @@
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
 
+                 this.isSearchHistory = false
+
                 //获取年月下拉列表
                 await this.selectScheduleDateList()
                 //获取预定做成数据
@@ -1767,6 +1778,7 @@
                 if(this.treeData.length !== 0) {
                         this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
                     }
+                this.empTreeData= []
             },
             searchOrgTree: Debounce( async function() {
                 this.empDeptLoading = true
