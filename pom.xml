@@ -11,7 +11,7 @@
 
     <groupId>jp.smartcompany</groupId>
     <artifactId>web-work</artifactId>
-    <version>2.3.4</version>
+    <version>2.3.5</version>
     <packaging>war</packaging>
     <name>web-work</name>
     <description>Web就業システム</description>
