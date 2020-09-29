@@ -197,6 +197,14 @@ public class DeptStatListBean {
         for (Map mapRow : mapList) {
             List<Object> rowDate = CollUtil.newArrayList();
 
+            Iterator it = mapRow.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry =(Map.Entry) it.next();
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                mapRow.put(key," "+ value);
+
+            }
             for (int col = 0; col < headerList.size(); col++) {
                 rowDate.add(StrUtil.nullToEmpty(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid()))));
             }
