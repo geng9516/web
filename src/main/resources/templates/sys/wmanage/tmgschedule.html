@@ -795,20 +795,23 @@
                     }
                 }
                  await this.getSearchCondition()
-                //获取年月下拉列表
-                await this.selectScheduleDateList()
-                //获取预定做成数据
-                await this.getSelectScheduleInfo()
-                //获取 勤務パターン列表  区分列表 出張列表
-                await this.getSelectIkkaInfo()
-                //获取发令信息
-                await this.getHatuRei()
-                //获取周勤务pattern列表
-                await this.selectWeekPtn()
-                //获取周勤务pattern适用列表
-                await this.selectTmgWeekPatternList()
-                //判断选择的年月能不能编辑
-                this.isEditable4Schedule()
+                if(this.EmpFlag){
+                    //获取年月下拉列表
+                    await this.selectScheduleDateList()
+                    //获取预定做成数据
+                    await this.getSelectScheduleInfo()
+                    //获取 勤務パターン列表  区分列表 出張列表
+                    await this.getSelectIkkaInfo()
+                    //获取发令信息
+                    await this.getHatuRei()
+                    //获取周勤务pattern列表
+                    await this.selectWeekPtn()
+                    //获取周勤务pattern适用列表
+                    await this.selectTmgWeekPatternList()
+                    //判断选择的年月能不能编辑
+                    this.isEditable4Schedule()
+                }
+
             },
             //获取年月下拉列表
             async selectScheduleDateList() {
