@@ -176,7 +176,7 @@ var THEME_CONFIG  = {
     '--login-right-part-bg': 'rgb(42,44,49)',
     '--login-panel-bg': 'rgb(54,57,63)',
     '--grey': 'rgb(235, 235, 235)',
-    // '--white': 'rgb(47,49,54)',
+    '--white': 'rgb(235,235,235)',
     '--theme-mark': 'rgb(42,44,49)',
     // '--login-svg-fill': 'var(--theme-blue)',
     // '--login-left-part-bg': 'radial-gradient(rgb(135, 177, 252), rgb(48, 118, 242))',
