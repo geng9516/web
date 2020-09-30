@@ -314,6 +314,8 @@ public class TmgScheduleBean {
      */
     private final String USE_SCHEDULE4PERM_SITE = "TMG_USE_SCHEDULE4PERM_SITE";
 
+    private final String SCHEDULE_EDIT_FLAG = "SCHEDULE_EDIT_FLAG";
+
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
      *
@@ -891,8 +893,6 @@ public class TmgScheduleBean {
      */
     public ScheduleInfoVO selectPaidHolidayInfo(String startDispDate, String endDispDate) {
 
-
-
         if (null != startDispDate && !"".equals(startDispDate)) {
             _startDispDate = startDispDate;
         }
@@ -925,13 +925,15 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextStart(nextStart);
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
-
         String cacheKey = "SCHEDULE_INFO_" + _startDispDate + _endDispDate + useFixedFunction + employeeId;
         ScheduleInfoVO result = (ScheduleInfoVO) lruCache.get(cacheKey);
-        if(null != result){
-            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache から取り出す(key["+cacheKey+"])");
+        Object obj = lruCache.get(SCHEDULE_EDIT_FLAG);
+        if (null != result && null == lruCache.get(SCHEDULE_EDIT_FLAG)) {
+            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache から取り出す(key[" + cacheKey + "])");
             return result;
-        }else {
+        } else {
+            //編集フラッグをcacheから削除する
+            lruCache.remove(SCHEDULE_EDIT_FLAG);
             List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
             // Arrayにデータフォーマッを変える
             for (int i = 0; i < scheduleDataDTOS.size(); i++) {
@@ -1001,7 +1003,7 @@ public class TmgScheduleBean {
             scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
             scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
             lruCache.put(cacheKey, scheduleInfoVO);
-            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache までロードする(key["+cacheKey+"])");
+            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache までロードする(key[" + cacheKey + "])");
             return scheduleInfoVO;
         }
     }
@@ -1248,7 +1250,7 @@ public class TmgScheduleBean {
      * 予定作成更新処理を行います。
      */
     public void executeEditMonthlyUSchedule(String content, PsDBBean psDBBean) {
-
+        lruCache.put(SCHEDULE_EDIT_FLAG, true);
         if (JSONUtil.isJsonObj(content)) {
             MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
             if (null != monthlyUScheduleEditParaDTO) {
