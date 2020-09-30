@@ -170,7 +170,7 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl" placeholder="用務内容は半角100文字、全角50文字以内で入力してください。"
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl" placeholder="用務内容は100文字以内で入力してください。"
                                :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
                     </template>
 
