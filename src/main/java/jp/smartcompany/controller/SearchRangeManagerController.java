@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Date;
 import java.util.Map;
 
+/**
+ * 检索对象范围controller
+ * @author Xiao Wenpeng
+ */
 @RestController
 @RequestMapping("sys/searchrangemanager")
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))

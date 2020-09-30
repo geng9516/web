@@ -43,4 +43,10 @@ public class AdminController {
         return "sys/settings/groupappmanager";
     }
 
+    @GetMapping("searchrangemanager")
+    public String toSearchRangeManager(@RequestParam("moduleIndex") Integer moduleIndex, ModelMap modelMap) {
+        modelMap.addAttribute("moduleIndex",moduleIndex);
+        return "sys/settings/searchrangemanager";
+    }
+
 }
