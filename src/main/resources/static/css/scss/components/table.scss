@@ -104,8 +104,8 @@
     .ivu-table-row {
       td:first-child {
         // 强行着色
-        background-color: var(--light-blue-l) !important;
-        color: var(--theme-blue) !important;
+        background-color: var(--primary-info-bg) !important;
+        color: var(--primary-info) !important;
         .ivu-table-cell {
           line-height: 26px;
         }
@@ -137,8 +137,8 @@
     color: var(--white) !important;
   }
   .sub-title {
-    background-color: var(--light-blue-l) !important;
-    color: var(--theme-blue) !important;
+    background-color: var(--table-subtitle) !important;
+    color: var(--table-subtitle-bg) !important;
   }
   .rest-title {
     background-color: var(--primary-info-bg) !important;
