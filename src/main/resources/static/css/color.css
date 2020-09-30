@@ -39,7 +39,6 @@
   /* 蓝色系 */
   --blue25:rgb(233, 243, 255);
   --blue15:rgb(244, 250, 255);
-  --filter-svg-icon:invert(100%) sepia() saturate(23) hue-rotate(0deg);
 
   /* login */
   --theme-mark: var(--orange60);
@@ -49,12 +48,12 @@
   /* SIDER */
   --sider-background: var(--orange60);
   --sider-background-actived:var(--orange25);
-  --sider-memu-background: var(--orange25);
-  --sider-memu-icon-color: var(--orange);
-  --sider-memu-icon-bg:linear-gradient(-45deg, rgb(255, 242, 234), rgb(255, 234, 217));
-  --sider-memu-title-background: var(--orange50);
-  --sider-memu-item-border-top: var(--orange);
-  --sider-memu-item-border-bottom: var(--dark-red);
+  --sider-menu-background: var(--orange25);
+  --sider-menu-icon-color: var(--orange);
+  --sider-menu-icon-bg:linear-gradient(-45deg, rgb(255, 242, 234), rgb(255, 234, 217));
+  --sider-menu-title-background: var(--orange50);
+  --sider-menu-item-border-top: var(--orange);
+  --sider-menu-item-border-bottom: var(--dark-red);
 
   /* header checkin */
   --dept-select: var(--orange);

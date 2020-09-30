@@ -395,13 +395,13 @@
 .ivu-input::placeholder {
   color:var(--place-holder);
 }
-.ivu-input {
-  color:var(--grey);
-}
 .ivu-modal-header {
   border-bottom-color: var(--login-title-border-b);
 }
 .ivu-modal-content {
+  background: var(--modal-bg);
+}
+.ivu-drawer-content {
   background: var(--modal-bg);
 }
 .ivu-btn-ghost {
@@ -410,6 +410,10 @@
 .ivu-menu-horizontal.ivu-menu-light:after {
   background: var(--login-title-border-b);
 }
+// .ivu-input, .input-like-span {
+//   border-color: var(--input-border);
+//   background-color: var(--input-bg);
+// }
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}
