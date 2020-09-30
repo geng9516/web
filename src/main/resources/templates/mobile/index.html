@@ -99,7 +99,7 @@
               <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
             </i-col>
           </Row>
-          <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan4time" class="long-table">
+          <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan4time" class="long-table" :disabled-hover="true">
             <template slot-scope="{ row, index }" slot="workStart">
               <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
               <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
@@ -134,7 +134,7 @@
           <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
         </div>
 
-        <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 long-table" no-data-text="">
+        <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 long-table" no-data-text="" :disabled-hover="true">
           <template slot-scope="{ row, index }" slot="tdadNopen">
             <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed"
               @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -171,7 +171,7 @@
             <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
           </div>
 
-          <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 long-table" no-data-text="" :span-method="handleSpan">
+          <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 long-table" no-data-text="" :span-method="handleSpan" :disabled-hover="true">
 
 
 
