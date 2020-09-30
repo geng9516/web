@@ -1,9 +1,11 @@
 package jp.smartcompany.job.modules.tmg.timepunch;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.service.ITmgDailyService;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.service.ITmgTimepunchService;
@@ -45,11 +47,17 @@ public class TmgTimePunchBean {
     private final AttendanceBookBean attendanceBookBean;
     private final ITmgDailyService iTmgDailyService;
     private PsDBBean psDBBean;
+    private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
+
     private final String Cs_MINDATE = "1900/01/01";
     private final String Cs_MAXDATE = "2222/12/31";
     private final String BEAN_DESC = "TimePunch";
     private final String DATE_FORMAT = "yyyy/MM/dd";
     private final String siteId = "TMG_INP";
+    private final String CACHE_OVERWORK = "CACHE_OVERWORK";
+    private final String CACHE_SCHEDULETIME = "CACHE_SCHEDULETIME";
+    private final String CACHE_DUTYANDRELAXTIME = "CACHE_DUTYANDRELAXTIME";
+    private final String CACHE_SCHEDULEINFO = "CACHE_SCHEDULEINFO";
 
     /**
      * プログラムIDとアクションの間の区切り文字
@@ -312,52 +320,60 @@ public class TmgTimePunchBean {
      * @return
      */
     public DutyAndRelaxDateDTO getDutyAndRelaxDate(String baseDate) {
-        DutyAndRelaxDateDTO dutyAndRelaxDateDTO = new DutyAndRelaxDateDTO();
-        String custId = psDBBean.getCustID();
-        String compCode = psDBBean.getCompCode();
-        String employeeId = psDBBean.getUserCode();
-        String language = psDBBean.getLanguage();
 
-        // 月初
-        String startDate = "";
-        //　月末
-        String endDate = "";
-        if (null == baseDate || "".equals(baseDate)) {
-            startDate = DateUtil.format(DateUtil.beginOfMonth(new Date()), DATE_FORMAT);
-            endDate = DateUtil.format(DateUtil.endOfMonth(new Date()), DATE_FORMAT);
-        } else {
-            startDate = DateUtil.format(DateUtil.beginOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
-            endDate = DateUtil.format(DateUtil.endOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
-        }
+        DutyAndRelaxDateDTO dutyAndRelaxDateDTO = (DutyAndRelaxDateDTO) lruCache.get(CACHE_DUTYANDRELAXTIME);
+        if (null == dutyAndRelaxDateDTO) {
+            dutyAndRelaxDateDTO = new DutyAndRelaxDateDTO();
+            String custId = psDBBean.getCustID();
+            String compCode = psDBBean.getCompCode();
+            String employeeId = psDBBean.getUserCode();
+            String language = psDBBean.getLanguage();
 
-        // 1.出勤日数   出勤時間
-        HashMap<String, Object> result = this.selectDutyDaysAndHours(custId, compCode, employeeId, language, startDate);
-        if (null != result) {
-            //出勤日数
-            if (null != result.get(DUTYDAYS_KEY)) {
-                String dutyDays = result.get(DUTYDAYS_KEY).toString() + "日";
-                dutyAndRelaxDateDTO.setDutyDates(dutyDays);
+            // 月初
+            String startDate = "";
+            //　月末
+            String endDate = "";
+            if (null == baseDate || "".equals(baseDate)) {
+                startDate = DateUtil.format(DateUtil.beginOfMonth(new Date()), DATE_FORMAT);
+                endDate = DateUtil.format(DateUtil.endOfMonth(new Date()), DATE_FORMAT);
+            } else {
+                startDate = DateUtil.format(DateUtil.beginOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
+                endDate = DateUtil.format(DateUtil.endOfMonth(DateUtil.parse(baseDate, DATE_FORMAT)), DATE_FORMAT);
             }
-            //出勤時間
+
+            // 1.出勤日数   出勤時間
+            HashMap<String, Object> result = this.selectDutyDaysAndHours(custId, compCode, employeeId, language, startDate);
+            if (null != result) {
+                //出勤日数
+                if (null != result.get(DUTYDAYS_KEY)) {
+                    String dutyDays = result.get(DUTYDAYS_KEY).toString() + "日";
+                    dutyAndRelaxDateDTO.setDutyDates(dutyDays);
+                }
+                //出勤時間
            /* if (null != result.get(DUTYHOURS_KEY)) {
                 String dutyHours = result.get(DUTYHOURS_KEY).toString();
                 if (dutyHours.indexOf(":") > 0) {
                     dutyAndRelaxDateDTO.setDutyHours(dutyHours.substring(0, dutyHours.indexOf(":")) + "時" + dutyHours.substring(dutyHours.indexOf(":") + 1, dutyHours.length()) + "分");
                 }
             }*/
+            }
+            String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
+            dutyAndRelaxDateDTO.setDutyHours(dutyHours);
+
+            // 2.超過勤務時間
+            String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);
+            dutyAndRelaxDateDTO.setOverTime(overTime);
+
+            // 3.年次休暇
+            String npaidRestDaysHour = this.getNpaidRestDaysHour(employeeId, startDate, compCode, custId);
+            dutyAndRelaxDateDTO.setNpaidRestDaysHour(npaidRestDaysHour);
+            lruCache.put(CACHE_DUTYANDRELAXTIME, dutyAndRelaxDateDTO);
+            logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache までロードする");
+            return dutyAndRelaxDateDTO;
+        } else {
+            logger.info("[出勤日数  出勤時間  超過勤務時間   年次休暇] Cache から取り出す");
+            return dutyAndRelaxDateDTO;
         }
-        String dutyHours = attendanceBookBean.selectWorkTime(psDBBean);
-        dutyAndRelaxDateDTO.setDutyHours(dutyHours);
-
-        // 2.超過勤務時間
-        String overTime = this.selectOverTime(custId, compCode, employeeId, startDate, endDate);
-        dutyAndRelaxDateDTO.setOverTime(overTime);
-
-        // 3.年次休暇
-        String npaidRestDaysHour = this.getNpaidRestDaysHour(employeeId, startDate, compCode, custId);
-        dutyAndRelaxDateDTO.setNpaidRestDaysHour(npaidRestDaysHour);
-
-        return dutyAndRelaxDateDTO;
     }
 
     /**
@@ -367,24 +383,31 @@ public class TmgTimePunchBean {
      * @return
      */
     public ScheduleInfoDTO selectScheduleInfo(String targetDate) {
-
-        if (null == targetDate || "".equals(targetDate)) {
-            targetDate = DateUtil.format(new Date(), "yyyy/MM/dd");
-        }
-        String custId = psDBBean.getCustID();
-        String compCode = psDBBean.getCompCode();
-        String employeeId = psDBBean.getUserCode();
-        ScheduleInfoDTO scheduleInfoDTO = iTmgTimepunchService.selectScheduleInfo(custId, compCode, employeeId, targetDate);
-        scheduleInfoDTO.setTda_cemployeeid(employeeId);
-        String timerRange = scheduleInfoDTO.getTimerange();
-        List<HashMap<String, Object>> restList = new ArrayList<HashMap<String, Object>>();
-        if (null != timerRange && !"".equals(timerRange) && JSONUtil.isJson(timerRange)) {
-            //チェック
-            scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
+        ScheduleInfoDTO scheduleInfoDTO = (ScheduleInfoDTO) lruCache.get(CACHE_SCHEDULEINFO);
+        if (null == scheduleInfoDTO) {
+            if (null == targetDate || "".equals(targetDate)) {
+                targetDate = DateUtil.format(new Date(), "yyyy/MM/dd");
+            }
+            String custId = psDBBean.getCustID();
+            String compCode = psDBBean.getCompCode();
+            String employeeId = psDBBean.getUserCode();
+            scheduleInfoDTO = iTmgTimepunchService.selectScheduleInfo(custId, compCode, employeeId, targetDate);
+            scheduleInfoDTO.setTda_cemployeeid(employeeId);
+            String timerRange = scheduleInfoDTO.getTimerange();
+            List<HashMap<String, Object>> restList = new ArrayList<HashMap<String, Object>>();
+            if (null != timerRange && !"".equals(timerRange) && JSONUtil.isJson(timerRange)) {
+                //チェック
+                scheduleInfoDTO.setTimerange_arr(JSONUtil.parseArray(timerRange).toArray());
+            } else {
+                log.warn("社員の休憩時間は取得してない");
+            }
+            lruCache.put(CACHE_SCHEDULEINFO, scheduleInfoDTO);
+            logger.info("[予定時間] Cache までロードする");
+            return scheduleInfoDTO;
         } else {
-            log.warn("社員の休憩時間は取得してない");
+            logger.info("[予定時間] Cache から取り出す");
+            return scheduleInfoDTO;
         }
-        return scheduleInfoDTO;
     }
 
     /**
@@ -664,7 +687,17 @@ public class TmgTimePunchBean {
      * @return
      */
     public ClockInfoVO selectClockInfo(String custId, String compCode, String employeeId) {
-        return iTmgTimepunchService.selectClockInfo(custId, compCode, employeeId);
+        ClockInfoVO clockInfoVO = (ClockInfoVO) lruCache.get(CACHE_SCHEDULETIME);
+        if (null == clockInfoVO) {
+            clockInfoVO = iTmgTimepunchService.selectClockInfo(custId, compCode, employeeId);
+            lruCache.put(CACHE_SCHEDULETIME, clockInfoVO);
+            logger.info("[打刻と予定データ] Cache までロードする");
+            return clockInfoVO;
+        } else {
+            logger.info("[打刻と予定データ] Cache から取り出す");
+            return clockInfoVO;
+        }
+
     }
 
     /**
@@ -676,6 +709,15 @@ public class TmgTimePunchBean {
      * @return
      */
     public String[] selectOverWorkTime(String custId, String compCode, String employeeId) {
+        /*List<DetailOverhoursVO> detailOverhoursVOList = (List<DetailOverhoursVO>) lruCache.get(CACHE_OVERWORK);
+        if (null == detailOverhoursVOList) {
+            detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
+            lruCache.put(CACHE_OVERWORK, detailOverhoursVOList);
+            logger.info("[超過勤務時間] Cache までロードする");
+        } else {
+            //Cacheが設定されました
+            logger.info("[超過勤務時間] Cache から取ります");
+        }*/
         List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
         String[] overWorkTime = new String[detailOverhoursVOList.size()];
         String timeTmp = "";

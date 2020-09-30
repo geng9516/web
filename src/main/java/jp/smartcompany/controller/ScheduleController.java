@@ -48,7 +48,6 @@ public class ScheduleController {
     public ScheduleInfoVO selectScheduleInfo(@RequestParam("txtBaseDate") String txtBaseDate,
                                              @RequestParam("txtEndDate") String txtEndDate,
                                              @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //  System.out.println("controller-->selectScheduleInfo");
         //初期化
         if (null == txtBaseDate || null == txtEndDate || "".equals(txtBaseDate) || "".equals(txtEndDate)) {
             //基準時間を制限
@@ -111,7 +110,6 @@ public class ScheduleController {
     public HashMap<String, Object> selectIkkaInfo(
             @RequestParam("baseDateIkka") String baseDateIkka,
             @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //  System.out.println("controller-->selectIkkaInfo");
         return tmgScheduleBean.selectIkkaInfo(baseDateIkka, psDBBean);
     }
 
@@ -133,7 +131,6 @@ public class ScheduleController {
                                                                @RequestParam("txtEndDate") String txtEndDate,
                                                                @RequestParam("content") String content,
                                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //   System.out.println("controller-->executeEditMonthlyUSchedule");
         tmgScheduleBean.executeEditMonthlyUSchedule(content, psDBBean);
         return null;
     }
@@ -155,7 +152,6 @@ public class ScheduleController {
                                                @RequestParam("txtEndDate") String txtEndDate,
                                                @RequestParam("twp_nid") int twp_nid,
                                                @RequestAttribute("BeanName") PsDBBean psDBBean) {
-        //   System.out.println("controller-->selectCsvReference");
         //初期化
         //tmgScheduleBean.setExecuteParameters(psDBBean);
         return tmgScheduleBean.selectCsvReference(twp_nid, psDBBean);
