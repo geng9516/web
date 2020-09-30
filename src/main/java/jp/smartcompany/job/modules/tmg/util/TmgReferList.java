@@ -1726,7 +1726,6 @@ public class TmgReferList {
         for (List<String> vMember : vMemberList) {
             vGroupID.add(vMember.get(TmgMemberList.DEFAULT_KEY_GROUPID));
         }
-
         // グループの権限
         return hasAuthorityAtGroup(sStart, sEnd, vGroupID, sAuthority);
 
@@ -1792,9 +1791,8 @@ public class TmgReferList {
 
         // 指定の権限があるかどうか
         int iAuthority	= getAuthorityIndex(sAuthority);
-        for(Iterator<List<String>> i = vGroupList.iterator(); i.hasNext();){
-            List<String> vGroup = i.next();
-            if(StrUtil.equals(vGroup.get(iAuthority),TmgUtil.Cs_MGD_ONOFF_1)) {	// ONなら
+        for (List<String> vGroup : vGroupList) {
+            if (StrUtil.equals(vGroup.get(iAuthority), TmgUtil.Cs_MGD_ONOFF_1)) {    // ONなら
                 return true;
             }
         }

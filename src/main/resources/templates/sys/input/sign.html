@@ -91,20 +91,20 @@
                         <i-col span="8" class="label tc">就業区分</i-col>
                         <i-col span="8" class="no-border-radius">
                             <i-select v-model="workingId" ref="select1"
-                                      class="mr30" @on-change="changeWorkingID"
-                                      v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
+                                      class="mr30 tc" @on-change="changeWorkingID"
+                                      v-if="isEdiTableResult4Inp && !bFixed">
                                 <i-option v-for="(item, index) of workingIdList" :key="index"
                                           :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                                 </i-option>
                             </i-select>
-                            <p class="input-like-span" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
+                            <p class="input-like-span tc" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
                         </i-col>
                     </Row>
                     <Row class="mb5">
                         <i-col span="8" class="label tc">出張</i-col>
                         <i-col span="8" class="no-border-radius" v-if="!bDisable">
                             <i-select v-model="businessTrip" ref="select2"
-                                      class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
+                                      class="mr30 tc" @on-change="" v-if="(!bHoliday && !bFixed)">
                                 <i-option v-for="(item, index) of businessTripList" :key="index"
                                           :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                                 </i-option>
@@ -1134,6 +1134,11 @@
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
                 if (!this.bDisable) {
                     this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    if (!this.workData[2].workStart) {
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[0].workStart
+                    }else{
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    }
                     if (!this.workData[2].workEnd) {
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[0].workEnd
                     } else {
@@ -1243,7 +1248,7 @@
                     return true;
                 }
                 // 修正出社時刻形式
-                if (this.workData[2].workStart === null || !this.time_check(this.workData[2].workStart)) {
+                if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                     return false;
                 }

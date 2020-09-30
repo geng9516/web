@@ -330,7 +330,7 @@ public class TmgMemberList {
 
         if (psSearchData == null){return "";}
 
-        StringBuffer sbSQL = new StringBuffer("");
+        StringBuilder sbSQL = new StringBuilder("");
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
         if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
