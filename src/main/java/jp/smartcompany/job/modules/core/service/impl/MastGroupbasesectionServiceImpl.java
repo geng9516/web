@@ -89,4 +89,10 @@ public class MastGroupbasesectionServiceImpl extends ServiceImpl<MastGroupbasese
               psCompanyId,psGroupId, psLanguage, strSearchDate);
   }
 
+  @Override
+  public List<MastGroupbasesectionDO> selectMastGroupBaseSection(Date startDate, String custId, String systemId, String groupId) {
+      String sStartDate = SysUtil.transDateToString(startDate);
+      return baseMapper.selectMastGroupBaseSection(sStartDate,custId,systemId,groupId);
+  }
+
 }

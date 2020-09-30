@@ -47,7 +47,7 @@
                                     <i-col span="7" class="no-border-radius">
                                         <date-picker type="date" :options="startLimit"
                                             :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
-                                            format="yyyy/MM/dd" ref="datePicker" transfer
+                                            format="yyyy/MM/dd" ref="datePicker" :clearable="false" transfer
                                             @on-change="handleDeptDateChange">
                                         </date-picker>
                                     </i-col>
@@ -231,7 +231,7 @@
                                     :maxlength="100"
                                     @on-blur="handleInputChange(row._index, false)"></i-input>
                             </i-col>
-                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 0">
+                            <i-col span="6" v-show="value[row._index].updateOverTimeDtoList.length > 1">
                                 <i-button ghost type="error"
                                     @click="handleMinusOverTime(value[row._index].updateOverTimeDtoList, i)">-
                                 </i-button>
@@ -452,7 +452,7 @@
                                 {
                                     title: '終業',
                                     width: 55,
-                                    key: 'openTp',
+                                    key: 'closeTp',
                                     className: 'checkin',
                                     align: 'center'
                                 }
@@ -544,7 +544,7 @@
                     permisssionFlagKeyValueHelper: {
                         'limit_OVERWORK_MONTH_AVG': { name: '超勤実績の月平均時間', desc: '月の超勤実績の平均時間', label:'時', color:'level3' },
                         'limit_COUNT': { name: '超勤実績の月次警告値超過回数', desc: '年内の超勤時間が45時間を超えた月数', label:'回', color:'level2' },
-                        'limit_OVER_WORK_LVL1': { name: '超勤実績の警告値(時間)(日次:レベル1)', desc: '一日の超勤時間の合計', label:'時', color:'level3' },
+                        'limit_OVER_WORK_LVL1': { name: '超勤実績の警告値(時間)(日次:レベル1)', desc: '一日の超勤時間の合計', label:'時', color:'level2' },
                         'limit_SUM_MONTH_LVL1': { name: '超勤実績の警告値(時間)(月次:レベル1)', desc: '月内の超勤時間の合計', label:'時', color:'level1' },
                         'limit_SUM_MONTH_LVL2': { name: '超勤実績の警告値(時間)(月次:レベル2)', desc: '-', label:'時', color:'level2'},
                         'limit_SUM_MONTH_LVL3': { name: '超勤実績の警告値(時間)(月次:レベル3)', desc: '-', label:'時', color:'level3' },
@@ -571,7 +571,7 @@
                         }, 
                         { 
                             title: '警告値', 
-                            width: 80,
+                            width: 110,
                             slot: 'value',
                             align:'right'
                         }, 
@@ -1139,56 +1139,46 @@
                                             return true
                                         }
                                         // check 超勤时间是否与勤务时间重复
-                                        if(!e.openN){
-                                            e.openN=""
-                                        }
-                                        if(!e.closeN){
-                                            e.closeN=""
-                                        }
-                                        if (Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) {
-                                            that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 })
+                                        if (e.openN && e.closeN && Utils.timeOverlap(e.openN, e.closeN, t.sNOpen, t.sNClose)) { 
+                                            that.$Notice.warning({ title: '注意', desc: '超過勤務時間は予定始業時間～予定終業時間外で入力してください。', duration: 6.5 }) 
                                             return true
                                         }
                                     }
                                 })
-
-                                result = Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')
-
-                                if (result) {
-                                    return true
-                                }
+                                if (result) return true
+                                if(Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')) return true 
                             }
-                            if (e.updateRestTimeDtoList.length > 0) {
-                                let result = false
-                                if (!e.updateOverTimeDtoList.length > 0) {
-                                    that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。', duration: 6.5 })
-                                    return true
-                                }
-                                let checkArr = []
-                                result = e.updateRestTimeDtoList.some(t => {
-                                    if (!t.sNRestOpen && t.sNRestClose) {
-                                        that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。', duration: 6.5 })
-                                        return true
-                                    }
-                                    if (t.sNRestOpen && !t.sNRestClose) {
-                                        that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。', duration: 6.5 })
-                                        return true
-                                    }
-                                    if (t.sNRestOpen && t.sNRestClose) {
-                                        if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
-                                            that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
-                                            return true
-                                        }
-                                    }
-                                })
+                            // if (e.updateRestTimeDtoList.length > 0) {
+                            //     let result = false
+                            //     if (!e.updateOverTimeDtoList.length > 0) {
+                            //         that.$Notice.warning({ title: '注意', desc: '超過勤務情報の入力が無いため、休憩時間の入力ができません。', duration: 6.5 })
+                            //         return true
+                            //     }
+                            //     let checkArr = []
+                            //     result = e.updateRestTimeDtoList.some(t => {
+                            //         if (!t.sNRestOpen && t.sNRestClose) {
+                            //             that.$Notice.warning({ title: '注意', desc: '休憩の開始時間を入力してください。', duration: 6.5 })
+                            //             return true
+                            //         }
+                            //         if (t.sNRestOpen && !t.sNRestClose) {
+                            //             that.$Notice.warning({ title: '注意', desc: '休憩の終了時間を入力してください。', duration: 6.5 })
+                            //             return true
+                            //         }
+                            //         if (t.sNRestOpen && t.sNRestClose) {
+                            //             if (Utils.timeToMinute(t.sNRestOpen) >= Utils.timeToMinute(t.sNRestClose)) {
+                            //                 that.$Notice.warning({ title: '注意', desc: '休憩開始時間＜休憩終了時間となるようにしてください。', duration: 6.5 })
+                            //                 return true
+                            //             }
+                            //         }
+                            //     })
+                            //
+                            //     result = Utils.multipleTimeOverlap(e.updateRestTimeDtoList, 'sNRestOpen', 'sNRestClose', '休憩時間が重複しています。')
 
-                                result = Utils.multipleTimeOverlap(e.updateRestTimeDtoList, 'sNRestOpen', 'sNRestClose', '休憩時間が重複しています。')
-
-                                if (result) {
-                                    return true
-                                }
-                                // 超過勤務時間は予定始業時間～予定終業時間外で入力してください。
-                            }
+                            //     if (result) {
+                            //         return true
+                            //     }
+                            //     // 超過勤務時間は予定始業時間～予定終業時間外で入力してください。
+                            // }
                         })
                         if (!check) {
                             try {

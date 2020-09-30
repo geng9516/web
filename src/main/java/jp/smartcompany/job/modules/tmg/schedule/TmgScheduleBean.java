@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg.schedule;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -17,7 +18,6 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -625,7 +625,7 @@ public class TmgScheduleBean {
         Date objDate = null;
 
         try {
-            String ymd[] = StringUtils.split(date, Cs_FORMAT_SLASH);
+            String ymd[] = StrUtil.split(date, Cs_FORMAT_SLASH);
             Calendar calendar = Calendar.getInstance();
 
             // カレンダーに年月日を設定
@@ -1015,8 +1015,8 @@ public class TmgScheduleBean {
         // 勤務時間数に端数が存在する場合に不正な値となるため修正
         // 1ヶ月の勤務時間(時間)
         double WorkingHourOfMonth = 0.0;
-        minites = Double.parseDouble(StringUtils.defaultIfEmpty(MIOfWeekDay, "0"));
-        bDateCnt = Double.parseDouble(StringUtils.defaultIfEmpty(baseDateCnt, "0"));
+        minites = Double.parseDouble(StrUtil.nullToDefault(MIOfWeekDay, "0"));
+        bDateCnt = Double.parseDouble(StrUtil.nullToDefault(baseDateCnt, "0"));
         // 1ヶ月の勤務時間を算出
         WorkingHourOfMonth = (minites / 60) * bDateCnt;
         return this.getWorkingHourOfMonthDisp(String.valueOf(WorkingHourOfMonth));

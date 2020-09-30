@@ -76,7 +76,7 @@
           <Row>
             <i-col span="8" class="label tc">就業区分</i-col>
             <i-col span="16" class="no-border-radius">
-              <p class="tc">{{dailyEdit.tdaCworkingidRName}}</p>
+              <p class="input-like-span tc">{{dailyEdit.tdaCworkingidRName}}</p>
             </i-col>
           </Row>
           <Row class="mb5">
@@ -88,7 +88,7 @@
                   　:value="item.mgdCmastercode">
                 </i-option>
               </i-select>
-              <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
+              <p v-else class="tc input-like-span">{{dailyEdit.tdaCbusinesstripidRName}}</p>
             </i-col>
             <i-col span="8" class="no-border-radius" v-else>
               <i-select v-model="businessTrip" class="mr30" @on-change="" disabled v-if="(!bHoliday && !bFixed)">
@@ -99,30 +99,20 @@
               <p v-else class="tc">{{dailyEdit.tdaCbusinesstripidRName}}</p>
             </i-col>
           </Row>
-          <i-table :columns="columnsWork" :data="workData">
+          <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan4time" class="long-table" :disabled-hover="true">
             <template slot-scope="{ row, index }" slot="workStart">
-              <span>{{ row.workStart | toTime }}</span>
+              <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
+              <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
+
+              <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
+                        </span>
+              <span class="bs-comment-approved" style="font-size: 12px;" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}}({{dailyEdit.tdaDmodifieddateR }})</span>
+              <span v-else>{{ row.workStart }}</span>
             </template>
             <template slot-scope="{ row , index}" slot="workEnd">
-              <span>{{ row.workEnd | toTime }}</span>
+              <span>{{ row.workEnd }}</span>
             </template>
           </i-table>
-
-          <div class="mt5 no-border-radius" style="display: flex; align-items: stretch;">
-            <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">本人コメント</span>
-            <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCowncommentR"
-              type="textarea" v-if="!bFixed">
-            </i-input>
-          </div>
-
-          <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
-            <span class="label tr" style="display: inline-block;width: 33%;margin-bottom: 1px;">承認者コメント</span>
-            <span class="tl input-like-span" style="width: 67%;margin-bottom: 1px;white-space: pre-line;" :value="dailyEdit.tdaCbosscommentR"
-                  v-if="!bApproved">
-            </span>
-            <span class="bs-comment-approved tl" style="width: 67%;margin-bottom: 1px;"
-              v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
-          </div>
         </div>
 
 
@@ -144,7 +134,7 @@
           <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
         </div>
 
-        <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 long-table" no-data-text="">
+        <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 long-table" no-data-text="" :disabled-hover="true">
           <template slot-scope="{ row, index }" slot="tdadNopen">
             <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed"
               @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -181,7 +171,7 @@
             <i-button style="display: inline-block;" disabled v-if="bDisable">追加</i-button>
           </div>
 
-          <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 long-table" no-data-text="" :span-method="handleSpan">
+          <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 long-table" no-data-text="" :span-method="handleSpan" :disabled-hover="true">
 
 
 
@@ -297,17 +287,20 @@
             {
               title: '勤務時間',
               align: 'center',
-              key: 'workTime'
+              key: 'workTime',
+              //width:'30'
             },
             {
               title: '始業',
               slot: 'workStart',
-              align: 'center'
+              align: 'center',
+              //width:'35'
             },
             {
               title: '終業',
               slot: 'workEnd',
-              align: 'center'
+              align: 'center',
+              //width:'35'
             }
           ],
           columnsNotWork: [
@@ -642,6 +635,21 @@
               }
             )
           })
+          this.workData = this.workData.concat([
+            {
+              workTime: '本人コメント',
+              isOwnComment: true,
+              cellClassName: {
+                workTime: 'like-title'
+              }
+            },
+            {
+              workTime: '承認者コメント',
+              isBSComment: true,
+              cellClassName: {
+                workTime: 'like-title'
+              }
+            }])
           // 非勤務
           this.detailNonDutyVOList = data.detailNonDutyVOList
           // 超過勤務
@@ -775,8 +783,17 @@
           this.tmgResultsDto.holiday = this.bHoliday
           this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
           if (!this.bDisable) {
-            this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
-            this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
+            if (!this.workData[2].workStart ) {
+              this.tmgResultsDto.txtTdaNopenR = this.workData[0].workStart
+            }else{
+              this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+            }
+
+            if (!this.workData[2].workEnd ) {
+              this.tmgResultsDto.txtTdaNcloseR = this.workData[0].workEnd
+            }else{
+              this.tmgResultsDto.txtTdaNcloseR = this.workData[2].workEnd
+            }
             this.tmgResultsDto.nonDutyList = this.detailNonDutyVOList
             this.tmgResultsDto.overHoursList =this.detailOverhoursVOListNormal
             if (this.bFixed || this.bHoliday) {
@@ -860,7 +877,7 @@
             return true;
           }
           // 修正出社時刻形式
-          if (this.workData[2].workStart ===null || !this.time_check(this.workData[2].workStart)) {
+          if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
             this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力してください。"})
             return false;
           }
@@ -978,7 +995,6 @@
             tdadCcode01Name: '',
             tdadCsparechar2: '',
             tdadCsparechar2Name: ''
-
           },{
             itemName: '用務内容',
             tdadNopen: '',
@@ -997,7 +1013,6 @@
             tdadSeq: Date.now(),
             tdadCsparechar1: `中断時間登録（携帯端末　${Utils.formatDate(Date.now(),'YYYY-MM-DD hh:ff:ss')}）`,
             tdadNsparenum1: null
-
           })
 
         },
@@ -1048,6 +1063,14 @@
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
         }, 50),
+        handleSpan4time({ rowIndex, columnIndex }) {
+          const len = this.workData.length
+          if (rowIndex === len - 2 && columnIndex === 1) {
+            return [1, 2]
+          } else if (rowIndex === len - 1 && columnIndex === 1) {
+            return [1, 2]
+          }
+        }
       }
     })
   </script>

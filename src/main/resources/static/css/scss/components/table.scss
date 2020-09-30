@@ -58,6 +58,8 @@
     }
   }
   td {
+    background: var(--table-body-bg);
+    color: var(--grey);
     // 表格边框颜色加深
     border-color: var(--table-border);
   }
@@ -113,7 +115,8 @@
   // 日间表格 激活class
   tr {
     &.select-col:hover td {
-      background-color: var(--table-td-hover);
+      background-color: var(--table-td-hover-bg);
+      color: var(--table-tr-hover);
       .ivu-progress-bg:before {
         content: '';
         opacity: 0;
@@ -180,7 +183,8 @@
     line-height: 24px;
     width: 100px;
     text-align: right;
-    background-color: var(--border-grey);
+    background-color: var(--label-monthSum);
+    color: var(--grey);
     border-radius: 3px 0 0 3px;
     padding-top: 5px;
     padding-right: 5px;
@@ -193,7 +197,7 @@
     text-align: left;
     margin-left: -5px;
     vertical-align: bottom;
-    background: white;
+    background: var(--label-monthSum-bg);
     border: 1px solid var(--light-input-border-grey);
     border-radius: 0 3px 3px 0;
     padding: 0 5px;

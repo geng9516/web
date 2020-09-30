@@ -1,10 +1,10 @@
 package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.core.util.PsResult;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
@@ -2032,7 +2032,7 @@ public class TmgUtil {
         Date objDate = null;
 
         try {
-            String ymd[] = StringUtils.split(date, Cs_FORMAT_SLASH);
+            String ymd[] = StrUtil.split(date, Cs_FORMAT_SLASH);
             Calendar calendar = Calendar.getInstance();
 
             // カレンダーに年月日を設定

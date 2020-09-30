@@ -116,7 +116,7 @@
         </template>
 
         <template slot-scope="{ row }" slot="more">
-          <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)">詳細
+          <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)"/>詳細
         </template>
 
         <template slot-scope="{ row }" slot="status">
@@ -696,7 +696,9 @@
             noreserved: 1,
             _dateList: '',
             _dateListRange:['', ''],
-            dateListRange:['', '']
+            dateListRange:['', ''],
+            txtAddDate:null,
+            txtTargetNumber:null
           },
           tabPaneLabel: (h) => {
             return h('div', [

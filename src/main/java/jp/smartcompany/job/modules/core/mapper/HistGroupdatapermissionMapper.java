@@ -1,8 +1,12 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * <p>
@@ -16,4 +20,11 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface HistGroupdatapermissionMapper extends BaseMapper<HistGroupdatapermissionDO> {
 
-        }
+        List<SearchRangeManagerDataDTO> getSearchRangeTableData(@Param("systemId") String systemId,
+                                                                @Param("siteId") String siteId,
+                                                                @Param("appId") String appId,
+                                                                @Param("searchDate") String sSearchDate,
+                                                                @Param("language") String language,
+                                                                @Param("groupIds") List<String> groupIds);
+
+}
