@@ -159,7 +159,7 @@
                     </template>
 
                     <template slot-scope="{ row }" slot="content">
-                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl"
+                        <i-input v-model="pattern.updateOverTimeDtoList[0].sCComment" type="textarea" :maxlength="100" class="tl" placeholder="用務内容は半角100文字、全角50文字以内で入力してください。"
                             :autosize="{ minRows: 2, maxRows: 5 }" @on-blur="handleInputChange(row._index, false)" />
                     </template>
 
@@ -1181,17 +1181,27 @@
                             // }
                         })
                         if (!check) {
-                            try {
-                                this.updateBtnLoading = true
-                                await this.http.post('sys/overtimeinstruct/uploadData', { updateDtoList: UpdateData })
-                                this.getTableDataDaily({ day: this.query.baseDay })
-                                this.overWorkViewType=1
-                                this.getTableData()
-                                this.$Message.success('命令完了')
-                            } catch (error) {
-                            } finally {
-                                this.updateBtnLoading = false
-                            }
+                            this.$Modal.confirm({
+                                inDrawer: true,
+                                title: '注意',
+                                content: '入力された内容で超過勤務命令を出します。よろしいですか？',
+                                width: 400,
+                                okText: 'OK',
+                                cancelText: 'キャンセル',
+                                onOk: async () => {
+                                    try {
+                                        this.updateBtnLoading = true
+                                        await this.http.post('sys/overtimeinstruct/uploadData', {updateDtoList: UpdateData})
+                                        this.getTableDataDaily({day: this.query.baseDay})
+                                        this.overWorkViewType = 1
+                                        this.getTableData()
+                                        this.$Message.success('命令完了')
+                                    } catch (error) {
+                                    } finally {
+                                        this.updateBtnLoading = false
+                                    }
+                                }
+                            })
                         }
                     }else{
                         this.showDayApply=false
