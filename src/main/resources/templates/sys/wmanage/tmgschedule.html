@@ -1474,6 +1474,22 @@
                     let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
                     console.log("count"+count)
                     let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
+
+                    let pattern= new RegExp("[A-Za-z0-9]+");
+                    if(pattern.test(e.comment)){
+                        if(e.comment.length>=100){
+                            that.$Notice.warning({ title: '注意', desc: day+' コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                    }else{
+                        if(e.comment.length>=50){
+                            that.$Notice.warning({ title: '注意', desc: day+' コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+                    }
                     //区分为出勤时进行时间check
                     if(e.workId=="TMG_WORK|000"){
                         if (!e.nopen) {

@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -27,4 +28,6 @@ public interface HistGroupdatapermissionMapper extends BaseMapper<HistGroupdatap
                                                                 @Param("language") String language,
                                                                 @Param("groupIds") List<String> groupIds);
 
+        SearchRangeManagerChangeDateDTO selectHistoryDate(@Param("custId") String custId,@Param("systemId") String systemId,
+                                                          @Param("groupId") String groupId,@Param("searchDate") String searchDate);
 }

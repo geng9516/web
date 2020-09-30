@@ -39,6 +39,8 @@ var THEME_CONFIG  = {
     '--table-tr-hover': 'rgb(81,91,110)',
     '--table-checkin': 'rgb(175, 102, 10)',
     '--table-checkin-bg': 'rgb(255, 254, 234)',
+    '--table-subtitle': 'var(--orange75)',
+    '--table-subtitle-bg': 'var(--orange25)',
     '--spin': 'var(--orange)',
     '--spin-bg': 'rgba(255, 255, 255, .7)',
     '--tree-hover': 'rgb(255,213, 185)',
@@ -48,6 +50,8 @@ var THEME_CONFIG  = {
     '--primary-info': 'var(--brown-text)',
     '--primary-info-border': '1px solid var(--olive)',
     '--primary-info-bg': 'var(--gold50)',
+    '--success-info': 'var(--text-green)',
+    '--success-info-bg': 'var(--green25)',
     '--row-label-primary': 'rgb(171, 78, 16)',
     '--row-label-primary-border': 'rgb(220, 200, 187)',
     // header
@@ -103,6 +107,8 @@ var THEME_CONFIG  = {
     '--label-monthSum': 'var(--border-grey)',
     '--light-input-border-grey': 'rgb(230, 230, 230)',
     '--label-monthSum-bg': 'white',
+    '--selection-input-bg':'white',
+
   },
   blue: {
     //basic color
@@ -143,6 +149,8 @@ var THEME_CONFIG  = {
     '--table-tr-hover': 'rgb(81,91,110)',
     '--table-checkin': 'var(--table-th-checkin)',
     '--table-checkin-bg': 'var(--light-blue)',
+    '--table-subtitle': 'var(--theme-blue)',
+    '--table-subtitle-bg': 'var(--light-blue-l)',
     '--spin': 'var(--theme-blue)',
     '--spin-bg': 'rgba(255, 255, 255, .9)',
     '--tree-hover': 'rgb(213, 232, 252)',
@@ -152,6 +160,8 @@ var THEME_CONFIG  = {
     '--primary-info': 'var(--primary)',
     '--primary-info-bg': 'rgb(240, 250, 255)',
     '--primary-info-border': '1px solid rgb(171, 220, 255)',
+    '--success-info': 'var(--text-green)',
+    '--success-info-bg': 'var(--green25)',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',
     // header
@@ -207,6 +217,8 @@ var THEME_CONFIG  = {
     '--label-monthSum': 'var(--border-grey)',
     '--light-input-border-grey': 'rgb(230, 230, 230)',
     '--label-monthSum-bg': 'white',
+    '--selection-input-bg':'white',
+
   },
   dark: {
     //basic color
@@ -243,10 +255,12 @@ var THEME_CONFIG  = {
     '--table-body-bg': 'rgb(42,44,49)',
     '--table-td-stripe': 'rgb(42,44,49)',
     '--table-td-sat': 'var(--blue25)',
-    '--table-td-hover-bg': 'rgba(0, 0, 0, 0.6)',
+    '--table-td-hover-bg': 'rgb(220,220, 220,0.25)',
     '--table-tr-hover': 'rgb(235,235,235)',
     '--table-checkin': 'var(--table-th-checkin)',
     '--table-checkin-bg': 'var(--light-blue)',
+    '--table-subtitle': 'rgb(108, 108, 108)',
+    '--table-subtitle-bg': 'rgb(201, 201, 201)',
     '--spin': 'var(--theme-blue)',
     '--spin-bg': 'rgba(51, 51, 51,0.9)',
     '--tree-hover': 'rgb(213, 232, 252)',
@@ -255,6 +269,8 @@ var THEME_CONFIG  = {
     '--tree-border': 'var(--blue25)',
     '--primary-info': 'rgb(168, 210, 255)',
     '--primary-info-bg': 'rgb(71, 159, 210,.2)',
+    '--success-info': 'rgb(168, 255, 174)',
+    '--success-info-bg': 'rgba(71, 210, 90, 0.2)',
     '--primary-info-border': 'transparent',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',
@@ -289,7 +305,7 @@ var THEME_CONFIG  = {
     // 小标题样式
     '--titlenorm-border-t': 'none',
     '--titlenorm-border-b': 'transparent',
-    '--titlenorm-bg': 'rgba(112, 210, 71, 0.2)',
+    '--titlenorm-bg': 'rgba(71, 210, 90, 0.2)',
     '--titlenorm-i': 'rgb(91, 208, 41)',
     // checkbox
     '--checkbox-border': 'var(--primary)',
@@ -311,6 +327,8 @@ var THEME_CONFIG  = {
     '--label-monthSum': 'rgb(72, 72, 72)',
     '--light-input-border-grey': 'rgb(144, 143, 143)',
     '--label-monthSum-bg': 'rgb(55, 54, 54)',
+    '--selection-input-bg':'rgba(158, 158, 158, 0.2)',
+
   }
 }
 
