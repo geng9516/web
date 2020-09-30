@@ -50,8 +50,8 @@
 
 // 禁选的checkbox
 .ivu-checkbox-disabled .ivu-checkbox-inner {
-  background-image: linear-gradient(-45deg, rgb(193,193,193), rgb(217,217,217));
-  border-color: rgb(165, 165, 165);
+  background-image: var(--disabled-checkbox-bg);
+  border-color: var(--disabled-checkbox-border);
 }
 // 可移动的对话框
 // .ivu-modal-no-mask {
@@ -200,7 +200,7 @@
   margin: 2px 0;
   color: var(--row-label-primary);
   border: 1px solid var(--row-label-primary-border);
-  background-color: var(--white);
+  background-color: var(--content-bg);
   border-radius: 3px;
 }
 .primary-info {
@@ -398,7 +398,7 @@
 .ivu-modal-header {
   border-bottom-color: var(--login-title-border-b);
 }
-.ivu-modal-content, .ivu-drawer-content, .ivu-table-row {
+.ivu-modal-content, .ivu-drawer-content, .ivu-table-row, .ivu-btn-text:hover {
   background: var(--modal-bg);
 }
 .ivu-btn-ghost {
@@ -407,13 +407,50 @@
 .ivu-menu-horizontal.ivu-menu-light:after {
   background: var(--login-title-border-b);
 }
-.ivu-input, .input-like-span, .ivu-select-selection {
+.ivu-input, .input-like-span, .ivu-select-selection,.ivu-input-number-input {
   border-color: var(--light-input-border-grey);
   color: var(--grey);
   background-color:var(--selection-input-bg);
 }
 .ivu-select-arrow {
   color: var(--grey);
+}
+.ivu-select-disabled .ivu-select-selection {
+  background: var(--disabled-selection);
+  color: var(--disabled-btn);
+}
+.ivu-select-disabled .ivu-select-selection .ivu-select-arrow {
+  color: var(--disabled-btn);
+}
+.ivu-input-number.ivu-input-number-default {
+  background-color: var(--selection-input-bg);
+  border-color: var(--light-input-border-grey);
+  &.ivu-input-number-disabled {
+    border-color: var(--input-number-disabled-border);
+    background-color: var(--input-number-disabled-bg);
+  }
+
+}
+.ivu-input-disabled.ivu-input-with-suffix, .ivu-input-number-input[disabled] {
+  background: var(--disabled-selection);
+  color: var(--disabled-btn);
+  border-color: var(--disabled-btn-border);
+}
+.ivu-btn[disabled], .ivu-btn-ghost.ivu-btn-primary[disabled] {
+  background: var(--disabled-btn-bg);
+  color: var(--disabled-btn);
+  border-color: var(--disabled-btn-border);
+  &:hover {
+    border-color: var(--disabled-btn-border);
+    background: var(--disabled-btn-bg);
+    color: var(--disabled-btn);
+  }
+}
+.ivu-btn[disabled].ivu-btn-text[disabled] {
+  border-color: transparent;
+  &:hover {
+    border-color: transparent;
+  }
 }
 /* margin */
 .m0{margin:0;}
