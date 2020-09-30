@@ -255,7 +255,6 @@
 <script th:src="${baseUrl + '/static/component/clock.js'}"></script>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
-    console.log([[${session}]])
     const SIGN = new Vue({
         el: '.stamp-warp',
         components: {Clock},
