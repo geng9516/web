@@ -243,7 +243,7 @@
             , TDAD_CSPARECHAR1
             , TDAD_NSPARENUM1
             , TDAD_CCODE01
-            <if test='categoryCode == "MG_CATEGORY|Overhours"'>
+            <if test='categoryCode == "TMG_CATEGORY|Overhours"'>
                 , TDAD_CSPARECHAR2
             </if>
         ) VALUES (
@@ -275,10 +275,10 @@
             </choose>
             , #{txtTDAD_CCODE01,jdbcType=VARCHAR}
             <choose>
-                <when test='categoryCode == "MG_CATEGORY|Overhours" and siteId == "TMG_INP"'>
+                <when test='categoryCode == "TMG_CATEGORY|Overhours" and site == "TMG_INP"'>
                     , NVL(#{txtTDAD_CSPARECHAR2,jdbcType=VARCHAR}, 'TMG_OVERHOUR_STATUS|0')
                 </when>
-                <when test="categoryCode == 'MG_CATEGORY|Overhours' and siteId != 'TMG_INP'">
+                <when test='categoryCode == "TMG_CATEGORY|Overhours" and site != "TMG_INP"'>
                     <choose>
                         <when test='"TMG_OVERHOUR_STATUS|0"== txtTDAD_CSPARECHAR2 and hasAuthority == "true"'>
                             , 'TMG_OVERHOUR_STATUS|5'
