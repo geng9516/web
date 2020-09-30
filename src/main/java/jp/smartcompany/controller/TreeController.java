@@ -126,7 +126,7 @@ public class TreeController {
                 }
             }
         } else if (type==TmgReferList.TREEVIEW_TYPE_LIST) {
-            System.out.println("---TREEVIEW_TYPE_LIST---");
+            log.info("---TREEVIEW_TYPE_LIST---");
             if (StrUtil.equals(psDBBean.getSiteId(),TmgUtil.Cs_SITE_ID_TMG_PERM)) {
                 String groupListStr = referList.getJSONArrayForGroupList();
                 if (StrUtil.isNotBlank(groupListStr)) {

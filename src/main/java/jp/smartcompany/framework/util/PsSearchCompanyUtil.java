@@ -73,7 +73,6 @@ public class PsSearchCompanyUtil {
                         break;
                     }
                 }
-                System.out.println(bEquals);
                 if (bEquals) {
                     lResultList.add(PsConst.CODE_ALL_COMPANIES);
                 }
