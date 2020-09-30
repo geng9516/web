@@ -46,7 +46,7 @@
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
-  background-color: white;
+  background-color:var(--selection-input-bg);
 }
 .change-line span {
   white-space: pre-wrap;

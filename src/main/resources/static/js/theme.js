@@ -8,6 +8,7 @@ var THEME_CONFIG  = {
     '--red': 'rgb(252, 13, 27)',
     '--theme-blue': 'rgb(48, 118, 242)',
     '--green': 'rgb(82, 196, 26)',
+    '--border-grey': 'rgb(234, 235, 236)',
     // login
     '--login-svg-fill': 'var(--orange)',
     '--login-left-part-bg': 'var(--orange-g)',
@@ -52,6 +53,7 @@ var THEME_CONFIG  = {
     '--primary-info-bg': 'var(--gold50)',
     '--success-info': 'var(--text-green)',
     '--success-info-bg': 'var(--green25)',
+    '--error-info-bg': 'var(--light-pink)',
     '--row-label-primary': 'rgb(171, 78, 16)',
     '--row-label-primary-border': 'rgb(220, 200, 187)',
     // header
@@ -82,6 +84,10 @@ var THEME_CONFIG  = {
     '--ghost-primary-color': 'var(--orange)',
     '--ghost-primary-hover': 'linear-gradient(-45deg, var(--orange25), var(--white))',
     '--ghost-primary-active': 'linear-gradient(-45deg, var(--orange25), var(--white))',
+    '--disabled-btn': '#c5c8ce',
+    '--disabled-btn-bg': 'white',
+    '--disabled-btn-border': '#dcdee2',
+    '--disabled-selection': '#f3f3f3',
     // 小标题样式
     '--titlenorm-border-t': 'none',
     '--titlenorm-border-b': 'var(--orange75)',
@@ -90,6 +96,8 @@ var THEME_CONFIG  = {
     // checkbox
     '--checkbox-border': 'var(--orange25)',
     '--checkbox-bg': 'var(--orange75)',
+    '--disabled-checkbox-bg':'linear-gradient(-45deg, rgb(193,193,193), rgb(217,217,217))',
+    '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(255,157,93, .7), rgb(255,102,0, .7))',
     // footer
@@ -108,6 +116,10 @@ var THEME_CONFIG  = {
     '--light-input-border-grey': 'rgb(230, 230, 230)',
     '--label-monthSum-bg': 'white',
     '--selection-input-bg':'white',
+    '--dept-select-border-left':'0',
+
+    '--input-number-disabled-border':'#e3e5e8',
+    '--input-number-disabled-bg':'var(--light-input-border-grey)'
 
   },
   blue: {
@@ -118,6 +130,7 @@ var THEME_CONFIG  = {
     '--red': 'rgb(252, 13, 27)',
     '--theme-blue': 'rgb(48, 118, 242)',
     '--green': 'rgb(82, 196, 26)',
+    '--border-grey': 'rgb(234, 235, 236)',
     // login
     '--login-svg-fill': 'var(--theme-blue)',
     '--login-left-part-bg': 'radial-gradient(rgb(135, 177, 252), rgb(48, 118, 242))',
@@ -162,6 +175,7 @@ var THEME_CONFIG  = {
     '--primary-info-border': '1px solid rgb(171, 220, 255)',
     '--success-info': 'var(--text-green)',
     '--success-info-bg': 'var(--green25)',
+    '--error-info-bg': 'var(--light-pink)',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',
     // header
@@ -192,6 +206,10 @@ var THEME_CONFIG  = {
     '--ghost-primary-color': 'var(--primary)',
     '--ghost-primary-hover': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
     '--ghost-primary-active': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
+    '--disabled-btn': '#c5c8ce',
+    '--disabled-btn-bg': 'white',
+    '--disabled-btn-border': '#dcdee2',
+    '--disabled-selection': '#f3f3f3',
     // 小标题样式
     '--titlenorm-border-t': '1px solid var(--form-title-border)',
     '--titlenorm-border-b': 'var(--form-title-border)',
@@ -200,6 +218,8 @@ var THEME_CONFIG  = {
     // checkbox
     '--checkbox-border': 'var(--primary)',
     '--checkbox-bg': 'var(--primary)',
+    '--disabled-checkbox-bg':'linear-gradient(-45deg, rgb(193,193,193), rgb(217,217,217))',
+    '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
     // footer
@@ -218,7 +238,9 @@ var THEME_CONFIG  = {
     '--light-input-border-grey': 'rgb(230, 230, 230)',
     '--label-monthSum-bg': 'white',
     '--selection-input-bg':'white',
-
+    '--dept-select-border-left':'0',
+    '--input-number-disabled-border':'#e3e5e8',
+    '--input-number-disabled-bg':'#f3f3f3'
   },
   dark: {
     //basic color
@@ -228,6 +250,7 @@ var THEME_CONFIG  = {
     '--red': 'rgb(255, 98, 106)',
     '--theme-blue': 'rgb(159, 206, 255)',
     '--green': 'rgb(82, 196, 26)',
+    '--border-grey': 'rgb(92, 87, 87)',
     // login
     '--login-svg-fill': 'rgb(235, 235, 235)',
     '--login-left-part-bg': 'rgb(42,44,49)',
@@ -257,8 +280,8 @@ var THEME_CONFIG  = {
     '--table-td-sat': 'var(--blue25)',
     '--table-td-hover-bg': 'rgb(220,220, 220,0.25)',
     '--table-tr-hover': 'rgb(235,235,235)',
-    '--table-checkin': 'var(--table-th-checkin)',
-    '--table-checkin-bg': 'var(--light-blue)',
+    '--table-checkin': 'var(--primary-info)',
+    '--table-checkin-bg': 'var(--primary-info-bg)',
     '--table-subtitle': 'rgb(108, 108, 108)',
     '--table-subtitle-bg': 'rgb(201, 201, 201)',
     '--spin': 'var(--theme-blue)',
@@ -271,6 +294,7 @@ var THEME_CONFIG  = {
     '--primary-info-bg': 'rgb(71, 159, 210,.2)',
     '--success-info': 'rgb(168, 255, 174)',
     '--success-info-bg': 'rgba(71, 210, 90, 0.2)',
+    '--error-info-bg': 'rgba(246, 123, 97,0.2)',
     '--primary-info-border': 'transparent',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',
@@ -302,14 +326,20 @@ var THEME_CONFIG  = {
     '--ghost-primary-color': 'rgb(53, 173, 255)',
     '--ghost-primary-hover': 'rgb(65, 69, 76)',
     '--ghost-primary-active': 'linear-gradient(-45deg, var(--ghost-hover), var(--white))',
+    '--disabled-btn': '#606060',
+    '--disabled-btn-bg': 'var(--content-bg)',
+    '--disabled-btn-border': '#3c3c3d',
+    '--disabled-selection': 'var(--content-bg)',
     // 小标题样式
     '--titlenorm-border-t': 'none',
     '--titlenorm-border-b': 'transparent',
     '--titlenorm-bg': 'rgba(71, 210, 90, 0.2)',
     '--titlenorm-i': 'rgb(91, 208, 41)',
     // checkbox
-    '--checkbox-border': 'var(--primary)',
-    '--checkbox-bg': 'var(--primary)',
+    '--checkbox-border': 'rgb(136, 136, 136)',
+    '--checkbox-bg': 'rgb(98,98, 98)',
+    '--disabled-checkbox-bg':'linear-gradient(-45deg, #333333, #333333)',
+    '--disabled-checkbox-border':'#464646',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
     // footer
@@ -328,7 +358,9 @@ var THEME_CONFIG  = {
     '--light-input-border-grey': 'rgb(144, 143, 143)',
     '--label-monthSum-bg': 'rgb(55, 54, 54)',
     '--selection-input-bg':'rgba(158, 158, 158, 0.2)',
-
+    '--dept-select-border-left':'1px dashed var(--dept-select)',
+    '--input-number-disabled-border':'rgb(79,79, 79)',
+    '--input-number-disabled-bg':'rgba(73, 73, 73, 0.55)'
   }
 }
 

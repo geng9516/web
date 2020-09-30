@@ -6,11 +6,9 @@ import jp.smartcompany.job.modules.core.CoreBean;
 import jp.smartcompany.job.modules.core.service.AccessAuditService;
 import jp.smartcompany.job.modules.core.service.ErrorAuditService;
 import jp.smartcompany.job.modules.core.service.LoginAuditService;
-import jp.smartcompany.job.modules.core.service.OperationAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.AccessAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
 import jp.smartcompany.job.modules.core.pojo.entity.LoginAuditDO;
-import jp.smartcompany.job.modules.core.pojo.entity.OperationAuditDO;
 import jp.smartcompany.boot.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +27,6 @@ public class LogBusiness {
     private final AccessAuditService accessAuditService;
     private final LoginAuditService loginAuditService;
     private final ErrorAuditService errorAuditService;
-    private final OperationAuditService operationAuditService;
 
     /**
      * 登录日志查询
@@ -70,20 +67,6 @@ public class LogBusiness {
         String endTime = (String)params.get("endTime");
         IPage<ErrorAuditDO> p = new Query<ErrorAuditDO>().getPage(params);
         IPage<ErrorAuditDO> page = errorAuditService.listByPage(keyword,startTime,endTime,p);
-        return new PageUtil(page);
-    }
-
-    /**
-     * 访问操作日志
-     * @param params 查询参数
-     * @return PageUtil 分页工具类
-     */
-    public PageUtil listOperationLog(Map<String,Object> params) {
-        String keyword = (String)params.get("keyword");
-        String startTime =(String)params.get("startTime");
-        String endTime = (String)params.get("endTime");
-        IPage<OperationAuditDO> p = new Query<OperationAuditDO>().getPage(params);
-        IPage<OperationAuditDO> page = operationAuditService.listByPage(keyword,startTime,endTime,p);
         return new PageUtil(page);
     }
 

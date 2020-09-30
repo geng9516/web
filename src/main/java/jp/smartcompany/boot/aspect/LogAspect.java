@@ -1,24 +1,19 @@
 package jp.smartcompany.boot.aspect;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 
-import jp.smartcompany.boot.annotation.OperationLog;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.job.modules.core.service.ErrorAuditService;
-import jp.smartcompany.job.modules.core.service.OperationAuditService;
 import jp.smartcompany.job.modules.core.pojo.entity.ErrorAuditDO;
-import jp.smartcompany.job.modules.core.pojo.entity.OperationAuditDO;
+
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.IpUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +25,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.lang.reflect.Method;
 import java.util.Date;
-import java.util.Map;
 
 /**
  * @author Xiao Wenpeng
@@ -42,85 +36,6 @@ import java.util.Map;
 public class LogAspect {
 
   private final ErrorAuditService errorAuditService;
-  private final OperationAuditService operationAuditService;
-
-  @Around(value="@annotation(jp.smartcompany.boot.annotation.OperationLog)")
-  public Object around(ProceedingJoinPoint point) throws Throwable {
-    HttpServletRequest request = ContextUtil.getHttpRequest();
-    long beginTime = System.currentTimeMillis();
-    String className = point.getTarget().getClass().getName();
-    MethodSignature signature = (MethodSignature) point.getSignature();
-    Method method = signature.getMethod();
-    OperationLog operationLog = method.getAnnotation(OperationLog.class);
-    OperationAuditDO operationAuditDO = new OperationAuditDO();
-    if(operationLog != null){
-      // 注解上的描述
-      operationAuditDO.setOperation(operationLog.value());
-    }
-    operationAuditDO.setMethod(className + "." + method.getName() + "()");
-    //请求的参数
-    Object[] args = point.getArgs();
-    String[] argNames = signature.getParameterNames();
-    boolean canOriginalInsert = true;
-    Map<String,Object> paramMaps = MapUtil.newHashMap();
-    for (int i = 0;i<args.length;i++) {
-      Object arg = args[i];
-      if (arg != null) {
-        boolean isOriginalInsert = arg instanceof MultipartFile || (arg instanceof String && ((String) arg).length() > 5000);
-        if (isOriginalInsert) {
-          canOriginalInsert = false;
-          break;
-        }
-      }
-      assert request != null;
-      if (StrUtil.equalsIgnoreCase(request.getMethod(),"get")) {
-        String argName = argNames[i];
-        paramMaps.put(argName,arg);
-      }
-    }
-    String params;
-    if (canOriginalInsert) {
-      if (args.length>1 || MapUtil.isEmpty(paramMaps)){
-         params = JSONUtil.toJsonStr(paramMaps);
-      } else {
-        if (args.length>0) {
-          Object arg = args[0];
-          params = JSONUtil.toJsonStr(arg);
-        } else {
-          params = "Params can not serializable";
-        }
-      }
-    } else {
-      params = "Params can not serializable";
-    }
-    // 3000为数据库定义的可存储varchar长度
-    operationAuditDO.setParams(params.length()>3000?"Params is too long":params);
-    //设置IP地址
-    if (request!=null) {
-      operationAuditDO
-              .setIp(IpUtil.getRemoteAddr(request))
-              .setUrl(request.getRequestURI());
-    }
-
-//    EmpBO empBO = ShiroUtil.getLoginEmp();
-
-    String username = Constant.ANON_USER;
-//    if (empBO!=null){
-//      username = empBO.getUsername();
-//    }
-    operationAuditDO
-            .setUsername(username);
-    //执行方法
-    Object result = point.proceed();
-    //执行时长(毫秒)
-    long time = System.currentTimeMillis() - beginTime;
-    operationAuditDO.setTime(time);
-    Date now  = DateUtil.date();
-    operationAuditDO.setCreateTime(now);
-    operationAuditDO.setUpdateTime(now);
-    operationAuditService.save(operationAuditDO);
-    return result;
-  }
 
   @AfterThrowing(throwing = "e",value="execution(* jp.smartcompany.controller.*.*(..)) || execution(* jp.smartcompany.job.modules..*(..))")
   public void afterThrowing(JoinPoint point, Throwable e) {
