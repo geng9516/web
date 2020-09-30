@@ -1129,7 +1129,7 @@
                                         that.$Notice.warning({ title: '注意', desc: '終了時間を入力してください。', duration: 6.5 })
                                         return true
                                     }
-                                    if (!t.sCComment) {
+                                    if (t.sNOpen && t.sNClose && !t.sCComment) {
                                         that.$Notice.warning({ title: '注意', desc: '用務内容を入力してください。', duration: 6.5 })
                                         return true
                                     }
