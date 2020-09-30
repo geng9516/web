@@ -1,5 +1,6 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
@@ -26,6 +27,12 @@ public class HistGroupdatapermissionServiceImpl extends ServiceImpl<HistGroupdat
    public List<SearchRangeManagerDataDTO> getSearchRangeTableData(String systemId, String siteId, String appId, Date searchDate, String language, List<String> groupIds) {
       String sSearchDate = SysUtil.transDateToString(searchDate);
       return baseMapper.getSearchRangeTableData(systemId,siteId, appId, sSearchDate, language, groupIds);
+   }
+
+   @Override
+   public SearchRangeManagerChangeDateDTO selectHistoryDate(String custId, String systemId, String groupId, Date searchDate) {
+      String sSearchDate = SysUtil.transDateToString(searchDate);
+      return baseMapper.selectHistoryDate(custId,systemId,groupId,sSearchDate);
    }
 
 }
