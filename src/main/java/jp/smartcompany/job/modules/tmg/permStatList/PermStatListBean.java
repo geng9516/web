@@ -635,7 +635,6 @@ public class PermStatListBean {
     private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay) {
 
         try {
-
             if (!referList.hasAuthorityAtEmployee(psStartDay, psEndDay, psEmployeeId, TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL)) {
                 return false;
             }

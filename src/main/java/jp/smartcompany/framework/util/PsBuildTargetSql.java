@@ -15,6 +15,7 @@ import jp.smartcompany.framework.sysboot.dto.TableCombinationTypeDTO;
 import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +31,7 @@ import java.util.regex.Pattern;
  * 検索対象範囲設定情報取得クラス
  */
 @Component
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class PsBuildTargetSql {
 
@@ -184,7 +186,7 @@ public class PsBuildTargetSql {
             sSiteId = TOP_PAGE;
         }
         appSearchRangeInfoLogic.setPsSite(sSiteId);
-        System.out.println("getApplicationUrl" +getApplicationUrl()+","+psMode);
+        log.debug("getApplicationUrl" +getApplicationUrl()+","+psMode);
         appSearchRangeInfoLogic.create(getApplicationUrl(), psMode);
     }
     /**

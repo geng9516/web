@@ -55,16 +55,16 @@
   white-space: pre-line;
 }
 .week-rest {
-  background: var(--light-blue);
-  color: var(--primary);
+  background: var(--primary-info-bg);
+  color: var(--primary-info);
   min-height: 47px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .year-rest {
-  background: var(--green25);
-  color: var(--text-green);
+  background: var(--success-info-bg);
+  color: var(--success-info);
   min-height: 47px;
   display: flex;
   flex-direction: column;

@@ -2341,7 +2341,7 @@ public class TmgUtil {
         String discretionWorkTrue = "1";
 
         if (discretionWorkTrue.equals(discretionWork)) {
-            System.out.println("職員「" + employeeCode + "」 は　裁量労働対象者です");
+//            System.out.println("職員「" + employeeCode + "」 は　裁量労働対象者です");
             return true;
         }
         return false;
@@ -2356,7 +2356,7 @@ public class TmgUtil {
     public static Boolean isDiscretion(PsDBBean psDBBean) {
 
         if (null == psDBBean) {
-            System.out.println("裁量労働対象者かどうかを判定 中で　PsDBBean対象が空です");
+//            System.out.println("裁量労働対象者かどうかを判定 中で　PsDBBean対象が空です");
             return false;
         }
         String baseDate = DateUtil.format(new Date(), "yyyy/MM/dd");

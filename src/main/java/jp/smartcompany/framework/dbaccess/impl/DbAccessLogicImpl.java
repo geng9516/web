@@ -4,6 +4,7 @@ import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.framework.dbaccess.DbAccessLogic;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +19,7 @@ import java.util.Vector;
  * @author Xiao Wenpeng
  */
 @Service
+@Slf4j
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class DbAccessLogicImpl implements DbAccessLogic {
 
@@ -37,7 +39,7 @@ public class DbAccessLogicImpl implements DbAccessLogic {
 
     @Override
     public int executeUpdate(Statement statement,String sSql) throws SQLException {
-        System.out.println(sSql);
+        log.debug(sSql);
         int count = statement.executeUpdate(sSql);
         return count;
     }
