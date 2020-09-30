@@ -3,6 +3,7 @@
 }
 .ivu-table {
   .ivu-table-header {
+    background: var(--content-bg);
     th {
       padding: 2px 0;
     }
@@ -44,8 +45,8 @@
     }
     // 休息日 如星期六日
     &.rest {
-      background-color: var(--green25);
-      color: var(--text-green);
+      background: var(--success-info-bg);
+      color: var(--success-info);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }
@@ -246,7 +247,7 @@
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
-  background-color: white;
+  background-color: var(--selection-input-bg);
 }
 
 .label {
@@ -280,7 +281,7 @@
     color: var(--primary);
   }
   &.rest {
-    color: var(--text-green);
+    color: var(--green);
   }
 }
 
