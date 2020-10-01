@@ -70,10 +70,10 @@
             <Alert type="error" class="error-info tl" style="width: 70%" v-show="nodata">対象期間(年)は適切な日付ではありません。</Alert>
             <div class="tl ml10 mb15" v-if="yearData.length>0">
                 <template>
-                    <Tag   color="blue">定休日</Tag>
-                    <Tag   color="red">法休日</Tag>
-                    <Tag   color="green">祝日</Tag>
-                    <Tag   style="background:white">出勤日</Tag>
+                    <div class="cal-tag sat">定休日</div>
+                    <div class="cal-tag sun">法休日</div>
+                    <div class="cal-tag rest">祝日</div>
+                    <div class="cal-tag" style="background:var(--content-bg);color:var(--grey)">出勤日</div>
                 </template>
             </div>
             <div style="display:inline-block;width:80%;margin-left: -14%;">
@@ -89,7 +89,7 @@
                         <i-col class="cal-week sat" span="3">土</i-col>
                     </Row>
                     <Row class="calendar-row mb20">
-                        <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3"
+                        <i-col class="cal-week empty" span="3"
                             v-for="(n, t) of +e.startDay" :key="t+500">
                             &nbsp;&nbsp
                         </i-col>
@@ -98,7 +98,7 @@
                             :key="t + 1000" @click.native.stop="changeCalendar(e, t, i+1)">
                             {{ n }}
                         </i-col>
-                        <i-col class="cal-week" style="background:rgb(245, 247, 249)" span="3"
+                        <i-col class="cal-week empty" span="3"
                             v-for="(q, p) of addGreyCalendar(e)" :key="p+2000">
                             &nbsp
                         </i-col>
@@ -330,6 +330,7 @@
                 },
             },
             mounted() {
+                this.loading = true
                 this.getInit()
             },
             methods: {

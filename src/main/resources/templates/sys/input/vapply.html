@@ -65,7 +65,7 @@
                             申請へ
                         </i-button>
                         <date-picker type="year" :open="openDatePicker" format="yyyy" style="position: absolute;left: -600px;" v-model="curYear" @on-change="handleDatePicker" slot="extra">
-                            <a @click="openDatePicker = !openDatePicker">
+                            <a @click="openDatePicker = !openDatePicker" style="color: var(--ghost-primary-color);">
                                 <Icon type="ios-calendar-outline"></Icon>
                                 <span>{{ opts.year }}</span>
                             </a>
@@ -95,7 +95,7 @@
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                 </li>
-                                                <li style="margin-right:10px" v-else>
+                                                <li style="margin-right:10px;color: rgb(104, 109, 116);" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
                                                     <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(/\u3000|\s/)[0]}}</Avatar>
                                                     <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(/\u3000|\s/)[0]}}</Avatar>
@@ -115,7 +115,7 @@
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(`http:////${e.tnafFilepath.slice(2)}`, '_blank')">{{ e.tnafCfilename }}</div>
+                                                <div class="mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;color: rgb(48, 118, 242);" @click="()=>window.open(`http:////${e.tnafFilepath.slice(2)}`, '_blank')">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -148,22 +148,22 @@
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
                                         <Poptip trigger="hover" class="cursor tl" placement="left-start" title="申請履歴" transfer>
                                             {{ `申請日時：${item.tntfDnotification}` }}
-                                            <div slot="content" style="width: 500px;" class="tc">
+                                            <div slot="content" style="width: 500px;color: rgb(104, 109, 116);" class="tc">
                                                 <Row class="ft13 mb5 mt10">
                                                     <i-col span="8">
-                                                        <p class="head-info mr1">更新者</p>
+                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者</p>
                                                     </i-col>
                                                     <i-col span="4">
-                                                        <p class="head-info mr1">操作</p>
+                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">操作</p>
                                                     </i-col>
                                                     <i-col span="4">
-                                                        <p class="head-info">状態</p>
+                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">状態</p>
                                                     </i-col>
                                                     <i-col span="8">
-                                                        <p class="head-info">更新日時</p>
+                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新日時</p>
                                                     </i-col>
                                                 </Row>
-                                                <Row class="mb20 ft13 border">
+                                                <Row class="mb20 ft13" style="border: 1px solid rgb(234,235,236);border-top: 0;border-radius: 3px;">
                                                     <i-col span="8" class="mb10">
                                                         <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.empname }}</p>
                                                     </i-col>
@@ -318,8 +318,8 @@
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
                                     <Upload ref="upload"  :show-upload-list="false" multiple type="drag" class="tl mt15 mb10" action="/" :before-upload="handleBeforeUpload">
                                         <div style="padding: 20px 0">
-                                            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                            <p>Click or drag files here to upload</p>
+                                            <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                                            <p style="color:var(--grey)">Click or drag files here to upload</p>
                                         </div>
                                     </Upload>
                                     <ul class="ivu-upload-list tl mb10">

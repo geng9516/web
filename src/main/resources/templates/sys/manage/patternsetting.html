@@ -233,8 +233,8 @@
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
         <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select width100" type="drag">
             <div style="padding: 20px 0">
-                <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                <p>Click or drag files here to upload</p>
+                <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                <p style="color:var(--grey)">Click or drag files here to upload</p>
             </div>
         </Upload>
         <div class="tl mt10" v-if="file !== null">

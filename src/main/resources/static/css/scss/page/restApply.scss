@@ -8,7 +8,8 @@
   overflow-y: visible;
 }
 .head-info {
-  background: #e7e7e7;
+  background: var(--label-monthSum);
+  color: var(--grey);
 }
 .full-name {
   .ivu-card-head {
@@ -85,7 +86,7 @@
   &.ivu-alert-info {
     top: -8px;
     padding: 8px 16px;
-    background: var(--white);
+    background: var(--content-bg);
     border: 1px dashed var(--form-border-dash);
   }
 }
@@ -109,6 +110,7 @@
 }
 .card {
   width: 800px;
+  background: var(--content-bg);
   backface-visibility: hidden;
   transition: all 1.5s;
   box-shadow: rgba(50, 50, 50, 0.2) 0 0 15px;
@@ -171,8 +173,8 @@
 }
 .vacation-type-warp {
   padding: 6px 6px 3px;
-  border: 1px solid rgb(219, 240, 255);
-  background: rgba(240, 250, 255, 0.349);
+  border: 1px solid var(--border-color);
+  background: var(--rest-apply-self-info-bg);
 }
 // 更多承认者
 .more-user {
@@ -196,29 +198,29 @@
     left: 5px;
   }
   &.ok {
-    color: var(--theme-blue);
-    background-color: var(--light-blue);
+    color: var(--blue-or-dark);
+    background-color: var(--blue-or-dark-bg);
     &:after {
       content: '済';
     }
   }
   &.deny {
     color: var(--red);
-    background-color: var(--light-pink);
+    background-color: var(--error-info-bg);
     &:after {
       content: '差';
     }
   }
   &.error {
     color: var(--red);
-    background-color: var(--light-pink);
+    background-color: var(--error-info-bg);
     &:after {
       content: 'エ';
     }
   }
   &.ing {
-    color: var(--text-green);
-    background-color: var(--green25);
+    background-color: var(--success-info-bg);
+    color: var(--success-info);
     &:after {
       content: '申';
     }
@@ -230,7 +232,7 @@
   background: linear-gradient(to bottom, #ccc 80%, transparent 100%) no-repeat left 19px top 15px/1px 100%;
   text-align: left;
   position: relative;
-  right: -32px;
+  right: -33px;
   max-height: 70vh;
   overflow-y: scroll;
   color: var(--grey);
@@ -252,7 +254,7 @@
       width: 15px;
       height: 15px;
       border-radius: 50%;
-      box-shadow: 0 0 0 4px var(--light-blue);
+      box-shadow: var(--apply-status-dot-shadow);
       background: linear-gradient(90deg, rgb(50, 182, 255), rgb(66, 118, 255));
     }
     &.deny::before {

@@ -268,6 +268,9 @@
 }
 
 // 树形选择器
+.ivu-tree-title {
+  color: var(--grey);
+}
 .ivu-tree-title-selected, .ivu-tree-title-selected:hover {
   background-color: var(--tree-hover);
 }
@@ -288,7 +291,7 @@
     margin-left: 7px;
   }
   .ivu-icon {
-    background-color: var(--light-grey);
+    background-color: var(--tree-bg);
   }
   ul li {
     margin: 0;
@@ -431,6 +434,10 @@
   }
 
 }
+.ivu-select-single .ivu-select-selection .ivu-select-selected-value {
+  background: var(--dept-search-bg);
+  border:var(--border-grey);
+}
 .ivu-input-disabled.ivu-input-with-suffix, .ivu-input-number-input[disabled] {
   background: var(--disabled-selection);
   color: var(--disabled-btn);
@@ -451,6 +458,24 @@
   &:hover {
     border-color: transparent;
   }
+}
+.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs {
+  color: var(--grey);
+}
+.ivu-card-head, .ivu-card-bordered {
+  border-color: var(--border-grey);
+}
+.ivu-radio-inner:after {
+  background-color: var(--checkbox-bg);
+}
+.ivu-radio-checked .ivu-radio-inner {
+  border-color: var(--checkbox-bg);
+}
+.ivu-picker-panel-body {
+  color: rgb(104, 109, 116);
+}
+.ivu-upload-drag {
+  background: var(--content-bg);
 }
 /* margin */
 .m0{margin:0;}
