@@ -30,6 +30,22 @@ public class UserManagerCondDTO {
      */
     private Integer limit;
     /**
+     * 排序字段
+     */
+    public String sidx;
+    /**
+     * 排序方式
+     */
+    public String order;
+    /**
+     * 升序
+     */
+    public String asc;
+    /**
+     * 是否需要返回数据总数
+     */
+    public String sum;
+    /**
      * 部署ID
      */
     private String sectionId;
