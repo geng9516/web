@@ -459,8 +459,11 @@
     border-color: transparent;
   }
 }
-.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body {
+.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body, .ivu-upload-list-file {
   color: var(--grey);
+}
+.ivu-upload-list-file:hover {
+  background: var(--upload-list-file-hover-bg);
 }
 .ivu-card-head, .ivu-card-bordered {
   border-color: var(--border-grey);

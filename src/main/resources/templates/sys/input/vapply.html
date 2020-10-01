@@ -334,7 +334,7 @@
                                             <span @click="applyCardDownloadFile(item)">
                                                 <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
                                             </span>
-                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)" v-if="item.isDefault">既存</p>
+                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
                                             <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
                                             <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
                                         </li>
@@ -540,7 +540,6 @@
                  },
                  handleRestType(e) {
                     if (!e) return
-                    console.log(this.rotate)
                     if (this.rotate) {
                         this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
@@ -567,7 +566,6 @@
                     }
                     this.restApply.restTypeId = e
                     this.isReApplyIng = false
-                    console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
                 onRefresh() {
@@ -848,7 +846,8 @@
                     this.restApply.ntfNo = item.tntfCntfNo
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
                     // 文件
-                    this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
+                    this.$nextTick(()=>{
+                        this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
                             name:e.tnafCfilename,
                             url:e.tnafFilepath,
@@ -856,7 +855,7 @@
                             isDefault: true
                         }
                     })
-
+                    })
                     // 再拿更多详细
                     const { data } = await this.http.get('sys/vapply/NotificationDetail', {ntfNo:item.tntfCntfNo})
 

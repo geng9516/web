@@ -135,7 +135,9 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
-    '--mask-bg':'rgba(55,55,55,.6)'
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
+
   },
   blue: {
     //basic color
@@ -271,7 +273,8 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
-    '--mask-bg':'rgba(55,55,55,.6)'
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
   },
   dark: {
     //basic color
@@ -407,7 +410,8 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'#92231a',
     '--over-time-level-4':'#480904',
     '--over-time-level-5':'#210301',
-    '--mask-bg':'rgba(99, 99, 99,0.91)'
+    '--mask-bg':'rgba(99, 99, 99,0.91)',
+    '--upload-list-file-hover-bg':'#3b3a3a',
   }
 }
 
