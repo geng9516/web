@@ -1,6 +1,6 @@
 var APP_THEME = localStorage.getItem('APP_THEME') || 'default'
 var THEME_CONFIG  = {
-  orange: {
+  default: {
     //basic color
     '--grey': 'rgb(104, 109, 116)',
     '--white': 'rgb(255, 255, 255)',
@@ -139,7 +139,7 @@ var THEME_CONFIG  = {
     '--upload-list-file-hover-bg':'#f3f3f3',
 
   },
-  blue: {
+  classical: {
     //basic color
     '--grey': 'rgb(104, 109, 116)',
     '--white': 'rgb(255, 255, 255)',
@@ -417,22 +417,10 @@ var THEME_CONFIG  = {
 
 var Changetheme = function(e = APP_THEME, context) {
   if(context) context.curTheme = e
-  if(e === 'default') {
+  if(e) {
     localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.orange).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.orange[e])
-    })
-  }
-  if(e=== 'classical') {
-    localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.blue).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.blue[e])
-    })
-  }
-  if(e=== 'dark') {
-    localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.dark).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.dark[e])
+    Object.keys(THEME_CONFIG[e]).forEach(t=>{
+      document.documentElement.style.setProperty(t,THEME_CONFIG[e][t])
     })
   }
 }

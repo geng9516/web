@@ -1,10 +1,337 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="layout/header::common_header(title='検索対象範囲',cssPaths='/pages/content.min.css')">
 </head>
 <body>
-検索対象範囲
+  <div th:replace="layout/loadingBar::loadingBar"></div>
+  <!-- 菜单导航栏 -->
+  <div th:replace="layout/sider"></div>
+  <main class="content startregistersettings-warp" ref="layout">
+    <div class="content_head">
+      <div class="header">
+        <div class="title1">
+          <h1>
+            <Icon type="i-emeer colored"></Icon>
+            {{ `検索対象範囲 ` }}
+            <span class="blue"> : {{dataDate}}</span>
+          </h1>
+        </div>
+        <div class="btnbox">
+          <span style="flex:1"></span>
+          今回改定日：
+          <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5"
+            format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
+          </date-picker>
+          <i-button type="primary" icon="md-create" @click="isEditing = true" v-if="!isEditing"
+            :loading="loading">編集
+          </i-button>
+          <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading"
+            v-if="isEditing">登録</i-button>
+          <i-button type="primary" @click="handleCancel" ghost v-if="isEditing">キャンセル</i-button>
+        </div>
+      </div>
+      <div class="searchwrap">
+        <span class="label" @on-change="handleSystemChange">システム名</span>
+        <i-select v-model="opts.systemId" class="mr15" style="width:200px">
+          <i-option v-for="(item, i) of systemList" :key="i" :value="item.msCsystemidPk">{{ item.msCsystemname }}
+          </i-option>
+        </i-select>
+        <span class="label">選択法人名</span>
+        <i-select v-model="opts.companyId" class="mr15" @on-change="handleLegalPersonChange">
+          <i-option value="0" label="全て"></i-option>
+          <i-option v-for="(item, i) of legalPersonList" :key="i" :value="item.macCcompanyidCk">
+            {{ item.macCcompanyname }}</i-option>
+        </i-select>
+        <span class="label">選択グループ名</span>
+        <i-select v-model="opts.groupId" @on-change="handleGroupChange">
+          <i-option value="0" label="全グループ表示"></i-option>
+          <i-option v-for="(item, i) of groupList" :key="i" :value="item.mgCgroupidPk">{{ item.mgCgroupdescription }}
+          </i-option>
+        </i-select>
+      </div>
+    </div>
+    <div class="content_body">
+      <div class="table-top">
+        <Row :gutter="16">
+          <i-col span="4">
+            <i-button type="text" class="blue" :loading="loading" @click="getPreData">
+              <Icon type="ios-arrow-back"></Icon>
+              <span class="ml5">{{beforeDate}} 改定分</span>
+            </i-button>
+          </i-col>
+          <i-col span="20" class="tr">
+            選択サイト名：
+            <i-select v-model="opts.siteId" class="mr15" style="width:260px" @on-change="handSiteChange" transfer>
+              <i-option value="0" label="全サイト表示"></i-option>
+              <i-option v-for="(item, i) of siteList" :key="i" :value="item.mtrCsiteid">{{ item.mtrCobjname }}
+              </i-option>
+            </i-select>
+            選択アプリケーション名：
+            <i-select v-model="opts.appId" class="mr15" style="width:260px" @on-change="handleAppChange" transfer>
+              <i-option value="0" label="全アプリケーション"></i-option>
+              <i-option v-for="(item, i) of appList" :key="i" :value="item.mtrCappid">{{ item.mtrCobjname }}</i-option>
+            </i-select>
+          </i-col>
+        </Row>
+      </div>
+        <!-- type: "0" トップページ   <Icon type="md-compass" />
+        type: "1" サイト   <Icon type="md-compass" />
+        type: "3" アプリケーション ml10 <Icon type="md-desktop" />
+        type: "4" サブアプリケーション <Icon type="md-easel" />
+        type: "2" ダイアログアプリケーション ml10 <Icon type="ios-photos" />
+        type: "5" 画面 ml20  <Icon type="md-browsers" />
+        type: "6" 機能ボタン ml30 <Icon type="md-disc" /> -->
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    const START_REGISTER_SETTINGS = new Vue({
+      el: '.startregistersettings-warp',
+      data() {
+        return {
+          // 预设最多20个权限
+          slotList: Utils.getNumArray(1, 20).map(e => `m${e}`),
+          radioType: 0,
+          loading: true,
+          editLoading: false,
+          isEditing: false,
+          dataDate: '現在有効な設定',
+          beforeDate: '',
+          needChange: '',
+          legalPersonList: [],
+          beforeClickedCell: {},
+          clickedCell: {},
+          updateValue: [],
+          systemList: [],
+          siteList: [],
+          appList: [],
+          groupList: [],
+          tableHead: [],
+          curDate: new Date(),
+          opts: {
+            systemId: '01',
+            appId: '0',
+            siteId: '0',
+            companyId: '0',
+            date: '',
+            groupId: '0',
+            isAll: false,
+          },
+          tableData: [],
+          tableDataForAction: [],
+          limitDate: '',
+          rangeOptions: {
+            disabledDate: date => {
+              return date.valueOf() < new Date(this.limitDate).getTime()
+            }
+          },
+          contentScrollTop: 0
+        }
+      },
+      async created() {
+        this.getSystemList()
+        this.getSiteList()
+        this.getAppList()
+        await this.getLegalPersonList()
+        this.getGroupList()
+        this.getTableData()
+        window.addEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 220) return true
+          else return false
+        },
+        columns() {
+          let result = [{
+            title: 'アプリケーション名',
+            minWidth: 200,
+            slot: 'objectName',
+            tree: true
+          }]
+          if (this.isEditing) {
+            result = result.concat({
+              title: '操作',
+              width: 45,
+              slot: 'action',
+              align: 'center'
+            })
+          }
+          this.tableHead.forEach((e, i) => {
+            result = result.concat({
+              title: e.title,
+              slot: `m${i + 1}`,
+              align: 'center'
+            })
+          })
+          return result
+        }
+
+      },
+      methods: {
+        async getLegalPersonList() {
+          let OPTS = {
+            psSite: Utils.getUrlParam(location.href, 'psSite'),
+            psApp: Utils.getUrlParam(location.href,'psApp')
+          }
+          if (this.opts.date) {
+            OPTS.searchDate = this.opts.date
+          }
+          const { data } = await this.http.get('sys/groupappmanager/companies', OPTS)
+          this.legalPersonList = data
+          this.opts.companyId = data[0] && data[0].macCcompanyidCk
+
+        },
+        async getSystemList() {
+          const { data } = await this.http.get('sys/groupappmanager/systems')
+          this.systemList = data
+        },
+        async getSiteList() {
+          // 选择系统时，site要跟着变
+          const { data } = await this.http.get('sys/groupappmanager/sites', this.opts)
+          this.siteList = data
+        },
+        async getAppList() {
+          // 选择サイト时，アプリケーション要跟着变,且每次切换都将app重置
+          const OPTS = { ...this.opts }
+          if (this.opts.siteId === '0') {
+            delete OPTS.siteId
+          }
+          const { data } = await this.http.get('sys/groupappmanager/apps', OPTS)
+          this.appList = data
+
+        },
+        async getGroupList() {
+          // 选择法人时，グループ要跟着变
+          const OPTS = { ...this.opts }
+          OPTS.searchDate = this.opts.date
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
+
+          if (this.opts.companyId === '0') {
+            delete OPTS.companyId
+          }
+          const { data } = await this.http.postForm('sys/groupappmanager/groups', OPTS)
+          this.groupList = data
+
+        },
+        async getTableData() {
+          const OPTS = { ...this.opts }
+          OPTS.psSite = Utils.getUrlParam(location.href, 'psSite')
+          OPTS.psApp = Utils.getUrlParam(location.href,'psApp')
+          Object.keys(OPTS).forEach(key => {
+            if (OPTS[key] === '0') {
+              delete OPTS[key]
+            }
+          })
+          this.loading = true
+          try {
+            const { data } = await this.http.get('sys/searchrangemanager', OPTS)
+            console.log(data)
+            this.beforeDate = data.beforeDate
+            this.limitDate = data.latestDate
+            if (data.afterDate) {
+              this.dataDate = `${data.changeDate} 改定分`
+            } else {
+              this.dataDate = '現在有効な設定'
+            }
+            // 法人全部的时候需要显示公司名
+            let showFullName = false
+            if (this.opts.companyId === '0') {
+              showFullName = true
+            }
+            // 有几种hgpCobjectid，就有几种权限，也就是表头有多少个
+            const tableHeadHelper = data.dataList[0].hgpCobjectid
+            this.tableHead = data.dataList.some(e => {
+                if(e.hgpCobjectid !== tableHeadHelper) return true
+                return {
+                    title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription
+                }
+            })
+            let result = [{}]
+            let j = 0
+            let k = 1
+            let curTypeId = tableHeadHelper
+            data.dataList.forEach((e, i) => {
+              // 如果id相同就放在同一个对象里面加一个属性
+              if(curTypeId === e.hgpCobjectid) {
+                result[j][`m${k}`] = {...e}
+                k += 1
+              } else {
+                // 如果id不同就自增一个对象继续
+                // 初始化对象以防下方为空
+                console.log(`j:${j} k:${k}`)
+                if(!result[j]) result[j] = {}
+                curTypeId = e.hgpCobjectid
+                j += 1
+                k = 1
+                result[j][`m${k}`] = {...e}
+              }
+              console.log(result)
+            })
+            console.log(result)
+            // this.tableData =
+            // this.tableDataForAction = this.tableData.slice(0, 1)
+          } catch (error) {
+            console.log(error)
+          } finally {
+            this.loading = false
+          }
+        },
+        handleSystemChange() {
+          this.getSiteList()
+        },
+        handleLegalPersonChange(e) {
+          if (e === '0') {
+            // 法人全部的时候，需要将isAll设为true, 还要将法人id置空
+            this.opts.isAll = true
+          } else {
+            this.opts.isAll = false
+          }
+          this.getGroupList()
+          this.getTableData()
+        },
+        handleGroupChange() {
+          this.getTableData()
+        },
+        handleAppChange() {
+          this.getTableData()
+        },
+        handSiteChange() {
+          // 选择site名时，要把app的重置为第一项
+          this.getAppList()
+
+          this.opts.appId = '0'
+          this.getTableData()
+        },
+        async handleDatePicker(e) {
+          if (!e) return
+          this.opts.date = e
+          await this.getLegalPersonList()
+          await this.getGroupList()
+          this.getTableData()
+        },
+        getPreData() {
+          this.opts.date = this.beforeDate
+          this.getTableData()
+        },
+        handleCancel() {
+          if(this.updateValue.length > 0) {
+            history.go(0)
+          } else {
+            this.isEditing = false
+          }
+        },
+        handleScroll: Throttle(function (e) {
+          this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+        }, 50)
+      }
+    })
+  </script>
 </body>
 </html>
