@@ -1,19 +1,32 @@
 package jp.smartcompany.admin.searchrangemanager.logic.impl;
 
+import cn.hutool.cache.impl.TimedCache;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
+import jp.smartcompany.boot.common.Constant;
+import jp.smartcompany.boot.common.GlobalException;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
+import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +38,10 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
 
     private final GroupAppManagerMainLogic groupAppManagerMainLogic;
     private final IHistGroupdatapermissionService histGroupdatapermissionService;
+    private final IMastDatapermissionService mastDatapermissionService;
+    private final TimedCache<String,Object> timedCache;
+
+    public static final String REQ_SCOPE_NAME = "searchRangeTableDtoList";
 
     @Override
     public Map<String,Object> listRangeTable(String systemId, Date searchDate, String groupId,
@@ -54,8 +71,72 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         map.put("afterDate",afterDate);
         map.put("nowDate",nowDate);
         map.put("latestDate",latestDate);
+        timedCache.put(REQ_SCOPE_NAME+"_"+ ContextUtil.getHttpRequest().getSession().getId(),dataList);
         return map;
     }
 
+    @Override
+    public List<MastDatapermissionDO> listConditions() {
+        QueryWrapper<MastDatapermissionDO> qw = SysUtil.query();
+        qw.orderByAsc("MDP_CPERMISSIONID");
+        return mastDatapermissionService.list(qw);
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public void executeUpdate(List<SearchRangeManagerDataDTO> updateList) {
+        HttpServletRequest request = ContextUtil.getHttpRequest();
+        PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
+        String sessionId = request.getSession().getId();
+        // 画面表示のためのイレモノを取得
+        List<SearchRangeManagerDataDTO> dataList = (List<SearchRangeManagerDataDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
+        if (CollUtil.isEmpty(dataList)) {
+            throw new GlobalException("リストの有効期限が切れています。更新してもう一度お試しください");
+        }
+        // 将本次更改过的数据覆盖到原先的缓存list中
+        for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : updateList) {
+            for (SearchRangeManagerDataDTO rangeManagerDataDTO : dataList) {
+                if (rangeManagerDataDTO.getHgpId().equals(searchRangeManagerDataDTO.getHgpId())) {
+                    BeanUtil.copyProperties(searchRangeManagerDataDTO,rangeManagerDataDTO);
+                }
+            }
+        }
+
+        // 更新数据库
+        List<HistGroupdatapermissionDO> insertDbList = CollUtil.newArrayList();
+        List<HistGroupdatapermissionDO> updateDbList = CollUtil.newArrayList();
+        List<Long> updateFinishHistoryIdList = CollUtil.newArrayList();
+
+        for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : dataList) {
+            HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
+            BeanUtil.copyProperties(searchRangeManagerDataDTO,histDO);
+            histDO.setHgpCmodifieruserid(psSession.getLoginUser());
+            if (searchRangeManagerDataDTO.getCreateHistory() == 0) {
+                updateFinishHistoryIdList.add(histDO.getHgpId());
+                histDO.setHgpId(null);
+                insertDbList.add(histDO);
+            } else if (searchRangeManagerDataDTO.getCreateHistory() == 1) {
+                insertDbList.add(histDO);
+            } else if (searchRangeManagerDataDTO.getCreateHistory() == 2) {
+                updateDbList.add(histDO);
+            }
+        }
+        List<HistGroupdatapermissionDO> updateFinishHistoryList = CollUtil.newArrayList();
+        updateFinishHistoryIdList.forEach(id -> {
+            HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
+            histDO.setHgpId(id);
+            histDO.setHgpDenddate(DateUtil.date());
+            updateFinishHistoryList.add(histDO);
+        });
+        if (CollUtil.isNotEmpty(updateFinishHistoryList)) {
+            histGroupdatapermissionService.updateBatchById(updateFinishHistoryList);
+        }
+        if (CollUtil.isNotEmpty(insertDbList)) {
+            histGroupdatapermissionService.saveBatch(insertDbList);
+        }
+        if (CollUtil.isNotEmpty(updateDbList)) {
+            histGroupdatapermissionService.updateBatchById(updateDbList);
+        }
+    }
 
 }

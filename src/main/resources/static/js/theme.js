@@ -135,6 +135,9 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
+
   },
   blue: {
     //basic color
@@ -270,6 +273,8 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
   },
   dark: {
     //basic color
@@ -300,8 +305,8 @@ var THEME_CONFIG  = {
     '--sider-menu-title-background': 'rgb(58, 58, 58)',
     '--sider-menu-item-border-top': 'rgb(130,130,130)',
     '--sider-menu-item-border-bottom': 'rgb(190, 190, 190)',
-    '--form-label': 'rgb(72, 72, 72)',
-    '--table-head': 'rgb(72, 72, 72)',
+    '--form-label': 'rgb(75, 75, 75)',
+    '--table-head': 'rgb(75, 75, 75)',
     '--table-head-border': 'rgb(92, 87, 87)',
     '--table-border': 'rgb(92, 87, 87)',
     '--table-body-bg': 'rgb(42,44,49)',
@@ -388,7 +393,7 @@ var THEME_CONFIG  = {
     '--label-monthSum': 'rgb(72, 72, 72)',
     '--light-input-border-grey': 'rgb(144, 143, 143)',
     '--label-monthSum-bg': 'rgb(55, 54, 54)',
-    '--selection-input-bg':'rgba(158, 158, 158, 0.2)',
+    '--selection-input-bg':'rgba(101, 101, 101, 0.2)',
     '--dept-select-border-left':'1px dashed var(--dept-select)',
     '--input-number-disabled-border':'rgb(79,79, 79)',
     '--input-number-disabled-bg':'rgba(73, 73, 73, 0.55)',
@@ -405,6 +410,8 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'#92231a',
     '--over-time-level-4':'#480904',
     '--over-time-level-5':'#210301',
+    '--mask-bg':'rgba(99, 99, 99,0.91)',
+    '--upload-list-file-hover-bg':'#3b3a3a',
   }
 }
 

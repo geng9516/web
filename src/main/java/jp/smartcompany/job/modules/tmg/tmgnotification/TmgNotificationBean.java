@@ -538,13 +538,13 @@ public class TmgNotificationBean {
         }
     }
 
-    public EmployeeDetailVo getEmpInfo(PsDBBean psDBbean ) throws Exception {
+    public EmployeeDetailVo getEmpInfo(PsDBBean psDBbean) throws Exception {
         //年开始日
-        String GsStartDate =iMastGenericDetailService.selectDate(psDBbean.getCustID(), psDBbean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)),TmgUtil.getSysdate()).getStartDate();
+        String GsStartDate =iMastGenericDetailService.selectDate(psDBbean.getCustID(), psDBbean.getCompCode(), Integer.parseInt(referList.getRecordDate().substring(0, 4)),TmgUtil.getSysdate()).getStartDate();
         referList = new TmgReferList(psDBbean, "TmgNotification",GsStartDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 false, false, false, false);
-        String sApprovalLevelName=referList.getApprovalLevelName(TmgUtil.getSysdate(), TmgUtil.getSysdate(), psDBbean.getTargetUser());
-        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBbean.getCustID(), psDBbean.getCompCode(), psDBbean.getTargetUser(), psDBbean.getLanguage(), referList.getTargetSec());
+        String sApprovalLevelName=referList.getApprovalLevelName(referList.getRecordDate(), referList.getRecordDate(), psDBbean.getTargetUser());
+        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBbean.getCustID(), psDBbean.getCompCode(), psDBbean.getTargetUser(), psDBbean.getLanguage(), referList.getTargetSec(),referList.getRecordDate());
         if(sApprovalLevelName!=null){
             employeeDetailVo.setSApprovalLevelName(sApprovalLevelName);
         }else{

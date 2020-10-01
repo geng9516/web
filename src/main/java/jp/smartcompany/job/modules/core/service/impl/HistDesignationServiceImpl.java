@@ -115,13 +115,14 @@ public class HistDesignationServiceImpl extends ServiceImpl<HistDesignationMappe
 
 
         @Override
-        public EmployeeDetailVo selectemployee(String custId, String compId, String employeeId, String language, String sectionId){
+        public EmployeeDetailVo selectemployee(String custId, String compId, String employeeId, String language, String sectionId,String date){
                 Map<String, Object> map = MapUtil.newHashMap(5);
                 map.put("custId", custId);
                 map.put("compId", compId);
                 map.put("employeeId", employeeId);
                 map.put("language", language);
                 map.put("sectionId", sectionId);
+                map.put("recordDate", date);
                 return baseMapper.selectemployee(map);
         }
 

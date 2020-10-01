@@ -85,8 +85,8 @@ public class SearchRangeManagerDataDTO  {
     private String mtrCobjname;
     private String hgpCpermnecessityname;
     private String hgpCpermmustname;
-    private Integer CreateHistory;
-    private String fullPermisson;
+    private Integer createHistory;
+    private String fullPermission;
     private String companyNick;
 
 }

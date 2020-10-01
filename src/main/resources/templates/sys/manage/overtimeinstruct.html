@@ -158,7 +158,7 @@
                     一括適用
                 </div>
                 <!-- 一括適用table start -->
-                <i-table border :columns="columnsAction" :data="columnsActionData">
+                <i-table border :columns="columnsAction" :data="columnsActionData" :disabled-hover="true">
                     <template slot-scope="{ row }" slot="startTime">
                         <i-input v-model="pattern.updateOverTimeDtoList[0].sNOpen" class="tl"
                             @on-blur="handleInputChange(row._index, pattern.updateOverTimeDtoList[0],'sNOpen', $event.target)" />
@@ -367,7 +367,7 @@
                 return {
                     showAverage: false,
                     showDayApply: false,
-                    hasPassedTimeCheck: false,
+                    hasPassedTimeCheck: true,
                     dailyTableLoading: false,
                     updateBtnLoading: false,
                     title: '日別編集画面',
@@ -1175,6 +1175,7 @@
                                     }
                                 })
                                 if (result) return true
+                                if(e.updateOverTimeDtoList.length === 1 && !e.updateOverTimeDtoList.sNOpen) return false
                                 if(Utils.multipleTimeOverlap(e.updateOverTimeDtoList, 'sNOpen', 'sNClose', '超勤勤務が重複しています。')) return true
                             }
                             // if (e.updateRestTimeDtoList.length > 0) {

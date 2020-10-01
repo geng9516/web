@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestAttribute;
  * @author Xiao Wenpeng
  */
 @Controller(CoreBean.Controller.SITE)
-@RequiredArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(ondConstructor = @__(@Autowired))
 public class SiteController {
 
     private final ScCacheUtil cacheUtil;

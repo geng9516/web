@@ -16,13 +16,20 @@
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                            class="mb10 no-border-radius" ref="select">
+                            class="mb10 no-border-radius" ref="select" v-if="!isReApplyIng">
                             <i-option value="全て" v-if="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
-                        <section v-show="selectedRestInfo.biko">
+                        <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
+                                  class="mb10 no-border-radius" ref="select" disabled v-else>
+                            <i-option value="全て" v-if="this.rotate">全て</i-option>
+                            <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
+                            </option-group>
+                        </i-select>
+                        <section v-show="selectedRestInfo.biko && !rotate">
                             <Divider size="small" orientation="left">注意事項</Divider>
                             <Alert class="primary-info mb20">{{ selectedRestInfo.biko | turnLine }}
                             </Alert>
@@ -95,7 +102,7 @@
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                 </li>
-                                                <li style="margin-right:10px;color: rgb(104, 109, 116);" v-else>
+                                                <li style="margin-right:10px;" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
                                                     <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(/\u3000|\s/)[0]}}</Avatar>
                                                     <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(/\u3000|\s/)[0]}}</Avatar>
@@ -103,7 +110,7 @@
                                                     <Avatar class="more-user">{{`+${item.ntfapprover.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
-                                            <div class="tl" slot="content">
+                                            <div class="tl" style="color: rgb(104, 109, 116);" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
                                                     <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0].trim()}}</Avatar>
                                                     <span>{{ e }}</span>
@@ -190,7 +197,7 @@
                         <!-- PersonalApplyTable -->
                     </Card>
                     <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="handleFrontCardClass">
-                        <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
+                        <span class="mr5 link-span" slot="extra" @click="onRefresh" v-if="!isReApplyIng">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
                         <Row style="margin-top:10px" :gutter="16" class="tl">
@@ -327,7 +334,7 @@
                                             <span @click="applyCardDownloadFile(item)">
                                                 <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
                                             </span>
-                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)" v-if="item.isDefault">既存</p>
+                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
                                             <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
                                             <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
                                         </li>
@@ -533,7 +540,6 @@
                  },
                  handleRestType(e) {
                     if (!e) return
-                    console.log(this.rotate)
                     if (this.rotate) {
                         this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
@@ -560,7 +566,6 @@
                     }
                     this.restApply.restTypeId = e
                     this.isReApplyIng = false
-                    console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
                 onRefresh() {
@@ -841,7 +846,8 @@
                     this.restApply.ntfNo = item.tntfCntfNo
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
                     // 文件
-                    this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
+                    this.$nextTick(()=>{
+                        this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
                             name:e.tnafCfilename,
                             url:e.tnafFilepath,
@@ -849,10 +855,7 @@
                             isDefault: true
                         }
                     })
-
-                    // comment
-                    this.restApply.owncomment = item.tntfCowncomment
-
+                    })
                     // 再拿更多详细
                     const { data } = await this.http.get('sys/vapply/NotificationDetail', {ntfNo:item.tntfCntfNo})
 
@@ -864,8 +867,8 @@
                     this.restApply.txtAddDate = data.tntfNuapperAddition
 
                     // 時間帯
-                    this.restApply.timezoneOpen = data.tntfNtimezoneOpenHhmi
-                    this.restApply.timezoneClose = data.tntfNtimezoneCloseHhmi
+                    this.$set(this.restApply, 'timezoneOpen', data.tntfNtimezoneOpenHhmi)
+                    this.$set(this.restApply, 'timezoneClose', data.tntfNtimezoneCloseHhmi)
 
                     // 始业终业
                     this.restApply.timeOpen = data.tntfNtimeOpen
@@ -897,6 +900,10 @@
 
                     // 伤病
                     this.restApply.txtSickName = data.tntfCsickName
+
+                    // comment
+                    this.restApply.owncomment = data.tntfCowncomment
+
                 },
                 resetReApply() {
                     this.loading = true
