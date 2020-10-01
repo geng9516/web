@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.List;
 
 /**
  * 检索对象范围controller
@@ -56,4 +58,21 @@ public class SearchRangeManagerController {
                 isAll
         );
     }
+
+    // 条件一覧画面表示明細データ情報の設定
+    // http://localhost:6879/sys/searchrangemanager/conditions
+    @GetMapping("conditions")
+    public List<MastDatapermissionDO> conditions() {
+        return searchRangeManagerLogic.listConditions();
+    }
+
+    /**
+       检索对象范围更新参数：
+       {
+         initMode: 0 未設定  1 すべて  2 OR 3 AND  // 対象範囲
+         useBaseSection: true    // 基点組織
+         retirement: 0 参照しない 1 自社のみ 2 すべて
+       }
+     */
+
 }

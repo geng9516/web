@@ -3,13 +3,16 @@ package jp.smartcompany.admin.searchrangemanager.logic.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import jp.smartcompany.admin.groupappmanager.dto.GroupAppManagerGroupDTO;
 import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
+import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
 
     private final GroupAppManagerMainLogic groupAppManagerMainLogic;
     private final IHistGroupdatapermissionService histGroupdatapermissionService;
+    private final IMastDatapermissionService mastDatapermissionService;
 
     @Override
     public Map<String,Object> listRangeTable(String systemId, Date searchDate, String groupId,
@@ -57,5 +61,11 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         return map;
     }
 
+    @Override
+    public List<MastDatapermissionDO> listConditions() {
+        QueryWrapper<MastDatapermissionDO> qw = SysUtil.query();
+        qw.orderByAsc("MDP_CPERMISSIONID");
+        return mastDatapermissionService.list(qw);
+    }
 
 }

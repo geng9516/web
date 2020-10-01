@@ -771,8 +771,8 @@
                this.restApply.txtAddDate = data.tntfNuapperAddition
 
                // 時間帯
-               this.restApply.timezoneOpen = data.tntfNtimezoneOpenHhmi
-               this.restApply.timezoneClose = data.tntfNtimezoneCloseHhmi
+               this.$set(this.resetReApply, 'timezoneOpen', data.tntfNtimezoneOpenHhmi)
+               this.$set(this.resetReApply, 'timezoneClose', data.tntfNtimezoneCloseHhmi)
 
                // 始业终业
                this.restApply.timeOpen = data.tntfNtimeOpen
