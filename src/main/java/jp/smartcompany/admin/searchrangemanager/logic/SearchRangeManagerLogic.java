@@ -1,5 +1,6 @@
 package jp.smartcompany.admin.searchrangemanager.logic;
 
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 
 import java.util.Date;
@@ -13,5 +14,7 @@ public interface SearchRangeManagerLogic {
                                      String language, String custId, String companyId, boolean isAll);
 
    List<MastDatapermissionDO> listConditions();
+
+   void executeUpdate(List<SearchRangeManagerDataDTO> updateList);
 
 }

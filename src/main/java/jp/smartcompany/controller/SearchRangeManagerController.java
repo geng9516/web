@@ -2,6 +2,7 @@ package jp.smartcompany.controller;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
@@ -10,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.Map;
 import java.util.List;
@@ -66,13 +69,12 @@ public class SearchRangeManagerController {
         return searchRangeManagerLogic.listConditions();
     }
 
-    /**
-       检索对象范围更新参数：
-       {
-         initMode: 0 未設定  1 すべて  2 OR 3 AND  // 対象範囲
-         useBaseSection: true    // 基点組織
-         retirement: 0 参照しない 1 自社のみ 2 すべて
-       }
-     */
+    // 更新设置的检索范围对象
+    @PostMapping("update")
+    public String updateSearchPermission(@Valid @NotEmpty @RequestBody List<SearchRangeManagerDataDTO> updateList) {
+        searchRangeManagerLogic.executeUpdate(updateList);
+        return "変更成功";
+    }
+
 
 }
