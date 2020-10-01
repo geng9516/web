@@ -459,7 +459,7 @@
     border-color: transparent;
   }
 }
-.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs {
+.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body {
   color: var(--grey);
 }
 .ivu-card-head, .ivu-card-bordered {
@@ -476,6 +476,9 @@
 }
 .ivu-upload-drag {
   background: var(--content-bg);
+}
+.ivu-modal-mask {
+  background: var(--mask-bg);
 }
 /* margin */
 .m0{margin:0;}
