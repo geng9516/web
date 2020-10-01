@@ -112,7 +112,7 @@
                 <Icon type="logo-buffer"></Icon>
                 {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}未承認者状況
             </div>
-            <i-table border :columns="notAprEmpCol" :data="notAprEmpData" :loading="loadingEmp">
+            <i-table border :columns="notAprEmpCol" :data="notAprEmpData" :loading="loadingEmp" :disabled-hover="true">
             </i-table>
         </Drawer>
 
@@ -126,7 +126,7 @@
                 <Icon type="logo-buffer"></Icon>
                 {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}締め未完了部局
             </div>
-            <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC">
+            <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC" :disabled-hover="true">
             </i-table>
         </Drawer>
 
