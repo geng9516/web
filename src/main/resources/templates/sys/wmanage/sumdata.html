@@ -577,6 +577,8 @@
                 async download(e,f) {
                     if(f){
                         this.opts.sRetroFlg = f
+                    }else{
+                        this.opts.sRetroFlg = ''
                     }
                     this.opts.baseDate = e.concat('/01')
                     try{
