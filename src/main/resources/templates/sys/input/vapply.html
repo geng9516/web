@@ -102,7 +102,7 @@
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                 </li>
-                                                <li style="margin-right:10px;color: rgb(104, 109, 116);" v-else>
+                                                <li style="margin-right:10px;" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
                                                     <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(/\u3000|\s/)[0]}}</Avatar>
                                                     <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(/\u3000|\s/)[0]}}</Avatar>
@@ -110,7 +110,7 @@
                                                     <Avatar class="more-user">{{`+${item.ntfapprover.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
-                                            <div class="tl" slot="content">
+                                            <div class="tl" style="color: rgb(104, 109, 116);" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
                                                     <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0].trim()}}</Avatar>
                                                     <span>{{ e }}</span>
