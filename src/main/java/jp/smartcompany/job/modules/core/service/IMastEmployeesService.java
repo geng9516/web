@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
-import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -12,7 +13,6 @@ import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -101,4 +101,6 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
             String loginUser,
             String systemId
     );
+
+    IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList);
 }
