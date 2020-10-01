@@ -94,7 +94,7 @@
                 <Row :gutter="16">
                     <i-col span="12">
                         <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
-                              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" />
+                              :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
                     </i-col>
                     <i-col class="tr" span="10" v-if="isEditable" style="margin-left: 8%;">
                         <i-button type="primary" ghost @click="checkAlladmin" class="mr15">
