@@ -265,20 +265,17 @@
               } else {
                 // 如果id不同就自增一个对象继续
                 // 初始化对象以防下方为空
-                console.log(`j:${j} k:${k}`)
-                if(!result[j]) result[j] = {}
-                curTypeId = e.hgpCobjectid
                 j += 1
                 k = 1
+                if(!result[j]) result[j] = {}
+                curTypeId = e.hgpCobjectid
                 result[j][`m${k}`] = {...e}
               }
-              console.log(result)
             })
             console.log(result)
             // this.tableData =
             // this.tableDataForAction = this.tableData.slice(0, 1)
           } catch (error) {
-            console.log(error)
           } finally {
             this.loading = false
           }
