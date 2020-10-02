@@ -75,13 +75,42 @@
           </i-col>
         </Row>
       </div>
-        <!-- type: "0" トップページ   <Icon type="md-compass" />
-        type: "1" サイト   <Icon type="md-compass" />
-        type: "3" アプリケーション ml10 <Icon type="md-desktop" />
-        type: "4" サブアプリケーション <Icon type="md-easel" />
-        type: "2" ダイアログアプリケーション ml10 <Icon type="ios-photos" />
-        type: "5" 画面 ml20  <Icon type="md-browsers" />
-        type: "6" 機能ボタン ml30 <Icon type="md-disc" /> -->
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :show-header="!isEditing" :row-class-name="() => 'select-col'"
+        :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
+        ref="table">
+        <!-- hgpCappid サイト ml20   <Icon type="md-compass" />
+        !hgpCappid アプリケーション  <Icon type="md-desktop" /> -->
+
+        <template slot-scope="{ row }" slot="objectName">
+          <span v-if="row.m1 && row.m1.hgpCappid" class="mr10 mt5 mb5 ml20 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-compass" class="mr5"></Icon>{{row.m1 && row.m1.mtrCobjname}}
+          </span>
+          <span v-if="row.m1 && !row.m1.hgpCappid" class="mr10 mt5 mb5 pt2 pb2 pl10 pr10 row-label-primary">
+            <Icon type="md-desktop" class="mr5"></Icon>{{row.m1 && row.m1.mtrCobjname}}
+          </span>
+        </template>
+
+
+        <!-- <template slot-scope="{ row }" slot="action">
+          <i-button type="success" ghost size="small" icon="ios-arrow-forward" long></i-button>
+        </template> -->
+
+        <!-- 循环slotList -->
+        <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
+         <div style="color: var(--primary-info);">
+           <span v-if="row[item].fullPermisson === '0'">{{ row[item].hgpCpermnecessityname }}</span>
+           <span v-if="row[item].hgpCpermnecessityname || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
+           <span v-if="row[item].hgpCpermmustname || row[item].hgpCbasesectionFlagMust === '1'">{{ `O  R:${row[item].hgpCpermmustname}` }}</span>
+         </div>
+         <div class="ml10" style="color: var(--primary-info);">
+           <span v-if="row[item].hgpCbasesectionFlagNeed == '1' || row[item].hgpCbasesectionFlagMust == '1'">基点組織設定を使用する</span>
+         </div>
+         <div class="ml20" style="color: var(--primary-info);">
+          <span v-if="row[item].hgpCpermRetired == '1'">退職者: 自社のみ</span>
+          <span v-if="row[item].hgpCpermRetired == '2'">退職者: すべて</span>
+         </div>
+        </template>
+      </i-table>
     </div>
     <back-top></back-top>
   </main>
@@ -154,19 +183,19 @@
             slot: 'objectName',
             tree: true
           }]
-          if (this.isEditing) {
-            result = result.concat({
-              title: '操作',
-              width: 45,
-              slot: 'action',
-              align: 'center'
-            })
-          }
+          // if (this.isEditing) {
+          //   result = result.concat({
+          //     title: '操作',
+          //     width: 45,
+          //     slot: 'action',
+          //     align: 'center'
+          //   })
+          // }
           this.tableHead.forEach((e, i) => {
             result = result.concat({
               title: e.title,
               slot: `m${i + 1}`,
-              align: 'center'
+              align: 'left'
             })
           })
           return result
@@ -232,7 +261,6 @@
           this.loading = true
           try {
             const { data } = await this.http.get('sys/searchrangemanager', OPTS)
-            console.log(data)
             this.beforeDate = data.beforeDate
             this.limitDate = data.latestDate
             if (data.afterDate) {
@@ -247,12 +275,13 @@
             }
             // 有几种hgpCobjectid，就有几种权限，也就是表头有多少个
             const tableHeadHelper = data.dataList[0].hgpCobjectid
+            let tableHead = []
             this.tableHead = data.dataList.some(e => {
                 if(e.hgpCobjectid !== tableHeadHelper) return true
-                return {
-                    title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription
-                }
+                tableHead = tableHead.concat({title: showFullName ? `${e.mgCgroupdescription}\n${e.companyNick}` : e.mgCgroupdescription})
             })
+            this.tableHead = tableHead
+
             let result = [{}]
             let j = 0
             let k = 1
@@ -273,12 +302,15 @@
               }
             })
             console.log(result)
-            // this.tableData =
+            this.tableData = result
             // this.tableDataForAction = this.tableData.slice(0, 1)
           } catch (error) {
           } finally {
             this.loading = false
           }
+        },
+        handleCellClick(row, column, data, event) {
+          
         },
         handleSystemChange() {
           this.getSiteList()

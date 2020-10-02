@@ -124,4 +124,37 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
     IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, @Param("custId") String custId,
                                              @Param("language") String language, @Param("companyId") String companyId, @Param("companyList") List<String> companyList);
 
+    IPage<UserManagerListDTO> selectMainLockoutList(IPage<UserManagerListDTO> page, @Param("custId") String custId,
+                                                @Param("language") String language, @Param("companyId") String companyId, @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAdminList(IPage<UserManagerListDTO> page,@Param("custId") String custId,
+                                                  @Param("language") String language,@Param("companyId") String companyId,
+                                                  @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainEmpNameList(IPage<UserManagerListDTO> page,
+                                                    @Param("custId") String custId,
+                                                    @Param("language") String language,
+                                                    @Param("companyId") String companyId,
+                                                    @Param("companyList") List<String> companyList,
+                                                    @Param("empName") String empName);
+
+    IPage<UserManagerListDTO> selectMainSectionList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                    @Param("companyList") List<String> companyList, @Param("sectionCompanyId") String sectionCompanyId,
+                                                    @Param("sectionId") String sectionId);
+
+    IPage<UserManagerListDTO> selectMainEmpIdList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                  @Param("companyId") String companyId,@Param("companyList") List<String> companyList,@Param("empId") String empId);
+
+    IPage<UserManagerListDTO> selectMainAfterRetireList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                        @Param("companyId") String companyId,@Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAfterJoinList(IPage<UserManagerListDTO> page,@Param("custId") String custId,
+                                                      @Param("language") String language,@Param("companyId") String companyId,
+                                                      @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainBeforeJoinList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                       @Param("companyId") String companyId,@Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,@Param("companyId") String companyId,
+                                                  @Param("companyList") List<String> companyList);
 }

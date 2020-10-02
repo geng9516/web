@@ -513,6 +513,133 @@
 
     <select id="selectMainAllList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
         SELECT
+            ME_CCUSTOMERID_CK,
+            ME_CCOMPANYID,
+            ME_CEMPLOYEEID_CK,
+            main.ME_CUSERID,
+            main.ME_DSTARTDATE,
+            ME_CKANANAME,
+            CASE
+              WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+              ELSE
+                PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+              END ME_CNAME,
+            ME_CMAIL,
+            ME_ID,
+            ME_DDATEOFEMPLOYEMENT,
+            ME_DDATEOFRETIREMENT,
+            MA_ID,
+            MA_CUSERID,
+            MA_CACCOUNT,
+            MA_DSTART,
+            MA_DEND,
+            MA_NRETRYCOUNTER,
+            MA_NPASSWORDLOCK,
+            MA_CADMINUSER,
+            MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            MAST_EMPLOYEES main,
+            (
+            SELECT
+              MAP_CUSERID
+            FROM
+              MAST_PASSWORD
+            WHERE
+              MAP_NHISTORY = 0),MAST_ACCOUNT,
+              (
+                SELECT
+                  MIN(ME_DSTARTDATE),
+                  ME_CUSERID
+                FROM
+                  MAST_EMPLOYEES
+                WHERE
+                  TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+                GROUP BY
+                  ME_CUSERID
+              ) mindate
+              WHERE
+                ME_CCUSTOMERID_CK = #{custId}
+                AND main.ME_CUSERID = MAP_CUSERID(+)
+                AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+                AND mindate.ME_CUSERID = main.ME_CUSERID
+                AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
+                AND main.ME_CUSERID = MA_CUSERID(+)
+                <if test="companyId!=null">
+                    AND ME_CCOMPANYID = #{companyId}
+                </if>
+                <if test="companyList!=null and companyList.size()>0">
+                    AND ME_CCOMPANYID IN
+                    <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                        #{compId}
+                    </foreach>
+                </if>
+            ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainLockoutList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+            ME_CCUSTOMERID_CK,
+            ME_CCOMPANYID,
+            ME_CEMPLOYEEID_CK,
+            main.ME_CUSERID,
+            main.ME_DSTARTDATE,
+            ME_CKANANAME,
+            CASE
+              WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+            ELSE
+              PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+            END ME_CNAME,
+            ME_CMAIL,
+            ME_DDATEOFEMPLOYEMENT,
+            ME_DDATEOFRETIREMENT,
+            ME_ID,
+            MA_ID,
+            MA_CUSERID,
+            MA_CACCOUNT,
+            MA_DSTART,
+            MA_DEND,
+            MA_NRETRYCOUNTER,
+            MA_NPASSWORDLOCK,
+            MA_CADMINUSER,
+            MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            MAST_EMPLOYEES main,
+            (
+                SELECT *
+                FROM
+                  MAST_ACCOUNT
+                WHERE
+                    (
+                        TRUNC(SYSDATE) >= MA_DSTART AND TRUNC(SYSDATE) <![CDATA[<=]]> MA_DEND) AND MA_NPASSWORDLOCK = 1
+                    ) MAST_ACCOUNT,
+                    (
+                        SELECT MIN(ME_DSTARTDATE) ,ME_CUSERID FROM MAST_EMPLOYEES
+                        WHERE
+                          TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+                        GROUP BY ME_CUSERID
+                    ) mindate
+                WHERE
+                    ME_CCUSTOMERID_CK = #{custId}
+                    AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+                    AND main.ME_CUSERID = MA_CUSERID
+                    AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+                    AND mindate.ME_CUSERID = main.ME_CUSERID
+                    <if test="companyId!=null">
+                        AND ME_CCOMPANYID = #{companyId}
+                    </if>
+                    <if test="companyList!=null and companyList.size()>0">
+                        AND ME_CCOMPANYID IN
+                        <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                            #{compId}
+                        </foreach>
+                    </if>
+                ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainAdminList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
         ME_CCUSTOMERID_CK
         ,ME_CCOMPANYID
         ,ME_CEMPLOYEEID_CK
@@ -526,9 +653,9 @@
         PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
         END ME_CNAME
         ,ME_CMAIL
-        ,ME_ID
         ,ME_DDATEOFEMPLOYEMENT
         ,ME_DDATEOFRETIREMENT
+        ,ME_ID
         ,MA_ID
         ,MA_CUSERID
         ,MA_CACCOUNT
@@ -539,33 +666,36 @@
         ,MA_CADMINUSER
         ,MAST_ACCOUNT.VERSIONNO VERSIONNO
         FROM
-        MAST_EMPLOYEES main,
-        (
-        SELECT
-        MAP_CUSERID
+        MAST_EMPLOYEES main
+        ,(SELECT
+        MA_ID
+        ,MA_CCUSTOMERID
+        ,MA_CUSERID
+        ,MA_CACCOUNT
+        ,MA_DSTART
+        ,MA_DEND
+        ,MA_NRETRYCOUNTER
+        ,MA_NPASSWORDLOCK
+        ,MA_CADMINUSER
+        ,VERSIONNO
         FROM
-        MAST_PASSWORD
+        MAST_ACCOUNT
         WHERE
-        MAP_NHISTORY = 0),
-        MAST_ACCOUNT,
-        (
-        SELECT
-        MIN(ME_DSTARTDATE),
-        ME_CUSERID
+        (TRUNC(SYSDATE) >= MA_DSTART AND TRUNC(SYSDATE) <![CDATA[<=]]> MA_DEND)
+        AND MA_CADMINUSER = 1
+        ) MAST_ACCOUNT
+        ,	(SELECT
+        MIN(ME_DSTARTDATE) ,ME_CUSERID
         FROM
         MAST_EMPLOYEES
         WHERE
         TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
         GROUP BY
-        ME_CUSERID
-        ) mindate
+        ME_CUSERID) mindate
         WHERE
         ME_CCUSTOMERID_CK = #{custId}
-        AND main.ME_CUSERID = MAP_CUSERID(+)
         AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
         AND mindate.ME_CUSERID = main.ME_CUSERID
-        AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
-        AND main.ME_CUSERID = MA_CUSERID(+)
         <if test="companyId!=null">
             AND ME_CCOMPANYID = #{companyId}
         </if>
@@ -575,6 +705,474 @@
                 #{compId}
             </foreach>
         </if>
+        AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+        AND main.ME_CUSERID = MA_CUSERID
+        AND ME_CIFSTILLEMPLOYEDID = '0'
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainEmpNameList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+            ME_CCUSTOMERID_CK
+             ,ME_CCOMPANYID
+             ,ME_CEMPLOYEEID_CK
+             ,main.ME_CUSERID
+             ,main.ME_DSTARTDATE
+             ,ME_CKANANAME
+             ,CASE
+                  WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+                  ELSE
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+            END ME_CNAME
+             ,ME_CMAIL
+             ,ME_DDATEOFEMPLOYEMENT
+             ,ME_DDATEOFRETIREMENT
+             ,ME_ID
+             ,MA_ID
+             ,MA_CUSERID
+             ,MA_CACCOUNT
+             ,MA_DSTART
+             ,MA_DEND
+             ,MA_NRETRYCOUNTER
+             ,MA_NPASSWORDLOCK
+             ,MA_CADMINUSER
+             ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            MAST_EMPLOYEES main
+           ,MAST_ACCOUNT
+           ,(SELECT
+                 MIN(ME_DSTARTDATE) ,ME_CUSERID
+             FROM
+                 MAST_EMPLOYEES
+             WHERE
+                 TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+             GROUP BY
+                 ME_CUSERID) mindate
+        WHERE
+              ME_CCUSTOMERID_CK = #{custId}
+              AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+              AND mindate.ME_CUSERID = main.ME_CUSERID
+              <if test="companyId!=null">
+                AND ME_CCOMPANYID = #{companyId}
+              </if>
+              <if test="companyList!=null and companyList.size()>0">
+                AND ME_CCOMPANYID IN
+                <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                    #{compId}
+                </foreach>
+              </if>
+              AND (
+                       ME_CKANANAME LIKE #{empName} || '%'
+                       OR  ME_CKANJINAME LIKE #{empName} || '%'
+                       OR  ME_CEMPLOYEENAMECH LIKE #{empName} || '%'
+                       OR  ME_CEMPLOYEENAME01 LIKE #{empName} || '%'
+                       OR  ME_CEMPLOYEENAME02 LIKE #{empName} || '%'
+                       OR  ME_CENGLISHNAME LIKE #{empName} || '%'
+                       OR  ME_COLDSURNAMEINKANJI LIKE #{empName} || '%'
+                       OR  ME_COLDSURNAMEKANA LIKE #{empName} || '%'
+                       OR  ME_COLDSURNAMEINENGLISH LIKE #{empName} || '%'
+                  )
+              AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
+              AND main.ME_CUSERID = MA_CUSERID(+)
+        ORDER BY ME_CKANANAME
+    </select>
+
+    <select id="selectMainSectionList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT DISTINCT
+            ME_CCUSTOMERID_CK,
+            ME_CCOMPANYID,
+            ME_CEMPLOYEEID_CK,
+            main.ME_CUSERID,
+            main.ME_DSTARTDATE,
+            ME_CKANANAME,
+            CASE
+               WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                   PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+               ELSE
+                   PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+            END ME_CNAME
+                      ,ME_CMAIL
+                      ,ME_DDATEOFEMPLOYEMENT
+                      ,ME_DDATEOFRETIREMENT
+                      ,ME_ID
+                      ,MA_ID
+                      ,MA_CUSERID
+                      ,MA_CACCOUNT
+                      ,MA_DSTART
+                      ,MA_DEND
+                      ,MA_NRETRYCOUNTER
+                      ,MA_NPASSWORDLOCK
+                      ,MA_CADMINUSER
+                      ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            (MAST_ORGANISATION JOIN MAST_EMPLOYEES main ON
+                    MO_CCUSTOMERID_CK_FK = ME_CCUSTOMERID_CK
+                    AND MO_CCOMPANYID_CK_FK = ME_CCOMPANYID
+                )
+                LEFT JOIN MAST_ACCOUNT ON
+                    ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+                    AND ME_CUSERID = MA_CUSERID
+           ,(SELECT
+                 MIN(ME_DSTARTDATE) ,ME_CUSERID
+             FROM
+                 MAST_EMPLOYEES
+             WHERE
+                 TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+             GROUP BY
+                 ME_CUSERID) mindate
+        WHERE
+            MO_CCUSTOMERID_CK_FK = #{custId}
+          AND MO_CCOMPANYID_CK_FK = #{sectionCompanyId}
+          AND (MO_CSECTIONID_CK = #{sectionId} OR MO_CLAYEREDSECTIONID LIKE '%,' || #{sectionId} || ',%')
+          AND MO_CLANGUAGE = 'ja'
+          AND TRUNC(MO_DEND) >= TRUNC(SYSDATE)
+          AND ME_CIFSTILLEMPLOYEDID = '0'
+          AND main.ME_CUSERID IN (
+            SELECT
+                HD_CUSERID
+            FROM
+                HIST_DESIGNATION
+            WHERE
+              TRUNC(HD_DENDDATE) >= TRUNC(SYSDATE)
+              AND	HD_CCUSTOMERID_CK = ME_CCUSTOMERID_CK
+              AND HD_CCOMPANYID_CK = ME_CCOMPANYID
+              AND HD_CEMPLOYEEID_CK = ME_CEMPLOYEEID_CK
+              AND HD_CSECTIONID_FK = MO_CSECTIONID_CK
+        )
+          AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+          AND mindate.ME_CUSERID = main.ME_CUSERID
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainEmpIdList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+            ME_CCUSTOMERID_CK
+             ,ME_CCOMPANYID
+             ,ME_CEMPLOYEEID_CK
+             ,main.ME_CUSERID
+             ,main.ME_DSTARTDATE
+             ,ME_CKANANAME
+             ,CASE
+                  WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+                  ELSE
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+            END ME_CNAME
+             ,ME_CMAIL
+             ,ME_DDATEOFEMPLOYEMENT
+             ,ME_DDATEOFRETIREMENT
+             ,ME_ID
+             ,MA_ID
+             ,MA_CUSERID
+             ,MA_CACCOUNT
+             ,MA_DSTART
+             ,MA_DEND
+             ,MA_NRETRYCOUNTER
+             ,MA_NPASSWORDLOCK
+             ,MA_CADMINUSER
+             ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            MAST_EMPLOYEES main
+           ,MAST_ACCOUNT
+           ,(SELECT
+                 MIN(ME_DSTARTDATE) ,ME_CUSERID
+             FROM
+                 MAST_EMPLOYEES
+             WHERE
+                 TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+             GROUP BY
+                 ME_CUSERID) mindate
+        WHERE
+            ME_CCUSTOMERID_CK =#{custId}
+          AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+          AND mindate.ME_CUSERID = main.ME_CUSERID
+            <if test="companyId!=null">
+                AND ME_CCOMPANYID = #{companyId}
+            </if>
+            <if test="companyList!=null and companyList.size()>0">
+                AND ME_CCOMPANYID IN
+                <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                    #{compId}
+                </foreach>
+            </if>
+          AND main.ME_CUSERID IN (
+            SELECT
+                HD_CUSERID
+            FROM
+                HIST_DESIGNATION
+            WHERE
+                        HD_CCUSTOMERID_CK = ME_CCUSTOMERID_CK
+                        AND HD_CCOMPANYID_CK = ME_CCOMPANYID
+                        AND HD_CEMPLOYEEID_CK = ME_CEMPLOYEEID_CK
+                        AND HD_DENDDATE >= TRUNC(SYSDATE)
+                        AND HD_CEMPLOYEEID_CK LIKE #{empId} || '%'
+        )
+          AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
+          AND main.ME_CUSERID = MA_CUSERID(+)
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainAfterRetireList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+        ME_CCUSTOMERID_CK
+        ,ME_CCOMPANYID
+        ,ME_CEMPLOYEEID_CK
+        ,main.ME_CUSERID
+        ,main.ME_DSTARTDATE
+        ,ME_CKANANAME
+        ,CASE
+        WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+        PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+        ELSE
+        PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+        END ME_CNAME
+        ,ME_CMAIL
+        ,ME_DDATEOFEMPLOYEMENT
+        ,ME_DDATEOFRETIREMENT
+        ,ME_ID
+        ,MA_ID
+        ,MA_CUSERID
+        ,MA_CACCOUNT
+        ,MA_DSTART
+        ,MA_DEND
+        ,MA_NRETRYCOUNTER
+        ,MA_NPASSWORDLOCK
+        ,MA_CADMINUSER
+        ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+        MAST_EMPLOYEES main
+        ,MAST_ACCOUNT
+        ,(SELECT
+        MIN(ME_DSTARTDATE) ,ME_CUSERID
+        FROM
+        MAST_EMPLOYEES
+        WHERE
+        TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+        GROUP BY
+        ME_CUSERID) mindate
+        WHERE
+        ME_CCUSTOMERID_CK = #{custId}
+        AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+        AND mindate.ME_CUSERID = main.ME_CUSERID
+        <if test="companyId!=null">
+            AND ME_CCOMPANYID = #{companyId}
+        </if>
+        <if test="companyList!=null and companyList.size()>0">
+            AND ME_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                #{compId}
+            </foreach>
+        </if>
+        AND ME_DDATEOFRETIREMENT <![CDATA[<]]> TRUNC(SYSDATE)
+        AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+        AND main.ME_CUSERID = MA_CUSERID
+        AND EXISTS (
+        SELECT 1
+        FROM
+        MAST_ACCOUNT
+        WHERE
+        MA_CCUSTOMERID = ME_CCUSTOMERID_CK
+        AND	MA_CUSERID = main.ME_CUSERID
+        AND (TRUNC(SYSDATE) >= MA_DSTART AND TRUNC(SYSDATE) <![CDATA[<=]]> MA_DEND)
+        )
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainAfterJoinList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+        ME_CCUSTOMERID_CK
+        ,ME_CCOMPANYID
+        ,ME_CEMPLOYEEID_CK
+        ,main.ME_CUSERID
+        ,main.ME_DSTARTDATE
+        ,ME_CKANANAME
+        ,CASE
+        WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+          PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+        ELSE
+          PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+        END ME_CNAME
+        ,ME_CMAIL
+        ,ME_DDATEOFEMPLOYEMENT
+        ,ME_DDATEOFRETIREMENT
+        ,ME_ID
+        ,MA_ID
+        ,MA_CUSERID
+        ,MA_CACCOUNT
+        ,MA_DSTART
+        ,MA_DEND
+        ,MA_NRETRYCOUNTER
+        ,MA_NPASSWORDLOCK
+        ,MA_CADMINUSER
+        ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+        MAST_EMPLOYEES main
+        ,MAST_ACCOUNT
+        ,(SELECT
+        MIN(ME_DSTARTDATE) ,ME_CUSERID
+        FROM
+        MAST_EMPLOYEES
+        WHERE
+        TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+        GROUP BY
+        ME_CUSERID) mindate
+        WHERE
+        ME_CCUSTOMERID_CK = #{custId}
+        AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+        AND mindate.ME_CUSERID = main.ME_CUSERID
+        <if test="companyId!=null">
+            AND ME_CCOMPANYID = #{companyId}
+        </if>
+        <if test="companyList!=null and companyList.size()>0">
+            AND ME_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                #{compId}
+            </foreach>
+        </if>
+        AND ME_DDATEOFEMPLOYEMENT <![CDATA[<=]]> TRUNC(SYSDATE)
+        AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
+        AND main.ME_CUSERID = MA_CUSERID(+)
+        AND NOT EXISTS (
+        SELECT 1
+        FROM
+        MAST_ACCOUNT
+        WHERE
+        MA_CCUSTOMERID = ME_CCUSTOMERID_CK
+        AND MA_CUSERID = main.ME_CUSERID
+        )
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainBeforeJoinList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+            ME_CCUSTOMERID_CK
+             ,ME_CCOMPANYID
+             ,ME_CEMPLOYEEID_CK
+             ,main.ME_CUSERID
+             ,main.ME_DSTARTDATE
+             ,ME_CKANANAME
+             ,CASE
+                  WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+                  ELSE
+                      PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+                  END ME_CNAME
+             ,ME_CMAIL
+             ,ME_DDATEOFEMPLOYEMENT
+             ,ME_DDATEOFRETIREMENT
+             ,ME_ID
+             ,MA_ID
+             ,MA_CUSERID
+             ,MA_CACCOUNT
+             ,MA_DSTART
+             ,MA_DEND
+             ,MA_NRETRYCOUNTER
+             ,MA_NPASSWORDLOCK
+             ,MA_CADMINUSER
+             ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+            MAST_EMPLOYEES main,
+            MAST_ACCOUNT,
+            (
+                SELECT
+                  MIN(ME_DSTARTDATE) ,ME_CUSERID
+                FROM
+                  MAST_EMPLOYEES
+                WHERE
+                  TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+                GROUP BY
+                  ME_CUSERID
+            ) mindate
+        WHERE
+            ME_CCUSTOMERID_CK = #{custId}
+          AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+          AND mindate.ME_CUSERID = main.ME_CUSERID
+          <if test="companyId!=null">
+            AND ME_CCOMPANYID = #{companyId}
+          </if>
+          <if test="companyList!=null and companyList.size()>0">
+            AND ME_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                #{compId}
+            </foreach>
+          </if>
+          AND ME_DDATEOFEMPLOYEMENT > TRUNC(SYSDATE)
+          AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID(+)
+          AND main.ME_CUSERID = MA_CUSERID(+)
+        ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+
+    <select id="selectMainValidList" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerListDTO">
+        SELECT
+            ME_CCUSTOMERID_CK
+            ,ME_CCOMPANYID
+            ,ME_CEMPLOYEEID_CK
+            ,main.ME_CUSERID
+            ,main.ME_DSTARTDATE
+            ,ME_CKANANAME
+            ,CASE
+                WHEN ME_DSTARTDATE > TRUNC(SYSDATE) THEN
+                   PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,'2222/03/31','${language}')
+                ELSE
+                   PSMASTER.FUNC_GET_EMP_NAME('${custId}',ME_CCOMPANYID,ME_CEMPLOYEEID_CK,NULL,'${language}')
+                END ME_CNAME
+            ,ME_CMAIL
+            ,ME_DDATEOFEMPLOYEMENT
+            ,ME_DDATEOFRETIREMENT
+            ,ME_ID
+            ,MA_ID
+            ,MA_CUSERID
+            ,MA_CACCOUNT
+            ,MA_DSTART
+            ,MA_DEND
+            ,MA_NRETRYCOUNTER
+            ,MA_NPASSWORDLOCK
+            ,MA_CADMINUSER
+            ,MAST_ACCOUNT.VERSIONNO VERSIONNO
+        FROM
+        MAST_EMPLOYEES main
+        ,(SELECT
+            MA_ID
+            ,MA_CCUSTOMERID
+            ,MA_CUSERID
+            ,MA_CACCOUNT
+            ,MA_DSTART
+            ,MA_DEND
+            ,MA_NRETRYCOUNTER
+            ,MA_NPASSWORDLOCK
+            ,MA_CADMINUSER
+            ,VERSIONNO
+            FROM
+              MAST_ACCOUNT
+            WHERE
+            (TRUNC(SYSDATE) >= MA_DSTART AND TRUNC(SYSDATE) <![CDATA[<=]]> MA_DEND)
+            AND MA_NPASSWORDLOCK = 0
+            ) MAST_ACCOUNT,
+        (SELECT
+        MIN(ME_DSTARTDATE) ,ME_CUSERID
+        FROM
+        MAST_EMPLOYEES
+        WHERE
+        TRUNC(ME_DENDDATE) >= TRUNC(SYSDATE)
+        GROUP BY
+        ME_CUSERID) mindate
+        WHERE
+        ME_CCUSTOMERID_CK = #{custId}
+        AND mindate."MIN(ME_DSTARTDATE)" = main.ME_DSTARTDATE
+        AND mindate.ME_CUSERID = main.ME_CUSERID
+        <if test="companyId!=null">
+            AND ME_CCOMPANYID = #{companyId}
+        </if>
+        <if test="companyList!=null and companyList.size()>0">
+            AND ME_CCOMPANYID IN
+            <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                #{compId}
+            </foreach>
+        </if>
+        AND ME_CIFSTILLEMPLOYEDID = '0'
+        AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+        AND main.ME_CUSERID = MA_CUSERID
         ORDER BY ME_CEMPLOYEEID_CK
     </select>
 
