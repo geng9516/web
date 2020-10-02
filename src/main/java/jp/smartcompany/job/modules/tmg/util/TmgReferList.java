@@ -656,9 +656,18 @@ public class TmgReferList {
         HttpSession httpSession = psDBBean.getSession();
         switch(piParam){
             case csSessionControl4SearchTreeInitialization:
+
                 if (isUseSearcjEmp()){
                     httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, getHidSelectTab());
+                    // fix:与老代码不同的是，接口化搜索接口后每次调用都要重新设置搜索条件和搜索结果
+                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
+                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
+                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
+                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
+                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
+
                 } else {
+
                     // 組織ツリー検索タブを使わない場合は初期化
                     httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, ciSelectTreeTab);
                     httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
@@ -669,6 +678,7 @@ public class TmgReferList {
                 }
                 break;
             case csSessionControl4SearchTreeSave:
+
                 httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
                 httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
                 httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
