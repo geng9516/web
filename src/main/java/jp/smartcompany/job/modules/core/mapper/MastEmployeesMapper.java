@@ -1,5 +1,7 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -118,5 +120,8 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
             @Param("loginUser") String loginUser,
             @Param("systemId") String systemId
     );
+
+    IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, @Param("custId") String custId,
+                                             @Param("language") String language, @Param("companyId") String companyId, @Param("companyList") List<String> companyList);
 
 }

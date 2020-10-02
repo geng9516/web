@@ -8,6 +8,7 @@
   min-height: 100vh;
   padding-top: 51px;
   overflow-y: auto;
+  background: var(--content-bg);
   .content_head {
     padding: 0 10px 12px;
     // border-bottom: solid 1px var(--border-grey);
@@ -197,7 +198,7 @@
   width: 100vw;
   clip-path: circle(3px at 93.9% 2.7%);
   /* background: var(--login-right-part-bg); */
-  background: var(--table-head);
+  background: var(--mobile-nav-bg);
   height: 100vh;
   transition: clip-path 0.6s cubic-bezier(0.86, 0, 0.07, 1);
 }

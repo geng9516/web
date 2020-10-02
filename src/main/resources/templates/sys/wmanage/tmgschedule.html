@@ -330,7 +330,7 @@
                 適用済
             </div>
             <div style="position: relative;">
-            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適応している週勤務パターンがありません">
+            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適応している週勤務パターンがありません" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="startTime">
                     <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
                                  format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(tableDataUsedbak[row._index].twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
@@ -379,7 +379,7 @@
                 <i-button type="primary" ghost long @click="executeMakeWeekPattern">登録</i-button>
                 </i-col>
             </Row>
-            <i-table border class="mt5" :columns="columns2" :data="tableData2">
+            <i-table border class="mt5" :columns="columns2" :data="tableData2" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="workDivision">
                     <i-select v-model="value2.applyList[row._index].workDivisionId" transfer @on-change="handleChangeDivision2(row._index,'value2')">
                         <i-option v-for="(item) of workDivisionList" :value="item.mgd_work">{{ item.mgd_workname }}</i-option>
@@ -425,7 +425,7 @@
                 </i-col>
             </Row>
 
-            <i-table border class="mt10 mb20" :columns="columns2" :data="tableData3">
+            <i-table border class="mt10 mb20" :columns="columns2" :data="tableData3" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="workDivision">
                     <span>{{ row.workname }}</span>
                 </template>
