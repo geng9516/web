@@ -575,13 +575,13 @@
             }
         },
         async mounted() {
-            this.getIsDiscretion()
-            await this.getData()
             this.$refs.clock.showTime()
             this.getClockInfo()
+            this.getIsDiscretion()
+            this.getServerTime()
             await this.getScheduleInfo()
             await this.getOverTime()
-            this.getDutyAndRelaxDate()
+            await this.getDutyAndRelaxDate()
             this.dynamicScheduleFit()
         },
         beforeDestroy() {
@@ -653,7 +653,7 @@
             }
         },
         methods: {
-            async getData() {
+            async getServerTime() {
                 try {
                     const {data} = await this.http.get('sys/timePunch/serverTime', null)
                     /*this.data = data
