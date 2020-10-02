@@ -8,10 +8,12 @@ import jp.smartcompany.job.modules.core.pojo.handler.OrganisationEntityListHandl
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,6 +44,7 @@ public class TmgDivisionTree {
     private String gsRootSection;
 
     private final DataSource dataSource = (DataSource) SpringUtil.getBean("dataSource");
+    private final TmgSearchRangeUtil searchRangeUtil = SpringUtil.getBean(TmgSearchRangeUtil.class);
 
     /**
      * コンストラクタ
@@ -279,6 +282,22 @@ public class TmgDivisionTree {
         }
     }
 
+    /**
+     * 検索対象範囲条件の取得(職員に対する検索対象範囲とは別に分ける。Treeでは上位所属を利用するが社員リストでは出てはいけないため)
+     * @param pSession
+     * @return
+     */
+    public String getDivTreeSearchRange(PsDBBean psDBBean, HttpSession pSession) {
+        // 検索対象範囲の適用
+        String sExists;
+        try {
+            sExists = searchRangeUtil.getExistsQueryBaseSection(psDBBean, pSession, "o.MO_CSECTIONID_CK");
+        }
+        catch(Exception e) {
+            sExists = "";
+        }
+        return sExists;
+    }
 
     /**
      * 指定された部署の正式名称を返します

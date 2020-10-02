@@ -226,4 +226,25 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     public IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList) {
         return baseMapper.selectMainAllList(page, custId, language, companyId,companyList);
     }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainLockoutList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList) {
+        return baseMapper.selectMainLockoutList(page, custId, language, companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainAdminList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainAdminList(page,custId,language,companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainEmpNameList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList,String empName) {
+        return baseMapper.selectMainEmpNameList(page,custId,language,companyId,companyList,empName);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainSectionList(IPage<UserManagerListDTO> page,String custId,String language,List<String> companyList,
+                                                           String sectionCompanyId,String sectionId) {
+        return baseMapper.selectMainSectionList(page,custId,language,companyList,sectionCompanyId,sectionId);
+    }
 }

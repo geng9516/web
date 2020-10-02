@@ -37,23 +37,54 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
          String language = "ja";
          List<String> companyList = searchCompanyUtil.getCompList(date);
 
+         // 设置默认查询参数
          Integer searchType = (Integer)conditions.get("searchType");
          String companyId = (String)conditions.get("companyId");
+         String empId = (String)conditions.get("empId");
+         String sectionId = (String)conditions.get("sectionId");
+         String sectionCompanyId = (String)conditions.get("sectionCompanyId");
+         String empName = (String)conditions.get("empName");
          if (searchType == null) {
-            searchType = 1;
+            searchType = 0;
          }
          if (StrUtil.isBlank(companyId)) {
              companyId = "01";
          }
+
          IPage<UserManagerListDTO> pageResult=null;
+         IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(conditions);
          switch(searchType) {
-             /**
-              * 全て
-              */
-             case 1:
-                 pageResult = mastEmployeesService.selectMainAllList(new PageQuery<UserManagerListDTO>().getPage(conditions),custId,language,companyId,companyList);
+             case 1: // 全て
+                 pageResult = mastEmployeesService.selectMainAllList(pageQuery,custId,language,companyId,companyList);
                  break;
-             default:
+             case 2: // ロックアウトされているユーザ
+                 pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
+                 break;
+             case 3: // 現在有効なユーザ
+//                 pageResult = mastEmployeesService.selectMainValidList(pageQuery,custId,language,companyId,companyList);
+                 break;
+             case 4: // 入社前
+//                 pageResult = mastEmployeesService.selectMainBeforeJoinList(pageQuery,custId,language,companyId,companyList);
+                 break;
+             case 5: //入社後未登録
+//                 pageResult = mastEmployeesService.selectMainAfterJoinList(pageQuery,custId,language,companyId,companyList);
+                 break;
+             case 6: // 退職後未削除
+//                 pageResult = mastEmployeesService.selectMainAfterRetireList(pageQuery,custId,language,companyId,companyList);
+                 break;
+             case 7: // 社員番号
+//                 pageResult = mastEmployeesService.selectMainEmpIdList(pageQuery,custId,language,companyId,companyList,empId);
+                 break;
+             case 8: // 部署
+                 pageResult = mastEmployeesService.selectMainSectionList(pageQuery,custId,language,companyList,sectionCompanyId,sectionId);
+                 break;
+             case 9: // 氏名
+                 pageResult = mastEmployeesService.selectMainEmpNameList(pageQuery,custId,language,companyId,companyList,empName);
+                 break;
+             case 10: // 管理ツールユーザ
+                 pageResult = mastEmployeesService.selectMainAdminList(pageQuery,custId,language,companyId,companyList);
+             default: // 默认查询ロックアウトされているユーザ
+                 pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
          }
          return new PageUtil(pageResult);
