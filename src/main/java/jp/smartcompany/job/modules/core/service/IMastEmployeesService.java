@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.core.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
@@ -126,6 +127,14 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
     IPage<UserManagerListDTO> selectMainBeforeJoinList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
 
     IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    List<UserManagerDTO> selectStartList(String custId, List<String> userIds,
+                                         String language, Integer searchType,
+                                         List<String> companyList);
+
+    List<UserManagerDTO> selectEndList(String custId, List<String> userIds,
+                                         String language, Integer searchType,
+                                         List<String> companyList);
     /**
      * ===================用户管理 搜索用户结束===============
      */

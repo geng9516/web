@@ -1,6 +1,6 @@
-package jp.smartcompany.admin.usermanager.dto;
+package jp.smartcompany.admin.usermanager.form;
 
-import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class UserManagerEditEndDTO {
+public class UserManagerEditEndForm {
 
     @NotNull
     private Date endDate;
