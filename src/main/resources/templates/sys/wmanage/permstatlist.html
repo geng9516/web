@@ -1798,7 +1798,7 @@
                 },
                 async getApplyEmployPersonalInfo() {
                     // 職員情報取得
-                    const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                    const { data } = await this.http.get('sys/vapply/EmployInfo', this.queryList)
                     this.privateInfo.name = data.name
                     this.privateInfo.workType = data.worktype
                 },
