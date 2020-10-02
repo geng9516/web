@@ -438,10 +438,10 @@
           }
         },
         async update() {
-          // this.loading = true
+          this.loading = true
+          this.isEditing = false
           console.log(this.updateValue)
           const { data } = await this.http.post('sys/searchrangemanager/update', [this.updateValue])
-          this.isEditing = false
           this.getTableData()
           this.updateValue = {}
           // let OPTS = { permList: [...new Set(this.updateValue)] }
