@@ -10,7 +10,6 @@ import jp.smartcompany.job.modules.tmg.timepunch.vo.ClockResultVO;
 import jp.smartcompany.job.modules.tmg.timepunch.vo.SystemTimerVO;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -174,11 +173,20 @@ public class TimepunchController {
      */
     @PostMapping("queryOverWorkTime")
     @ResponseBody
-    @Cacheable(cacheNames = "queryOverWorkTime")
     public String[] queryOverWorkTime(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         String[] overWorkTime = tmgTimePunchBean.selectOverWorkTime(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
         return overWorkTime;
     }
 
+    /**
+     * 社員の時間帯時間を取得する
+     *
+     * @param psDBBean
+     * @return
+     */
+    public Integer[] getEmpScheduleSection(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        Integer[] schSection = tmgTimePunchBean.getEmpScheduleSection(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
+        return schSection;
+    }
 
 }

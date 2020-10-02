@@ -10,13 +10,10 @@ import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.boot.util.SpringUtil;
-import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
 import jp.smartcompany.job.modules.tmg.schedule.vo.*;
-import jp.smartcompany.job.modules.tmg.timepunch.dto.DutyAndRelaxDateDTO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +40,7 @@ import java.util.*;
 public class TmgScheduleBean {
     private final Logger logger = LoggerFactory.getLogger(TmgScheduleBean.class);
 
-    private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
+   // private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
 
     private final ITmgScheduleService iTmgScheduleService;
 
@@ -925,7 +922,7 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextStart(nextStart);
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
-        String cacheKey = "SCHEDULE_INFO_" + _startDispDate + _endDispDate + useFixedFunction + employeeId;
+        /*String cacheKey = "SCHEDULE_INFO_" + _startDispDate + _endDispDate + useFixedFunction + employeeId;
         ScheduleInfoVO result = (ScheduleInfoVO) lruCache.get(cacheKey);
         Object obj = lruCache.get(SCHEDULE_EDIT_FLAG);
         if (null != result && null == lruCache.get(SCHEDULE_EDIT_FLAG)) {
@@ -933,79 +930,79 @@ public class TmgScheduleBean {
             return result;
         } else {
             //編集フラッグをcacheから削除する
-            lruCache.remove(SCHEDULE_EDIT_FLAG);
-            List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
-            // Arrayにデータフォーマッを変える
-            for (int i = 0; i < scheduleDataDTOS.size(); i++) {
-                ScheduleDataDTO scheduleDataDTO = scheduleDataDTOS.get(i);
-                if (null != scheduleDataDTO.getTimerange() && !"".equals(scheduleDataDTO.getTimerange())) {
-                    scheduleDataDTO.setTimerange_arr(JSONUtil.parseArray(scheduleDataDTO.getTimerange()).toArray());
-                }
-                if (null != scheduleDataDTO.getJson() && !"".equals(scheduleDataDTO.getJson())) {
-                    scheduleDataDTO.setJson_arr(JSONUtil.parseArray(scheduleDataDTO.getJson()).toArray());
-                }
+            lruCache.remove(SCHEDULE_EDIT_FLAG);*/
+        List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
+        // Arrayにデータフォーマッを変える
+        for (int i = 0; i < scheduleDataDTOS.size(); i++) {
+            ScheduleDataDTO scheduleDataDTO = scheduleDataDTOS.get(i);
+            if (null != scheduleDataDTO.getTimerange() && !"".equals(scheduleDataDTO.getTimerange())) {
+                scheduleDataDTO.setTimerange_arr(JSONUtil.parseArray(scheduleDataDTO.getTimerange()).toArray());
             }
-            NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
-
-            /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
-            ArrayList _TCA_CHOLFlgList = new ArrayList();
-            int weekday = 0;
-            int holiday = 0;
-            for (int i = 0; i < scheduleDataDTOS.size(); i++) {
-                String sHolFlg = scheduleDataDTOS.get(i).getHolflgCalendar();
-                _TCA_CHOLFlgList.add(sHolFlg);
-                // 休日、平日を集計
-                if (Cs_MGD_HOLFLG_0.equals(sHolFlg)) {
-                    weekday++;
-                } else {
-                    holiday++;
-                }
+            if (null != scheduleDataDTO.getJson() && !"".equals(scheduleDataDTO.getJson())) {
+                scheduleDataDTO.setJson_arr(JSONUtil.parseArray(scheduleDataDTO.getJson()).toArray());
             }
-            if (weekday == 0) {
-                paidHolidayVO.setDateOfRecordDays("0");
-            } else {
-                paidHolidayVO.setDateOfRecordDays(String.valueOf(weekday));
-            }
-            if (holiday == 0) {
-                paidHolidayVO.setNationalHolidayDays("0");
-            } else {
-                paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
-            }
-            String npaidRestDaysHour = "0.0日 0時間 0分";
-            if (null != npaidRestDTO) {
-                //年次休暇残
-                npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0.0" : Float.valueOf(npaidRestDTO.getTmo_npaid_rest_days()) + "日 ";
-                int hour = 0;
-                int min = 0;
-                String hoursMins = npaidRestDTO.getTmo_npaid_rest_hours();
-                if (null != hoursMins && !"".equals(hoursMins)) {
-                    int hoursMins_int = Integer.parseInt(hoursMins);
-
-                    if (hoursMins_int % 60 == 0) {
-                        hour = hoursMins_int / 60;
-                    } else {
-                        hour = (hoursMins_int - hoursMins_int % 60) / 60;
-                        min = hoursMins_int % 60;
-                    }
-                }
-                npaidRestDaysHour += hour + "時間 ";
-                npaidRestDaysHour += min + "分";
-            }
-
-            paidHolidayVO.setNpaidRestDaysHour(npaidRestDaysHour);
-
-            //基準時間
-            String workingHours = iTmgScheduleService.selectWorkingHours(employeeId, _baseDate, _targetCustCode, _targetCompCode);
-            String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
-            paidHolidayVO.setDateOfRecord(dateOfRecord);
-            paidHolidayVO.setAvgWorkTime(workingHours);
-
-            scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
-            scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
-            lruCache.put(cacheKey, scheduleInfoVO);
-            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache までロードする(key[" + cacheKey + "])");
-            return scheduleInfoVO;
         }
+        NpaidRestDTO npaidRestDTO = iTmgScheduleService.selectTmgMonthly(employeeId, _startDispDate, _targetCompCode, _targetCustCode);
+
+        /** 全社カレンダー.TCA_CHOLFLG値格納リスト */
+        ArrayList _TCA_CHOLFlgList = new ArrayList();
+        int weekday = 0;
+        int holiday = 0;
+        for (int i = 0; i < scheduleDataDTOS.size(); i++) {
+            String sHolFlg = scheduleDataDTOS.get(i).getHolflgCalendar();
+            _TCA_CHOLFlgList.add(sHolFlg);
+            // 休日、平日を集計
+            if (Cs_MGD_HOLFLG_0.equals(sHolFlg)) {
+                weekday++;
+            } else {
+                holiday++;
+            }
+        }
+        if (weekday == 0) {
+            paidHolidayVO.setDateOfRecordDays("0");
+        } else {
+            paidHolidayVO.setDateOfRecordDays(String.valueOf(weekday));
+        }
+        if (holiday == 0) {
+            paidHolidayVO.setNationalHolidayDays("0");
+        } else {
+            paidHolidayVO.setNationalHolidayDays(String.valueOf(holiday));
+        }
+        String npaidRestDaysHour = "0.0日 0時間 0分";
+        if (null != npaidRestDTO) {
+            //年次休暇残
+            npaidRestDaysHour = npaidRestDTO.getTmo_npaid_rest_days() == null ? "0.0" : Float.valueOf(npaidRestDTO.getTmo_npaid_rest_days()) + "日 ";
+            int hour = 0;
+            int min = 0;
+            String hoursMins = npaidRestDTO.getTmo_npaid_rest_hours();
+            if (null != hoursMins && !"".equals(hoursMins)) {
+                int hoursMins_int = Integer.parseInt(hoursMins);
+
+                if (hoursMins_int % 60 == 0) {
+                    hour = hoursMins_int / 60;
+                } else {
+                    hour = (hoursMins_int - hoursMins_int % 60) / 60;
+                    min = hoursMins_int % 60;
+                }
+            }
+            npaidRestDaysHour += hour + "時間 ";
+            npaidRestDaysHour += min + "分";
+        }
+
+        paidHolidayVO.setNpaidRestDaysHour(npaidRestDaysHour);
+
+        //基準時間
+        String workingHours = iTmgScheduleService.selectWorkingHours(employeeId, _baseDate, _targetCustCode, _targetCompCode);
+        String dateOfRecord = this.calculateWorkingHourOfMonth(workingHours == null ? "0" : workingHours, paidHolidayVO.getDateOfRecordDays());
+        paidHolidayVO.setDateOfRecord(dateOfRecord);
+        paidHolidayVO.setAvgWorkTime(workingHours);
+
+        scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
+        scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
+           /* lruCache.put(cacheKey, scheduleInfoVO);
+            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache までロードする(key[" + cacheKey + "])");*/
+        return scheduleInfoVO;
+        //}
     }
 
     /**
@@ -1165,74 +1162,74 @@ public class TmgScheduleBean {
      */
     public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid, String baseDate, String custId, String compId, String language) {
         //lruCache key
-        String cacheKey = "SCHEDULE_IKKA_" + sectionid + groupid + baseDate + custId + compId;
+        /*String cacheKey = "SCHEDULE_IKKA_" + sectionid + groupid + baseDate + custId + compId;
         HashMap<String, Object> result = (HashMap<String, Object>) lruCache.get(cacheKey);
         if (null != result) {
             logger.info("[区分  出張  勤務パターン] Cache から取り出す");
             return result;
-        } else {
-            if ("".equals(baseDate) || null == baseDate) {
-                baseDate = getSysdate();
-                logger.warn("baseDateが空です");
-            }
-            if ("".equals(custId) || null == custId) {
-                logger.warn("custIdが空です");
-                return null;
-            }
-            if ("".equals(compId) || null == compId) {
-                logger.warn("compIdが空です");
-                return null;
-            }
-            if ("".equals(language) || null == language) {
-                logger.warn("languageが空です");
-                return null;
-            }
-            if ("".equals(sectionid) || null == sectionid) {
-                logger.warn("sectionidが空です");
-                return null;
-            }
-            if ("".equals(groupid) || null == groupid) {
-                logger.warn("groupIdが空です");
-                groupid = "null";
-            }
+        } else {*/
+        if ("".equals(baseDate) || null == baseDate) {
+            baseDate = getSysdate();
+            logger.warn("baseDateが空です");
+        }
+        if ("".equals(custId) || null == custId) {
+            logger.warn("custIdが空です");
+            return null;
+        }
+        if ("".equals(compId) || null == compId) {
+            logger.warn("compIdが空です");
+            return null;
+        }
+        if ("".equals(language) || null == language) {
+            logger.warn("languageが空です");
+            return null;
+        }
+        if ("".equals(sectionid) || null == sectionid) {
+            logger.warn("sectionidが空です");
+            return null;
+        }
+        if ("".equals(groupid) || null == groupid) {
+            logger.warn("groupIdが空です");
+            groupid = "null";
+        }
 
-            //[区分]
-            List<HashMap<String, Object>> kubunnList = this.selectGenericDetail(custId, compId, language, baseDate);
-            //[出張]
-            List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip(custId, compId, language, baseDate);
-            // 勤務パターン
-            List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid, baseDate, custId, compId);
-            // データフォマードを変更する
-            for (int i = 0; i < workPatternList.size(); i++) {
-                HashMap<String, Object> hashMap = workPatternList.get(i);
-                List<JSONObject> dutyArray = new ArrayList<JSONObject>();
-                List<JSONObject> restArray = new ArrayList<JSONObject>();
-                Map plan = new HashMap();
-                if (null != hashMap.get(planJSONKey) && !"".equals(hashMap.get(planJSONKey))) {
-                    String json = hashMap.get(planJSONKey).toString();
-                    JSONArray jsonArray = JSONUtil.parseArray(json);
-                    for (int j = 0; j < jsonArray.size(); j++) {
-                        JSONObject o = (JSONObject) jsonArray.get(j);
-                        if (o.get(planTypeKey).equals(dutyKey)) {
-                            dutyArray.add(o);
-                        }
-                        if (o.get(planTypeKey).equals(restKey)) {
-                            restArray.add(o);
-                        }
+        //[区分]
+        List<HashMap<String, Object>> kubunnList = this.selectGenericDetail(custId, compId, language, baseDate);
+        //[出張]
+        List<HashMap<String, Object>> syuccyouList = this.selectBusinessTrip(custId, compId, language, baseDate);
+        // 勤務パターン
+        List<HashMap<String, Object>> workPatternList = this.selectWorkPatternIkkatu(sectionid, groupid, baseDate, custId, compId);
+        // データフォマードを変更する
+        for (int i = 0; i < workPatternList.size(); i++) {
+            HashMap<String, Object> hashMap = workPatternList.get(i);
+            List<JSONObject> dutyArray = new ArrayList<JSONObject>();
+            List<JSONObject> restArray = new ArrayList<JSONObject>();
+            Map plan = new HashMap();
+            if (null != hashMap.get(planJSONKey) && !"".equals(hashMap.get(planJSONKey))) {
+                String json = hashMap.get(planJSONKey).toString();
+                JSONArray jsonArray = JSONUtil.parseArray(json);
+                for (int j = 0; j < jsonArray.size(); j++) {
+                    JSONObject o = (JSONObject) jsonArray.get(j);
+                    if (o.get(planTypeKey).equals(dutyKey)) {
+                        dutyArray.add(o);
+                    }
+                    if (o.get(planTypeKey).equals(restKey)) {
+                        restArray.add(o);
                     }
                 }
-                plan.put("dutyArray", dutyArray);
-                plan.put("restArray", restArray);
-                hashMap.put(planJSONKey, plan);
             }
-            HashMap<String, Object> results = new HashMap<String, Object>();
-            results.put("kubunnList", kubunnList);
-            results.put("syuccyouList", syuccyouList);
-            results.put("workPatternList", workPatternList);
-            lruCache.put(cacheKey, results);
-            logger.info("[区分  出張  勤務パターン] Cache までロードする");
-            return results;
+            plan.put("dutyArray", dutyArray);
+            plan.put("restArray", restArray);
+            hashMap.put(planJSONKey, plan);
         }
+        HashMap<String, Object> results = new HashMap<String, Object>();
+        results.put("kubunnList", kubunnList);
+        results.put("syuccyouList", syuccyouList);
+        results.put("workPatternList", workPatternList);
+            /*lruCache.put(cacheKey, results);
+            logger.info("[区分  出張  勤務パターン] Cache までロードする");*/
+        return results;
+        //}
     }
 
 
@@ -1250,7 +1247,7 @@ public class TmgScheduleBean {
      * 予定作成更新処理を行います。
      */
     public void executeEditMonthlyUSchedule(String content, PsDBBean psDBBean) {
-        lruCache.put(SCHEDULE_EDIT_FLAG, true);
+        //lruCache.put(SCHEDULE_EDIT_FLAG, true);
         if (JSONUtil.isJsonObj(content)) {
             MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
             if (null != monthlyUScheduleEditParaDTO) {
@@ -1320,7 +1317,7 @@ public class TmgScheduleBean {
                 nRestClose = restTimeHashMap.get(_restClose);
                 if (!ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestClose) && !ObjectUtil.isEmpty(nRestClose)) {
                     // TMG_DAILY_DETAIL 休憩時間レコード登録：予定
-                    logger.info("nRestOpen:" + nRestOpen + " ---- nRestClose:" + nRestClose);
+                    //logger.info("nRestOpen:" + nRestOpen + " ---- nRestClose:" + nRestClose);
                     iTmgScheduleService.insertTmgDailyDetailCheckRest(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getTargetUserId(),
                             Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_PLAN_REST, nRestOpen, nRestClose,
                             NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_PLAN_REST.equals(NOTWORKINGID_RESULT_REST));
