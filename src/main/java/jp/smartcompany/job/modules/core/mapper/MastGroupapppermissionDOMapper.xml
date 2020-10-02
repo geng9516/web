@@ -27,7 +27,6 @@
             MTR_NSEQ,
             MTR_ID
         FROM
-            (
              MAST_APPTREE
              LEFT OUTER JOIN MAST_GROUPAPPPERMISSION ON	MTR_COBJECTID = MGP_COBJECTID
                 AND	MTR_CSYSTEMID = MGP_CSYSTEMID
@@ -43,7 +42,6 @@
                 AND MG_CSYSTEMID_CK_FK = MGP_CSYSTEMID
                 AND MG_DSTARTDATE <![CDATA[ <= ]]> #{date}
                 AND MG_DENDDATE <![CDATA[ <= ]]> #{date}
-            )
         WHERE
             MTR_CSYSTEMID = #{systemId}
             AND	MTR_CTYPE <![CDATA[ <> ]]> '0'

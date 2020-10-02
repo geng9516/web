@@ -44,4 +44,9 @@ public interface MastGroupbasesectionMapper extends BaseMapper<MastGroupbasesect
            @Param("searchDate") String searchDate
    );
 
+   List<MastGroupbasesectionDO> selectMastGroupBaseSection(@Param("searchDate") String searchDate,
+                                                           @Param("custId") String custId,
+                                                           @Param("systemId") String systemId,
+                                                           @Param("groupId") String groupId);
+
 }

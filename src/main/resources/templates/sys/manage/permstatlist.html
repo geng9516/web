@@ -213,7 +213,7 @@
                             <p class="input-like-span tc" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
                         </i-col>
                     </Row>
-                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
+                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" :disabled-hover="true">
                         <template slot="workStart" slot-scope="{ row, index }">
                             <div v-if="row.isInput && bFixed" >
                                 <span class="input-like-span tc" style="border-radius: 5px; white-space: pre-line;">{{ row.workStart }}</span>
@@ -264,7 +264,7 @@
                     <i-button  disabled v-else>追加</i-button>
                 </div>
 
-                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
+                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20" :disabled-hover="true"
                          no-data-text="">
                     <template slot="tdadNopen" slot-scope="{ row, index }">
                         <i-input @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailNonDutyVOList[index].tdadNopen"></i-input>
@@ -314,7 +314,7 @@
                         <!--                </i-col>-->
                     </div>
 
-                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20" :disabled-hover="true"
                              no-data-text="">
                         <template slot="tdadNopen" slot-scope="{ row ,index }">
                             <i-input @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)" v-if=" !bFixed" v-model="detailOverhoursVOList[index].tdadNopen"></i-input>
@@ -349,7 +349,7 @@
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
-                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"   no-data-text="">
+                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"   no-data-text="" :disabled-hover="true">
                 </i-table>
                 <Spin fix size="large" v-if="dailyloading"></Spin>
             </div>
@@ -1721,7 +1721,7 @@
             },
             async getApplyEmployPersonalInfo() {
                 // 職員情報取得
-                const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                const { data } = await this.http.get('sys/vapply/EmployInfo', this.queryList)
                 this.privateInfo.name = data.name
                 this.privateInfo.workType = data.worktype
             },

@@ -1,5 +1,8 @@
 package jp.smartcompany.job.modules.core.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -118,5 +121,50 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
             @Param("loginUser") String loginUser,
             @Param("systemId") String systemId
     );
+
+    IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, @Param("custId") String custId,
+                                             @Param("language") String language, @Param("companyId") String companyId, @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainLockoutList(IPage<UserManagerListDTO> page, @Param("custId") String custId,
+                                                @Param("language") String language, @Param("companyId") String companyId, @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAdminList(IPage<UserManagerListDTO> page,@Param("custId") String custId,
+                                                  @Param("language") String language,@Param("companyId") String companyId,
+                                                  @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainEmpNameList(IPage<UserManagerListDTO> page,
+                                                    @Param("custId") String custId,
+                                                    @Param("language") String language,
+                                                    @Param("companyId") String companyId,
+                                                    @Param("companyList") List<String> companyList,
+                                                    @Param("empName") String empName);
+
+    IPage<UserManagerListDTO> selectMainSectionList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                    @Param("companyList") List<String> companyList, @Param("sectionCompanyId") String sectionCompanyId,
+                                                    @Param("sectionId") String sectionId);
+
+    IPage<UserManagerListDTO> selectMainEmpIdList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                  @Param("companyId") String companyId,@Param("companyList") List<String> companyList,@Param("empId") String empId);
+
+    IPage<UserManagerListDTO> selectMainAfterRetireList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                        @Param("companyId") String companyId,@Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAfterJoinList(IPage<UserManagerListDTO> page,@Param("custId") String custId,
+                                                      @Param("language") String language,@Param("companyId") String companyId,
+                                                      @Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainBeforeJoinList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,
+                                                       @Param("companyId") String companyId,@Param("companyList") List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,@Param("custId") String custId,@Param("language") String language,@Param("companyId") String companyId,
+                                                  @Param("companyList") List<String> companyList);
+
+    List<UserManagerDTO> selectStartList(@Param("custId") String custId, @Param("userIds") List<String> userIds,
+                                         @Param("language") String language, @Param("searchType") Integer searchType,
+                                         List<String> companyList);
+
+    List<UserManagerDTO> selectEndList(@Param("custId") String custId, @Param("userIds") List<String> userIds,
+                                         @Param("language") String language, @Param("searchType") Integer searchType,
+                                         List<String> companyList);
 
 }

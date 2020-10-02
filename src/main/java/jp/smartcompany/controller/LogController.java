@@ -38,9 +38,4 @@ public class LogController {
     return logBusiness.listErrorLog(params);
   }
 
-  @GetMapping("operation")
-  public PageUtil operationAuditList(@RequestParam Map<String, Object> params) {
-    return logBusiness.listOperationLog(params);
-  }
-
 }

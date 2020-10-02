@@ -35,11 +35,10 @@
   --gold50: rgb(255, 252, 189);
   --olive: rgb(199, 191, 6);
   --light-gold: rgb(255, 250, 207);
-  --brown-text: rgb(191, 112, 13);
+  --brown-text: rgb(188, 120, 34);
   /* 蓝色系 */
   --blue25:rgb(233, 243, 255);
   --blue15:rgb(244, 250, 255);
-  --filter-svg-icon:invert(100%) sepia() saturate(23) hue-rotate(0deg);
 
   /* login */
   --theme-mark: var(--orange60);
@@ -49,12 +48,12 @@
   /* SIDER */
   --sider-background: var(--orange60);
   --sider-background-actived:var(--orange25);
-  --sider-memu-background: var(--orange25);
-  --sider-memu-icon-color: var(--orange);
-  --sider-memu-icon-bg:linear-gradient(-45deg, rgb(255, 242, 234), rgb(255, 234, 217));
-  --sider-memu-title-background: var(--orange50);
-  --sider-memu-item-border-top: var(--orange);
-  --sider-memu-item-border-bottom: var(--dark-red);
+  --sider-menu-background: var(--orange25);
+  --sider-menu-icon-color: var(--orange);
+  --sider-menu-icon-bg:linear-gradient(-45deg, rgb(255, 242, 234), rgb(255, 234, 217));
+  --sider-menu-title-background: var(--orange50);
+  --sider-menu-item-border-top: var(--orange);
+  --sider-menu-item-border-bottom: var(--dark-red);
 
   /* header checkin */
   --dept-select: var(--orange);
@@ -97,8 +96,6 @@
 
   --primary-shadow: var(--btn-shadow);
 
-  --ghost-primary-border: var(--primary-border);
-  --ghost-primary-background: var(--white);
   --ghost-primary-shadow: var(--btn-shadow);
 
   --error-border: rgb(251, 146, 140);
@@ -108,7 +105,6 @@
   --error-active: linear-gradient(-45deg, rgb(243, 54, 67), var(--error-border));
 
   --ghost-error-border: rgb(251, 81, 82);
-  --ghost-error-background: var(--white);
   --ghost-error-shadow: var(--btn-shadow);
   --ghost-error-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
   --ghost-error-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));
@@ -120,7 +116,6 @@
   --success-active: linear-gradient(-45deg, rgb(11, 189, 70), var(--success-border));
 
   --ghost-success-border: rgb(9, 184, 88);
-  --ghost-success-background: var(--white);
   --ghost-success-shadow: var(--btn-shadow);
   --ghost-success-hover: linear-gradient(-45deg, var(--ghost-hover), var(--white));
   --ghost-success-active: linear-gradient(-45deg, var(--ghost-hover), var(--white));

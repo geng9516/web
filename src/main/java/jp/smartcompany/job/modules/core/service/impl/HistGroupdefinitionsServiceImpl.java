@@ -51,4 +51,10 @@ public class HistGroupdefinitionsServiceImpl extends ServiceImpl<HistGroupdefini
 //                }
                 return baseMapper.selectGroupDefinitions(customerId,companyId,systemId,groupId,strSearchDate,seq);
         }
+
+        @Override
+        public List<HistGroupdefinitionsDO> selectHistGroupDefinitions(Date searchDate, String custId, String systemId, String groupId) {
+                String startDate = SysUtil.transDateToString(searchDate);
+                return baseMapper.selectHistGroupDefinitions(startDate,custId,systemId,groupId);
+        }
 }

@@ -41,4 +41,10 @@ public interface HistGroupdefinitionsMapper extends BaseMapper<HistGroupdefiniti
                 @Param("searchDate") String searchDate,
                 @Param("seq") Long seq);
 
+        List<HistGroupdefinitionsDO> selectHistGroupDefinitions(
+                @Param("searchDate") String searchDate,
+                @Param("custId") String custId,
+                @Param("systemId") String systemId,
+                @Param("groupId") String groupId);
+
 }

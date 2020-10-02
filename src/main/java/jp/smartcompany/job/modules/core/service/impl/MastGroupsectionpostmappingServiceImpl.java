@@ -155,6 +155,13 @@ public class MastGroupsectionpostmappingServiceImpl extends ServiceImpl<MastGrou
     public void deleteSectionPostType(
             String customerId,String systemId,String groupId, String typeId, Date startDate) {
         String sStartDate = SysUtil.transDateToString(startDate);
-         baseMapper.deleteSectionPostType(customerId,systemId,groupId, typeId, sStartDate);
+        baseMapper.deleteSectionPostType(customerId,systemId,groupId, typeId, sStartDate);
     }
+
+    @Override
+    public List<MastGroupsectionpostmappingDO> selectMastGroupSectionPostMapping(Date startDate, String custId, String systemId,String groupId) {
+        String sStartDate = SysUtil.transDateToString(startDate);
+        return baseMapper.selectMastGroupSectionPostMapping(sStartDate, custId, systemId,groupId);
+    }
+
 }

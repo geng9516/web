@@ -46,7 +46,7 @@
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
-  background-color: white;
+  background-color:var(--selection-input-bg);
 }
 .change-line span {
   white-space: pre-wrap;
@@ -55,16 +55,16 @@
   white-space: pre-line;
 }
 .week-rest {
-  background: var(--light-blue);
-  color: var(--primary);
+  color: var(--blue-or-dark);
+  background: var(--blue-or-dark-bg);
   min-height: 47px;
   display: flex;
   flex-direction: column;
   justify-content: center;
 }
 .year-rest {
-  background: var(--green25);
-  color: var(--text-green);
+  background: var(--success-info-bg);
+  color: var(--success-info);
   min-height: 47px;
   display: flex;
   flex-direction: column;

@@ -3,6 +3,9 @@ package jp.smartcompany.job.modules.core.service.impl;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -218,5 +221,71 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
             String systemId
     ) {
         return baseMapper.selectEmployeeInfoList(searchDate,language,designation,sEmpInfoUserIDList,sCompNick,sSectionNick,sPostNick,loginUser,systemId);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList) {
+        return baseMapper.selectMainAllList(page, custId, language, companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainLockoutList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList) {
+        return baseMapper.selectMainLockoutList(page, custId, language, companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainAdminList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainAdminList(page,custId,language,companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainEmpNameList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList,String empName) {
+        return baseMapper.selectMainEmpNameList(page,custId,language,companyId,companyList,empName);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainSectionList(IPage<UserManagerListDTO> page,String custId,String language,List<String> companyList,
+                                                           String sectionCompanyId,String sectionId) {
+        return baseMapper.selectMainSectionList(page,custId,language,companyList,sectionCompanyId,sectionId);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainEmpIdList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList,String empId) {
+        return baseMapper.selectMainEmpIdList(page,custId,language,companyId,companyList,empId);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainAfterRetireList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainAfterRetireList(page,custId,language, companyId, companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainAfterJoinList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainAfterJoinList(page, custId,language, companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainBeforeJoinList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainBeforeJoinList(page,custId,language,companyId,companyList);
+    }
+
+    @Override
+    public IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
+        return baseMapper.selectMainValidList(page,custId,language,companyId,companyList);
+    }
+
+    @Override
+    public List<UserManagerDTO> selectStartList(String custId, List<String> userIds,
+
+                                                String language, Integer searchType,
+                                                List<String> companyList) {
+        return baseMapper.selectStartList(custId,userIds,language,searchType,companyList);
+    }
+
+    @Override
+    public List<UserManagerDTO> selectEndList(String custId, List<String> userIds,
+                                              String language, Integer searchType,
+                                              List<String> companyList) {
+         return baseMapper.selectEndList(custId,userIds, language, searchType, companyList);
     }
 }

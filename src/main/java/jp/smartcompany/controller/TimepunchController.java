@@ -178,5 +178,15 @@ public class TimepunchController {
         return overWorkTime;
     }
 
+    /**
+     * 社員の時間帯時間を取得する
+     *
+     * @param psDBBean
+     * @return
+     */
+    public Integer[] getEmpScheduleSection(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+        Integer[] schSection = tmgTimePunchBean.getEmpScheduleSection(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
+        return schSection;
+    }
 
 }

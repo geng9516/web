@@ -3,6 +3,7 @@
 }
 .ivu-table {
   .ivu-table-header {
+    background: var(--content-bg);
     th {
       padding: 2px 0;
     }
@@ -44,20 +45,22 @@
     }
     // 休息日 如星期六日
     &.rest {
-      background-color: var(--green25);
-      color: var(--text-green);
+      background: var(--success-info-bg);
+      color: var(--success-info);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }
     // today
     &.gold {
-      background-color: var(--light-gold);
-      color: var(--brown-text);
+      background-color: var(--gold-info-bg);
+      color: var(--gold-info);
       border-bottom: 1px solid var(--border-grey);
       border-right: 1px solid var(--border-grey);
     }
   }
   td {
+    background: var(--table-body-bg);
+    color: var(--grey);
     // 表格边框颜色加深
     border-color: var(--table-border);
   }
@@ -102,8 +105,8 @@
     .ivu-table-row {
       td:first-child {
         // 强行着色
-        background-color: var(--light-blue-l) !important;
-        color: var(--theme-blue) !important;
+        background-color: var(--primary-info-bg) !important;
+        color: var(--primary-info) !important;
         .ivu-table-cell {
           line-height: 26px;
         }
@@ -113,7 +116,8 @@
   // 日间表格 激活class
   tr {
     &.select-col:hover td {
-      background-color: var(--table-td-hover);
+      background-color: var(--table-td-hover-bg);
+      color: var(--table-tr-hover);
       .ivu-progress-bg:before {
         content: '';
         opacity: 0;
@@ -134,8 +138,8 @@
     color: var(--white) !important;
   }
   .sub-title {
-    background-color: var(--light-blue-l) !important;
-    color: var(--theme-blue) !important;
+    background-color: var(--table-subtitle-bg) !important;
+    color: var(--table-subtitle) !important;
   }
   .rest-title {
     background-color: var(--primary-info-bg) !important;
@@ -180,7 +184,8 @@
     line-height: 24px;
     width: 100px;
     text-align: right;
-    background-color: var(--border-grey);
+    background-color: var(--label-monthSum);
+    color: var(--grey);
     border-radius: 3px 0 0 3px;
     padding-top: 5px;
     padding-right: 5px;
@@ -193,7 +198,7 @@
     text-align: left;
     margin-left: -5px;
     vertical-align: bottom;
-    background: white;
+    background: var(--label-monthSum-bg);
     border: 1px solid var(--light-input-border-grey);
     border-radius: 0 3px 3px 0;
     padding: 0 5px;
@@ -242,7 +247,7 @@
   border-right: 1px solid var(--border-grey);
   border-bottom: 1px solid var(--border-grey);
   border-left: 1px solid var(--border-grey);
-  background-color: white;
+  background-color: var(--selection-input-bg);
 }
 
 .label {
@@ -276,7 +281,7 @@
     color: var(--primary);
   }
   &.rest {
-    color: var(--text-green);
+    color: var(--green);
   }
 }
 

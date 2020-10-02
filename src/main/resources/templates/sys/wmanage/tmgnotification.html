@@ -109,7 +109,7 @@
         </template>
 
         <template slot-scope="{ row }" slot="more">
-          <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)">詳細
+          <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)"/>詳細
         </template>
 
         <template slot-scope="{ row }" slot="status">
@@ -360,24 +360,24 @@
               </form-item>
               <!-- 有振休 -->
               <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.begin" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.begin" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
               </form-item>
               <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-                <date-picker type="date" :value="restApply.end" class="datepicker-single mb5 width100" placeholder="日付"
+                <date-picker type="date" :value="restApply.end" class="datepicker-single tl width100" placeholder="日付"
                   format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
               </form-item>
 
               <!-- 有起算日-->
               <form-item label="起算日" 　v-show="selectedRestInfo.period">
-                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single mb5 width100"
+                <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single tl width100"
                   placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
                 </date-picker>
               </form-item>
 
               <!-- 有加算日-->
               <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
-                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
+                <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
               </form-item>
 
               <!-- 是小时单位的 時間帯 -->
@@ -431,17 +431,17 @@
 
               <!-- 是有氏名的-->
               <form-item label="氏名" v-show="selectedRestInfo.name">
-                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100文字以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有続柄的-->
               <form-item label="続柄" v-show="selectedRestInfo.relation">
-                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100文字以内で入力してください。"/>
+                <i-input class="mb5 tl" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
               </form-item>
 
               <!-- 是有対象の人数的-->
               <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber">
-                <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
+                <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
                 </i-input>
               </form-item>
 
@@ -453,7 +453,7 @@
 
               <!-- 有伤病-->
               <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
-                <i-input v-model="restApply.txtSickName" class="tl"/>
+                <i-input v-model="restApply.txtSickName" class="tl" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
               </form-item>
 
               <form-item label="申請事由等">
@@ -674,7 +674,9 @@
             noreserved: 1,
             _dateList: '',
             _dateListRange:['', ''],
-            dateListRange:['', '']
+            dateListRange:['', ''],
+            txtAddDate:null,
+            txtTargetNumber:null
           },
           tabPaneLabel: (h) => {
             return h('div', [
@@ -832,6 +834,8 @@
         },
         async handleDeptDateChange(e) {
           this.referListObject.txtTmgReferListTreeViewRecordDate = e
+          this.curYear=e
+          this.opts.year=e.slice(0,4)
           this.isSearchHistory = true
           await this.getOrgTree()
           if(this.treeData.length !== 0) {
@@ -1160,7 +1164,9 @@
               noreserved: 1,
               _dateList: '',
               _dateListRange: ['', ''],
-              dateListRange: ['', '']
+              dateListRange: ['', ''],
+              txtAddDate:null,
+              txtTargetNumber:null
             }
             this.errorInfo = false
             this.uploadFiles = []
@@ -1302,6 +1308,7 @@
             this.errorMsg = '続柄を入力してください。'
             return
           }
+          console.log(this.restApply.txtTargetNumber)
           if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
             this.errorInfo = true
             this.errorMsg = '対象の人数を入力してください。'
@@ -1345,7 +1352,9 @@
               noreserved: 1,
               _dateList: '',
               _dateListRange:['', ''],
-              dateListRange:['', '']
+              dateListRange:['', ''],
+              txtAddDate:null,
+              txtTargetNumber:null
             }
             this.$Message.success('申请完了')
             this.agencyApplyShow = false

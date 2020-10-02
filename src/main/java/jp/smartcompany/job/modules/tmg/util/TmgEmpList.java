@@ -9,7 +9,6 @@ import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -354,7 +353,7 @@ public class TmgEmpList {
         sSQL.append(" FROM ");
         sSQL.append(    " HIST_DESIGNATION d");
         sSQL.append(    ",TMG_EMPLOYEES e ");
-        if (StringUtils.isNotBlank(layeredSection)) {
+        if (StrUtil.isNotBlank(layeredSection)) {
             sSQL.append(", MAST_ORGANISATION o ");
         }
 
@@ -386,7 +385,7 @@ public class TmgEmpList {
             sSQL.append("        TMG_F_IS_MANAGEFLG(e.TEM_CEMPLOYEEID,TRUNC(" + targetEndDate+ "),LAST_DAY("+ targetEndDate +"),e.TEM_CCUSTOMERID,e.TEM_CCOMPANYID)");
         }
 
-        if (StringUtils.isNotBlank(layeredSection)) {
+        if (StrUtil.isNotBlank(layeredSection)) {
             // 検索対象範囲の適用
             sSQL.append("    AND o.MO_CCUSTOMERID_CK_FK = D.HD_CCUSTOMERID_CK ");
             sSQL.append("    AND o.MO_CCOMPANYID_CK_FK = D.HD_CCOMPANYID_CK ");

@@ -789,9 +789,10 @@ public class EvaluatorSettingBean {
             List<EditMemberVO> memberList = CollUtil.newArrayList();
             for (int i = 0;i< bean.getCount(psResult,IDX_MEMBER);i++) {
                 EditMemberVO vo = new EditMemberVO();
-                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
-                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
-                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
+                vo.setEmpId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
+                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
+                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
+                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPNAME,i));
                 List<Map<String,String>> groupList = CollUtil.newArrayList();
                 for (int j = 0; j <bean.getCount(psResult,IDX_GROUPNAME);j++) {
                     Map<String,String> item = MapUtil.<String,String>builder()
@@ -1435,7 +1436,7 @@ public class EvaluatorSettingBean {
 
         String sSQL = " SELECT "
                 + "     M.TGRM_CEMPLOYEEID, "
-                + "     TMG_F_GET_ME_NAME( M.TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ", 0, M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID ) as TGRM_CEMPLOYEEID, "
+                + "     TMG_F_GET_ME_NAME( M.TGRM_CEMPLOYEEID, " + SysUtil.transDateNullToDB(evaluaterSettingParam.getYYYYMMDD()) + ", 0, M.TGRM_CCUSTOMERID, M.TGRM_CCOMPANYID ) as TGRM_CEMPLOYEEID_NAME, "
                 + "     G.TGR_CGROUPID, "
                 + "     G.TGR_CGROUPNAME, "
                 + "     M.TGRM_CBASE_SECTIONID, "
@@ -1826,7 +1827,6 @@ public class EvaluatorSettingBean {
             vQuery.add(buildSQLForSelectEvaluaterEmpNum(params));    // 3 グループの承認者ごとに登録されている権限設定の歴数
             try {
                  psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
-
                  // グループ・承認者毎の権限設定歴データ数マップデータを作成
                  Map<String,Object> groupEmpDataMap = MapUtil.newHashMap();
                  for (int i=0; i <= psDBBean.getCount(psResult,IDX_EVALEMPNUM); i++) {
@@ -2291,7 +2291,7 @@ public class EvaluatorSettingBean {
         sSQL.append("     G.TGR_CGROUPID, ");
         sSQL.append("     G.TGR_CGROUPNAME, ");
         sSQL.append("     E.TEV_CEMPLOYEEID, ");
-        sSQL.append("     TMG_F_GET_ME_NAME(E.TEV_CEMPLOYEEID, " + baseDate + ", 0, E.TEV_CCUSTOMERID, E.TEV_CCOMPANYID) as TEV_CEMPLOYEEID, ");
+        sSQL.append("     TMG_F_GET_ME_NAME(E.TEV_CEMPLOYEEID, " + baseDate + ", 0, E.TEV_CCUSTOMERID, E.TEV_CCOMPANYID) as TEV_CEMPLOYEEID_NAME, ");
         sSQL.append("     TMG_F_GET_MO(D.HD_CSECTIONID_FK, " + baseDate + ", 1, D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, " + lang + ") as HD_CSECTIONID_FK, ");
         sSQL.append("     TMG_F_GET_MP(D.HD_CPOSTID_FK, " + baseDate + ", D.HD_CCUSTOMERID_CK, D.HD_CCOMPANYID_CK, " + lang + ") as HD_CPOSTID_FK, ");
         /*

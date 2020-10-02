@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='勤務パターン',cssPaths='/pages/content.min.css')">
+<head th:replace="layout/header::common_header(title='勤務パターン設定',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
@@ -233,8 +233,8 @@
     <Modal v-model="csvuploadModal" class="tc" title="CSVファイル取込" :mask-closable="false">
         <Upload :before-upload="handleBeforeUpload" action="/" class="ivu-upload ivu-upload-select width100" type="drag">
             <div style="padding: 20px 0">
-                <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                <p>Click or drag files here to upload</p>
+                <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                <p style="color:var(--grey)">Click or drag files here to upload</p>
             </div>
         </Upload>
         <div class="tl mt10" v-if="file !== null">
@@ -994,9 +994,9 @@
                 }
                 //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
                 //翌日勤務パターンがあれば.日付切替時刻を入力しなければならない
-                if (!this.valid_nextPtn(changeTime, nextptn)) {
-                    return
-                }
+                //if (!this.valid_nextPtn(changeTime, nextptn)) {
+                //   return
+                //}
                 this.btn_sk_commit_show = false
                 if (this.isDefault === true) {
                     this.rawData.flag = "TMG_ONOFF|1"

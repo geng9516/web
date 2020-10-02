@@ -5,6 +5,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    color: rgb(104, 109, 116);
     height: 72vh;
     .error-img {
       width: 100%;
@@ -33,7 +34,7 @@
       padding: 0 15px;
       border: 1px solid transparent;
       border-radius: 2px;
-      color: var(--white);
+      color: rgb(104, 109, 116);
       background-color: var(--green);
       cursor: pointer;
       user-select: none;

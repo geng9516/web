@@ -2,6 +2,7 @@ package jp.smartcompany.job.modules.tmg.patternsetting;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
@@ -19,7 +20,6 @@ import jp.smartcompany.job.modules.tmg.patternsetting.vo.ModifiCSVVO;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +88,6 @@ public class PatternSettingBean {
         if (null == sectionId || "".equals(sectionId)) {
             sectionId = referList.getTargetSec();
         }
-
         List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), sectionId, groupId);
         List<JSONObject> dutyArray = null;
         List<JSONObject> restArray = null;
@@ -364,7 +363,7 @@ public class PatternSettingBean {
             tmgPatternInsertDTO.setMinDate(PatternSettingConst.SQL_MIN_DATE);
             tmgPatternInsertDTO.setMaxDate(PatternSettingConst.SQL_MAX_DATE);
             tmgPatternInsertDTO.setEmployeeId(pstParam.getModifierUserId());
-            if (StringUtils.isBlank(pstParam.getNextPatternId())) {
+            if (StrUtil.isBlank(pstParam.getNextPatternId())) {
                 tmgPatternInsertDTO.setC2caldays(TmgUtil.Cs_MGD_ONOFF_0);
             } else {
                 tmgPatternInsertDTO.setC2caldays(TmgUtil.Cs_MGD_ONOFF_1);
@@ -709,7 +708,7 @@ public class PatternSettingBean {
                 }
 
                 // 勤務パターンID重複
-                if (i != k && !StringUtils.isBlank(sIPATTERNID) && !StringUtils.isBlank(sKPATTERNID) && sIPATTERNID.equals(sKPATTERNID)) {
+                if (i != k && !StrUtil.isBlank(sIPATTERNID) && !StrUtil.isBlank(sKPATTERNID) && sIPATTERNID.equals(sKPATTERNID)) {
 
                     // メッセージ：CSVファイル内の勤務パターンIDが重複しています。
                     lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_DUPLICATION_ID));
@@ -719,7 +718,7 @@ public class PatternSettingBean {
                 }
 
                 // 親ループデータ、子ループデータが両方ONの場合
-                if (bDefaultflg && i != k && !StringUtils.isBlank(sIDEFAULTFLG) && !StringUtils.isBlank(sKDEFAULTFLG)
+                if (bDefaultflg && i != k && !StrUtil.isBlank(sIDEFAULTFLG) && !StrUtil.isBlank(sKDEFAULTFLG)
                         && TmgUtil.Cs_MGD_ONOFF_1.equals(sIDEFAULTFLG) && TmgUtil.Cs_MGD_ONOFF_1.equals(sKDEFAULTFLG)) {
 
                     // メッセージ：CSVファイル内にデフォルトフラグがONになっている勤務パターンが複数あります。
@@ -815,7 +814,7 @@ public class PatternSettingBean {
                     // ▼▼ 単項目チェック Start▼▼
                     if (PatternSettingConst.CSV_COLUMN_INDEX_CUSTOMERID == nIndex) {
                         // 顧客コード
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CUSTOMERID));
 
@@ -833,7 +832,7 @@ public class PatternSettingBean {
 
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_COMPANYID == nIndex) {
                         // 法人コード
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_COMPANYID));
 
@@ -851,7 +850,7 @@ public class PatternSettingBean {
 
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_PATTERNID == nIndex) {
                         // 勤務パターンID
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_PATTERNID));
 
@@ -870,7 +869,7 @@ public class PatternSettingBean {
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_PATTERNNM == nIndex) {
 
                         // 勤務パターン名称
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_PATTERNNM));
 
@@ -884,7 +883,7 @@ public class PatternSettingBean {
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_CDEFAULTFLG == nIndex) {
 
                         // デフォルトフラグ
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CDEFAULTFLG));
 
@@ -908,7 +907,7 @@ public class PatternSettingBean {
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_CHANGE_TIME == nIndex) {
 
                         // 日付切替時刻 hh:mm
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_DATE_CHANGE_TIME));
                         } else if (!PatternSettingUtil.formatChackHHMM(sColumn)) {
@@ -922,7 +921,7 @@ public class PatternSettingBean {
 
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_NEXTPTN == nIndex) {
 
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 空白文字を登録しないためnullセット
                             sColumn = null;
                         }
@@ -933,7 +932,7 @@ public class PatternSettingBean {
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_OPEN == nIndex) {
 
                         // 始業時刻 hh:mm
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_OPEN));
 
@@ -958,7 +957,7 @@ public class PatternSettingBean {
                     } else if (PatternSettingConst.CSV_COLUMN_INDEX_CLOSE == nIndex) {
 
                         // 終業時刻 hh:mm
-                        if (StringUtils.isBlank(sColumn)) {
+                        if (StrUtil.isBlank(sColumn)) {
                             // 未入力
                             lMsgChild.add(PatternSettingUtil.getMessage(psDBBean.getLanguage(), PatternSettingConst.ERROR_CSV_CLOSE));
 

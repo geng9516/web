@@ -42,7 +42,7 @@
   }
 }
 .ivu-divider-inner-text {
-  color: var(--grey);
+  color: rgb(104, 109, 116);
 }
 .ivu-form-item-validating .ivu-input-icon-validate {
   display: none;
@@ -50,8 +50,8 @@
 
 // 禁选的checkbox
 .ivu-checkbox-disabled .ivu-checkbox-inner {
-  background-image: linear-gradient(-45deg, rgb(193,193,193), rgb(217,217,217));
-  border-color: rgb(165, 165, 165);
+  background-image: var(--disabled-checkbox-bg);
+  border-color: var(--disabled-checkbox-border);
 }
 // 可移动的对话框
 // .ivu-modal-no-mask {
@@ -200,7 +200,7 @@
   margin: 2px 0;
   color: var(--row-label-primary);
   border: 1px solid var(--row-label-primary-border);
-  background-color: var(--white);
+  background-color: var(--content-bg);
   border-radius: 3px;
 }
 .primary-info {
@@ -268,6 +268,9 @@
 }
 
 // 树形选择器
+.ivu-tree-title {
+  color: var(--grey);
+}
 .ivu-tree-title-selected, .ivu-tree-title-selected:hover {
   background-color: var(--tree-hover);
 }
@@ -288,7 +291,7 @@
     margin-left: 7px;
   }
   .ivu-icon {
-    background-color: var(--light-grey);
+    background-color: var(--tree-bg);
   }
   ul li {
     margin: 0;
@@ -355,10 +358,10 @@
   margin-top: -32px;
   // position: absolute;
   // bottom: 0;
-  background: #eaebec;
+  background: var(--footer-bg);
   box-shadow: 1px 0 2px rgba(0, 0, 0, 0.1);
-  border-top: 1px solid #dedede;
-  color: #686d74;
+  border-top: 1px solid var(--login-panel-bg);
+  color: var(--grey);
   font-weight: 700;
   font-size: 13px;
   text-align: center;
@@ -392,7 +395,94 @@
 .cursor {
   cursor: pointer;
 }
+.ivu-input::placeholder {
+  color:var(--place-holder);
+}
+.ivu-modal-header {
+  border-bottom-color: var(--login-title-border-b);
+}
+.ivu-modal-content, .ivu-drawer-content, .ivu-table-row, .ivu-btn-text:hover {
+  background: var(--modal-bg);
+}
+.ivu-btn-ghost {
+  background: var(--ghost-background);
+}
+.ivu-menu-horizontal.ivu-menu-light:after {
+  background: var(--login-title-border-b);
+}
+.ivu-input, .input-like-span, .ivu-select-selection,.ivu-input-number-input {
+  border-color: var(--light-input-border-grey);
+  color: var(--grey);
+  background-color:var(--selection-input-bg);
+}
+.ivu-select-arrow {
+  color: var(--grey);
+}
+.ivu-select-disabled .ivu-select-selection {
+  background: var(--disabled-selection);
+  color: var(--disabled-btn);
+}
+.ivu-select-disabled .ivu-select-selection .ivu-select-arrow {
+  color: var(--disabled-btn);
+}
+.ivu-input-number.ivu-input-number-default {
+  background-color: var(--selection-input-bg);
+  border-color: var(--light-input-border-grey);
+  &.ivu-input-number-disabled {
+    border-color: var(--input-number-disabled-border);
+    background-color: var(--input-number-disabled-bg);
+  }
 
+}
+.ivu-select-single .ivu-select-selection .ivu-select-selected-value {
+  background: var(--dept-search-bg);
+  border:var(--border-grey);
+}
+.ivu-input-disabled.ivu-input-with-suffix, .ivu-input-number-input[disabled], .ivu-input[disabled] {
+  background: var(--disabled-selection);
+  color: var(--disabled-btn);
+  border-color: var(--disabled-btn-border);
+}
+.ivu-btn[disabled], .ivu-btn-ghost.ivu-btn-primary[disabled],.ivu-btn-ghost.ivu-btn-success[disabled] {
+  background: var(--disabled-btn-bg);
+  color: var(--disabled-btn);
+  border-color: var(--disabled-btn-border);
+  &:hover {
+    border-color: var(--disabled-btn-border);
+    background: var(--disabled-btn-bg);
+    color: var(--disabled-btn);
+  }
+}
+.ivu-btn[disabled].ivu-btn-text[disabled] {
+  border-color: transparent;
+  &:hover {
+    border-color: transparent;
+  }
+}
+.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body, .ivu-upload-list-file {
+  color: var(--grey);
+}
+.ivu-upload-list-file:hover {
+  background: var(--upload-list-file-hover-bg);
+}
+.ivu-card-head, .ivu-card-bordered {
+  border-color: var(--border-grey);
+}
+.ivu-radio-inner:after {
+  background-color: var(--checkbox-bg);
+}
+.ivu-radio-checked .ivu-radio-inner {
+  border-color: var(--checkbox-bg);
+}
+.ivu-picker-panel-body {
+  color: rgb(104, 109, 116);
+}
+.ivu-upload-drag {
+  background: var(--content-bg);
+}
+.ivu-modal-mask {
+  background: var(--mask-bg);
+}
 /* margin */
 .m0{margin:0;}
 .ml1{margin-left:1px;}

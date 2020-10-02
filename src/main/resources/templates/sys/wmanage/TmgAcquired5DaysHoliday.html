@@ -253,9 +253,7 @@
                         <div class="person-info">{{ privateInfo.taLessdays9 | addNumDeci(true) }}</div>
                         </i-col>
                     </Row>
-                    <div class="titlenorm mb10 mt20">
-                    </div>
-                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="takenDaysDataLoading" class="mb30">
+                    <i-table border :columns="takenDaysColums" :data="takenDaysData" :loading="takenDaysDataLoading" class="mb30 mt10">
                     </i-table>
                 </span>
         </Modal>
@@ -836,6 +834,7 @@
                 this.query.txtAction = 'ACT_DISP'
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 this.query.txtUserCode = e[0].empid

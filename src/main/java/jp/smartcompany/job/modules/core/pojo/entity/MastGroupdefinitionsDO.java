@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @Getter
 @Setter
 @ToString
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false,of = "mgpId")
 @Accessors(chain = true)
 @TableName("mast_groupdefinitions")
 @KeySequence("MAST_GROUPDEFINITIONS_SEQ")

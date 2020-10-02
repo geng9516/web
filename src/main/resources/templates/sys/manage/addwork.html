@@ -275,7 +275,7 @@
                         <p class="input-like-span tc" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
                         </i-col>
                     </Row>
-                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
+                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" :disabled-hover="true">
                         <template slot-scope="{ row, index }" slot="workStart">
                             <div v-if="row.isInput && bFixed" >
                                 <span class="input-like-span tc" style="border-radius: 5px; white-space: pre-line;">{{ row.workStart }}</span>
@@ -326,7 +326,7 @@
                     <i-button  disabled v-else>追加</i-button>
                 </div>
 
-                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
+                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20" :disabled-hover="true"
                          no-data-text="">
                     <template slot-scope="{ row, index }" slot="tdadNopen">
                         <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -376,7 +376,7 @@
         <!--                </i-col>-->
                     </div>
 
-                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20" :disabled-hover="true"
                               no-data-text="">
                         <template slot-scope="{ row ,index }" slot="tdadNopen">
                             <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -411,7 +411,7 @@
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
-                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"   no-data-text="">
+                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"   no-data-text="" :disabled-hover="true">
                 </i-table>
                 <Spin size="large" fix v-if="dailyloading"></Spin>
             </div>

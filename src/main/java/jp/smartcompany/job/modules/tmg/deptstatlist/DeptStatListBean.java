@@ -1,6 +1,7 @@
 package jp.smartcompany.job.modules.tmg.deptstatlist;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgTriggerDO;
@@ -13,7 +14,6 @@ import jp.smartcompany.job.modules.tmg.util.CommonUI;
 import jp.smartcompany.job.modules.tmg.util.CusomCsvUtil;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -189,7 +189,7 @@ public class DeptStatListBean {
         List<List<Object>> rowData = CollUtil.newArrayList();
         List<Object> rowTilte = CollUtil.newArrayList();
         for (ItemVO header : headerList) {
-            rowTilte.add(StringUtils.defaultString(header.getMgdCheader()));
+            rowTilte.add(StrUtil.nullToEmpty(header.getMgdCheader()));
         }
         rowData.add(rowTilte);
 
@@ -197,8 +197,16 @@ public class DeptStatListBean {
         for (Map mapRow : mapList) {
             List<Object> rowDate = CollUtil.newArrayList();
 
+            Iterator it = mapRow.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry entry =(Map.Entry) it.next();
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+                mapRow.put(key," "+ value);
+
+            }
             for (int col = 0; col < headerList.size(); col++) {
-                rowDate.add(StringUtils.defaultString(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid()))));
+                rowDate.add(StrUtil.nullToEmpty(String.valueOf( mapRow.get(headerList.get(col).getTempColumnid()))));
             }
 
             rowData.add(rowDate);

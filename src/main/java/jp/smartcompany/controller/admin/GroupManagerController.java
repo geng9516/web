@@ -1,4 +1,4 @@
-package jp.smartcompany.controller;
+package jp.smartcompany.controller.admin;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
@@ -54,7 +54,7 @@ public class GroupManagerController {
 
     /**
      * ===========================================
-     * 原SmartCompany GroupManagerMainAction 整理接口
+     * 原SmartCompany GroupManagerGroupEditAction 整理接口
      * ===========================================
      */
     @GetMapping("detail")
@@ -243,16 +243,6 @@ public class GroupManagerController {
         return groupManagerDateEditLogic.sortHandler(groupIds,null);
     }
 
-    /**
-     * ===========================================
-     * GroupManagerHistoryEditAction 整理接口
-     * ===========================================
-     */
-    @GetMapping("historylist")
-    public Map<String,Object> editHistoryList(@RequestParam("systemId") String systemId, @RequestParam("groupId") String groupId) {
-
-        return null;
-    }
 
 }
 

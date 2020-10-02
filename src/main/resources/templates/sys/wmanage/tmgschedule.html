@@ -330,7 +330,7 @@
                 適用済
             </div>
             <div style="position: relative;">
-            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適応している週勤務パターンがありません">
+            <i-table border class="mt5" :columns="columnsUsed" :data="tableDataUsed" no-data-text="適応している週勤務パターンがありません" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="startTime">
                     <date-picker type="date" :value="row.twp_dstartdate" class="datepicker-single mb5"　@on-change="tableDataUsed[row._index].twp_dstartdate = $event"
                                  format="yyyy/MM/dd" :transfer="true" :disabled="!(new Date(tableDataUsedbak[row._index].twp_dstartdate)>=nextMonthFirstDay)"></date-picker>
@@ -379,7 +379,7 @@
                 <i-button type="primary" ghost long @click="executeMakeWeekPattern">登録</i-button>
                 </i-col>
             </Row>
-            <i-table border class="mt5" :columns="columns2" :data="tableData2">
+            <i-table border class="mt5" :columns="columns2" :data="tableData2" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="workDivision">
                     <i-select v-model="value2.applyList[row._index].workDivisionId" transfer @on-change="handleChangeDivision2(row._index,'value2')">
                         <i-option v-for="(item) of workDivisionList" :value="item.mgd_work">{{ item.mgd_workname }}</i-option>
@@ -425,7 +425,7 @@
                 </i-col>
             </Row>
 
-            <i-table border class="mt10 mb20" :columns="columns2" :data="tableData3">
+            <i-table border class="mt10 mb20" :columns="columns2" :data="tableData3" :disabled-hover="true">
                 <template slot-scope="{ row }" slot="workDivision">
                     <span>{{ row.workname }}</span>
                 </template>
@@ -628,6 +628,7 @@
                     hidSearchCondition:'BROADMATCH',
                     hidSearchData:'',
                     txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
                     type: 11
@@ -643,6 +644,8 @@
                 searchTypesList: [],     //組織ツリー用
                 deptName: '選んでください',   //選択した職員の所属
                 query: {
+                    txtTmgReferListTreeViewAdminTargetSection:'',
+                    txtTmgReferListTreeViewAdminTargetEmp:'',
                     EmployeeCode:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href,'psApp'),
@@ -650,7 +653,9 @@
                     txtEndDate:'',
                     sectionid:'',
                 },
-
+                SecFlag:false,
+                EmpFlag:false,
+                EmpSelect:false,
             }
         },
         async mounted() {
@@ -792,25 +797,29 @@
                     }
                 }
                  await this.getSearchCondition()
-                //获取年月下拉列表
-                await this.selectScheduleDateList()
-                //获取预定做成数据
-                await this.getSelectScheduleInfo()
-                //获取 勤務パターン列表  区分列表 出張列表
-                await this.getSelectIkkaInfo()
-                //获取发令信息
-                await this.getHatuRei()
-                //获取周勤务pattern列表
-                await this.selectWeekPtn()
-                //获取周勤务pattern适用列表
-                await this.selectTmgWeekPatternList()
-                //判断选择的年月能不能编辑
-                this.isEditable4Schedule()
+                if(this.EmpFlag){
+                    //获取年月下拉列表
+                    await this.selectScheduleDateList()
+                    //获取预定做成数据
+                    await this.getSelectScheduleInfo()
+                    //获取 勤務パターン列表  区分列表 出張列表
+                    await this.getSelectIkkaInfo()
+                    //获取发令信息
+                    await this.getHatuRei()
+                    //获取周勤务pattern列表
+                    await this.selectWeekPtn()
+                    //获取周勤务pattern适用列表
+                    await this.selectTmgWeekPatternList()
+                    //判断选择的年月能不能编辑
+                    this.isEditable4Schedule()
+                }
+
             },
             //获取年月下拉列表
             async selectScheduleDateList() {
                 try {
                     const query = {
+                        ...this.referListObject,
                         EmployeeCode:this.query.EmployeeCode,
                         psSite:this.query.psSite,
                         psApp:this.query.psApp,
@@ -831,7 +840,7 @@
                             background: true,
                             closable: true,
                             duration: 6.5,
-                            content: '指定した年月の超勤データ或は選択した所属に存在している職員はありません。'
+                            content: '指定した年月の就業シート或は選択した所属に存在している職員はありません。'
                         });
                         this.defaultDate=''
                         this.query.txtBaseDate=''
@@ -907,6 +916,9 @@
                     if(data){
                         this.hatuReiName=data.name
                         this.hatuResTimeRange=data.timerange
+                    }else{
+                        this.hatuReiName=""
+                        this.hatuResTimeRange=""
                     }
             },
             //输入框check
@@ -1462,6 +1474,22 @@
                     let count=Utils.timeToMinute(e.nclose)-Utils.timeToMinute(e.nopen)
                     console.log("count"+count)
                     let day=Utils.formatDate(e.dyyyymmdd,'MM/DD')
+
+                    let pattern= new RegExp("[A-Za-z0-9]+");
+                    if(pattern.test(e.comment)){
+                        if(e.comment && e.comment.length>=100){
+                            that.$Notice.warning({ title: '注意', desc: day+' コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+                    }else{
+                        if(e.comment && e.comment.length>=50){
+                            that.$Notice.warning({ title: '注意', desc: day+' コメントが設定値を超えています。全角・半角カナ50字以内、半角英数100字以内。', duration: 6.5 })
+                            result=true
+                            return result
+                        }
+
+                    }
                     //区分为出勤时进行时间check
                     if(e.workId=="TMG_WORK|000"){
                         if (!e.nopen) {
@@ -1674,9 +1702,16 @@
                 this.wokertypename=e[0].wokertypename
                 //其他页面需要参数
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
+                console.log("-----------------------------------1------------------------------------")
+                console.log(this.query.txtTmgReferListTreeViewAdminTargetEmp)
+                console.log(this.query.txtTmgReferListTreeViewAdminTargetSection)
                 //当前页面请求参数
                 this.query.EmployeeCode = e[0].empid
                 this.query.sectionid= e[0].secid
+
+                 this.isSearchHistory = false
 
                 //获取年月下拉列表
                 await this.selectScheduleDateList()
@@ -1759,6 +1794,7 @@
                 if(this.treeData.length !== 0) {
                         this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
                     }
+                this.empTreeData= []
             },
             searchOrgTree: Debounce( async function() {
                 this.empDeptLoading = true

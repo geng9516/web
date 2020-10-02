@@ -1,6 +1,8 @@
 package jp.smartcompany.job.modules.core.service;
 
-import cn.hutool.core.map.MapUtil;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
 import jp.smartcompany.framework.component.dto.EmployInfoSearchDTO;
@@ -12,7 +14,6 @@ import jp.smartcompany.job.modules.tmg.paidholiday.vo.PaidHolidayInitVO;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -101,4 +102,40 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
             String loginUser,
             String systemId
     );
+
+
+    /**
+     * ===================用户管理 搜索用户开始===============
+     */
+    IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainLockoutList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAdminList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainEmpNameList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList,String empName);
+
+    IPage<UserManagerListDTO> selectMainSectionList(IPage<UserManagerListDTO> page,String custId,String language,List<String> companyList,
+                                                    String sectionCompanyId,String sectionId);
+
+    IPage<UserManagerListDTO> selectMainEmpIdList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList,String empId);
+
+    IPage<UserManagerListDTO> selectMainAfterRetireList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainAfterJoinList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainBeforeJoinList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList);
+
+    List<UserManagerDTO> selectStartList(String custId, List<String> userIds,
+                                         String language, Integer searchType,
+                                         List<String> companyList);
+
+    List<UserManagerDTO> selectEndList(String custId, List<String> userIds,
+                                         String language, Integer searchType,
+                                         List<String> companyList);
+    /**
+     * ===================用户管理 搜索用户结束===============
+     */
 }

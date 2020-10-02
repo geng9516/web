@@ -183,5 +183,20 @@
         and tda_dyyyymmdd = to_date(to_char(sysdate,'yyyy/mm/dd'), 'yyyy/mm/dd')
     </select>
 
+    <!-- 社員の勤務パターンを取得する -->
+    <select id="selectEmpPattern" parameterType="java.util.HashMap" resultType="java.lang.String">
+        select tmg_f_get_pattern_default(#{custId},#{compCode},#{employeeId},sysdate) from dual
+    </select>
+
+    <!-- 勤務パターンの変更時間を取得する -->
+    <select id="selectPatternChangeTime" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select p.tpa_ndate_change_time
+              from tmg_pattern p
+             where p.tpa_ccustomerid = #{custId}
+               and p.tpa_ccompanyid = #{compCode}
+               and p.tpa_csectionid = #{sectionId}
+               and p.tpa_cpatternid = #{patternId}
+    </select>
+
 
 </mapper>

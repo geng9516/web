@@ -648,7 +648,7 @@
                 if(!e[0]) return
 
                 this.deptDrawShow = false
-
+                this.deptName = e[0].secnic
                 this.loginEmployee = e[0].empid
                 this.query.employeeId = e[0].empid
                 this.kanjiName = e[0].empname
@@ -659,6 +659,7 @@
                 this.query.txtTmgReferListTreeViewAdminTargetGroup = e[0].groupid
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.getData(true)
+                console.log(e[0])
             },
             showName(e) {
                 const result = e.match(/^[\s\S]+(?=\()/g)

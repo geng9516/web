@@ -276,7 +276,7 @@
                         <p class="input-like-span tc" v-else>{{dailyEdit.tdaCbusinesstripidRName}}</p>
                     </i-col>
                 </Row>
-                <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
+                <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" :disabled-hover="true">
                     <template slot-scope="{ row, index }" slot="workStart">
                         <div v-if="row.isInput && bFixed" >
                             <i-input v-model="workData[index].workStart" v-if="!isCommonDiscretionaryLabor" :disabled="workTimeDisable" @on-blur="handleInputChange(index, workData[index],'workStart', $event.target)"></i-input>
@@ -327,7 +327,7 @@
                 <i-button  disabled v-else>追加</i-button>
             </div>
 
-            <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 tl"
+            <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20 tl" :disabled-hover="true"
                      no-data-text="">
                 <template slot-scope="{ row, index }" slot="tdadNopen">
                     <i-input  v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -378,7 +378,7 @@
     <!--                </i-col>-->
                 </div>
 
-                <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 tl"
+                <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20 tl" :disabled-hover="true"
                          no-data-text="">
                     <template slot-scope="{ row ,index }" slot="tdadNopen">
                         <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailOverhoursVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -412,7 +412,7 @@
                 <Icon type="logo-buffer"></Icon>
                 更新履歴
             </div>
-            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"  no-data-text="">
+            <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20"  no-data-text="" :disabled-hover="true">
             </i-table>
             <Spin size="large" fix v-if="dailyloading"></Spin>
         </div>
@@ -893,6 +893,7 @@
                 this.sectionName = e[0].secnic
                 this.deptName = e[0].secnic
                 this.query.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewAdminTargetSection = e[0].secid
                 this.referListObject.txtTmgReferListTreeViewAdminTargetEmp = e[0].empid
                 this.kanjiName = e[0].empname
                 this.workTypeName=e[0].wokertypename

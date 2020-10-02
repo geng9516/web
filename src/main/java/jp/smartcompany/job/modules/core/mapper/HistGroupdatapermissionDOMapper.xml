@@ -2,4 +2,181 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="jp.smartcompany.job.modules.core.mapper.HistGroupdatapermissionMapper">
 
+    <select id="getSearchRangeTableData" parameterType="map" resultType="jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO">
+        SELECT
+            TEMP.MG_CGROUPDESCRIPTION,
+            TEMP.COMPANYNICK,
+            (	SELECT	MDP_CPERMISSION
+                 FROM	MAST_DATAPERMISSION
+                 WHERE	MAST_DATAPERMISSION.MDP_CPERMISSIONID = HIST_GROUPDATAPERMISSION.HGP_CPERMNECESSITY
+            ) AS full_permission,
+            TEMP.MTR_COBJNAME,
+            (	SELECT	MDP_CPERMISSIONNAME
+                 FROM	MAST_DATAPERMISSION
+                 WHERE	MAST_DATAPERMISSION.MDP_CPERMISSIONID = HIST_GROUPDATAPERMISSION.HGP_CPERMNECESSITY
+            ) AS HGP_CPERMNECESSITYNAME,
+            (	SELECT	MDP_CPERMISSIONNAME
+                 FROM	MAST_DATAPERMISSION
+                 WHERE	MAST_DATAPERMISSION.MDP_CPERMISSIONID = HIST_GROUPDATAPERMISSION.HGP_CPERMMUST
+            ) AS HGP_CPERMMUSTNAME,
+            HIST_GROUPDATAPERMISSION.HGP_ID,
+            TEMP.MG_CCUSTOMERID AS HGP_CCUSTOMERID,
+            TEMP.MTR_COBJECTID AS HGP_COBJECTID,
+            TEMP.MTR_CSITEID AS HGP_CSITEID,
+            TEMP.MTR_CAPPID AS HGP_CAPPID,
+            TEMP.MG_CSYSTEMID_CK_FK AS HGP_CSYSTEMID,
+            TEMP.MG_CGROUPID_PK AS HGP_CGROUPID,
+            NVL(
+                    HIST_GROUPDATAPERMISSION.HGP_DENDDATE,
+                    NVL(
+                            (	SELECT	MIN(HIST_GROUPDATAPERMISSION.HGP_DSTARTDATE) - 1
+                                 FROM	HIST_GROUPDATAPERMISSION
+                                 WHERE	HGP_CCUSTOMERID = TEMP.MG_CCUSTOMERID
+                                   AND		HGP_CSYSTEMID = TEMP.MG_CSYSTEMID_CK_FK
+                                   AND		HGP_CGROUPID = TEMP.MG_CGROUPID_PK
+                                   AND		HGP_COBJECTID = TEMP.MTR_COBJECTID
+                                   AND		HGP_DSTARTDATE >= #{searchDate}
+                            ),
+                            (	SELECT	MAX(MG_DENDDATE)
+                                 FROM	MAST_GROUP
+                                 WHERE	MG_CCUSTOMERID = TEMP.MG_CCUSTOMERID
+                                   AND		MG_CSYSTEMID_CK_FK = TEMP.MG_CSYSTEMID_CK_FK
+                                   AND		MG_CGROUPID_PK = TEMP.MG_CGROUPID_PK
+                                   AND		MG_CLANGUAGE = 'ja'
+                            )
+                        )
+                ) AS HGP_DENDDATE,
+            HIST_GROUPDATAPERMISSION.HGP_CPERMNECESSITY,
+            HIST_GROUPDATAPERMISSION.HGP_CPERMMUST,
+            HIST_GROUPDATAPERMISSION.HGP_CBASESECTION_FLAG_NEED,
+            HIST_GROUPDATAPERMISSION.HGP_CBASESECTION_FLAG_MUST,
+            HIST_GROUPDATAPERMISSION.VERSIONNO,
+            HIST_GROUPDATAPERMISSION.HGP_CMODIFIERUSERID,
+            HIST_GROUPDATAPERMISSION.HGP_DMODIFIEDDATE,
+            DECODE(HGP_DSTARTDATE,'${searchDate}', 2, null, 1, 0) AS CREATE_HISTORY,
+            HIST_GROUPDATAPERMISSION.HGP_CPERM_RETIRED
+        FROM
+            (SELECT	MG_CCUSTOMERID,
+                           MG_CSYSTEMID_CK_FK,
+                           MG_CGROUPID_PK,
+                           PSMASTER.FUNC_GET_GROUP_DESC(MG_CSYSTEMID_CK_FK, MG_CGROUPID_PK,MG_DSTARTDATE, '${language}') AS MG_CGROUPDESCRIPTION,
+                           NVL(
+                                   PSMASTER.FUNC_GET_COMP_NICK(
+                                           MG_CCUSTOMERID,
+                                           MG_CCOMPANYID,
+                                           NULL,
+                                           '${language}'
+                                       ),
+                                   PSMASTER.FUNC_GET_COMP_NAME(
+                                           MG_CCUSTOMERID,
+                                           MG_CCOMPANYID,
+                                           NULL,
+                                           '${language}'
+                                       )
+                           ) COMPANYNICK,   -- 法人略称(ない場合名称も取得)
+                           MG_NWEIGHTAGE,
+                           PSMASTER.FUNC_GET_OBJ_NAME(
+                                   MTR_CSITEID, MTR_CAPPID,
+                                   NULL, NULL, NULL, '${language}')
+                               AS MTR_COBJNAME,
+                           MTR_COBJECTID,
+                           MTR_CSITEID,
+                           MTR_CAPPID,
+                           MTR_NSEQ
+                 FROM MAST_GROUP,MAST_APPTREE
+                 WHERE
+                     MG_CCUSTOMERID = '01'
+                     AND MG_CLANGUAGE = 'ja'
+                     AND MG_DSTARTDATE <![CDATA[<=]]> #{searchDate}
+                     AND MG_DENDDATE >= #{searchDate}
+                     AND MTR_CTYPE IN ('1','2','3')
+                     <if test="systemId!=null">
+                         AND MG_CSYSTEMID_CK_FK(+) = #{systemId}
+                     </if>
+                     <if test="groupIds!=null and groupIds.size() > 0">
+                         AND MG_CGROUPID_PK IN
+                         <foreach collection="groupIds" index="index" item="groupId" separator="," open="(" close=")">
+                             #{groupId}
+                         </foreach>
+                     </if>
+                     <if test="siteId!=null">
+                         AND MTR_CSITEID = #{siteId}
+                     </if>
+                     <if test="appId!=null">
+                         AND (
+                             (MTR_CAPPID = #{appId}) OR
+                             (
+                                 MTR_CAPPID IS NULL AND
+                                 MTR_CSITEID IN
+                                 (SELECT DISTINCT MTR_CSITEID FROM MAST_APPTREE WHERE MTR_CAPPID = #{appId})
+                             )
+                         )
+                     </if>
+            ) TEMP,
+            HIST_GROUPDATAPERMISSION
+        WHERE
+            HGP_CCUSTOMERID(+) = TEMP.MG_CCUSTOMERID
+            AND HGP_CSYSTEMID(+) = TEMP.MG_CSYSTEMID_CK_FK
+            AND	HGP_CGROUPID(+) = TEMP.MG_CGROUPID_PK
+            AND	HGP_COBJECTID(+) = TEMP.MTR_COBJECTID
+            AND	HGP_DSTARTDATE(+) <![CDATA[<=]]> #{searchDate}
+            AND	HGP_DENDDATE(+) >= #{searchDate}
+        ORDER BY
+            TEMP.MTR_NSEQ,
+            TEMP.MG_NWEIGHTAGE,
+            TEMP.MG_CGROUPID_PK
+    </select>
+
+    <select id="selectHistoryDate" resultType="jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO" parameterType="map">
+        SELECT
+            (
+                SELECT
+                    MAX(HGP_DSTARTDATE)
+                    FROM
+                    HIST_GROUPDATAPERMISSION
+                    WHERE
+                    HGP_CCUSTOMERID = #{custId}
+                    AND HGP_CSYSTEMID = #{systemId}
+                    <if test="groupId !=null">
+                        AND HGP_CGROUPID = #{groupId}
+                    </if>
+                    AND HGP_DSTARTDATE <![CDATA[<]]> a.HGP_DSTARTDATE
+            ) as beforeDate,
+            a.HGP_DSTARTDATE as nowDate,
+            (
+                SELECT
+                    MIN(HGP_DSTARTDATE)
+                    FROM
+                    HIST_GROUPDATAPERMISSION
+                    WHERE
+                    HGP_CCUSTOMERID	= #{custId}
+                    AND HGP_CSYSTEMID = #{systemId}
+                    <if test="groupId!=null">
+                        AND HGP_CGROUPID = #{groupId}
+                    </if>
+                    AND HGP_DSTARTDATE > a.HGP_DSTARTDATE
+            ) as afterDate,
+            (
+                SELECT
+                    MAX(HGP_DSTARTDATE)
+                    FROM HIST_GROUPDATAPERMISSION
+                    WHERE HGP_CCUSTOMERID = #{custId}
+                    <if test="groupId!=null">
+                      AND HGP_CGROUPID = #{groupId}
+                    </if>
+                    AND HGP_CSYSTEMID = #{systemId}
+                    AND HGP_DSTARTDATE	<![CDATA[<=]]> TRUNC(SYSDATE)
+            ) as latestDate
+        FROM
+            (
+                SELECT MAX(HGP_DSTARTDATE) AS HGP_DSTARTDATE FROM HIST_GROUPDATAPERMISSION WHERE HGP_CCUSTOMERID = #{custId}
+                <if test="groupId!=null">
+                    AND HGP_CGROUPID = #{groupId}
+                </if>
+                AND HGP_CSYSTEMID = #{systemId}
+                AND HGP_DSTARTDATE	<![CDATA[<=]]> #{searchDate}
+            ) a
+        ORDER BY HGP_DSTARTDATE
+    </select>
+
 </mapper>

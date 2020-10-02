@@ -97,7 +97,7 @@
                <!-- 有加算日-->
                <section v-show="selectedRestInfo.addDate" class="tl mt20">
                   <p class="mb5">加算日数</p>
-                  <input-number :max="99" :min="1" class="mb15 tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
+                  <input-number :max="99" :min="1" :precision="0" class="mb15 tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
                </section>
 
                <!-- 是小时单位的 時間帯 -->
@@ -154,20 +154,20 @@
                <!-- 是有氏名的-->
                <section v-show="selectedRestInfo.name" class="tl mt20">
                   <p class="mb5">氏名</p>
-                  <i-input class="mb15" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100文字以内で入力してください。"/>
+                  <i-input class="mb15" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
                </section>
 
                <!-- 是有続柄的-->
                <section v-show="selectedRestInfo.relation" class="tl">
                   <p class="mb5">続柄</p>
-                  <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100文字以内で入力してください。"/>
+                  <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
                </section>
 
                <!-- 是有対象の人数的-->
                <section v-show="selectedRestInfo.targetNumber " class="tl">
                   <p class="mb5">対象の人数</p>
-                  <i-input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber"
-                     placeholder="人数"><span slot="append">人</span></i-input-number>
+                  <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtTargetNumber"
+                     placeholder="人数"><span slot="append">人</span></input-number>
                </section>
 
                <!-- 有生年月日-->
@@ -191,8 +191,8 @@
                   <Upload ref="upload" :show-upload-list="false" multiple type="drag" class="tl mt15 mb10" action="/"
                      :before-upload="handleBeforeUpload">
                      <div style="padding: 20px 0">
-                        <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                        <p>Click or drag files here to upload</p>
+                        <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                        <p style="color:var(--grey)">Click or drag files here to upload</p>
                      </div>
                   </Upload>
                   <ul class="ivu-upload-list tl mb10">
@@ -234,7 +234,7 @@
             </i-col>
             <i-col span="6">
                <date-picker type="year" :open="openDatePicker" format="yyyy" v-model="curYear" @on-change="handleDatePicker">
-               <a @click="openDatePicker = !openDatePicker">
+               <a @click="openDatePicker = !openDatePicker" style="color: var(--ghost-primary-color);">
                   <Icon type="ios-calendar-outline"></Icon>
                   <span>{{ opts.year }}</span>
                </a>
@@ -250,7 +250,7 @@
             </i-option>
          </i-select>
          <!-- PersonalApplyTable -->
-         <ul class="apply-history-list" style="right: unset;">
+         <ul class="apply-history-list" style="right: unset;max-height: unset;">
             <!-- timeline开始，根据申请最终状态变更圆点颜色 -->
             <li :class="handleTimelineDotShow(item.tntfCstatusflg)" v-for="(item, index) of applyHistoryListData"
                :key="index">
@@ -292,8 +292,8 @@
             <Spin size="large" fix v-if="listLoading && rotate" style="position: fixed; top: 45px; height: 88vh;">
             </Spin>
             <!-- 还有更多数据的时候 -->
-            <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" class="width75"
-               style="margin-top: 35px;margin-left: 80px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>
+            <i-button v-show="applyHistoryListAmount - applyHistoryListData.length > 0" long
+               style="margin-top: 35px;" :loading="moreDataLoading" @click='handleMoreDataLoading'>
                もっと見る</i-button>
          </ul>
          <!-- PersonalApplyTable -->
@@ -340,7 +340,9 @@
                   noreserved: 1,
                   _dateList: '',
                   _dateListRange:['', ''],
-                  dateListRange:['', '']
+                  dateListRange:['', ''],
+                  txtAddDate:null,
+                  txtTargetNumber:null
                },
                openDatePicker: false,
                applyHistoryListAmount: 0,
@@ -467,7 +469,7 @@
                   }
                   const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                   this.applyHistoryListData = data.list
-                  this.applyHistoryListAmount = data.count
+                  this.applyHistoryListAmount = data.totalCount
                   if (!isInit) this.$Message.success('再表示完了')
                } catch (error) {
                   return
@@ -493,7 +495,9 @@
                   noreserved: 1,
                   _dateList: '',
                   _dateListRange: ['', ''],
-                  dateListRange: ['', '']
+                  dateListRange: ['', ''],
+                  txtAddDate:null,
+                  txtTargetNumber:null
                }
                this.errorInfo = false
                this.uploadFiles = []
@@ -640,7 +644,9 @@
                      noreserved: 1,
                      _dateList: '',
                      _dateListRange:['', ''],
-                     dateListRange:['', '']
+                     dateListRange:['', ''],
+                     txtAddDate:null,
+                     txtTargetNumber:null
                   }
                   this.rotate = !this.rotate
                   this.isReApplyIng = false
@@ -765,8 +771,8 @@
                this.restApply.txtAddDate = data.tntfNuapperAddition
 
                // 時間帯
-               this.restApply.timezoneOpen = data.tntfNtimezoneOpenHhmi
-               this.restApply.timezoneClose = data.tntfNtimezoneCloseHhmi
+               this.$set(this.resetReApply, 'timezoneOpen', data.tntfNtimezoneOpenHhmi)
+               this.$set(this.resetReApply, 'timezoneClose', data.tntfNtimezoneCloseHhmi)
 
                // 始业终业
                this.restApply.timeOpen = data.tntfNtimeOpen

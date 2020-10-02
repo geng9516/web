@@ -56,14 +56,15 @@
                     <div class="time-title">時間</div>
                     <div class="plan-title">本日の勤務予定</div>
                 </div>
-                <ul class="time-list">
-                    <li class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
+                <ul class="time-list" >
+                    <li v-model="scheduleTime" class="li" v-for="(item, i) of scheduleTime" :key="i">{{ item }}</li>
                     <abbr :class="isActivated ? 'real-schedule stamp-actived' : 'real-schedule stamp-deactived'" v-for="(item, i) of dynamicSchedule" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">予定勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
                     </abbr>
-                    <abbr :class="isOverActivated ? 'real-schedule stamp-actived' : 'real-schedule'" style="background-color:rgb(255 149 79);opacity:0.7;" v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
+                    <abbr v-model="overWorkData" :class="isOverActivated ? 'real-schedule-overwork stamp-actived' : 'real-schedule-overwork'"
+                          v-for="(item, i) of dynamicSchedule2" :key="i" :style="item.style">
                         <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{ item.style.width.split('px')[0] > 100 ? item.time : '~' }}
                             <div slot="content">超過勤務時間:<br/>{{ item.time }}</div>
                         </Tooltip>
@@ -90,20 +91,20 @@
                         <i-col span="8" class="label tc">就業区分</i-col>
                         <i-col span="8" class="no-border-radius">
                             <i-select v-model="workingId" ref="select1"
-                                      class="mr30" @on-change="changeWorkingID"
-                                      v-if="((!bHoliday && !bFixed) || ( isEdiTableResult4Inp && !bFixed))">
+                                      class="mr30 tc" @on-change="changeWorkingID"
+                                      v-if="isEdiTableResult4Inp && !bFixed">
                                 <i-option v-for="(item, index) of workingIdList" :key="index"
                                           :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                                 </i-option>
                             </i-select>
-                            <p class="input-like-span" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
+                            <p class="input-like-span tc" v-else align="center">{{dailyEdit.tdaCworkingidRName}}</p>
                         </i-col>
                     </Row>
                     <Row class="mb5">
                         <i-col span="8" class="label tc">出張</i-col>
                         <i-col span="8" class="no-border-radius" v-if="!bDisable">
                             <i-select v-model="businessTrip" ref="select2"
-                                      class="mr30" @on-change="" v-if="(!bHoliday && !bFixed)">
+                                      class="mr30 tc" @on-change="" v-if="(!bHoliday && !bFixed)">
                                 <i-option v-for="(item, index) of businessTripList" :key="index"
                                           :label="item.mgdCgenericdetaildesc" 　:value="item.mgdCmastercode">
                                 </i-option>
@@ -120,14 +121,14 @@
                             <p class="input-like-span" v-else align="center">{{dailyEdit.tdaCbusinesstripidRName}}</p>
                         </i-col>
                     </Row>
-                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan">
+                    <i-table :columns="columnsWork" :data="workData" :span-method="handleSpan" :disabled-hover="true">
                         <template slot-scope="{ row, index }" slot="workStart">
                             <i-input v-model="workData[index].workStart" v-if="!bFixed && isEdiTableResult4Inp" :disabled="workTimeDisable" class="tc"
                                      @on-blur="handleInputChange(index,  workData[index],'workStart', $event.target)"></i-input>
-                            <i-input class="tc" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
-                            <span class="tc input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
+                            <i-input class="tl" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="row.isOwnComment && !bFixed"></i-input>
+                            <span class="tl input-like-span" v-if="row.isOwnComment && bFixed" style="border-radius: 5px; white-space: pre-line;">{{ dailyEdit.tdaCowncommentR}}</span>
 
-                            <span class="tc input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
+                            <span class="tl input-like-span" style="border-radius: 5px; white-space: pre-line;" v-if="row.isBSComment">{{ dailyEdit.tdaCbosscommentR}}
                         </span>
                             <span class="bs-comment-approved" v-if="row.isBSComment && bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span>
                             <span v-else>{{ row.workStart }}</span>
@@ -156,7 +157,7 @@
                     <i-button type="primary" ghost @click="addNotWork" v-if="!bDisable">追加</i-button>
                     <i-button disabled v-else>追加</i-button>
                 </div>
-                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20"
+                <i-table :columns="columnsNotWork" :data="detailNonDutyVOList" class="mb20" :disabled-hover="true"
                          no-data-text="">
                     <template slot-scope="{ row, index }" slot="tdadNopen">
                         <i-input v-model="detailNonDutyVOList[index].tdadNopen" v-if=" !bFixed" @on-blur="handleInputChange(index, detailNonDutyVOList[index],'tdadNopen', $event.target)"></i-input>
@@ -206,7 +207,7 @@
                         <!--                </i-col>-->
                     </div>
 
-                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20"
+                    <i-table :columns="columnsOverWork" :data="detailOverhoursVOList" class="mb20" :disabled-hover="true"
                              no-data-text="">
                         <template slot-scope="{ row ,index }" slot="tdadNopen">
                             <i-input v-model="detailOverhoursVOList[index].tdadNopen" v-if=" !bFixed"
@@ -242,7 +243,7 @@
                     <Icon type="logo-buffer"></Icon>
                     更新履歴
                 </div>
-                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20" no-data-text="">
+                <i-table :columns="columnsDailyLog" :data="dailyLog" class="mb20" no-data-text="" :disabled-hover="true">
                 </i-table>
                 <Spin size="large" fix v-if="dailyloading"></Spin>
             </div>
@@ -294,7 +295,7 @@
                     compCode: [[${ session.psSession.loginCompany}]],
                     language: [[${ session.psSession.language}]],
                     employeId: [[${ session.psSession.loginEmployee }]],
-                    userCode:[[${ session.psSession.loginEmployee }]]
+                    userCode: [[${ session.psSession.loginEmployee }]]
                 },
                 scheduleData: ['', ''],
                 overWorkData: [''],
@@ -574,18 +575,20 @@
             }
         },
         async mounted() {
-            this.getIsDiscretion()
-            await this.getData()
             this.$refs.clock.showTime()
             this.getClockInfo()
-            this.getScheduleInfo()
-            this.getOverTime()
-            this.getDutyAndRelaxDate()
+            this.getIsDiscretion()
+            this.getServerTime()
+            await this.getScheduleInfo()
+            await this.getOverTime()
+            await this.getDutyAndRelaxDate()
+            this.dynamicScheduleFit()
         },
         beforeDestroy() {
             this.$refs.clock.cleanClock()
         },
         computed: {
+            //予定時間表示かどうか
             isActivated() {
                 if (this.data.clockOnTime && !this.data.clockOffTime) return true
                 return false
@@ -643,14 +646,14 @@
                             left: `${left}px`,
                             top: '35%',
                             textDecoration: 'none',
-                            color: contentWidth > 100 ? '#ff0000' : 'var(--real-schedule)'
+                            color: contentWidth > 100 ? 'var(--real-schedule-overwork)' : 'transparent'
                         }
                     }
                 })
             }
         },
         methods: {
-            async getData() {
+            async getServerTime() {
                 try {
                     const {data} = await this.http.get('sys/timePunch/serverTime', null)
                     /*this.data = data
@@ -665,13 +668,13 @@
                     //console.log(this.data.serverTime)
                     return
                 } catch (e) {
-                    console.log(e)
+                    //console.log(e)
                     this.data.serverTime = Date.now()
                 }
 
             },
             //超過勤務時間を取得する
-            async getOverTime(){
+            async getOverTime() {
                 const {data} = await this.http.post('sys/timePunch/queryOverWorkTime', this.query_overWork)
                 if (data) {
                     this.overWorkData = data
@@ -791,6 +794,22 @@
                 this.isShow = false
                 this.$emit('close')
             },
+            //予定時間帯の自動適応（２４、２９、４８）
+            dynamicScheduleFit() {
+                var endTime = "";
+                if (this.overWorkData.length > 0) {
+                    //もし超過勤務時間があれば、超過勤務時間に基く
+                    endTime = Utils.timeToMinute(this.overWorkData[this.overWorkData.length - 1].split('-')[1])
+                } else {
+                    //無ければ、勤務予定時間に基く
+                    endTime = Utils.timeToMinute(this.scheduleData[this.scheduleData.length - 1].split('-')[1])
+                }
+                if (parseInt(endTime) <= 1740)
+                    this.scheduleTime = Utils.getNumArray(0, 29)
+                if (parseInt(endTime) > 1740)
+                    this.scheduleTime = Utils.getNumArray(0, 48)
+
+            },
             //一覧から日次実績をクリックする
             async showDay() {
                 // 業登録画面表示
@@ -842,7 +861,7 @@
 
                 // 非勤務ドロップダウン
                 this.categoryNondutyList = data.categoryNondutyList
-                console.log(this.categoryNondutyList)
+                //console.log(this.categoryNondutyList)
                 if (this.categoryNondutyList.length > 0) {
                     this.categoryNonduty = this.categoryNondutyList[0].itemCode
                 }
@@ -994,11 +1013,10 @@
                 this.overHourLimit = limitOfBasedateVO.dailyConvMinute
                 this.otDaily = limitOfBasedateVO.otDaily
                 this.targetForOverTime = data.targetForOverTime
-                this.changeWorkingID(this.workingId),
-
-                    console.log(this.bHoliday)
-                console.log(this.bFixed)
-                console.log(this.isEdiTableResult4Inp)
+                this.changeWorkingID(this.workingId)
+                //console.log(this.bHoliday)
+                //console.log(this.bFixed)
+                //console.log(this.isEdiTableResult4Inp)
 
             },
 
@@ -1087,13 +1105,18 @@
 
                         } finally {
                             this.isShow = false
+
+                            //超過勤務時間を追加するかもしれないので、データリストを更新する
+                            this.getOverTime()
+
+                            //自動で時間帯に適応性する
+                            this.dynamicScheduleFit()
                         }
                     }
                 })
             }),
             //登録
             async updateDaily() {
-                console.log(this.workData)
                 if (!this.errorCheck(this.workingId)) {
                     return
                 }
@@ -1111,6 +1134,11 @@
                 this.tmgResultsDto.tdaCowncommentR = this.dailyEdit.tdaCowncommentR
                 if (!this.bDisable) {
                     this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    if (!this.workData[2].workStart) {
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[0].workStart
+                    }else{
+                        this.tmgResultsDto.txtTdaNopenR = this.workData[2].workStart
+                    }
                     if (!this.workData[2].workEnd) {
                         this.tmgResultsDto.txtTdaNcloseR = this.workData[0].workEnd
                     } else {
@@ -1160,10 +1188,16 @@
                             if (check) {
                                 return false
                             }
+
                         } catch (error) {
                             return
                         } finally {
                             this.updateDailyLoading = false
+
+                            //超過勤務時間を追加するかもしれないので、データリストを更新する
+                            await this.getOverTime()
+                            //自動で時間帯に適応性する
+                            this.dynamicScheduleFit()
                         }
                     }
                 })
@@ -1214,13 +1248,12 @@
                     return true;
                 }
                 // 修正出社時刻形式
-                if (this.workData[2].workStart === null || !this.time_check(this.workData[2].workStart)) {
+                if (this.workData[2].workStart && !this.time_check(this.workData[2].workStart)) {
                     this.$Notice.error({desc: "就業時間・始業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                     return false;
                 }
 
                 // 修正退社時刻形式
-
                 if (this.workData[2].workEnd && !this.time_check(this.workData[2].workEnd)) {
                     this.$Notice.error({desc: "就業時間・終業は適切な時刻ではありません。(hh:mm)形式で時刻を入力及び48:00以内の時刻で指定してください。"})
                     return false;
@@ -1388,6 +1421,7 @@
                     return [1, 2]
                 }
             }
+
         }
     })
 </script>

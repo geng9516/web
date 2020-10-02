@@ -7,24 +7,24 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 
+import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.CalendarDto;
-import jp.smartcompany.job.modules.tmg.tmgnotification.dto.DateDto;
+import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.IOException;
 
@@ -54,6 +54,7 @@ public class TmgNotificationBean {
     private final ITmgNtfactionlogService iTmgNtfactionlogService;
     private final ITmgCalendarService iTmgCalendarService;
     private final ITmgEmployeesService iTmgEmployeesService;
+    private final HttpSession httpSession;
 
     // アクション
     public static final String ACT_DISPINP_RLIST = "ACT_DispInp_RList";            // 一覧表示(本人)
@@ -357,10 +358,10 @@ public class TmgNotificationBean {
      * @return
      */
     public List<TypeGroupVo> getMgdNtfTypeList(PsDBBean psDBBean){
-
-        String workType = iTmgEmployeesService.selectWorkerType(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),DateTime.now());
-
         String date=psDBBean.getSiteId().equals(TmgUtil.Cs_SITE_ID_TMG_INP)? TmgUtil.getSysdate(): this.referList.getRecordDate();
+        String workType = iTmgEmployeesService.selectWorkerType(psDBBean.getCustID(),psDBBean.getCompCode(),psDBBean.getTargetUser(),DateUtil.parse(date));
+
+
         List<MgdTmgNtfTypeVo> MgdTmgNtfTypeVos = iMastGenericDetailService.selectMasterTmgNtfType(psDBBean.getCustID(),
                 psDBBean.getCompCode(),date, psDBBean.getTargetUser(), psDBBean.getLanguage(), psDBBean.getSiteId(),workType);
 
@@ -537,13 +538,13 @@ public class TmgNotificationBean {
         }
     }
 
-    public EmployeeDetailVo getEmpInfo(PsDBBean psDBbean ) throws Exception {
+    public EmployeeDetailVo getEmpInfo(PsDBBean psDBbean) throws Exception {
         //年开始日
-        String GsStartDate =iMastGenericDetailService.selectDate(psDBbean.getCustID(), psDBbean.getCompCode(), Integer.parseInt(TmgUtil.getSysdate().substring(0, 4)),TmgUtil.getSysdate()).getStartDate();
+        String GsStartDate =iMastGenericDetailService.selectDate(psDBbean.getCustID(), psDBbean.getCompCode(), Integer.parseInt(((String)psDBbean.getRequestHash().get(TmgReferList.TREEVIEW_KEY_RECORD_DATE)).substring(0, 4)),TmgUtil.getSysdate()).getStartDate();
         referList = new TmgReferList(psDBbean, "TmgNotification",GsStartDate, TmgReferList.TREEVIEW_TYPE_LIST, true,
                 false, false, false, false);
-        String sApprovalLevelName=referList.getApprovalLevelName(TmgUtil.getSysdate(), TmgUtil.getSysdate(), psDBbean.getTargetUser());
-        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBbean.getCustID(), psDBbean.getCompCode(), psDBbean.getTargetUser(), psDBbean.getLanguage(), referList.getTargetSec());
+        String sApprovalLevelName=referList.getApprovalLevelName(referList.getRecordDate(), referList.getRecordDate(), psDBbean.getTargetUser());
+        EmployeeDetailVo employeeDetailVo = iHistDesignationService.selectemployee(psDBbean.getCustID(), psDBbean.getCompCode(), psDBbean.getTargetUser(), psDBbean.getLanguage(), referList.getTargetSec(),referList.getRecordDate());
         if(sApprovalLevelName!=null){
             employeeDetailVo.setSApprovalLevelName(sApprovalLevelName);
         }else{
@@ -682,6 +683,7 @@ public class TmgNotificationBean {
     @Transactional(rollbackFor = GlobalException.class)
     public GlobalResponse actionMakeApply(PsDBBean psDBBean, ParamNotificationListDto param, MultipartFile[] uploadFiles,
                                           String[]deleteFiles) throws Exception {
+
         //基本信息
         param.setCompId(psDBBean.getCustID());
         param.setCustId(psDBBean.getCompCode());
@@ -724,15 +726,12 @@ public class TmgNotificationBean {
             //ファイル保存SQL
             deleteNtfAttachdFile(param,deleteFiles);
         }
-
         //file upload
         if(uploadFiles!=null){
             uploadFiles(param.getNtfNo(),uploadFiles,path);
             //ファイル保存SQL
             insertNtfAttachdFile(param, uploadFiles,path);
         }
-
-
         //ntfAction
         if (param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
             // 代理申請
@@ -751,8 +750,10 @@ public class TmgNotificationBean {
         }else if(param.getAction().equals(ACT_EDITAPPLY_UDEL)){
             //全取消
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_7);
+            PsSession psSession=(PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+            //全取消のときに、コメントを自動添加する
+            param.setCancelcomment(psSession.getLoginKanjiName()+"("+TmgUtil.getSysdate()+")");
         }
-
         try{
             // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
             int deleteErrMsg = deleteErrMsg(param);
@@ -766,12 +767,10 @@ public class TmgNotificationBean {
                     return  GlobalResponse.error("申請番号がありません。");
                 }
             }
-
             if (param.getAction().equals(ACT_MAKEAPPLY_CAPPLY) || param.getAction().equals(ACT_ALTERAPPLY_CAPPLY)) {
                 // 新規申請の場合は、新規申請用
                 int insertNotificationCheckUpdate = insertNotificationCheckNew(param);
             }
-
             int insertErrmsg = insertErrMsg(param);
             String selectErrMsg = selectErrCode(param);
             if(!selectErrMsg.equals("0")&&!param.getAction().equals(ACT_EDITAPPLY_UDEL) ){
@@ -787,7 +786,6 @@ public class TmgNotificationBean {
             deleteErrMsg(param);
             deleteNotificationnCheck(param);
         }
-
     }
 
     private void deleteNtfAttachdFile(ParamNotificationListDto param, String[] deleteFiles) {
@@ -1302,7 +1300,7 @@ public class TmgNotificationBean {
         }
         // 対象の人数
         if (!StrUtil.hasEmpty(param.getTxtTargetNumber())) {
-            tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
+            tncDo.setTntfNnumberOfTarget(Long.parseLong(StrUtil.nullToDefault(param.getTxtTargetNumber(), "NULL")));
         }
         tncDo.setTntfCntfnoMoto(null);
 
@@ -1502,7 +1500,7 @@ public class TmgNotificationBean {
         tncDo.setTntfDdateofbirth(param.getTxtBirthday());
         // 対象の人数
         if(!StrUtil.hasEmpty(param.getTxtTargetNumber())){
-            tncDo.setTntfNnumberOfTarget(Long.parseLong(StringUtils.defaultIfEmpty(param.getTxtTargetNumber(), "NULL")));
+            tncDo.setTntfNnumberOfTarget(Long.parseLong(StrUtil.nullToDefault(param.getTxtTargetNumber(), "NULL")));
         }
         tncDo.setTntfCntfnoMoto(tnDo.getTntfCntfnoMoto());// 分割前申請番号
 

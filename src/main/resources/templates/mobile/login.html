@@ -8,11 +8,14 @@
 <svg th:replace="layout/logos::svg_logos"></svg>
 <style>
     body {
+        position: fixed;
         background: var(--login-right-part-bg);
         overflow-y: hidden;
     }
 
     .login-page {
+        position: relative;
+        width: 100vw;
         height: 100vh;
         animation: scrollToUp 80s linear infinite alternate;
     }
@@ -91,7 +94,7 @@
         padding-left: 1.071rem;
         border-radius: 5px;
         box-shadow: 0 1px 5px 0 var(--ghost-primary-shadow);
-        background: rgba(255, 255, 255, .6);
+        background: var(--mobile-input-btn-bg);
         /* border-color: var(--input-border-grey); */
         border-color: transparent;
     }
@@ -108,7 +111,8 @@
         width: 100vw;
         border-radius: 40%;
         text-align: center;
-        background-color: #fff;
+        background-color:var(--content-bg);
+        color: var(--grey);
         font-size: 12px;
     }
 
@@ -151,8 +155,13 @@
             bottom: -32px;
         }
     }
+    @media all and (orientation: landscape) {
+      .login-page {
+        display: none;
+      }
+    }
 </style>
-<main class="login-page" :style="`background-image:url(${BASE_URL}/static/svg/trademark.svg)`">
+<main class="login-page" :style="handleBg()">
     <section class="main-logo">
         <svg class="logo-trademark mr2">
             <use xlink:href="#logo-p-mark"></use>
@@ -177,10 +186,10 @@
             ログイン
         </i-button>
         <Divider size="small">OR</Divider>
-        <i-button class="work-btn" style="background: rgba(255,255,255,.6);" type="primary" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable" size="large" ghost long>{{
+        <i-button class="work-btn" style="background: var(--mobile-other-btn-bg)" type="primary" @click="clock('ACT_EXEC_OPEN')" :loading="clocking" :disabled="clockDisable" size="large" ghost long>{{
             clockBtn.clock }}
         </i-button>
-        <i-button style="background: rgba(255,255,255,.6);" size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{ clockBtn.exit }}</i-button>
+        <i-button style="background: var(--mobile-other-btn-bg)" size="large" @click="clock('ACT_EXEC_CLOSE')" :loading="exiting" :disabled="clockDisable" long>{{ clockBtn.exit }}</i-button>
     </section>
     <div class="mobile-footer">
         <div class="footer-p">Smart Public WorkManager Ver.1.0.0 Copyright©</br>株式会社日進サイエンティア</div>
@@ -328,6 +337,10 @@
                     this.exiting = false
                     this.clockDisable = false
                 }
+            },
+            handleBg() {
+                // todo: 后端提供接口后需更改
+                if(localStorage.getItem('APP_THEME') !== 'dark') return `background-image:url(${BASE_URL}/static/svg/trademark.svg)`
             },
             fixH5Height() {
                 setTimeout(function () {

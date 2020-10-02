@@ -63,7 +63,7 @@ public interface IHistDesignationService extends IService<HistDesignationDO> {
         /**ヘッダ情報(新規申請用)を取得するSQLを生成します。*/
         EmployeeDetailVo selectemployeeDetail(String custId, String compId, String employeeId, String language);
 
-        EmployeeDetailVo selectemployee(String custId, String compId, String employeeId, String language, String sectionId);
+        EmployeeDetailVo selectemployee(String custId, String compId, String employeeId, String language, String sectionId,String date);
 
         /**
          * 職員一覧を取得するSQLを返す

@@ -18,7 +18,6 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -453,7 +452,7 @@ public class PermStatListBean {
         // 『承認状態が「承認待」状態で、超勤命令を有する未終業打刻』状態の職員氏名を取得する。（条件に該当しない場合、空文字となる）
 
         // 該当者氏名が取得できた場合、trueを返す。
-        if (StringUtils.isNotEmpty(empName)) {
+        if (StrUtil.isNotEmpty(empName)) {
             return true;
         }
 
@@ -636,7 +635,6 @@ public class PermStatListBean {
     private Boolean existsDispMonthlyApproval(String psEmployeeId, String psStartDay, String psEndDay) {
 
         try {
-
             if (!referList.hasAuthorityAtEmployee(psStartDay, psEndDay, psEmployeeId, TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL)) {
                 return false;
             }
@@ -1360,7 +1358,7 @@ public class PermStatListBean {
         List<String> rowIdList = iTmgDailyService.buildSQLForSelectObjEmpForUpdate(empIdList, getReqDYYYYMMDD());
 
         //  一括承認データを更新する
-        String sProgramId = APPLICATION_ID + "_" + ACT_PERMIT;
+        String sProgramId = APPLICATION_ID + "_" + _sAction;
         iTmgDailyService.buildSQLForUpdateTmgDaily(psDBBean.getUserCode(), sProgramId, getReqDYYYYMMDD(), empIdList);
 
         // 承認時に超過勤務でステータスが申請中のものがある場合に確認済へ変更

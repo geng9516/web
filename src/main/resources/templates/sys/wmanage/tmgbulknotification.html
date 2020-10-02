@@ -2,7 +2,7 @@
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
 <head
-    th:replace="layout/header::common_header(title='休暇・休業登録',cssPaths='/pages/content.min.css,' + '/pages/restapplyconfirm.min.css')">
+    th:replace="layout/header::common_header(title='休暇一括登録',cssPaths='/pages/content.min.css,' + '/pages/restapplyconfirm.min.css')">
 </head>
 
 <body>
@@ -15,7 +15,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{  '休暇・休業登録' }}
+                        {{  '休暇一括登録' }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -118,7 +118,7 @@
                                     <i-col class="no-border-radius" span="7">
                                         <date-picker :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit"
                                             @on-change="handleDeptDateChange" transfer format="yyyy/MM/dd"
-                                            placeholder="基準日" ref="datePicker" type="date"></date-picker>
+                                            placeholder="基準日" ref="datePicker" type="date" :clearable="false"></date-picker>
                                     </i-col>
                                 </Row>
                                 <Tree :data="treeData" @on-check-change="handleDeptChange" class="tree mt2"

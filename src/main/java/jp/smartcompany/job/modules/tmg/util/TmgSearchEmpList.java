@@ -173,8 +173,6 @@ public class TmgSearchEmpList {
      * @param useManageFLG 管理対象外職員を表示するかの判定フラグ（true：含める、false：含めない）
      */
     private void createEmpList(String psDate, boolean pbWithTarget, boolean useManageFLG) {
-        System.out.println("---++++");
-        System.out.println(psDate);
         String sDate;
         if (StrUtil.isNotBlank(psDate)) {
             sDate = "TO_DATE('" + psDate + "', 'yyyy/MM/dd')";

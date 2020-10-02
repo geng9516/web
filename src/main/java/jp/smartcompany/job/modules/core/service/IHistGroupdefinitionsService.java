@@ -37,4 +37,6 @@ public interface IHistGroupdefinitionsService extends IService<HistGroupdefiniti
             Date searchDate,
             Long seq
     );
+
+    List<HistGroupdefinitionsDO> selectHistGroupDefinitions(Date searchDate, String custId, String systemId, String groupId);
 }

@@ -236,4 +236,30 @@
             </if>
     </delete>
 
+    <select id="selectMastGroupSectionPostMapping" parameterType="map" resultType="jp.smartcompany.job.modules.core.pojo.entity.MastGroupsectionpostmappingDO">
+        SELECT
+            MAG_ID,
+            MAG_CCUSTOMERID_CK_FK,
+            MAG_CSYSTEMID_CK,
+            MAG_CGROUPID_FK,
+            MAG_DSTARTDATE_CK,
+            MAG_DENDDATE,
+            MAG_CTYPEID,
+            MAG_CCOMPANYID,
+            MAG_CSECTIONID,
+            MAG_CPOSTID,
+            MAG_CEMPLOYEEID,
+            VERSIONNO
+        FROM
+            MAST_GROUPSECTIONPOSTMAPPING
+        WHERE
+            MAG_CCUSTOMERID_CK_FK = #{custId}
+            AND MAG_CSYSTEMID_CK = #{systemId}
+            AND MAG_CGROUPID_FK = #{groupId}
+            <if test="searchDate!=null">
+                AND MAG_DSTARTDATE_CK  <![CDATA[<=]]> #{searchDate}
+                AND MAG_DENDDATE >= #{searchDate}
+            </if>
+    </select>
+
 </mapper>

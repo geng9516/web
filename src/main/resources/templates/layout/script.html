@@ -9,7 +9,8 @@
   <!--支持ES6余下语法，如Promise-->
   <script th:src="${baseUrl + '/static/libs/browser-polyfill.min.js' }"></script>
   <!--全局引入baseURL-->
-  <script>
+  <script th:inline="javascript">
+    const SYS_DATE = [[${ session.TmgReferListCurrentDate }]] || new Date()
     const {protocol,hostname,port,pathname} = location
     let BASE_URL
     if (parseInt(port) !== 80) {
@@ -26,8 +27,8 @@
   <script th:src="${baseUrl + '/static/libs/stringify.js'}"></script>
   <script th:src="${baseUrl + '/static/js/http.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/js/filter.js?t='+ new java.util.Date().getTime()}"></script>
-  <script th:src="${baseUrl + '/static/js/mixins.js?t='+ new java.util.Date().getTime()}"></script>
   <script th:src="${baseUrl + '/static/js/utils.js?t='+ new java.util.Date().getTime()}"></script>
+  <script th:src="${baseUrl + '/static/js/mixins.js?t='+ new java.util.Date().getTime()}"></script>
   <!--默认资源 End-->
   <th:block th:if="jsPaths!=null">
     <script th:each="jsPath:${#strings.setSplit(jsPaths,',')}" th:src="${baseUrl + '/static'+jsPath+ '?t=' + new java.util.Date().getTime()}"></script>

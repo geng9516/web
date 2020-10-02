@@ -16,13 +16,20 @@
                     <div class="vacation-type-warp">
                         <div class="label">{{ this.rotate ? '照会区分' : '申請区分' }}</div>
                         <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                            class="mb10 no-border-radius" ref="select">
+                            class="mb10 no-border-radius" ref="select" v-if="!isReApplyIng">
                             <i-option value="全て" v-if="this.rotate">全て</i-option>
                             <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
                                 <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
                             </option-group>
                         </i-select>
-                        <section v-show="selectedRestInfo.biko">
+                        <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
+                                  class="mb10 no-border-radius" ref="select" disabled v-else>
+                            <i-option value="全て" v-if="this.rotate">全て</i-option>
+                            <option-group v-for="(item, i) of curRestTypeList" :key="i" :label="item.groupName">
+                                <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
+                            </option-group>
+                        </i-select>
+                        <section v-show="selectedRestInfo.biko && !rotate">
                             <Divider size="small" orientation="left">注意事項</Divider>
                             <Alert class="primary-info mb20">{{ selectedRestInfo.biko | turnLine }}
                             </Alert>
@@ -65,7 +72,7 @@
                             申請へ
                         </i-button>
                         <date-picker type="year" :open="openDatePicker" format="yyyy" style="position: absolute;left: -600px;" v-model="curYear" @on-change="handleDatePicker" slot="extra">
-                            <a @click="openDatePicker = !openDatePicker">
+                            <a @click="openDatePicker = !openDatePicker" style="color: var(--ghost-primary-color);">
                                 <Icon type="ios-calendar-outline"></Icon>
                                 <span>{{ opts.year }}</span>
                             </a>
@@ -95,7 +102,7 @@
                                                     <!-- 3个人以下摊开显示 -->
                                                     <Avatar v-for="(e,i) of item.ntfapprover" :key="i" :class="i > 0 ? 'ml-1':''" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0]}}</Avatar>
                                                 </li>
-                                                <li style="margin-right:10px" v-else>
+                                                <li style="margin-right:10px;" v-else>
                                                     <!-- 超过3个人，缩进,并且隐藏了多少人  -->
                                                     <Avatar :src="item.ntfapprover[0].avatar || ''">{{item.ntfapprover[0].avatar ? '' : item.ntfapprover[0].split(/\u3000|\s/)[0]}}</Avatar>
                                                     <Avatar class="ml-13" :src="item.ntfapprover[1].avatar || ''">{{item.ntfapprover[1].avatar ? '' : item.ntfapprover[1].split(/\u3000|\s/)[0]}}</Avatar>
@@ -103,7 +110,7 @@
                                                     <Avatar class="more-user">{{`+${item.ntfapprover.length - 3}`}}</Avatar>
                                                 </li>
                                             </ul>
-                                            <div class="tl" slot="content">
+                                            <div class="tl" style="color: rgb(104, 109, 116);" slot="content">
                                                 <div class="mb5" v-for="(e,i) of item.ntfapprover" :key="i">
                                                     <Avatar class="mr15 pop-avatar" :src="e.avatar || ''">{{e.avatar ? '' : e.split(/\u3000|\s/)[0].trim()}}</Avatar>
                                                     <span>{{ e }}</span>
@@ -115,7 +122,7 @@
                                         <Poptip v-if="item.tmgNtfAttachedfileDoList.length !== 0" trigger="hover" class="cursor tl" placement="right-start" title="ファイル" transfer>
                                             <i-button type="primary" class="mr10" size="small" ghost icon="md-eye">ファイル</i-button>
                                             <div slot="content">
-                                                <div class="blue mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;" @click="()=>window.open(`http:////${e.tnafFilepath.slice(2)}`, '_blank')">{{ e.tnafCfilename }}</div>
+                                                <div class="mb2 cursor" v-for="(e, i) of item.tmgNtfAttachedfileDoList" style="text-decoration: underline;color: rgb(48, 118, 242);" @click="()=>window.open(`http:////${e.tnafFilepath.slice(2)}`, '_blank')">{{ e.tnafCfilename }}</div>
                                             </div>
                                         </Poptip>
                                     </i-col>
@@ -148,22 +155,22 @@
                                     <i-col span="8" style="margin-left: 66.5%" class="description cursor light-grey mt10">
                                         <Poptip trigger="hover" class="cursor tl" placement="left-start" title="申請履歴" transfer>
                                             {{ `申請日時：${item.tntfDnotification}` }}
-                                            <div slot="content" style="width: 500px;" class="tc">
+                                            <div slot="content" style="width: 500px;color: rgb(104, 109, 116);" class="tc">
                                                 <Row class="ft13 mb5 mt10">
                                                     <i-col span="8">
-                                                        <p class="head-info mr1">更新者</p>
+                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新者</p>
                                                     </i-col>
                                                     <i-col span="4">
-                                                        <p class="head-info mr1">操作</p>
+                                                        <p class="mr1" style="background: rgb(234,235,236);color: rgb(104, 109, 116);">操作</p>
                                                     </i-col>
                                                     <i-col span="4">
-                                                        <p class="head-info">状態</p>
+                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">状態</p>
                                                     </i-col>
                                                     <i-col span="8">
-                                                        <p class="head-info">更新日時</p>
+                                                        <p style="background: rgb(234,235,236);color: rgb(104, 109, 116);">更新日時</p>
                                                     </i-col>
                                                 </Row>
-                                                <Row class="mb20 ft13 border">
+                                                <Row class="mb20 ft13" style="border: 1px solid rgb(234,235,236);border-top: 0;border-radius: 3px;">
                                                     <i-col span="8" class="mb10">
                                                         <p v-for="(e, j) of item.tmgNtfactionlogDOList">{{ e.empname }}</p>
                                                     </i-col>
@@ -190,7 +197,7 @@
                         <!-- PersonalApplyTable -->
                     </Card>
                     <Card :title="selectedRestInfo.ntfName ? selectedRestInfo.ntfName : '申請区分選択待ち'" :class="handleFrontCardClass">
-                        <span class="mr5 link-span" slot="extra" @click="onRefresh">申請状況一覧へ</span>
+                        <span class="mr5 link-span" slot="extra" @click="onRefresh" v-if="!isReApplyIng">申請状況一覧へ</span>
                         <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
                         <Divider size="small" orientation="left">期間</Divider>
                         <Row style="margin-top:10px" :gutter="16" class="tl">
@@ -230,7 +237,7 @@
                                 <!-- 有加算日-->
                                 <section v-show="selectedRestInfo.addDate" class="tl mt20">
                                     <p class="mb5">加算日数</p>
-                                    <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
+                                    <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
                                 </section>
 
                                 <!-- 是小时单位的 時間帯 -->
@@ -285,19 +292,19 @@
                                     <!-- 是有氏名的-->
                                     <section v-show="selectedRestInfo.name" class="tl">
                                         <p class="mb5">氏名</p>
-                                        <i-input class="mb15" v-model="restApply.txtName" :maxlength="100" placeholder="氏名は100文字以内で入力してください。"/>
+                                        <i-input class="mb15" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
                                     </section>
 
                                     <!-- 是有続柄的-->
                                     <section v-show="selectedRestInfo.relation" class="tl">
                                         <p class="mb5">続柄</p>
-                                        <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="100" placeholder="続柄は100文字以内で入力してください。"/>
+                                        <i-input class="mb15" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
                                     </section>
 
                                     <!-- 是有対象の人数的-->
                                     <section v-show="selectedRestInfo.targetNumber " class="tl">
                                         <p class="mb5">対象の人数</p>
-                                        <input-number :max="99" :min="1" class="mb15　tl" v-model="restApply.txtTargetNumber"  placeholder="人数"><span slot="append">人</span></input-number>
+                                        <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtTargetNumber"  placeholder="人数"><span slot="append">人</span></input-number>
                                     </section>
 
                                     <!-- 有生年月日-->
@@ -310,7 +317,7 @@
                                     <!-- 有伤病-->
                                     <section v-show="selectedRestInfo.sickName" class="tl">
                                         <p class="mb5">傷病名</p>
-                                        <i-input v-model="restApply.txtSickName" />
+                                        <i-input v-model="restApply.txtSickName" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
                                     </section>
 
                                     <!-- 勤務時間ラベル,休憩時間,労災申請有無暂无
@@ -318,8 +325,8 @@
                                     <Divider size="small" orientation="left">添付ファイル</Divider>
                                     <Upload ref="upload"  :show-upload-list="false" multiple type="drag" class="tl mt15 mb10" action="/" :before-upload="handleBeforeUpload">
                                         <div style="padding: 20px 0">
-                                            <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
-                                            <p>Click or drag files here to upload</p>
+                                            <Icon type="ios-cloud-upload" size="52" style="color: var(--theme-mark)"></Icon>
+                                            <p style="color:var(--grey)">Click or drag files here to upload</p>
                                         </div>
                                     </Upload>
                                     <ul class="ivu-upload-list tl mb10">
@@ -327,7 +334,7 @@
                                             <span @click="applyCardDownloadFile(item)">
                                                 <Icon :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document' "></Icon> {{ item.name }}
                                             </span>
-                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:rgb(104, 109, 116)" v-if="item.isDefault">既存</p>
+                                            <p style="position: absolute;top: 5px;right: 42px;font-size: 9px;color:var(--grey)" v-if="item.isDefault">既存</p>
                                             <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
                                             <!-- <i-progress v-show="progressAutoShow()" :stroke-width="2" :percent="100" /> -->
                                         </li>
@@ -391,7 +398,9 @@
                         noreserved: 1,
                         _dateList: '',
                         _dateListRange:['', ''],
-                        dateListRange:['', '']
+                        dateListRange:['', ''],
+                        txtAddDate:null,
+                        txtTargetNumber:null
                     },
                     openDatePicker: false,
                     applyHistoryListAmount:0,
@@ -518,7 +527,7 @@
                         }
                         const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
                         this.applyHistoryListData = data.list
-                        this.applyHistoryListAmount = data.count
+                        this.applyHistoryListAmount = data.totalCount
                         if (!isInit) this.$Message.success('再表示完了')
                     } catch (error) {
                         return
@@ -531,7 +540,6 @@
                  },
                  handleRestType(e) {
                     if (!e) return
-                    console.log(this.rotate)
                     if (this.rotate) {
                         this.opts.ntfTypeId = e === '全て' ? '' : e
                         this.getApplyHistory()
@@ -544,7 +552,9 @@
                         noreserved: 1,
                         _dateList: '',
                         _dateListRange: ['', ''],
-                        dateListRange: ['', '']
+                        dateListRange: ['', ''],
+                        txtAddDate:null,
+                        txtTargetNumber:null
                     }
                     this.errorInfo = false
                     this.uploadFiles = []
@@ -556,7 +566,6 @@
                     }
                     this.restApply.restTypeId = e
                     this.isReApplyIng = false
-                    console.log(this.flatRestTypeList)
                     this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
                 },
                 onRefresh() {
@@ -730,7 +739,9 @@
                             noreserved:1,
                             _dateList: '',
                             _dateListRange:['', ''],
-                            dateListRange:['', '']
+                            dateListRange:['', ''],
+                            txtAddDate:null,
+                            txtTargetNumber:null
                         }
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
@@ -835,7 +846,8 @@
                     this.restApply.ntfNo = item.tntfCntfNo
                     this.selectedRestInfo.finalApprovalLevel = item.finalApprovalLevel
                     // 文件
-                    this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
+                    this.$nextTick(()=>{
+                        this.uploadFiles = item.tmgNtfAttachedfileDoList.map(e=>{
                         return {
                             name:e.tnafCfilename,
                             url:e.tnafFilepath,
@@ -843,10 +855,7 @@
                             isDefault: true
                         }
                     })
-
-                    // comment
-                    this.restApply.owncomment = item.tntfCowncomment
-
+                    })
                     // 再拿更多详细
                     const { data } = await this.http.get('sys/vapply/NotificationDetail', {ntfNo:item.tntfCntfNo})
 
@@ -858,8 +867,8 @@
                     this.restApply.txtAddDate = data.tntfNuapperAddition
 
                     // 時間帯
-                    this.restApply.timezoneOpen = data.tntfNtimezoneOpenHhmi
-                    this.restApply.timezoneClose = data.tntfNtimezoneCloseHhmi
+                    this.$set(this.restApply, 'timezoneOpen', data.tntfNtimezoneOpenHhmi)
+                    this.$set(this.restApply, 'timezoneClose', data.tntfNtimezoneCloseHhmi)
 
                     // 始业终业
                     this.restApply.timeOpen = data.tntfNtimeOpen
@@ -891,6 +900,10 @@
 
                     // 伤病
                     this.restApply.txtSickName = data.tntfCsickName
+
+                    // comment
+                    this.restApply.owncomment = data.tntfCowncomment
+
                 },
                 resetReApply() {
                     this.loading = true

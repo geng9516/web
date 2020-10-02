@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" xmlns:th="http://www.thymeleaf.org">
 
-<head th:replace="layout/header::common_header(title='月次集計データ作成',cssPaths='/pages/content.min.css')">
+<head th:replace="layout/header::common_header(title='月次集計',cssPaths='/pages/content.min.css')">
 </head>
 
 <body>
@@ -14,7 +14,7 @@
                 <div class="title1">
                     <h1>
                         <Icon type="i-emeer colored"></Icon>
-                        {{ `月次集計データ作成` }}
+                        {{ `月次集計` }}
                     </h1>
                 </div>
                 <div class="btnbox">
@@ -106,13 +106,13 @@
                 月次締めを実行するには、全職員の月次承認を行ってください</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
-                :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" />
+                :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" simple/>
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
                 {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}未承認者状況
             </div>
-            <i-table border :columns="notAprEmpCol" :data="notAprEmpData" :loading="loadingEmp">
+            <i-table border :columns="notAprEmpCol" :data="notAprEmpData" :loading="loadingEmp" :disabled-hover="true">
             </i-table>
         </Drawer>
 
@@ -120,13 +120,13 @@
             <Alert class="primary-info lb tl">月次締めが行われていない部局が存在します。</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
-                :page-size="pageValueSec.curSize"   ref="Page" />
+                :page-size="pageValueSec.curSize"   ref="Page" simple/>
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
                 {{ Utils.formatDate(this.opts.baseDate,'YYYY年MM月')    }}締め未完了部局
             </div>
-            <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC">
+            <i-table border :columns="notAprSecCol" :data="notAprSecData" :loading="loadingSEC" :disabled-hover="true">
             </i-table>
         </Drawer>
 
@@ -577,6 +577,8 @@
                 async download(e,f) {
                     if(f){
                         this.opts.sRetroFlg = f
+                    }else{
+                        this.opts.sRetroFlg = ''
                     }
                     this.opts.baseDate = e.concat('/01')
                     try{

@@ -9,6 +9,7 @@
   min-width: 1220px;
   max-width: 1920px;
   padding: 51px 0 0 60px;
+  background-color: var(--content-bg);
   overflow-y: auto;
   .content_head {
     padding: 12px 20px 12px 12px;
@@ -20,7 +21,7 @@
     .table-top {
       text-align: left;
       padding: 8px;
-      background: var(--white);
+      background: var(--content-bg);
       border: solid 1px var(--border-grey);
       border-bottom: none;
       .icon-left {
@@ -84,7 +85,7 @@
       margin-right: 30px;
       border: 1px dashed var(--dept-select);
       border-radius:0;
-      border-left: 0;
+      border-left: var(--dept-select-border-left);
       cursor: pointer;
     }
   }

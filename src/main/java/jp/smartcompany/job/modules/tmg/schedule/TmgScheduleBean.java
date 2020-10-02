@@ -1,14 +1,15 @@
 package jp.smartcompany.job.modules.tmg.schedule;
 
+import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.core.date.CalendarUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
-import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.service.ITmgScheduleService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.job.modules.tmg.schedule.dto.*;
@@ -17,7 +18,6 @@ import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.Synchronized;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,8 +38,9 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 public class TmgScheduleBean {
-
     private final Logger logger = LoggerFactory.getLogger(TmgScheduleBean.class);
+
+   // private LRUCache<Object, Object> lruCache = (LRUCache<Object, Object>) SpringUtil.getBean("scCache");
 
     private final ITmgScheduleService iTmgScheduleService;
 
@@ -310,13 +311,15 @@ public class TmgScheduleBean {
      */
     private final String USE_SCHEDULE4PERM_SITE = "TMG_USE_SCHEDULE4PERM_SITE";
 
+    private final String SCHEDULE_EDIT_FLAG = "SCHEDULE_EDIT_FLAG";
+
     /**
      * 対象者が4週間の変形労働制対象者か検索しフラグ値を設定します
      *
      * @param baseDate
      */
     private void setVariationalWorkInfo(String baseDate) {
-        logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
+        //logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
         int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
         int tmp2 = iTmgScheduleService.selectVariationalWorkDays(_targetUserCode, baseDate, _targetCustCode, _targetCompCode, _loginLanguageCode);
 
@@ -334,7 +337,7 @@ public class TmgScheduleBean {
      * @param baseDate
      */
     private boolean setVariationalWorkInfo(String baseDate, String custId, String compCode, String employeeId, String language) {
-        logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
+        //logger.info("-->setVariationalWorkInfo baseDate:" + baseDate);
         int tmp1 = iTmgScheduleService.selectVariationalWorkInfo(employeeId, baseDate, custId, compCode, language);
         int tmp2 = iTmgScheduleService.selectVariationalWorkDays(employeeId, baseDate, custId, compCode, language);
 
@@ -625,7 +628,7 @@ public class TmgScheduleBean {
         Date objDate = null;
 
         try {
-            String ymd[] = StringUtils.split(date, Cs_FORMAT_SLASH);
+            String ymd[] = StrUtil.split(date, Cs_FORMAT_SLASH);
             Calendar calendar = Calendar.getInstance();
 
             // カレンダーに年月日を設定
@@ -919,6 +922,15 @@ public class TmgScheduleBean {
         scheduleInfoVO.setNextStart(nextStart);
         scheduleInfoVO.setNextEnd(nextEnd);
         scheduleInfoVO.setPeriod(period);
+        /*String cacheKey = "SCHEDULE_INFO_" + _startDispDate + _endDispDate + useFixedFunction + employeeId;
+        ScheduleInfoVO result = (ScheduleInfoVO) lruCache.get(cacheKey);
+        Object obj = lruCache.get(SCHEDULE_EDIT_FLAG);
+        if (null != result && null == lruCache.get(SCHEDULE_EDIT_FLAG)) {
+            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache から取り出す(key[" + cacheKey + "])");
+            return result;
+        } else {
+            //編集フラッグをcacheから削除する
+            lruCache.remove(SCHEDULE_EDIT_FLAG);*/
         List<ScheduleDataDTO> scheduleDataDTOS = iTmgScheduleService.selectSchedule(NOTWORKINGID_PLAN_REST, _startDispDate, _endDispDate, _isVariationalWorkType, Cs_MGD_MANAGEFLG_0, useFixedFunction, employeeId, _targetCompCode, _targetCustCode, _loginLanguageCode);
         // Arrayにデータフォーマッを変える
         for (int i = 0; i < scheduleDataDTOS.size(); i++) {
@@ -987,8 +999,10 @@ public class TmgScheduleBean {
 
         scheduleInfoVO.setPaidHolidayVO(paidHolidayVO);
         scheduleInfoVO.setScheduleDataDTOList(scheduleDataDTOS);
-
+           /* lruCache.put(cacheKey, scheduleInfoVO);
+            logger.info("[公休日数 基準日数 基準時間 年次休暇残] Cache までロードする(key[" + cacheKey + "])");*/
         return scheduleInfoVO;
+        //}
     }
 
     /**
@@ -1015,8 +1029,8 @@ public class TmgScheduleBean {
         // 勤務時間数に端数が存在する場合に不正な値となるため修正
         // 1ヶ月の勤務時間(時間)
         double WorkingHourOfMonth = 0.0;
-        minites = Double.parseDouble(StringUtils.defaultIfEmpty(MIOfWeekDay, "0"));
-        bDateCnt = Double.parseDouble(StringUtils.defaultIfEmpty(baseDateCnt, "0"));
+        minites = Double.parseDouble(StrUtil.nullToDefault(MIOfWeekDay, "0"));
+        bDateCnt = Double.parseDouble(StrUtil.nullToDefault(baseDateCnt, "0"));
         // 1ヶ月の勤務時間を算出
         WorkingHourOfMonth = (minites / 60) * bDateCnt;
         return this.getWorkingHourOfMonthDisp(String.valueOf(WorkingHourOfMonth));
@@ -1147,6 +1161,13 @@ public class TmgScheduleBean {
      * @return
      */
     public HashMap<String, Object> selectIkkaInfo(String sectionid, String groupid, String baseDate, String custId, String compId, String language) {
+        //lruCache key
+        /*String cacheKey = "SCHEDULE_IKKA_" + sectionid + groupid + baseDate + custId + compId;
+        HashMap<String, Object> result = (HashMap<String, Object>) lruCache.get(cacheKey);
+        if (null != result) {
+            logger.info("[区分  出張  勤務パターン] Cache から取り出す");
+            return result;
+        } else {*/
         if ("".equals(baseDate) || null == baseDate) {
             baseDate = getSysdate();
             logger.warn("baseDateが空です");
@@ -1205,7 +1226,10 @@ public class TmgScheduleBean {
         results.put("kubunnList", kubunnList);
         results.put("syuccyouList", syuccyouList);
         results.put("workPatternList", workPatternList);
+            /*lruCache.put(cacheKey, results);
+            logger.info("[区分  出張  勤務パターン] Cache までロードする");*/
         return results;
+        //}
     }
 
 
@@ -1223,7 +1247,7 @@ public class TmgScheduleBean {
      * 予定作成更新処理を行います。
      */
     public void executeEditMonthlyUSchedule(String content, PsDBBean psDBBean) {
-
+        //lruCache.put(SCHEDULE_EDIT_FLAG, true);
         if (JSONUtil.isJsonObj(content)) {
             MonthlyUScheduleEditParaDTO monthlyUScheduleEditParaDTO = JSONUtil.parseObj(content).toBean(MonthlyUScheduleEditParaDTO.class);
             if (null != monthlyUScheduleEditParaDTO) {
@@ -1293,7 +1317,7 @@ public class TmgScheduleBean {
                 nRestClose = restTimeHashMap.get(_restClose);
                 if (!ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestOpen) && !ObjectUtil.isEmpty(nRestClose) && !ObjectUtil.isEmpty(nRestClose)) {
                     // TMG_DAILY_DETAIL 休憩時間レコード登録：予定
-                    logger.info("nRestOpen:" + nRestOpen + " ---- nRestClose:" + nRestClose);
+                    //logger.info("nRestOpen:" + nRestOpen + " ---- nRestClose:" + nRestClose);
                     iTmgScheduleService.insertTmgDailyDetailCheckRest(psDBBean.getCustID(), psDBBean.getCompCode(), monthlyUScheduleEditParaDTO.getTargetUserId(),
                             Cs_MINDATE, Cs_MAXDATE, monthlyUScheduleEditParaDTO.getLoginUserId(), TMG_SCHEDULE_CMODIFIERPROGRAMID, sTargetDate, NOTWORKINGID_PLAN_REST, nRestOpen, nRestClose,
                             NOTWORKINGID_PLAN_REST, NOTWORKINGID_NOTICE_REST, NOTWORKINGID_RESULT_REST, bClearResult, NOTWORKINGID_PLAN_REST.equals(NOTWORKINGID_RESULT_REST));

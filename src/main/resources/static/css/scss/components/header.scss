@@ -2,7 +2,7 @@
   padding: 0;
   margin-bottom: -1px;  /* 按钮和sider减少1px*/
   height: 50px;
-  background:var(--white);
+  background:var(--login-panel-bg);
   z-index: 900;
   position: fixed;
   top: 0px;
@@ -17,7 +17,7 @@
     padding-right: 10px;
     line-height: 45px;
     a {
-      color: rgb(81, 90, 110);
+      color: var(--grey);
     }
     i.ivu-icon-md-contact {
       color: #ffcc6a;
@@ -64,6 +64,6 @@
   border-bottom: 1px solid rgb(210, 210, 210);
 }
 .group-info-wrap {
-  border: 5px solid var(--tree-border);
-  background: var(--tree-bg);
+  border: 5px solid rgb(234, 238, 242);
+  background: rgb(245, 247, 249);
 }
