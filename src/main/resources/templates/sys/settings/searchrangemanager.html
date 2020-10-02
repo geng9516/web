@@ -464,6 +464,8 @@
           }
           if(!this.updateValue.fullPermission) {
             this.updateValue.type = '0'
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
           }
           if(this.updateValue.fullPermission === '0') {
             this.updateValue.type = '1'
