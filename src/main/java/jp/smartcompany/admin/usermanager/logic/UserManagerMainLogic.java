@@ -3,6 +3,7 @@ package jp.smartcompany.admin.usermanager.logic;
 import jp.smartcompany.boot.util.PageUtil;
 
 import java.util.Map;
+import java.util.List;
 
 public interface UserManagerMainLogic {
 
@@ -21,5 +22,11 @@ public interface UserManagerMainLogic {
         絞り込み区分 searchType
      */
     PageUtil search(Map<String,Object> params);
+
+    /**
+     * 解锁用户
+     * @param userIds
+     */
+    void unLock(List<String> userIds);
 
 }

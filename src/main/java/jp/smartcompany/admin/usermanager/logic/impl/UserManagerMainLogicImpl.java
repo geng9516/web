@@ -1,14 +1,17 @@
 package jp.smartcompany.admin.usermanager.logic.impl;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.admin.usermanager.logic.UserManagerMainLogic;
 import jp.smartcompany.boot.util.PageQuery;
 import jp.smartcompany.boot.util.PageUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
 
     private final PsSearchCompanyUtil searchCompanyUtil;
     private final IMastEmployeesService mastEmployeesService;
+    private final IMastAccountService mastAccountService;
 
     /**
      * 法人リスト取得
@@ -90,5 +94,19 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
          }
          return new PageUtil(pageResult);
      }
+
+     @Override
+     public void unLock(List<String> userIds) {
+        List<MastAccountDO> accountList = mastAccountService.list(new QueryWrapper<MastAccountDO>().in("MA_CUSERID",userIds));
+        String userId = SecurityUtil.getUserId();
+        Date date = DateUtil.date();
+        accountList.forEach(account-> {
+            account.setMaNpasswordlock(0);
+            account.setMaNretrycounter(0);
+            account.setMaCmodifieruserid(userId);
+            account.setMaDmodifieddate(date);
+        });
+        mastAccountService.updateBatchById(accountList);
+    }
 
 }
