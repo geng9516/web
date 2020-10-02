@@ -1,6 +1,8 @@
 package jp.smartcompany.admin.usermanager.logic;
 
+import jp.smartcompany.admin.usermanager.dto.UserManagerEditEndDTO;
 import jp.smartcompany.boot.util.PageUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 
 import java.util.Map;
 import java.util.List;
@@ -28,5 +30,17 @@ public interface UserManagerMainLogic {
      * @param userIds
      */
     void unLock(List<String> userIds);
+
+    /**
+     * パスワードポリシーリスト　設定
+     */
+    List<ConfSyscontrolDO> passwordPolicy();
+
+    void updatePolicy(List<ConfSyscontrolDO> controlList);
+
+    /**
+     * 利用終了日 変更
+     */
+    void updateEndDate(UserManagerEditEndDTO dto);
 
 }

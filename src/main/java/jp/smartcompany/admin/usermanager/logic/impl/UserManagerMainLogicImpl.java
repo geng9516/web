@@ -1,22 +1,29 @@
 package jp.smartcompany.admin.usermanager.logic.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerEditEndDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.admin.usermanager.logic.UserManagerMainLogic;
 import jp.smartcompany.boot.util.PageQuery;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+import jp.smartcompany.job.modules.core.service.IConfSyscontrolService;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +35,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
     private final PsSearchCompanyUtil searchCompanyUtil;
     private final IMastEmployeesService mastEmployeesService;
     private final IMastAccountService mastAccountService;
+    private final IConfSyscontrolService confSyscontrolService;
 
     /**
      * 法人リスト取得
@@ -96,6 +104,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
      }
 
      @Override
+     @Transactional
      public void unLock(List<String> userIds) {
         List<MastAccountDO> accountList = mastAccountService.list(new QueryWrapper<MastAccountDO>().in("MA_CUSERID",userIds));
         String userId = SecurityUtil.getUserId();
@@ -107,6 +116,72 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
             account.setMaDmodifieddate(date);
         });
         mastAccountService.updateBatchById(accountList);
+    }
+
+
+    // 定数：有効期間（日数）
+    private static final String PROP_PW_VALID_PERIOD = "PasswordValidPeriod";
+    // 定数：最小文字数
+    private static final String PROP_PW_MIN_LEN = "PASSWORD_MIN_LEN";
+    // 定数：最大文字数
+    private static final String PROP_PW_MAX_LEN = "PASSWORD_MAX_LEN";
+    // 定数：最大リトライ回数
+    private static final String PROP_LOGIN_RETRY = "LoginRetry";
+    // 定数：再利用禁止回数
+    private static final String PROP_CHANGE_PW_LIMITATION_COUNT = "ChangePasswordLimitationCount";
+
+    @Override
+    public List<ConfSyscontrolDO> passwordPolicy() {
+        List<String> props = CollUtil.newArrayList(PROP_PW_VALID_PERIOD,PROP_PW_MAX_LEN,PROP_PW_MIN_LEN,PROP_LOGIN_RETRY,PROP_CHANGE_PW_LIMITATION_COUNT);
+        return confSyscontrolService.list(new QueryWrapper<ConfSyscontrolDO>().in("CS_CPROPERTYNAME", props).orderByDesc("CS_CPROPERTYNAME"));
+    }
+
+    @Override
+    @Transactional
+    public void updatePolicy(List<ConfSyscontrolDO> controlList) {
+        confSyscontrolService.updateBatchById(controlList);
+    }
+
+    @Override
+    public void updateEndDate(UserManagerEditEndDTO dto) {
+        List<UserManagerListDTO> accountDTOList = dto.getList();
+        String userId = SecurityUtil.getUserId();
+        Date date = DateUtil.date();
+        accountDTOList.forEach(account -> {
+//            account.setMaCmodifieruserid(userId);
+//            account.setMaDmodifieddate(date);
+//            if (StrUtil.isNotBlank(account.getMaCuserid())) {
+//                //「退職日を設定する」のとき
+//               if (dto.getUseRetireDate()) {
+//                   if (account.getMeDdateofretirement() == null) {
+//                       // 退職日がNULLのときはそのまま
+//                       if (userManagerEditEndDto.getEndDate() != null) {
+//                           accountDto.setMaDend(accountDto.getMaDend());
+//                       } else {
+//                           // 入力値がなかったらシステム日付
+//                           accountDto.setMaDend(new Timestamp(new Date().getTime()));
+//                       }
+//                   } else {
+//                       // 退職日を設定
+//                       accountDto.setMaDend(dto.getMeDdateofretirement());
+//                   }
+//               } else {
+//
+//               }
+//            }
+        });
+    }
+
+
+
+    /**
+     * 初期値表示日付取得
+     */
+    public Date getDefaultDate() {
+        // 利用終了日(初期値設定)
+        Calendar cal = (Calendar) Calendar.getInstance().clone();
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+        return new Timestamp(cal.getTime().getTime());
     }
 
 }

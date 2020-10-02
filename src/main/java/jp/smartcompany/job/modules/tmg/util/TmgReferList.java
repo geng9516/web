@@ -661,11 +661,11 @@ public class TmgReferList {
                 } else {
                     // 組織ツリー検索タブを使わない場合は初期化
                     httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, ciSelectTreeTab);
-//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
-//                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
-//                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, null);
-//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, null);
-//                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, null);
+                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
+                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
+                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, null);
+                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, null);
+                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, null);
                 }
                 break;
             case csSessionControl4SearchTreeSave:
