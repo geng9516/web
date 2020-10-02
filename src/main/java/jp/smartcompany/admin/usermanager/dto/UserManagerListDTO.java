@@ -46,8 +46,6 @@ public class UserManagerListDTO {
     private Integer maNpasswordlock; //MA_NPASSWORDLOCK
     /** カラム：MA_CADMINUSER*/
     private String maCadminuser; //MA_CADMINUSER
-    /** カラム：VERSIONNO*/
-    private Integer versionNo; //VERSIONNO
     /** カラム：ME_DDATEOFEMPLOYEMENT*/
     private Date meDdateofemployement; //ME_DDATEOFEMPLOYEMENT
     /** カラム：ME_DSTARTDATE*/

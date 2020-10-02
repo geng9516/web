@@ -75,7 +75,7 @@
           </i-col>
         </Row>
       </div>
-      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :show-header="!isEditing" :row-class-name="() => 'select-col'"
+      <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
         <!-- hgpCappid サイト ml20   <Icon type="md-compass" />
@@ -98,20 +98,59 @@
         <!-- 循环slotList -->
         <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
          <div style="color: var(--primary-info);">
-           <span v-if="row[item].fullPermisson === '0'">{{ row[item].hgpCpermnecessityname }}</span>
-           <span v-if="row[item].hgpCpermnecessityname || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
-           <span v-if="row[item].hgpCpermmustname || row[item].hgpCbasesectionFlagMust === '1'">{{ `O  R:${row[item].hgpCpermmustname}` }}</span>
-         </div>
-         <div class="ml10" style="color: var(--primary-info);">
-           <span v-if="row[item].hgpCbasesectionFlagNeed == '1' || row[item].hgpCbasesectionFlagMust == '1'">基点組織設定を使用する</span>
+           <span v-if="row[item].fullPermission === '0'">{{ row[item].hgpCpermnecessityname }}</span>
+           <!-- 老就业全て参照可能的时候 与 OR 发生混用，需要排除'0001'这个单独的情况 vFullId = document.getElementById("fullPermissonId"); -->
+           <span v-if="row[item].hgpCpermnecessityname && row[item].hgpCpermnecessity !== '0001'  || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
+           <span v-if="row[item].hgpCpermmustname || row[item].hgpCbasesectionFlagMust === '1'">{{ `AND:${row[item].hgpCpermmustname}` }}</span>
+           <span v-else>&nbsp;</span>
          </div>
          <div class="ml20" style="color: var(--primary-info);">
+           <span v-if="row[item].hgpCbasesectionFlagNeed == '1' || row[item].hgpCbasesectionFlagMust == '1'">基点組織設定を使用する</span>
+         </div>
+         <div style="color: var(--primary-info);margin-left: 40px;">
           <span v-if="row[item].hgpCpermRetired == '1'">退職者: 自社のみ</span>
           <span v-if="row[item].hgpCpermRetired == '2'">退職者: すべて</span>
          </div>
         </template>
       </i-table>
     </div>
+    <Modal class="tc" v-model="isShow" title="対象範囲設定" width="650" :mask-closable="false" @on-ok="update">
+      <!-- <Alert class="error-info tl">入力内容は登録するまで保持されます。</Alert> -->
+      <radio-group class="tl width100" v-model="updateValue.type" @on-change="handleRadio($event)" vertical>
+        <Radio label="0">未設定</Radio>
+        <span class="ml30" style="color: var(--primary-info);">自分自身の情報のみ参照可能です</span>
+        <Radio label="1">すべて</Radio>
+        <span class="ml30" style="color: var(--primary-info);">すべての情報が参照可能です。</span>
+        <div class="titlenorm mb5 mt10" style="font-size:15px">
+          <Icon type="logo-buffer"></Icon>
+          条件を選択
+        </div>
+        <Alert class="primary-info tl">指定範囲内での情報が参照可能です</Alert>
+        <Radio style="display: inline-block;width: 50px;" label="2">OR</Radio>
+        <Radio style="display: inline-block;width: 50px;" label="3">AND</Radio>
+     </radio-group>
+
+     <i-select class="mt10" v-model="updateValue.selected" :disabled="updateValue.selectedDisable" @on-change="handleSelect($event)" placeholder="選択ください">
+     <i-option>&nbsp;</i-option>
+      <i-option v-for="(item, index) of conditionsList" :key="index" :label="item.mdpCpermissionname" :value="item.mdpCpermissionid">
+      </i-option>
+    </i-select>
+
+     <Checkbox v-model="updateValue.checked" class="width100 tl mt15" style="margin-left: 0;">基点組織設定を使用する</Checkbox>
+     <div class="titlenorm mb5 mt10" style="font-size:15px">
+      <Icon type="logo-buffer"></Icon>
+      退職者検索対象範囲
+    </div>
+
+    <radio-group class="tl width100" v-model="updateValue.hgpCpermRetired" vertical>
+      <Radio label="0">参照しない</Radio>
+      <span class="ml30" style="color: var(--primary-info);">退職者の情報は参照出来ません。</span>
+      <Radio label="1">自社のみ</Radio>
+      <span class="ml30" style="color: var(--primary-info);">自社の退職者の情報が参照可能です。</span>
+      <Radio label="2">すべて</Radio>
+      <span class="ml30" style="color: var(--primary-info);">すべての退職者の情報が参照可能です。</span>
+   </radio-group>
+    </Modal>
     <back-top></back-top>
   </main>
   <div th:replace="layout/head::header"></div>
@@ -123,6 +162,7 @@
           // 预设最多20个权限
           slotList: Utils.getNumArray(1, 20).map(e => `m${e}`),
           radioType: 0,
+          isShow: false,
           loading: true,
           editLoading: false,
           isEditing: false,
@@ -132,7 +172,7 @@
           legalPersonList: [],
           beforeClickedCell: {},
           clickedCell: {},
-          updateValue: [],
+          updateValue: {},
           systemList: [],
           siteList: [],
           appList: [],
@@ -149,7 +189,7 @@
             isAll: false,
           },
           tableData: [],
-          tableDataForAction: [],
+          conditionsList: [],
           limitDate: '',
           rangeOptions: {
             disabledDate: date => {
@@ -163,6 +203,7 @@
         this.getSystemList()
         this.getSiteList()
         this.getAppList()
+        this.getConditionsList()
         await this.getLegalPersonList()
         this.getGroupList()
         this.getTableData()
@@ -303,14 +344,141 @@
             })
             console.log(result)
             this.tableData = result
-            // this.tableDataForAction = this.tableData.slice(0, 1)
           } catch (error) {
           } finally {
             this.loading = false
           }
         },
+        async getConditionsList() {
+          const { data } = await this.http.get('sys/searchrangemanager/conditions')
+          this.conditionsList = data
+        },
+        handleRadio(e) {
+          // 「未設定」の場合
+          if(e === '0') {
+            this.updateValue.hgpCbasesectionFlagNeed     = "0";
+			      this.updateValue.hgpCpermnecessity = "";
+			      this.updateValue.hgpCpermnecessityname = "";
+
+			      this.updateValue.hgpCbasesectionFlagMust     = "0";
+			      this.updateValue.hgpCpermmust = "";
+            this.updateValue.hgpCpermmustname = "";
+
+            // 不可选选择器
+            this.selectedDisable = true
+            this.updateValue.selected = ''
+
+            // 未設定なら 退職者検索参照しない
+            this.updateValue.hgpCpermRetired = '0'
+          }
+          // 「すべて」の場合
+          if(e === '1') {
+            this.updateValue.hgpCbasesectionFlagNeed     = "0";
+			      this.updateValue.hgpCpermnecessity = '0001';
+			      this.updateValue.hgpCpermnecessityname = '全て参照可能';
+
+			      this.updateValue.hgpCbasesectionFlagMust     = "0";
+			      this.updateValue.hgpCpermmust = "";
+            this.updateValue.hgpCpermmustname = "";
+
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
+            this.updateValue.selected = ''
+          }
+          // 「条件指定」の場合 定義リスト OR
+          if(e === '2') {
+            if (this.updateValue.checked) {
+				      this.updateValue.hgpCbasesectionFlagNeed   = "1";
+			      } else {
+				      this.updateValue.hgpCbasesectionFlagNeed   = "0";
+			      }
+
+			      this.updateValue.hgpCbasesectionFlagMust     = "0";
+			      this.updateValue.hgpCpermmust = "";
+            this.updateValue.hgpCpermmustname = "";
+
+            this.updateValue.selectedDisable = false
+          }
+
+          // 「条件指定」の場合 定義リスト AND]
+          if(e === '3'){
+            this.updateValue.hgpCbasesectionFlagNeed     = "0";
+			      this.updateValue.hgpCpermnecessity = "";
+			      this.updateValue.hgpCpermnecessityname = "";
+
+			      if (this.updateValue.checked) {
+				      this.updateValue.hgpCbasesectionFlagMust   = "1";
+			      } else {
+				      this.updateValue.hgpCbasesectionFlagMust   = "0";
+			      }
+
+            this.updateValue.selectedDisable = false
+          }
+        },
+        handleSelect(e) {
+          const cuCondition = this.conditionsList.find(t=> t.mdpCpermissionid === e)
+          if(cuCondition) {
+            if(this.updateValue.type === '2') {
+              this.updateValue.hgpCpermnecessity = cuCondition.mdpCpermissionid
+			        this.updateValue.hgpCpermnecessityname = cuCondition.mdpCpermissionname
+            }
+            if(this.updateValue.type === '3') {
+              this.updateValue.hgpCpermmust = cuCondition.mdpCpermissionid
+			        this.updateValue.hgpCpermmustname = cuCondition.mdpCpermissionname
+            }
+          } else {
+            if(this.updateValue.type === '2') {
+              this.updateValue.hgpCpermnecessity = ''
+			        this.updateValue.hgpCpermnecessityname = ''
+            }
+            if(this.updateValue.type === '3') {
+              this.updateValue.hgpCpermmust = ''
+			        this.updateValue.hgpCpermmustname = ''
+            }
+          }
+        },
+        async update() {
+          this.loading = true
+          this.isEditing = false
+          console.log(this.updateValue)
+          const { data } = await this.http.post('sys/searchrangemanager/update', [this.updateValue])
+          this.getTableData()
+          this.updateValue = {}
+          // let OPTS = { permList: [...new Set(this.updateValue)] }
+          // if (this.opts.date) {
+          //   OPTS.changeDate = this.opts.date
+          // }
+          // const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
+        },
         handleCellClick(row, column, data, event) {
-          
+          // 点到名字的第一列是也不要弹出操作浮层
+          if (!this.isEditing || column.slot === 'objectName') {
+            return
+          }
+          console.log(row[column.slot])
+          this.updateValue = {...row[column.slot]}
+
+          // 点开后的初始显示
+          if(this.updateValue.hgpCbasesectionFlagMust === '1' || this.updateValue.hgpCbasesectionFlagNeed=== '1') {
+            this.updateValue.checked = true
+          }
+          if(!this.updateValue.fullPermission) {
+            this.updateValue.type = '0'
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
+          }
+          if(this.updateValue.fullPermission === '0') {
+            this.updateValue.type = '1'
+          }
+          if(this.updateValue.hgpCbasesectionFlagNeed === '1' || this.updateValue.hgpCpermnecessityname && this.updateValue.hgpCpermnecessity !== '0001') {
+            this.updateValue.type = '2'
+            this.updateValue.selected = this.updateValue.hgpCpermnecessity
+          }
+          if(this.updateValue.hgpCbasesectionFlagMust === '1'|| this.updateValue.hgpCpermmustname) {
+            this.updateValue.type = '3'
+            this.updateValue.selected = this.updateValue.hgpCpermmust
+          }
+          this.isShow = true
         },
         handleSystemChange() {
           this.getSiteList()
@@ -350,11 +518,12 @@
           this.getTableData()
         },
         handleCancel() {
-          if(this.updateValue.length > 0) {
-            history.go(0)
-          } else {
-            this.isEditing = false
-          }
+          // if(this.updateValue.length > 0) {
+          //   history.go(0)
+          // } else {
+          //   this.isEditing = false
+          // }
+          this.isEditing = false
         },
         handleScroll: Throttle(function (e) {
           this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop

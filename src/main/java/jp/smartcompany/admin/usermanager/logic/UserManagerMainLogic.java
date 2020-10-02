@@ -1,8 +1,12 @@
 package jp.smartcompany.admin.usermanager.logic;
 
+import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
+import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
 import jp.smartcompany.boot.util.PageUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 
 import java.util.Map;
+import java.util.List;
 
 public interface UserManagerMainLogic {
 
@@ -22,4 +26,24 @@ public interface UserManagerMainLogic {
      */
     PageUtil search(Map<String,Object> params);
 
+    /**
+     * 解锁用户
+     * @param userIds
+     */
+    void unLock(List<String> userIds);
+
+    /**
+     * パスワードポリシーリスト　設定
+     */
+    List<ConfSyscontrolDO> passwordPolicy();
+
+    void updatePolicy(List<ConfSyscontrolDO> controlList);
+
+    Map<String,Object> showChangeEndDate(ShowLimitDateForm form);
+    /**
+     * 利用終了日 変更
+     */
+    void changeEndDate(UserManagerEditEndForm dto);
+
+    Map<String,Object> showChangeStartDate(ShowLimitDateForm form);
 }

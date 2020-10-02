@@ -4,6 +4,7 @@ import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.framework.auth.entity.LoginControlEntity;
 import jp.smartcompany.framework.compatible.entity.V3CompatiblePostEntity;
@@ -271,5 +272,20 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
     @Override
     public IPage<UserManagerListDTO> selectMainValidList(IPage<UserManagerListDTO> page,String custId,String language,String companyId,List<String> companyList) {
         return baseMapper.selectMainValidList(page,custId,language,companyId,companyList);
+    }
+
+    @Override
+    public List<UserManagerDTO> selectStartList(String custId, List<String> userIds,
+
+                                                String language, Integer searchType,
+                                                List<String> companyList) {
+        return baseMapper.selectStartList(custId,userIds,language,searchType,companyList);
+    }
+
+    @Override
+    public List<UserManagerDTO> selectEndList(String custId, List<String> userIds,
+                                              String language, Integer searchType,
+                                              List<String> companyList) {
+         return baseMapper.selectEndList(custId,userIds, language, searchType, companyList);
     }
 }
