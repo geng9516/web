@@ -102,6 +102,9 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(255,157,93, .7), rgb(255,102,0, .7))',
+    '--mobile-nav-bg':'var(--table-head)',
+    '--mobile-other-btn-bg':'rgba(255, 255, 255, .6)',
+    '--mobile-input-btn-bg':'rgba(255, 255, 255, .6)',
     // footer
     '--footer-bg': '#eaebec',
     // reset
@@ -241,6 +244,9 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
+    '--mobile-nav-bg':'var(--table-head)',
+    '--mobile-other-btn-bg':'rgba(255, 255, 255, .6)',
+    '--mobile-input-btn-bg':'rgba(255, 255, 255, .6)',
     // footer
     '--footer-bg': '#eaebec',
     // reset
@@ -377,7 +383,11 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-bg':'linear-gradient(-45deg, #333333, #333333)',
     '--disabled-checkbox-border':'#464646',
     // mobile login
-    '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
+    '--mobile-login-btn': 'rgb(43, 64, 104)',
+    '--mobile-nav-bg':'rgb(32, 31, 31)',
+    '--mobile-other-btn-bg':'var(--ghost-background)',
+    '--mobile-input-btn-bg':'var(--selection-input-bg)',
+
     // footer
     '--footer-bg': 'rgb(54, 54, 54)',
     // dark

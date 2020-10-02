@@ -264,12 +264,12 @@
                 k += 1
               } else {
                 // 如果id不同就自增一个对象继续
-                // 初始化对象以防下方为空
-                j += 1
-                k = 1
-                if(!result[j]) result[j] = {}
                 curTypeId = e.hgpCobjectid
-                result[j][`m${k}`] = {...e}
+                // 初始化对象以防下方为空
+                result[j+1] = {}
+                result[j+1].m1 = {...e}
+                j += 1
+                k = 2
               }
             })
             console.log(result)

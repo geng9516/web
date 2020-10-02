@@ -109,5 +109,20 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
      */
     ClockInfoVO selectClockInfo(HashMap<String, Object> params);
 
+    /**
+     * 社員の勤務パターンを取得する
+     *
+     * @param params
+     * @return
+     */
+    String selectEmpPattern(HashMap<String, Object> params);
+
+    /**
+     * 務パターンの変更時間を取得する
+     *
+     * @param params
+     * @return
+     */
+    int selectPatternChangeTime(HashMap<String, Object> params);
 
 }

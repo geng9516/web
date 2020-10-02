@@ -994,9 +994,9 @@
                 }
                 //日付切替時刻があれば、翌日勤務パターンを選択しなければならない
                 //翌日勤務パターンがあれば.日付切替時刻を入力しなければならない
-                if (!this.valid_nextPtn(changeTime, nextptn)) {
-                    return
-                }
+                //if (!this.valid_nextPtn(changeTime, nextptn)) {
+                //   return
+                //}
                 this.btn_sk_commit_show = false
                 if (this.isDefault === true) {
                     this.rawData.flag = "TMG_ONOFF|1"

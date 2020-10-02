@@ -94,7 +94,7 @@
             ,tab1.c2caldays as tpa_c2caldays
             ,tab1.cnextptn as tpa_cnextptn
             ,tab2.tpa_cpatternname as cnextptname
-          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{sectionId}, #{groupId}, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
+          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{sectionId}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if> trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
                   order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid
     </select>
 
@@ -114,7 +114,7 @@
             ,tab1.c2caldays as tpa_c2caldays
             ,tab1.cnextptn as tpa_cnextptn
             ,tab2.tpa_cpatternname as cnextptname
-          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode},#{sectionId},#{groupId}, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
+          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode},#{sectionId}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if>, trunc(sysdate))) tab1,tmg_pattern tab2 where tab1.cnextptn = tab2.tpa_cpatternid(+)
              where  tab1.cnextptn = tab2.tpa_cpatternid(+) and tab1.csectionid = #{sectionId}
                order by tab1.csectionid, tab1.cgroupid, tab1.cpatternid
     </select>
@@ -134,7 +134,7 @@
             ,tmg_f_conv_min2hhmi(ndate_change_time, 0) as tpa_ndate_change_time
             ,c2caldays as tpa_c2caldays
             ,cnextptn as tpa_cnextptn
-          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{groupId}, null, trunc(sysdate)))
+          from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if>, null, trunc(sysdate)))
              where cpatternid=#{patternId}
     </select>
 
@@ -208,7 +208,7 @@
         ,tmg_f_conv_min2hhmi(ndate_change_time, 0) as tpa_ndate_change_time
         ,c2caldays as tpa_c2caldays
         ,cnextptn as tpa_cnextptn
-        from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, #{groupId}, null, trunc(sysdate)))
+        from table(tmg_f_get_tmg_pattern_list(#{custId},#{compCode}, <if test="groupId=='null'">'',</if><if test="groupId != 'null'"> ${groupId},</if>, null, trunc(sysdate)))
         <!-- 編集の場合、選択したパターンが表示しない -->
         <if test="patternId != null">
             where cpatternid<![CDATA[<>]]> #{patternId}

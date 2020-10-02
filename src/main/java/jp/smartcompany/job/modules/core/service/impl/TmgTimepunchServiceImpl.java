@@ -143,4 +143,24 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
         params.put("compCode", compCode);
         return baseMapper.selectClockInfo(params);
     }
+
+    @Override
+    public String selectEmpPattern(String custId, String compCode, String employeeId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("employeeId", employeeId);
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        return baseMapper.selectEmpPattern(params);
+    }
+
+    @Override
+    public int selectPatternChangeTime(String custId, String compCode, String sectionId, String patternId) {
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("custId", custId);
+        params.put("compCode", compCode);
+        params.put("sectionId", sectionId);
+        params.put("patternId", patternId);
+        return baseMapper.selectPatternChangeTime(params);
+    }
+
 }

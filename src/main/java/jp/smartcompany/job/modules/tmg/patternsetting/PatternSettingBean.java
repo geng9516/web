@@ -88,7 +88,6 @@ public class PatternSettingBean {
         if (null == sectionId || "".equals(sectionId)) {
             sectionId = referList.getTargetSec();
         }
-
         List<TmgPatternDTO> tmgPatternDTOS = iPatternSettingService.selectTmgPattern(psDBBean.getCustID(), psDBBean.getCompCode(), sectionId, groupId);
         List<JSONObject> dutyArray = null;
         List<JSONObject> restArray = null;
