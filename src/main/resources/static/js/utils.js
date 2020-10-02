@@ -247,6 +247,7 @@ const Utils = {
    * @returns {boolean}
    */
     multipleTimeOverlap: function (timeArray, formkey = 'open', endkey = 'close', errorMsg = '時間が重複しています。') {
+    if(timeArray.length === 0) return false
     let checkArr = []
     timeArray.forEach((e, i) => {
       const _timeArray = this.getNumArray(this.timeToMinute(e[formkey]), this.timeToMinute(e[endkey]))

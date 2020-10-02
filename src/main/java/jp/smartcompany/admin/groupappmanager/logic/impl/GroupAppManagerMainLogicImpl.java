@@ -78,7 +78,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
   private static final String OFF = "0";
 
   /** requestScopeに権限一覧を登録する際の名前 */
-  private static final String REQ_SCOPE_NAME = "permissionTableDtoList";
+  public static final String REQ_SCOPE_NAME = "permissionTableDtoList";
 
   private final PsSearchCompanyUtil psSearchCompanyUtil;
   private final IMastGroupService iMastGroupService;
@@ -283,7 +283,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
     if (CollUtil.isEmpty(lTable)) {
-      throw new GlobalException("権限データが存在しない");
+      throw new GlobalException("リストの有効期限が切れています。更新してもう一度お試しください");
     }
 
     // 今回改定日取得

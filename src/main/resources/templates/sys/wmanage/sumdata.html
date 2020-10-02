@@ -106,7 +106,7 @@
                 月次締めを実行するには、全職員の月次承認を行ってください</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueEmp.amount" :current="pageValueEmp.curPage" show-total style="display: inline"
-                :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" />
+                :page-size="pageValueEmp.curSize" @on-change="pageChangeEmp" ref="Page" simple/>
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
@@ -120,7 +120,7 @@
             <Alert class="primary-info lb tl">月次締めが行われていない部局が存在します。</Alert>
             <div class="tr mb10">
                 <Page :total="pageValueSec.amount" :current="pageValueSec.curPage" show-total style="display: inline"
-                :page-size="pageValueSec.curSize"   ref="Page" />
+                :page-size="pageValueSec.curSize"   ref="Page" simple/>
             </div>
             <div class="titlenorm">
                 <Icon type="logo-buffer"></Icon>
@@ -577,6 +577,8 @@
                 async download(e,f) {
                     if(f){
                         this.opts.sRetroFlg = f
+                    }else{
+                        this.opts.sRetroFlg = ''
                     }
                     this.opts.baseDate = e.concat('/01')
                     try{

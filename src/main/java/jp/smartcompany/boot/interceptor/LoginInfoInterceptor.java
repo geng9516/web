@@ -4,6 +4,8 @@ import cn.hutool.cache.impl.LRUCache;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.admin.groupappmanager.logic.impl.GroupAppManagerMainLogicImpl;
+import jp.smartcompany.admin.searchrangemanager.logic.impl.SearchRangeMangerLogicImpl;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.configuration.security.dto.SmartUserDetails;
 import jp.smartcompany.boot.util.ContextUtil;
@@ -100,9 +102,19 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
                 loadMenus(systemCode, systemList,httpSession);
             }
 
+            String sessionId = httpSession.getId();
+            String requestUri = request.getRequestURI();
+            // 不是权限设定管理页面的话则要把缓存的设定列表对象先删除
+            if (!requestUri.contains("groupappmanager")) {
+                timedCache.remove(GroupAppManagerMainLogicImpl.REQ_SCOPE_NAME+"_"+sessionId);
+            }
+            if (!requestUri.contains("searchrangemanager")) {
+                timedCache.remove(SearchRangeMangerLogicImpl.REQ_SCOPE_NAME+"_"+sessionId);
+            }
+
             Boolean passwordExpired = (Boolean)timedCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
             // 如果密码过期且不是访问修改密码的接口则跳转到密码过期页面
-            if (passwordExpired!=null && passwordExpired && !request.getRequestURI().contains("changeExpirePassword")) {
+            if (passwordExpired!=null && passwordExpired && !requestUri.contains("changeExpirePassword")) {
                 request.setAttribute("username",SecurityUtil.getUsername());
                 RequestDispatcher dispatcher = request.getRequestDispatcher("/expirePassword");
                 dispatcher.forward(request, response);

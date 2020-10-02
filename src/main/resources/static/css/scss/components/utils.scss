@@ -438,12 +438,12 @@
   background: var(--dept-search-bg);
   border:var(--border-grey);
 }
-.ivu-input-disabled.ivu-input-with-suffix, .ivu-input-number-input[disabled] {
+.ivu-input-disabled.ivu-input-with-suffix, .ivu-input-number-input[disabled], .ivu-input[disabled] {
   background: var(--disabled-selection);
   color: var(--disabled-btn);
   border-color: var(--disabled-btn-border);
 }
-.ivu-btn[disabled], .ivu-btn-ghost.ivu-btn-primary[disabled] {
+.ivu-btn[disabled], .ivu-btn-ghost.ivu-btn-primary[disabled],.ivu-btn-ghost.ivu-btn-success[disabled] {
   background: var(--disabled-btn-bg);
   color: var(--disabled-btn);
   border-color: var(--disabled-btn-border);
@@ -459,8 +459,11 @@
     border-color: transparent;
   }
 }
-.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body {
+.ivu-divider-inner-text,.ivu-select-input, .ivu-tabs, .ivu-modal-confirm-head-title,.ivu-modal-confirm-body, .ivu-upload-list-file {
   color: var(--grey);
+}
+.ivu-upload-list-file:hover {
+  background: var(--upload-list-file-hover-bg);
 }
 .ivu-card-head, .ivu-card-bordered {
   border-color: var(--border-grey);

@@ -1,6 +1,6 @@
 var APP_THEME = localStorage.getItem('APP_THEME') || 'default'
 var THEME_CONFIG  = {
-  orange: {
+  default: {
     //basic color
     '--grey': 'rgb(104, 109, 116)',
     '--white': 'rgb(255, 255, 255)',
@@ -102,6 +102,9 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(255,157,93, .7), rgb(255,102,0, .7))',
+    '--mobile-nav-bg':'var(--table-head)',
+    '--mobile-other-btn-bg':'rgba(255, 255, 255, .6)',
+    '--mobile-input-btn-bg':'rgba(255, 255, 255, .6)',
     // footer
     '--footer-bg': '#eaebec',
     // reset
@@ -135,9 +138,11 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
-    '--mask-bg':'rgba(55,55,55,.6)'
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
+
   },
-  blue: {
+  classical: {
     //basic color
     '--grey': 'rgb(104, 109, 116)',
     '--white': 'rgb(255, 255, 255)',
@@ -239,6 +244,9 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-border':'rgb(165, 165, 165)',
     // mobile login
     '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
+    '--mobile-nav-bg':'var(--table-head)',
+    '--mobile-other-btn-bg':'rgba(255, 255, 255, .6)',
+    '--mobile-input-btn-bg':'rgba(255, 255, 255, .6)',
     // footer
     '--footer-bg': '#eaebec',
     // reset
@@ -271,7 +279,8 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'rgb(255, 124, 114)',
     '--over-time-level-4':'rgb(171, 14, 1)',
     '--over-time-level-5':'rgb(88, 9, 2)',
-    '--mask-bg':'rgba(55,55,55,.6)'
+    '--mask-bg':'rgba(55,55,55,.6)',
+    '--upload-list-file-hover-bg':'#f3f3f3',
   },
   dark: {
     //basic color
@@ -374,7 +383,11 @@ var THEME_CONFIG  = {
     '--disabled-checkbox-bg':'linear-gradient(-45deg, #333333, #333333)',
     '--disabled-checkbox-border':'#464646',
     // mobile login
-    '--mobile-login-btn': 'linear-gradient(90deg, rgba(50, 182, 255, .7), rgb(66, 118, 255, .7))',
+    '--mobile-login-btn': 'rgb(43, 64, 104)',
+    '--mobile-nav-bg':'rgb(32, 31, 31)',
+    '--mobile-other-btn-bg':'var(--ghost-background)',
+    '--mobile-input-btn-bg':'var(--selection-input-bg)',
+
     // footer
     '--footer-bg': 'rgb(54, 54, 54)',
     // dark
@@ -407,28 +420,17 @@ var THEME_CONFIG  = {
     '--over-time-level-3':'#92231a',
     '--over-time-level-4':'#480904',
     '--over-time-level-5':'#210301',
-    '--mask-bg':'rgba(99, 99, 99,0.91)'
+    '--mask-bg':'rgba(99, 99, 99,0.91)',
+    '--upload-list-file-hover-bg':'#3b3a3a',
   }
 }
 
 var Changetheme = function(e = APP_THEME, context) {
   if(context) context.curTheme = e
-  if(e === 'default') {
+  if(e) {
     localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.orange).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.orange[e])
-    })
-  }
-  if(e=== 'classical') {
-    localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.blue).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.blue[e])
-    })
-  }
-  if(e=== 'dark') {
-    localStorage.setItem('APP_THEME', e)
-    Object.keys(THEME_CONFIG.dark).forEach(e=>{
-      document.documentElement.style.setProperty(e,THEME_CONFIG.dark[e])
+    Object.keys(THEME_CONFIG[e]).forEach(t=>{
+      document.documentElement.style.setProperty(t,THEME_CONFIG[e][t])
     })
   }
 }
