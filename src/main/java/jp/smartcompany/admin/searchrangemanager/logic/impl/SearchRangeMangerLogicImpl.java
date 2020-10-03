@@ -98,6 +98,9 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
             for (SearchRangeManagerDataDTO rangeManagerDataDTO : dataList) {
                 if (rangeManagerDataDTO.getHgpId().equals(searchRangeManagerDataDTO.getHgpId())) {
                     BeanUtil.copyProperties(searchRangeManagerDataDTO,rangeManagerDataDTO);
+//                    System.out.println("===+++");
+//                    System.out.println(rangeManagerDataDTO);
+                    break;
                 }
             }
         }
@@ -137,6 +140,7 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         if (CollUtil.isNotEmpty(updateDbList)) {
             histGroupdatapermissionService.updateBatchById(updateDbList);
         }
+        timedCache.remove(REQ_SCOPE_NAME+"_"+sessionId);
     }
 
 }

@@ -39,4 +39,9 @@ public class MastPasswordServiceImpl extends ServiceImpl<MastPasswordMapper, Mas
                return baseMapper.updateHistory(username);
         }
 
+        @Override
+        public int updateHistoryNo(List<String> userIds) {
+                return baseMapper.updateHistoryNo(userIds);
+        }
+
 }

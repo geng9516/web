@@ -1,8 +1,11 @@
 package jp.smartcompany.job.modules.core.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerUpdateParamDTO;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginAccountBO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.mapper.MastAccountMapper;
@@ -12,6 +15,7 @@ import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -46,4 +50,75 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
               return loginAccountList.get(0);
         }
 
+
+        /* =====================
+                用户管理模块相关sql 开始
+           ===================
+         */
+        @Override
+        public List<UserManagerDTO> selectStartCheckAccount(
+                String customerId,
+                String userid,
+                String account) {
+           return baseMapper.selectStartCheckAccount(
+                   customerId,
+                   userid,
+                   account);
+        }
+
+        @Override
+        public List<UserManagerDTO> selectPersonalCheckAccountOld(String customerId, String account) {
+           QueryWrapper<MastAccountDO> qw = SysUtil.query();
+           qw.eq("MA_CCUSTOMERID",customerId)
+             .eq("MA_CACCOUNT",account)
+                   .lt(" MA_DEND", "TRUNC(SYSDATE)");
+           return list(qw).stream().map(accountDO -> {
+             UserManagerDTO dto = new UserManagerDTO();
+             dto.setMaCuserid(accountDO.getMaCuserid());
+             dto.setMaCaccount(accountDO.getMaCaccount());
+             return dto;
+           }).collect(Collectors.toList());
+        }
+
+        @Override
+        public UserManagerDTO selectPersonalCheckUserid(String userId) {
+          QueryWrapper<MastAccountDO> qw = SysUtil.query();
+          qw.eq("MA_CUSERID",userId);
+          MastAccountDO account = list(qw).get(0);
+          UserManagerDTO userManagerDTO = new UserManagerDTO();
+          BeanUtil.copyProperties(account,userManagerDTO);
+          return userManagerDTO;
+        }
+
+      /**
+       * 更新情報取得クエリ
+       * @param  pwdDate 日付
+       * @param sCryptPassword パスワード
+       * @param userId ログインユーザID
+       * @param sUpdatePassword パスワード（元）
+       * @param customerId 顧客コード
+       * @param userIds ユーザID（複数配列）
+       * @param companyList 法人検索対象範囲
+       * @return List
+       */
+        @Override
+        public List<UserManagerUpdateParamDTO> selectPasswordForUpdateInfo(
+          String pwdDate,
+          String sCryptPassword,
+          String userId,
+          String sUpdatePassword,
+          String customerId,
+          List<String> userIds,
+          List<String> companyList) {
+            return baseMapper.selectPasswordForUpdateInfo(pwdDate, sCryptPassword
+                    , userId
+                    , sUpdatePassword
+                    , customerId
+                    , userIds
+                    , companyList);
+        }
+        /* =====================
+                用户管理模块相关sql 结束
+           ===================
+         */
 }

@@ -665,9 +665,7 @@ public class TmgReferList {
                     httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
                     httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
                     httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
-
                 } else {
-
                     // 組織ツリー検索タブを使わない場合は初期化
                     httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, ciSelectTreeTab);
                     httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
@@ -678,9 +676,9 @@ public class TmgReferList {
                 }
                 break;
             case csSessionControl4SearchTreeSave:
-
                 httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
                 httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
+//                httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
                 httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
                 httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
                 httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
@@ -1247,26 +1245,45 @@ public class TmgReferList {
      */
     private void createMemberList4SearchView(TmgMemberList pTmgMemberList, String psBase) throws Exception{
 
-        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
-            // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
-            pTmgMemberList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-            pTmgMemberList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
-        } else {
-//            log.info("【搜索参数：searchItems:{},searchCondition:{},searchData:{},type:{},psSite:{},psApp:{}】");
-            log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
-                    getSearchCondition(),getSearchData());
-            if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
-                pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
-                        getSearchItems(), getSearchCondition(), getSearchData()
-                );
-            } else {
-                pTmgMemberList.setSearchDataArray(null);
-            }
-            sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
-                    pTmgMemberList.getDispLimit4Tree()
+        log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
+                getSearchCondition(),getSearchData());
+//        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
+//            pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
+//                    getSearchItems(), getSearchCondition(), getSearchData()
+//            );
+//        } else {
+//            pTmgMemberList.setSearchDataArray(null);
+//        }
+        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
+            pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
+                    getSearchItems(), getSearchCondition(), getSearchData()
             );
-
+        } else {
+            pTmgMemberList.setSearchDataArray(null);
         }
+        sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
+                pTmgMemberList.getDispLimit4Tree()
+        );
+
+//        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
+//            // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
+//            pTmgMemberList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+//            pTmgMemberList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
+//        } else {
+//            log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
+//                    getSearchCondition(),getSearchData());
+//            if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
+//                pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
+//                        getSearchItems(), getSearchCondition(), getSearchData()
+//                );
+//            } else {
+//                pTmgMemberList.setSearchDataArray(null);
+//            }
+//            sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
+//                    pTmgMemberList.getDispLimit4Tree()
+//            );
+//
+//        }
 
     }
 
@@ -1292,8 +1309,7 @@ public class TmgReferList {
             if(treeViewType == TREEVIEW_TYPE_LIST || treeViewType == TREEVIEW_TYPE_LIST_SEC || treeViewType == TREEVIEW_TYPE_LIST_WARD){
                 sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectEmpList() : buildSQLForSelectEmpList();
             }
-        }else
-        if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
+        }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             if(treeViewType == TREEVIEW_TYPE_LIST || treeViewType == TREEVIEW_TYPE_LIST_SEC){
                 if (PERM_SELECTEDVIEW_ALL.equals(getSelectedView())){
                     sSQL = (isSelectedSearchTab()) ? buildSearchDataArraySQLForSelectMemberList() : buildSQLForSelectMemberListAll();
@@ -3146,7 +3162,8 @@ public class TmgReferList {
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA) != null){
                 searchData =psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA);
             } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA) != null){
-                searchData = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
+                // fix：接口化后不再需要后端负责判断使用session还是前端传过来的参数，全部交由前端控制
+//                searchData = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
             }
 //        }
         return searchData;
