@@ -91,7 +91,7 @@
                             <tab-pane label="検索" name="organisationSearch">
                                 <Row :gutter="8" class="tl mb2">
                                     <i-col span="15">
-                                        <i-input @on-search="getTableData" class="mar mb5 like-select"
+                                        <i-input class="mar mb5 like-select"
                                                  enter-button placeholder="検索" search v-model="referListObject.hidSearchData">
                                             <i-select placeholder="項目" slot="prepend" style="width: 108px"
                                                       transfer v-model="referListObject.hidSearchItems">
@@ -600,6 +600,7 @@
         },
         methods: {
             async getSearchTableData() {
+                this.deptName = '職員により検索中'
                 //ツリー：0、検索：1
                 this.referListObject.hidSelectTab='1'
                 this.getTableData()
