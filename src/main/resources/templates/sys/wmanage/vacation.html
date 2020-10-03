@@ -65,7 +65,7 @@
                     ​
                     <Drawer :closable="selectedTab === '検索'" :mask-closable="!isSearchHistory" class="tc" placement="right"
                             v-model="deptDrawShow" width="700">
-                        <Tabs :animated="false" @on-click="currentTabChanged" v-model="selectedTab">
+                        <Tabs :animated="false" v-model="selectedTab">
                             <tab-pane label="ツリー" name="organisationTree">
                                 <div class="titlenorm mb5">
                                     <Icon type="logo-buffer"></Icon>
@@ -667,6 +667,7 @@
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
+                this.referListObject.hidSelectTab='0'
                 this.getTableData()
             },
             handleSpan({rowIndex, columnIndex}) {
