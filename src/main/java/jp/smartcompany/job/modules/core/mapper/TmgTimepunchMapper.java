@@ -115,7 +115,7 @@ public interface TmgTimepunchMapper extends BaseMapper<TmgTimepunchDO> {
      * @param params
      * @return
      */
-    String selectEmpPattern(HashMap<String, Object> params);
+    int selectEmpPattern(HashMap<String, Object> params);
 
     /**
      * 務パターンの変更時間を取得する

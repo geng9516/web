@@ -145,7 +145,7 @@ public class TmgTimepunchServiceImpl extends ServiceImpl<TmgTimepunchMapper, Tmg
     }
 
     @Override
-    public String selectEmpPattern(String custId, String compCode, String employeeId) {
+    public int selectEmpPattern(String custId, String compCode, String employeeId) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("employeeId", employeeId);
         params.put("custId", custId);
