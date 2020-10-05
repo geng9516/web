@@ -365,7 +365,7 @@
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
 
             // 未設定なら 退職者検索参照しない
@@ -382,7 +382,7 @@
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.updateValue.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
           }
           // 「条件指定」の場合 定義リスト OR
@@ -396,8 +396,7 @@
 			      this.updateValue.hgpCbasesectionFlagMust     = "0";
 			      this.updateValue.hgpCpermmust = "";
             this.updateValue.hgpCpermmustname = "";
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
 
           // 「条件指定」の場合 定義リスト AND]
@@ -411,8 +410,7 @@
 			      } else {
 				      this.updateValue.hgpCbasesectionFlagMust   = "0";
 			      }
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
         },
         handleSelect(e) {
@@ -442,13 +440,9 @@
           this.isEditing = false
           console.log(this.updateValue)
           const { data } = await this.http.post('sys/searchrangemanager/update', [this.updateValue])
+          this.$Message.success('更新完了')
           this.getTableData()
           this.updateValue = {}
-          // let OPTS = { permList: [...new Set(this.updateValue)] }
-          // if (this.opts.date) {
-          //   OPTS.changeDate = this.opts.date
-          // }
-          // const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
         },
         handleCellClick(row, column, data, event) {
           // 点到名字的第一列是也不要弹出操作浮层
