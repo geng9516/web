@@ -658,35 +658,46 @@ public class TmgReferList {
      */
     private void sessionControl4SearchTree(int piParam, List pvSearchDataArray, String psDispLimit4Tree){
         HttpSession httpSession = ContextUtil.getSession();
-        switch(piParam){
-            case csSessionControl4SearchTreeInitialization:
-
-                if (isUseSearcjEmp()){
-                    httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, getHidSelectTab());
-                    // fix:与老代码不同的是，接口化搜索接口后每次调用都要重新设置搜索条件和搜索结果
-                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
-                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
-                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
-                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
-                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
-                } else {
-                    // 組織ツリー検索タブを使わない場合は初期化
-                    httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, ciSelectTreeTab);
-                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
-                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
-                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, null);
-                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, null);
-                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, null);
-                }
-                break;
-            case csSessionControl4SearchTreeSave:
-                httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
-                httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
-                httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
-                httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
-                httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
-                break;
+        if (StrUtil.isNotBlank(getSearchData())) {
+            httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
+            httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
+            httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
+            httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
+        } else {
+            httpSession.removeAttribute(SESSION_KEY_SEARCHDATAARRAY);
+            httpSession.removeAttribute(SESSION_KEY_SEARCHCONDITION);
+            httpSession.removeAttribute(SESSION_KEY_SEARCHDATA);
+            httpSession.removeAttribute(SESSION_KEY_DISPLIMIT4TREE);
         }
+//        switch(piParam){
+//            case csSessionControl4SearchTreeInitialization:
+//
+//                if (isUseSearcjEmp()){
+//                    httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, getHidSelectTab());
+//                    // fix:与老代码不同的是，接口化搜索接口后每次调用都要重新设置搜索条件和搜索结果
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
+//                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
+//                } else {
+//                    // 組織ツリー検索タブを使わない場合は初期化
+//                    httpSession.setAttribute(TREEVIEW_OBJ_HIDSELECT, ciSelectTreeTab);
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, null);
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, null);
+//                    httpSession.setAttribute(SESSION_KEY_SEARCHDATA, null);
+//                    httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, null);
+//                }
+//                break;
+//            case csSessionControl4SearchTreeSave:
+//                httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
+//                httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
+//                httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
+//                httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
+//                httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
+//                break;
+//        }
     }
 
     /**
@@ -1015,7 +1026,7 @@ public class TmgReferList {
                         empList.setSearchDataArray(null);
                     }
                     httpSession.setAttribute(SESSION_KEY_TARGETDATE, target);
-                    sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
+//                    sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
                 }
             }
             // そうでない場合、SYSDATE-targetDateの範囲のレコードを使用します
@@ -1110,7 +1121,7 @@ public class TmgReferList {
             } else {
                 empList.setSearchDataArray(null);
             }
-            sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
+//            sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
         }
         // 使用するデータを、SYSDATE-targetDateの範囲に絞り込みます
         empList.setSearchDataArray(empList.getSearchDataArrayBetween(pSdf.format(gcSysdate.getTime()),targetDate));
@@ -1265,9 +1276,9 @@ public class TmgReferList {
         } else {
             pTmgMemberList.setSearchDataArray(null);
         }
-        sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
-                pTmgMemberList.getDispLimit4Tree()
-        );
+//        sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
+//                pTmgMemberList.getDispLimit4Tree()
+//        );
 
 
 //        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
