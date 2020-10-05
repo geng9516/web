@@ -79,4 +79,63 @@
           HD_CIFKEYORADDITIONALROLE
     </select>
 
+
+    <!--用户管理相关sql开始-->
+    <select id="selectStartCheckAccount" parameterType="map" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerDTO">
+      --既存アカウントチェック
+      SELECT
+        MA_CACCOUNT
+        FROM
+        MAST_ACCOUNT
+      WHERE
+        MA_CCUSTOMERID = #{customerId}
+        AND MA_CACCOUNT = #{account}
+        AND MA_CUSERID <![CDATA[<>]]> #{userId}
+        AND MA_DSTART <![CDATA[ <= ]]> TRUNC(SYSDATE)
+        AND MA_DEND >= TRUNC(SYSDATE)
+      UNION
+      SELECT
+        MA_CACCOUNT
+      FROM
+        MAST_ACCOUNT
+      WHERE
+        MA_CCUSTOMERID = #{customerId}
+        AND MA_CACCOUNT =  #{account}
+        AND MA_CUSERID <![CDATA[<>]]> #{userId}
+        AND MA_DSTART > TRUNC(SYSDATE)
+    </select>
+
+    <select id="selectPasswordForUpdateInfo" resultType="jp.smartcompany.admin.usermanager.dto.UserManagerUpdateParamDTO">
+          SELECT
+             ME_CUSERID AS MAP_CUSERID
+            ,ME_CMAIL
+            ,MA_CACCOUNT
+            ,SYSDATE AS MAP_DMODIFY
+            ,TO_DATE('${pwdDate}') AS MAP_DPWDDATE
+            ,0 AS MAP_NHISTORY
+            ,'${password}' AS MAP_CPASSWORD
+            ,'${loginUserId}' AS MAP_CMODIFIER
+            ,'${originalPassword}' AS ORIGINAL_PASSWORD
+        FROM
+             MAST_EMPLOYEES,MAST_ACCOUNT
+        WHERE
+            ME_CCUSTOMERID_CK = #{custId}
+            <if test="userList!=null and userList.size()>0">
+              AND MA_CUSERID IN
+              <foreach collection="userList" index="index" item="userId" separator="," open="(" close=")">
+                #{userId}
+              </foreach>
+            </if>
+            AND ME_DENDDATE = TO_DATE('2222/12/31')
+            AND ME_CCUSTOMERID_CK = MA_CCUSTOMERID
+            AND MA_CUSERID = ME_CUSERID
+            <if test="companyList!=null and companyList.size()>0">
+              AND ME_CCOMPANYID IN
+              <foreach collection="companyList" index="index" item="compId" separator="," open="(" close=")">
+                #{compId}
+              </foreach>
+            </if>
+            ORDER BY ME_CEMPLOYEEID_CK
+    </select>
+    <!--用户管理相关sql结束-->
 </mapper>

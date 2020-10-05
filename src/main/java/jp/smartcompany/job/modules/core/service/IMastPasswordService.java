@@ -38,4 +38,6 @@ public interface IMastPasswordService extends IService<MastPasswordDO> {
          */
         int updateHistory(String username);
 
+        int updateHistoryNo(List<String> userIds);
+
 }

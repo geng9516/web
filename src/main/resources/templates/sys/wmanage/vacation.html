@@ -24,6 +24,37 @@
         </div>
         <div class="searchwrap">
             <!-- 共通組織図画面 start-->
+<!--            <span style="display:flex;width: calc(15% + 200px);">-->
+<!--                    <span class="label">所属</span>-->
+<!--                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">-->
+<!--                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}-->
+<!--                            <div slot="content">{{deptName}}</div>-->
+<!--                        </Tooltip>-->
+<!--                    </i-button>-->
+<!--                    <Drawer class="tc" placement="right" width="700" :closable="false"-->
+<!--                            :mask-closable="!isSearchHistory"-->
+<!--                            v-model="deptDrawShow">-->
+<!--                        <div class="titlenorm mb5">-->
+<!--                            <Icon type="logo-buffer"></Icon>-->
+<!--                            所属-->
+<!--                        </div>-->
+<!--                        <Row class="tl mb5">-->
+<!--                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>-->
+<!--                            <i-col span="7" class="no-border-radius">-->
+<!--                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit" transfer-->
+<!--                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"-->
+<!--                                         @on-change="handleDeptDateChange"></date-picker>-->
+<!--                            </i-col>-->
+<!--                        </Row>-->
+<!--                        <div style="position: relative;">-->
+<!--                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"-->
+<!--                                  empty-text="所属データなし"></Tree>-->
+<!--                            <Spin size="large" fix v-if="empDeptLoading"></Spin>-->
+<!--                        </div>-->
+<!--                    </Drawer>-->
+<!--                </span>-->
+
+
             <span style="display:flex;width: calc(15% + 200px);">
                     <span class="label">所属</span>
                     <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
@@ -31,26 +62,56 @@
                             <div slot="content">{{deptName}}</div>
                         </Tooltip>
                     </i-button>
-                    <Drawer class="tc" placement="right" width="700" :closable="false"
-                            :mask-closable="!isSearchHistory"
-                            v-model="deptDrawShow">
-                        <div class="titlenorm mb5">
-                            <Icon type="logo-buffer"></Icon>
-                            所属
-                        </div>
-                        <Row class="tl mb5">
-                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                            <i-col span="7" class="no-border-radius">
-                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit" transfer
-                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"
-                                         @on-change="handleDeptDateChange"></date-picker>
-                            </i-col>
-                        </Row>
-                        <div style="position: relative;">
-                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                  empty-text="所属データなし"></Tree>
-                            <Spin size="large" fix v-if="empDeptLoading"></Spin>
-                        </div>
+                    ​
+                    <Drawer :closable="selectedTab === '検索'" :mask-closable="!isSearchHistory" class="tc" placement="right"
+                            v-model="deptDrawShow" width="700">
+                        <Tabs :animated="false" v-model="selectedTab">
+                            <tab-pane label="ツリー" name="organisationTree">
+                                <div class="titlenorm mb5">
+                                    <Icon type="logo-buffer"></Icon>
+                                    所属
+                                </div>
+                                <Row class="tl mb5">
+                                    <i-col class="label tc" span="4" style="height: 32px;">基準日</i-col>
+                                    <i-col class="no-border-radius" span="7">
+                                        <date-picker :clearable="false" :options="startLimit"
+                                                     :value="referListObject.txtTmgReferListTreeViewRecordDate" @on-change="handleDeptDateChange"
+                                                     format="yyyy/MM/dd" placeholder="基準日" ref="datePicker" transfer
+                                                     type="date">
+                                        </date-picker>
+                                    </i-col>
+                                </Row>
+
+                                <div style="position: relative;">
+                                    <Tree :data="treeData" class="tree mt2" empty-text="所属データなし"
+                                          ref="tree" v-on:on-select-change="handleClickLeaf"></Tree>
+                                    <Spin fix size="large" v-if="empDeptLoading"></Spin>
+                                </div>
+                            </tab-pane>
+                            <tab-pane label="検索" name="organisationSearch">
+                                <Row :gutter="8" class="tl mb2">
+                                    <i-col span="15">
+                                        <i-input class="mar mb5 like-select"
+                                                 enter-button placeholder="検索" search v-model="referListObject.hidSearchData">
+                                            <i-select placeholder="項目" slot="prepend" style="width: 108px"
+                                                      transfer v-model="referListObject.hidSearchItems">
+                                                <i-option :value="item.value" v-for="(item,i) of searchTypesList">
+                                                    {{ item.name }}</i-option>
+                                            </i-select>
+                                            <i-select placeholder="条件" slot="append"
+                                                      style="width: 108px" transfer v-model="referListObject.hidSearchCondition">
+                                                <i-option :value="item.value" v-for="(item,i) of searchConditionsList">
+                                                    {{ item.name }}</i-option>
+                                            </i-select>
+                                        </i-input>
+                                    </i-col>
+                                    <i-col class="no-border-radius" span="8">
+                                        <i-button :loading="loading" @click="getSearchTableData" ghost icon="md-search" long
+                                                  type="primary">検索</i-button>
+                                    </i-col>
+                                </Row>
+                            </tab-pane>
+                        </Tabs>
                     </Drawer>
                 </span>
             <!-- 共通組織図画面 end-->
@@ -321,6 +382,9 @@
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    hidSearchItems:'EMPLOYEEID',
+                    hidSearchCondition:'BROADMATCH',
+                    hidSearchData:'',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
@@ -397,6 +461,10 @@
                         ]
                     }
                 ],
+                selectedTab: 'organisationTree',
+                searchTypesList: [],     //組織ツリー用
+                searchConditionsList: [],//組織ツリー用
+                // hidSearchData: '',
                 paidNowLoading: false,
                 paidDetailsData: [],
                 isSearchHistory: false,
@@ -531,6 +599,12 @@
             await this.getInit()
         },
         methods: {
+            async getSearchTableData() {
+                this.deptName = '職員により検索中'
+                //ツリー：0、検索：1
+                this.referListObject.hidSelectTab='1'
+                this.getTableData()
+            },
             async getTableData() {
                 try {
                     this.loading = true
@@ -567,6 +641,18 @@
                     this.empDeptLoading = false
                 }
             },
+            async getSearchCondition() {
+                const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList = Object.keys(data.searchConditions).map(e => { return { name: data.searchConditions[e], value: e } })
+                this.searchTypesList = Object.keys(data.searchTypes).map(e => { return { name: data.searchTypes[e], value: e } })
+            },
+            async currentTabChanged(name) {
+                // if (name=="organisationTree") {
+                //     this.referListObject.hidSelectTab='0'
+                // } else if (name=="organisationSearch") {
+                //     this.referListObject.hidSelectTab='1'
+                // }
+            },
             async handleDeptDateChange(e) {
                 const date = [[${ TREEVIEW_KEY_RECORD_DATE }]]
                 this.referListObject[date] = e
@@ -581,6 +667,7 @@
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
+                this.referListObject.hidSelectTab='0'
                 this.getTableData()
             },
             handleSpan({rowIndex, columnIndex}) {
@@ -1541,7 +1628,7 @@
 
                 this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 await this.getOrgTree()
-
+                this.getSearchCondition()
                 this.targetAdminSection = '',
                     this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
