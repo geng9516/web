@@ -75,6 +75,7 @@
           </i-col>
         </Row>
       </div>
+      <Alert v-show="this.updateList.length > 0" class="error-info tl">情報が変更されています。 登録ボタンで登録処理を行なってください。</Alert>
       <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
