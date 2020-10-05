@@ -657,14 +657,14 @@
                     }
 
                     if(this.selectedRestInfo.timeZone) {
-                        if(this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
-                            this.errorInfo = true
-                            this.errorMsg = '終了時間を入力してください'
-                            return
-                        }
-                        if(!this.restApply.timezoneOpen && this.restApply.timezoneClose) {
+                        if(!this.restApply.timezoneOpen) {
                             this.errorInfo = true
                             this.errorMsg = '開始時間を入力してください。'
+                            return
+                        }
+                        if(!this.restApply.timezoneClose) {
+                            this.errorInfo = true
+                            this.errorMsg = '終了時間を入力してください'
                             return
                         }
                         if(!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
@@ -753,7 +753,7 @@
                         }
                         this.rotate = !this.rotate
                         this.isReApplyIng = false
-                        await this.getApplyHistory()
+                        await this.getApplyHistory(true)
                         await this.getRestInfo()
                         this.$Message.success('申请完了')
                         this.uploadFiles = []
