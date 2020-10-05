@@ -75,6 +75,7 @@
           </i-col>
         </Row>
       </div>
+      <Alert class="primary-info">セルをクリックすると、変更ができます。</Alert>
       <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
