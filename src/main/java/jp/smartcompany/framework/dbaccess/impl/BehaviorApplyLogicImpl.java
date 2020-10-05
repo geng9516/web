@@ -77,7 +77,7 @@ public class BehaviorApplyLogicImpl implements BehaviorApplyLogic {
             , final String psRelationID, final String psColumnId) {
         HttpServletRequest request = ContextUtil.getHttpRequest();
         assert request != null;
-        HttpSession session = request.getSession();
+        HttpSession session = ContextUtil.getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         // 参照権限有無
         boolean bResult = false;

@@ -65,7 +65,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         }
         // 法人検索対象範囲情報取得(参照可能な法人のリストを取得)
         List<String> companyValidList = searchCompanyUtil.getCompList(SysUtil.transStringToDate(searchDate));
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         // 获取当前系统正在被使用的grouplist
         List<GroupManagerGroupListDTO> validGroupList= iMastGroupService.selectValidGroup(session.getLoginCustomer(),systemId,session.getLanguage(),searchDate,companyValidList);
         validGroupList.forEach(item->{
@@ -88,7 +88,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
     public String deleteHandler(GroupManagerDeleteDTO dto) {
         QueryWrapper<MastGroupDO> qw = SysUtil.query();
         String date = SysUtil.transDateToString(DateUtil.date());
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         if (StrUtil.isBlank(dto.getSystemId())){
             dto.setSystemId("01");
         }
@@ -109,7 +109,7 @@ public class GroupManagerDateEditLogicImpl implements GroupManagerDateEditLogic 
         if (StrUtil.isBlank(systemId)) {
             systemId = "01";
         }
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         List<GroupManagerSortDTO> sortList = CollUtil.newArrayList();
         String now = SysUtil.transDateToString(DateUtil.date());
         for (int i = 0; i < groupIds.size(); i++) {

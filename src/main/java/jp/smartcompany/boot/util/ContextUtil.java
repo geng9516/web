@@ -1,5 +1,6 @@
 package jp.smartcompany.boot.util;
 
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
@@ -7,6 +8,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * @author xiao wenpeng
@@ -34,6 +36,18 @@ public class ContextUtil {
   public static String getOrigin(){
     HttpServletRequest request = getHttpRequest();
     return request.getHeader("Origin");
+  }
+
+  public static HttpSession getSession() {
+    HttpServletRequest request = getHttpRequest();
+    if (request == null) {
+      throw new GlobalException("リクエストオブジェクトが存在しません");
+    }
+    HttpSession session = request.getSession(false);
+    if (session == null) {
+      throw new GlobalException("セッションオブジェクトが存在しません");
+    }
+    return session;
   }
 
   public static String getParam(String key) {

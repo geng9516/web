@@ -246,7 +246,7 @@ public class SysUtil {
     }
 
     public static String getPermissionString() {
-        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        HttpSession session = ContextUtil.getSession();
         PsSession psSession = (PsSession)session.getAttribute(Constant.PS_SESSION);
         ScCacheUtil scCacheUtil = (ScCacheUtil)SpringUtil.getBean("scCacheUtil");
         return scCacheUtil.getPermissionString(psSession.getLoginCustomer(),

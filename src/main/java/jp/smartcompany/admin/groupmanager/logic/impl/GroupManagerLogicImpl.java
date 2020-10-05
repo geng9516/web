@@ -49,7 +49,7 @@ public class GroupManagerLogicImpl implements GroupManagerLogic {
         }
         List<String> companyList = psSearchCompanyUtil.getCompList(searchDate);
         String searchDateStr = SysUtil.transDateToString(searchDate);
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         // 获取当前系统正在被使用的grouplist
         List<GroupManagerGroupListDTO> validGroupList= iMastGroupService.selectValidGroup(session.getLoginCustomer(),systemId,session.getLanguage(),searchDateStr,companyList);
         validGroupList.forEach(item->{

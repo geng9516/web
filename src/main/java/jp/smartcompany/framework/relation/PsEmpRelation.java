@@ -31,7 +31,7 @@ public class PsEmpRelation {
 
     public int getRelationId(String sCust, String sLoginUser,
                              String sTargetUser, String sSystem, String sDate) {
-        HttpSession session = Objects.requireNonNull(ContextUtil.getHttpRequest()).getSession();
+        HttpSession session = ContextUtil.getSession();
         PsSession pssess = (PsSession) session.getAttribute(Constant.PS_SESSION);
         int nRelId;
         if (sLoginUser.equals(sTargetUser)) {

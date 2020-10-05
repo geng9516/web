@@ -262,7 +262,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
      */
     public void setRequest(HttpServletRequest pRequest) {
         gRequest = pRequest;
-        gPsSession = (PsSession) pRequest.getSession().getAttribute(Constant.PS_SESSION);
+        gPsSession = (PsSession) pRequest.getSession(false).getAttribute(Constant.PS_SESSION);
         // setPsSecurityDateがDIされないので、リクエストから設定
         setPsSecurityDate(gRequest.getParameter("psSecurityDate"));
     }
@@ -1344,7 +1344,7 @@ public class AppSearchRangeInfoBusinessImpl implements AppSearchRangeInfoBusines
         if (sSecurityDate == null) {
             sSecurityDate = SysUtil.transDateToString(new Date());
         }
-        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sSecurityDate,ContextUtil.getHttpRequest().getSession());
+        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(sSecurityDate,ContextUtil.getSession());
         Map<String, Map<String, String>> baseSectionListMapMap = bsi.getHmGroup();
         Map<String, String> baseSectionListMap = baseSectionListMapMap.get(psSystemId);
 

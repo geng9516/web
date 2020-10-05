@@ -257,7 +257,7 @@ public class TreeController {
             @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
             @RequestParam(value="searchRange",required = false) String searchRange, HttpServletRequest request) {
         String searchDate = SysUtil.transDateToString(DateUtil.date());
-        PsSession session = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) request.getSession(false).getAttribute(Constant.PS_SESSION);
         List<OrgTreeDTO> treeDTOList = orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
                 session.getLanguage(),
                 session.getLoginCompany(),

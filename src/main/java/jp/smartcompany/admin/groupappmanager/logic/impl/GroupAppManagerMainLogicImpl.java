@@ -33,13 +33,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 import java.util.Vector;
@@ -188,7 +187,7 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
     }
     layout.setTableBody(lTable);
     // 権限一覧をrequestScopeに登録
-    timedCache.put(REQ_SCOPE_NAME+"_"+ContextUtil.getHttpRequest().getSession().getId(),lTable);
+    timedCache.put(REQ_SCOPE_NAME+"_"+ContextUtil.getSession().getId(),lTable);
     getSearchDate(layout,systemId, date,  groupId);
     return layout;
   }
@@ -277,9 +276,9 @@ public class GroupAppManagerMainLogicImpl implements GroupAppManagerMainLogic {
 
   @Override
   public String executeUpdate(GroupAppManagerUpdatePermsForm updatePerm) throws SQLException {
-    HttpServletRequest request = ContextUtil.getHttpRequest();
-    PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
-    String sessionId = request.getSession().getId();
+    HttpSession httpSession = ContextUtil.getSession();
+    PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+    String sessionId = httpSession.getId();
     // 画面表示のためのイレモノを取得
     List<GroupAppManagerPermissionTableDTO> lTable = (List<GroupAppManagerPermissionTableDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
     if (CollUtil.isEmpty(lTable)) {

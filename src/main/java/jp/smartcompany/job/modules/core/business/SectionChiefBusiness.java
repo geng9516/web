@@ -53,7 +53,7 @@ public class SectionChiefBusiness {
         if (request==null) {
             return null;
         }
-        PsSession psSession = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
+        PsSession psSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         // 言語区分を取得
         String sLanguage = psSession.getLanguage();
         // 言語区分を取得

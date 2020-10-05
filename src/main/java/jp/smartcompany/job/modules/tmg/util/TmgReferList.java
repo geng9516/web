@@ -10,6 +10,7 @@ import cn.hutool.db.Entity;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.TmgMgdMsgSearchTreeView;
 import jp.smartcompany.job.modules.core.pojo.handler.StringListHandler;
@@ -537,7 +538,7 @@ public class TmgReferList {
     }
 
     private void setSysdate(){
-        HttpSession httpSession = psDBBean.getSession();
+        HttpSession httpSession = ContextUtil.getSession();
         // 初期化
         SimpleDateFormat sdf = new SimpleDateFormat(DEFAULT_DATE_FORMAT);
         Date dDate = new Date();
@@ -653,7 +654,7 @@ public class TmgReferList {
      * @return なし
      */
     private void sessionControl4SearchTree(int piParam, List pvSearchDataArray, String psDispLimit4Tree){
-        HttpSession httpSession = psDBBean.getSession();
+        HttpSession httpSession = ContextUtil.getSession();
         switch(piParam){
             case csSessionControl4SearchTreeInitialization:
 
@@ -691,13 +692,13 @@ public class TmgReferList {
      */
     private void createTreeViewSiteAdmin(String baseDate) throws Exception {
 
-        HttpSession session = psDBBean.getSession();
+        HttpSession session = ContextUtil.getSession();
 
         // 対象社員の社員コードをリクエストパラメータから取得
         targetEmp_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_EMP);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetEmp_admin == null || targetEmp_admin.equals("")){
-            targetEmp_admin = (String)psDBBean.getSession().getAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP);
+            targetEmp_admin = (String)session.getAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP);
             // セッションにも存在しない場合、NULLをセット
             if(targetEmp_admin == null || targetEmp_admin.equals("")){
                 targetEmp_admin = null;
@@ -708,7 +709,7 @@ public class TmgReferList {
         targetSec_admin = psDBBean.getReqParam(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(StrUtil.isBlank(targetSec_admin)){
-            targetSec_admin = (String)psDBBean.getSession().getAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
+            targetSec_admin = (String)session.getAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION);
             // セッションにも存在しない場合、NULLをセット(対象社員もNULLにしておく)
             if(StrUtil.isBlank(targetSec_admin)){
                 targetSec_admin = null;
@@ -756,7 +757,7 @@ public class TmgReferList {
 
     private void createTreeViewNoTargetSection(String psDaseDate) throws Exception {
 
-        HttpSession session = psDBBean.getSession();
+        HttpSession session =ContextUtil.getSession();
 
         createMemberList(targetDate, getHidSelectTab());
         // 対象組織の組織コードをリクエストパラメータから取得
@@ -770,14 +771,14 @@ public class TmgReferList {
         targetGroup_perm  = psDBBean.getReqParam(TREEVIEW_KEY_PERM_TARGET_GROUP);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetGroup_perm == null){
-            targetGroup_perm = (String)psDBBean.getSession().getAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP);
+            targetGroup_perm = (String)session.getAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP);
         }
 
         // 対象社員の社員コードをリクエストパラメータから取得
         targetMember_perm = psDBBean.getReqParam(TREEVIEW_KEY_PERM_TARGET_EMP);
         // リクエストパラメータに存在しない場合、セッションから取得
         if(targetMember_perm == null){
-            targetMember_perm = (String)psDBBean.getSession().getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP);
+            targetMember_perm = (String)session.getAttribute(TREEVIEW_KEY_PERM_TARGET_EMP);
         }
         // 2007/10/02 Shishido 2007/08/30の修正を元に戻します
         // 承認サイトで社員の存在しない部署を選択しても、自動的に社員が存在する部署を対象になるため、
@@ -860,6 +861,7 @@ public class TmgReferList {
      * 勤怠管理サイト用に、組織ツリーを作成します。
      */
     private void createOrgTree(){
+        HttpSession session = ContextUtil.getSession();
         // 勤怠管理サイトの場合、SYSDATE時点の組織ツリーを作成する
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             // 検索対象範囲の適用
@@ -867,8 +869,8 @@ public class TmgReferList {
             // 検索対象範囲条件を取得（暂时不需要）
             String sExists = orgTree.getOrgTreeSearchRange(psDBBean);
             // セッションに組織ツリーのデータが格納されていれば、セッションのデータを使用する
-            List obj = (List)psDBBean.getSession().getAttribute(SESSION_KEY_ORGTREE_RESULT);
-            String sCondition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_ORGTREE_CONDITION);
+            List obj = (List)session.getAttribute(SESSION_KEY_ORGTREE_RESULT);
+            String sCondition = (String)session.getAttribute(SESSION_KEY_ORGTREE_CONDITION);
             if(obj != null && sCondition != null && sCondition.equalsIgnoreCase(sExists) && sessionSameCheck()) {
                 orgTree.setDataArray(obj);
             }
@@ -891,7 +893,7 @@ public class TmgReferList {
      * 勤怠管理サイト用に、部局ツリーを作成します。
      */
     private void createDivTree(){
-        HttpSession session = psDBBean.getSession();
+        HttpSession session = ContextUtil.getSession();
         // 勤怠管理サイトの場合、SYSDATE時点の組織ツリーを作成する
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             divTree = new TmgDivisionTree(psDBBean,beanDesc);
@@ -968,6 +970,7 @@ public class TmgReferList {
      * @param targetDate
      */
     private void createEmpList(String targetSection, String targetDate, int piHidSelectTab) throws Exception{
+        HttpSession httpSession = ContextUtil.getSession();
         // 勤怠管理サイトの場合、対象部署について、SYSDATE-targetDateの範囲で歴を持っている社員一覧を作成する
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             empList = new TmgEmpList(psDBBean, beanDesc);
@@ -995,9 +998,9 @@ public class TmgReferList {
                         isJoinTmgEmployees,
                         this.gbUseManageFLG
                 );
-                if (target.equals(psDBBean.getSession().getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
-                    empList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-                    empList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
+                if (target.equals(httpSession.getAttribute(SESSION_KEY_TARGETDATE)) && isSession4SearchTabItem()){
+                    empList.setSearchDataArray((List)httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+                    empList.setDispLimit4Tree((String)httpSession.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
                 } else {
                     if (isSelectedSearchTab()){
                         empList.createEmpList("'"+psDBBean.getCustID()+"'", "'"+psDBBean.getCompCode()+"'",
@@ -1008,7 +1011,7 @@ public class TmgReferList {
                     } else {
                         empList.setSearchDataArray(null);
                     }
-                    psDBBean.getSession().setAttribute(SESSION_KEY_TARGETDATE, target);
+                    httpSession.setAttribute(SESSION_KEY_TARGETDATE, target);
                     sessionControl4SearchTree(csSessionControl4SearchTreeSave, empList.getSearchDataArray(), empList.getDispLimit4Tree());
                 }
             }
@@ -1020,7 +1023,7 @@ public class TmgReferList {
 //                    createEmpList4SearchView(target, target, targetSection, sdf);
                     createEmpList4TreeView(base, target, targetSection, sdf);
                     createEmpList4SearchView(base, target, targetSection, sdf);
-                    psDBBean.getSession().setAttribute(SESSION_KEY_TARGETDATE, target);
+                    httpSession.setAttribute(SESSION_KEY_TARGETDATE, target);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -1039,13 +1042,13 @@ public class TmgReferList {
      */
     private void createEmpList4TreeView(String psBase, String psTarget, String psTargetSection,
                                         SimpleDateFormat pSdf) throws Exception{
-
+        HttpSession httpSession = ContextUtil.getSession();
         List dataArray = null;
-        String condition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_CONDITION);
+        String condition = (String)httpSession.getAttribute(SESSION_KEY_EMPLIST_CONDITION);
         // セッションに登録されているデータと、検索条件(対象部署＆結合条件)が同じ場合、そちらのデータを取りに行く
         if(condition != null && condition.equalsIgnoreCase(
                 tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean))){
-            dataArray = (List)psDBBean.getSession().getAttribute(SESSION_KEY_EMPLIST_RESULT);
+            dataArray = (List)httpSession.getAttribute(SESSION_KEY_EMPLIST_RESULT);
         }
         log.info("【createEmpList4TreeView-before-dataArray:{}】",dataArray);
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
@@ -1066,10 +1069,10 @@ public class TmgReferList {
                     isJoinTmgEmployees,
                     this.gbUseManageFLG //管理対象外を表示するか
             );
-            psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean));
-            psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_CONDITION, null);
-            psDBBean.getSession().setAttribute(SESSION_KEY_EMPLIST_RESULT, empList.getDataArray());
-            psDBBean.getSession().setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
+            httpSession.setAttribute(SESSION_KEY_EMPLIST_CONDITION, tmgSearchRangeUtil.getEmpListCondition("", psTargetSection, isJoinTmgEmployees, psDBBean));
+            httpSession.setAttribute(SESSION_KEY_EMPLIST_CONDITION, null);
+            httpSession.setAttribute(SESSION_KEY_EMPLIST_RESULT, empList.getDataArray());
+            httpSession.setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
         }
         // 使用するデータを、SYSDATE-targetDateの範囲に絞り込みます
         empList.setDataArray(empList.getDataArrayBetween(pSdf.format(gcSysdate.getTime()),targetDate));
@@ -1086,12 +1089,13 @@ public class TmgReferList {
      */
     private void createEmpList4SearchView(String psBase, String psTarget, String psTargetSection,
                                           SimpleDateFormat pSdf) throws Exception{
+        HttpSession httpSession = ContextUtil.getSession();
         // セッションに社員一覧のデータが格納されていて管理対象者条件使用フラグが同じ場合は、セッションのデータを使用する
-        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
+        if(httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null  &&
                 getRecordDate().equals(gsSessionDate) && isSession4SearchTabItem()
         ){
-            empList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-            empList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
+            empList.setSearchDataArray((List)httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY));
+            empList.setDispLimit4Tree((String)httpSession.getAttribute(SESSION_KEY_DISPLIMIT4TREE));
         }
         // そうでなければ「SYSDATE-前年度初日」の範囲で社員一覧を作成しておく
         else{
@@ -1115,11 +1119,11 @@ public class TmgReferList {
      * @return boolean
      */
     private boolean isSession4SearchTabItem(){
-
+        HttpSession httpSession = ContextUtil.getSession();
         if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
-            String searchItems = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS);
-            String searchCondition =  (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
-            String searchData =  (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
+            String searchItems = (String)httpSession.getAttribute(SESSION_KEY_SEARCHITEMS);
+            String searchCondition =  (String)httpSession.getAttribute(SESSION_KEY_SEARCHCONDITION);
+            String searchData =  (String)httpSession.getAttribute(SESSION_KEY_SEARCHDATA);
             if(!StrUtil.equals(searchItems,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES)) &&
                     StrUtil.equals(searchCondition,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION)) &&
                     StrUtil.equals(searchData,psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA))
@@ -1127,7 +1131,7 @@ public class TmgReferList {
                 return false;
             }
             return true;
-        } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null){
+        } else if (httpSession.getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null){
             return true;
         }
 
@@ -1139,13 +1143,14 @@ public class TmgReferList {
      * 勤怠承認サイト用に、グループ一覧を作成します。
      */
     private void createGroupList(){
+        HttpSession session = ContextUtil.getSession();
         // 勤怠承認サイトの場合、SYSDATE-前月初日の間で権限を持っているグループの一覧を作成する
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             groupList = new TmgGroupList(psDBBean, beanDesc);
             //基準日時点で有効なグループの一覧を作成するため実質不要
             String targetDate = SysUtil.transDateNullToDB(getDateStringFor(gcPreMonthDate, DEFAULT_DATE_FORMAT));	//前月初日
             // セッションにグループ一覧のデータが格納されていれば、セッションのデータを使用する
-            List<String> dataArray = (List<String>)psDBBean.getSession().getAttribute(SESSION_KEY_GROUPLIST_RESULT);
+            List<String> dataArray = (List<String>)session.getAttribute(SESSION_KEY_GROUPLIST_RESULT);
             if(dataArray != null && getRecordDate().equals(gsSessionDate)  && sessionSameCheck()){
                 groupList.setDataArray(dataArray);
             }
@@ -1154,7 +1159,7 @@ public class TmgReferList {
                 try{
                     String baseDate = SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT));
                     groupList.createGroupList(baseDate, targetDate);
-                    psDBBean.getSession().setAttribute(SESSION_KEY_GROUPLIST_RESULT, groupList.getDataArray());
+                    session.setAttribute(SESSION_KEY_GROUPLIST_RESULT, groupList.getDataArray());
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -1225,17 +1230,17 @@ public class TmgReferList {
      * @param psBase
      */
     private void createMemberList4TreeView(TmgMemberList pTemberList, String psBase) throws Exception{
-
+        HttpSession httpSession = ContextUtil.getSession();
         // セッションにメンバー一覧のデータが登録されていない場合、SYSDATE-前年度初日の範囲でメンバー一覧を作成して登録しておきます
-        List dataArray = (List)psDBBean.getSession().getAttribute(SESSION_KEY_MEMBERLIST_RESULT);
+        List dataArray = (List)httpSession.getAttribute(SESSION_KEY_MEMBERLIST_RESULT);
 
         if(dataArray != null && sessionSameCheck()){
             // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
             pTemberList.setDataArray(dataArray);
         } else {
             pTemberList.createMemberList(psBase, gbUseManageFLG);
-            psDBBean.getSession().setAttribute(SESSION_KEY_MEMBERLIST_RESULT, pTemberList.getDataArray());
-            psDBBean.getSession().setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
+            httpSession.setAttribute(SESSION_KEY_MEMBERLIST_RESULT, pTemberList.getDataArray());
+            httpSession.setAttribute(SESSION_KEY_USEMANAGEFLG,String.valueOf(this.gbUseManageFLG));
         }
 
     }
@@ -2860,14 +2865,15 @@ public class TmgReferList {
      * @param sEmp 検索対象社員の社員番号
      */
     public void setTargetEmployee(String sEmp){
+        HttpSession httpSession = ContextUtil.getSession();
         if(isSite(TmgUtil.Cs_SITE_ID_TMG_ADMIN)){
             String sSec = empList.getTargetEmpData(sEmp,TmgEmpList.DEFAULT_KEY_SECID);
             if(sSec != null){
                 targetSec_admin = sSec;
                 targetEmp_admin = sEmp;
                 // セッションに登録する
-                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
-                psDBBean.getSession().setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
+                httpSession.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_SECTION, targetSec_admin);
+                httpSession.setAttribute(TREEVIEW_KEY_ADMIN_TARGET_EMP, targetEmp_admin);
             }
         }else if(isSite(TmgUtil.Cs_SITE_ID_TMG_PERM)){
             String sSec = memberList.getTargetMemberData(sEmp,TmgMemberList.DEFAULT_KEY_SECID);
@@ -2876,9 +2882,9 @@ public class TmgReferList {
                 targetSec_perm = sSec;
                 targetGroup_perm = sGroup;
                 targetMember_perm = sEmp;
-                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION, targetSec_perm);
-                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP, targetGroup_perm);
-                psDBBean.getSession().setAttribute(TREEVIEW_KEY_PERM_TARGET_EMP, targetMember_perm);
+                httpSession.setAttribute(TREEVIEW_KEY_PERM_TARGET_SECTION, targetSec_perm);
+                httpSession.setAttribute(TREEVIEW_KEY_PERM_TARGET_GROUP, targetGroup_perm);
+                httpSession.setAttribute(TREEVIEW_KEY_PERM_TARGET_EMP, targetMember_perm);
             }
         }
     }
@@ -3002,7 +3008,7 @@ public class TmgReferList {
      * @return boolean
      */
     public boolean sessionSameCheck(){
-        String useManage = (String)psDBBean.getSession().getAttribute(SESSION_KEY_USEMANAGEFLG);
+        String useManage = (String)ContextUtil.getSession().getAttribute(SESSION_KEY_USEMANAGEFLG);
         return String.valueOf(this.gbUseManageFLG).equals(useManage) && getRecordDate().equals(gsSessionDate);
     }
 
@@ -3014,7 +3020,7 @@ public class TmgReferList {
      * @return
      */
     public boolean isAllDivision() {
-        return ((Boolean)psDBBean.getSession().getAttribute(SESSION_KEY_DIVTREE_ALL)).booleanValue();
+        return (Boolean) ContextUtil.getSession().getAttribute(SESSION_KEY_DIVTREE_ALL);
     }
 
     /**
@@ -3022,7 +3028,7 @@ public class TmgReferList {
      * @return
      */
     public String getRootSection() {
-        return (String)psDBBean.getSession().getAttribute(SESSION_KEY_DIVTREE_ROOT);
+        return (String)ContextUtil.getSession().getAttribute(SESSION_KEY_DIVTREE_ROOT);
     }
 
     public String getRecordDate() {
@@ -3084,12 +3090,13 @@ public class TmgReferList {
      * 現在選択されているタブの値を返却する
      */
     public int getHidSelectTab() {
+        HttpSession httpSession = ContextUtil.getSession();
 //        if (hidSelectTab == null){
             hidSelectTab = ciSelectTreeTab;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSELECT) != null){
                 hidSelectTab = Integer.parseInt(psDBBean.getReqParam(TREEVIEW_OBJ_HIDSELECT));
-            } else if (psDBBean.getSession().getAttribute(TREEVIEW_OBJ_HIDSELECT) != null){
-                hidSelectTab = Integer.parseInt(psDBBean.getSession().getAttribute(TREEVIEW_OBJ_HIDSELECT).toString());
+            } else if (httpSession.getAttribute(TREEVIEW_OBJ_HIDSELECT) != null){
+                hidSelectTab = Integer.parseInt(httpSession.getAttribute(TREEVIEW_OBJ_HIDSELECT).toString());
             }
 //        }
         return hidSelectTab;
@@ -3107,12 +3114,13 @@ public class TmgReferList {
      */
     private String searchItems = null;
     public String getSearchItems() {
+        HttpSession httpSession = ContextUtil.getSession();
 //        if (searchItems == null){
             searchItems = TmgUtil.Cs_TREE_VIEW_ITEMS_KANANAME;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
                 searchItems = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES);
-            } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS) != null){
-                searchItems = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHITEMS);
+            } else if (httpSession.getAttribute(SESSION_KEY_SEARCHITEMS) != null){
+                searchItems = (String)httpSession.getAttribute(SESSION_KEY_SEARCHITEMS);
             }
 //        }
         return searchItems;
@@ -3129,12 +3137,13 @@ public class TmgReferList {
     private String searchCondition = null;
 
     public String getSearchCondition() {
+        HttpSession httpSession = ContextUtil.getSession();
 //        if (searchCondition == null){
             searchCondition = TmgUtil.Cs_TREE_VIEW_CONDITION_BROADMATCH;
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION) != null){
                 searchCondition = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION);
-            } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION) != null){
-                searchCondition = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
+            } else if (httpSession.getAttribute(SESSION_KEY_SEARCHCONDITION) != null){
+                searchCondition = (String)ContextUtil.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
             }
 //        }
         return searchCondition;
@@ -3150,7 +3159,7 @@ public class TmgReferList {
             searchData = "";
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA) != null){
                 searchData =psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHDATA);
-            } else if (psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA) != null){
+            } else if (ContextUtil.getSession().getAttribute(SESSION_KEY_SEARCHDATA) != null){
                 // fix：接口化后不再需要后端负责判断使用session还是前端传过来的参数，全部交由前端控制
 //                searchData = (String)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATA);
             }
