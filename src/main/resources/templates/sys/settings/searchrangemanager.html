@@ -23,12 +23,12 @@
           <date-picker type="date" v-model="curDate" :options="rangeOptions" class="ml5"
             format="yyyy/MM/dd" @on-change="handleDatePicker" transfer clearable editable :disabled="loading">
           </date-picker>
-          <i-button type="primary" icon="md-create" @click="isEditing = true" v-if="!isEditing"
+          <!-- <i-button type="primary" icon="md-create" @click="isEditing = true" v-if="!isEditing"
             :loading="loading">編集
           </i-button>
           <i-button type="success" icon="md-done-all" @click="update" :loading="editLoading"
             v-if="isEditing">登録</i-button>
-          <i-button type="primary" @click="handleCancel" ghost v-if="isEditing">キャンセル</i-button>
+          <i-button type="primary" @click="handleCancel" ghost v-if="isEditing">キャンセル</i-button> -->
         </div>
       </div>
       <div class="searchwrap">
@@ -75,6 +75,7 @@
           </i-col>
         </Row>
       </div>
+      <Alert class="primary-info">セルをクリックすると、変更ができます。</Alert>
       <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
@@ -97,7 +98,7 @@
 
         <!-- 循环slotList -->
         <template v-for="item of slotList" slot-scope="{ row }" :slot="item">
-         <div style="color: var(--primary-info);">
+         <div style="color: var(--primary-info);" class="cursor">
            <span v-if="row[item].fullPermission === '0'">{{ row[item].hgpCpermnecessityname }}</span>
            <!-- 老就业全て参照可能的时候 与 OR 发生混用，需要排除'0001'这个单独的情况 vFullId = document.getElementById("fullPermissonId"); -->
            <span v-if="row[item].hgpCpermnecessityname && row[item].hgpCpermnecessity !== '0001'  || row[item].hgpCbasesectionFlagNeed === '1'">{{ `O  R:${row[item].hgpCpermnecessityname}` }}</span>
@@ -365,7 +366,7 @@
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
 
             // 未設定なら 退職者検索参照しない
@@ -382,7 +383,7 @@
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.updateValue.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
           }
           // 「条件指定」の場合 定義リスト OR
@@ -396,8 +397,7 @@
 			      this.updateValue.hgpCbasesectionFlagMust     = "0";
 			      this.updateValue.hgpCpermmust = "";
             this.updateValue.hgpCpermmustname = "";
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
 
           // 「条件指定」の場合 定義リスト AND]
@@ -411,8 +411,7 @@
 			      } else {
 				      this.updateValue.hgpCbasesectionFlagMust   = "0";
 			      }
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
         },
         handleSelect(e) {
@@ -442,17 +441,13 @@
           this.isEditing = false
           console.log(this.updateValue)
           const { data } = await this.http.post('sys/searchrangemanager/update', [this.updateValue])
+          this.$Message.success('更新完了')
           this.getTableData()
           this.updateValue = {}
-          // let OPTS = { permList: [...new Set(this.updateValue)] }
-          // if (this.opts.date) {
-          //   OPTS.changeDate = this.opts.date
-          // }
-          // const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
         },
         handleCellClick(row, column, data, event) {
           // 点到名字的第一列是也不要弹出操作浮层
-          if (!this.isEditing || column.slot === 'objectName') {
+          if (column.slot === 'objectName') {
             return
           }
           console.log(row[column.slot])
@@ -462,12 +457,14 @@
           if(this.updateValue.hgpCbasesectionFlagMust === '1' || this.updateValue.hgpCbasesectionFlagNeed=== '1') {
             this.updateValue.checked = true
           }
-          if(!this.updateValue.fullPermission) {
+          if(!this.updateValue.fullPermission && !this.updateValue.hgpCpermnecessityname && !this.updateValue.hgpCpermmustname) {
             this.updateValue.type = '0'
             // 不可选选择器
             this.updateValue.selectedDisable = true
           }
           if(this.updateValue.fullPermission === '0') {
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
             this.updateValue.type = '1'
           }
           if(this.updateValue.hgpCbasesectionFlagNeed === '1' || this.updateValue.hgpCpermnecessityname && this.updateValue.hgpCpermnecessity !== '0001') {
