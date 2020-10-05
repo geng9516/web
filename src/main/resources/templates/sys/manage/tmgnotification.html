@@ -1076,7 +1076,6 @@
           query.action = "ACT_EditPerm_UPermit"
           // 将详细的数据变成申请的数据
           query = this.changeData(query)
-
           this.$Modal.confirm({
             inDrawer: true,
             title: 'この申請を最終決裁します。よろしいですか？',
@@ -1122,7 +1121,7 @@
           query.action = "ACT_EditApply_UDel"
           // 将详细的数据变成申请的数据
           query = this.changeData(query)
-
+          console.log(query)
           this.$Modal.confirm({
             inDrawer: true,
             title: '申請の最終決裁を取消します。よろしいですか？',
@@ -1208,8 +1207,9 @@
               _dateListRange: ['', ''],
               dateListRange: ['', ''],
               txtAddDate:null,
-              txtTargetNumber:null
+              txtTargetNumber:null,
             }
+            this.approvalLevel=''
             this.errorInfo = false
             this.uploadFiles = []
             this.hasPassedTimeCheck = true

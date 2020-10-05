@@ -312,7 +312,8 @@
                     this.UploadDto.bulkNtfId = this.ntfType
                     this.UploadDto.beginDate = this.fromDate
                     this.UploadDto.endDate = this.toDate
-
+                    console.log(this.fromDate)
+                    console.log(this.toDate)
                     let secid=''
                     this.deptNameList.forEach(e=>{
                         console.log(e)
@@ -326,6 +327,16 @@
                             duration: 6,
                             content: '対象部署選択してください。'
                         });
+                        return false
+                    }
+                    if( this.UploadDto.beginDate >this.UploadDto.endDate ){
+                        this.$Message.error({
+                            background: true,
+                            closable: true,
+                            duration: 6,
+                            content: '対象期間(開始日)＜＝対象期間(終了日)となるように入力してください。'
+                        });
+                        return false
                     }
                     try {
                         const { msg } = await this.http.post('sys/tmgbulknotification/makeBulkNtf', this.UploadDto)
@@ -358,8 +369,19 @@
 
                 },
                 async bulkNtfCancel(e) {
-                    const { msg } = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', { seq: e })
-                    this.getNtfType()
+                    this.$Modal.confirm({
+                        inDrawer: true,
+                        title: '休暇・休業一括登録の反映内容を取消します。よろしいですか？\n' +
+                            '※取消処理は途中でキャンセルすることはできません。',
+                        width: 490,
+                        okText: 'OK',
+                        cancelText: 'キャンセル',
+                        onOk: async () => {
+                            const { msg } = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', { seq: e })
+                            this.getNtfType()
+                        }
+                    })
+
                 },
                 async getNtfType() {
                     this.opts.baseDate = this.referListObject.txtTmgReferListTreeViewRecordDate
