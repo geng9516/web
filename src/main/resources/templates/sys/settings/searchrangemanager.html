@@ -462,6 +462,8 @@
             this.updateValue.selectedDisable = true
           }
           if(this.updateValue.fullPermission === '0') {
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
             this.updateValue.type = '1'
           }
           if(this.updateValue.hgpCbasesectionFlagNeed === '1' || this.updateValue.hgpCpermnecessityname && this.updateValue.hgpCpermnecessity !== '0001') {
