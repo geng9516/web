@@ -710,15 +710,6 @@ public class TmgTimePunchBean {
      * @return
      */
     public String[] selectOverWorkTime(String custId, String compCode, String employeeId) {
-        /*List<DetailOverhoursVO> detailOverhoursVOList = (List<DetailOverhoursVO>) lruCache.get(CACHE_OVERWORK);
-        if (null == detailOverhoursVOList) {
-            detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
-            lruCache.put(CACHE_OVERWORK, detailOverhoursVOList);
-            logger.info("[超過勤務時間] Cache までロードする");
-        } else {
-            //Cacheが設定されました
-            logger.info("[超過勤務時間] Cache から取ります");
-        }*/
         List<DetailOverhoursVO> detailOverhoursVOList = iTmgDailyService.buildSQLForSelectDetailOverhours(custId, compCode, employeeId, siteId, DateUtil.format(new Date(), "yyyy/MM/dd"), "ja", true);
         String[] overWorkTime = new String[detailOverhoursVOList.size()];
         String timeTmp = "";
@@ -739,28 +730,21 @@ public class TmgTimePunchBean {
      * @return
      */
     public Integer[] getEmpScheduleSection(String custId, String compCode, String employeeId) {
-
-        String empInfo = iTmgTimepunchService.selectEmpPattern(custId, compCode, employeeId);
-        logger.info("社員の情報：" + empInfo);
         //単位：分
-        int changeTime = 300;
-        if (null != empInfo) {
-            String[] empInfoArrs = empInfo.split(",");
-            if (empInfoArrs.length > 13) {
-                changeTime = iTmgTimepunchService.selectPatternChangeTime(custId, compCode, empInfoArrs[3], empInfoArrs[12]);
-            } else {
-                changeTime = 300;
-            }
+        int changeTime = 0;
+        try {
+            changeTime = iTmgTimepunchService.selectEmpPattern(custId, compCode, employeeId);
+        } catch (Exception e) {
+            logger.error("社員の時間帯時間を取得することが失敗しました", e);
+            //失敗の場合、変更時間を初期化になる
+            changeTime = 300;
         }
-
-        Integer[] schSection = new Integer[2];
-        if (null != empInfo && !"".equals(empInfo)) {
-            int startTime = changeTime / 60;
-            schSection = new Integer[]{startTime, startTime + 24};
-        } else {
-            //ディフォルト値
-            schSection = new Integer[]{5, 29};
+        if (changeTime == 0) {
+            changeTime = 300;
         }
+        logger.info("社員「" + employeeId + "」の勤務変更時間は「" + changeTime + "」です");
+        int startTime = changeTime / 60;
+        Integer[] schSection = new Integer[]{startTime, startTime + 24};
 
         return schSection;
     }

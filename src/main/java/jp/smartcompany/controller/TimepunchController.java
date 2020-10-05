@@ -184,7 +184,9 @@ public class TimepunchController {
      * @param psDBBean
      * @return
      */
-    public Integer[] getEmpScheduleSection(@RequestAttribute("BeanName") PsDBBean psDBBean) {
+    @PostMapping("queryEmpScheduleSection")
+    @ResponseBody
+    public Integer[] queryEmpScheduleSection(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         Integer[] schSection = tmgTimePunchBean.getEmpScheduleSection(psDBBean.getCustID(), psDBBean.getCompCode(), psDBBean.getUserCode());
         return schSection;
     }
