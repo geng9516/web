@@ -1174,6 +1174,7 @@
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
+                console.log([[${ session.psSession.loginDesignation[0] }]])
                 if (this.targetAdminSection == null || this.targetAdminSection == '') {
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
@@ -1183,15 +1184,15 @@
                         this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
                         this.curDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                        this.rawData.tpa_csectionid = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.rawData.tpa_csectionid = [[${ session.psSession.loginDesignation[0].section }]]
                         this.rawData.tpa_cgroupid = ''
-                        this.query_upload.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_upload.sectionId = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query_upload.groupId = ''
-                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_upload.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query_upload.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                        this.query_sk.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_sk.sectionId = [[${ session.psSession.loginDesignation[0].section }]]
                         this.query_sk.groupId = ''
-                        this.query_ykjtPattern.sectionId = [[${ session.psSession.loginDesignation[0].sectionName }]]
+                        this.query_ykjtPattern.sectionId = [[${ session.psSession.loginDesignation[0].section }]]
 
                     } else {
                         // console.log("getDeptCode_false")
