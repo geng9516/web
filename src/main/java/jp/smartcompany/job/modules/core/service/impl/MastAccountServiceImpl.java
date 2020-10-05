@@ -14,6 +14,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jp.smartcompany.boot.util.SysUtil;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,10 +31,11 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
 
         @Override
         public MastAccountDO getByUsername(String username) {
+                Date now = DateUtil.date();
                 QueryWrapper<MastAccountDO> qw = SysUtil.query();
                 qw.eq("ma_caccount", username)
-                  .le("ma_dstart", DateUtil.date())
-                  .ge("ma_dend",DateUtil.date());
+                  .le("ma_dstart", now)
+                  .ge("ma_dend",now);
                 List<MastAccountDO> accountList = list(qw);
                 if (CollUtil.isEmpty(accountList)){
                    return null;
