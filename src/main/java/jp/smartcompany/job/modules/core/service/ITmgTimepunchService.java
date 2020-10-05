@@ -156,7 +156,7 @@ public interface ITmgTimepunchService extends IService<TmgTimepunchDO> {
      * @param employeeId
      * @return
      */
-    String selectEmpPattern(String custId, String compCode, String employeeId);
+    int selectEmpPattern(String custId, String compCode, String employeeId);
 
 
     /**

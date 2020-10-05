@@ -3,6 +3,7 @@ package jp.smartcompany.controller.admin;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
 import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditStartForm;
+import jp.smartcompany.admin.usermanager.logic.UserManagerEditPersonalLogic;
 import jp.smartcompany.admin.usermanager.logic.UserManagerMainLogic;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
@@ -25,6 +26,7 @@ import java.util.List;
 public class UserManagerController {
 
     private final UserManagerMainLogic userManagerMainLogic;
+    private final UserManagerEditPersonalLogic userManagerEditPersonalLogic;
 
 
     /* ============ 旧代码： UserManagerMainAction 开始 ===========*/
@@ -82,4 +84,11 @@ public class UserManagerController {
     }
     /* ============ 旧代码： UserManagerEditStartAction 结束 ===========*/
 
+    /* ============ UserManagerEditPersonalAction 开始 ============= */
+    @GetMapping("personal/{id}")
+    public Map<String,Object> showPersonal(@PathVariable("id") String userId) {
+        return userManagerEditPersonalLogic.display(userId);
+    }
+
+    /* ============ UserManagerEditPersonalAction 结束 ============= */
 }

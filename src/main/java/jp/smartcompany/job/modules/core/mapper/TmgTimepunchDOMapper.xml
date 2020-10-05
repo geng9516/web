@@ -184,8 +184,8 @@
     </select>
 
     <!-- 社員の勤務パターンを取得する -->
-    <select id="selectEmpPattern" parameterType="java.util.HashMap" resultType="java.lang.String">
-        select tmg_f_get_pattern_default(#{custId},#{compCode},#{employeeId},sysdate) from dual
+    <select id="selectEmpPattern" parameterType="java.util.HashMap" resultType="java.lang.Integer">
+        select tmg_f_get_pattern_default(#{custId},#{compCode},#{employeeId},sysdate).NDATE_CHANGE_TIME from dual
     </select>
 
     <!-- 勤務パターンの変更時間を取得する -->
