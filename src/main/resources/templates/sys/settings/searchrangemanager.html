@@ -463,8 +463,9 @@
             cancelText: 'キャンセル',
             onOk: async () => {
               this.loading = true
+              this.isEditing = false,
               console.log(this.updateValue)
-              const { data } = await this.http.post('sys/searchrangemanager/update', this.updateValue)
+              const { data } = await this.http.post('sys/searchrangemanager/update', this.updateList)
               this.$Message.success('更新完了')
               this.getTableData()
               this.updateValue = {}
