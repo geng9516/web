@@ -59,7 +59,8 @@
                               </i-col>
                               <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
                               <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                                    <i-select :value="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                                    <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange" transfer>
+                                      <i-option value="all">全て</i-option>
                                       <i-option value="group">グループごとに</i-option>
                                       <i-option value="section">部署ごとに</i-option>
                                     </i-select>
@@ -67,7 +68,7 @@
                         </Row>
                         <div style="position: relative;">
                               <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                                    empty-text="所属データなし"></Tree>
+                                    :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
                               <Spin size="large" fix v-if="empDeptLoading"></Spin>
                         </div>
                       </tab-pane>
@@ -409,6 +410,7 @@
                     [[${ TREEVIEW_KEY_PERM_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_PERM_TARGET_GROUP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
+                    txtTmgReferListTreeViewPermSelectedView: '',
                     hidSearchData:'',
                     txtTmgReferListTreeViewRecordDate: '',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
@@ -427,7 +429,7 @@
                     txtTmgReferListTreeViewPermTargetSection: '',
                     txtTmgReferListTreeViewPermTargetGroup: '',
                     txtTmgReferListTreeViewPermTargetEmp: '',
-                    txtTmgReferListTreeViewPermSelectedView: 'section',
+                    txtTmgReferListTreeViewPermSelectedView: '',
                     hidSearchItems:'EMPLOYEEID',
                     hidSearchCondition:'BROADMATCH',
                     txtCEMPLOYEEID: '',
@@ -463,7 +465,7 @@
                 nextMonthShow: false,
 
                 isSearchHistory: false,
-                selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] === "all" ? "section":[[${ session.txtTmgReferListTreeViewPermSelectedView }]], //組織ツリー用
+                selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
                 empDeptLoading: false,
                 deptDrawShow: false,
                 //↓↓↓↓↓↓日次実績登録用↓↓↓↓↓↓
@@ -1188,14 +1190,38 @@
                 yearMMDD = yearMMDD+"01"
                 return  yearMMDD
             },
+            // async handleDeptViewTypeChange(e) {
+            //     this.selectedDeptViewType = e
+            //     console.log("getOrgTree3")
+            //     console.log(this.selectedDeptViewType)
+            //     this.queryList.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
+            //     await this.getOrgTree()
+            //     console.log("handleDeptViewTypeChange")
+            //     console.log(this.queryList.txtTmgReferListTreeViewPermSelectedView)
+            //     this.$Notice.success({ title: '所属図更新完了' })
+            // },
             async handleDeptViewTypeChange(e) {
                 this.selectedDeptViewType = e
-                console.log("getOrgTree3")
+                console.log("----------------1---------------------")
                 console.log(this.selectedDeptViewType)
-                this.queryList.txtTmgReferListTreeViewPermSelectedView = this.selectedDeptViewType
+                if (this.selectedDeptViewType === "all") {
+                    this.deptDrawShow = false
+                    this.deptName = '全て表示中'
+                    this.treeData = []
+                    this.queryList.txtTmgReferListTreeViewPermSelectedView = 'all'
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
+                    this.getTableData()
+                    return
+                }
                 await this.getOrgTree()
-                console.log("handleDeptViewTypeChange")
-                console.log(this.queryList.txtTmgReferListTreeViewPermSelectedView)
+                if (this.selectedDeptViewType === "section") {
+                    this.queryList.txtTmgReferListTreeViewPermSelectedView = 'section'
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
+                }
+                if (this.selectedDeptViewType === "group") {
+                    this.queryList.txtTmgReferListTreeViewPermSelectedView = 'group'
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'group'
+                }
                 this.$Notice.success({ title: '所属図更新完了' })
             },
             //日次承認画面用

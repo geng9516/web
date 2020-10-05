@@ -1,7 +1,9 @@
 package jp.smartcompany.framework.util;
 
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import java.util.HashMap;
 import java.util.Vector;
@@ -41,10 +43,12 @@ public class BuildTargetSql {
 
     private PsDBBean psDBBean;
     private PsResult psResult;
+    private PsDBBeanUtil psDBBeanUtil;
 
     public BuildTargetSql(PsDBBean psDBBean) {
         this.psDBBean = psDBBean;
         this.psResult = new PsResult();
+        this.psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
     }
 
     /**
@@ -64,7 +68,7 @@ public class BuildTargetSql {
         String sWhere = "";
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectCondition());
-        PsResult rsResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+        PsResult rsResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
         if(rsResult.getException().size() > 0 && !rsResult.getException().get(0).equals("")) {
             throw new Exception();
         }
@@ -89,14 +93,14 @@ public class BuildTargetSql {
         String sSecPostAndOr = "";
 
         for(int i = 0; i < ((Vector)rsResult.getResult().get(0)).size(); i++) {
-            String sAndOr = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
-            String sOpenedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
-            String sOperator = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
-            String sClosedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
-            String sTableID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
-            String sColumnID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
-            String sMasterTableName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
-            String sMyFlag = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
+            String sAndOr = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
+            String sOpenedParenthsis = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
+            String sOperator = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
+            String sClosedParenthsis = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
+            String sTableID = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
+            String sColumnID = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
+            String sMasterTableName = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
+            String sMyFlag = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
 
             // 途中でORが出たら組織と役職の間につながりはなし
             if(bSecPost && sAndOr.equals("OR")) {
@@ -167,27 +171,27 @@ public class BuildTargetSql {
 
         // １行ずつ読んでSQLを組み立てる
         for(int i = 0; i < ((Vector)rsResult.getResult().get(0)).size(); i++) {
-            String sAndOr = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
+            String sAndOr = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CANDOR, i);
             if(sAndOr == null) {
                 sAndOr = "";
             }
-            String sOpenedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
+            String sOpenedParenthsis = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPENEDPARENTHSIS, i);
             if(sOpenedParenthsis == null) {
                 sOpenedParenthsis = "";
             }
-            String sColumnName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNNAME, i);
-            String sOperator = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
-            String sDisplayValue = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CDISPLAYVALUE, i);
-            String sClosedParenthsis = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
+//            String sColumnName = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNNAME, i);
+            String sOperator = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_COPERATOR, i);
+//            String sDisplayValue = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CDISPLAYVALUE, i);
+            String sClosedParenthsis = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCLOSEDPARENTHSIS, i);
             if(sClosedParenthsis == null) {
                 sClosedParenthsis = "";
             }
-            String sTableID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
-            String sColumnID = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
-            String sTypeOfColumn = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTYPEOFCOLUMN, i);
-            String sMasterTableName = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
-            String sValue = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CVALUE, i);
-            String sMyFlag = (String)psDBBean.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
+            String sTableID = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTABLEID, i);
+            String sColumnID = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CCOLUMNID, i);
+            String sTypeOfColumn = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CTYPEOFCOLUMN, i);
+            String sMasterTableName = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_MD_CMASTERTBLNAME, i);
+            String sValue = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CVALUE, i);
+            String sMyFlag = (String)psDBBeanUtil.valueAtColumnRow((Vector)rsResult.getResult().get(0), COL_HTD_CMYFLAG, i);
 
             // マスタ参照カラムの場合
             if(sMasterTableName != null) {
@@ -299,9 +303,9 @@ public class BuildTargetSql {
                             "FROM "	+
                             "MAST_POST a "	+
                             "WHERE "	+
-                            "a.MAP_CCUSTOMERID_CK_FK = " + psDBBean.escDBString(psDBBean.getCustID()) + " "	+
-                            "AND a.MAP_CCOMPANYID_CK_FK = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
-                            "AND a.MAP_CPOSTID_CK = " + psDBBean.escDBString(psValue) + " "	+
+                            "a.MAP_CCUSTOMERID_CK_FK = " + SysUtil.escDBString(psDBBean.getCustID()) + " "	+
+                            "AND a.MAP_CCOMPANYID_CK_FK = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
+                            "AND a.MAP_CPOSTID_CK = " + SysUtil.escDBString(psValue) + " "	+
                             "AND a.MAP_CLANGUAGE = 'ja' "	+
                             "AND a.MAP_DSTART <= " + SysUtil.transDateNullToDB(psCreterialDate) + " "	+
                             "AND a.MAP_DEND >= " + SysUtil.transDateNullToDB(psCreterialDate)	+
@@ -369,25 +373,25 @@ public class BuildTargetSql {
                     sWhereTemp += "(";
                     if(sSectionOperator.equals("=")) {
                         /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
-                        sWhereTemp += SectionsSeparateWhere( "##" + sSectionTableID + "##." + sSectionColumnID, psDBBean.escDBString(sSectionCode), 1000, true );
+                        sWhereTemp += SectionsSeparateWhere( "##" + sSectionTableID + "##." + sSectionColumnID, SysUtil.escDBString(sSectionCode), 1000, true );
                         /* ▲ 2005/11/02 A.SUZUKI */
                         bOrFlag = true;
                     }
                     else if(sSectionOperator.equals("<=")) {
                         /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                         // 親組織があれば追加する
-                        String sUpperSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                        String sUpperSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                         if(!sUpperSectionList.equals("")) {
-                            sUpperSectionList = psDBBean.escDBString(sSectionCode) + "," + sUpperSectionList;
+                            sUpperSectionList = SysUtil.escDBString(sSectionCode) + "," + sUpperSectionList;
                         } else {
-                            sUpperSectionList = psDBBean.escDBString(sSectionCode);
+                            sUpperSectionList = SysUtil.escDBString(sSectionCode);
                         }
                         sWhereTemp += SectionsSeparateWhere( "##" + sSectionTableID + "##." + sSectionColumnID, sUpperSectionList, 1000, true );
                         /* ▲ 2005/11/02 A.SUZUKI */
                         bOrFlag = true;
                     }
                     else if(sSectionOperator.equals("<")) {
-                        String sUpperSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                        String sUpperSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                         // 親組織がある時だけ作成する
                         if(!sUpperSectionList.equals("")) {
                             /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -399,18 +403,18 @@ public class BuildTargetSql {
                     else if(sSectionOperator.equals(">=")) {
                         /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                         // 子組織があれば追加する
-                        String sLowerSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                        String sLowerSectionList =psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                         if(!sLowerSectionList.equals("")) {
-                            sLowerSectionList = psDBBean.escDBString(sSectionCode) + "," + sLowerSectionList;
+                            sLowerSectionList = SysUtil.escDBString(sSectionCode) + "," + sLowerSectionList;
                         } else {
-                            sLowerSectionList = psDBBean.escDBString(sSectionCode);
+                            sLowerSectionList = SysUtil.escDBString(sSectionCode);
                         }
                         sWhereTemp += SectionsSeparateWhere( "##" + sSectionTableID + "##." + sSectionColumnID, sLowerSectionList, 1000, true );
                         /* ▲ 2005/11/02 A.SUZUKI */
                         bOrFlag = true;
                     }
                     else if(sSectionOperator.equals(">")) {
-                        String sLowerSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                        String sLowerSectionList = psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                         // 子組織があるときだけ作成する
                         if(!sLowerSectionList.equals("")) {
                             /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -431,12 +435,12 @@ public class BuildTargetSql {
                                         "MAST_POST a,"	+
                                         "HIST_DESIGNATION b "	+
                                         "WHERE "	+
-                                        "b.HD_CCUSTOMERID_CK = " + psDBBean.escDBString(psDBBean.getCustID()) + " "	+
-                                        "AND b.HD_CCOMPANYID_CK = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
-                                        "AND b.HD_CEMPLOYEEID_CK = " + psDBBean.escDBString(psDBBean.getUserCode())	+ " "	+
-                                        "AND b.HD_CSECTIONID_FK = " + psDBBean.escDBString(sSectionCode) + " "	+
+                                        "b.HD_CCUSTOMERID_CK = " + SysUtil.escDBString(psDBBean.getCustID()) + " "	+
+                                        "AND b.HD_CCOMPANYID_CK = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
+                                        "AND b.HD_CEMPLOYEEID_CK = " +SysUtil.escDBString(psDBBean.getUserCode())	+ " "	+
+                                        "AND b.HD_CSECTIONID_FK = " + SysUtil.escDBString(sSectionCode) + " "	+
                                         // 2005/09/12 Saito
-                                        "AND b.HD_CPOSTID_FK = " + psDBBean.escDBString(sPostCode) + " "			+
+                                        "AND b.HD_CPOSTID_FK = " + SysUtil.escDBString(sPostCode) + " "			+
                                         "AND b.HD_DSTARTDATE_CK <= " + SysUtil.transDateNullToDB(psCreterialDate) + " "	+
                                         "AND b.HD_DENDDATE >= " + SysUtil.transDateNullToDB(psCreterialDate) + " "	+
                                         "AND a.MAP_CCUSTOMERID_CK_FK = b.HD_CCUSTOMERID_CK "	+
@@ -512,23 +516,23 @@ public class BuildTargetSql {
         if(psMyFlag.equals("0")) {
             if(psOperator.equals("=")) {
                 /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
-                sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, psDBBean.escDBString(psValue), 1000, true );
+                sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, SysUtil.escDBString(psValue), 1000, true );
                 /* ▲ 2005/11/02 A.SUZUKI */
             }
             else if(psOperator.equals("<=")) {
                 /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                 // 親組織があれば追加する
-                String sSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
+                String sSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
                 if(!sSectionList.equals("")) {
-                    sSectionList = psDBBean.escDBString(psValue) + "," + sSectionList;
+                    sSectionList =SysUtil.escDBString(psValue) + "," + sSectionList;
                 } else {
-                    sSectionList = psDBBean.escDBString(psValue);
+                    sSectionList = SysUtil.escDBString(psValue);
                 }
                 sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, sSectionList, 1000, true );
                 /* ▲ 2005/11/02 A.SUZUKI */
             }
             else if(psOperator.equals("<")) {
-                String sSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
+                String sSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
                 // 親組織がある時だけ追加する
                 if(!sSectionList.equals("")) {
                     /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -539,17 +543,17 @@ public class BuildTargetSql {
             else if(psOperator.equals(">=")) {
                 /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                 // 子組織があれば追加する
-                String sSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
+                String sSectionList = psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
                 if(!sSectionList.equals("")) {
-                    sSectionList = psDBBean.escDBString(psValue) + "," + sSectionList;
+                    sSectionList = SysUtil.escDBString(psValue) + "," + sSectionList;
                 } else {
-                    sSectionList = psDBBean.escDBString(psValue);
+                    sSectionList = SysUtil.escDBString(psValue);
                 }
                 sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, sSectionList, 1000, true );
                 /* ▲ 2005/11/02 A.SUZUKI */
             }
             else if(psOperator.equals(">")) {
-                String sSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
+                String sSectionList =psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), psValue, psCreterialDate);
                 // 子組織がある時だけ追加する
                 if(!sSectionList.equals("")) {
                     /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -559,7 +563,7 @@ public class BuildTargetSql {
             }
             else if(psOperator.equals("<>")) {
                 /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
-                sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, psDBBean.escDBString(psValue), 1000, false );
+                sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, SysUtil.escDBString(psValue), 1000, false );
                 /* ▲ 2005/11/02 A.SUZUKI */
             }
             // ▼▼▼ 2005/11/30 Saito
@@ -584,25 +588,25 @@ public class BuildTargetSql {
                 String sSectionCode = (String)((Vector)vecSecPost.get(i)).get(0);
                 if(psOperator.equals("=")) {
                     /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
-                    sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, psDBBean.escDBString(sSectionCode), 1000, true );
+                    sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, SysUtil.escDBString(sSectionCode), 1000, true );
                     /* ▲ 2005/11/02 A.SUZUKI */
                     bOrFlag = true;
                 }
                 else if(psOperator.equals("<=")) {
                     /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                     // 親組織があれば追加する
-                    String sUpperSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                    String sUpperSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                     if(!sUpperSectionList.equals("")) {
-                        sUpperSectionList = psDBBean.escDBString(sSectionCode) + "," + sUpperSectionList;
+                        sUpperSectionList = SysUtil.escDBString(sSectionCode) + "," + sUpperSectionList;
                     } else {
-                        sUpperSectionList = psDBBean.escDBString(sSectionCode);
+                        sUpperSectionList =SysUtil.escDBString(sSectionCode);
                     }
                     sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, sUpperSectionList, 1000, true );
                     /* ▲ 2005/11/02 A.SUZUKI */
                     bOrFlag = true;
                 }
                 else if(psOperator.equals("<")) {
-                    String sUpperSectionList = psDBBean.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                    String sUpperSectionList = psDBBeanUtil.getV3Logic().getUpperSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                     // 親組織がある時だけ作成する
                     if(!sUpperSectionList.equals("")) {
                         /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -614,18 +618,18 @@ public class BuildTargetSql {
                 else if(psOperator.equals(">=")) {
                     /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
                     // 子組織があれば追加する
-                    String sLowerSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                    String sLowerSectionList =psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                     if(!sLowerSectionList.equals("")) {
-                        sLowerSectionList = psDBBean.escDBString(sSectionCode) + "," + sLowerSectionList;
+                        sLowerSectionList = SysUtil.escDBString(sSectionCode) + "," + sLowerSectionList;
                     } else {
-                        sLowerSectionList = psDBBean.escDBString(sSectionCode);
+                        sLowerSectionList = SysUtil.escDBString(sSectionCode);
                     }
                     sWhere += SectionsSeparateWhere( "##" + psTableID + "##." + psColumnID, sLowerSectionList, 1000, true );
                     /* ▲ 2005/11/02 A.SUZUKI */
                     bOrFlag = true;
                 }
                 else if(psOperator.equals(">")) {
-                    String sLowerSectionList = psDBBean.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
+                    String sLowerSectionList = psDBBeanUtil.getV3Logic().getLowerSectionListForSQL(psDBBean.getCustID(), psDBBean.getCompCode(), sSectionCode, psCreterialDate);
                     // 子組織があるときだけ作成する
                     if(!sLowerSectionList.equals("")) {
                         /* ▼ 2005/11/02 A.SUZUKI 検索対象範囲設定・部門人事にて参照所属が1000を超える場合にOracle制限でエラー発生を回避(Q&A1173,1226,1303) */
@@ -692,7 +696,7 @@ public class BuildTargetSql {
             // 2005/09/30 Saito
             if(!psOperator.equalsIgnoreCase("IS NULL") && !psOperator.equalsIgnoreCase("IS NOT NULL")) {
                 if(psTypeOfColumn.equalsIgnoreCase("VARCHAR2")) {
-                    sWhere += psDBBean.escDBString(psValue);
+                    sWhere += SysUtil.escDBString(psValue);
                 }
                 else if(psTypeOfColumn.equalsIgnoreCase("NUMBER")) {
                     sWhere += SysUtil.transNumberNullToDB(psValue);
@@ -701,7 +705,7 @@ public class BuildTargetSql {
                     sWhere += SysUtil.transDateNullToDB(psValue);
                 }
                 else {
-                    sWhere += psDBBean.escDBString(psValue);
+                    sWhere += SysUtil.escDBString(psValue);
                 }
             }
         }
@@ -713,9 +717,9 @@ public class BuildTargetSql {
                             "FROM "	+
                             psTableID + " a "	+
                             "WHERE "	+
-                            "a." + pvecColumnIDs.get(0) + " = " + psDBBean.escDBString(psDBBean.getCustID()) + " "	+
-                            "AND a." + pvecColumnIDs.get(1) + " = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
-                            "AND a." + pvecColumnIDs.get(2) + " = " + psDBBean.escDBString(psDBBean.getUserCode()) + " "	+
+                            "a." + pvecColumnIDs.get(0) + " = " + SysUtil.escDBString(psDBBean.getCustID()) + " "	+
+                            "AND a." + pvecColumnIDs.get(1) + " = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
+                            "AND a." + pvecColumnIDs.get(2) + " = " + SysUtil.escDBString(psDBBean.getUserCode()) + " "	+
                             "AND a." + pvecColumnIDs.get(3) + " <= " + SysUtil.transDateNullToDB(psCreterialDate) + " "	+
                             "AND a." + pvecColumnIDs.get(4) + " >= " + SysUtil.transDateNullToDB(psCreterialDate) + " ";
             // 2006/03/15 Saito
@@ -842,28 +846,28 @@ public class BuildTargetSql {
         // MAST_GROUPDEFINITIONSを読み込む
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectGroupDefinitions());
-        psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+        psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
         if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
             throw new Exception();
         }
 
         // 該当するグループは１件のみの前提なので内側でpsResultを使い回しても大丈夫
         for(int i = 0; i < ((Vector)psResult.getResult().get(0)).size(); i++) {
-            String sBaseFlag = psDBBean.valueAtColumnRow(psResult,0, COL_MGP_BASEFLAG, i);
-            String sQuery = psDBBean.valueAtColumnRow(psResult,0, COL_MGP_CQUERY, i);
+            String sBaseFlag = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_MGP_BASEFLAG, i);
+            String sQuery = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_MGP_CQUERY, i);
             // MAST_GROUPSECTIONPOSTMAPPINGで定義の場合
             if(sBaseFlag.equals("0")) {
                 // 該当する所属・役職の組み合わせを取得する
                 vecQuery.clear();
                 vecQuery.add(buildSQLForSelectGroupSecPost(psCreterialDate));
-                psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+                psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
                 if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
                     throw new Exception();
                 }
                 for(int j = 0; j < ((Vector)psResult.getResult().get(0)).size(); j++) {
                     Vector vecRow = new Vector();
-                    String sSectionID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
-                    String sPostID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
+                    String sSectionID = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
+                    String sPostID = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
                     vecRow.add(sSectionID);
                     vecRow.add(sPostID);
                     vecGroupSecPost.add(vecRow);
@@ -876,14 +880,14 @@ public class BuildTargetSql {
                 // 該当する所属・役職の組み合わせを取得する
                 vecQuery.clear();
                 vecQuery.add(buildSQLForSelectGroupDefinitionsQuery(sQuery, psCreterialDate));
-                psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+                psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
                 if(psResult.getException().size() > 0 && !psResult.getException().get(0).equals("")) {
                     throw new Exception();
                 }
                 for(int j = 0; j < ((Vector)psResult.getResult().get(0)).size(); j++) {
                     Vector vecRow = new Vector();
-                    String sSectionID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
-                    String sPostID = psDBBean.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
+                    String sSectionID = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_HD_CSECTIONID_FK, j);
+                    String sPostID = psDBBeanUtil.valueAtColumnRow(psResult,0, COL_HD_CPOSTID_FK, j);
                     vecRow.add(sSectionID);
                     vecRow.add(sPostID);
                     vecGroupSecPost.add(vecRow);
@@ -906,10 +910,10 @@ public class BuildTargetSql {
                 "FROM " +
                 "MAST_GROUPDEFINITIONS "	+
                 "WHERE " +
-                "MGP_CCUSTOMERID_CK_FK = " + psDBBean.escDBString(psDBBean.getCustID()) + " "		+
-                "AND MGP_CCOMPANYID_CK_FK = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
-                "AND MGP_CSYSTEMID_CK = " + psDBBean.escDBString(psDBBean.getSystemCode()) + " "		+
-                "AND MGP_CGROUPID_CK_FK = " + psDBBean.escDBString(psDBBean.getGroupID()) + " "		+
+                "MGP_CCUSTOMERID_CK_FK = " + SysUtil.escDBString(psDBBean.getCustID()) + " "		+
+                "AND MGP_CCOMPANYID_CK_FK = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
+                "AND MGP_CSYSTEMID_CK = " + SysUtil.escDBString(psDBBean.getSystemCode()) + " "		+
+                "AND MGP_CGROUPID_CK_FK = " + SysUtil.escDBString(psDBBean.getGroupID()) + " "		+
                 "AND MGP_DSTARTDATE <= TRUNC(SYSDATE) "								+
                 "AND MGP_DENDDATE >= TRUNC(SYSDATE) ";
     }
@@ -930,15 +934,15 @@ public class BuildTargetSql {
                         "MAST_GROUPSECTIONPOSTMAPPING, "	+
                         "HIST_DESIGNATION "					+
                         "WHERE " +
-                        "MAG_CCUSTOMERID_CK_FK = " + psDBBean.escDBString(psDBBean.getCustID()) + " "		+
-                        "AND MAG_CCOMPANYID_CK_FK = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
-                        "AND MAG_CSYSTEMID_CK = " + psDBBean.escDBString(psDBBean.getSystemCode()) + " "		+
-                        "AND MAG_CGROUPID_FK = " + psDBBean.escDBString(psDBBean.getGroupID()) + " "			+
+                        "MAG_CCUSTOMERID_CK_FK = " + SysUtil.escDBString(psDBBean.getCustID()) + " "		+
+                        "AND MAG_CCOMPANYID_CK_FK = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
+                        "AND MAG_CSYSTEMID_CK = " + SysUtil.escDBString(psDBBean.getSystemCode()) + " "		+
+                        "AND MAG_CGROUPID_FK = " + SysUtil.escDBString(psDBBean.getGroupID()) + " "			+
                         "AND MAG_DSTARTDATE_CK <= TRUNC(SYSDATE) "							+
                         "AND MAG_DENDDATE >= TRUNC(SYSDATE) "								+
                         "AND HD_CCUSTOMERID_CK = MAG_CCUSTOMERID_CK_FK "					+
                         "AND HD_CCOMPANYID_CK = MAG_CCOMPANYID_CK_FK "						+
-                        "AND HD_CEMPLOYEEID_CK = " + psDBBean.escDBString(psDBBean.getUserCode())	+ " "		+
+                        "AND HD_CEMPLOYEEID_CK = " + SysUtil.escDBString(psDBBean.getUserCode())	+ " "		+
                         "AND HD_DSTARTDATE_CK <= " + psCreterialDate + " "		+
                         "AND HD_DENDDATE >= " + psCreterialDate + " ";
         return sSql;
@@ -955,7 +959,7 @@ public class BuildTargetSql {
                 "HD_CSECTIONID_FK, "	+
                 "HD_CPOSTID_FK "		+
                 sSql.substring(nFromPoint)	+
-                " AND HD_CEMPLOYEEID_CK = " + psDBBean.escDBString(
+                " AND HD_CEMPLOYEEID_CK = " + SysUtil.escDBString(
                         psDBBean.getUserCode()) +
                 // 2005/09/22 Saito 仮想異動歴は検索対象としない
                 " AND HD_NOFFCIALORNOT = '0'";
@@ -972,8 +976,8 @@ public class BuildTargetSql {
                 "FROM " +
                 "MAST_DATADICTIONARY " +
                 "WHERE " +
-                "MD_CCUSTOMERID = " + psDBBean.escDBString(psDBBean.getCustID()) + " "	+
-                "AND MD_CCOMPANYID = " + psDBBean.escDBString(psDBBean.getCompCode()) + " "	+
+                "MD_CCUSTOMERID = " + SysUtil.escDBString(psDBBean.getCustID()) + " "	+
+                "AND MD_CCOMPANYID = " + SysUtil.escDBString(psDBBean.getCompCode()) + " "	+
                 "AND MD_CTABLENAME = '" + psTableID + "' "			+
                 "AND MD_CCOLUMNNAME LIKE '%"	+ psKeyWord + "%' ";
     }
@@ -1104,82 +1108,82 @@ public class BuildTargetSql {
         Vector vecQuery = new Vector();
 
         vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCUSTOMERID"));
-        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        this.psResult =psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
         if ((this.psResult.getException().size() > 0)
                 && (!this.psResult.getException().get(0).equals(""))) {
             throw new Exception();
         }
         if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
         } else {
             vecColumnIDs.add(null);
         }
         vecQuery.clear();
         vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CCOMPANYID"));
-        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        this.psResult =psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
         if ((this.psResult.getException().size() > 0)
                 && (!this.psResult.getException().get(0).equals(""))) {
             throw new Exception();
         }
         if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
         } else {
             vecColumnIDs.add(null);
         }
         vecQuery.clear();
         vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "CEMPLOYEEID"));
-        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        this.psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
         if ((this.psResult.getException().size() > 0)
                 && (!this.psResult.getException().get(0).equals(""))) {
             throw new Exception();
         }
         if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
         } else {
             vecColumnIDs.add(null);
         }
         vecQuery.clear();
         vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTARTDATE"));
-        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        this.psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
         if ((this.psResult.getException().size() > 0)
                 && (!this.psResult.getException().get(0).equals(""))) {
             throw new Exception();
         }
         if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
         } else {
             vecQuery.clear();
             vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DSTART"));
-            this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+            this.psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
             if ((this.psResult.getException().size() > 0)
                     && (!this.psResult.getException().get(0).equals(""))) {
                 throw new Exception();
             }
             if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-                vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+                vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
             } else {
                 vecColumnIDs.add(null);
             }
         }
         vecQuery.clear();
         vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DENDDATE"));
-        this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+        this.psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
         if ((this.psResult.getException().size() > 0)
                 && (!this.psResult.getException().get(0).equals(""))) {
             throw new Exception();
         }
         if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-            vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+            vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
         } else {
             vecQuery.clear();
             vecQuery.add(buildSQLForSelectColumnIDs(psTableID, "DEND"));
-            this.psResult = psDBBean.getValuesforMultiquery(vecQuery, "BuildTargetSql");
+            this.psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "BuildTargetSql",psDBBean);
             if ((this.psResult.getException().size() > 0)
                     && (!this.psResult.getException().get(0).equals(""))) {
                 throw new Exception();
             }
             if (((Vector) this.psResult.getResult().get(0)).size() > 0) {
-                vecColumnIDs.add(psDBBean.valueAtColumnRow(psResult,0, 0, 0));
+                vecColumnIDs.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0));
             } else {
                 vecColumnIDs.add(null);
             }

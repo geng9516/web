@@ -2,8 +2,10 @@ package jp.smartcompany.job.modules.tmg.util;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import org.slf4j.LoggerFactory;
 
@@ -2079,24 +2081,22 @@ public class TmgUtil {
             , String compCode
             , String employeeCode
             , String date) {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("SELECT ");
-        sb.append(buildSQLForSelectFlex(bean.escDBString(custId)
-                , bean.escDBString(compCode)
-                , bean.escDBString(employeeCode)
-                , date));
-        sb.append("  FROM DUAL");
+        PsDBBeanUtil psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
 
         Vector vecQuery = new Vector();
-        vecQuery.add(sb.toString());
+        String sb = "SELECT " +
+                buildSQLForSelectFlex(SysUtil.escDBString(custId)
+                        , SysUtil.escDBString(compCode)
+                        , SysUtil.escDBString(employeeCode)
+                        , date) +
+                "  FROM DUAL";
+        vecQuery.add(sb);
 
         PsResult psResult = null;
         String flexWork = null;
 
         try {
-            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            psResult =psDBBeanUtil.getValuesforMultiquery(vecQuery, "TmtUtil",bean);
             flexWork = valueAtColumnRowFromPsResult(bean
                     , psResult
                     , 0
@@ -2153,24 +2153,21 @@ public class TmgUtil {
             , String compCode
             , String employeeCode
             , String date) {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("SELECT ");
-        sb.append(buildSQLForSelectNeedTime4Flex(bean.escDBString(custId)
-                , bean.escDBString(compCode)
-                , bean.escDBString(employeeCode)
-                , date));
-        sb.append("  FROM DUAL");
-
+        PsDBBeanUtil psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
         Vector vecQuery = new Vector();
-        vecQuery.add(sb.toString());
+        String sb = "SELECT " +
+                buildSQLForSelectNeedTime4Flex(SysUtil.escDBString(custId)
+                        , SysUtil.escDBString(compCode)
+                        , SysUtil.escDBString(employeeCode)
+                        , date) +
+                "  FROM DUAL";
+        vecQuery.add(sb);
 
         PsResult psResult = null;
         String needTime4Flex = null;
 
         try {
-            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            psResult =psDBBeanUtil.getValuesforMultiquery(vecQuery, "TmtUtil",bean);
             needTime4Flex = valueAtColumnRowFromPsResult(bean
                     , psResult
                     , 0
@@ -2310,24 +2307,22 @@ public class TmgUtil {
             , String compCode
             , String employeeCode
             , String date) {
-
-        StringBuffer sb = new StringBuffer();
-
-        sb.append("SELECT ");
-        sb.append(buildSQLForSelectDiscretion(bean.escDBString(custId)
-                , bean.escDBString(compCode)
-                , bean.escDBString(employeeCode)
-                , "'" + date + "'"));
-        sb.append("  FROM DUAL");
+        PsDBBeanUtil psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
 
         Vector vecQuery = new Vector();
-        vecQuery.add(sb.toString());
+        String sb = "SELECT " +
+                buildSQLForSelectDiscretion(SysUtil.escDBString(custId)
+                        , SysUtil.escDBString(compCode)
+                        , SysUtil.escDBString(employeeCode)
+                        , "'" + date + "'") +
+                "  FROM DUAL";
+        vecQuery.add(sb);
 
         PsResult psResult = null;
         String discretionWork = null;
 
         try {
-            psResult = bean.getValuesforMultiquery(vecQuery, "TmtUtil");
+            psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, "TmtUtil",bean);
             discretionWork = valueAtColumnRowFromPsResult(bean
                     , psResult
                     , 0

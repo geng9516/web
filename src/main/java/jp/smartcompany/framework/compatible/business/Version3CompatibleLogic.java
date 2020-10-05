@@ -1,6 +1,5 @@
 package jp.smartcompany.framework.compatible.business;
 
-import jp.smartcompany.framework.sysboot.dto.SystemPropertyDTO;
 import jp.smartcompany.job.modules.core.util.PsResult;
 
 import javax.servlet.http.HttpSession;
@@ -75,13 +74,11 @@ public interface Version3CompatibleLogic {
      * @param sCompid 検索者の法人コード
      * @param sCustid 顧客コード
      * @param sSystemCode システムコード
-     * @param strGUID GUID
      * @return int 更新件数
      */
      int setInsertValues( Vector vecQuery,  String sUserid,
                                 String sBeandesc,  String sCompid,
-                                String sCustid,    String sSystemCode,
-                                String strGUID);
+                                String sCustid,    String sSystemCode);
 
     /**
      * 更新用SQLを実行します。（BLOB対応版）
@@ -92,13 +89,12 @@ public interface Version3CompatibleLogic {
      * @param sCompId 検索者の法人コード
      * @param sCustId 顧客コード
      * @param sSystemCode システムコード
-     * @param sGUID	 GUID
      * @return int 更新件数
      */
      int setInsertValuesForBlob( Vector vecQuery,  Vector vecParams,
                                        String sUserId,   String sBeanDesc,
                                        String sCompId,   String sCustId,
-                                       String sSystemCode,  String sGUID);
+                                       String sSystemCode);
 
     /**
      * 複数SELECT文を実行します
@@ -114,7 +110,6 @@ public interface Version3CompatibleLogic {
      * @param sCompid 法人コード
      * @param sCustid 顧客コード
      * @param sSystemCode システムコード
-     * @param strGUID GUID
      * @return PsResult 結果セット
      * @throws Exception システム例外
      */
@@ -124,8 +119,7 @@ public interface Version3CompatibleLogic {
              Vector vPostweightage,      String sBeandesc,
              boolean bApplypermission,  String sTargetuser,
              Vector vDept,    String sCompid,
-             String sCustid,  String sSystemCode,
-             String strGUID
+             String sCustid,  String sSystemCode
     ) throws Exception;
 
     /**

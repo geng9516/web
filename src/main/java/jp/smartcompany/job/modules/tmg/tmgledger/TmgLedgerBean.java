@@ -1,9 +1,11 @@
 package jp.smartcompany.job.modules.tmg.tmgledger;
 
 import cn.hutool.core.util.StrUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.service.IMastGenericDetailService;
 import jp.smartcompany.job.modules.core.service.ITmgMonthlyService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerParamVO;
 import jp.smartcompany.job.modules.tmg.tmgledger.vo.LedgerSheetVo;
@@ -31,10 +33,10 @@ public class TmgLedgerBean {
     private static final String BEAN_DESC = "TmgLedger";
     /** 帳票出力パラメータ */
     private TmgLedgerParam tmgLedgerParam;
-    private Map      parameterMap  = new HashMap();
 
     private final IMastGenericDetailService iMastGenericDetailService;
     private final ITmgMonthlyService iTmgMonthlyService;
+    private final PsDBBeanUtil psDBBeanUtil;
 
 
     /**
@@ -66,7 +68,7 @@ public class TmgLedgerBean {
     public void execute(HttpServletRequest request, PsDBBean psDBBean, LedgerParamVO ledgerParamVO, HttpServletResponse response) throws Exception {
 
         // 初期化処理
-        psDBBean.setSysControl((Hashtable<String, Object>) psDBBean.getRequestHash());
+        psDBBeanUtil.setSysControl((Hashtable<String, Object>) psDBBean.getRequestHash(),psDBBean);
 
         // パラメータ設定
         TmgLedgerParam param = getLedgerParam(psDBBean,ledgerParamVO);
@@ -228,16 +230,16 @@ public class TmgLedgerBean {
 
             // ダウンロードデータ検索
             Vector vQuery = new Vector(); // クエリ格納オブジェクト
-            String sDBCustId   = psDBBean.escDBString(param.getCustomerID());
-            String sDBCompId   = psDBBean.escDBString(param.getCompanyID());
-            String sDBLang     = psDBBean.escDBString(param.getLanguage());
-            String sDBMasterId = psDBBean.escDBString(TmgUtil.Cs_MGD_LEDGER_CSV_DOWNLOAD + "|" + psDBBean.getReqParm(TmgLedgerConst.REQ_TARGET_LEDGER_SHEET));
+            String sDBCustId   = SysUtil.escDBString(param.getCustomerID());
+            String sDBCompId   = SysUtil.escDBString(param.getCompanyID());
+            String sDBLang     = SysUtil.escDBString(param.getLanguage());
+            String sDBMasterId = SysUtil.escDBString(TmgUtil.Cs_MGD_LEDGER_CSV_DOWNLOAD + "|" + psDBBean.getReqParam(TmgLedgerConst.REQ_TARGET_LEDGER_SHEET));
 
             // 0 CSVダウンロード設定　検索
             vQuery.add(buildSQLForCSVDownloadInfo(sDBCustId, sDBCompId, sDBMasterId, sDBLang));
 
             // 検索結果取得
-            PsResult result = (PsResult)psDBBean.getValuesforMultiquery(vQuery, BEAN_DESC);
+            PsResult result = psDBBeanUtil.getValuesforMultiquery(vQuery, BEAN_DESC,psDBBean);
 
             Vector vecResult  = result.getResult();
             Vector vecData    = (Vector)vecResult.get(0); // クエリ０番目の検索結果取得
