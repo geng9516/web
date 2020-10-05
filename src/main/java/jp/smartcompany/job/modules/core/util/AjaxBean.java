@@ -2,10 +2,13 @@ package jp.smartcompany.job.modules.core.util;
 
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Vector;
 
 @Service
 public class AjaxBean {
+    @Resource
+    private PsDBBeanUtil psDBBeanUtil;
 
     private boolean isSelect(String sSQL) {
         return sSQL.trim().substring(0, 6).toLowerCase().equals("select");
@@ -36,11 +39,11 @@ public class AjaxBean {
                 }
                 if(mode != currentMode) {
                     if(currentMode == SELECT) {
-                        PsResult res = psDBBean.getValuesforMultiquery(vecSQL, "AjaxBean");
+                        PsResult res = psDBBeanUtil.getValuesforMultiquery(vecSQL, "AjaxBean",psDBBean);
                         vecResult.addAll(res.getResult());
                         currentMode = UPDATE;
                     } else {
-                        psDBBean.setInsertValues(vecSQL, "AjaxBean");
+                        psDBBeanUtil.setInsertValues(vecSQL, "AjaxBean",psDBBean);
                         currentMode = SELECT;
                     }
                     vecSQL.clear();
@@ -49,13 +52,13 @@ public class AjaxBean {
             }
 
             if(currentMode == SELECT) {
-                PsResult res = psDBBean.getValuesforMultiquery(vecSQL, "AjaxBean");
+                PsResult res = psDBBeanUtil.getValuesforMultiquery(vecSQL, "AjaxBean",psDBBean);
                 Vector vec = res.getResult();
                 for(int i = 0; i < vec.size(); i++) {
                     vecResult.add(vec.elementAt(i));
                 }
             } else {
-                psDBBean.setInsertValues(vecSQL, "AjaxBean");
+                psDBBeanUtil.setInsertValues(vecSQL, "AjaxBean",psDBBean);
             }
             if(vecResult.size() > 0) {
                 psResult.setResult(vecResult);

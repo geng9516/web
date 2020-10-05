@@ -1,7 +1,9 @@
 package jp.smartcompany.job.modules.tmg.util;
 
+import jp.smartcompany.boot.util.SpringUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsUtil;
 import net.sf.jasperreports.engine.JRException;
@@ -73,7 +75,7 @@ public class TmgPdfReportUtil {
      * @throws  Exception
      */
     public TmgPdfReportUtil(PsDBBean poPsDBBean, String psCustId, String psCompId, String psBaseDate, String psMgLedgerSheetId, String psLang) throws Exception {
-
+        PsDBBeanUtil psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
         //パラメータをメンバー変数へ保持
         this.setBean(poPsDBBean);
         this.setId(psMgLedgerSheetId);
@@ -86,15 +88,15 @@ public class TmgPdfReportUtil {
         //帳票定義を検索
         Vector vecQuery = new Vector();
         vecQuery.add(this.buildSQLForSelectConfiguration(
-                this.goBean.toDBString(psCustId),
-                this.goBean.toDBString(psCompId),
-                this.goBean.toDBDate(psBaseDate),
-                this.goBean.toDBString(TmgUtil.Cs_MGD_LEDGER_PDF_DOWNLOAD + "|" + psMgLedgerSheetId),
-                this.goBean.toDBString(this.gsLang)
+                SysUtil.transStringNullToDB(psCustId),
+                SysUtil.transStringNullToDB(psCompId),
+                SysUtil.transDateNullToDB(psBaseDate),
+                SysUtil.transStringNullToDB(TmgUtil.Cs_MGD_LEDGER_PDF_DOWNLOAD + "|" + psMgLedgerSheetId),
+                SysUtil.transStringNullToDB(this.gsLang)
         ));
 
         // 検索結果取得
-        PsResult psResult = this.goBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,poPsDBBean);
 
         // 検索結果が無い場合
         if (psResult.getResult().isEmpty()) {

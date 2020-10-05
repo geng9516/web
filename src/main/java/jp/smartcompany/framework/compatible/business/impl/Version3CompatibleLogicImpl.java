@@ -37,7 +37,6 @@ import javax.servlet.http.HttpSession;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -150,7 +149,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     @Override
-    public int setInsertValues(Vector vecQuery, String sUserid, String sBeandesc, String sCompid, String sCustid, String sSystemCode, String strGUID) {
+    public int setInsertValues(Vector vecQuery, String sUserid, String sBeandesc, String sCompid, String sCustid, String sSystemCode) {
         int nCount = 0;
         if (vecQuery != null && vecQuery.size() > 0) {
             // SQL実行
@@ -170,7 +169,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
     }
 
     @Override
-    public int setInsertValuesForBlob(Vector vecQuery, Vector vecParams, String sUserId, String sBeanDesc, String sCompId, String sCustId, String sSystemCode, String sGUID) {
+    public int setInsertValuesForBlob(Vector vecQuery, Vector vecParams, String sUserId, String sBeanDesc, String sCompId, String sCustId, String sSystemCode) {
         int nCount = 0;
         if (vecQuery != null && vecQuery.size() > 0) {
 
@@ -205,12 +204,11 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
      * @param sCompid 法人コード
      * @param sCustid 顧客コード
      * @param sSystemCode システムコード
-     * @param strGUID GUID
      * @return PsResult 結果セット
      * @throws Exception システム例外
      */
     @Override
-    public PsResult executeSelectQueryBatch(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, Vector vPostweightage, String sBeandesc, boolean bApplypermission, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode, String strGUID) throws Exception {
+    public PsResult executeSelectQueryBatch(Vector vecQuery, String sUserid, Vector vPostid, String sGroupid, Vector vPostweightage, String sBeandesc, boolean bApplypermission, String sTargetuser, Vector vDept, String sCompid, String sCustid, String sSystemCode) throws Exception {
         // リレーションID取得
         int nRelationId = getRelation(sCustid, sCompid, sUserid,
                 sCompid, sTargetuser, this.getDataBaseDate());

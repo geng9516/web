@@ -18,6 +18,7 @@ import jp.smartcompany.job.modules.core.service.ITmgMgdMsgSearchTreeViewService;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import jp.smartcompany.boot.util.SysDateUtil;
 import jp.smartcompany.boot.util.SysUtil;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -112,6 +113,8 @@ public class TmgReferList {
     private TmgGroupList groupList  = null;
     // 勤怠承認サイト用:メンバー一覧
     private TmgMemberList memberList = null;
+
+    private PsDBBeanUtil psDBBeanUtil = SpringUtil.getBean(PsDBBeanUtil.class);
 
     /**
      *  検索対象日付をセッションに登録する際のキーです。
@@ -952,13 +955,13 @@ public class TmgReferList {
                 + " from "
                 + " 	MAST_GENERIC_DETAIL d "
                 + " where "
-                + " 		d.MGD_CCUSTOMERID		= " + psDBBean.escDBString(psDBBean.getCustID())
-                + " 	and d.MGD_CCOMPANYID_CK_FK	= " + psDBBean.escDBString(psDBBean.getCompCode())
+                + " 		d.MGD_CCUSTOMERID		= " + SysUtil.escDBString(psDBBean.getCustID())
+                + " 	and d.MGD_CCOMPANYID_CK_FK	= " + SysUtil.escDBString(psDBBean.getCompCode())
                 + " 	and d.MGD_CGENERICGROUPID	= 'TMG_ADMIN_GROUP' "
                 + " 	and " + SysUtil.transDateNullToDB(getDateStringFor(gcSysdate, DEFAULT_DATE_FORMAT))
                 + " 		between d.MGD_DSTART_CK and d.MGD_DEND "
-                + " 	and d.MGD_CLANGUAGE_CK		= " + psDBBean.escDBString(psDBBean.getLanguage())
-                + " 	and d.MGD_CGENERICDETAILID_CK = " + psDBBean.escDBString(psDBBean.getGroupID())
+                + " 	and d.MGD_CLANGUAGE_CK		= " +SysUtil.escDBString(psDBBean.getLanguage())
+                + " 	and d.MGD_CGENERICDETAILID_CK = " + SysUtil.escDBString(psDBBean.getGroupID())
                 + "";
     }
 

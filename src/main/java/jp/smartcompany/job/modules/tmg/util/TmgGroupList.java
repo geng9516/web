@@ -3,6 +3,7 @@ package jp.smartcompany.job.modules.tmg.util;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.util.SpringUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -92,12 +93,12 @@ public class TmgGroupList {
 
     public void createGroupList(String baseDate, String targetDate) throws Exception{
         String sSQL =   buildSQLForSelectGroupList(
-                psDBBean.escDBString(psDBBean.getCustID()),
-                psDBBean.escDBString(psDBBean.getCompCode()),
-                psDBBean.escDBString(psDBBean.getUserCode()),
+                SysUtil.escDBString(psDBBean.getCustID()),
+                SysUtil.escDBString(psDBBean.getCompCode()),
+                SysUtil.escDBString(psDBBean.getUserCode()),
                 baseDate,
-                psDBBean.escDBString(psDBBean.getLanguage()),
-                psDBBean.escDBString(DEFAULT_DATE_FORMAT)
+                SysUtil.escDBString(psDBBean.getLanguage()),
+                SysUtil.escDBString(DEFAULT_DATE_FORMAT)
                 );
 
         Connection connection = null;

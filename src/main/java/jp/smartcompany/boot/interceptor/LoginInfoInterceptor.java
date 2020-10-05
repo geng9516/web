@@ -24,10 +24,7 @@ import jp.smartcompany.job.modules.core.service.IMastEmployeesService;
 import jp.smartcompany.job.modules.core.service.IMastOrganisationService;
 import jp.smartcompany.job.modules.core.service.IMastSystemService;
 import jp.smartcompany.job.modules.core.service.ITmgGroupService;
-import jp.smartcompany.job.modules.core.util.Designation;
-import jp.smartcompany.job.modules.core.util.PsConst;
-import jp.smartcompany.job.modules.core.util.PsDBBean;
-import jp.smartcompany.job.modules.core.util.PsSession;
+import jp.smartcompany.job.modules.core.util.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
 import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import lombok.RequiredArgsConstructor;
@@ -64,6 +61,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     private final GroupBusiness groupBusiness;
     private final BaseSectionBusiness baseSectionBusiness;
+    private final PsDBBeanUtil psDBBeanUtil;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
@@ -393,7 +391,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(appId)) {
             hashtable.put("AppId",appId);
         }
-        psDBBean.setSysControl(hashtable);
+        psDBBeanUtil.setSysControl(hashtable,psDBBean);
         request.setAttribute("BeanName",psDBBean);
 
     }
