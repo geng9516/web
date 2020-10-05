@@ -168,6 +168,22 @@
         <Drawer :mask-closable="false" :title="title" @on-close="handleClose()" v-model="isShow" width="850">
             <div style="position: relative">
                 <Alert class="error-info" type="error" v-show="errorFlag">{{ errorMsg }}</Alert>
+                <div class="mb10">
+                    <Row :gutter="10">
+                        <i-col span="8">
+                            <div class="label pl10">所属</div>
+                            <div class="person-info">{{ deptName }}</div>
+                        </i-col>
+                        <i-col span="8">
+                            <div class="label pl10">氏名</div>
+                            <div class="person-info">{{ privateInfo.name }}</div>
+                        </i-col>
+                        <i-col span="8">
+                            <div class="label pl10">種別</div>
+                            <div class="person-info">{{ privateInfo.workType }}</div>
+                        </i-col>
+                    </Row>
+                </div>
                 <div class="mb10 tr">
                     <div v-if="!bFixed">
                         <i-button type="error" ghost  class="mr10" @click="updateRemandsStatus" icon="md-hand" :loading="deleteDailyLoading" v-if="notapproval">
@@ -185,22 +201,6 @@
                             承認
                         </i-button>
                     </div>
-                </div>
-                <div class="mb10">
-                    <Row :gutter="10">
-                        <i-col span="8">
-                            <div class="label pl10">所属</div>
-                            <div class="person-info">{{ deptName }}</div>
-                        </i-col>
-                        <i-col span="8">
-                            <div class="label pl10">氏名</div>
-                            <div class="person-info">{{ privateInfo.name }}</div>
-                        </i-col>
-                        <i-col span="8">
-                            <div class="label pl10">種別</div>
-                            <div class="person-info">{{ privateInfo.workType }}</div>
-                        </i-col>
-                    </Row>
                 </div>
                 <div class="titlenorm mb10">
                     <Icon type="logo-buffer"></Icon>
