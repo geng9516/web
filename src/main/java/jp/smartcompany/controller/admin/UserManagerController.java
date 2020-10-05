@@ -2,6 +2,7 @@ package jp.smartcompany.controller.admin;
 
 import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
 import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
+import jp.smartcompany.admin.usermanager.form.UserManagerEditStartForm;
 import jp.smartcompany.admin.usermanager.logic.UserManagerMainLogic;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
@@ -56,7 +57,7 @@ public class UserManagerController {
 
 
     /* ============ 旧代码： UserManagerEditEndAction 开始 ===========*/
-    @PostMapping("show/changeEndDate")
+    @PostMapping("show/endDate")
     public Map<String,Object> showChangeEndDate(@Valid @RequestBody ShowLimitDateForm form) {
         return userManagerMainLogic.showChangeEndDate(form);
     }
@@ -70,9 +71,14 @@ public class UserManagerController {
 
 
     /* ============ 旧代码： UserManagerEditStartAction 开始 ===========*/
-    @PostMapping("change/changeStartDate")
+    @PostMapping("show/startDate")
     public Map<String,Object> showChangeStartDate(@Valid @RequestBody ShowLimitDateForm form) {
         return userManagerMainLogic.showChangeStartDate(form);
+    }
+
+    @PostMapping("change/startDate")
+    public Map<String,String> changeStartDate(@Valid @RequestBody UserManagerEditStartForm form) {
+        return userManagerMainLogic.changeStartDate(form);
     }
     /* ============ 旧代码： UserManagerEditStartAction 结束 ===========*/
 

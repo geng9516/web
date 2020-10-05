@@ -355,6 +355,7 @@
           this.conditionsList = data
         },
         handleRadio(e) {
+          this.updateValue.fullPermission = '1'
           // 「未設定」の場合
           if(e === '0') {
             this.updateValue.hgpCbasesectionFlagNeed     = "0";
@@ -378,6 +379,7 @@
 			      this.updateValue.hgpCpermnecessity = '0001';
 			      this.updateValue.hgpCpermnecessityname = '全て参照可能';
 
+            this.updateValue.fullPermission = '0'
 			      this.updateValue.hgpCbasesectionFlagMust     = "0";
 			      this.updateValue.hgpCpermmust = "";
             this.updateValue.hgpCpermmustname = "";

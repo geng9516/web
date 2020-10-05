@@ -203,6 +203,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
                 .put("defaultStartDate", SysUtil.transDateToString(DateUtil.date())).build();
     }
 
+    @Override
     @Transactional(rollbackFor = GlobalException.class)
     public Map<String,String> changeStartDate(UserManagerEditStartForm form) {
         Date startDate;

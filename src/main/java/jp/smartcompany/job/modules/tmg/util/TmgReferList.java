@@ -678,7 +678,6 @@ public class TmgReferList {
             case csSessionControl4SearchTreeSave:
                 httpSession.setAttribute(SESSION_KEY_SEARCHDATAARRAY, pvSearchDataArray);
                 httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, String.valueOf(getSearchItems()));
-//                httpSession.setAttribute(SESSION_KEY_SEARCHITEMS, null);
                 httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
                 httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
                 httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
@@ -1198,7 +1197,6 @@ public class TmgReferList {
             // 前年度初日より以前の日付が指定された場合、新しい範囲について社員一覧の検索処理を実行します
             if(SysDateUtil.isLess(date,gcPreYearDate)){
                 memberList.createMemberList(base, gbUseManageFLG);
-
                 if (isSelectedSearchTab()){
                     memberList.createMemberList(base, gbUseManageFLG,
                             getSearchItems(), getSearchCondition(), getSearchData()
@@ -1209,11 +1207,14 @@ public class TmgReferList {
             }
             // そうでない場合、SYSDATE-targetDateの範囲のレコードを使用します
             else{
-                // 使用するデータレコードを、SYSDATE-targetDateの範囲に絞り込みます
-                memberList.setDataArray(memberList.getDataArrayBetween(sdf.format(gcSysdate.getTime()),targetDate));
-                memberList.setSearchDataArray(memberList.getSearchDataArrayBetween(sdf.format(gcSysdate.getTime()),targetDate));
+                try {
+                    // 使用するデータレコードを、SYSDATE-targetDateの範囲に絞り込みます
+                    memberList.setDataArray(memberList.getDataArrayBetween(sdf.format(gcSysdate.getTime()), targetDate));
+                    memberList.setSearchDataArray(memberList.getSearchDataArrayBetween(sdf.format(gcSysdate.getTime()), targetDate));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-
         }
 
     }
@@ -1247,14 +1248,9 @@ public class TmgReferList {
 
         log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
                 getSearchCondition(),getSearchData());
-//        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
-//            pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
-//                    getSearchItems(), getSearchCondition(), getSearchData()
-//            );
-//        } else {
-//            pTmgMemberList.setSearchDataArray(null);
-//        }
-        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
+
+
+        if (isSelectedSearchTab()){
             pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
                     getSearchItems(), getSearchCondition(), getSearchData()
             );
@@ -1265,25 +1261,18 @@ public class TmgReferList {
                 pTmgMemberList.getDispLimit4Tree()
         );
 
-//        if(psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY) != null && isSession4SearchTabItem()){
-//            // セッションに登録されていて管理対象者条件使用フラグが同じ場合、セッションのデータをそのまま使用します
-//            pTmgMemberList.setSearchDataArray((List)psDBBean.getSession().getAttribute(SESSION_KEY_SEARCHDATAARRAY));
-//            pTmgMemberList.setDispLimit4Tree((String)psDBBean.getSession().getAttribute(SESSION_KEY_DISPLIMIT4TREE));
-//        } else {
-//            log.info("【createMemberList4SearchView参数：searchTab:{},searchItems:{},searchCondition:{},searchData:{}】",isSelectedSearchTab(),getSearchItems(),
-//                    getSearchCondition(),getSearchData());
-//            if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())){
-//                pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
-//                        getSearchItems(), getSearchCondition(), getSearchData()
-//                );
-//            } else {
-//                pTmgMemberList.setSearchDataArray(null);
-//            }
-//            sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
-//                    pTmgMemberList.getDispLimit4Tree()
+
+//        if (isSelectedSearchTab() && StrUtil.isNotBlank(getSearchData())) {
+//            pTmgMemberList.createMemberList(psBase, gbUseManageFLG,
+//                    getSearchItems(), getSearchCondition(), getSearchData()
 //            );
-//
+//        } else {
+//            pTmgMemberList.setSearchDataArray(null);
 //        }
+//        sessionControl4SearchTree(csSessionControl4SearchTreeSave, pTmgMemberList.getSearchDataArray(),
+//                pTmgMemberList.getDispLimit4Tree()
+//        );
+//
 
     }
 
