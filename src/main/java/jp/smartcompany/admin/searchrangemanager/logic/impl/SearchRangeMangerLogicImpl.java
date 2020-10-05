@@ -3,6 +3,7 @@ package jp.smartcompany.admin.searchrangemanager.logic.impl;
 import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateField;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.util.StrUtil;
@@ -20,6 +21,7 @@ import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
+import jp.smartcompany.job.modules.core.util.PsConst;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +90,8 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         HttpServletRequest request = ContextUtil.getHttpRequest();
         PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
         String sessionId = request.getSession().getId();
+        Date startDate = DateUtil.date();
+        Date endDate  = SysUtil.transStringToDate(PsConst.MAXDATE);
         // 画面表示のためのイレモノを取得
         List<SearchRangeManagerDataDTO> dataList = (List<SearchRangeManagerDataDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
         if (CollUtil.isEmpty(dataList)) {
@@ -98,48 +102,33 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
             for (SearchRangeManagerDataDTO rangeManagerDataDTO : dataList) {
                 if (rangeManagerDataDTO.getHgpId().equals(searchRangeManagerDataDTO.getHgpId())) {
                     BeanUtil.copyProperties(searchRangeManagerDataDTO,rangeManagerDataDTO);
-//                    System.out.println("===+++");
-//                    System.out.println(rangeManagerDataDTO);
+                    System.out.println(rangeManagerDataDTO);
                     break;
                 }
             }
+            searchRangeManagerDataDTO.setHgpDstartdate(startDate);
+            searchRangeManagerDataDTO.setHgpDenddate(endDate);
         }
 
         // 更新数据库
-        List<HistGroupdatapermissionDO> insertDbList = CollUtil.newArrayList();
-        List<HistGroupdatapermissionDO> updateDbList = CollUtil.newArrayList();
-        List<Long> updateFinishHistoryIdList = CollUtil.newArrayList();
-
         for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : dataList) {
             HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
             BeanUtil.copyProperties(searchRangeManagerDataDTO,histDO);
             histDO.setHgpCmodifieruserid(psSession.getLoginUser());
+            histDO.setHgpDmodifieddate(startDate);
+
             if (searchRangeManagerDataDTO.getCreateHistory() == 0) {
-                updateFinishHistoryIdList.add(histDO.getHgpId());
+                histDO.setHgpDenddate(DateUtil.offset(startDate, DateField.DAY_OF_MONTH,-1));
+                histGroupdatapermissionService.updateById(histDO);
                 histDO.setHgpId(null);
-                insertDbList.add(histDO);
+                histGroupdatapermissionService.save(histDO);
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 1) {
-                insertDbList.add(histDO);
+                histGroupdatapermissionService.save(histDO);
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 2) {
-                updateDbList.add(histDO);
+                histGroupdatapermissionService.updateById(histDO);
             }
         }
-        List<HistGroupdatapermissionDO> updateFinishHistoryList = CollUtil.newArrayList();
-        updateFinishHistoryIdList.forEach(id -> {
-            HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
-            histDO.setHgpId(id);
-            histDO.setHgpDenddate(DateUtil.date());
-            updateFinishHistoryList.add(histDO);
-        });
-        if (CollUtil.isNotEmpty(updateFinishHistoryList)) {
-            histGroupdatapermissionService.updateBatchById(updateFinishHistoryList);
-        }
-        if (CollUtil.isNotEmpty(insertDbList)) {
-            histGroupdatapermissionService.saveBatch(insertDbList);
-        }
-        if (CollUtil.isNotEmpty(updateDbList)) {
-            histGroupdatapermissionService.updateBatchById(updateDbList);
-        }
+
         timedCache.remove(REQ_SCOPE_NAME+"_"+sessionId);
     }
 

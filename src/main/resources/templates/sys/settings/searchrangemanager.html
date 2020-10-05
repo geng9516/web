@@ -75,6 +75,7 @@
           </i-col>
         </Row>
       </div>
+      <Alert class="primary-info">セルをクリックすると、変更ができます。</Alert>
       <i-table border :class="tableHeadFixed ? 'table-head-fixed no-padding' : 'no-padding'" :row-class-name="() => 'select-col'"
         :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" @on-cell-click="handleCellClick"
         ref="table">
@@ -354,6 +355,7 @@
           this.conditionsList = data
         },
         handleRadio(e) {
+          this.updateValue.fullPermission = '1'
           // 「未設定」の場合
           if(e === '0') {
             this.updateValue.hgpCbasesectionFlagNeed     = "0";
@@ -365,7 +367,7 @@
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
 
             // 未設定なら 退職者検索参照しない
@@ -377,12 +379,13 @@
 			      this.updateValue.hgpCpermnecessity = '0001';
 			      this.updateValue.hgpCpermnecessityname = '全て参照可能';
 
+            this.updateValue.fullPermission = '0'
 			      this.updateValue.hgpCbasesectionFlagMust     = "0";
 			      this.updateValue.hgpCpermmust = "";
             this.updateValue.hgpCpermmustname = "";
 
             // 不可选选择器
-            this.updateValue.selectedDisable = true
+            this.$set(this.updateValue, 'selectedDisable', true)
             this.updateValue.selected = ''
           }
           // 「条件指定」の場合 定義リスト OR
@@ -396,8 +399,7 @@
 			      this.updateValue.hgpCbasesectionFlagMust     = "0";
 			      this.updateValue.hgpCpermmust = "";
             this.updateValue.hgpCpermmustname = "";
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
 
           // 「条件指定」の場合 定義リスト AND]
@@ -411,8 +413,7 @@
 			      } else {
 				      this.updateValue.hgpCbasesectionFlagMust   = "0";
 			      }
-
-            this.updateValue.selectedDisable = false
+            this.$set(this.updateValue, 'selectedDisable', false)
           }
         },
         handleSelect(e) {
@@ -442,13 +443,9 @@
           this.isEditing = false
           console.log(this.updateValue)
           const { data } = await this.http.post('sys/searchrangemanager/update', [this.updateValue])
+          this.$Message.success('更新完了')
           this.getTableData()
           this.updateValue = {}
-          // let OPTS = { permList: [...new Set(this.updateValue)] }
-          // if (this.opts.date) {
-          //   OPTS.changeDate = this.opts.date
-          // }
-          // const { data } = await this.http.post('sys/groupappmanager/update', OPTS)
         },
         handleCellClick(row, column, data, event) {
           // 点到名字的第一列是也不要弹出操作浮层
@@ -468,6 +465,8 @@
             this.updateValue.selectedDisable = true
           }
           if(this.updateValue.fullPermission === '0') {
+            // 不可选选择器
+            this.updateValue.selectedDisable = true
             this.updateValue.type = '1'
           }
           if(this.updateValue.hgpCbasesectionFlagNeed === '1' || this.updateValue.hgpCpermnecessityname && this.updateValue.hgpCpermnecessity !== '0001') {

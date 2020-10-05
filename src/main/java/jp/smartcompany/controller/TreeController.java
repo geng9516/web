@@ -223,10 +223,6 @@ public class TreeController {
         TmgReferList referList = new TmgReferList(psDBBean, psDBBean.getAppId(), baseDate, type, joinEmployees,
                 useRecordDate, useManage, useTargetDate, useSearch);
         String searchMemberList = referList.getJSONArrayForMemberListSearch();
-        // 如果没有输入搜索条件则直接返回
-        if (StrUtil.isBlank(referList.getSearchData())) {
-            return GlobalResponse.ok(CollUtil.newArrayList());
-        }
         if (StrUtil.isBlank(searchMemberList)) {
             return GlobalResponse.ok(TmgUtil.getPropertyValue("MSG_ZERO_SEARCH_RESULTS"));
         }
