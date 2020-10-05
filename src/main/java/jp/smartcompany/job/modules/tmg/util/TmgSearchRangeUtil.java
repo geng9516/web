@@ -8,6 +8,7 @@ import jp.smartcompany.framework.util.BuildTargetSql;
 import jp.smartcompany.framework.util.PsBuildTargetSql;
 import jp.smartcompany.job.modules.core.pojo.bo.LoginGroupBO;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +31,7 @@ public class TmgSearchRangeUtil  {
 
     private final ScCacheUtil scCacheUtil;
     private final PsBuildTargetSql psBuildTargetSql;
+    private final PsDBBeanUtil psDBBeanUtil;
 
     /**
      * LOG出力用ディスクリプタ
@@ -163,7 +165,7 @@ public class TmgSearchRangeUtil  {
                 }
                 sb.append(psSectionColumn);
                 sb.append(" LIKE ");
-                sb.append(psDBBean.escDBString(sectionLayerList.get(i) + "%"));
+                sb.append(SysUtil.escDBString(sectionLayerList.get(i) + "%"));
             }
             sb.append(") ");
 
@@ -309,7 +311,7 @@ public class TmgSearchRangeUtil  {
                 if( i != 0){
                     sb.append(",");
                 }
-                sb.append(psDBBean.escDBString(sectionLayerList.get(i)));
+                sb.append(SysUtil.escDBString(sectionLayerList.get(i)));
             }
             sb.append(") ");
 
@@ -323,9 +325,9 @@ public class TmgSearchRangeUtil  {
     private void addBaseSectionList(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString, List<String> sectionLayerList) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectBaseSectionList(psDBBean,sSiteId,sAppId,userGroupCodeListString));
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
-        for(int i = 0 ;i < psDBBean.getCount(psResult,0); i++){
-            sectionLayerList.add(psDBBean.valueAtColumnRow(psResult,0, 1, i));
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
+        for(int i = 0 ;i < psDBBeanUtil.getCount(psResult,0); i++){
+            sectionLayerList.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 1, i));
         }
     }
 
@@ -333,10 +335,9 @@ public class TmgSearchRangeUtil  {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectBaseSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString));
         log.info("【getBaseSectionCount：{}】",vecQuery);
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
-        String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
-        int nUserSectionCount = Integer.parseInt(sConut);
-        return nUserSectionCount;
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
+        String sConut = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
+        return Integer.parseInt(sConut);
     }
 
     /**
@@ -349,9 +350,9 @@ public class TmgSearchRangeUtil  {
         return "select COUNT(1) " +
                 "from HIST_GROUPDATAPERMISSION a " +
                 "where " +
-                "	a.HGP_CSITEID = " + psDBBean.escDBString(sSiteId) + " " +
-                "and a.HGP_CAPPID = " + psDBBean.escDBString(sAppId) + " " +
-                "and a.HGP_CCUSTOMERID = " + psDBBean.escDBString(psDBBean.getCustID()) +"  " +
+                "	a.HGP_CSITEID = " + SysUtil.escDBString(sSiteId) + " " +
+                "and a.HGP_CAPPID = " + SysUtil.escDBString(sAppId) + " " +
+                "and a.HGP_CCUSTOMERID = " + SysUtil.escDBString(psDBBean.getCustID()) +"  " +
                 "and a.HGP_CSYSTEMID = '01' " +
                 "and a.HGP_CGROUPID in (" + userGroupCodeListString + ") " +
                 "and a.HGP_DSTARTDATE <= TRUNC(SYSDATE) " +
@@ -363,9 +364,9 @@ public class TmgSearchRangeUtil  {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectUserSectionLayerList(psDBBean));
         log.info("【addUserSectionLayerList：{}】",vecQuery);
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
-        for(int i = 0 ;i < psDBBean.getCount(psResult,0); i++){
-            sectionLayerList.add(psDBBean.valueAtColumnRow(psResult,0, 0, i));
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
+        for(int i = 0 ;i < psDBBeanUtil.getCount(psResult,0); i++){
+            sectionLayerList.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, i));
         }
     }
 
@@ -378,9 +379,9 @@ public class TmgSearchRangeUtil  {
                 "	b.MO_CLAYEREDSECTIONID  " +
                 "from HIST_DESIGNATION a , MAST_ORGANISATION b  " +
                 "where  " +
-                "	a.HD_CCUSTOMERID_CK = " + psDBBean.escDBString(psDBBean.getCustID()) +" " +
-                "and a.HD_CCOMPANYID_CK = " + psDBBean.escDBString(psDBBean.getCompCode()) +" " +
-                "and a.HD_CEMPLOYEEID_CK = " + psDBBean.escDBString(psDBBean.getUserCode()) +" " +
+                "	a.HD_CCUSTOMERID_CK = " + SysUtil.escDBString(psDBBean.getCustID()) +" " +
+                "and a.HD_CCOMPANYID_CK = " + SysUtil.escDBString(psDBBean.getCompCode()) +" " +
+                "and a.HD_CEMPLOYEEID_CK = " + SysUtil.escDBString(psDBBean.getUserCode()) +" " +
                 "and a.HD_DSTARTDATE_CK <= TRUNC(SYSDATE)  " +
                 "and a.HD_DENDDATE >= TRUNC(SYSDATE)  " +
                 "and b.MO_CCUSTOMERID_CK_FK=a.HD_CCUSTOMERID_CK  " +
@@ -394,8 +395,8 @@ public class TmgSearchRangeUtil  {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectUserSectionCheck(psDBBean,sSiteId,sAppId,userGroupCodeListString));
         log.info("【getUserSectionCount：{}】",vecQuery);
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
-        String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
+        String sConut = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
         int nUserSectionCount = Integer.parseInt(sConut);
         return nUserSectionCount;
     }
@@ -410,9 +411,9 @@ public class TmgSearchRangeUtil  {
         return "select COUNT(1) " +
                 "from HIST_GROUPDATAPERMISSION a " +
                 "where " +
-                "	a.HGP_CSITEID = " + psDBBean.escDBString(sSiteId) + " " +
-                "and a.HGP_CAPPID = " + psDBBean.escDBString(sAppId) + " " +
-                "and a.HGP_CCUSTOMERID = " + psDBBean.escDBString(psDBBean.getCustID()) +"  " +
+                "	a.HGP_CSITEID = " + SysUtil.escDBString(sSiteId) + " " +
+                "and a.HGP_CAPPID = " + SysUtil.escDBString(sAppId) + " " +
+                "and a.HGP_CCUSTOMERID = " + SysUtil.escDBString(psDBBean.getCustID()) +"  " +
                 "and a.HGP_CSYSTEMID = '01' " +
                 "and a.HGP_CGROUPID in (" + userGroupCodeListString + ") " +
                 "and a.HGP_DSTARTDATE <= TRUNC(SYSDATE) " +
@@ -424,12 +425,11 @@ public class TmgSearchRangeUtil  {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectALLSectionCheck(psDBBean,sSiteId, sAppId, userGroupCodeListString));
         log.info("【getAllSectionCount，query：{}】",vecQuery);
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
         log.info("【getAllSectionCount，psResult：{}】",psResult);
         // PsResult(result=[[[0]]], exception=[])
-        String sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
-        int nUserSectionCount = Integer.parseInt(sConut);
-        return nUserSectionCount;
+        String sConut = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
+        return Integer.parseInt(sConut);
     }
 
     /**
@@ -442,9 +442,9 @@ public class TmgSearchRangeUtil  {
         return "select COUNT(1) " +
                 "from HIST_GROUPDATAPERMISSION a " +
                 "where " +
-                "	a.HGP_CSITEID = " + psDBBean.escDBString(sSiteId) + " " +
-                "and a.HGP_CAPPID = " + psDBBean.escDBString(sAppId) + " " +
-                "and a.HGP_CCUSTOMERID = " + psDBBean.escDBString(psDBBean.getCustID()) +"  " +
+                "	a.HGP_CSITEID = " + SysUtil.escDBString(sSiteId) + " " +
+                "and a.HGP_CAPPID = " + SysUtil.escDBString(sAppId) + " " +
+                "and a.HGP_CCUSTOMERID = " + SysUtil.escDBString(psDBBean.getCustID()) +"  " +
                 "and a.HGP_CSYSTEMID = '01' " +
                 "and a.HGP_CGROUPID in (" + userGroupCodeListString + ") " +
                 "and a.HGP_DSTARTDATE <= TRUNC(SYSDATE) " +
@@ -473,9 +473,9 @@ public class TmgSearchRangeUtil  {
     private void addBaseSectionLayerList(PsDBBean psDBBean,String sSiteId, String sAppId, String userGroupCodeListString, List<String> sectionLayerList) throws Exception {
         Vector vecQuery = new Vector();
         vecQuery.add(buildSQLForSelectBaseSectionList(psDBBean,sSiteId,sAppId,userGroupCodeListString));
-        PsResult psResult = psDBBean.getValuesforMultiquery(vecQuery, BEAN_DESC);
-        for(int i = 0 ;i < psDBBean.getCount(psResult,0); i++){
-            sectionLayerList.add(psDBBean.valueAtColumnRow(psResult,0, 0, i));
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vecQuery, BEAN_DESC,psDBBean);
+        for(int i = 0 ;i < psDBBeanUtil.getCount(psResult,0); i++){
+            sectionLayerList.add(psDBBeanUtil.valueAtColumnRow(psResult,0, 0, i));
         }
     }
 
@@ -491,9 +491,9 @@ public class TmgSearchRangeUtil  {
                 "  ,b.MGBS_CSECTIONID " +
                 "from HIST_GROUPDATAPERMISSION a , MAST_GROUPBASESECTION b " +
                 "where " +
-                "	a.HGP_CSITEID = " + psDBBean.escDBString(sSiteId) + " " +
-                "and a.HGP_CAPPID = " + psDBBean.escDBString(sAppId) + " " +
-                "and a.HGP_CCUSTOMERID = " + psDBBean.escDBString(psDBBean.getCustID()) +"  " +
+                "	a.HGP_CSITEID = " + SysUtil.escDBString(sSiteId) + " " +
+                "and a.HGP_CAPPID = " + SysUtil.escDBString(sAppId) + " " +
+                "and a.HGP_CCUSTOMERID = " + SysUtil.escDBString(psDBBean.getCustID()) +"  " +
                 "and a.HGP_CSYSTEMID = '01' " +
                 "and a.HGP_CGROUPID in (" + userGroupCodeListString + ") " +
                 "and a.HGP_DSTARTDATE <= TRUNC(SYSDATE) " +
@@ -598,8 +598,8 @@ public class TmgSearchRangeUtil  {
         // カラム名からユーザIDカラム名を取得
         Vector vSql = new Vector();
         vSql.add(buildSQLForSelectUserIdColumn(sColumn[1]));
-        PsResult psResult = psDBBean.getValuesforMultiquery(vSql, "");
-        String sUserId = (String)psDBBean.valueAtColumnRow((Vector)(psResult.getResult()).elementAt(0), 0, 0);
+        PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vSql, "",psDBBean);
+        String sUserId = (String)psDBBeanUtil.valueAtColumnRow((Vector)(psResult.getResult()).elementAt(0), 0, 0);
         // 別名とユーザIDカラム名を結合
         return sColumn[0] + "." + sUserId;
     }

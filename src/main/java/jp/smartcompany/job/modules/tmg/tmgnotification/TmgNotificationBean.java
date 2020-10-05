@@ -13,6 +13,7 @@ import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.job.modules.core.pojo.entity.*;
 import jp.smartcompany.job.modules.core.service.*;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsSession;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
@@ -52,9 +53,9 @@ public class TmgNotificationBean {
     private final IHistDesignationService iHistDesignationService;
     private final ITmgNtfAttachedfileService iTmgNtfAttachedfileService;
     private final ITmgNtfactionlogService iTmgNtfactionlogService;
-    private final ITmgCalendarService iTmgCalendarService;
     private final ITmgEmployeesService iTmgEmployeesService;
     private final HttpSession httpSession;
+    private final PsDBBeanUtil psDBBeanUtil;
 
     // アクション
     public static final String ACT_DISPINP_RLIST = "ACT_DispInp_RList";            // 一覧表示(本人)
@@ -719,7 +720,7 @@ public class TmgNotificationBean {
         //決裁レベル返却
         param.setApprovalLevel(getLoginApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),psDBBean.getTargetUser(),referList));
 
-        String path = psDBBean.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
+        String path = psDBBeanUtil.getSystemProperty("TMG_NOTIFICATION_UPLOADFILE_PATH");
         if (deleteFiles!=null&&param.getAction().equals(ACT_REMAKEAPPLY_CAPPLY)) {
             //file upload
             deleteFiles(param.getNtfNo(),deleteFiles,path);

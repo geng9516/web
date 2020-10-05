@@ -525,14 +525,14 @@ public class PermStatListBean {
         if (isFlex( psDBBean,psDBBean.getCustID()
                 , psDBBean.getTargetComp()
                 , psEmployeeId
-                , psDBBean.toDBDate(psEndDay)
+                , SysUtil.transDateNullToDB(psEndDay)
         ) ){
             if(!getNeedTime4Flex(
                     psDBBean,
                     psDBBean.getCustID()
                     , psDBBean.getTargetComp()
                     , psEmployeeId
-                    , psDBBean.toDBDate(psEndDay)
+                    , SysUtil.transDateNullToDB(psEndDay)
             ).equals("0:00")){
                 return DISABLED;
             }

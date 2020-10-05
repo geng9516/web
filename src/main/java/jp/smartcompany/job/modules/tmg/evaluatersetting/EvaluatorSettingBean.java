@@ -11,6 +11,7 @@ import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.AjaxBean;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
+import jp.smartcompany.job.modules.core.util.PsDBBeanUtil;
 import jp.smartcompany.job.modules.core.util.PsResult;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.dto.*;
 import jp.smartcompany.job.modules.tmg.evaluatersetting.vo.EditMemberVO;
@@ -41,6 +42,7 @@ public class EvaluatorSettingBean {
     private final TmgSearchRangeUtil tmgSearchRangeUtil;
     private final ScCacheUtil scCacheUtil;
     private final AjaxBean ajaxBean;
+    private final PsDBBeanUtil psDBBeanUtil;
 
     // 結果セット番号
     private final static int IDX_LIST			 = 0;	// グループ一覧及び承認者一覧
@@ -260,7 +262,7 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForSelectGroupAttribute(params));		  // グループ属性テーブル
         PsResult psResult;
         try {
-            psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
         } catch (Exception e) {
             throw new GlobalException(e.getMessage());
         }
@@ -272,27 +274,27 @@ public class EvaluatorSettingBean {
         // 超過勤務制限値編集項目の編集可能項目の有無を確認
 
         boolean bEditOvertimeAnyItem = false;
-        if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+        if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                ||psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
             bEditOvertimeAnyItem = true;
         }
         // 休日勤務制限値編集項目の編集可能項目の有無を確認
         boolean bEditHolidaytimeAnyItem = false;
-        if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
-                || psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+        if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")
+                ||psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")
+                || psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit, COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
             bEditHolidaytimeAnyItem = true;
         }
         // 選択グループが組織既定のグループであるか確認
@@ -311,14 +313,14 @@ public class EvaluatorSettingBean {
 
         if (bEditGroupName) {
 //            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,EvaluatorSettingConst.COL_ADD_GROUPNAME,0));
-            map.put("groupName",psDBBean.valueAtColumnRow(psResult,IDX_GROUPNAME,0,0));
+            map.put("groupName",psDBBeanUtil.valueAtColumnRow(psResult,IDX_GROUPNAME,0,0));
         }
 
         // デフォルトグループの場合のみ、夜間連携のデフォルト承認者自動設定フラグ入力欄を表示
         boolean sAutosetChecked = false;
         if (isDefaultGroup(params.getGroup())){
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0) == null ||
-                    TmgUtil.Cs_MGD_ONOFF_1.equals(psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0)) ){
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0) == null ||
+                    TmgUtil.Cs_MGD_ONOFF_1.equals(psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_GroupAttribute,COL_GroupAttribute_AutoSet_Eva, 0)) ){
                 sAutosetChecked = true;
             }
         }
@@ -330,10 +332,10 @@ public class EvaluatorSettingBean {
               // 超勤実績の警告値(時間)(日次:レベル1)
               Map<String,Object> dailyOverTime = MapUtil.newHashMap();
               boolean showDailyOverTime = false;
-              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+              if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit, COL_OVERTIMELIMIT_OT_DAILY_01_MGD, 0).equals("TMG_ONOFF|1")) {
                  showDailyOverTime = true;
-                 String dailyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_DAILY_01,0);
-                 String dailyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_DAILY_01,0);
+                 String dailyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_DAILY_01,0);
+                 String dailyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_DAILY_01,0);
                  dailyOverTime.put("self",dailyOverTimeSelf);
                  dailyOverTime.put("basic",dailyOverTimeBasic);
               }
@@ -343,10 +345,10 @@ public class EvaluatorSettingBean {
               // 超勤実績の警告値(時間)(月次:黄色)
               Map<String,Object> monthlyOverTimeYellow = MapUtil.newHashMap();
               boolean showMonthlyOverTimeYellow = false;
-              if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+              if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
                   showMonthlyOverTimeYellow = true;
-                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_01,0);
-                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01,0);
+                String monthlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_01,0);
+                String monthlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_01,0);
                   monthlyOverTimeYellow.put("self",monthlyOverTimeSelf);
                   monthlyOverTimeYellow.put("basic",monthlyOverTimeBasic);
               }
@@ -356,10 +358,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(月次:オレンジ)
             Map<String,Object> monthlyOverTimeOrange = MapUtil.newHashMap();
             boolean showMonthlyOverTimeOrange = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyOverTimeOrange = true;
-                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_02,0);
-                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02,0);
+                String monthlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_02,0);
+                String monthlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_02,0);
                 monthlyOverTimeOrange.put("self",monthlyOverTimeSelf);
                 monthlyOverTimeOrange.put("basic",monthlyOverTimeBasic);
             }
@@ -369,10 +371,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(月次:ピンク)
             Map<String,Object> monthlyOverTimePink = MapUtil.newHashMap();
             boolean showMonthlyOverTimePink = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyOverTimePink = true;
-                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_03,0);
-                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03,0);
+                String monthlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_03,0);
+                String monthlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_03,0);
                 monthlyOverTimePink.put("self",monthlyOverTimeSelf);
                 monthlyOverTimePink.put("basic",monthlyOverTimeBasic);
             }
@@ -382,10 +384,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(月次:赤色)
             Map<String,Object> monthlyOverTimeRed = MapUtil.newHashMap();
             boolean showMonthlyOverTimeRed = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyOverTimeRed = true;
-                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_04,0);
-                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04,0);
+                String monthlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_04,0);
+                String monthlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_04,0);
                 monthlyOverTimeRed.put("self",monthlyOverTimeSelf);
                 monthlyOverTimeRed.put("basic",monthlyOverTimeBasic);
             }
@@ -395,10 +397,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(月次:？？)
             Map<String,Object> monthlyOverTimeBackUp = MapUtil.newHashMap();
             boolean showMonthlyOverTimeBackUp = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyOverTimeBackUp = true;
-                String monthlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_05,0);
-                String monthlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05,0);
+                String monthlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTLY_05,0);
+                String monthlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTLY_05,0);
                 monthlyOverTimeBackUp.put("self",monthlyOverTimeSelf);
                 monthlyOverTimeBackUp.put("basic",monthlyOverTimeBasic);
             }
@@ -408,10 +410,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(年次:黄色)
             Map<String,Object> yearlyOverTimeYellow = MapUtil.newHashMap();
             boolean showYearlyOverTimeYellow= false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
                 showYearlyOverTimeYellow = true;
-                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_01,0);
-                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01,0);
+                String yearlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_01,0);
+                String yearlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_01,0);
                 yearlyOverTimeYellow.put("self",yearlyOverTimeSelf);
                 yearlyOverTimeYellow.put("basic",yearlyOverTimeBasic);
             }
@@ -421,10 +423,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(年次:オレンジ)
             Map<String,Object> yearlyOverTimeOrange = MapUtil.newHashMap();
             boolean showYearlyOverTimeOrange = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
                 showYearlyOverTimeOrange  = true;
-                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_02,0);
-                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02,0);
+                String yearlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_02,0);
+                String yearlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_02,0);
                 yearlyOverTimeOrange.put("self",yearlyOverTimeSelf);
                 yearlyOverTimeOrange.put("basic",yearlyOverTimeBasic);
             }
@@ -434,10 +436,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(年次:ピンク)
             Map<String,Object> yearlyOverTimePink = MapUtil.newHashMap();
             boolean showYearlyOverTimePink = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
                 showYearlyOverTimePink  = true;
-                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_03,0);
-                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03,0);
+                String yearlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_03,0);
+                String yearlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_03,0);
                 yearlyOverTimePink.put("self",yearlyOverTimeSelf);
                 yearlyOverTimePink.put("basic",yearlyOverTimeBasic);
             }
@@ -447,10 +449,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(年次:赤色)
             Map<String,Object> yearlyOverTimeRed = MapUtil.newHashMap();
             boolean showYearlyOverTimeRed = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
                 showYearlyOverTimeRed  = true;
-                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_04,0);
-                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04,0);
+                String yearlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_04,0);
+                String yearlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_04,0);
                 yearlyOverTimeRed.put("self",yearlyOverTimeSelf);
                 yearlyOverTimeRed.put("basic",yearlyOverTimeBasic);
             }
@@ -460,10 +462,10 @@ public class EvaluatorSettingBean {
             // 超勤実績の警告値(時間)(年次:？？)
             Map<String,Object> yearlyOverTimeBackUp = MapUtil.newHashMap();
             boolean showYearlyOverTimeBackUp = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
                 showYearlyOverTimeBackUp  = true;
-                String yearlyOverTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_05,0);
-                String yearlyOverTimeBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05,0);
+                String yearlyOverTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_YEARLY_05,0);
+                String yearlyOverTimeBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_YEARLY_05,0);
                 yearlyOverTimeBackUp.put("self",yearlyOverTimeSelf);
                 yearlyOverTimeBackUp.put("basic",yearlyOverTimeBasic);
             }
@@ -478,16 +480,16 @@ public class EvaluatorSettingBean {
             Map<String,Object> avgOverTime = MapUtil.newHashMap();
             boolean showAvgOverTime = false;
 
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT_MGD, 0).equals("TMG_ONOFF|1")) {
                 showCountOverTime  = true;
-                String countSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_COUNT,0);
-                String countBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT,0);
+                String countSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_COUNT,0);
+                String countBasic =psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_COUNT,0);
                 countOverTime.put("self",countSelf);
                 countOverTime.put("basic",countBasic);
 
                 showAvgOverTime = true;
-                String avgSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_AVG,0);
-                String avgBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_AVG,0);
+                String avgSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimitSelf,COL_OverTimeLimitSelf_OT_MONTHLY_AVG,0);
+                String avgBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_OverTimeLimit,COL_OVERTIMELIMIT_OT_MONTHLY_AVG,0);
                 avgOverTime.put("self",avgSelf);
                 avgOverTime.put("basic",avgBasic);
             }
@@ -505,10 +507,10 @@ public class EvaluatorSettingBean {
             // 警告値(日数)(月次:レベル1)
             Map<String,Object> monthlyHolidayTimeLevel1 = MapUtil.newHashMap();
             boolean showMonthlyHolidayTimeLevel1 = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyHolidayTimeLevel1 = true;
-                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_01,0);
-                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01,0);
+                String holidayTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_01,0);
+                String holidayBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_01,0);
                 monthlyHolidayTimeLevel1.put("self",holidayTimeSelf);
                 monthlyHolidayTimeLevel1.put("basic",holidayBasic);
             }
@@ -518,10 +520,10 @@ public class EvaluatorSettingBean {
             // 警告値(日数)(月次:レベル2)
             Map<String,Object> monthlyHolidayTimeLevel2= MapUtil.newHashMap();
             boolean showMonthlyHolidayTimeLevel2 = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyHolidayTimeLevel2 = true;
-                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_02,0);
-                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02,0);
+                String holidayTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_02,0);
+                String holidayBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_02,0);
                 monthlyHolidayTimeLevel2.put("self",holidayTimeSelf);
                 monthlyHolidayTimeLevel2.put("basic",holidayBasic);
             }
@@ -531,10 +533,10 @@ public class EvaluatorSettingBean {
             // 警告値(日数)(月次:レベル3)
             Map<String,Object> monthlyHolidayTimeLevel3 = MapUtil.newHashMap();
             boolean showMonthlyHolidayTimeLevel3 = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyHolidayTimeLevel3 = true;
-                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_03,0);
-                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03,0);
+                String holidayTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_03,0);
+                String holidayBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_03,0);
                 monthlyHolidayTimeLevel3.put("self",holidayTimeSelf);
                 monthlyHolidayTimeLevel3.put("basic",holidayBasic);
             }
@@ -544,10 +546,10 @@ public class EvaluatorSettingBean {
             // 警告値(日数)(月次:レベル4)
             Map<String,Object> monthlyHolidayTimeLevel4= MapUtil.newHashMap();
             boolean showMonthlyHolidayTimeLevel4 = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyHolidayTimeLevel4 = true;
-                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_04,0);
-                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04,0);
+                String holidayTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_04,0);
+                String holidayBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_04,0);
                 monthlyHolidayTimeLevel4.put("self",holidayTimeSelf);
                 monthlyHolidayTimeLevel4.put("basic",holidayBasic);
             }
@@ -557,10 +559,10 @@ public class EvaluatorSettingBean {
             // 警告値(日数)(月次:レベル5)
             Map<String,Object> monthlyHolidayTimeLevel5 = MapUtil.newHashMap();
             boolean showMonthlyHolidayTimeLevel5 = false;
-            if (psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
+            if (psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05_MGD, 0).equals("TMG_ONOFF|1")) {
                 showMonthlyHolidayTimeLevel5 = true;
-                String holidayTimeSelf = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_05,0);
-                String holidayBasic = psDBBean.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05,0);
+                String holidayTimeSelf = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimitSelf,COL_HolidayTimeLimitSelf_HT_MONTLY_05,0);
+                String holidayBasic = psDBBeanUtil.valueAtColumnRow(psResult,QUERY_SHOWEDITGROUP_HolidayTimeLimit,COL_OVERTIMELIMIT_HT_MONTLY_05,0);
                 monthlyHolidayTimeLevel5.put("self",holidayTimeSelf);
                 monthlyHolidayTimeLevel5.put("basic",holidayBasic);
             }
@@ -593,7 +595,7 @@ public class EvaluatorSettingBean {
         vQuery.add(buildSQLForDeletePattern(params));      // 対象グループに紐付く勤務パターン情報を削除
         vQuery.add(buildSQLForDeletePatternRest(params));  // 対象グループに紐付く勤務パターン(休憩)情報を削除
         vQuery.add(buildSQLForDeletePatternApply(params)); // 対象グループに紐付く勤務パターン割付情報を削除
-        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows == 0) {
             return GlobalResponse.ok("削除成功しました");
         }
@@ -630,7 +632,7 @@ public class EvaluatorSettingBean {
         // エラーチェック削除
         vQuery.add(buildSQLForDeleteGroupAttributeCheck(params));
         // DB反映
-        int rows = psDBBean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
         if (rows >0) {
             return GlobalResponse.ok("登録処理成功しました");
         }
@@ -660,9 +662,9 @@ public class EvaluatorSettingBean {
         try {
            referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
                     TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-           psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
-           groupListCount = bean.getCount(psResult,IDX_GROUP_LIST);
-           levelCount = bean.getCount(psResult,IDX_APPROVAL);
+           psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
+           groupListCount = psDBBeanUtil.getCount(psResult,IDX_GROUP_LIST);
+           levelCount = psDBBeanUtil.getCount(psResult,IDX_APPROVAL);
         } catch (Exception e) {
            throw new GlobalException(e.getMessage());
         }
@@ -672,16 +674,16 @@ public class EvaluatorSettingBean {
 
         List<Map<String,String>> groupList = CollUtil.newArrayList();
         for (int i = 0; i < groupListCount; i++) {
-            String sCode  = bean.valueAtColumnRow(psResult,IDX_GROUP_LIST, 0, i);
-            String sName = bean.valueAtColumnRow(psResult,IDX_GROUP_LIST, 1, i);
+            String sCode  = psDBBeanUtil.valueAtColumnRow(psResult,IDX_GROUP_LIST, 0, i);
+            String sName = psDBBeanUtil.valueAtColumnRow(psResult,IDX_GROUP_LIST, 1, i);
             Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
             groupList.add(item);
         }
 
         List<Map<String,String>> levelList = CollUtil.newArrayList();
         for (int i = 0; i < levelCount; i++) {
-            String sCode  = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
-            String sName = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
+            String sCode  = psDBBeanUtil.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
+            String sName = psDBBeanUtil.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
             Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
             levelList.add(item);
         }
@@ -785,20 +787,20 @@ public class EvaluatorSettingBean {
         int IDX_GROUPNAME	= 1;	// グループ一覧
         map.put("YYYYMMDD",params.getYYYYMMDD());
         try {
-            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
             List<EditMemberVO> memberList = CollUtil.newArrayList();
-            for (int i = 0;i< bean.getCount(psResult,IDX_MEMBER);i++) {
+            for (int i = 0;i< psDBBeanUtil.getCount(psResult,IDX_MEMBER);i++) {
                 EditMemberVO vo = new EditMemberVO();
-                vo.setEmpId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
-                vo.setEmpName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
-                vo.setGroupId(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
-                vo.setGroupName(bean.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPNAME,i));
+                vo.setEmpId(psDBBeanUtil.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEEID,i));
+                vo.setEmpName(psDBBeanUtil.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_EMPLOYEENAME,i));
+                vo.setGroupId(psDBBeanUtil.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPID,i));
+                vo.setGroupName(psDBBeanUtil.valueAtColumnRow(psResult,IDX_MEMBER,EvaluatorSettingConst.COL_MEMBER_GROUPNAME,i));
                 List<Map<String,String>> groupList = CollUtil.newArrayList();
-                for (int j = 0; j <bean.getCount(psResult,IDX_GROUPNAME);j++) {
+                for (int j = 0; j <psDBBeanUtil.getCount(psResult,IDX_GROUPNAME);j++) {
                     Map<String,String> item = MapUtil.<String,String>builder()
                            .put(
-                                 bean.valueAtColumnRow(psResult,IDX_GROUPNAME,0,j),
-                                 bean.valueAtColumnRow(psResult,IDX_GROUPNAME,1,j)
+                                   psDBBeanUtil.valueAtColumnRow(psResult,IDX_GROUPNAME,0,j),
+                                   psDBBeanUtil.valueAtColumnRow(psResult,IDX_GROUPNAME,1,j)
                            ).build();
                    groupList.add(item);
                 }
@@ -845,7 +847,7 @@ public class EvaluatorSettingBean {
 
         }
 
-        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows >0) {
             return GlobalResponse.ok("登録処理成功しました");
         }
@@ -882,9 +884,9 @@ public class EvaluatorSettingBean {
         try {
             referList = new TmgReferList(bean, EvaluatorSettingConst.BEAN_DESC,params.getYYYYMMDD(),
                     TmgReferList.TREEVIEW_TYPE_LIST_SEC, true);
-            psResult = bean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
-            evaluatorCount = bean.getCount(psResult,IDX_EVALUATOR);
-            levelCount = bean.getCount(psResult,IDX_APPROVAL);
+            psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
+            evaluatorCount = psDBBeanUtil.getCount(psResult,IDX_EVALUATOR);
+            levelCount = psDBBeanUtil.getCount(psResult,IDX_APPROVAL);
         } catch (Exception e) {
             e.printStackTrace();
             throw new GlobalException(e.getMessage());
@@ -896,38 +898,38 @@ public class EvaluatorSettingBean {
         boolean hasAuthMonthApprove = hasAuthority(TmgUtil.Cs_AUTHORITY_MONTHLYAPPROVAL,params);
         map.put("enableMonthlyResult", hasAuthMonthApprove);
 
-        map.put("groupName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_GROUPNAME,0));
-        map.put("empName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_EMPLOYEENAME,0));
-        map.put("sectionName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_SECTIONNAME,0));
-        map.put("postName",bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_POSTNAME,0));
+        map.put("groupName",psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_GROUPNAME,0));
+        map.put("empName",psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_EMPLOYEENAME,0));
+        map.put("sectionName",psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_SECTIONNAME,0));
+        map.put("postName",psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_POSTNAME,0));
 
         //組織直下のグループ以外の場合、権限付与のチェックボックスをdisableにする
         boolean enableEditAuthority = StrUtil.equals(params.getRootGroup(),groupId);
         map.put("enableEditAuthority",enableEditAuthority);
 
-        map.put("defaultLevel",bean.valueAtColumnRow(psResult,IDX_DEFAULT, EvaluatorSettingConst.COL_MGD_DEFAULT_APPLEVEL, 0));
+        map.put("defaultLevel",psDBBeanUtil.valueAtColumnRow(psResult,IDX_DEFAULT, EvaluatorSettingConst.COL_MGD_DEFAULT_APPLEVEL, 0));
 
         List<Map<String,Object>> authInfoList = CollUtil.newArrayList();
         for (int i = 0; i < evaluatorCount; i++) {
             Map<String,Object> authInfo = MapUtil.newHashMap();
             // 勤怠承認
-            boolean dailyResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_RESULTS, 0));
+            boolean dailyResult = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_RESULTS, 0));
             // 月次承認
-            boolean monthlyDailyResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_MONTHLYRESULTS, 0));
+            boolean monthlyDailyResult = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_MONTHLYRESULTS, 0));
             // 休暇・休出承認
-            boolean notificationResult = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_NOTIFICATION, 0));
+            boolean notificationResult = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_NOTIFICATION, 0));
             // 超過勤務命令
-            boolean overTime = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_OVERTIME, 0));
+            boolean overTime = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_OVERTIME, 0));
             // 予定作成
-            boolean schedule = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_SCHEDULE, 0));
+            boolean schedule = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_SCHEDULE, 0));
             // 権限付与
-            boolean authority = isAuthority(bean.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_AUTHORITY, 0));
+            boolean authority = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult, IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_AUTHORITY, 0));
 
             //　レベル
-            String level = bean.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_APPROVALLEVEL,i);
+            String level =psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR,EvaluatorSettingConst.COL_EVAL_APPROVALLEVEL,i);
 
-            String startDate = bean.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_FROM, i);
-            String endDate = bean.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_TO, i);
+            String startDate = psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_FROM, i);
+            String endDate = psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALUATOR, EvaluatorSettingConst.COL_EVAL_TERM_TO, i);
 
             authInfo.put("dailyResult",dailyResult);
             authInfo.put("monthlyDailyResult",monthlyDailyResult);
@@ -944,8 +946,8 @@ public class EvaluatorSettingBean {
 
         List<Map<String,String>> levelList = CollUtil.newArrayList();
         for (int i = 0; i < levelCount; i++) {
-            String sCode  = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
-            String sName = bean.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
+            String sCode  = psDBBeanUtil.valueAtColumnRow(psResult,IDX_APPROVAL, 0, i);
+            String sName = psDBBeanUtil.valueAtColumnRow(psResult,IDX_APPROVAL, 1, i);
             Map<String,String> item = MapUtil.<String,String>builder().put(sCode,sName).build();
             levelList.add(item);
         }
@@ -976,7 +978,7 @@ public class EvaluatorSettingBean {
                 vQuery.add(buildSQLForUpdateAuthority(params, dto, bean)); // 権限情報変更(UPD)
             }
         }
-        int rows = bean.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC);
+        int rows = psDBBeanUtil.setInsertValues(vQuery, EvaluatorSettingConst.BEAN_DESC,bean);
         if (rows >0) {
             return GlobalResponse.ok("変更処理成功しました");
         }
@@ -1783,11 +1785,11 @@ public class EvaluatorSettingBean {
                 vecSQL.add(buildSQLForTransitionDate(params));
                 PsResult psResult = null;
                 try {
-                    psResult = psDBBean.getValuesforMultiquery(vecSQL, EvaluatorSettingConst.BEAN_DESC);
+                    psResult = psDBBeanUtil.getValuesforMultiquery(vecSQL, EvaluatorSettingConst.BEAN_DESC,psDBBean);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                String baseDate = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
+                String baseDate = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
                 if (StrUtil.isNotBlank(baseDate)) {
                     params.setYYYYMMDD(baseDate);
                 }
@@ -1826,16 +1828,16 @@ public class EvaluatorSettingBean {
             vQuery.add(buildSQLForTransitionDate(params));           // 2 画面遷移リンク用基準日取得(クエリ)
             vQuery.add(buildSQLForSelectEvaluaterEmpNum(params));    // 3 グループの承認者ごとに登録されている権限設定の歴数
             try {
-                 psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+                 psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
                  // グループ・承認者毎の権限設定歴データ数マップデータを作成
                  Map<String,Object> groupEmpDataMap = MapUtil.newHashMap();
-                 for (int i=0; i <= psDBBean.getCount(psResult,IDX_EVALEMPNUM); i++) {
+                 for (int i=0; i <= psDBBeanUtil.getCount(psResult,IDX_EVALEMPNUM); i++) {
                      // キー（グループID_承認者職員番号）
-                     String key= psDBBean.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_GROUPID, i) +
+                     String key= psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_GROUPID, i) +
                                  "_" +
-                                 psDBBean.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_EMPID, i);
+                             psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_EMPID, i);
                      // 値（グループ・承認者が保持する権限設定データ歴数）
-                     String value = psDBBean.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_DATACNT, i);
+                     String value = psDBBeanUtil.valueAtColumnRow(psResult,IDX_EVALEMPNUM, EvaluatorSettingConst.COL_EVALEMPNUM_DATACNT, i);
                      if (StrUtil.isNotBlank(value)) {
                          groupEmpDataMap.put(key,value);
                      }
@@ -1847,11 +1849,11 @@ public class EvaluatorSettingBean {
                 boolean sEmpNameBoldTagFlg;		// 承認者氏名の太字タグフラグ
 
                 // ▽件数分だけループ
-                for (int i=0;i<psDBBean.getCount(psResult, IDX_LIST);i++){
+                for (int i=0;i<psDBBeanUtil.getCount(psResult, IDX_LIST);i++){
 
                     EvaluatorGroupVO vo = new EvaluatorGroupVO();
 
-                    sGroupName_Eval = psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i);
+                    sGroupName_Eval = psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i);
                     // ▼ループ中にグループ名が切り替わった場合　かつ　勤怠承認サイトの場合、グループ名を表示
                     /* 2007/06/28  H.Kawabata      権限設定の仕様変更 */
                     if(!sGroupName_Group.equals(sGroupName_Eval)) {
@@ -1867,7 +1869,7 @@ public class EvaluatorSettingBean {
                         if ((params.isSiteTp() && i != 0 && haveAuthority) || params.isSiteTa()) {
                             // ▼▼▼組織直下の部署以外の場合、リンクを表示
                             // ルートグループの場合、組織属性編集画面への遷移リンクを表示する。
-                            String groupId = psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i);
+                            String groupId = psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i);
                             if (StrUtil.equals(
                                     groupId,
                                     params.getRootGroup())) {
@@ -1881,16 +1883,16 @@ public class EvaluatorSettingBean {
                             vo.setEnableEditGroup(false);
                             vo.setEnableEditGroupName(false);
                         }
-                        vo.setGroup(psDBBean.valueAtColumnRow(psResult,IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i));
-                        vo.setGroupId(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i));
+                        vo.setGroup(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i));
+                        vo.setGroupId(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i));
                     } else {
-                        vo.setGroup(psDBBean.valueAtColumnRow(psResult,IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i-1));
-                        vo.setGroupId(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1));
+                        vo.setGroup(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i-1));
+                        vo.setGroupId(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1));
                     }
 
                     // ■ 承認者氏名欄の表示制御 ■
                     // 承認者未設定の組織・グループには、"未設定"と表示する。
-                    String sEvalEmpId = psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEEID,i);
+                    String sEvalEmpId = psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEEID,i);
 
                     List<EvaluatorMemberVO> memberList = CollUtil.newArrayList();
 
@@ -1901,8 +1903,8 @@ public class EvaluatorSettingBean {
 
                         // 承認者氏名欄の枠は、グループまたは承認者職員番号が変わるタイミングのみで生成する。
                         if (i==0
-                                || !psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1).equals(sGroupName_Eval)
-                                || !psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEEID,i-1).equals(sEvalEmpId))
+                                || !psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i-1).equals(sGroupName_Eval)
+                                || !psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEEID,i-1).equals(sEvalEmpId))
                         {
                             /*
                              * 下記の場合のみ、承認者編集画面への画面遷移リンクを表示する。
@@ -1913,13 +1915,13 @@ public class EvaluatorSettingBean {
                             sEmpNameLinkTagFlg = false;	// 承認者氏名のリンクフラグ
                             sEmpNameBoldTagFlg = false;	// 承認者氏名の太字フラグ
                             if (isEditLink(
-                                    psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EDITABLEFLG,i),
-                                    psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_ADMINFLG,i),
+                                    psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EDITABLEFLG,i),
+                                    psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_ADMINFLG,i),
                                     params, haveAuthority
                             )) {
                                 sEmpNameLinkTagFlg = true;
                                 // デフォルト承認者の場合、表示名を太字にする。
-                                if (isSecEvaluater(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_SECTIONEVALUATER,i))) {
+                                if (isSecEvaluater(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_SECTIONEVALUATER,i))) {
                                     sEmpNameBoldTagFlg = true;
                                 }
                            // 承認サイトで承認者編集が不能な承認者は、表示名を太字にする。
@@ -1930,12 +1932,12 @@ public class EvaluatorSettingBean {
                             memberVO.setEnableEmpEdit(sEmpNameLinkTagFlg);
                             memberVO.setNameBold(sEmpNameBoldTagFlg);
 
-                            memberVO.setGroupId(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i));
-                            memberVO.setGroupName(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i));
-                            memberVO.setPostName(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_POSTNAME,i));
+                            memberVO.setGroupId(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPID,i));
+                            memberVO.setGroupName(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_GROUPNAME,i));
+                            memberVO.setPostName(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_POSTNAME,i));
 
                             memberVO.setEmpId(sEvalEmpId);
-                            memberVO.setName(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEENAME,i));
+                            memberVO.setName(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_EMPLOYEENAME,i));
 
                         }
 
@@ -1945,34 +1947,34 @@ public class EvaluatorSettingBean {
 
                         // 勤怠承認権限
                         memberRightVO.setWorkConfirm(
-                          isAuthority(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_RESULTS,i))
+                          isAuthority(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_RESULTS,i))
                         );
                         // 勤怠承認権限
                         memberRightVO.setMonthConfirm(
-                          isAuthority(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_MONTHLYRESULTS,i))
+                          isAuthority(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_MONTHLYRESULTS,i))
                         );
                         // 超過勤務命令
                         memberRightVO.setOverWorkConfirm(
-                          isAuthority(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_OVERTIME,i))
+                          isAuthority(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_OVERTIME,i))
                         );
                         // 予定作成権限を持っていれば○を表示
                         memberRightVO.setScheduleCreate(
                           isAuthority(
-                                  psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_SCHEDULE,i)));
+                                  psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_SCHEDULE,i)));
                         // 権限付与権限を持っていれば○を表示
                         memberRightVO.setPermissionGive(
-                          isAuthority(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_AUTHORITY,i)));
+                          isAuthority(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_AUTHORITY,i)));
                         // 休暇・休出承認権限を持っていれば○を表示
-                        boolean restConfirm = isAuthority(psDBBean.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_NOTIFICATION,i));
+                        boolean restConfirm = isAuthority(psDBBeanUtil.valueAtColumnRow(psResult,IDX_LIST,EvaluatorSettingConst.COL_EVALLIST_NOTIFICATION,i));
                         memberRightVO.setRestConfirm(restConfirm);
                         // 休暇・休出承認権限を持っていれば決裁レベルを表示
                         if (restConfirm) {
                             memberRightVO.setLevel(
-                                    Integer.parseInt(psDBBean.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_APPROVALLEVEL, i))
+                                    Integer.parseInt(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_APPROVALLEVEL, i))
                             );
                         }
-                        memberRightVO.setValidStartDate(psDBBean.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_FROM, i));
-                        memberRightVO.setValidEndDate(psDBBean.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_TO, i));
+                        memberRightVO.setValidStartDate(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_FROM, i));
+                        memberRightVO.setValidEndDate(psDBBeanUtil.valueAtColumnRow(psResult, IDX_LIST, EvaluatorSettingConst.COL_EVALLIST_TERM_TO, i));
 
                         rightList.add(memberRightVO);
                         memberVO.setValidList(rightList);
@@ -2110,9 +2112,9 @@ public class EvaluatorSettingBean {
         String sConut = null;
         int nCount = 0;
         try {
-            PsResult psResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            PsResult psResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
             // 一件も結果がない場合はfalse
-            sConut = psDBBean.valueAtColumnRow(psResult,0, 0, 0);
+            sConut = psDBBeanUtil.valueAtColumnRow(psResult,0, 0, 0);
             nCount = Integer.parseInt(sConut);
         } catch (Exception e) {
             e.printStackTrace();
@@ -2527,11 +2529,11 @@ public class EvaluatorSettingBean {
      * @return String(取得出来ない場合は空白を返却)
      */
     public String getEvasetMessage(PsDBBean psDBBean,EvaluatorSettingParam evaluaterSettingParam, String psMasterCode){
-        PsResult psMesResult = null;
+        PsResult psMesResult;
         Vector <String> vQuery = new Vector <String>();
         vQuery.add(buildSQL4SelectTmgVMgdEvasetMessage(evaluaterSettingParam));
         try {
-            psMesResult = psDBBean.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC);
+            psMesResult = psDBBeanUtil.getValuesforMultiquery(vQuery, EvaluatorSettingConst.BEAN_DESC,psDBBean);
         } catch (Exception e) {
             e.printStackTrace();
             return "";
