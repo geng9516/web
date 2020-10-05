@@ -44,9 +44,15 @@
                     </Tooltip>
                 </span>
                 <span class="ml15 label">氏名</span>
-                <span class="input-like-span width15">
+                <span class="input-like-span width15 mr30">
                     <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{ kanjiName }}
                         <div slot="content">{{ kanjiName }}</div>
+                    </Tooltip>
+                </span>
+                <span class="label">種別</span>
+                <span class="input-like-span width15">
+                    <Tooltip transfer　v-if="workType"trigger="hover" 　:theme="toolTipTheme()">{{workType}}
+                        <div slot="content">{{workType}}</div>
                     </Tooltip>
                 </span>
             </div>
@@ -146,6 +152,7 @@
                     index: 0,
                     contentScrollTop: 0,
                     kanjiName: [[${ session.psSession.loginKanjiName }]],　　 //ログインしたユーザの氏名
+                    workType: [[${ session.psSession.workTypeName }]],　　 //ログインしたユーザの種別
                     loginEmployee: [[${ session.psSession.loginEmployee }]],  //ログインしたユーザの職員番号
                     sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
                     query: {

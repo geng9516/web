@@ -108,11 +108,17 @@
                 <!-- 共通組織図画面 end-->
                 </span>
             <span class="label">氏名</span>
-            <span class="input-like-span width15">
+            <span class="input-like-span width15 mr30">
                 <Tooltip trigger="hover"　:theme="toolTipTheme()" transfer　v-if="kanjiName">{{kanjiName}}
                     <div slot="content">{{kanjiName}}</div>
                 </Tooltip>
             </span>
+            <span class="label">種別</span>
+            <span class="input-like-span width15">
+                    <Tooltip transfer　v-if="workType"trigger="hover" 　:theme="toolTipTheme()">{{workType}}
+                        <div slot="content">{{workType}}</div>
+                    </Tooltip>
+                </span>
         </div>
     </div>
     <div class="content_body">
@@ -229,6 +235,7 @@
                 comment: '',
                 contentScrollTop: 0,
                 kanjiName: '',　         　 //選択した職員の氏名
+                workType: '',　         　 //選択した職員の種別
                 loginEmployee: '',          //選択した職員の職員番号
                 query: {
                     employeeId: '',        //組織ツリーで選択した職員番号
@@ -410,6 +417,7 @@
 
                 if (isInit) await this.getdefaultDate()
                 else await this.getqueryDate()
+                await this.getApplyEmployPersonalInfo()
                 await this.getExistsAttendanceBook()
                 await this.getqueryHolidayInfo()
                 await this.getTableData()
@@ -496,6 +504,11 @@
                     this.loading = false
                     this.isSearchHistory = false
                 }
+            },
+            async getApplyEmployPersonalInfo() {
+                // 職員情報取得
+                const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                this.workType = data.worktype
             },
             searchOrgTree: Debounce( async function() {
                 this.empDeptLoading = true
