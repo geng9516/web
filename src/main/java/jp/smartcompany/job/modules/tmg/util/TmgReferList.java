@@ -508,6 +508,7 @@ public class TmgReferList {
     }
 
     private void init() throws Exception{
+        sessionControl4SearchTree(csSessionControl4SearchTreeInitialization, null, null);
         // 日付の処理
         setSysdate();
         // targetDate(遡り基準日)がSYSDATEより後の日付だった場合、targetDate = SYSDATE とする
@@ -523,7 +524,6 @@ public class TmgReferList {
         if (StrUtil.isBlank(recordDate)){
             setRecordDate(baseDate);
         }
-        sessionControl4SearchTree(csSessionControl4SearchTreeInitialization, null, null);
         //病棟のリスト表示のケース
 //        if(this.treeViewType == TREEVIEW_TYPE_LIST_WARD){
 //
@@ -591,10 +591,14 @@ public class TmgReferList {
         ){
             StringBuilder sSQL = new StringBuilder();
             if (getRecordDate() != null && isUseRecordDate()){
+                String strD = getRecordDate();
+                if (strD.contains("T")) {
+                   strD = strD.split("T")[0];
+                }
                 sSQL.append(" SELECT ");
-                sSQL.append(    " TO_CHAR(TO_DATE('" + getRecordDate() + "'),'"+DEFAULT_DATE_FORMAT+"') as systemDate, ");
-                sSQL.append(    " TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE('" + getRecordDate() + "'),'MM'),-1),'"+DEFAULT_DATE_FORMAT+"') as preMonthDate, ");
-                sSQL.append(    " TO_CHAR(TMG_F_GET_THE_YEARZONE( TMG_F_GET_THE_YEAR(ADD_MONTHS(TO_DATE('" + getRecordDate() + "'),-12)), 0, ADD_MONTHS(TO_DATE('" + getRecordDate() + "'),-12)),'"+DEFAULT_DATE_FORMAT+"') preYearDate ");
+                sSQL.append(    " TO_CHAR(TO_DATE('" + strD + "'),'"+DEFAULT_DATE_FORMAT+"') as systemDate, ");
+                sSQL.append(    " TO_CHAR(ADD_MONTHS(TRUNC(TO_DATE('" + strD+ "'),'MM'),-1),'"+DEFAULT_DATE_FORMAT+"') as preMonthDate, ");
+                sSQL.append(    " TO_CHAR(TMG_F_GET_THE_YEARZONE( TMG_F_GET_THE_YEAR(ADD_MONTHS(TO_DATE('" + strD + "'),-12)), 0, ADD_MONTHS(TO_DATE('" + strD + "'),-12)),'"+DEFAULT_DATE_FORMAT+"') preYearDate ");
                 sSQL.append(" FROM DUAL ");
             } else {
                 sSQL.append(" SELECT ");
@@ -663,11 +667,6 @@ public class TmgReferList {
             httpSession.setAttribute(SESSION_KEY_SEARCHCONDITION, String.valueOf(getSearchCondition()));
             httpSession.setAttribute(SESSION_KEY_SEARCHDATA, String.valueOf(getSearchData()));
             httpSession.setAttribute(SESSION_KEY_DISPLIMIT4TREE, String.valueOf(psDispLimit4Tree));
-        } else {
-            httpSession.removeAttribute(SESSION_KEY_SEARCHDATAARRAY);
-            httpSession.removeAttribute(SESSION_KEY_SEARCHCONDITION);
-            httpSession.removeAttribute(SESSION_KEY_SEARCHDATA);
-            httpSession.removeAttribute(SESSION_KEY_DISPLIMIT4TREE);
         }
 //        switch(piParam){
 //            case csSessionControl4SearchTreeInitialization:
@@ -3134,7 +3133,7 @@ public class TmgReferList {
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES) != null){
                 searchItems = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHITEMES);
             } else if (httpSession.getAttribute(SESSION_KEY_SEARCHITEMS) != null){
-                searchItems = (String)httpSession.getAttribute(SESSION_KEY_SEARCHITEMS);
+//                searchItems = (String)httpSession.getAttribute(SESSION_KEY_SEARCHITEMS);
             }
 //        }
         return searchItems;
@@ -3157,7 +3156,7 @@ public class TmgReferList {
             if (psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION) != null){
                 searchCondition = psDBBean.getReqParam(TREEVIEW_OBJ_HIDSEARCHCONDITION);
             } else if (httpSession.getAttribute(SESSION_KEY_SEARCHCONDITION) != null){
-                searchCondition = (String)ContextUtil.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
+//                searchCondition = (String)ContextUtil.getSession().getAttribute(SESSION_KEY_SEARCHCONDITION);
             }
 //        }
         return searchCondition;
