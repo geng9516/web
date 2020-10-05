@@ -31,7 +31,7 @@ public class BaseControllerAdvice {
      */
     @ModelAttribute
     public void addAttributes(Model model) {
-        HttpSession session =  ContextUtil.getHttpRequest().getSession();
+        HttpSession session =  ContextUtil.getSession();
         // 如果tmgreferlist里不存在系统时间，则设置一个默认时间
         String currentDate = (String)session.getAttribute(TmgReferList.SESSION_KEY_CURRENT_DATE);
         if (currentDate==null) {

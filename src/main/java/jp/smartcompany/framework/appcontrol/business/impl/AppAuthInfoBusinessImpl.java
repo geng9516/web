@@ -187,7 +187,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
         // 返却用
         List <AppInfo> appInfoList = new ArrayList < AppInfo >();
         setRequest(ContextUtil.getHttpRequest());
-        gPsSession = (PsSession) gRequest.getSession().getAttribute(Constant.PS_SESSION);
+        gPsSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         TopPageInfo topPageInfo = gPsSession.getLoginAppPermission();
         if (topPageInfo == null) {
             return appInfoList;
@@ -404,7 +404,7 @@ public class AppAuthInfoBusinessImpl implements AppAuthInfoBusiness {
      */
     public List<SiteInfo> getSiteList() {
         setRequest(ContextUtil.getHttpRequest());
-        gPsSession = (PsSession) gRequest.getSession().getAttribute(Constant.PS_SESSION);
+        gPsSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         List<SiteInfo> lSite = CollUtil.newArrayList();
         TopPageInfo topPageInfo;
         Object o = scCache.get(gPsSession.getLoginEmployee()+":loginAppPermissions");

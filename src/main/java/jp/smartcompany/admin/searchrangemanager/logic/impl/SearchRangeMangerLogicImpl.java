@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -73,7 +74,7 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         map.put("afterDate",afterDate);
         map.put("nowDate",nowDate);
         map.put("latestDate",latestDate);
-        timedCache.put(REQ_SCOPE_NAME+"_"+ ContextUtil.getHttpRequest().getSession().getId(),dataList);
+        timedCache.put(REQ_SCOPE_NAME+"_"+ ContextUtil.getSession().getId(),dataList);
         return map;
     }
 
@@ -87,9 +88,9 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void executeUpdate(List<SearchRangeManagerDataDTO> updateList) {
-        HttpServletRequest request = ContextUtil.getHttpRequest();
-        PsSession psSession = (PsSession)request.getSession().getAttribute(Constant.PS_SESSION);
-        String sessionId = request.getSession().getId();
+        HttpSession httpSession = ContextUtil.getSession();
+        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+        String sessionId = httpSession.getId();
         Date startDate = DateUtil.date();
         Date endDate  = SysUtil.transStringToDate(PsConst.MAXDATE);
         // 画面表示のためのイレモノを取得

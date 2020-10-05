@@ -95,7 +95,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
 
     @Override
     public Map<String,Object> detail(Date searchDate, String systemId, String groupId) {
-        PsSession psSession = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession psSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         Date maxDate = SysUtil.transStringToDate(PsConst.MAXDATE);
         String companyId;
         String companyName;
@@ -1089,7 +1089,7 @@ public class GroupManagerGroupEditLogicImpl implements GroupManagerGroupEditLogi
      */
     public void insertBaseSection(List<BaseSectionRowDTO> baseSectionList) {
 
-        PsSession session = (PsSession) ContextUtil.getHttpRequest().getSession().getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
 
         List<MastGroupbasesectionDO> saveRows = CollUtil.newArrayList();
         List<MastGroupbasesectionDO> updateRows = CollUtil.newArrayList();

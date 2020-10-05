@@ -66,14 +66,6 @@ public class PsDBBean {
         scCacheUtil = SpringUtil.getBean(ScCacheUtil.class);
     }
 
-    public HttpSession getSession(){
-        HttpServletRequest request = ContextUtil.getHttpRequest();
-        if (request!=null){
-            return request.getSession();
-        }
-        return null;
-    }
-
     // 日付フォーマット
     private final String DATE_FORMAT = "yyyy/MM/dd";
     /** 更新用エラーコード */
@@ -358,7 +350,7 @@ public class PsDBBean {
         Date tdate = DateUtil.parse(psCreterialDate,DATE_FORMAT);
         String date = DateUtil.format(tdate, DATE_FORMAT);
         // ログインユーザの基点組織を取得
-        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(date,ContextUtil.getHttpRequest().getSession());
+        BaseSectionBO bsi = baseSectionBusiness.getBaseSection(date,ContextUtil.getSession());
         Map<String, Map<String, String>> hbSection = bsi.getHmCompany();
         // システムコード「01」の基点組織情報取得
         Map<String, String> hBaseSection =

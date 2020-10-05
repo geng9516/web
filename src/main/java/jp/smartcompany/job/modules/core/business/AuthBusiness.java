@@ -125,7 +125,7 @@ public class AuthBusiness {
     public void logout(HttpServletRequest req) {
         lruCache.clear();
         timedCache.clear();
-        HttpSession session = req.getSession();
+        HttpSession session = req.getSession(false);
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         if (psSession!=null) {
             saveLoginInfo(false, psSession.getLoginUser());
