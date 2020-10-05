@@ -65,7 +65,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
-        HttpSession httpSession = ContextUtil.getSession();
+        HttpSession httpSession = request.getSession();
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
@@ -130,7 +130,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     // 设置PsDBBean和PsSession
     public void configGlobalParameters(HttpServletRequest request,MastSystemDO mastSystemDO) {
-        HttpSession httpSession = request.getSession(false);
+        HttpSession httpSession = request.getSession();
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         session.setLanguage(mastSystemDO.getMsClanguage());
         session.setLoginCompany(mastSystemDO.getMsCsystemidPk());
