@@ -9,7 +9,7 @@
             (	SELECT	MDP_CPERMISSION
                  FROM	MAST_DATAPERMISSION
                  WHERE	MAST_DATAPERMISSION.MDP_CPERMISSIONID = HIST_GROUPDATAPERMISSION.HGP_CPERMNECESSITY
-            ) AS full_permission,
+            ) AS fullPermission,
             TEMP.MTR_COBJNAME,
             (	SELECT	MDP_CPERMISSIONNAME
                  FROM	MAST_DATAPERMISSION
