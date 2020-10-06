@@ -5,6 +5,7 @@ import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.common.GlobalResponse;
 import jp.smartcompany.boot.enums.ErrorMessage;
+import jp.smartcompany.boot.util.SysUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,36 +128,38 @@ public class ExceptionAdvice {
 
     @ExceptionHandler(NoHandlerFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ModelAndView handleException(NoHandlerFoundException e) {
-        boolean isTestEnv = StrUtil.equals(Constant.Env.DEV, env) || StrUtil.equals(Constant.Env.TEST, env);
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("404");
-        mv.addObject("error",ErrorMessage.NOT_FOUND_ERROR);
-        if (isTestEnv) {
-            e.printStackTrace();
+    public Object handleException(NoHandlerFoundException e, HttpServletRequest req) {
+        printStackTrace(e);
+        Object o;
+        if (SysUtil.isAjaxRequest(req)) {
+            o = GlobalResponse.error(HttpStatus.NOT_FOUND.value(),ErrorMessage.NOT_FOUND_ERROR.msg());
+        } else {
+            o = new ModelAndView();
+            ((ModelAndView)o).setViewName("404");
+            ((ModelAndView)o).addObject("error",ErrorMessage.NOT_FOUND_ERROR);
         }
-        return mv;
+        return o;
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ModelAndView handleException(Exception e) {
-        boolean isTestEnv = StrUtil.equals(Constant.Env.DEV, env) || StrUtil.equals(Constant.Env.TEST, env);
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("500");
-        mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
-        if (isTestEnv) {
-            e.printStackTrace();
-            String message = e.getMessage();
-            if (StrUtil.isNotBlank(message)) {
-                mv.addObject("error",GlobalResponse.error(message));
-            } else {
-                mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
-            }
+    public Object handleException(Exception e,HttpServletRequest req) {
+        printStackTrace(e);
+        Object o;
+        if (SysUtil.isAjaxRequest(req)) {
+            o = GlobalResponse.error(HttpStatus.INTERNAL_SERVER_ERROR.value(),ErrorMessage.SERVER_INTERNAL_ERROR.msg());
         } else {
-            mv.addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
+            o = new ModelAndView();
+            ((ModelAndView)o).setViewName("500");
+            if (!StrUtil.equals(env, "prod")){
+                e.printStackTrace();
+                ((ModelAndView)o).addObject("error",e.getMessage());
+            } else {
+                ((ModelAndView)o).addObject("error",ErrorMessage.SERVER_INTERNAL_ERROR);
+            }
+
         }
-        return mv;
+        return o;
     }
 
     private GlobalResponse convertError(Errors error) {
