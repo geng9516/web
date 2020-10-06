@@ -644,7 +644,9 @@
                     this.takenDaysDataLoading = false
                 }
 
-                this.privateInfo.deptName = this.deptName
+                // 職員情報取得
+                await this.getApplyEmployPersonalInfo()
+
                 this.privateInfo.name = this.paidData[0].name
                 this.privateInfo.workType = this.paidData[0].type
 
@@ -782,6 +784,11 @@
                     });
                 }
                 this.isSearchHistory = false
+                console.log("this.query.hidSelectTab === '1'")
+                console.log(this.query.hidSelectTab)
+                if (this.query.hidSelectTab == '1'){
+                    this.deptName = '職員により検索中'
+                }
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -1269,9 +1276,6 @@
                 this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]]
                 this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]]
                 this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
-                if (this.query.hidSelectTab === '1'){
-                    this.deptName = '職員により検索中'
-                }
 
                 this.targetAdminSection = '',
                 this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
@@ -1320,6 +1324,12 @@
                         }
                     }
                 })
+            },
+            // 職員情報取得
+            async getApplyEmployPersonalInfo() {
+                // 職員情報取得
+                const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                this.privateInfo.deptName = data.section
             },
         }
     })
