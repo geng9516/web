@@ -504,7 +504,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
     @Override
     public int getRelation(String sCustomerID, String sLoginCompanyID, String sLoginUserID, String sTargetCompanyID, String sTargetUserID, String sDate)  {
-        HttpSession session = ContextUtil.getSession();
+        HttpSession session = ContextUtil.getHttpRequest().getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         // ログインユーザコード取得
         String sLoginUserCode = psSession.getLoginUser();
@@ -565,7 +565,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
     @Override
     public String getBaseSectionListForSQL(String sCustID, String sCompID, String sEmployeeID, String sCreterialDate) {
-        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate,ContextUtil.getSession());
+        BaseSectionBO baseSectionBO = baseSectionBusiness.getBaseSection(sCreterialDate,ContextUtil.getHttpRequest().getSession());
         Map<String, String> hBaseSection = baseSectionBO.getHmCompany().get(SYSTEM_CODE_01);
         String sBaseSection = "";
         if (MapUtil.isNotEmpty(hBaseSection) && hBaseSection.containsKey(sCompID)) {
@@ -941,7 +941,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
                                                final String psSystemCode,
                                                final String psDomainid,
                                                final int pnRelationId) {
-        HttpSession session = ContextUtil.getSession();
+        HttpSession session = ContextUtil.getHttpRequest().getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         Vector<Boolean> vBehav = new Vector<Boolean>();
         for (Object o : pvColumn) {
@@ -1115,7 +1115,7 @@ public class Version3CompatibleLogicImpl implements Version3CompatibleLogic {
 
         // SQL実行結果の行数分処理
         Vector<Vector<Object>> vResult = new Vector<Vector<Object>>();
-        HttpSession session = ContextUtil.getSession();
+        HttpSession session = ContextUtil.getHttpRequest().getSession();
         PsSession psSession = (PsSession) session.getAttribute(Constant.PS_SESSION);
         for (int nRcnt = nSline; nRcnt < nEline; nRcnt++) {
 

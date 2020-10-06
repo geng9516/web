@@ -65,7 +65,20 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws ServletException, IOException {
-        HttpSession httpSession = ContextUtil.getSession();
+        String requestUri = request.getRequestURI();
+        if (SecurityUtil.isAuthenticated()) {
+            Boolean passwordExpired = (Boolean) timedCache.get(SecurityUtil.getUsername() + "passwordExpired", true);
+            // 如果密码过期且不是访问修改密码的接口则跳转到密码过期页面
+            if (passwordExpired != null && passwordExpired) {
+                if (!StrUtil.containsAny(requestUri, "changeExpirePassword", "/expirePassword")) {
+                    request.setAttribute("username", SecurityUtil.getUsername());
+                    RequestDispatcher dispatcher = request.getRequestDispatcher("/expirePassword");
+                    dispatcher.forward(request, response);
+                    return false;
+                }
+            }
+        }
+        HttpSession httpSession = request.getSession();
         ContextUtil.add(new PsDBBean());
         // 默认为日本语
         String language = Constant.DEFAULT_LANGUAGE;
@@ -101,7 +114,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
             }
 
             String sessionId = httpSession.getId();
-            String requestUri = request.getRequestURI();
             // 不是权限设定管理页面的话则要把缓存的设定列表对象先删除
             if (!requestUri.contains("groupappmanager")) {
                 timedCache.remove(GroupAppManagerMainLogicImpl.REQ_SCOPE_NAME+"_"+sessionId);
@@ -109,16 +121,6 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
             if (!requestUri.contains("searchrangemanager")) {
                 timedCache.remove(SearchRangeMangerLogicImpl.REQ_SCOPE_NAME+"_"+sessionId);
             }
-
-            Boolean passwordExpired = (Boolean)timedCache.get(SecurityUtil.getUsername()+"passwordExpired",true);
-            // 如果密码过期且不是访问修改密码的接口则跳转到密码过期页面
-            if (passwordExpired!=null && passwordExpired && !requestUri.contains("changeExpirePassword")) {
-                request.setAttribute("username",SecurityUtil.getUsername());
-                RequestDispatcher dispatcher = request.getRequestDispatcher("/expirePassword");
-                dispatcher.forward(request, response);
-                return false;
-            }
-
         }
         return true;
     }
@@ -130,7 +132,7 @@ public class LoginInfoInterceptor implements HandlerInterceptor {
 
     // 设置PsDBBean和PsSession
     public void configGlobalParameters(HttpServletRequest request,MastSystemDO mastSystemDO) {
-        HttpSession httpSession = request.getSession(false);
+        HttpSession httpSession = request.getSession();
         PsSession session = (PsSession) httpSession.getAttribute(Constant.PS_SESSION);
         session.setLanguage(mastSystemDO.getMsClanguage());
         session.setLoginCompany(mastSystemDO.getMsCsystemidPk());

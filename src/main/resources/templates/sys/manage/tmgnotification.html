@@ -1358,22 +1358,22 @@
           }
         }
 
-        if (this.restApply.timezoneOpen || this.restApply.timezoneClose) {
-          if (this.restApply.timezoneOpen && !this.restApply.timezoneClose) {
-            this.errorInfo = true
-            this.errorMsg = '終了時間を入力してください'
-            return
-          }
-          if (!this.restApply.timezoneOpen && this.restApply.timezoneClose) {
-            this.errorInfo = true
-            this.errorMsg = '開始時間を入力してください。'
-            return
-          }
-          if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
-            this.errorInfo = true
-            this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
-            return
-          }
+        if (this.selectedRestInfo.timeZone) {
+            if(!this.restApply.timezoneOpen) {
+              this.errorInfo = true
+              this.errorMsg = '開始時間を入力してください。'
+              return
+            }
+            if (!this.restApply.timezoneClose) {
+              this.errorInfo = true
+              this.errorMsg = '終了時間を入力してください'
+              return
+            }
+            if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+              this.errorInfo = true
+              this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+              return
+            }
         }
         if (!this.hasPassedTimeCheck) {
           this.errorInfo = true
@@ -1506,7 +1506,6 @@
       handleClickEmpLeafTree(e) {
         this.deptName = '職員により検索中'
         this.referListObject.hidSelectTab = '1'
-        this.referListObject.hidSearchData = this.referListObject.hidSearchData
         this.deptDrawShow = false
 
         this.getTableData()

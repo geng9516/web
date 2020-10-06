@@ -49,10 +49,6 @@ public class SectionChiefBusiness {
      * @exception
      */
     public List<EvaluatorBO> getSectionChiefWithSection(String psUserId, String psSectionId, Date pdSearchDate) {
-        HttpServletRequest request =  ContextUtil.getHttpRequest();
-        if (request==null) {
-            return null;
-        }
         PsSession psSession = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         // 言語区分を取得
         String sLanguage = psSession.getLanguage();
