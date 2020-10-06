@@ -5,6 +5,7 @@ import cn.hutool.db.handler.EntityHandler;
 import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.util.SpringUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
@@ -135,13 +136,13 @@ public class TmgMemberList {
     private void createTreeMemberList(String baseDate, String psParamUseManageFlg) throws Exception{
 
         String sSQL =   buildSQLForSelectMemberList(
-                        bean.escDBString(bean.getCustID()),
-                        bean.escDBString(bean.getCompCode()),
-                        bean.escDBString(bean.getUserCode()),
+                       SysUtil.escDBString(bean.getCustID()),
+                       SysUtil.escDBString(bean.getCompCode()),
+                       SysUtil.escDBString(bean.getUserCode()),
                         baseDate,
                         psParamUseManageFlg,
-                        bean.escDBString(bean.getLanguage()),
-                        bean.escDBString(DEFAULT_DATE_FORMAT),
+                       SysUtil.escDBString(bean.getLanguage()),
+                       SysUtil.escDBString(DEFAULT_DATE_FORMAT),
                         null,
                         null,
                         null);
@@ -180,9 +181,9 @@ public class TmgMemberList {
                                         String psSearchCondition, String psSearchData
     ) throws Exception{
 
-        String sSQL =   buildSQLForSelectMemberList(bean.escDBString(bean.getCustID()), bean.escDBString(bean.getCompCode()),
-                        bean.escDBString(bean.getUserCode()), baseDate, psParamUseManageFlg, bean.escDBString(bean.getLanguage()),
-                        bean.escDBString(DEFAULT_DATE_FORMAT), psSearchItems, psSearchCondition,
+        String sSQL =   buildSQLForSelectMemberList(SysUtil.escDBString(bean.getCustID()),SysUtil.escDBString(bean.getCompCode()),
+                       SysUtil.escDBString(bean.getUserCode()), baseDate, psParamUseManageFlg,SysUtil.escDBString(bean.getLanguage()),
+                       SysUtil.escDBString(DEFAULT_DATE_FORMAT), psSearchItems, psSearchCondition,
                         psSearchData);
 
         Connection connection = null;
@@ -210,8 +211,8 @@ public class TmgMemberList {
      */
     private String getMsgDispLimit4Tree(String psBaseDate) throws Exception{
 
-        String sSQL =   buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
-                        bean.escDBString(bean.getCompCode()), psBaseDate, bean.escDBString(bean.getLanguage()));
+        String sSQL =   buildSQLForSelectTmgDispLimit4Tree(SysUtil.escDBString(bean.getCustID()),
+                       SysUtil.escDBString(bean.getCompCode()), psBaseDate,SysUtil.escDBString(bean.getLanguage()));
 
         Connection connection = null;
         Entity entity = null;
@@ -334,11 +335,11 @@ public class TmgMemberList {
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
         if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString(sReplaceSearchData + "%"));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString(sReplaceSearchData + "%"));
         } else if (TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString("%" + sReplaceSearchData));
         } else {
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData + "%"));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString("%" + sReplaceSearchData + "%"));
         }
 
         sbSQL.append(" ESCAPE '_' ");

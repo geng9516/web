@@ -32,6 +32,12 @@
                 <i-option v-for="(item, index) of dispMonthlyList" :key="index" :label="item.val" :value="item.code">
                 </i-option>
             </i-select>
+            <span class="label">所属</span>
+            <span class="input-like-span width15">
+                    <Tooltip transfer　v-if="sectionName"trigger="hover" 　:theme="toolTipTheme()">{{ sectionName }}
+                        <div slot="content">{{ sectionName }}</div>
+                    </Tooltip>
+            </span>
         </div>
     </div>
     <div class="content_body" style="position: relative">
@@ -300,6 +306,7 @@
                 dailyloading:false,
                 contentScrollTop: 0,
                 selectDisabled: false,   　//年月選択可否制御
+                sectionName: [[${ session.psSession.loginDesignation[0].sectionName }]],　 //ログインしたユーザの所属
                 lightDelBtnVisible: [],
                 lightDelBtnVisible2: [],
                 dispMonthlyList: [],       //年月リスト

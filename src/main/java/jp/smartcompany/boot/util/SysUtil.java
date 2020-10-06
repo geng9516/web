@@ -493,4 +493,8 @@ public class SysUtil {
     public static boolean isAjaxRequest(HttpServletRequest request) {
         return StrUtil.equalsIgnoreCase("XMLHttpRequest",request.getHeader(Constant.HEADER_XMLHTTPREQUEST));
     }
+
+    public static String escDBString(String sString) {
+        return transStringNullToDB(escapeQuote(sString));
+    }
 }

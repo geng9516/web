@@ -1737,17 +1737,17 @@ public class TmgResultsBean {
 
 
     private String getFlextime(String baseDate,PsDBBean psDBBean){
-        String needTime4Flex =null;
+        String needTime4Flex;
         if(TmgUtil.isFlex(psDBBean
                 , psDBBean.getCustID()
                 , psDBBean.getCompCode()
                 , psDBBean.getTargetUser()
-                , psDBBean.toDBDate(baseDate))){
+                , SysUtil.transDateNullToDB(baseDate))){
             needTime4Flex=TmgUtil.getNeedTime4Flex(psDBBean
                     , psDBBean.getCustID()
                     , psDBBean.getCompCode()
                     , psDBBean.getTargetUser()
-                    , psDBBean.toDBDate(baseDate));
+                    , SysUtil.transDateNullToDB(baseDate));
         }else{
             needTime4Flex="0:00";
         }

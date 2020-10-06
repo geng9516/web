@@ -9,6 +9,7 @@ import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONUtil;
 import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalResponse;
+import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.dialog.postselect.logic.PostGenericLogic;
 import jp.smartcompany.framework.jsf.orgtree.dto.OrgTreeDTO;
@@ -257,7 +258,7 @@ public class TreeController {
             @RequestParam(value="useSearchRange",required=false,defaultValue = "true") Boolean useSearchRange,
             @RequestParam(value="searchRange",required = false) String searchRange, HttpServletRequest request) {
         String searchDate = SysUtil.transDateToString(DateUtil.date());
-        PsSession session = (PsSession) request.getSession(false).getAttribute(Constant.PS_SESSION);
+        PsSession session = (PsSession) ContextUtil.getSession().getAttribute(Constant.PS_SESSION);
         List<OrgTreeDTO> treeDTOList = orgTreeListLogic.getOrgTreeList(session.getLoginCustomer(),
                 session.getLanguage(),
                 session.getLoginCompany(),

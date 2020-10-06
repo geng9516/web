@@ -7,6 +7,7 @@ import cn.hutool.db.handler.EntityListHandler;
 import cn.hutool.db.sql.SqlExecutor;
 import jp.smartcompany.boot.util.ContextUtil;
 import jp.smartcompany.boot.util.SpringUtil;
+import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.util.PsDBBean;
 import lombok.extern.slf4j.Slf4j;
 
@@ -468,11 +469,11 @@ public class TmgEmpList {
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
         if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString(sReplaceSearchData + "%"));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escape(sReplaceSearchData + "%"));
         } else if (TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString("%" + sReplaceSearchData));
         } else {
-            sbSQL.append(psSearchItems).append(" LIKE ").append(bean.escDBString("%" + sReplaceSearchData + "%"));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString("%" + sReplaceSearchData + "%"));
         }
 
         sbSQL.append(" ESCAPE '_' ");
@@ -524,8 +525,8 @@ public class TmgEmpList {
      */
     private String getMsgDispLimit4Tree(String psBaseDate) throws Exception{
 
-        String sSQL =buildSQLForSelectTmgDispLimit4Tree(bean.escDBString(bean.getCustID()),
-                        bean.escDBString(bean.getCompCode()),psBaseDate, bean.escDBString(bean.getLanguage()));
+        String sSQL =buildSQLForSelectTmgDispLimit4Tree( SysUtil.escDBString(bean.getCustID()),
+                        SysUtil.escDBString(bean.getCompCode()),psBaseDate,  SysUtil.escDBString(bean.getLanguage()));
 
         Connection connection = null;
         Entity entity = null;

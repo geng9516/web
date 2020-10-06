@@ -56,6 +56,7 @@ var THEME_CONFIG  = {
     '--gold-info':'var(--brown-text)',
     '--gold-info-bg':'var(--light-gold)',
     '--error-info-bg': 'var(--light-pink)',
+    '--error-info-border': 'rgba(237, 64, 20, 0.12)',
     '--row-label-primary': 'rgb(171, 78, 16)',
     '--row-label-primary-border': 'rgb(220, 200, 187)',
     // header
@@ -198,6 +199,7 @@ var THEME_CONFIG  = {
     '--gold-info':'var(--brown-text)',
     '--gold-info-bg':'var(--light-gold)',
     '--error-info-bg': 'var(--light-pink)',
+    '--error-info-border': 'rgba(237, 64, 20, 0.12)',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',
     // header
@@ -337,6 +339,7 @@ var THEME_CONFIG  = {
     '--gold-info':'rgb(252, 241, 154)',
     '--gold-info-bg':'rgba(180, 175, 134 ,0.4)',
     '--error-info-bg': 'rgba(246, 123, 97,0.2)',
+    '--error-info-border': 'transparent',
     '--primary-info-border': 'transparent',
     '--row-label-primary': 'var(--primary)',
     '--row-label-primary-border': 'rgb(53, 173, 255)',

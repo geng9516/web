@@ -84,7 +84,7 @@ public class AppAuthJudgmentBusinessImpl implements AppAuthJudgmentBusiness {
         if (request==null) {
             return null;
         }
-        PsSession psSession = (PsSession) request.getSession(false).getAttribute(Constant.PS_SESSION);
+        PsSession psSession = (PsSession) request.getSession().getAttribute(Constant.PS_SESSION);
         // グループ判定結果取得
         Map<String, List<LoginGroupBO>> loginGroups = psSession.getLoginGroups();
         // 言語区分 取得
