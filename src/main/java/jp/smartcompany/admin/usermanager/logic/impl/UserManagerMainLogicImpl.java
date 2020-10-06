@@ -72,33 +72,43 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
          IPage<UserManagerListDTO> pageResult;
          IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(conditions);
          switch(searchType) {
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=1
              case 1: // 全て
                  pageResult = mastEmployeesService.selectMainAllList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=2
              case 2: // ロックアウトされているユーザ
                  pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=3
              case 3: // 現在有効なユーザ
                  pageResult = mastEmployeesService.selectMainValidList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=4
              case 4: // 入社前
                  pageResult = mastEmployeesService.selectMainBeforeJoinList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=5&companyId=01
              case 5: //入社後未登録
                  pageResult = mastEmployeesService.selectMainAfterJoinList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=6&companyId=01
              case 6: // 退職後未削除
                  pageResult = mastEmployeesService.selectMainAfterRetireList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=7&companyId=01&empId=4640
              case 7: // 社員番号
                  pageResult = mastEmployeesService.selectMainEmpIdList(pageQuery,custId,language,companyId,companyList,empId);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=8&sectionCompanyId=01&sectionId=201000000000
              case 8: // 部署
                  pageResult = mastEmployeesService.selectMainSectionList(pageQuery,custId,language,companyList,sectionCompanyId,sectionId);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=9&companyId=01&empName=464
              case 9: // 氏名
                  pageResult = mastEmployeesService.selectMainEmpNameList(pageQuery,custId,language,companyId,companyList,empName);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=10&companyId=01
              case 10: // 管理ツールユーザ
                  pageResult = mastEmployeesService.selectMainAdminList(pageQuery,custId,language,companyId,companyList);
              default: // 默认查询ロックアウトされているユーザ

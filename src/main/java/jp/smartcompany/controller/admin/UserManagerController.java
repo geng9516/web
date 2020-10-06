@@ -30,8 +30,6 @@ public class UserManagerController {
 
 
     /* ============ 旧代码： UserManagerMainAction 开始 ===========*/
-
-    // http://localhost:6879/sys/usermanager/search?psSite=Admin&page=2
     @GetMapping("search")
     public PageUtil search(@RequestParam Map<String,Object> params) {
         return userManagerMainLogic.search(params);
