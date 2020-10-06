@@ -12,8 +12,6 @@ public class UserManagerDTO extends UserManagerListDTO {
     private String permaLink;
     /** パスワード */
     private String password;
-    /** ステータス*/
-    private String status;
     /** チェックボックス */
     private Boolean chkuser;
 }
