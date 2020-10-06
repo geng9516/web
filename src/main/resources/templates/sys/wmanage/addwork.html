@@ -422,6 +422,7 @@
 </main>
 <div th:replace="layout/head::header"></div>
 <script type="text/babel" th:inline="javascript">
+    console.log([[${session}]])
     const WORK_YEAR_SCHEDULE = new Vue({
         // 特别注意要对上这个class
         el: '.monthWorkConfirm-warp',
@@ -1022,6 +1023,7 @@
                     this.monthlyLoading= false
                     this.updateMonthloading=false
                 }
+                this.isSearchHistory = false
             },
             rowClass(row) {
                 if (row.today) {

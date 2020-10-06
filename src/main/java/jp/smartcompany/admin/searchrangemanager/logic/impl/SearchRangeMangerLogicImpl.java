@@ -1,6 +1,5 @@
 package jp.smartcompany.admin.searchrangemanager.logic.impl;
 
-import cn.hutool.cache.impl.TimedCache;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateField;
@@ -13,23 +12,19 @@ import jp.smartcompany.admin.groupappmanager.logic.GroupAppManagerMainLogic;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerChangeDateDTO;
 import jp.smartcompany.admin.searchrangemanager.dto.SearchRangeManagerDataDTO;
 import jp.smartcompany.admin.searchrangemanager.logic.SearchRangeManagerLogic;
-import jp.smartcompany.boot.common.Constant;
 import jp.smartcompany.boot.common.GlobalException;
-import jp.smartcompany.boot.util.ContextUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.HistGroupdatapermissionDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastDatapermissionDO;
 import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import jp.smartcompany.job.modules.core.service.IMastDatapermissionService;
 import jp.smartcompany.job.modules.core.util.PsConst;
-import jp.smartcompany.job.modules.core.util.PsSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +37,6 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     private final GroupAppManagerMainLogic groupAppManagerMainLogic;
     private final IHistGroupdatapermissionService histGroupdatapermissionService;
     private final IMastDatapermissionService mastDatapermissionService;
-    private final TimedCache<String,Object> timedCache;
 
     public static final String REQ_SCOPE_NAME = "searchRangeTableDtoList";
 
@@ -59,9 +53,17 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         if (CollUtil.isEmpty(permGroupIds)){
             return null;
         }
+        Date now = DateUtil.date();
         List<SearchRangeManagerDataDTO> dataList = histGroupdatapermissionService.getSearchRangeTableData(systemId,siteId,appId,searchDate,language,permGroupIds);
+        // 在java中实现旧代码的createHistory逻辑
         dataList.forEach(item -> {
-            item.setHgpDstartdate(searchDate);
+            if (DateUtil.isSameDay(item.getHgpDstartdate(),now )) {
+                item.setCreateHistory(2);
+            } else if (item.getHgpDstartdate() == null){
+                item.setCreateHistory(1);
+            } else {
+                item.setCreateHistory(0);
+            }
         });
         Map<String,Object> map = MapUtil.newHashMap();
         SearchRangeManagerChangeDateDTO changeDateDTO = histGroupdatapermissionService.selectHistoryDate(custId, systemId,groupId, searchDate);
@@ -74,7 +76,6 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
         map.put("afterDate",afterDate);
         map.put("nowDate",nowDate);
         map.put("latestDate",latestDate);
-        timedCache.put(REQ_SCOPE_NAME+"_"+ ContextUtil.getSession().getId(),dataList);
         return map;
     }
 
@@ -88,49 +89,37 @@ public class SearchRangeMangerLogicImpl implements SearchRangeManagerLogic {
     @Override
     @Transactional(rollbackFor = GlobalException.class)
     public void executeUpdate(List<SearchRangeManagerDataDTO> updateList) {
-        HttpSession httpSession = ContextUtil.getSession();
-        PsSession psSession = (PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-        String sessionId = httpSession.getId();
-        Date startDate = DateUtil.date();
+
+        Date startDate = SysUtil.transStringToDate(SysUtil.transDateToString(DateUtil.date()));
         Date endDate  = SysUtil.transStringToDate(PsConst.MAXDATE);
-        // 画面表示のためのイレモノを取得
-        List<SearchRangeManagerDataDTO> dataList = (List<SearchRangeManagerDataDTO>) timedCache.get(REQ_SCOPE_NAME+"_"+sessionId,false);
-        if (CollUtil.isEmpty(dataList)) {
-            throw new GlobalException("リストの有効期限が切れています。更新してもう一度お試しください");
-        }
-        // 将本次更改过的数据覆盖到原先的缓存list中
-        for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : updateList) {
-            for (SearchRangeManagerDataDTO rangeManagerDataDTO : dataList) {
-                if (rangeManagerDataDTO.getHgpId().equals(searchRangeManagerDataDTO.getHgpId())) {
-                    BeanUtil.copyProperties(searchRangeManagerDataDTO,rangeManagerDataDTO);
-                    System.out.println(rangeManagerDataDTO);
-                    break;
-                }
-            }
-            searchRangeManagerDataDTO.setHgpDstartdate(startDate);
-            searchRangeManagerDataDTO.setHgpDenddate(endDate);
-        }
+
 
         // 更新数据库
-        for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : dataList) {
+        for (SearchRangeManagerDataDTO searchRangeManagerDataDTO : updateList) {
             HistGroupdatapermissionDO histDO = new HistGroupdatapermissionDO();
             BeanUtil.copyProperties(searchRangeManagerDataDTO,histDO);
-            histDO.setHgpCmodifieruserid(psSession.getLoginUser());
+            histDO.setHgpCmodifieruserid(SecurityUtil.getUserId());
             histDO.setHgpDmodifieddate(startDate);
 
             if (searchRangeManagerDataDTO.getCreateHistory() == 0) {
                 histDO.setHgpDenddate(DateUtil.offset(startDate, DateField.DAY_OF_MONTH,-1));
                 histGroupdatapermissionService.updateById(histDO);
                 histDO.setHgpId(null);
+                histDO.setHgpDstartdate(startDate);
+                histDO.setHgpDenddate(endDate);
                 histGroupdatapermissionService.save(histDO);
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 1) {
+                histDO.setHgpDstartdate(startDate);
+                histDO.setHgpDenddate(endDate);
                 histGroupdatapermissionService.save(histDO);
+                // 如果更新前改订日和此时相同，则只更新当前数据
             } else if (searchRangeManagerDataDTO.getCreateHistory() == 2) {
                 histGroupdatapermissionService.updateById(histDO);
             }
         }
 
-        timedCache.remove(REQ_SCOPE_NAME+"_"+sessionId);
+
     }
+
 
 }
