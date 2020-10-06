@@ -53,8 +53,9 @@
             HIST_GROUPDATAPERMISSION.VERSIONNO,
             HIST_GROUPDATAPERMISSION.HGP_CMODIFIERUSERID,
             HIST_GROUPDATAPERMISSION.HGP_DMODIFIEDDATE,
-            DECODE(HGP_DSTARTDATE,'${searchDate}', 2, null, 1, 0) AS CREATE_HISTORY,
-            HIST_GROUPDATAPERMISSION.HGP_CPERM_RETIRED
+            DECODE(HGP_DSTARTDATE,'${searchDate}' || ' 00:00:00', 2, null, 1, 0) AS createHistory,
+            HIST_GROUPDATAPERMISSION.HGP_CPERM_RETIRED,
+            HIST_GROUPDATAPERMISSION.HGP_DSTARTDATE
         FROM
             (SELECT	MG_CCUSTOMERID,
                            MG_CSYSTEMID_CK_FK,
@@ -73,7 +74,7 @@
                                            NULL,
                                            '${language}'
                                        )
-                           ) COMPANYNICK,   -- 法人略称(ない場合名称も取得)
+                           ) COMPANYNICK,
                            MG_NWEIGHTAGE,
                            PSMASTER.FUNC_GET_OBJ_NAME(
                                    MTR_CSITEID, MTR_CAPPID,
