@@ -469,7 +469,7 @@ public class TmgEmpList {
         String sReplaceSearchData = psSearchData.replaceAll("_", "__").replaceAll("%", "_%");
 
         if (TmgUtil.Cs_TREE_VIEW_CONDITION_PREFIXSEARCH.equals(psSearchCondition)){
-            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escape(sReplaceSearchData + "%"));
+            sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString(sReplaceSearchData + "%"));
         } else if (TmgUtil.Cs_TREE_VIEW_CONDITION_BACKWARDMATCH.equals(psSearchCondition)){
             sbSQL.append(psSearchItems).append(" LIKE ").append(SysUtil.escDBString("%" + sReplaceSearchData));
         } else {

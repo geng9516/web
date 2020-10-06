@@ -453,28 +453,23 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
             }
         } else {
             // アカウント情報あり
-            System.out.println("++++");
             if (poUserManagerDto.getMeDdateofretirement() != null
                     && poUserManagerDto.getMeDdateofretirement().before(calSys.getTime())
                     && poUserManagerDto.getMaDend() != null
                     && poUserManagerDto.getMaDend().compareTo(calSys.getTime()) >= 0) {
                 // 退職後未削除
                 sStatus = STATUS_AFTER_RETIRE;
-                System.out.println("---");
             } else if (poUserManagerDto.getMaDend() != null
                     && poUserManagerDto.getMaDend().before(calSys.getTime())) {
                 // 無効
                 sStatus = STATUS_INVALID;
-                System.out.println("***");
             } else if (poUserManagerDto.getMaNpasswordlock() != null
                     && poUserManagerDto.getMaNpasswordlock() == 1) {
                 // ロックアウト
                 sStatus = STATUS_LOCKOUT;
-                System.out.println("===");
             } else if (calResult.compareTo(calSys) > 0) {
                 // 入社年月日>システム日付のとき"入社前"(アカウント情報有無は無関係)
                 sStatus = STATUS_BEFORE_ENTRANCE;
-                System.out.println("nnn");
             }
         }
         //スタータスがnullの場合
@@ -485,7 +480,6 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
     }
 
     private String getStatusText(String status) {
-        System.out.println(status);
         if(StrUtil.equals(STATUS_BEFORE_ENTRANCE,status)) {
             return STATUS_BEFORE_ENTRANCE_TEXT;
         }
