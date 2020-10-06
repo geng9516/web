@@ -135,4 +135,10 @@ public class NotificationDetailVo {
     private List<NtfActionLogVo> tmgNtfactionlogDOList = new ArrayList<NtfActionLogVo>();
 
     private TypeChildrenVo ntfTypeValue;
+    // 確定済の場合
+    private boolean isFixed;
+    // レベル判定
+    private boolean checkApprovelLevel;
+    // 申請者が本人の場合のみ取下が可能
+    private boolean isMatchUserId;
 }

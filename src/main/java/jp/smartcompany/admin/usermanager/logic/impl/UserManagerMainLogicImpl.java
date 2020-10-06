@@ -72,39 +72,52 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
          IPage<UserManagerListDTO> pageResult;
          IPage<UserManagerListDTO> pageQuery = new PageQuery<UserManagerListDTO>().getPage(conditions);
          switch(searchType) {
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=1
              case 1: // 全て
                  pageResult = mastEmployeesService.selectMainAllList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=2
              case 2: // ロックアウトされているユーザ
                  pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=3
              case 3: // 現在有効なユーザ
                  pageResult = mastEmployeesService.selectMainValidList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=4
              case 4: // 入社前
                  pageResult = mastEmployeesService.selectMainBeforeJoinList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=5&companyId=01
              case 5: //入社後未登録
                  pageResult = mastEmployeesService.selectMainAfterJoinList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=6&companyId=01
              case 6: // 退職後未削除
                  pageResult = mastEmployeesService.selectMainAfterRetireList(pageQuery,custId,language,companyId,companyList);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=7&companyId=01&empId=4640
              case 7: // 社員番号
                  pageResult = mastEmployeesService.selectMainEmpIdList(pageQuery,custId,language,companyId,companyList,empId);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=8&sectionCompanyId=01&sectionId=201000000000
              case 8: // 部署
                  pageResult = mastEmployeesService.selectMainSectionList(pageQuery,custId,language,companyList,sectionCompanyId,sectionId);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=9&companyId=01&empName=464
              case 9: // 氏名
                  pageResult = mastEmployeesService.selectMainEmpNameList(pageQuery,custId,language,companyId,companyList,empName);
                  break;
+             // http://localhost:6879/sys/usermanager/search?psSite=Admin&searchType=10&companyId=01
              case 10: // 管理ツールユーザ
                  pageResult = mastEmployeesService.selectMainAdminList(pageQuery,custId,language,companyId,companyList);
              default: // 默认查询ロックアウトされているユーザ
                  pageResult = mastEmployeesService.selectMainLockoutList(pageQuery,custId,language,companyId,companyList);
                  break;
          }
+         pageResult.getRecords().forEach(item -> {
+             item.setStatus(getStatus(item));
+         });
          return new PageUtil(pageResult);
      }
 
@@ -430,7 +443,6 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
         calResult.set(Calendar.SECOND, 0);
 
         if (poUserManagerDto.getMaId() == null) {
-
             // アカウント情報なし
             if (calResult.compareTo(calSys) <= 0) {
                 // 入社年月日<=システム日付のとき"入社後未登録"
@@ -440,25 +452,29 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
                 sStatus = STATUS_BEFORE_ENTRANCE;
             }
         } else {
-
             // アカウント情報あり
+            System.out.println("++++");
             if (poUserManagerDto.getMeDdateofretirement() != null
                     && poUserManagerDto.getMeDdateofretirement().before(calSys.getTime())
                     && poUserManagerDto.getMaDend() != null
                     && poUserManagerDto.getMaDend().compareTo(calSys.getTime()) >= 0) {
                 // 退職後未削除
                 sStatus = STATUS_AFTER_RETIRE;
+                System.out.println("---");
             } else if (poUserManagerDto.getMaDend() != null
                     && poUserManagerDto.getMaDend().before(calSys.getTime())) {
                 // 無効
                 sStatus = STATUS_INVALID;
+                System.out.println("***");
             } else if (poUserManagerDto.getMaNpasswordlock() != null
                     && poUserManagerDto.getMaNpasswordlock() == 1) {
                 // ロックアウト
                 sStatus = STATUS_LOCKOUT;
+                System.out.println("===");
             } else if (calResult.compareTo(calSys) > 0) {
                 // 入社年月日>システム日付のとき"入社前"(アカウント情報有無は無関係)
                 sStatus = STATUS_BEFORE_ENTRANCE;
+                System.out.println("nnn");
             }
         }
         //スタータスがnullの場合
@@ -469,6 +485,7 @@ public class UserManagerMainLogicImpl implements UserManagerMainLogic {
     }
 
     private String getStatusText(String status) {
+        System.out.println(status);
         if(StrUtil.equals(STATUS_BEFORE_ENTRANCE,status)) {
             return STATUS_BEFORE_ENTRANCE_TEXT;
         }
