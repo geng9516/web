@@ -9,6 +9,7 @@ import jp.smartcompany.job.modules.core.service.IHistGroupdatapermissionService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Repository;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
