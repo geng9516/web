@@ -536,427 +536,427 @@
               <Alert class="primary-info">各上限 500kBytes</Alert>
             </form-item>
 
-            <form-item label="注意事項" v-if="selectBiko">
-              <Alert class="primary-info" >{{selectBiko}}</Alert>
-            </form-item>
-          </i-form>
-          <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create" :loading="applyLoading">申請
-          </i-button>
-        </tab-pane>
-      </Tabs>
-    </Drawer>
-  </div>
-  <back-top></back-top>
-</main>
-<div th:replace="layout/head::header"></div>
-<script type="text/babel" th:inline="javascript">
-  const REST_APPLY_CONFIRM = new Vue({
-    el: '.restapplyconfirm-warp',
-    data() {
-      return {
-        approvalLevel:'',
-        selectBiko:'',
-        hasAuthority:false,
-        hasPassedTimeCheck: true,
-        agencyApplyShow: false,
-        columns: [
-          {
-            title: '氏名',
-            key: 'tntfCemployeeidName',
-            align: 'right',
-            minWidth: 100,
-            maxWidth: 200
-          },
-          {
-            title: '代理申請',
-            slot: 'otherOne',
-            align: 'center',
-            width: 80
-          },
-          {
-            title: '申請区分',
-            key: 'tntfCtype',
-            tooltip: true,
-            align: 'left',
-            minWidth: 105,
-            maxWidth: 200
-          },
-          {
-            title: '対象期間',
-            slot: 'dateList',
-            align: 'center',
-            minWidth: 190,
-            maxWidth: 200
-          },
-          {
-            title: '次の承認者',
-            slot: 'nextAdmin',
-            align: 'center',
-            minWidth: 150
-          },
-          {
-            title: '申請理由',
-            key: 'tntfCowncomment',
-            tooltip: true,
-            minWidth: 100
-          },
-          {
-            title: '申請日時',
-            key: 'tntfDnotification',
-            align: 'center',
-            minWidth: 50,
-            maxWidth: 160
-          },
-          {
-            title: '最終更新日',
-            key: 'tntfDmodifieddate',
-            align: 'center',
-            minWidth: 50,
-            maxWidth: 160
-          },
-          {
-            title: '状態',
-            slot: 'status',
-            align: 'center',
-            width: 45
-          },
-          {
-            title: '詳細',
-            slot: 'more',
-            align: 'center',
-            width: 80
-          },
-          {
-            type: 'selection',
-            width: 50,
-            align: 'center'
-          }
-        ],
-        week: [
-          { name: '月', value: 1 },
-          { name: '火', value: 2 },
-          { name: '水', value: 3 },
-          { name: '木', value: 4 },
-          { name: '金', value: 5 },
-          { name: '土', value: 6 },
-          { name: '日', value: 7 }
-        ],
-        loading: false,
-        detailsLoading: false,
-        restInfoLoading: false,
-        confirmLoading: false,
-        errorInfo: false,
-        agencyApplyPanel: true, // 代理申请第二个panel是否可点
-        agencyApplyPanelLoading: false,
-        applyLoading: false,
-        errorMsg: '',
-        timerangeType: 1,
-        applyEmployRestInfoLoading: false,
-        needRefreshTable: false,
-        tableData: [],
-        pageValue: {
-          amount: 0,
-          curPage: 1,
-          curSize: 50
-        },
-        opts: {
-          ntfTypeId: '全て',
-          statusFlg: 0,
-          year: '',
-          serchEmpId: '全て',
-          page: 1
-        },
-        curYear: new Date(),
-        empList: [],
-        statusList: [],
-        detailsData: {},
-        applyEmployPersonalInfo: [],
-        applyEmployRestInfo: [],
-        applyEmployRestList: [],
-        detailsStatus: '',
-        updateHistorycolumns: [
-          {
-            title: '更新者',
-            key: 'empname',
-            align: 'right',
-          }, {
-            title: '操作',
-            key: 'ntfactionname',
-            align: 'center',
-          }, {
-            title: '状態',
-            key: 'statusname',
-            align: 'center',
-          }, {
-            title: '更新日時',
-            key: 'tnalDmodifieddate',
-            width: 180,
-            align: 'center',
-          }, {
-            title: '更新時コメント',
-            key: 'tnalCupdateccomment',
-            align: 'center',
-            tooltip: true
-          }],
-        detailDrawShow: false,
-        restInfoList: [],
-        restTypeListForReview: [],
-        selectedRestInfo: {},
-        selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
-        empDeptLoading: false,  // 組織ツリーloading用
-        deptDrawShow: false,    //組織ツリー用
-        treeData: [],            //組織ツリー用
-        currentTab: '',         //組織のツリーと検索タブーを切り替え
-        isSearchHistory: false,
-        empTreeData: [],        //組織ツリー用
-        searchTypesList: [],     //組織ツリー用
-        searchConditionsList: [],//組織ツリー用
-        emplistLoading: false,  //職員番号ローディング用動画
-        deptName: '選んでください',   //選択した職員の所属
-        referListObject: {       //組織ツリー共通
-          txtTmgReferListTreeViewRecordDate: '',
-          txtTmgReferListTreeViewPermTargetSection: '',
-          txtTmgReferListTreeViewPermTargetGroup: '',
-          txtTmgReferListTreeViewPermTargetEmp: '',
-          txtTmgReferListTreeViewPermSelectedView: '',
-          hidSearchData:'',
-          hidSearchItems:'EMPLOYEEID',
-          hidSearchCondition:'BROADMATCH',
-          hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
-          psSite: Utils.getUrlParam(location.href, 'psSite'),
-          psApp: Utils.getUrlParam(location.href, 'psApp'),
-          type: 21
-        },
-        restApply: {
-          useVacation: false,
-          weekSelected: [],
-          noreserved: 1,
-          _dateList: '',
-          _dateListRange:['', ''],
-          dateListRange:['', ''],
-          txtAddDate:null,
-          txtTargetNumber:null
-        },
-        tabPaneLabel: (h) => {
-          return h('div', [
-            h('i-button', {
-              props: {
-                type: 'text',
-                loading: this.agencyApplyPanelLoading,
-                disabled: this.agencyApplyPanel
-              }
-            }, '2. 休暇・休業申請'),
-          ])
-        },
-        ruleValidate: {
-          restTypeId: [
-            { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+              <form-item label="注意事項" v-if="selectBiko">
+                <Alert class="primary-info" >{{selectBiko}}</Alert>
+              </form-item>
+            </i-form>
+            <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create" :loading="applyLoading">申請
+            </i-button>
+          </tab-pane>
+        </Tabs>
+      </Drawer>
+    </div>
+    <back-top></back-top>
+  </main>
+  <div th:replace="layout/head::header"></div>
+  <script type="text/babel" th:inline="javascript">
+    const REST_APPLY_CONFIRM = new Vue({
+      el: '.restapplyconfirm-warp',
+      data() {
+        return {
+          isDrop:false,
+          isPerm:false,
+          isCancel:false,
+          isNotification:false,
+          approvalLevel:'',
+          selectBiko:'',
+          hasAuthority:false,
+          hasPassedTimeCheck: true,
+          agencyApplyShow: false,
+          columns: [
+            {
+              title: '申請者',
+              key: 'tntfCemployeeidName',
+              align: 'right',
+              minWidth: 100,
+              maxWidth: 200
+            },
+            {
+              title: '代理申請',
+              slot: 'otherOne',
+              align: 'center',
+              width: 80
+            },
+            {
+              title: '申請区分',
+              key: 'tntfCtype',
+              tooltip: true,
+              align: 'left',
+              minWidth: 105,
+              maxWidth: 200
+            },
+            {
+              title: '対象期間',
+              slot: 'dateList',
+              align: 'center',
+              minWidth: 190,
+              maxWidth: 200
+            },
+            {
+              title: '次の承認者',
+              slot: 'nextAdmin',
+              align: 'center',
+              minWidth: 150
+            },
+            {
+              title: '申請理由',
+              key: 'tntfCowncomment',
+              tooltip: true,
+              minWidth: 100
+            },
+            {
+              title: '申請日時',
+              key: 'tntfDnotification',
+              align: 'center',
+              minWidth: 50,
+              maxWidth: 160
+            },
+            {
+              title: '最終更新日',
+              key: 'tntfDmodifieddate',
+              align: 'center',
+              minWidth: 50,
+              maxWidth: 160
+            },
+            {
+              title: '状態',
+              slot: 'status',
+              align: 'center',
+              width: 45
+            },
+            {
+              title: '詳細',
+              slot: 'more',
+              align: 'center',
+              width: 80
+            },
+            {
+              type: 'selection',
+              width: 50,
+              align: 'center'
+            }
           ],
+          week: [
+            { name: '月', value: 1 },
+            { name: '火', value: 2 },
+            { name: '水', value: 3 },
+            { name: '木', value: 4 },
+            { name: '金', value: 5 },
+            { name: '土', value: 6 },
+            { name: '日', value: 7 }
+          ],
+          loading: false,
+          detailsLoading: false,
+          restInfoLoading: false,
+          confirmLoading: false,
+          errorInfo: false,
+          agencyApplyPanel: true, // 代理申请第二个panel是否可点
+          agencyApplyPanelLoading: false,
+          applyLoading: false,
+          errorMsg: '',
+          timerangeType: 1,
+          applyEmployRestInfoLoading: false,
+          needRefreshTable: false,
+          tableData: [],
+          pageValue: {
+            amount: 0,
+            curPage: 1,
+            curSize: 50
+          },
+          opts: {
+            ntfTypeId: '全て',
+            statusFlg: 0,
+            year: '',
+            serchEmpId: '全て',
+            page: 1
+          },
+          curYear: new Date(),
+          empList: [],
+          statusList: [],
+          detailsData: {},
+          applyEmployPersonalInfo: [],
+          applyEmployRestInfo: [],
+          applyEmployRestList: [],
+          detailsStatus: '',
+          updateHistorycolumns: [
+            {
+              title: '更新者',
+              key: 'empname',
+              align: 'right',
+            }, {
+              title: '操作',
+              key: 'ntfactionname',
+              align: 'center',
+            }, {
+              title: '状態',
+              key: 'statusname',
+              align: 'center',
+            }, {
+              title: '更新日時',
+              key: 'tnalDmodifieddate',
+              width: 180,
+              align: 'center',
+            }, {
+              title: '更新時コメント',
+              key: 'tnalCupdateccomment',
+              align: 'center',
+              tooltip: true
+            }],
+          detailDrawShow: false,
+          restInfoList: [],
+          restTypeListForReview: [],
+          selectedRestInfo: {},
+          selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
+          empDeptLoading: false,  // 組織ツリーloading用
+          deptDrawShow: false,    //組織ツリー用
+          treeData: [],            //組織ツリー用
+          currentTab: '',         //組織のツリーと検索タブーを切り替え
+          isSearchHistory: false,
+          empTreeData: [],        //組織ツリー用
+          searchTypesList: [],     //組織ツリー用
+          searchConditionsList: [],//組織ツリー用
+          emplistLoading: false,  //職員番号ローディング用動画
+          deptName: '選んでください',   //選択した職員の所属
+          referListObject: {       //組織ツリー共通
+            txtTmgReferListTreeViewRecordDate: '',
+            txtTmgReferListTreeViewPermTargetSection: '',
+            txtTmgReferListTreeViewPermTargetGroup: '',
+            txtTmgReferListTreeViewPermTargetEmp: '',
+            txtTmgReferListTreeViewPermSelectedView: '',
+            hidSearchData:'',
+            hidSearchItems:'EMPLOYEEID',
+            hidSearchCondition:'BROADMATCH',
+            hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
+            psSite: Utils.getUrlParam(location.href, 'psSite'),
+            psApp: Utils.getUrlParam(location.href, 'psApp'),
+            type: 21
+          },
+          restApply: {
+            useVacation: false,
+            weekSelected: [],
+            noreserved: 1,
+            _dateList: '',
+            _dateListRange:['', ''],
+            dateListRange:['', ''],
+            txtAddDate:null,
+            txtTargetNumber:null
+          },
+          tabPaneLabel: (h) => {
+            return h('div', [
+              h('i-button', {
+                props: {
+                  type: 'text',
+                  loading: this.agencyApplyPanelLoading,
+                  disabled: this.agencyApplyPanel
+                }
+              }, '2. 休暇・休業申請'),
+            ])
+          },
+          ruleValidate: {
+            restTypeId: [
+              { required: true, message: 'The name cannot be empty', trigger: 'blur' }
+            ],
+          },
+          contentScrollTop: 0,
+          uploadFiles: [],
+          deleteFiles: [],
+          curClickedEmpId: 0,
+          curTab:'name1'
+        }
+      },
+      async mounted() {
+         this.getInit()
+         this.getStatusList()
+         this.getRestTypeForReview()
+        window.addEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+        beforeDestroy() {
+            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
+      },
+      computed: {
+        tableHeadFixed() {
+          if (this.contentScrollTop > 230) return true
+          else return false
         },
-        contentScrollTop: 0,
-        uploadFiles: [],
-        deleteFiles: [],
-        curClickedEmpId: 0,
-        curTab:'name1'
-      }
-    },
-    async mounted() {
-      this.getInit()
-      this.getStatusList()
-      this.getRestTypeForReview()
-      this.getHasAuthority()
-      window.addEventListener('scroll',this.handleScroll,{ passive: true })
-    },
-    beforeDestroy() {
-      window.removeEventListener('scroll',this.handleScroll,{ passive: true })
-    },
-    computed: {
-      tableHeadFixed() {
-        if (this.contentScrollTop > 230) return true
-        else return false
+        flatRestTypeList() {
+          let result = []
+          if (this.applyEmployRestList.length > 0) {
+            this.applyEmployRestList.forEach(e => (result = result.concat(e.ntfTypeValue)))
+          }
+          return result
+        },
       },
-      flatRestTypeList() {
-        let result = []
-        if (this.applyEmployRestList.length > 0) {
-          this.applyEmployRestList.forEach(e => (result = result.concat(e.ntfTypeValue)))
-        }
-        return result
-      },
-    },
-    methods: {
-      //初期化処理
-      async getInit() {
-        console.log([[${ session }]])
-        let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-        if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
-          this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
-        }
-        console.log(this.referListObject)
-        await this.getOrgTree()
-        await this.getSearchCondition()
-        //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
-        if (targetPermSection) {
-          let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
-          if (getDeptCode) {
-            this.getDeptName(this.treeData, targetPermSection)
-            this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+      methods: {
+        //初期化処理
+        async getInit() {
+          console.log([[${ session }]])
+          let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+          if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
+            this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+          }
+          console.log(this.referListObject)
+          await this.getOrgTree()
+          await this.getSearchCondition()
+          //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+          if (targetPermSection) {
+            let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
+            if (getDeptCode) {
+              this.getDeptName(this.treeData, targetPermSection)
+              this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+              this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
+              this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
+            }
+          }else{
+            this.deptName = this.treeData[0].label
+            this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
+            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+            this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
+            this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
             this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
             this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
           }
-        }else{
-          this.deptName = this.treeData[0].label
-          this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
-          this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-          this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
-          this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-          this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
-          this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
-        }
-        //一覧画面取得
-        this.getEmplist()
-        this.getTableData(true)
-      },
-      getDeptCode(data,section) {
-        let dept =false
-        data.forEach(e => {
-          if (e.secid === section) {
-            dept=true
-          }
-        })
-        return dept
-      },
-      getDeptName(data,section) {
-        // idによりループ処理でdeptNameを取得する
-        data.forEach(e => {
-          if (e.secid === section) {
-            this.deptName = e.label
-          }
-        })
-      },
-      getTableData: Debounce(async function (isInit, resetPage) {
-        try {
-          this.loading = true
-          let OPTS = { ...this.opts, ...this.referListObject }
-          if (this.opts.statusFlg === 0) {
-            OPTS.statusFlg = ''
-          }
-          if (OPTS.serchEmpId === '全て') {
-            OPTS.serchEmpId = ''
-          }
-          if (OPTS.ntfTypeId === '全て') {
-            OPTS.ntfTypeId = ''
-          }
-          // 点击非换页请求时需要将页数重置为1
-          if (resetPage) {
-            OPTS.page = 1
-            this.pageValue.curPage = 1
-          }
-          const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
-          this.tableData = data.list.map(e=>{
-            return {
-              ...e,
-              _disabled: e.tntfCstatusflg !== 'TMG_NTFSTATUS|2'
+          //一覧画面取得
+          this.getEmplist()
+          this.getTableData(true)
+        },
+        getDeptCode(data,section) {
+          let dept =false
+          data.forEach(e => {
+            if (e.secid === section) {
+              dept=true
             }
           })
-          this.pageValue.amount = data.totalCount
-          if (!isInit) this.$Message.success('再表示完了')
-          this.amount = data.totalCount || 2
-        } catch (error) {
-          return
-        } finally {
-          this.loading = false
-          this.isSearchHistory = false
-        }
-      }),
-      async getOrgTree() {
-        this.empDeptLoading = true
-        try {
-          const { groupList, sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-          // 先将数据转为标准格式，再转为可用数据
+          return dept
+        },
+        getDeptName(data,section) {
+          // idによりループ処理でdeptNameを取得する
+          data.forEach(e => {
+            if (e.secid === section) {
+              this.deptName = e.label
+            }
+          })
+        },
+        getTableData: Debounce(async function (isInit, resetPage) {
+          await this.getHasAuthority()
+          try {
+            this.loading = true
+            let OPTS = { ...this.opts, ...this.referListObject }
+            if (this.opts.statusFlg === 0) {
+              OPTS.statusFlg = ''
+            }
+            if (OPTS.serchEmpId === '全て') {
+              OPTS.serchEmpId = ''
+            }
+            if (OPTS.ntfTypeId === '全て') {
+              OPTS.ntfTypeId = ''
+            }
+            // 点击非换页请求时需要将页数重置为1
+            if (resetPage) {
+              OPTS.page = 1
+              this.pageValue.curPage = 1
+            }
+            const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
+            this.tableData = data.list.map(e=>{
+              return {
+                ...e,
+                _disabled: (e.tntfCstatusflg !== 'TMG_NTFSTATUS|2' || !this.hasAuthority )
+              }
+            })
+            this.pageValue.amount = data.totalCount
+            if (!isInit) this.$Message.success('再表示完了')
+            this.amount = data.totalCount || 2
+          } catch (error) {
+            return
+          } finally {
+            this.loading = false
+          }
+        }),
+        async getOrgTree() {
+          this.empDeptLoading = true
+          try {
+            const { groupList, sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
+            // 先将数据转为标准格式，再转为可用数据
+            if (this.selectedDeptViewType === "section") {
+              this.treeData = Utils.convertTreeData(sectionList)
+            }
+            if (this.selectedDeptViewType === "group") {
+              this.treeData = Utils.convertTreeData(groupList)
+            }
+            this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+          } catch (error) {
+            return
+          } finally {
+            this.loading = false
+            this.empDeptLoading = false
+          }
+        },
+        async getStatusList() {
+          const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
+          this.statusList = data
+        },
+        async getRestTypeForReview() {
+          // 获得休假选择list
+          const { data } = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
+          this.restTypeListForReview = data
+        },
+        async getHasAuthority() {
+          // 获得休假选择list
+          const { data } = await this.http.get('sys/vapply/hasAuthority', this.referListObject)
+          this.hasAuthority = data
+        },
+        async handleDeptDateChange(e) {
+          this.referListObject.txtTmgReferListTreeViewRecordDate = e
+          this.curYear=e
+          this.opts.year=e.slice(0,4)
+          this.isSearchHistory = true
+          await this.getOrgTree()
+          this.getHasAuthority()
+          if(this.treeData.length !== 0) {
+            this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
+          }
+          this.empTreeData= []
+          this.agencyApplyPanel = true
+        },
+        handleRestFilter(e) {
+          if (!e) return
+          this.getTableData(false, true)
+        },
+        async handleDeptViewTypeChange(forAgencyApply) {
+          if (this.selectedDeptViewType === "all") {
+            this.deptDrawShow = false
+            this.deptName = '全て表示中'
+            this.treeData = []
+            this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
+            if(!forAgencyApply) {
+              this.getTableData(false, true)
+            } else {
+              this.getEmplist()
+            }
+            return
+          }
+          await this.getOrgTree()
           if (this.selectedDeptViewType === "section") {
-            this.treeData = Utils.convertTreeData(sectionList)
+            this.opts.txtTmgReferListTreeViewPermSelectedView = 'section'
           }
           if (this.selectedDeptViewType === "group") {
-            this.treeData = Utils.convertTreeData(groupList)
+            this.opts.txtTmgReferListTreeViewPermSelectedView = 'group'
           }
-          this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-        } catch (error) {
-          return
-        } finally {
-          this.loading = false
-          this.empDeptLoading = false
-        }
-      },
-      async getStatusList() {
-        const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
-        this.statusList = data
-      },
-      async getRestTypeForReview() {
-        // 获得休假选择list
-        const { data } = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
-        this.restTypeListForReview = data
-      },
-      async getHasAuthority() {
-        // 获得休假选择list
-        const { data } = await this.http.get('sys/vapply/hasAuthority', this.referListObject)
-        this.hasAuthority = data
-      },
-      async handleDeptDateChange(e) {
-        this.referListObject.txtTmgReferListTreeViewRecordDate = e
-        this.curYear=e
-        this.opts.year=e.slice(0,4)
-        this.isSearchHistory = true
-        await this.getOrgTree()
-        this.getHasAuthority()
-        if(this.treeData.length !== 0) {
-          this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
-        }
-        this.empTreeData= []
-        this.agencyApplyPanel = true
-      },
-      handleRestFilter(e) {
-        if (!e) return
-        this.getTableData(false, true)
-      },
-      async handleDeptViewTypeChange(forAgencyApply) {
-        if (this.selectedDeptViewType === "all") {
+          this.$Notice.success({ title: '所属図更新完了' })
+        },
+        async handleClickLeaf(e, forAgencyApply) {
+          if (!e[0]) return
           this.deptDrawShow = false
-          this.deptName = '全て表示中'
-          this.treeData = []
-          this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
-          if(!forAgencyApply) {
-            this.getTableData(false, true)
-          } else {
-            this.getEmplist()
+          this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+          this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+          if (this.selectedDeptViewType === "section") {
+            this.deptName = e[0].label
           }
-          return
-        }
-        await this.getOrgTree()
-        if (this.selectedDeptViewType === "section") {
-          this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
-        }
-        if (this.selectedDeptViewType === "group") {
-          this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'group'
-        }
-        if(forAgencyApply) {
-          this.empTreeData = []
-        }
-        this.$Notice.success({ title: '所属図更新完了' })
-      },
-      async handleClickLeaf(e, forAgencyApply) {
-        if (!e[0]) return
-        this.deptDrawShow = false
-        this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
-        this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
-        if (this.selectedDeptViewType === "section") {
-          this.deptName = e[0].label
-        }
-        if (this.selectedDeptViewType === "group") {
-          this.deptName = e[0].secnic
-        }
-        // 点击部署时需要将员工重置为全部
-        this.opts.serchEmpId = '全て'
+          if (this.selectedDeptViewType === "group") {
+            this.deptName = e[0].secnic
+          }
+          // 点击部署时需要将员工重置为全部
+          this.opts.serchEmpId = '全て'
 
         if (forAgencyApply) {
           // 点击所属的时候需要拉取表格数据
@@ -1507,6 +1507,7 @@
       handleClickEmpLeafTree(e) {
         this.deptName = '職員により検索中'
         this.referListObject.hidSelectTab = '1'
+        this.referListObject.hidSearchData = this.referListObject.hidSearchData
         this.deptDrawShow = false
 
         this.getTableData()

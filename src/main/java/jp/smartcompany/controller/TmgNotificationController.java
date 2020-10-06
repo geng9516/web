@@ -10,6 +10,7 @@ import jp.smartcompany.job.modules.tmg.tmgnotification.TmgNotificationBean;
 import jp.smartcompany.job.modules.tmg.tmgnotification.dto.ParamNotificationListDto;
 import jp.smartcompany.job.modules.tmg.tmgnotification.vo.*;
 import jp.smartcompany.job.modules.tmg.util.TmgReferList;
+import jp.smartcompany.job.modules.tmg.util.TmgUtil;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -109,6 +110,16 @@ public class TmgNotificationController {
     @GetMapping("RestYearList")
     public List<RestYearVo> getRestYear(@RequestAttribute("BeanName") PsDBBean psDBBean) {
         return tmgNotificationBean.getRestYear(psDBBean);
+    }
+
+    /**
+     * 権限がある
+     *
+     * @return {"stutasName":"TMG_NTFSTATUS|0","stutasId":取下}
+     */
+    @GetMapping("isNotification")
+    public boolean isNotification(@RequestParam("empId") String empId,@RequestAttribute("BeanName") PsDBBean psDBBean) throws Exception {
+        return tmgNotificationBean.isNotification(empId,psDBBean, TmgUtil.getSysdate(),TmgUtil.getSysdate());
     }
 
 
