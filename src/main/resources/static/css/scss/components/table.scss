@@ -14,12 +14,32 @@
       &:nth-child(2n) td {
         background-color: var(--table-td-stripe);
       }
-      // 土 日
+      // 高亮表格单行row-class-name
       &.sat td {
-        background-color: var(--table-td-sat);
+        background-color: var(--success-info-bg);
       }
       &.sun td {
-        background-color: var(--table-td-sun);
+        background-color: var(--gold-info-bg);
+      }
+      &.highlight td {
+        background-color: var(--table-checkin-bg);
+      }
+      // 表格 hover单行class
+      &.select-col:hover td {
+        background-color: var(--table-td-hover-bg);
+        color: var(--table-tr-hover);
+        .ivu-progress-bg:before {
+          content: '';
+          opacity: 0;
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: var(--white);
+          border-radius: 10px;
+          animation: ivu-progress-active 2s ease-in-out infinite;
+        }
       }
     }
   }
@@ -110,25 +130,6 @@
         .ivu-table-cell {
           line-height: 26px;
         }
-      }
-    }
-  }
-  // 日间表格 激活class
-  tr {
-    &.select-col:hover td {
-      background-color: var(--table-td-hover-bg);
-      color: var(--table-tr-hover);
-      .ivu-progress-bg:before {
-        content: '';
-        opacity: 0;
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: var(--white);
-        border-radius: 10px;
-        animation: ivu-progress-active 2s ease-in-out infinite;
       }
     }
   }
