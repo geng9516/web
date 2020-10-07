@@ -249,15 +249,20 @@
             <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
 
-          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1">
+          <form-item label="承認者コメント" v-if="detailsStatus.indexOf('2') > -1">
             <i-input class="tl" type="textarea" style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCbosscomment"
                      :maxlength="100" placeholder="文字の長さは100文字以内になっております。"></i-input>
           </form-item>
-
           <form-item label="承認者コメント" v-else>
             <span class="input-like-span tl"  style="border-radius: 5px;">{{ detailsData.tntfCbosscomment }}</span>
           </form-item>
-
+          <form-item label="取消者コメント" v-if="detailsStatus.indexOf('5') > -1">
+            <i-input class="tl" type="textarea" style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCcancelcomment"
+                     :maxlength="100" placeholder="文字の長さは100文字以内になっております。"></i-input>
+          </form-item>
+          <form-item label="取消者コメント" v-if="(detailsStatus.indexOf('3') > -1) && detailsData.tntfCcancelcomment">
+            <span class="input-like-span tl"  style="border-radius: 5px;">{{ detailsData.tntfCcancelcomment }}</span>
+          </form-item>
           <form-item label="添付ファイル"
             v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
             <span class="input-like-span" style="border-radius: 5px;">
@@ -1155,7 +1160,7 @@
           query.owncomment = this.detailsData.tntfCowncomment
           query.bosscomment = this.detailsData.tntfCbosscomment
 
-          //query.cancelcomment = this.detailsData.tntfCcancelcomment
+          query.cancelcomment = this.detailsData.tntfCcancelcomment
           // 起算日
           query.txtPeriod = this.detailsData.tntfDperiodDate
 

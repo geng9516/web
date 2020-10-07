@@ -811,9 +811,9 @@ public class TmgNotificationBean {
         }else if(param.getAction().equals(ACT_EDITAPPLY_UDEL)){
             //全取消
             param.setNtfAction(TmgUtil.Cs_MGD_NTFACTION_7);
-            PsSession psSession=(PsSession)httpSession.getAttribute(Constant.PS_SESSION);
-            //全取消のときに、コメントを自動添加する
-            param.setCancelcomment(psSession.getLoginKanjiName()+"("+TmgUtil.getSysdate()+")");
+//            PsSession psSession=(PsSession)httpSession.getAttribute(Constant.PS_SESSION);
+//            //全取消のときに、コメントを自動添加する
+//            param.setCancelcomment(psSession.getLoginKanjiName()+"("+TmgUtil.getSysdate()+")");
         }
         try{
             // TMG_ERRMSGテーブルを使用する前に一度きれいに削除する
