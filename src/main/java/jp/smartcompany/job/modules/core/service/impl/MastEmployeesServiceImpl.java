@@ -223,6 +223,8 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
         return baseMapper.selectEmployeeInfoList(searchDate,language,designation,sEmpInfoUserIDList,sCompNick,sSectionNick,sPostNick,loginUser,systemId);
     }
 
+
+    // -=========================== 用户管理相关sql开始============================//
     @Override
     public IPage<UserManagerListDTO> selectMainAllList(IPage<UserManagerListDTO> page, String custId, String language, String companyId, List<String> companyList) {
         return baseMapper.selectMainAllList(page, custId, language, companyId,companyList);
@@ -288,4 +290,10 @@ public class MastEmployeesServiceImpl extends ServiceImpl<MastEmployeesMapper, M
                                               List<String> companyList) {
          return baseMapper.selectEndList(custId,userIds, language, searchType, companyList);
     }
+
+    @Override
+    public UserManagerDTO selectPersonalName(String custId, String userId, String language,  List<String> companyList) {
+         return baseMapper.selectPersonalName(custId,userId,language, companyList);
+    }
+    /*========================= 用户管理相关sql结束 ==================================*/
 }

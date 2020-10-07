@@ -1,10 +1,11 @@
 package jp.smartcompany.controller.admin;
 
+import jp.smartcompany.admin.usermanager.dto.ChangePasswordDTO;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
 import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
+import jp.smartcompany.admin.usermanager.form.UserManagerEditPersonalForm;
 import jp.smartcompany.admin.usermanager.form.UserManagerEditStartForm;
-import jp.smartcompany.admin.usermanager.logic.UserManagerEditPersonalLogic;
-import jp.smartcompany.admin.usermanager.logic.UserManagerMainLogic;
+import jp.smartcompany.admin.usermanager.logic.*;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,9 @@ public class UserManagerController {
 
     private final UserManagerMainLogic userManagerMainLogic;
     private final UserManagerEditPersonalLogic userManagerEditPersonalLogic;
+    private final UserManagerEditStartLogic userManagerEditStartLogic;
+    private final UserManagerEditEndLogic userManagerEditEndLogic;
+    private final UserManagerEditPasswordLogic userManagerEditPasswordLogic;
 
 
     /* ============ 旧代码： UserManagerMainAction 开始 ===========*/
@@ -59,12 +63,12 @@ public class UserManagerController {
     /* ============ 旧代码： UserManagerEditEndAction 开始 ===========*/
     @PostMapping("show/endDate")
     public Map<String,Object> showChangeEndDate(@Valid @RequestBody ShowLimitDateForm form) {
-        return userManagerMainLogic.showChangeEndDate(form);
+        return userManagerEditEndLogic.showChangeEndDate(form);
     }
 
     @PostMapping("change/endDate")
     public String changeEndDate(@RequestBody @Valid UserManagerEditEndForm form) {
-       userManagerMainLogic.changeEndDate(form);
+       userManagerEditEndLogic.changeEndDate(form);
        return "利用終了日変更成功";
     }
     /* ============ 旧代码： UserManagerEditEndAction 结束 ===========*/
@@ -73,12 +77,12 @@ public class UserManagerController {
     /* ============ 旧代码： UserManagerEditStartAction 开始 ===========*/
     @PostMapping("show/startDate")
     public Map<String,Object> showChangeStartDate(@Valid @RequestBody ShowLimitDateForm form) {
-        return userManagerMainLogic.showChangeStartDate(form);
+        return userManagerEditStartLogic.showChangeStartDate(form);
     }
 
     @PostMapping("change/startDate")
     public Map<String,String> changeStartDate(@Valid @RequestBody UserManagerEditStartForm form) {
-        return userManagerMainLogic.changeStartDate(form);
+        return userManagerEditStartLogic.changeStartDate(form);
     }
     /* ============ 旧代码： UserManagerEditStartAction 结束 ===========*/
 
@@ -88,5 +92,17 @@ public class UserManagerController {
         return userManagerEditPersonalLogic.display(userId);
     }
 
+    @PostMapping("personal")
+    public Map<String,String> updatePersonal(@RequestBody UserManagerEditPersonalForm form) {
+        return userManagerEditPersonalLogic.updatePersonal(form);
+    }
     /* ============ UserManagerEditPersonalAction 结束 ============= */
+
+    /* ============ UserManagerEditPasswordAction 开始 ============= */
+    @PostMapping("show/password")
+    public Map<String,Object> showChangePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
+        return userManagerEditPasswordLogic.showChangePassword(changePasswordDTO);
+    }
+
+    /* ============ UserManagerEditPasswordAction 结束 ============= */
 }
