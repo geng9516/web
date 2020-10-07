@@ -65,7 +65,7 @@
                     ​
                     <Drawer :closable="selectedTab === '検索'" :mask-closable="!isSearchHistory" class="tc" placement="right"
                             v-model="deptDrawShow" width="700">
-                        <Tabs :animated="false" v-model="selectedTab">
+                        <Tabs :animated="false" @on-click="currentTabChanged" v-model="selectedTab">
                             <tab-pane label="ツリー" name="organisationTree">
                                 <div class="titlenorm mb5">
                                     <Icon type="logo-buffer"></Icon>
@@ -667,7 +667,6 @@
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
                 this.referListObject[section] = e[0].secid
                 this.deptName = e[0].secnic
-                this.referListObject.hidSelectTab='0'
                 this.getTableData()
             },
             handleSpan({rowIndex, columnIndex}) {
@@ -846,10 +845,12 @@
                 if(nDaySum > 40) {
                      //MSG_OVER_SUM_DAY
                     this.$Notice.warning({desc: "調整付与日数と今期付与日数の合計は40を超えないようにして下さい。 "})
+                    this.clear()
                      return false;
                 } else if(nDHSum > 40) {
                     // MSG_OVER_SUM_DAYHOURS
                     this.$Notice.warning({desc: "合計付与日数と合計付与時間数の合計は40を超えないようにして下さい。 "})
+                    this.clear()
                      return false
                 }
                 return true
