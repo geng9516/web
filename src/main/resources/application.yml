@@ -27,17 +27,6 @@ server:
 spring:
   profiles:
     active: test
-  jackson:
-    default-property-inclusion: ALWAYS
-    time-zone: GMT+9
-    date-format: yyyy/MM/dd HH:mm:ss Z
-    serialization:
-      WRITE_DATES_AS_TIMESTAMPS: false
-      FAIL_ON_EMPTY_BEANS: false
-    deserialization:
-      FAIL_ON_UNKNOWN_PROPERTIES: false
-    mapper:
-      ACCEPT_CASE_INSENSITIVE_PROPERTIES: on
   servlet:
     multipart:
       max-file-size: 10MB

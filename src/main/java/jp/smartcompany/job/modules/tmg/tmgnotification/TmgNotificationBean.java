@@ -321,6 +321,22 @@ public class TmgNotificationBean {
         notificationDetailVo.setTmgNtfactionlogDOList(iTmgNtfactionlogService.selectNtfActionLog(param.getTodayD(), param.getLang(), param.getCustId(), param.getCompId(), param.getNtfNo()));
 
 
+        //遡り期限
+        String selectBackLimit = iTmgNotificationService.selectBackLimit(param.getCustId(), param.getCompId(), psDBBean.getUserCode());
+        notificationDetailVo.setFixed(isFixed(notificationDetailVo.getTntfCstatusflg(),notificationDetailVo.getTntfDbegin(),notificationDetailVo.getTntfDend(),
+                notificationDetailVo.getTntfDcancel(), selectBackLimit));
+
+        notificationDetailVo.setCheckApprovelLevel(hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),notificationDetailVo.getTntfCemployeeid()
+        ,notificationDetailVo.getApprovelLevel(),psDBBean.getSiteId()));
+
+        Boolean match =false;
+        if (psDBBean.getUserCode() == null || notificationDetailVo.getTntfCalteremployeeid() == null) {
+            match=false;
+        }else if(psDBBean.getUserCode().equals(notificationDetailVo.getTntfCalteremployeeid())){
+            match=true;
+        }
+
+        notificationDetailVo.setMatchUserId(match);
         TypeChildrenVo tc =new TypeChildrenVo();
         String viewflg="";
         int viewType=0;
@@ -351,6 +367,46 @@ public class TmgNotificationBean {
         notificationDetailVo.setNtfTypeValue(tc);
 
         return notificationDetailVo;
+    }
+
+
+    /**
+     * 確定済かどうか
+     *
+     * @param  sNtfStatus 申請ステータス
+     * @param  sBegin     開始日
+     * @param  sEnd       終了日
+     * @param  sCancel    申請解除日
+     * @param  sBackLimit 遡り期限
+     * @return boolean    true:確定済 / false:未確定
+     */
+    public boolean isFixed( String sNtfStatus, String sBegin, String sEnd, String sCancel, String sBackLimit ) {
+
+        // 承認待ち
+        if ( sNtfStatus.equals( TmgUtil.Cs_MGD_NTFSTATUS_2 ) ) {
+            return ( sBegin.compareTo(sBackLimit) < 0 ) ;
+        }
+        // 承認済
+        else if ( sNtfStatus.equals( TmgUtil.Cs_MGD_NTFSTATUS_5 ) ) {
+
+            if ( sCancel == null || sCancel.equals("")) {
+                return ( sEnd.compareTo(sBackLimit) < 0 ) ;
+            } else {
+                return ( sCancel.compareTo(sBackLimit) < 0 ) ;
+            }
+
+            /* 却下した申請の修正を可能にする */
+            // 却下
+        } else if (sNtfStatus.equals( TmgUtil.Cs_MGD_NTFSTATUS_3 ) ) {
+            return false;
+
+            // 取下げ
+        } else if (sNtfStatus.equals( TmgUtil.Cs_MGD_NTFSTATUS_0 )) {
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     /**
@@ -2025,6 +2081,24 @@ public class TmgNotificationBean {
         }
 
     }
+
+
+    /**
+     * 権限があるかどうか判定します。
+     *
+     * @param  sStart  開始日
+     * @param  sEnd    終了日
+     * @return boolean true:権限有り/false:なし
+     */
+    public boolean isNotification(String empId,PsDBBean psDBbean, String sStart, String sEnd ) throws Exception {
+        //年开始日
+        try {
+            return referList.hasAuthorityAtEmployee( sStart, sEnd, empId, TmgUtil.Cs_AUTHORITY_NOTIFICATION );
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
 
 //
 //    /**

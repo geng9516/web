@@ -50,5 +50,6 @@ public class UserManagerListDTO {
     private Date meDdateofemployement; //ME_DDATEOFEMPLOYEMENT
     /** カラム：ME_DSTARTDATE*/
     private Date meDstartdate; //ME_DSTARTDATE
+    private String status;
 
 }

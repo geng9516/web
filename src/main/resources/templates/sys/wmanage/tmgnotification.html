@@ -242,6 +242,9 @@
           <form-item label="生年月日" v-if="detailsData.tntfDdateofbirth">
             <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDdateofbirth }}</span>
           </form-item>
+          <form-item label="承認者" v-if="detailsData.tntfCboss">
+            <span class="input-like-span"  style="border-radius: 5px; white-space: pre-line;">{{ `${detailsData.tntfCbossName}(${detailsData.tntfDboss})` }}</span>
+          </form-item>
           <form-item label="申請事由等">
             <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
           </form-item>
@@ -961,8 +964,13 @@
         },
         async getDetails(id) {
           this.detailsLoading = true
+          let OPTS = {
+            psSite: Utils.getUrlParam(location.href, 'psSite'),
+            psApp: Utils.getUrlParam(location.href,'psApp'),
+            ntfNo:id
+          }
           try {
-            const { data } = await this.http.get('sys/vapply/NotificationDetail', { ntfNo: id })
+            const { data } = await this.http.get('sys/vapply/NotificationDetail',OPTS)
             this.detailsData = data
             this.detailsStatus = data.tntfCstatusflg
           } catch (error) {
