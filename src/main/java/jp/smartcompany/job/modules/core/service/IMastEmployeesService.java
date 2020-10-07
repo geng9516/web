@@ -135,6 +135,8 @@ public interface IMastEmployeesService extends IService<MastEmployeesDO> {
     List<UserManagerDTO> selectEndList(String custId, List<String> userIds,
                                          String language, Integer searchType,
                                          List<String> companyList);
+
+    UserManagerDTO selectPersonalName(String custId, String userId, String language,  List<String> companyList);
     /**
      * ===================用户管理 搜索用户结束===============
      */

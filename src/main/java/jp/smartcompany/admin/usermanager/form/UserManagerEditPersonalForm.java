@@ -1,4 +1,4 @@
-package jp.smartcompany.admin.usermanager.dto;
+package jp.smartcompany.admin.usermanager.form;
 
 import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import lombok.Getter;
@@ -10,7 +10,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class UserManagerEditPersonalDTO {
+public class UserManagerEditPersonalForm {
 
     /**ユーザID*/
     private String userId;

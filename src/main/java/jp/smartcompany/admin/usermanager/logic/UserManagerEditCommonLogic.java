@@ -1,5 +1,10 @@
 package jp.smartcompany.admin.usermanager.logic;
 
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
+import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
+
+import java.util.Date;
 import java.util.Map;
 import java.util.List;
 
@@ -24,6 +29,24 @@ public interface UserManagerEditCommonLogic {
   /** システムプロパティ：メール送信モード */
   String USER_MANAGER_MAIL_SEND_MODE = "UserManagerMailSendMode";
 
+  /**定数：ステータス　入社前*/
+  String STATUS_BEFORE_ENTRANCE = "STATUS_BEFORE_ENTRANCE";
+  /**定数：ステータス　入社後未登録*/
+  String STATUS_AFTER_ENTRANCE = "STATUS_AFTER_ENTRANCE";
+  /**定数：ステータス　ロックアウト*/
+  String STATUS_LOCKOUT = "STATUS_LOCKOUT";
+  /**定数：ステータス　無効*/
+  String STATUS_INVALID = "STATUS_INVALID";
+  /**定数：ステータス　退職後未削除*/
+  String STATUS_AFTER_RETIRE = "STATUS_AFTER_RETIRE";
+
+
+  String STATUS_AFTER_ENTRANCE_TEXT="入社後未登録";
+  String STATUS_AFTER_RETIRE_TEXT="退職後未削除";
+  String STATUS_BEFORE_ENTRANCE_TEXT="入社前";
+  String STATUS_INVALID_TEXT="無効";
+  String STATUS_LOCKOUT_TEXT="ロックアウト";
+
   Map<String,String> updatePassword(
           String customerId,
           String currentUserId,
@@ -33,4 +56,13 @@ public interface UserManagerEditCommonLogic {
           String password,
           Boolean forceChangePassword);
 
+  String getStatus(UserManagerListDTO poUserManagerDto);
+
+  void accountInsert(
+          MastAccountDO accountDto,
+          List<UserManagerDTO> checkListOld,
+          String psCustomerid,
+          String psAccount,
+          String psUserid,
+          Date now);
 }
