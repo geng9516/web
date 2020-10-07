@@ -563,7 +563,8 @@
                 AND TRUNC( to_date( #{baseDate}, #{dateFormat} ) ) BETWEEN D.HD_DSTARTDATE_CK
                 AND D.HD_DENDDATE
                 AND D.HD_CIFKEYORADDITIONALROLE = 0
-            ) AS POSTID
+            ) AS POSTID,
+            TMG_F_GET_MGD_N ( TNTF_CAPPROVAL_LEVEL,  #{baseDate}, 1, TNTF_CCUSTOMERID, TNTF_CCOMPANYID, #{lang} ) AS CAPPROVAL_LEVEL
         FROM
             TMG_NOTIFICATION
         WHERE

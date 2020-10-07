@@ -378,7 +378,7 @@
                         cancelText: 'キャンセル',
                         onOk: async () => {
                             const { msg } = await this.http.postForm('sys/tmgbulknotification/cancelBulkNtf', { seq: e })
-                            this.getNtfType()
+                            this.getHistoryDisp()
                         }
                     })
 
