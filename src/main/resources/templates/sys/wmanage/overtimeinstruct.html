@@ -47,8 +47,7 @@
                                     <i-col span="7" class="no-border-radius">
                                         <date-picker type="date" :options="startLimit"
                                             :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
-                                            format="yyyy/MM/dd" ref="datePicker" :clearable="false" transfer
-                                            @on-change="handleDeptDateChange">
+                                            format="yyyy/MM/dd" ref="datePicker" :clearable="false" transfer @on-change="handleDeptDateChange">
                                         </date-picker>
                                     </i-col>
                                 </Row>
@@ -823,6 +822,7 @@
                 },
                 handleDatePicker() {
                     this.query.baseMonth = Utils.formatDate(this.curDate, 'yyyy/MM').concat('/01')
+
                     if (this.deptName !== '選んでください') {
                         this.getTableHead()
                         this.getTableData()
@@ -937,7 +937,6 @@
                         this.deptName = '職員により検索中'
                     }
                     let url = 'sys/overtimeinstruct/monthlyResult'
-                    // 用于检索时，直接检索表格，需要用到字段
                     try {
                         if (this.overWorkViewType === 3) {
                             this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
