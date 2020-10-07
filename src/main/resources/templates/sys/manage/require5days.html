@@ -31,7 +31,7 @@
                     </i-button>
                 <!-- 共通組織図画面 start-->
                 <Drawer class="tc" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                  <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
+                  <Tabs :animated="false" v-model="currentTab" >
                    <tab-pane label="ツリー" name="organisationTree">
                        <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
@@ -47,32 +47,7 @@
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし">
                         </Tree>
                    </tab-pane>
-<!--                   <tab-pane label="検索" name="organisationSearch">-->
-<!--                        <Row class="tl mb2" :gutter="8">-->
-<!--                            <i-col span="15">-->
-<!--                                <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">-->
-<!--                                    <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px" placeholder="項目">-->
-<!--                                        <i-option v-for="(item,i) of searchTypesList" :value="item.value">{{ item.name }}</i-option>-->
-<!--                                    </i-select>-->
-<!--                                    <i-select v-model="referListObject.hidSearchCondition"  slot="append" style="width: 108px" placeholder="条件">-->
-<!--                                        <i-option v-for="(item,i) of searchConditionsList" :value="item.value">{{ item.name }}</i-option>-->
-<!--                                    </i-select>-->
-<!--                                </i-input>-->
-<!--                            </i-col>-->
-<!--                            <i-col span="8" class="no-border-radius">-->
-<!--                                <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" style="width: 100px" @click="searchOrgTree">検索</i-button>-->
-<!--                            </i-col>-->
-<!--                        </Row>-->
-<!--                        <div class="titlenorm mt15">-->
-<!--                            <Icon type="logo-buffer"></Icon>-->
-<!--                            社員-->
-<!--                        </div>-->
-<!--                        <div style="position: relative;">-->
-<!--                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="職員データなし"></Tree>-->
-<!--                            <Spin size="large" fix v-if="emplistLoading"></Spin>-->
-<!--                        </div>-->
-<!--                   </tab-pane>-->
-                       <tab-pane label="検索" name="organisationSearch">
+                   <tab-pane label="検索" name="organisationSearch">
                                 <Row :gutter="8" class="tl mb2">
                                     <i-col span="15">
                                         <i-input class="mar mb5 like-select"
@@ -472,9 +447,9 @@
                 query: {
                     txtAction: 'ACT_DISP',
                     txtDYYYYMM: '',
-                    hidSearchItems: '',     //検索種別
-                    hidSearchCondition: '', //検索条件
-                    hidSearchData: '',      //検索対象
+                    hidSearchItems: [[${ session.SearchItems }]] || '',     //検索種別
+                    hidSearchCondition: [[${ session.SearchCondition }]] || '', //検索条件
+                    hidSearchData: [[${ session.SearchData }]] || '',      //検索対象
                     page: '1',
                     year: '',
                     txtUserCode: null,
@@ -483,7 +458,7 @@
                     pdSearchEnd: '',
                     recordDate: '',
                     txtDYYYYMMDD: '',
-                    hidSelectTab:'0',
+                    hidSelectTab:[[${ session.hidSelectTab }]] === 1 ? '1':'0',
                     txtTmgReferListTreeViewRecordDate: '',
                     txtTmgReferListTreeViewPermTargetSection: '',
                     txtTmgReferListTreeViewPermTargetGroup: '',
@@ -537,7 +512,7 @@
                 searchConditionsList: [],//組織ツリー用
                 empTreeData: [],        //組織ツリー用
                 emplistLoading: false,  //職員一覧ローディング用動画
-                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch":"organisationTree", //組織のツリーと検索タブーを切り替え
                 dataLoading: false,
                 forRest: true,
                 radioCheckedIndex: 0,
@@ -560,7 +535,7 @@
             },
         },
         methods: {
-
+            //詳細ボタン
             async handleBtn(e,i) {
                 console.log("handleBtn(e)")
                 console.log(i)
@@ -571,7 +546,12 @@
                 this.privateInfo.taMustdays8 = e.taMustdays8[i]
                 this.privateInfo.taLessdays9 = e.taLessdays9[i]
 
-                this.privateInfo.deptName = this.deptName
+                // this.privateInfo.deptName = this.deptName
+                // 職員情報取得（種別）
+                //选择职员保存、初期化使用。
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e.cemployeeid0
+                await this.getApplyEmployPersonalInfo()
+
                 this.privateInfo.name = e.name
                 this.privateInfo.workType = e.type
 
@@ -692,7 +672,9 @@
                 //     this.paidData[0].basedDay = e[0].taKijyunbi5
                 // }
 
-                this.privateInfo.deptName = this.deptName
+                // 職員情報取得
+                await this.getApplyEmployPersonalInfo()
+
                 this.privateInfo.name = this.paidData[0].name
                 this.privateInfo.workType = this.paidData[0].type
 
@@ -719,13 +701,8 @@
                 this.dataLoading = true
                 this.tableData = []
                 if (this.query.hidSelectTab == '1') {
-                    this.query.hidSearchItems = this.referListObject.hidSearchItems
-                    this.query.hidSearchCondition = this.referListObject.hidSearchCondition
-                    this.query.hidSearchData = this.referListObject.hidSearchData
-                } else if (this.query.hidSelectTab == '0') {
-                    this.query.hidSearchItems = ''
-                    this.query.hidSearchCondition = ''
-                    this.query.hidSearchData = ''
+                    this.deptName = '職員により検索中'
+                    this.query.txtUserCode = null
                 }
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
@@ -876,29 +853,10 @@
                     this.empDeptLoading = false
                 }
             }),
-            handleClickEmpLeaf(e) {
-                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
-                //よって、二回目クリックすると、何もしない
-                if(!e[0]) return
-
-                this.deptDrawShow = false
-                this.query.txtAction = 'ACT_DISP'
-                this.deptName = e[0].secnic
-                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
-                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
-                this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
-                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-                this.query.txtUserCode = e[0].empid
-                if (!this.query.year) {
-                    this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
-                }
-
-                this.getTableData()
-            },
             async getSearchTableData() {
-                this.deptName = '職員により検索中'
                 this.query.hidSelectTab = '1'
+                this.query.hidSearchItems = this.referListObject.hidSearchItems
+                this.query.hidSearchCondition = this.referListObject.hidSearchCondition
                 this.query.hidSearchData = this.referListObject.hidSearchData
                 //ツリー：0、検索：1
                 this.getTableData()
@@ -970,6 +928,9 @@
                     this.updateAcquired5DaysVO.txtYear = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
                 }
                 this.yearShow = true
+
+                //ツリーを選択するの場合、0で設定する
+                this.query.hidSelectTab = '0'
                 await this.getTableData()
 
             },
@@ -1079,11 +1040,11 @@
                 this.paidData[index].editCheckPeriod = e
             },
             currentTabChanged(name) {
-                if (name=="organisationTree") {
-                    this.query.hidSelectTab='0'
-                } else if (name=="organisationSearch") {
-                    this.query.hidSelectTab='1'
-                }
+                // if (name=="organisationTree") {
+                //     this.query.hidSelectTab='0'
+                // } else if (name=="organisationSearch") {
+                //     this.query.hidSelectTab='1'
+                // }
             },
             errorCheck() {
                 let date = this.updateAcquired5DaysVO.kijunbiEdit
@@ -1333,6 +1294,17 @@
                 await this.getOrgTree()
                 await this.getSearchCondition()
 
+                //検索の初期化対応
+                this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
                 this.targetPermSection = '',
                 this.targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
@@ -1389,6 +1361,12 @@
                         }
                     }
                 })
+            },
+            // 職員情報取得
+            async getApplyEmployPersonalInfo() {
+                // 職員情報取得
+                const { data } = await this.http.get('sys/vapply/EmployInfo', this.query)
+                this.privateInfo.deptName = data.section
             },
         }
     })

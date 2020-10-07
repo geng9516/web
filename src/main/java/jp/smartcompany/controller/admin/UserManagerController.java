@@ -1,10 +1,7 @@
 package jp.smartcompany.controller.admin;
 
 import jp.smartcompany.admin.usermanager.dto.ChangePasswordDTO;
-import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
-import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
-import jp.smartcompany.admin.usermanager.form.UserManagerEditPersonalForm;
-import jp.smartcompany.admin.usermanager.form.UserManagerEditStartForm;
+import jp.smartcompany.admin.usermanager.form.*;
 import jp.smartcompany.admin.usermanager.logic.*;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
@@ -103,6 +100,9 @@ public class UserManagerController {
     public Map<String,Object> showChangePassword(@RequestBody ChangePasswordDTO changePasswordDTO) {
         return userManagerEditPasswordLogic.showChangePassword(changePasswordDTO);
     }
-
+    @PostMapping("change/password")
+    public Map<String,String> changePassword(@RequestBody UserManagerEditPasswordForm form) {
+        return userManagerEditPasswordLogic.changePassword(form);
+    }
     /* ============ UserManagerEditPasswordAction 结束 ============= */
 }
