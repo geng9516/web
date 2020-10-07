@@ -182,7 +182,7 @@
                         <Row :gutter="10">
                             <i-col span="8">
                                 <div class="label pl10">所属</div>
-                                <div class="person-info">{{ deptName }}</div>
+                                <div class="person-info">{{ privateInfo.deptName }}</div>
                             </i-col>
                             <i-col span="8">
                                 <div class="label pl10">氏名</div>
@@ -678,6 +678,7 @@
                     lightDelBtnVisible: [],
                     lightDelBtnVisible2: [],
                     privateInfo: {
+                        deptName: '',
                         name: '',
                         workType: ''
                     },
@@ -1814,6 +1815,7 @@
                 async getApplyEmployPersonalInfo() {
                     // 職員情報取得
                     const { data } = await this.http.get('sys/vapply/EmployInfo', this.queryList)
+                    this.privateInfo.deptName = data.section
                     this.privateInfo.name = data.name
                     this.privateInfo.workType = data.worktype
                 },
