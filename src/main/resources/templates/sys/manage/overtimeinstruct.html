@@ -36,8 +36,8 @@
                     ​
                     <Drawer class="tc" placement="right" width="700" :closable="selectedTab === '検索'"
                         :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                        <Tabs v-model="selectedTab" :animated="false" @on-click="handleTabClick">
-                            <tab-pane label="ツリー" name="ツリー">
+                        <Tabs v-model="currentTab" :animated="false" @on-click="currentTabChanged">
+                            <tab-pane label="ツリー" name="organisationTree">
                                 <div class="titlenorm mb5">
                                     <Icon type="logo-buffer"></Icon>
                                     所属
@@ -68,28 +68,25 @@
                                     <Spin size="large" fix v-if="empDeptLoading"></Spin>
                                 </div>
                             </tab-pane>
-                            <tab-pane label="検索" name="検索">
+                            <tab-pane label="検索" name="organisationSearch">
                                 <Row class="tl mb2" :gutter="8">
                                     <i-col span="15">
-                                        <i-input v-model="hidSearchData" @on-search="getTableData"
-                                            class="mar mb5 like-select" search enter-button placeholder="検索">
-                                            <i-select v-model="query.hidSearchItems" slot="prepend" style="width: 108px"
-                                                placeholder="項目" transfer>
-                                                <i-option v-for="(item,i) of searchTypesList" :value="item.value">
+                                        <i-input class="mar mb5 like-select" enter-button placeholder="検索" search v-model="query.hidSearchData">
+                                            <i-select placeholder="項目" slot="prepend" style="width: 108px" transfer v-model="query.hidSearchItems">
+                                                <i-option :value="item.value" v-for="(item,i) of searchTypesList">
                                                     {{ item.name }}</i-option>
                                             </i-select>
-                                            <i-select v-model="query.hidSearchCondition" slot="append"
-                                                style="width: 108px" placeholder="条件" transfer>
-                                                <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
+                                            <i-select placeholder="条件" slot="append" style="width: 108px" transfer v-model="query.hidSearchCondition">
+                                                <i-option :value="item.value" v-for="(item,i) of searchConditionsList">
                                                     {{ item.name }}</i-option>
                                             </i-select>
                                         </i-input>
                                     </i-col>
                                     <i-col span="8" class="no-border-radius">
-                                        <i-button long type="primary" icon="md-search" ghost :loading="loading"
-                                            @click="getTableData">検索</i-button>
+                                        <i-button long type="primary" icon="md-search" ghost :loading="loading" @click="getSearchTableData">検索</i-button>
                                     </i-col>
                                 </Row>
+                                <Alert class="primary-info mt10">※検索結果の上位100件を表示しています。</Alert>
                             </tab-pane>
                         </Tabs>
                     </Drawer>
@@ -148,7 +145,7 @@
                 <Row class="mb15">
                     <i-col span="4" class="label">所属</i-col>
                     <i-col span="6">
-                        <span class="input-like-span">{{ deptName }}</span>
+                        <span class="input-like-span">{{ empDeptName }}</span>
                     </i-col>
                 </Row>
 
@@ -311,7 +308,7 @@
                 <Row :gutter="10">
                     <i-col span="8">
                         <div class="label" style="padding:1px 0">所属</div>
-                        <div class="person-info">{{ deptName}}</div>
+                        <div class="person-info">{{ empDeptName}}</div>
                     </i-col>
                     <i-col span="8">
                         <div class="label" style="padding:1px 0">氏名</div>
@@ -388,6 +385,7 @@
                     treeData: [],            //組織ツリー用
                     curDate: new Date(),
                     deptName: '選んでください',  //選択した職員の所属
+                    empDeptName: this.deptName,
                     empName: '', //選択した職員名前
                     empWorkerTypeName: '', //選択した職員種別
                     isSearchHistory: false,
@@ -407,23 +405,25 @@
                         type: 21
                     },
                     query: {
+                        hidSearchItems: [[${ session.SearchItems }]],     //検索種別
+                        hidSearchCondition: [[${ session.SearchCondition }]], //検索条件
+                        hidSearchData: [[${ session.SearchData }]],      //検索対象
+                        hidSelectTab: [[${ session.hidSelectTab }]] === 1 ? '1' : '0',
+                        recordDate:'',
                         action: '',
                         baseDay: '',
                         baseMonth: '',
-                        psSite: Utils.getUrlParam(location.href, 'psSite'),
-                        //目标sec
                         txtTmgReferListTreeViewPermTargetSection: '',
                         txtTmgReferListTreeViewPermTargetGroup:'',
-                        //基准日
                         txtTmgReferListTreeViewRecordDate: '',
                         txtTmgReferListTreeViewPermTargetEmp: '',
-                        hidSearchItems: 'EMPLOYEEID',
-                        hidSearchCondition: 'BROADMATCH',
                         psApp: Utils.getUrlParam(location.href, 'psApp'),
-                        hidSelectTab: '0', //組織タブー0：ツリ、1:検索
+                        psSite: Utils.getUrlParam(location.href, 'psSite'),
                         type: 11,
                         empId: '',
                     },
+                    //組織のツリーと検索タブーを切り替え
+                    currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch" : "organisationTree",
                     hidSearchData: '',
                     columns3:[{}],
                     columns3bak: [
@@ -728,6 +728,14 @@
                 }
             },
             methods: {
+                // 職員検索
+                async getSearchTableData() {
+                    this.deptName = '職員により検索中'
+                    console.log(this.query.baseDay)
+                    //ツリー：0、検索：1
+                    this.query.hidSelectTab = '1'
+                    this.getTableData()
+                },
                 //初期化処理
                 async getInit() {
                     let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
@@ -737,6 +745,14 @@
                     await this.getOrgTree()
                         this.getSearchCondition()
                         this.getLimit()
+
+                    //検索の初期化対応 add by chenyl
+                    this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                    this.query.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                    this.query.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
+                    this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+
                     //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                     if (targetPermSection) {
                         let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
@@ -780,6 +796,7 @@
                 },
                 async handleDeptDateChange(e) {
                     this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                    this.query.txtTmgReferListTreeViewRecordDate = e
                     this.isSearchHistory = true
                     await this.getOrgTree()
                     if(this.treeData.length !== 0) {
@@ -818,6 +835,7 @@
                 },
                 handleClickLeaf(e) {
                     if (!e[0]) return
+                    this.query.hidSelectTab = '0'
                     this.deptDrawShow = false
                     if (this.selectedDeptViewType === "section") {
                         this.deptName = e[0].label
@@ -851,6 +869,14 @@
                     if (this.deptName !== '選んでください') {
                         this.getTableData()
                     }
+                },
+                //ツリーまたは検索を変わる
+                async currentTabChanged(name) {
+                    // if (name=="organisationTree") {
+                    //     this.referListObject.hidSelectTab='0'
+                    // } else if (name=="organisationSearch") {
+                    //     this.referListObject.hidSelectTab='1'
+                    // }
                 },
                 handleTabClick(e) {
                     // 用于点回ツリー时 显示已选中的项
@@ -943,16 +969,10 @@
                 },
                 async getTableData() {
                     this.loading = true
-                    let url = 'sys/overtimeinstruct/monthlyResult'
-                    // 用于检索时，直接检索表格，需要用到字段
-                    if (this.selectedTab === '検索') {
+                    if (this.query.hidSelectTab == '1') {
                         this.deptName = '職員により検索中'
-                        this.query.hidSelectTab = '1'
-                        this.query.hidSearchData = this.hidSearchData
-                    } else {
-                        this.query.hidSelectTab = '0'
-                        delete this.query.hidSearchData
                     }
+                    let url = 'sys/overtimeinstruct/monthlyResult'
                     try {
                         if (this.overWorkViewType === 3) {
                             this.query.action = "ACT_DISP_RMONTHLY_RESULT_OT100"
@@ -1007,6 +1027,19 @@
                     this.averageTableLoading = true
                     this.query.empId = e
                     this.query.txtTmgReferListTreeViewPermTargetEmp= e
+
+                    // 職員情報取得
+                    //console.log('this.query.hidSelectTab:', this.query.hidSelectTab)
+                    if (this.query.hidSelectTab == '1') {
+                        //職員検索の場合、リクエスト要
+                        this.query.txtTmgReferListTreeViewAdminTargetEmp = e
+                        this.query.txtTmgReferListTreeViewRecordDate = this.query.baseDay||Utils.formatDate(new Date(),'yyyy/MM/dd')
+                        this.getApplyEmployPersonalInfo()
+                    } else {
+                        //部署検索の場合、リクエスト不要
+                        this.empDeptName = this.deptName
+                    }
+
                     try {
                         const { data } = await this.http.get('sys/overtimeinstruct/avgTime', this.query)
                         this.monthAverageTableHead = data.tableHeader
@@ -1287,6 +1320,12 @@
                     ) {
                         return [0, 0]
                     }
+                },
+                // 職員情報取得
+                async getApplyEmployPersonalInfo() {
+                    // 職員情報取得
+                    const {data} = await this.http.get('sys/vapply/EmployInfo', this.query)
+                    this.empDeptName = data.section
                 },
             }
         })
