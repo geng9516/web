@@ -914,13 +914,13 @@
           let OPTS = { ...this.referListObject }
           this.curClickedEmpId = e[0].id
           OPTS.txtTmgReferListTreeViewAdminTargetEmp = e[0].id
-
+          this.curTab='name2'
           // 3条都完成的时候，就可以进行代理申请了
           this.agencyApplyPanelLoading = true
           Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
             this.agencyApplyPanel = false
             this.agencyApplyPanelLoading = false
-            this.curTab='name2'
+
           })
         },
         async getApplyEmployPersonalInfo(opts) {
@@ -1204,24 +1204,23 @@
         },
         handleRestType(e) {
           // 选择不同的休假时，判断显示不同的项目
-          if (!e || e === '全て') {
-            this.restApply = {
-              useVacation: false,
-              restTypeId: '全て',
-              weekSelected: [],
-              noreserved: 1,
-              _dateList: '',
-              _dateListRange: ['', ''],
-              dateListRange: ['', ''],
-              txtAddDate:null,
-              txtTargetNumber:null
-            }
-            this.errorInfo = false
-            this.uploadFiles = []
-            this.hasPassedTimeCheck = true
-            this.selectedRestInfo = {}
-            return
+
+          this.restApply = {
+            useVacation: false,
+            restTypeId: '全て',
+            weekSelected: [],
+            noreserved: 1,
+            _dateList: '',
+            _dateListRange: ['', ''],
+            dateListRange: ['', ''],
+            txtAddDate: null,
+            txtTargetNumber: null
           }
+          this.errorInfo = false
+          this.uploadFiles = []
+          this.hasPassedTimeCheck = true
+          this.selectedRestInfo = {}
+          if(!e)return
           this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
           const turnLine = Vue.filter('turnLine');
           this.selectBiko=turnLine(this.selectedRestInfo.biko)

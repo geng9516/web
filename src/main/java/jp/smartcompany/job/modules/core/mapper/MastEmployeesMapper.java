@@ -161,10 +161,11 @@ public interface MastEmployeesMapper extends BaseMapper<MastEmployeesDO> {
 
     List<UserManagerDTO> selectStartList(@Param("custId") String custId, @Param("userIds") List<String> userIds,
                                          @Param("language") String language, @Param("searchType") Integer searchType,
-                                         List<String> companyList);
+                                         @Param("companyList") List<String> companyList);
 
     List<UserManagerDTO> selectEndList(@Param("custId") String custId, @Param("userIds") List<String> userIds,
                                          @Param("language") String language, @Param("searchType") Integer searchType,
-                                         List<String> companyList);
+                                         @Param("companyList") List<String> companyList);
 
+    UserManagerDTO selectPersonalName(@Param("custId") String custId,@Param("userId") String userId,@Param("language") String language, @Param("companyList") List<String> companyList);
 }

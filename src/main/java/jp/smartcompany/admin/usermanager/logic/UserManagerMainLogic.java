@@ -2,7 +2,6 @@ package jp.smartcompany.admin.usermanager.logic;
 
 import jp.smartcompany.admin.usermanager.form.UserManagerEditEndForm;
 import jp.smartcompany.admin.usermanager.form.ShowLimitDateForm;
-import jp.smartcompany.admin.usermanager.form.UserManagerEditStartForm;
 import jp.smartcompany.boot.util.PageUtil;
 import jp.smartcompany.job.modules.core.pojo.entity.ConfSyscontrolDO;
 
@@ -40,13 +39,5 @@ public interface UserManagerMainLogic {
 
     void updatePolicy(List<ConfSyscontrolDO> controlList);
 
-    Map<String,Object> showChangeEndDate(ShowLimitDateForm form);
-    /**
-     * 利用終了日 変更
-     */
-    void changeEndDate(UserManagerEditEndForm dto);
 
-    Map<String,Object> showChangeStartDate(ShowLimitDateForm form);
-
-    Map<String,String> changeStartDate(UserManagerEditStartForm form);
 }

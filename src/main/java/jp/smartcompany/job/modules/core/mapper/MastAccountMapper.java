@@ -37,4 +37,12 @@ public interface MastAccountMapper extends BaseMapper<MastAccountDO> {
                 @Param("custId") String customerId,
                 @Param("userList") List<String> userIds,
                 @Param("companyList") List<String> companyList);
+
+        List<UserManagerDTO> selectPasswordList(
+                @Param("custId") String custId,
+                @Param("language") String language,
+                @Param("userList") List<String> userIds,
+                @Param("searchType") Integer searchType,
+                @Param("companyList") List<String> companyList
+        );
 }
