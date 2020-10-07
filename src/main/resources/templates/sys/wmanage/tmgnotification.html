@@ -128,7 +128,7 @@
           <span v-if="row.tntfCemployeeid !== row.tntfCalteremployeeid" class="confirm-sytle ing">代</span>
         </template>
 
-        <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover">
+        <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover.length > 0 && row.ntfapprover[0].trim()">
           <Tooltip placement="bottom" class="width100" transfer>
             <span style="white-space: normal;" slot="content">{{ row.ntfapprover.join(', ') }}</span>
             <span class="ivu-table-cell-tooltip-content">{{ row.ntfapprover.join(', ') }}</span>
@@ -287,7 +287,7 @@
 
       <!-- 代理申请的 -->
       <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="closeAgentApplyDrawer">
-        <Tabs :value="curTab" :animated="false">
+        <Tabs v-model="curTab" :animated="false">
           <tab-pane label="1. 職員選択" name="name1">
             <div class="titlenorm mb5">
               <Icon type="logo-buffer"></Icon>
