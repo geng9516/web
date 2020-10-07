@@ -4,13 +4,17 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.dto.UserManagerListDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerUpdateParamDTO;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditCommonLogic;
 import jp.smartcompany.boot.util.ScCacheUtil;
 import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
+import jp.smartcompany.job.modules.core.pojo.entity.MastAccountDO;
 import jp.smartcompany.job.modules.core.pojo.entity.MastPasswordDO;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import jp.smartcompany.job.modules.core.service.IMastPasswordService;
@@ -19,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.naming.ldap.Rdn;
-import java.sql.Timestamp;
 import java.util.*;
 
 @Service("userManagerEditCommonLogic")
@@ -169,7 +172,7 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
         cd = cd + 0x5f;
       }
       char charCd = (char) cd;
-      decryptStr = decryptStr + String.valueOf(charCd);
+      decryptStr = decryptStr + charCd;
     }
     decryptStr = (String) Rdn.unescapeValue(decryptStr);
 
@@ -224,6 +227,133 @@ public class UserManagerEditCommonLogicImpl implements UserManagerEditCommonLogi
       encryptStr.append(charCd);
     }
     return encryptStr.toString();
+  }
+
+
+  /**
+   * ステータス取得
+   * @param poUserManagerDto ユーザDtoデータ
+   * @return sValue
+   */
+  @Override
+  public String getStatus(UserManagerListDTO poUserManagerDto) {
+    String sStatus = "";
+    Calendar calSys = (Calendar) Calendar.getInstance().clone();
+    calSys.set(Calendar.HOUR, 0);
+    calSys.set(Calendar.MINUTE, 0);
+    calSys.set(Calendar.SECOND, 0);
+    Calendar calResult = (Calendar) Calendar.getInstance().clone();
+
+    // 入社年月日がnullの時は基本情報のデータ開始日付を使用
+    if (poUserManagerDto.getMeDdateofemployement() == null) {
+      calResult.setTime(poUserManagerDto.getMeDstartdate());
+    } else {
+      calResult.setTime(poUserManagerDto.getMeDdateofemployement());
+    }
+
+    calResult.set(Calendar.HOUR, 0);
+    calResult.set(Calendar.MINUTE, 0);
+    calResult.set(Calendar.SECOND, 0);
+
+    if (poUserManagerDto.getMaId() == null) {
+      // アカウント情報なし
+      if (calResult.compareTo(calSys) <= 0) {
+        // 入社年月日<=システム日付のとき"入社後未登録"
+        sStatus = STATUS_AFTER_ENTRANCE;
+      } else if (calResult.compareTo(calSys) > 0) {
+        // 入社年月日>システム日付のとき"入社前"(アカウント情報有無は無関係)
+        sStatus = STATUS_BEFORE_ENTRANCE;
+      }
+    } else {
+      // アカウント情報あり
+      if (poUserManagerDto.getMeDdateofretirement() != null
+              && poUserManagerDto.getMeDdateofretirement().before(calSys.getTime())
+              && poUserManagerDto.getMaDend() != null
+              && poUserManagerDto.getMaDend().compareTo(calSys.getTime()) >= 0) {
+        // 退職後未削除
+        sStatus = STATUS_AFTER_RETIRE;
+      } else if (poUserManagerDto.getMaDend() != null
+              && poUserManagerDto.getMaDend().before(calSys.getTime())) {
+        // 無効
+        sStatus = STATUS_INVALID;
+      } else if (poUserManagerDto.getMaNpasswordlock() != null
+              && poUserManagerDto.getMaNpasswordlock() == 1) {
+        // ロックアウト
+        sStatus = STATUS_LOCKOUT;
+      } else if (calResult.compareTo(calSys) > 0) {
+        // 入社年月日>システム日付のとき"入社前"(アカウント情報有無は無関係)
+        sStatus = STATUS_BEFORE_ENTRANCE;
+      }
+    }
+    //スタータスがnullの場合
+    if (StrUtil.isBlank(sStatus)) {
+      return "";
+    }
+    return getStatusText(sStatus);
+  }
+
+  private String getStatusText(String status) {
+    if(StrUtil.equals(STATUS_BEFORE_ENTRANCE,status)) {
+      return STATUS_BEFORE_ENTRANCE_TEXT;
+    }
+    if (StrUtil.equals(STATUS_AFTER_ENTRANCE,status)) {
+      return STATUS_AFTER_ENTRANCE_TEXT;
+    }
+    if (StrUtil.equals(STATUS_LOCKOUT,status)) {
+      return STATUS_LOCKOUT_TEXT;
+    }
+    if (StrUtil.equals(STATUS_INVALID,status)) {
+      return STATUS_INVALID_TEXT;
+    }
+    if (StrUtil.equals(STATUS_AFTER_RETIRE,status)) {
+      return STATUS_AFTER_RETIRE_TEXT;
+    }
+    return "";
+  }
+
+  /**
+   * Account登録処理
+   * @param accountDto
+   * @param checkListOld
+   * @param psCustomerid
+   * @param psAccount
+   * @param psUserid
+   * @param now
+   */
+  @Override
+  public void accountInsert(
+          MastAccountDO accountDto,
+          List<UserManagerDTO> checkListOld,
+          String psCustomerid,
+          String psAccount,
+          String psUserid,
+          Date now){
+
+    //=========================================================
+    //過去アカウント削除(1)
+    //=========================================================
+    if(CollUtil.isNotEmpty(checkListOld)){
+      // アカウント削除
+      Map<String,Object> accountParams = MapUtil.newHashMap();
+      accountParams.put("MA_CCUSTOMERID",psCustomerid);
+      accountParams.put("MA_CACCOUNT",psAccount);
+      mastAccountService.removeByMap(accountParams);
+      // パスワード削除
+      Map<String,Object> passwordParams = MapUtil.newHashMap();
+      passwordParams.put("accountInsert",checkListOld.get(0).getMaCuserid());
+      passwordService.removeByMap(passwordParams);
+    }
+    //=========================================================
+    //登録前処理
+    //=========================================================
+    accountDto.setMaCcustomerid(psCustomerid);
+    accountDto.setMaCaccount(psAccount);
+    accountDto.setMaCuserid(psUserid);
+    accountDto.setMaDcreate(now);
+    //=========================================================
+    //登録処理
+    //=========================================================
+    mastAccountService.save(accountDto);
   }
 
 }

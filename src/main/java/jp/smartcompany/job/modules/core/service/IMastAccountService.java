@@ -43,4 +43,12 @@ public interface IMastAccountService extends IService<MastAccountDO> {
                 String customerId,
                 List<String> userIds,
                 List<String> companyList);
+
+        List<UserManagerDTO> selectPasswordList(
+                String custId,
+                String language,
+                List<String> userIds,
+                Integer searchType,
+                List<String> companyList
+        );
 }

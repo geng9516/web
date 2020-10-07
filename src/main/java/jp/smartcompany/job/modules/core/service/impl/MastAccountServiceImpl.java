@@ -119,6 +119,17 @@ public class MastAccountServiceImpl extends ServiceImpl<MastAccountMapper, MastA
                     , userIds
                     , companyList);
         }
+
+        @Override
+        public List<UserManagerDTO> selectPasswordList(
+            String custId,
+            String language,
+            List<String> userIds,
+            Integer searchType,
+            List<String> companyList
+        ) {
+            return baseMapper.selectPasswordList(custId,language,userIds,searchType,companyList);
+        }
         /* =====================
                 用户管理模块相关sql 结束
            ===================
