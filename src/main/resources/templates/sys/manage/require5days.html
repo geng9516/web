@@ -31,7 +31,7 @@
                     </i-button>
                 <!-- 共通組織図画面 start-->
                 <Drawer class="tc" placement="right" width="700" :closable="false" :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-                  <Tabs :animated="false" v-model="currentTab" >
+                  <Tabs :animated="false" v-model="currentTab" @on-click="currentTabChanged">
                    <tab-pane label="ツリー" name="organisationTree">
                        <div class="titlenorm mb5">
                             <Icon type="logo-buffer"></Icon>
@@ -47,7 +47,32 @@
                         <Tree class="tree mt2" :data="treeData" @on-select-change="handleClickLeaf" ref="tree" empty-text="所属データなし">
                         </Tree>
                    </tab-pane>
-                   <tab-pane label="検索" name="organisationSearch">
+<!--                   <tab-pane label="検索" name="organisationSearch">-->
+<!--                        <Row class="tl mb2" :gutter="8">-->
+<!--                            <i-col span="15">-->
+<!--                                <i-input v-model="referListObject.hidSearchData" @on-search="searchOrgTree" class="mar mb5 like-select" search enter-button placeholder="検索">-->
+<!--                                    <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px" placeholder="項目">-->
+<!--                                        <i-option v-for="(item,i) of searchTypesList" :value="item.value">{{ item.name }}</i-option>-->
+<!--                                    </i-select>-->
+<!--                                    <i-select v-model="referListObject.hidSearchCondition"  slot="append" style="width: 108px" placeholder="条件">-->
+<!--                                        <i-option v-for="(item,i) of searchConditionsList" :value="item.value">{{ item.name }}</i-option>-->
+<!--                                    </i-select>-->
+<!--                                </i-input>-->
+<!--                            </i-col>-->
+<!--                            <i-col span="8" class="no-border-radius">-->
+<!--                                <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading" style="width: 100px" @click="searchOrgTree">検索</i-button>-->
+<!--                            </i-col>-->
+<!--                        </Row>-->
+<!--                        <div class="titlenorm mt15">-->
+<!--                            <Icon type="logo-buffer"></Icon>-->
+<!--                            社員-->
+<!--                        </div>-->
+<!--                        <div style="position: relative;">-->
+<!--                            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="職員データなし"></Tree>-->
+<!--                            <Spin size="large" fix v-if="emplistLoading"></Spin>-->
+<!--                        </div>-->
+<!--                   </tab-pane>-->
+                       <tab-pane label="検索" name="organisationSearch">
                                 <Row :gutter="8" class="tl mb2">
                                     <i-col span="15">
                                         <i-input class="mar mb5 like-select"
@@ -69,7 +94,7 @@
                                                   type="primary">検索</i-button>
                                     </i-col>
                                 </Row>
-                   </tab-pane>
+                       </tab-pane>
                   </Tabs>
                 </Drawer>
                 <!-- 共通組織図画面 end-->
@@ -851,6 +876,26 @@
                     this.empDeptLoading = false
                 }
             }),
+            handleClickEmpLeaf(e) {
+                //同一部署を二回目でクリックすると、取消とするためで、エラーあり
+                //よって、二回目クリックすると、何もしない
+                if(!e[0]) return
+
+                this.deptDrawShow = false
+                this.query.txtAction = 'ACT_DISP'
+                this.deptName = e[0].secnic
+                this.query.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.query.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                this.query.txtTmgReferListTreeViewPermTargetEmp = e[0].empid
+                this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                this.query.txtUserCode = e[0].empid
+                if (!this.query.year) {
+                    this.query.year = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
+                }
+
+                this.getTableData()
+            },
             async getSearchTableData() {
                 this.deptName = '職員により検索中'
                 this.query.hidSelectTab = '1'
@@ -925,7 +970,6 @@
                     this.updateAcquired5DaysVO.txtYear = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
                 }
                 this.yearShow = true
-                this.query.hidSelectTab = '0'
                 await this.getTableData()
 
             },
