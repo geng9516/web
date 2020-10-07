@@ -19,40 +19,40 @@
                 </h1>
             </div>
             <div class="btnbox">
-                
+
             </div>
         </div>
         <div class="searchwrap">
             <!-- 共通組織図画面 start-->
-<!--            <span style="display:flex;width: calc(15% + 200px);">-->
-<!--                    <span class="label">所属</span>-->
-<!--                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">-->
-<!--                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}-->
-<!--                            <div slot="content">{{deptName}}</div>-->
-<!--                        </Tooltip>-->
-<!--                    </i-button>-->
-<!--                    <Drawer class="tc" placement="right" width="700" :closable="false"-->
-<!--                            :mask-closable="!isSearchHistory"-->
-<!--                            v-model="deptDrawShow">-->
-<!--                        <div class="titlenorm mb5">-->
-<!--                            <Icon type="logo-buffer"></Icon>-->
-<!--                            所属-->
-<!--                        </div>-->
-<!--                        <Row class="tl mb5">-->
-<!--                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>-->
-<!--                            <i-col span="7" class="no-border-radius">-->
-<!--                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit" transfer-->
-<!--                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"-->
-<!--                                         @on-change="handleDeptDateChange"></date-picker>-->
-<!--                            </i-col>-->
-<!--                        </Row>-->
-<!--                        <div style="position: relative;">-->
-<!--                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"-->
-<!--                                  empty-text="所属データなし"></Tree>-->
-<!--                            <Spin size="large" fix v-if="empDeptLoading"></Spin>-->
-<!--                        </div>-->
-<!--                    </Drawer>-->
-<!--                </span>-->
+            <!--            <span style="display:flex;width: calc(15% + 200px);">-->
+            <!--                    <span class="label">所属</span>-->
+            <!--                    <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">-->
+            <!--                        <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}-->
+            <!--                            <div slot="content">{{deptName}}</div>-->
+            <!--                        </Tooltip>-->
+            <!--                    </i-button>-->
+            <!--                    <Drawer class="tc" placement="right" width="700" :closable="false"-->
+            <!--                            :mask-closable="!isSearchHistory"-->
+            <!--                            v-model="deptDrawShow">-->
+            <!--                        <div class="titlenorm mb5">-->
+            <!--                            <Icon type="logo-buffer"></Icon>-->
+            <!--                            所属-->
+            <!--                        </div>-->
+            <!--                        <Row class="tl mb5">-->
+            <!--                            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>-->
+            <!--                            <i-col span="7" class="no-border-radius">-->
+            <!--                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" :options="startLimit" transfer-->
+            <!--                                         placeholder="基準日" format="yyyy/MM/dd" ref="datePicker" :clearable="false"-->
+            <!--                                         @on-change="handleDeptDateChange"></date-picker>-->
+            <!--                            </i-col>-->
+            <!--                        </Row>-->
+            <!--                        <div style="position: relative;">-->
+            <!--                            <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"-->
+            <!--                                  empty-text="所属データなし"></Tree>-->
+            <!--                            <Spin size="large" fix v-if="empDeptLoading"></Spin>-->
+            <!--                        </div>-->
+            <!--                    </Drawer>-->
+            <!--                </span>-->
 
 
             <span style="display:flex;width: calc(15% + 200px);">
@@ -63,9 +63,9 @@
                         </Tooltip>
                     </i-button>
                     ​
-                    <Drawer :closable="selectedTab === '検索'" :mask-closable="!isSearchHistory" class="tc" placement="right"
+                    <Drawer :mask-closable="!isSearchHistory" class="tc" placement="right"
                             v-model="deptDrawShow" width="700">
-                        <Tabs :animated="false" @on-click="currentTabChanged" v-model="selectedTab">
+                        <Tabs :animated="false" @on-click="currentTabChanged" v-model="currentTab">
                             <tab-pane label="ツリー" name="organisationTree">
                                 <div class="titlenorm mb5">
                                     <Icon type="logo-buffer"></Icon>
@@ -110,6 +110,7 @@
                                                   type="primary">検索</i-button>
                                     </i-col>
                                 </Row>
+                                <Alert class="primary-info mt10">検索結果の上位100件を表示しています。</Alert>
                             </tab-pane>
                         </Tabs>
                     </Drawer>
@@ -119,18 +120,18 @@
         </div>
     </div>
     <div class="content_body">
-        <i-table  no-data-text="" border :columns="columns"
+        <i-table no-data-text="" border :columns="columns"
                  :row-class-name="() => 'select-col'" :disabled-hover="true" :data="data" :loading="loading">
             <div slot-scope="{ row }" slot="name" class="tc">
                 <span class="pl5 pr5 cursor row-label-primary tl no-border-radius width100" @click.stop="showDay(row)">{{ row.name }}</span>
             </div>
-            <template slot-scope="{ row }" slot="workertypenm" >
+            <template slot-scope="{ row }" slot="workertypenm">
                 <span>{{ row.workertypenm }}</span>
             </template>
-            <template slot-scope="{ row }" slot="tphDyyyymmdd" >
+            <template slot-scope="{ row }" slot="tphDyyyymmdd">
                 <span>{{ row.tphDyyyymmdd }}</span>
             </template>
-            <template slot-scope="{ row }" slot="investDaysSum" >
+            <template slot-scope="{ row }" slot="investDaysSum">
                 <span>{{ row.investDaysSum | addNumDeci(true) }}</span>
             </template>
 
@@ -148,12 +149,12 @@
         </i-table>
     </div>
 
-    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" :mask-closable ="false">
+    <Drawer :title="title" width="1000" v-model="paidHolidayInitRList" :mask-closable="false">
         <div class="content_body">
             <Row>
                 <i-col span="6" class="label tc">所属</i-col>
                 <i-col span="9">
-                    <span class="input-like-span">{{ deptName }}</span>
+                    <span class="input-like-span">{{ empDeptName }}</span>
                 </i-col>
             </Row>
 
@@ -187,18 +188,18 @@
 
                         <i-table border :columns="columns3" :data="paidNowData" :span-method="handleSpan" class="mt2" :disabled-hover="true">
                             <template slot-scope="{ row ,index }" slot="days">
-                                <i-input  v-model="paidNowData[index].days"  v-if="row.isEditable"  class=" tc" ></i-input>
+                                <i-input v-model="paidNowData[index].days" v-if="row.isEditable" class=" tc"></i-input>
                                 <p v-else>{{ row.days| addNumDeci(true) }}</p>
                             </template>
 
                             <template slot-scope="{ row,index }" slot="times">
-                                <i-input v-model="paidNowData[index].times"  v-if="row.isEditable"  class=" tc" ></i-input>
+                                <i-input v-model="paidNowData[index].times" v-if="row.isEditable" class=" tc"></i-input>
                                 <p v-else>{{ row.times| addNumDeci }}</p>
                             </template>
 
                             <template slot-scope="{ row ,index}" slot="expiryDate">
-                                <date-picker type="date"  v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付"
-                                             format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event"  v-if="row.isEditable" transfer ></date-picker>
+                                <date-picker type="date" v-model="paidNowData[index].expiryDate" class="datepicker-single mb5" placeholder="日付"
+                                             format="yyyy/MM/dd" @on-change="paidNowData[index].expiryDate = $event" v-if="row.isEditable" transfer></date-picker>
                                 <p v-else>{{ row.expiryDate }}</p>
                             </template>
                         </i-table>
@@ -261,7 +262,7 @@
             </div>
             <i-table @on-row-click="showDayList(arguments)" :row-class-name="() => 'select-col'"
                      border :columns="paidDetailsColumns" :data="paidDetailsData" :loading="paidNowLoading">
-                <template slot-scope="{ row }" slot="ninvest" >
+                <template slot-scope="{ row }" slot="ninvest">
                     <span>{{ row.ninvest | addNumDeci(true) }}</span>
                 </template>
 
@@ -382,9 +383,10 @@
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]: '',
                     [[${ TREEVIEW_KEY_ADMIN_TARGET_EMP }]]: '',
                     [[${ TREEVIEW_KEY_RECORD_DATE }]]: '',
-                    hidSearchItems:'EMPLOYEEID',
-                    hidSearchCondition:'BROADMATCH',
-                    hidSearchData:'',
+                    hidSearchItems: 'EMPLOYEEID',
+                    hidSearchCondition: 'BROADMATCH',
+                    hidSearchData: '',
+                    hidSelectTab: '0',
                     psSite: Utils.getUrlParam(location.href, 'psSite'),
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
@@ -461,7 +463,7 @@
                         ]
                     }
                 ],
-                selectedTab: 'organisationTree',
+                //selectedTab: 'organisationTree',
                 searchTypesList: [],     //組織ツリー用
                 searchConditionsList: [],//組織ツリー用
                 // hidSearchData: '',
@@ -472,12 +474,13 @@
                 deptDrawShow: false,
                 treeData: [],
                 deptName: '選んでください',
+                empDeptName: this.deptName,
                 paidHolidayInitRList: false,
                 isShow: false,
                 title: '',
                 name: '',
                 workertypenm: '',
-                cemployeeid:'',
+                cemployeeid: '',
                 param: {
                     txtDate: '',
                     txtUserCode: '',
@@ -486,15 +489,15 @@
                     psApp: Utils.getUrlParam(location.href, 'psApp'),
                     type: 31
                 },
-                paramters:{
+                paramters: {
                     cemployeeid: '',
-                    ninvest:'',
+                    ninvest: '',
                     dyyyymmdd: '',
                     nadjust: '',
                     nadjustHours: '',
                     nadjustTo: '',
                     nadjustHoursTo: '',
-                    dexpireAdjust:'',
+                    dexpireAdjust: '',
                     dexpireAdjustTo: '',
                     ccomment: ''
                 },
@@ -528,7 +531,20 @@
                     nloseDays: '',
                     nloseHours: '',
                     ccomment: ''
-                }
+                },
+                query: {
+                    hidSearchItems: [[${ session.SearchItems }]],     //検索種別
+                    hidSearchCondition: [[${ session.SearchCondition }]], //検索条件
+                    hidSearchData: [[${ session.SearchData }]],      //検索対象
+                    hidSelectTab: [[${ session.hidSelectTab }]] === 1 ? '1' : '0',
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewAdminTargetSection: '',
+                    txtTmgReferListTreeViewAdminTargetEmp: '',
+                    recordDate: '',
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp')
+                },
+                currentTab: [[${ session.hidSelectTab }]] === 1 ? "organisationSearch" : "organisationTree",         //組織のツリーと検索タブーを切り替え
             }
         },
         computed: {
@@ -555,24 +571,24 @@
                     },
                     {
                         name: '調整付与',
-                        days: this.format_hours(this.dataDetail.nadjust,1),
+                        days: this.format_hours(this.dataDetail.nadjust, 1),
                         cellClassName: {name: 'rest-title'},
                         isEditable: true,
-                        times: this.format_hours(this.dataDetail.nadjustHours,2),
+                        times: this.format_hours(this.dataDetail.nadjustHours, 2),
                         expiryDate: this.dataDetail.dexpireAdjust
                     },
                     {
                         name: '調整繰越',
-                        days: this.format_hours(this.dataDetail.nadjustTo,1),
+                        days: this.format_hours(this.dataDetail.nadjustTo, 1),
                         cellClassName: {name: 'rest-title'},
                         isEditable: true,
-                        times: this.format_hours(this.dataDetail.nadjustHoursTo,2),
+                        times: this.format_hours(this.dataDetail.nadjustHoursTo, 2),
                         expiryDate: this.dataDetail.dexpireAdjustTo
                     },
                     {
                         name: '合計付与',
                         days: this.dataDetail.ninvestDays,
-                        cellClassName: {name: 'rest-title',days:'sub-title'},
+                        cellClassName: {name: 'rest-title', days: 'sub-title'},
 
                         times: this.dataDetail.ninvestHours
                     },
@@ -599,18 +615,24 @@
             await this.getInit()
         },
         methods: {
+            // 職員検索
             async getSearchTableData() {
                 this.deptName = '職員により検索中'
                 //ツリー：0、検索：1
-                this.referListObject.hidSelectTab='1'
+                this.referListObject.hidSelectTab = '1'
+                this.query.hidSelectTab = '1'
                 this.getTableData()
             },
+            //データリストを更新する
             async getTableData() {
                 try {
+                    if (this.query.hidSelectTab == '1') {
+                        this.deptName = '職員により検索中'
+                    }
                     this.loading = true
                     const {data} = await this.http.get('sys/paidholiday/list', this.referListObject)
                     this.data = data
-                    if(this.data.length == 0){
+                    if (this.data.length == 0) {
                         this.Loading = false
                         this.$Message.error({
                             background: true,
@@ -619,6 +641,7 @@
                             content: '職員が存在している部署を選択してくだい。'
                         });
                     }
+
                 } catch (error) {
                     return
                 } finally {
@@ -642,10 +665,15 @@
                 }
             },
             async getSearchCondition() {
-                const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
-                this.searchConditionsList = Object.keys(data.searchConditions).map(e => { return { name: data.searchConditions[e], value: e } })
-                this.searchTypesList = Object.keys(data.searchTypes).map(e => { return { name: data.searchTypes[e], value: e } })
+                const {data} = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList = Object.keys(data.searchConditions).map(e => {
+                    return {name: data.searchConditions[e], value: e}
+                })
+                this.searchTypesList = Object.keys(data.searchTypes).map(e => {
+                    return {name: data.searchTypes[e], value: e}
+                })
             },
+            //ツリーまたは検索を変わる
             async currentTabChanged(name) {
                 // if (name=="organisationTree") {
                 //     this.referListObject.hidSelectTab='0'
@@ -653,20 +681,30 @@
                 //     this.referListObject.hidSelectTab='1'
                 // }
             },
+            //基準日変更対応
             async handleDeptDateChange(e) {
                 const date = [[${ TREEVIEW_KEY_RECORD_DATE }]]
                 this.referListObject[date] = e
                 this.isSearchHistory = true
                 await this.getOrgTree()
-                if(this.treeData.length !== 0) {
-                        this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
-                    }
+                if (this.treeData.length !== 0) {
+                    this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
+                }
+                //検索用社員情報を取得する基準日をセットする
+                this.query.txtTmgReferListTreeViewRecordDate = e
             },
+            //ツリー検索
             async handleClickLeaf(e) {
                 this.deptDrawShow = false
                 const section = [[${ TREEVIEW_KEY_ADMIN_TARGET_SECTION }]]
-                this.referListObject[section] = e[0].secid
-                this.deptName = e[0].secnic
+                if(e[0]){
+                    this.referListObject[section] = e[0].secid
+                    this.deptName = e[0].secnic
+                }
+
+                //ツリー検索までリセット
+                this.referListObject.hidSelectTab = '0'
+                this.query.hidSelectTab = '0'
                 this.getTableData()
             },
             handleSpan({rowIndex, columnIndex}) {
@@ -683,15 +721,26 @@
             // 年次休暇管理のレコードを選択する
             showDay(e) {
                 this.dataDetail = ''
-                this.paidDetailsData=[]
+                this.paidDetailsData = []
 
                 this.paidHolidayInitRList = true
-                this.title='年次休暇管理'
+                this.title = '年次休暇管理'
 
                 this.name = e.name
                 this.workertypenm = e.workertypenm
 
                 this.cemployeeid = e.tphCemployeeid
+
+                // 職員情報取得
+                //console.log('this.query.hidSelectTab:', this.query.hidSelectTab)
+                if (this.query.hidSelectTab == '1') {
+                    //職員検索の場合、リクエスト要
+                    this.query.txtTmgReferListTreeViewAdminTargetEmp = e.tphCemployeeid
+                    this.getApplyEmployPersonalInfo()
+                } else {
+                    //部署検索の場合、リクエスト不要
+                    this.empDeptName = this.deptName
+                }
 
                 this.getDetailList(e.tphDyyyymmdd, e.tphCemployeeid)
 
@@ -731,7 +780,7 @@
 
                 this.dataDetail = {...e[0]}
                 this.dataDetailBack = e[0]
-                setTimeout(()=>this.paidDetailsLoading = false)
+                setTimeout(() => this.paidDetailsLoading = false)
 
             },
 
@@ -741,7 +790,7 @@
                 this.paidDetailsLoading = true
 
                 this.dataDetail = {...this.dataDetailBack}
-                setTimeout(()=>this.paidDetailsLoading = false)
+                setTimeout(() => this.paidDetailsLoading = false)
 
             },
             //登録ボタン押下
@@ -756,7 +805,7 @@
                     this.paramters.nadjustHours = this.dataDetail.nadjustHours
                     this.paramters.nadjustTo = this.dataDetail.nadjustTo
                     // this.paramters.nadjustHoursTo =  this.format_hours(this.dataDetail.nadjustHoursTo,2)
-                    this.paramters.nadjustHoursTo =  this.dataDetail.nadjustHoursTo
+                    this.paramters.nadjustHoursTo = this.dataDetail.nadjustHoursTo
                     this.paramters.dexpireAdjust = this.dataDetail.dexpireAdjust
                     this.paramters.dexpireAdjustTo = this.dataDetail.dexpireAdjustTo
                     this.paramters.ccomment = this.dataDetail.ccomment
@@ -807,7 +856,7 @@
                 this.dataDetail.nadjustHoursTo = nadjustHoursTo
                 this.dataDetail.dexpireAdjustTo = dexpireAdjustTo
 
-                setTimeout(()=>this.paidDetailsLoading = false)
+                setTimeout(() => this.paidDetailsLoading = false)
 
                 // 日付不足チェック
                 let nKonkiShutoku = parseFloat(this.paidNowData[7].days) + parseFloat(this.paidNowData[7].times) / this.dataDetail.navgworktimeCalc;
@@ -829,7 +878,7 @@
                 ) {
                     // MSG_NO_DAY
                     this.$Notice.warning({desc: "調整付与日数が不足しています。"})
-                     return false;
+                    return false;
                 }
 
                 // 合計付与日数と合計付与時間数の合計
@@ -839,19 +888,19 @@
                     + eval(this.paidNowData[4].days))
                 let nHouSum = (this.toMinuteFromHours(this.paidNowData[1].times)
                     + this.toMinuteFromHours(this.paidNowData[3].times)
-                    + this.toMinuteFromHours(this.paidNowData[4].times))/60
-                let nDHSum  = (parseFloat(nDaySum) + (parseFloat(nHouSum) / this.dataDetail.navgworktimeCalc))
+                    + this.toMinuteFromHours(this.paidNowData[4].times)) / 60
+                let nDHSum = (parseFloat(nDaySum) + (parseFloat(nHouSum) / this.dataDetail.navgworktimeCalc))
 
-                if(nDaySum > 40) {
-                     //MSG_OVER_SUM_DAY
+                if (nDaySum > 40) {
+                    //MSG_OVER_SUM_DAY
                     this.$Notice.warning({desc: "調整付与日数と今期付与日数の合計は40を超えないようにして下さい。 "})
                     this.clear()
-                     return false;
-                } else if(nDHSum > 40) {
+                    return false;
+                } else if (nDHSum > 40) {
                     // MSG_OVER_SUM_DAYHOURS
                     this.$Notice.warning({desc: "合計付与日数と合計付与時間数の合計は40を超えないようにして下さい。 "})
                     this.clear()
-                     return false
+                    return false
                 }
                 return true
 
@@ -1552,7 +1601,7 @@
             },
             toDate(pDate) {
 
-                let dateArr = Utils.formatDate(pDate,'yyyy/mm/dd').split("/");
+                let dateArr = Utils.formatDate(pDate, 'yyyy/mm/dd').split("/");
 
                 for (let i = dateArr.length; i < 3; i++) {
                     dateArr[i] = 1;
@@ -1615,32 +1664,44 @@
                     return sHours;
                 }
             },
-            displayJudgment(days,times) {
-                if (days !=0.0 && times != 0.00){
+            displayJudgment(days, times) {
+                if (days != 0.0 && times != 0.00) {
                     return true;
                 }
                 return false;
             },
             //初期化処理
             async getInit() {
-                console.log("getInit")
-                console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
-                console.log(this.referListObject)
+                //console.log("getInit")
+                //console.log([[${ session.txtTmgReferListTreeViewAdminTargetSection }]])
+                //console.log(this.referListObject)
 
                 this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
                 await this.getOrgTree()
                 this.getSearchCondition()
-                this.targetAdminSection = '',
-                    this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+
+                //検索の初期化対応 add by chenyl
+                this.query.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.query.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.query.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.query.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]]
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
+
+                this.targetAdminSection = ''
+                this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
                 // ２．ログインユーザが本人所属部署の管理権限がない場合、ログインユーザの管理対象部署のTOP部署をデフォルト所属とする
-                console.log("getDeptCode")
-                console.log(this.loginDesignationSection)
-                console.log(this.targetAdminSection)
+                // console.log("getDeptCode")
+                // console.log(this.loginDesignationSection)
+                // console.log(this.targetAdminSection)
 
-                if (this.targetAdminSection == null || this.targetAdminSection == ''){
+                if (this.targetAdminSection == null || this.targetAdminSection == '') {
                     this.getDeptCode(this.treeData)
                     if (this.targetAdminSectionFlag) {
                         console.log("getDeptCode_true")
@@ -1648,12 +1709,20 @@
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        // add by chenyl
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     } else {
                         console.log("getDeptCode_false")
                         this.deptName = this.treeData[0].children[0].secnic
                         this.referListObject.txtTmgReferListTreeViewAdminTargetSection = this.treeData[0].children[0].secid
                         this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                         this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        // add by chenyl
+                        this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.psSession.loginDesignation[0].section }]]
+                        this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                        this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
 
                     }
                 } else {
@@ -1661,6 +1730,10 @@
                     this.referListObject.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                     this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                     this.referListObject.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    // add by chenyl
+                    this.query.txtTmgReferListTreeViewAdminTargetSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                    this.query.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.query.recordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
                 }
 
                 //一覧画面取得
@@ -1677,6 +1750,12 @@
                         }
                     }
                 })
+            },
+            // 職員情報取得
+            async getApplyEmployPersonalInfo() {
+                // 職員情報取得
+                const {data} = await this.http.get('sys/vapply/EmployInfo', this.query)
+                this.empDeptName = data.section
             },
         }
     })
