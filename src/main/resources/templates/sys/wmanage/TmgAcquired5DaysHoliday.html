@@ -529,7 +529,7 @@
             },
         },
         methods: {
-
+             //詳細ボタン
             async handleBtn(e,i) {
                 console.log("handleBtn(e)")
                 console.log(i)
@@ -541,7 +541,12 @@
                 this.privateInfo.taMustdays8 = e.taMustdays8[i]
                 this.privateInfo.taLessdays9 = e.taLessdays9[i]
 
-                this.privateInfo.deptName = this.deptName
+                // this.privateInfo.deptName = this.deptName
+                // 職員情報取得（種別）
+                //选择职员保存、初期化使用。
+                this.query.txtTmgReferListTreeViewAdminTargetEmp = e.cemployeeid0
+                await this.getApplyEmployPersonalInfo()
+
                 this.privateInfo.name = e.name
                 this.privateInfo.workType = e.type
 
@@ -553,9 +558,6 @@
                 this.isShow = true
                 this.isSeason = true
                 this.takenDaysDataLoading = true
-
-                //选择职员保存、初期化使用。
-                this.query.txtTmgReferListTreeViewAdminTargetEmp = e.cemployeeid0
 
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/showDisp', this.query)
                 this.takenDaysData =data
