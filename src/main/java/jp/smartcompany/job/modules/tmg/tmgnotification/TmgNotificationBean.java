@@ -221,8 +221,12 @@ public class TmgNotificationBean {
             nddVo.setRemakeApply(nlVo.getRemakeApply());
             nddVo.setTntfCtypeChar5(nlVo.getTntfCtypeChar5());
             nddVo.setTntfCtypeCode(nlVo.getTntfCtypeCode());
+//            nddVo.setCApprovalLevel(nlVo.getCapprovalLevel());
             if(nlVo.getNtfapprover().indexOf(",")>-1){
                 nddVo.setNtfapprover(nlVo.getNtfapprover().split(","));
+            }else if(!StrUtil.hasEmpty(nlVo.getNtfapprover())){
+                String[] str = {nlVo.getNtfapprover()};
+                nddVo.setNtfapprover(str);
             }
             nddVo.setAllCancellation(nlVo.getAllCancellation());
             nddVo.setTntfNtimezoneOpen(nlVo.getTntfNtimezoneOpen());
@@ -327,7 +331,7 @@ public class TmgNotificationBean {
                 notificationDetailVo.getTntfDcancel(), selectBackLimit));
 
         notificationDetailVo.setCheckApprovelLevel(hasCheckApprovelLevel(TmgUtil.getSysdate(),TmgUtil.getSysdate(),notificationDetailVo.getTntfCemployeeid()
-        ,notificationDetailVo.getApprovelLevel(),psDBBean.getSiteId()));
+        ,notificationDetailVo.getCapprovalLevel(),psDBBean.getSiteId()));
 
         Boolean match =false;
         if (psDBBean.getUserCode() == null || notificationDetailVo.getTntfCalteremployeeid() == null) {

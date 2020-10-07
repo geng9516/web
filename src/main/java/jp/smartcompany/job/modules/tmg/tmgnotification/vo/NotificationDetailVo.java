@@ -127,6 +127,8 @@ public class NotificationDetailVo {
     // 53 役職
     private String postid;
 
+    private String capprovalLevel;
+
     //  申請区分略称を取得
     private String ntfName;
     //  添付ファイル
@@ -141,4 +143,5 @@ public class NotificationDetailVo {
     private boolean checkApprovelLevel;
     // 申請者が本人の場合のみ取下が可能
     private boolean isMatchUserId;
+
 }

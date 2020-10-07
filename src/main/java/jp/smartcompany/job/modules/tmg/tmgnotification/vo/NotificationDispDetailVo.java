@@ -47,7 +47,7 @@ public class NotificationDispDetailVo {
     private String remakeApply;
     /**16site 显示*/
     private String tntfCtypeChar5;
-
+//    private String cApprovalLevel;
     /**18 typeId*/
     private String tntfCtypeCode;
     /**20 次の承認者*/
