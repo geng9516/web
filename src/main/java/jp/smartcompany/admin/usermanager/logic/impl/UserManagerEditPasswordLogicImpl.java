@@ -4,15 +4,19 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.map.MapUtil;
 import jp.smartcompany.admin.usermanager.dto.ChangePasswordDTO;
 import jp.smartcompany.admin.usermanager.dto.UserManagerDTO;
+import jp.smartcompany.admin.usermanager.form.UserManagerEditPasswordForm;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditCommonLogic;
 import jp.smartcompany.admin.usermanager.logic.UserManagerEditPasswordLogic;
+import jp.smartcompany.boot.common.GlobalException;
 import jp.smartcompany.boot.util.ScCacheUtil;
+import jp.smartcompany.boot.util.SecurityUtil;
 import jp.smartcompany.boot.util.SysUtil;
 import jp.smartcompany.framework.util.PsSearchCompanyUtil;
 import jp.smartcompany.job.modules.core.service.IMastAccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Map;
@@ -34,9 +38,9 @@ public class UserManagerEditPasswordLogicImpl implements UserManagerEditPassword
     @Override
     public Map<String,Object> showChangePassword(ChangePasswordDTO changePasswordDTO) {
         //システムプロパティ設定
-        this.passwordMinLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
-        this.passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
-        this.changeLimitCount = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_CHANGE_PW_LIMITATION_COUNT));
+        passwordMinLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
+        passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
+        changeLimitCount = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_CHANGE_PW_LIMITATION_COUNT));
         String custId = "01";
         String language = "ja";
         Date now = DateUtil.date();
@@ -55,6 +59,24 @@ public class UserManagerEditPasswordLogicImpl implements UserManagerEditPassword
                 .put("changeLimitCount",changeLimitCount)
                 .put("userList",userList)
         .build();
+    }
+
+    @Override
+    @Transactional(rollbackFor = GlobalException.class)
+    public Map<String,String> changePassword(UserManagerEditPasswordForm form) {
+        String customerId = "01";
+        passwordMaxLen = Integer.parseInt(cacheUtil.getSystemProperty(UserManagerEditCommonLogic.PROP_PW_MAX_LEN));
+        String userId = SecurityUtil.getUserId();
+        String language = "ja";
+        return userManagerEditCommonLogic.updatePassword(
+          customerId,
+          userId,
+          language,
+          form.getUserIds(),
+          form.getPasswordType(),
+          form.getPassword(),
+          form.getForceChangePassword()
+        );
     }
 
 }
