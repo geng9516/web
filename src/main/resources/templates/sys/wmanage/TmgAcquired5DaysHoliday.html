@@ -674,6 +674,12 @@
             async getTableData() {
                 this.dataLoading = true
                 this.tableData = []
+
+                if (this.query.hidSelectTab == '1'){
+                    this.deptName = '職員により検索中'
+                    this.query.txtUserCode = null
+                }
+
                 const { data } = await this.http.get('sys/tmgacquired5daysholiday/list', this.query)
                 if(data.length>0){
                     let b = data.map((e,i) => {
@@ -786,11 +792,6 @@
                     });
                 }
                 this.isSearchHistory = false
-                console.log("this.query.hidSelectTab === '1'")
-                console.log(this.query.hidSelectTab)
-                if (this.query.hidSelectTab == '1'){
-                    this.deptName = '職員により検索中'
-                }
             },
             async getOrgTree(refreshDept) {
                 this.empDeptLoading = true
@@ -824,7 +825,6 @@
                 }
             }),
             async getSearchTableData() {
-                this.deptName = '職員により検索中'
                 this.query.hidSelectTab = '1'
                 this.query.hidSearchItems = this.referListObject.hidSearchItems
                 this.query.hidSearchCondition = this.referListObject.hidSearchCondition
@@ -877,9 +877,6 @@
                 //よって、二回目クリックすると、何もしない
                 if (!e[0]) return
 
-                //ツリーを選択するの場合、0で設定する
-                // this.query.hidSelectTab='0'
-
                 this.deptDrawShow = false
                 this.query.txtAction = 'ACT_DISP'
                 this.deptName = e[0].secnic
@@ -897,6 +894,8 @@
                     this.updateAcquired5DaysVO.txtYear = Utils.formatDate(this.referListObject.txtTmgReferListTreeViewRecordDate, 'yyyy')
                 }
                 this.yearShow = true
+
+                //ツリーを選択するの場合、0で設定する
                 this.query.hidSelectTab = '0'
                 await this.getTableData()
 
@@ -1275,12 +1274,12 @@
                 this.query.hidSearchData = [[${ session.hidSearchData }]]
 
                 this.referListObject.hidSelectTab = [[${ session.hidSelectTab }]]
-                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]]
-                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]]
+                this.referListObject.hidSearchItems = [[${ session.hidSearchItems }]] || 'EMPLOYEEID'
+                this.referListObject.hidSearchCondition = [[${ session.hidSearchCondition }]] || 'BROADMATCH'
                 this.referListObject.hidSearchData = [[${ session.hidSearchData }]]
 
                 this.targetAdminSection = '',
-                    this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
+                this.targetAdminSection = [[${ session.txtTmgReferListTreeViewAdminTargetSection }]]
                 this.loginDesignationSection = [[${ session.psSession.loginDesignation[0].section }]]
                 //　初回管理サイトの画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
                 // １．ログインユーザが本人所属部署の管理権限がある場合、ログインユーザの所属部署をデフォルト所属とする。
