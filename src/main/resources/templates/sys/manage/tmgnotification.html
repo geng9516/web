@@ -247,16 +247,22 @@
 
 
                 <form-item label="承認者コメント"
-                           v-if="hasAuthority && (detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 )">
+                           v-if="isPerm">
                     <i-input class="tl" type="textarea" :maxlength="100" placeholder="文字の長さは100文字以内になっております。"
                              style="border-radius: 5px; white-space: pre-line;"
                              v-model="detailsData.tntfCbosscomment"></i-input>
                 </form-item>
 
-                <form-item label="承認者コメント" v-else>
+                <form-item label="承認者コメント" v-if="!isPerm">
                     <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCbosscomment }}</span>
                 </form-item>
-
+                <form-item label="取消者コメント" v-if="isCancel">
+                    <i-input class="tl" type="textarea" style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCcancelcomment"
+                             :maxlength="100" placeholder="文字の長さは100文字以内になっております。"></i-input>
+                </form-item>
+                <form-item label="取消者コメント" v-if="detailsStatus.indexOf('3') > -1 && detailsData.tntfCcancelcomment">
+                    <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCcancelcomment }}</span>
+                </form-item>
                 <form-item label="添付ファイル"
                            v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
             <span class="input-like-span" style="border-radius: 5px;">
@@ -1330,7 +1336,7 @@
                 // comment
                 query.owncomment = this.detailsData.tntfCowncomment
                 query.bosscomment = this.detailsData.tntfCbosscomment
-                //query.cancelcomment = this.detailsData.tntfCcancelcomment
+                query.cancelcomment = this.detailsData.tntfCcancelcomment
                 // 起算日
                 query.txtPeriod = this.detailsData.tntfDperiodDate
 
