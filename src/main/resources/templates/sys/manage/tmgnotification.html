@@ -31,7 +31,7 @@
                          @on-change="handleDatePicker">
             </date-picker>
             <!-- 共通組織図画面 start-->
-          <span style="display:flex;width: calc(15% + 200px);">
+            <span style="display:flex;width: calc(15% + 200px);">
           <span class="label">所属</span>
           <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
             <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}
@@ -41,58 +41,31 @@
           ​
           <Drawer class="tc" placement="right" width="700" :closable="false"
                   :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-            <Tabs v-model="currentTab" :animated="false" @on-click="currentTabChanged">
-              <tab-pane label="ツリー" name="organisationTree">
-                <div class="titlenorm mb5">
-                  <Icon type="logo-buffer"></Icon>
-                  所属
-                </div>
-                <Row class="tl mb5">
-                  <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                  <i-col span="7" class="no-border-radius">
-                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
-                                 :options="startLimit" :clearable="false"
-                                 format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
-                  </i-col>
-                  <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-                  <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                    <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
-                      <i-option value="all">全て</i-option>
-                      <i-option value="group">グループごとに</i-option>
-                      <i-option value="section">部署ごとに</i-option>
-                    </i-select>
-                  </div>
+            <div class="titlenorm mb5">
+              <Icon type="logo-buffer"></Icon>
+              所属
+            </div>
+            <Row class="tl mb5">
+              <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+              <i-col span="7" class="no-border-radius">
+                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                             :options="startLimit" :clearable="false"
+                             format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+              </i-col>
+              <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
+              <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
+                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                  <i-option value="all">全て</i-option>
+                  <i-option value="group">グループごとに</i-option>
+                  <i-option value="section">部署ごとに</i-option>
+                </i-select>
+              </div>
             </Row>
             <div style="position: relative;">
               <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
                     :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
               <Spin size="large" fix v-if="empDeptLoading"></Spin>
             </div>
-            </tab-pane>
-               <tab-pane label="検索" name="organisationSearch">
-                    <Row class="tl mb2" :gutter="8">
-                        <i-col span="15">
-                            <i-input v-model="referListObject.hidSearchData" @on-search="handleClickEmpLeafTree"
-                                     class="mar mb5 like-select" search enter-button placeholder="検索">
-                                <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px"
-                                          placeholder="項目" transfer>
-                                    <i-option v-for="(item,i) of searchTypesList" :value="item.value">
-                                        {{ item.name }}</i-option>
-                                </i-select>
-                                <i-select v-model="referListObject.hidSearchCondition"  slot="append"
-                                          style="width: 108px" placeholder="条件" transfer>
-                                    <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
-                                        {{ item.name }}</i-option>
-                                </i-select>
-                            </i-input>
-                        </i-col>
-                        <i-col span="8" class="no-border-radius">
-                            <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading"
-                                      style="width: 100px" @click="handleClickEmpLeafTree">検索</i-button>
-                        </i-col>
-                    </Row>
-               </tab-pane>
-            </Tabs>
           </Drawer>
         </span>
             <!-- 共通組織図画面 end-->
