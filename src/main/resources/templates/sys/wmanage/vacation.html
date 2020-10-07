@@ -862,8 +862,8 @@
                     return false;
                 } else if (nDHSum > 40) {
                     // MSG_OVER_SUM_DAYHOURS
-                    this.clear()
                     this.$Notice.warning({desc: "合計付与日数と合計付与時間数の合計は40を超えないようにして下さい。 "})
+                    this.clear()
                     return false
                 }
                 return true
