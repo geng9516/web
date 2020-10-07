@@ -24,9 +24,9 @@
             <div class="btnbox">
                 <span style="flex:1"></span>
               <i-button type="primary" icon="md-create" :loading="loading">パスワード変更</i-button>
-              <i-button type="success" icon="md-create" :loading="loading">利用開始</i-button>
-              <i-button type="error" icon="md-create" :loading="loading">利用終了</i-button>
-              <i-button type="primary" icon="md-create" :loading="loading">ロックアウト解除</i-button>
+              <i-button type="success" icon="md-checkmark" :loading="loading">利用開始</i-button>
+              <i-button type="error" icon="md-close" :loading="loading">利用終了</i-button>
+              <i-button type="primary" icon="md-unlock" :loading="loading">ロックアウト解除</i-button>
               <i-button type="primary" ghost icon="md-create" :loading="loading">パスワードポリシー設定へ</i-button>
             </div>
           </div>
@@ -60,7 +60,7 @@
                 :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
               </div>
           </div>
-          <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''" :row-class-name="() => 'select-col'"
+          <i-table border :class="tableHeadFixed ? 'table-head-fixed' : ''" :row-class-name="rowClassName"
             :columns="columns" :disabled-hover="true" :data="tableData" :loading="loading" no-data-text=""
             ref="table">
             <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
@@ -174,6 +174,14 @@
               this.loading = true
               try {
                 const { data } = await this.http.get('sys/usermanager/search', OPTS)
+                if(data.list.length === 0) {
+                    this.$Message.error({
+                      background: true,
+                      closable: true,
+                      duration: 6.5,
+                      content: '指定した条件に職員はありません。'
+                    })
+                }
                 this.tableData = data.list
                 this.pageValue.amount = data.totalCount
               } catch (error) {
@@ -207,6 +215,14 @@
               this.opts.page = e
               this.pageValue.curPage = e
               this.getTableData()
+            },
+            rowClassName(row, index){
+              if(row.status) {
+                console.log(row.status)
+                return 'highlight select-col'
+              } else {
+                return 'select-col'
+              }
             },
             handleScroll: Throttle(function (e) {
               this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop

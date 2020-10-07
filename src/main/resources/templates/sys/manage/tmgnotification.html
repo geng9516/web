@@ -10,27 +10,28 @@
 <!-- 菜单导航栏 -->
 <div th:replace="layout/sider"></div>
 <main class="content restapplyconfirm-warp" ref="layout">
-  <div class="content_head">
-    <div class="header">
-      <div class="title1">
-        <h1>
-          <Icon type="i-emeer colored"></Icon>
-          {{ `休暇・休業承認` }}
-        </h1>
-      </div>
-      <div class="btnbox" v-if="hasAuthority">
-        <span style="flex:1"></span>
-        <i-button type="primary" ghost icon="md-nutrition" @click="agencyApplyShow = true">代理申請
-        </i-button>
-        <i-button type="primary" icon="md-done-all" @click="confirm" :loading="confirmLoading">一括承認</i-button>
-      </div>
-    </div>
-    <div class="searchwrap">
-      <span class="label">年</span>
-      <date-picker type="year" format="yyyy年" class="mr15" :value="curYear" :options="startLimit" @on-change="handleDatePicker">
-      </date-picker>
-      <!-- 共通組織図画面 start-->
-      <span style="display:flex;width: calc(15% + 200px);">
+    <div class="content_head">
+        <div class="header">
+            <div class="title1">
+                <h1>
+                    <Icon type="i-emeer colored"></Icon>
+                    {{ `休暇・休業承認` }}
+                </h1>
+            </div>
+            <div class="btnbox" v-if="hasAuthority">
+                <span style="flex:1"></span>
+                <i-button type="primary" ghost icon="md-nutrition" @click="agencyApplyShow = true">代理申請
+                </i-button>
+                <i-button type="primary" icon="md-done-all" @click="confirm" :loading="confirmLoading">一括承認</i-button>
+            </div>
+        </div>
+        <div class="searchwrap">
+            <span class="label">年</span>
+            <date-picker type="year" format="yyyy年" class="mr15" :value="curYear" :options="startLimit"
+                         @on-change="handleDatePicker">
+            </date-picker>
+            <!-- 共通組織図画面 start-->
+            <span style="display:flex;width: calc(15% + 200px);">
           <span class="label">所属</span>
           <i-button v-on:click.native="deptDrawShow = true" class="input-like-span dept-select">
             <Tooltip trigger="hover" :theme="toolTipTheme()" transfer>{{deptName}}
@@ -40,237 +41,232 @@
           ​
           <Drawer class="tc" placement="right" width="700" :closable="false"
                   :mask-closable="!isSearchHistory" v-model="deptDrawShow">
-            <Tabs v-model="currentTab" :animated="false" @on-click="currentTabChanged">
-              <tab-pane label="ツリー" name="organisationTree">
-                <div class="titlenorm mb5">
-                  <Icon type="logo-buffer"></Icon>
-                  所属
-                </div>
-                <Row class="tl mb5">
-                  <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-                  <i-col span="7" class="no-border-radius">
-                    <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :options="startLimit" :clearable="false"
-                                 format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
-                  </i-col>
-                  <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-                  <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
-                    <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange(false)"  transfer>
-                      <i-option value="all">全て</i-option>
-                      <i-option value="group">グループごとに</i-option>
-                      <i-option value="section">部署ごとに</i-option>
-                    </i-select>
-                  </div>
-                </Row>
-                <div style="position: relative;">
-                  <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
-                        :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
-                  <Spin size="large" fix v-if="empDeptLoading"></Spin>
-                </div>
-               </tab-pane>
-               <tab-pane label="検索" name="organisationSearch">
-                                <Row class="tl mb2" :gutter="8">
-                                    <i-col span="15">
-                                        <i-input v-model="referListObject.hidSearchData" @on-search="handleClickEmpLeafTree"
-                                                 class="mar mb5 like-select" search enter-button placeholder="検索">
-                                            <i-select v-model="referListObject.hidSearchItems" slot="prepend" style="width: 108px"
-                                                      placeholder="項目" transfer>
-                                                <i-option v-for="(item,i) of searchTypesList" :value="item.value">
-                                                    {{ item.name }}</i-option>
-                                            </i-select>
-                                            <i-select v-model="referListObject.hidSearchCondition"  slot="append"
-                                                      style="width: 108px" placeholder="条件" transfer>
-                                                <i-option v-for="(item,i) of searchConditionsList" :value="item.value">
-                                                    {{ item.name }}</i-option>
-                                            </i-select>
-                                        </i-input>
-                                    </i-col>
-                                    <i-col span="8" class="no-border-radius">
-                                        <i-button long type="primary" icon="md-search" ghost :loading="empDeptLoading"
-                                                  style="width: 100px" @click="handleClickEmpLeafTree">検索</i-button>
-                                    </i-col>
-                                </Row>
-                      </tab-pane>
-                </Tabs>
+            <div class="titlenorm mb5">
+              <Icon type="logo-buffer"></Icon>
+              所属
+            </div>
+            <Row class="tl mb5">
+              <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+              <i-col span="7" class="no-border-radius">
+                <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日"
+                             :options="startLimit" :clearable="false"
+                             format="yyyy/MM/dd" ref="datePicker" @on-change="handleDeptDateChange"></date-picker>
+              </i-col>
+              <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
+              <div style="display: inline-block;width: 32.5%;" class="no-border-radius">
+                <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                  <i-option value="all">全て</i-option>
+                  <i-option value="group">グループごとに</i-option>
+                  <i-option value="section">部署ごとに</i-option>
+                </i-select>
+              </div>
+            </Row>
+            <div style="position: relative;">
+              <Tree class="tree mt2" :data="treeData" v-on:on-select-change="handleClickLeaf" ref="tree"
+                    :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
+              <Spin size="large" fix v-if="empDeptLoading"></Spin>
+            </div>
           </Drawer>
         </span>
-      <!-- 共通組織図画面 end-->
-    </div>
-  </div>
-  <div class="content_body">
-    <div class="table-top">
-      <Row :gutter="16">
-        <i-col span="20" offset="4" class="tr">
-          休暇区分：
-          <i-select v-model="opts.ntfTypeId" editable filterable clearable @on-change="handleRestFilter"
-                    class="mr15 width20" ref="select" style="display: inline-block" transfer>
-            <i-option value="全て">全て</i-option>
-            <option-group v-for="(item, i) of restTypeListForReview" :key="i" :label="item.groupName">
-              <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName"></i-option>
-            </option-group>
-          </i-select>
-          社員：
-          <i-select v-model="opts.serchEmpId" class="mr15 width20" @on-change="getTableData(false, true)"
-                    style="display: inline-block" transfer>
-            <i-option value="全て" label="全て"></i-option>
-            <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
-          </i-select>
-          状態：
-          <i-select v-model="opts.statusFlg" class="mr15 width20" @on-change="getTableData()"
-                    style="display: inline-block" transfer>
-            <i-option label="全て" :value="0"></i-option>
-            <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName" :value="item.stutasId">
-            </i-option>
-          </i-select>
-          <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
-                :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
-        </i-col>
-      </Row>
-    </div>
-    <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
-             :data="tableData" :loading="loading" ref="table" :row-class-name="() => 'select-col'">
-      <template slot-scope="{ row }" slot="dateList">
-        <span>{{row.tntfDbegin === row.tntfDend ? row.tntfDbegin :  `${row.tntfDbegin} ～ ${row.tntfDend}`}}</span>
-      </template>
-
-      <template slot-scope="{ row }" slot="otherOne">
-        <span v-if="row.tntfCemployeeid !== row.tntfCalteremployeeid" class="confirm-sytle ing">代</span>
-      </template>
-
-      <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover">
-        <Tooltip placement="bottom" class="width100" transfer>
-          <span style="white-space: normal;" slot="content">{{ row.ntfapprover.join(', ') }}</span>
-          <span class="ivu-table-cell-tooltip-content">{{ row.ntfapprover.join(', ') }}</span>
-        </Tooltip>
-      </template>
-
-      <template slot-scope="{ row }" slot="more">
-        <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)"/>詳細
-      </template>
-
-      <template slot-scope="{ row }" slot="status">
-        <span v-if="row.tntfCstatusflg.indexOf('0') > -1" class="confirm-sytle">取</span>
-        <span v-if="row.tntfCstatusflg.indexOf('2') > -1" class="confirm-sytle ing">待</span>
-        <span v-if="row.tntfCstatusflg.indexOf('3') > -1" class="confirm-sytle undo">差</span>
-        <span v-if="row.tntfCstatusflg.indexOf('5') > -1" class="confirm-sytle">済</span>
-        <span v-if="row.tntfCstatusflg.indexOf('9') > -1" class="confirm-sytle undo">エ</span>
-      </template>
-    </i-table>
-    <!-- 详细以及承认申请的panel start -->
-    <Drawer class="tc" title="休暇・休業承認" placement="right" width="700" :closable="false" v-model="detailDrawShow">
-      <Row :gutter="10">
-        <i-col span="8">
-          <div class="label" style="padding:1px 0">所属</div>
-          <div class="person-info">{{ detailsData.hdCsectionidFk }}</div>
-        </i-col>
-        <i-col span="8">
-          <div class="label" style="padding:1px 0">氏名</div>
-          <div class="person-info">{{ detailsData.tntfCemployeeidName }}</div>
-        </i-col>
-        <i-col span="8">
-          <div class="label" style="padding:1px 0">種別</div>
-          <div class="person-info">{{ detailsData.temCworktypeid }}</div>
-        </i-col>
-      </Row>
-      <div style="position: relative;min-height: 100px;">
-        <div v-for="(item, i) of restInfoList" :key="i">
-          <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
-          <Row class="ft13 mb5 mt10">
-            <i-col span="12">
-              <p class="label mr1">期間</p>
-            </i-col>
-            <i-col span="6">
-              <p class="label mr1">残日数</p>
-            </i-col>
-            <i-col span="6">
-              <p class="label">残時間数</p>
-            </i-col>
-          </Row>
-          <Row class="mb5 ft13 border">
-            <i-col span="12" class="mb5">
-              <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeRange">{{ e }}</p>
-            </i-col>
-            <i-col span="6">
-              <p :class="j === item.dayList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.dayList">{{ e }}</p>
-            </i-col>
-            <i-col span="6">
-              <p :class="j === item.timeList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeList">{{ e }}</p>
-            </i-col>
-          </Row>
+            <!-- 共通組織図画面 end-->
         </div>
-        <Spin size="large" fix v-if="restInfoLoading"></Spin>
-      </div>
-      <div class="tr" v-if="hasAuthority">
-        <i-button type="error" class="mr15 mb10" ghost @click="denyByPerson" v-if="detailsStatus.indexOf('2') > -1">
-          差戻</i-button>
-        <i-button type="primary" class="mb10" ghost @click="confirmByPerson" v-if="detailsStatus.indexOf('2') > -1">承認
-        </i-button>
-        <i-button type="primary" class="mb10" ghost @click="cancelByPerson" v-if="detailsStatus.indexOf('5') > -1">取消
-        </i-button>
-      </div>
-      <div class="titlenorm mb10" style="font-size:15px" v-show="tableData.length > 0">
-        <Icon type="logo-buffer"></Icon>
-        申請明細
-      </div>
-      <i-form label-position="right" :label-width="100" class="classical">
-        <form-item label="申請区分">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCtypeName }}</span>
-        </form-item>
-        <!--          <form-item label="最終決裁レベル">-->
-        <!--            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>-->
-        <!--          </form-item>-->
-        <form-item label="対象期間-日">
-          <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyDayShow(detailsData) }}</span>
-        </form-item>
-        <form-item label="対象期間-時" v-if="handleApplyHourShow(detailsData)">
-          <span class="input-like-span" style="border-radius: 5px;">{{ handleApplyHourShow(detailsData) }}</span>
-        </form-item>
-        <form-item label="曜日">
+    </div>
+    <div class="content_body">
+        <div class="table-top">
+            <Row :gutter="16">
+                <i-col span="20" offset="4" class="tr">
+                    休暇区分：
+                    <i-select v-model="opts.ntfTypeId" editable filterable clearable @on-change="handleRestFilter"
+                              class="mr15 width20" ref="select" style="display: inline-block" transfer>
+                        <i-option value="全て">全て</i-option>
+                        <option-group v-for="(item, i) of restTypeListForReview" :key="i" :label="item.groupName">
+                            <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i"
+                                      :label="e.ntfName"></i-option>
+                        </option-group>
+                    </i-select>
+                    社員：
+                    <i-select v-model="opts.serchEmpId" class="mr15 width20" @on-change="getTableData(false, true)"
+                              style="display: inline-block" transfer>
+                        <i-option value="全て" label="全て"></i-option>
+                        <i-option v-for="(item, i) of empList" :value="item.empid" :label="item.empname"></i-option>
+                    </i-select>
+                    状態：
+                    <i-select v-model="opts.statusFlg" class="mr15 width20" @on-change="getTableData()"
+                              style="display: inline-block" transfer>
+                        <i-option label="全て" :value="0"></i-option>
+                        <i-option v-for="(item, i) of statusList" :key="i" :label="item.stutasName"
+                                  :value="item.stutasId">
+                        </i-option>
+                    </i-select>
+                    <Page :total="pageValue.amount" :current="pageValue.curPage" show-total style="display: inline"
+                          :page-size="pageValue.curSize" @on-change="pageChange" ref="Page" simple/>
+                </i-col>
+            </Row>
+        </div>
+        <i-table :class="tableHeadFixed ? 'table-head-fixed' : ''" border :columns="columns" :disabled-hover="true"
+                 :data="tableData" :loading="loading" ref="table" :row-class-name="() => 'select-col'">
+            <template slot-scope="{ row }" slot="dateList">
+                <span>{{row.tntfDbegin === row.tntfDend ? row.tntfDbegin :  `${row.tntfDbegin} ～ ${row.tntfDend}`}}</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="otherOne">
+                <span v-if="row.tntfCemployeeid !== row.tntfCalteremployeeid" class="confirm-sytle ing">代</span>
+            </template>
+
+            <template slot-scope="{ row }" slot="nextAdmin" v-if="row.ntfapprover">
+                <Tooltip placement="bottom" class="width100" transfer>
+                    <span style="white-space: normal;" slot="content">{{ row.ntfapprover.join(', ') }}</span>
+                    <span class="ivu-table-cell-tooltip-content">{{ row.ntfapprover.join(', ') }}</span>
+                </Tooltip>
+            </template>
+
+            <template slot-scope="{ row }" slot="more">
+                <i-button class="width100" type="success" ghost size="small" @click="showDetails(row)"/>
+                詳細
+            </template>
+
+            <template slot-scope="{ row }" slot="status">
+                <span v-if="row.tntfCstatusflg.indexOf('0') > -1" class="confirm-sytle">取</span>
+                <span v-if="row.tntfCstatusflg.indexOf('2') > -1" class="confirm-sytle ing">待</span>
+                <span v-if="row.tntfCstatusflg.indexOf('3') > -1" class="confirm-sytle undo">差</span>
+                <span v-if="row.tntfCstatusflg.indexOf('5') > -1" class="confirm-sytle">済</span>
+                <span v-if="row.tntfCstatusflg.indexOf('9') > -1" class="confirm-sytle undo">エ</span>
+            </template>
+        </i-table>
+        <!-- 详细以及承认申请的panel start -->
+        <Drawer class="tc" title="休暇・休業承認" placement="right" width="700" :closable="false" v-model="detailDrawShow">
+            <Row :gutter="10">
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">所属</div>
+                    <div class="person-info">{{ detailsData.hdCsectionidFk }}</div>
+                </i-col>
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">氏名</div>
+                    <div class="person-info">{{ detailsData.tntfCemployeeidName }}</div>
+                </i-col>
+                <i-col span="8">
+                    <div class="label" style="padding:1px 0">種別</div>
+                    <div class="person-info">{{ detailsData.temCworktypeid }}</div>
+                </i-col>
+            </Row>
+            <div style="position: relative;min-height: 100px;">
+                <div v-for="(item, i) of restInfoList" :key="i">
+                    <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
+                    <Row class="ft13 mb5 mt10">
+                        <i-col span="12">
+                            <p class="label mr1">期間</p>
+                        </i-col>
+                        <i-col span="6">
+                            <p class="label mr1">残日数</p>
+                        </i-col>
+                        <i-col span="6">
+                            <p class="label">残時間数</p>
+                        </i-col>
+                    </Row>
+                    <Row class="mb5 ft13 border">
+                        <i-col span="12" class="mb5">
+                            <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeRange">{{
+                                e }}</p>
+                        </i-col>
+                        <i-col span="6">
+                            <p :class="j === item.dayList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.dayList">{{ e
+                                }}</p>
+                        </i-col>
+                        <i-col span="6">
+                            <p :class="j === item.timeList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeList">{{ e
+                                }}</p>
+                        </i-col>
+                    </Row>
+                </div>
+                <Spin size="large" fix v-if="restInfoLoading"></Spin>
+            </div>
+            <div class="tr">
+                <i-button type="error" class="mr15 mb10" ghost @click="dropByPerson" v-if="isDrop">取下
+                </i-button>
+                <i-button type="error" class="mr15 mb10" ghost @click="denyByPerson" v-if="isPerm">差戻
+                </i-button>
+                <i-button type="primary" class="mb10" ghost @click="confirmByPerson" v-if="isPerm">承認
+                </i-button>
+                <i-button type="primary" class="mb10" ghost @click="cancelByPerson" v-if="isCancel">取消
+                </i-button>
+            </div>
+            <div class="titlenorm mb10" style="font-size:15px" v-show="tableData.length > 0">
+                <Icon type="logo-buffer"></Icon>
+                申請明細
+            </div>
+            <i-form label-position="right" :label-width="100" class="classical">
+                <form-item label="申請区分">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCtypeName }}</span>
+                </form-item>
+                <!--          <form-item label="最終決裁レベル">-->
+                <!--            <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.approvelLevel }}</span>-->
+                <!--          </form-item>-->
+                <form-item label="対象期間-日">
+                    <span class="input-like-span"
+                          style="border-radius: 5px;">{{ handleApplyDayShow(detailsData) }}</span>
+                </form-item>
+                <form-item label="対象期間-時" v-if="handleApplyHourShow(detailsData)">
+                    <span class="input-like-span"
+                          style="border-radius: 5px;">{{ handleApplyHourShow(detailsData) }}</span>
+                </form-item>
+                <form-item label="曜日">
             <span class="input-like-span" v-if="detailsData.tntfNnoreserved === 1"
                   style="border-radius: 5px;">指定なし</span>
-          <span class="input-like-span" v-else style="border-radius: 5px;">{{ handleWeekShow(detailsData) }}</span>
-        </form-item>
-        <form-item label="傷病" v-if="detailsData.tntfCsickName">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCsickName }}</span>
-        </form-item>
-        <form-item label="起算日" v-if="detailsData.tntfDperiodDate">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDperiodDate }}</span>
-        </form-item>
-        <form-item label="加算日数" v-if="detailsData.tntfNuapperAddition">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfNuapperAddition }}</span>
-        </form-item>
-        <form-item label="氏名" v-if="detailsData.tntfCkanjiname">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCkanjiname }}</span>
-        </form-item>
-        <form-item label="続柄" v-if="detailsData.tntfCrelation">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCrelation }}</span>
-        </form-item>
-        <form-item label="対象の人数" v-if="detailsData.tntfNnumberOfTarget">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfNnumberOfTarget }}</span>
-        </form-item>
-        <form-item label="生年月日" v-if="detailsData.tntfDdateofbirth">
-          <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDdateofbirth }}</span>
-        </form-item>
-        <form-item label="申請事由等">
-          <span class="input-like-span"  style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
-        </form-item>
+                    <span class="input-like-span" v-else
+                          style="border-radius: 5px;">{{ handleWeekShow(detailsData) }}</span>
+                </form-item>
+                <form-item label="傷病" v-if="detailsData.tntfCsickName">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCsickName }}</span>
+                </form-item>
+                <form-item label="起算日" v-if="detailsData.tntfDperiodDate">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDperiodDate }}</span>
+                </form-item>
+                <form-item label="加算日数" v-if="detailsData.tntfNuapperAddition">
+                    <span class="input-like-span"
+                          style="border-radius: 5px;">{{ detailsData.tntfNuapperAddition }}</span>
+                </form-item>
+                <form-item label="氏名" v-if="detailsData.tntfCkanjiname">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCkanjiname }}</span>
+                </form-item>
+                <form-item label="続柄" v-if="detailsData.tntfCrelation">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfCrelation }}</span>
+                </form-item>
+                <form-item label="対象の人数" v-if="detailsData.tntfNnumberOfTarget">
+                    <span class="input-like-span"
+                          style="border-radius: 5px;">{{ detailsData.tntfNnumberOfTarget }}</span>
+                </form-item>
+                <form-item label="生年月日" v-if="detailsData.tntfDdateofbirth">
+                    <span class="input-like-span" style="border-radius: 5px;">{{ detailsData.tntfDdateofbirth }}</span>
+                </form-item>
+                <form-item label="承認者" v-if="detailsData.tntfCboss">
+                    <span class="input-like-span" style="border-radius: 5px; white-space: pre-line;">{{ `${detailsData.tntfCbossName}(${detailsData.tntfDboss})` }}</span>
+                </form-item>
+                <form-item label="申請事由等">
+                    <span class="input-like-span" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCowncomment }}</span>
+                </form-item>
 
-        <form-item label="承認者コメント" v-if="hasAuthority && (detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 )">
-          <i-input class="tl" type="textarea" :maxlength="100"  placeholder="文字の長さは100文字以内になっております。"  style="border-radius: 5px; white-space: pre-line;" v-model="detailsData.tntfCbosscomment"></i-input>
-        </form-item>
 
-        <form-item label="承認者コメント" v-else>
-          <span class="input-like-span tl"  style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCbosscomment }}</span>
-        </form-item>
+                <form-item label="承認者コメント"
+                           v-if="hasAuthority && (detailsStatus.indexOf('2') > -1 || detailsStatus.indexOf('5') > -1 )">
+                    <i-input class="tl" type="textarea" :maxlength="100" placeholder="文字の長さは100文字以内になっております。"
+                             style="border-radius: 5px; white-space: pre-line;"
+                             v-model="detailsData.tntfCbosscomment"></i-input>
+                </form-item>
 
-        <form-item label="添付ファイル"
-                   v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
+                <form-item label="承認者コメント" v-else>
+                    <span class="input-like-span tl" style="border-radius: 5px; white-space: pre-line;">{{ detailsData.tntfCbosscomment }}</span>
+                </form-item>
+
+                <form-item label="添付ファイル"
+                           v-if="detailsData.tmgNtfAttachedfileDoList && detailsData.tmgNtfAttachedfileDoList.length > 0">
             <span class="input-like-span" style="border-radius: 5px;">
               <i-button v-for="(item, i) of detailsData.tmgNtfAttachedfileDoList" :key="i"
-                        @click="()=>window.open(`http:////${item.tnafFilepath.slice(2)}`, '_blank')" class="no-border-radius mr5" type="primary"
+                        @click="()=>window.open(`http:////${item.tnafFilepath.slice(2)}`, '_blank')"
+                        class="no-border-radius mr5" type="primary"
                         size="small" ghost>{{ item.tnafCfilename }}</i-button>
             </span>
-        </form-item>
-        <span v-if="detailsData.tmgNtfactionlogDOList && detailsData.tmgNtfactionlogDOList.length > 0">
+                </form-item>
+                <span v-if="detailsData.tmgNtfactionlogDOList && detailsData.tmgNtfactionlogDOList.length > 0">
             <div class="titlenorm mb10 mt10" style="font-size:15px">
               <Icon type="logo-buffer"></Icon>
               更新履歴
@@ -279,192 +275,225 @@
                      :data="detailsData.tmgNtfactionlogDOList">
             </i-table>
           </span>
-        <Spin size="large" fix v-if="detailsLoading"></Spin>
-      </i-form>
-    </Drawer>
-    <!-- 详细以及承认申请的panel end -->
+                <Spin size="large" fix v-if="detailsLoading"></Spin>
+            </i-form>
+        </Drawer>
+        <!-- 详细以及承认申请的panel end -->
 
-    <!-- 代理申请的 -->
-    <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow" @on-close="closeAgentApplyDrawer">
-      <Tabs :value="curTab" :animated="false">
-        <tab-pane label="1. 職員選択" name="name1">
-          <div class="titlenorm mb5">
-            <Icon type="logo-buffer"></Icon>
-            所属
-          </div>
-          <Row class="tl mb5">
-            <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
-            <i-col span="7" class="no-border-radius">
-              <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate" placeholder="基準日" :options="startLimit" transfer
-                           format="yyyy/MM/dd" ref="datePicker" :clearable="false" @on-change="handleDeptDateChange"></date-picker>
-            </i-col>
-            <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
-            <div style="display: inline-block;width: 36.3%;" class="no-border-radius">
-              <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange(true)">
-                <i-option value="all">全て</i-option>
-                <i-option value="group">グループごとに</i-option>
-                <i-option value="section">部署ごとに</i-option>
-              </i-select>
-            </div>
-          </Row>
-          <div style="position: relative;max-height: 500px;overflow-y: scroll;">
-            <Tree class="tree mt2" :data="treeData" @on-select-change="(e) => {handleClickLeaf(e, false)}" ref="tree"
-                  :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
-            <Spin size="large" fix v-if="empDeptLoading"></Spin>
-          </div>
-          <div class="titlenorm mt10 mb5">
-            <Icon type="logo-buffer"></Icon>
-            社員
-          </div>
-          <div style="position: relative;">
-            <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf" empty-text="社員データなし">
-            </Tree>
-            <Spin size="large" fix v-if="emplistLoading"></Spin>
-          </div>
-        </tab-pane>
-        <tab-pane :label="tabPaneLabel" name="name2" :disabled="agencyApplyPanel">
-          <div class="titlenorm mb5">
-            <Icon type="logo-buffer"></Icon>
-            社員情報
-          </div>
-          <div style="position: relative;">
-            <Row :gutter="10">
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">所属</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.section }}</div>
-              </i-col>
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">氏名</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.name }}</div>
-              </i-col>
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">種別</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.worktype }}</div>
-              </i-col>
-            </Row>
-            <Row class="mt5" :gutter="10">
-              <i-col span="8">
-                <div class="label" style="padding:1px 0">あなたの決裁レベル</div>
-                <div class="person-info">{{ applyEmployPersonalInfo.sapprovalLevelName }}</div>
-              </i-col>
-            </Row>
-            <div v-for="(item, i) of applyEmployRestInfo" :key="i">
-              <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
-              <Row class="ft13 mb5 mt10">
-                <i-col span="12">
-                  <p class="label mr1">期間</p>
-                </i-col>
-                <i-col span="6">
-                  <p class="label mr1">残日数</p>
-                </i-col>
-                <i-col span="6">
-                  <p class="label">残時間数</p>
-                </i-col>
-              </Row>
-              <Row class="mb5 ft13 border">
-                <i-col span="12" class="mb5">
-                  <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeRange">{{ e }}
-                  </p>
-                </i-col>
-                <i-col span="6">
-                  <p :class="j === item.dayList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.dayList">{{ e }}</p>
-                </i-col>
-                <i-col span="6">
-                  <p :class="j === item.timeList.length - 1 ? '' : 'mb5'" v-for="(e, j) of item.timeList">{{ e }}</p>
-                </i-col>
-              </Row>
-            </div>
-            <Spin size="large" fix v-if="applyEmployRestInfoLoading"></Spin>
-          </div>
-          <!-- 申请的项目 -->
-          <div class="titlenorm mt10 mb5">
-            <Icon type="logo-buffer"></Icon>
-            代理申請
-          </div>
-          <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
-          <i-form label-position="right" :label-width="120" :rules="ruleValidate" class="classical tl">
-            <form-item label="申請区分" prop="restTypeId">
-              <i-select v-model="restApply.restTypeId" editable filterable clearable @on-change="handleRestType"
-                        class="mb5 no-border-radius" ref="select" transfer>
-                <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
-                  <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i" :label="e.ntfName">
-                  </i-option>
-                </option-group>
-              </i-select>
-            </form-item>
-            <form-item label="最終決裁レベル">
-              <span  class="mb5 input-like-span" >{{approvalLevel}}</span>
-            </form-item>
-            <form-item label="対象期間" v-show="!selectedRestInfo.transfer">
+        <!-- 代理申请的 -->
+        <Drawer class="tc" title="代理申請" placement="right" width="800" v-model="agencyApplyShow"
+                @on-close="closeAgentApplyDrawer">
+            <Tabs :value="curTab" :animated="false">
+                <tab-pane label="1. 職員選択" name="name1">
+                    <div class="titlenorm mb5">
+                        <Icon type="logo-buffer"></Icon>
+                        所属
+                    </div>
+                    <Row class="tl mb5">
+                        <i-col span="4" class="label tc" style="height: 32px;">基準日</i-col>
+                        <i-col span="7" class="no-border-radius">
+                            <date-picker type="date" :value="referListObject.txtTmgReferListTreeViewRecordDate"
+                                         placeholder="基準日" :options="startLimit" transfer
+                                         format="yyyy/MM/dd" ref="datePicker" :clearable="false"
+                                         @on-change="handleDeptDateChange"></date-picker>
+                        </i-col>
+                        <i-col span="4" class="label ml5 tc" style="height: 32px;">ビュー選択</i-col>
+                        <div style="display: inline-block;width: 36.3%;" class="no-border-radius">
+                            <i-select v-model="selectedDeptViewType" @on-change="handleDeptViewTypeChange">
+                                <i-option value="all">全て</i-option>
+                                <i-option value="group">グループごとに</i-option>
+                                <i-option value="section">部署ごとに</i-option>
+                            </i-select>
+                        </div>
+                    </Row>
+                    <div style="position: relative;max-height: 500px;overflow-y: scroll;">
+                        <Tree class="tree mt2" :data="treeData" @on-select-change="(e) => {handleClickLeaf(e, false)}"
+                              ref="tree"
+                              :empty-text="selectedDeptViewType === 'all' ? '全て表示中' : '所属データなし'"></Tree>
+                        <Spin size="large" fix v-if="empDeptLoading"></Spin>
+                    </div>
+                    <div class="titlenorm mt10 mb5">
+                        <Icon type="logo-buffer"></Icon>
+                        社員
+                    </div>
+                    <div style="position: relative;">
+                        <Tree class="tree mt2" :data="empTreeData" @on-select-change="handleClickEmpLeaf"
+                              empty-text="社員データなし">
+                        </Tree>
+                        <Spin size="large" fix v-if="emplistLoading"></Spin>
+                    </div>
+                </tab-pane>
+                <tab-pane :label="tabPaneLabel" name="name2" :disabled="agencyApplyPanel">
+                    <div class="titlenorm mb5">
+                        <Icon type="logo-buffer"></Icon>
+                        社員情報
+                    </div>
+                    <div style="position: relative;">
+                        <Row :gutter="10">
+                            <i-col span="8">
+                                <div class="label" style="padding:1px 0">所属</div>
+                                <div class="person-info">{{ applyEmployPersonalInfo.section }}</div>
+                            </i-col>
+                            <i-col span="8">
+                                <div class="label" style="padding:1px 0">氏名</div>
+                                <div class="person-info">{{ applyEmployPersonalInfo.name }}</div>
+                            </i-col>
+                            <i-col span="8">
+                                <div class="label" style="padding:1px 0">種別</div>
+                                <div class="person-info">{{ applyEmployPersonalInfo.worktype }}</div>
+                            </i-col>
+                        </Row>
+                        <Row class="mt5" :gutter="10">
+                            <i-col span="8">
+                                <div class="label" style="padding:1px 0">あなたの決裁レベル</div>
+                                <div class="person-info">{{ applyEmployPersonalInfo.sapprovalLevelName }}</div>
+                            </i-col>
+                        </Row>
+                        <div v-for="(item, i) of applyEmployRestInfo" :key="i">
+                            <Divider size="small" orientation="left">{{ item.typeName }}</Divider>
+                            <Row class="ft13 mb5 mt10">
+                                <i-col span="12">
+                                    <p class="label mr1">期間</p>
+                                </i-col>
+                                <i-col span="6">
+                                    <p class="label mr1">残日数</p>
+                                </i-col>
+                                <i-col span="6">
+                                    <p class="label">残時間数</p>
+                                </i-col>
+                            </Row>
+                            <Row class="mb5 ft13 border">
+                                <i-col span="12" class="mb5">
+                                    <p :class="j === item.timeRange.length - 1 ? '' : 'mb5'"
+                                       v-for="(e, j) of item.timeRange">{{ e }}
+                                    </p>
+                                </i-col>
+                                <i-col span="6">
+                                    <p :class="j === item.dayList.length - 1 ? '' : 'mb5'"
+                                       v-for="(e, j) of item.dayList">{{ e }}</p>
+                                </i-col>
+                                <i-col span="6">
+                                    <p :class="j === item.timeList.length - 1 ? '' : 'mb5'"
+                                       v-for="(e, j) of item.timeList">{{ e }}</p>
+                                </i-col>
+                            </Row>
+                        </div>
+                        <Spin size="large" fix v-if="applyEmployRestInfoLoading"></Spin>
+                    </div>
+                    <!-- 申请的项目 -->
+                    <div class="titlenorm mt10 mb5">
+                        <Icon type="logo-buffer"></Icon>
+                        代理申請
+                    </div>
+                    <Alert type="error" class="error-info" v-show="errorInfo">{{ errorMsg }}</Alert>
+                    <i-form label-position="right" :label-width="120" :rules="ruleValidate" class="classical tl">
+                        <form-item label="申請区分" prop="restTypeId">
+                            <i-select v-model="restApply.restTypeId" editable filterable clearable
+                                      @on-change="handleRestType"
+                                      class="mb5 no-border-radius" ref="select" transfer>
+                                <option-group v-for="(item, i) of applyEmployRestList" :key="i" :label="item.groupName">
+                                    <i-option v-for="(e, i) of item.ntfTypeValue" :value="e.ntfId" :key="i"
+                                              :label="e.ntfName">
+                                    </i-option>
+                                </option-group>
+                            </i-select>
+                        </form-item>
+                        <form-item label="最終決裁レベル">
+                            <span class="mb5 input-like-span">{{approvalLevel}}</span>
+                        </form-item>
+                        <form-item label="対象期間" v-show="!selectedRestInfo.transfer">
                 <span class="input-like-span">
                   <radio-group v-model="timerangeType" @on-change="restApply.useVacation = false">
                     <Radio :label="1">指定日申請</Radio>
                     <Radio :label="2">範囲申請</Radio>
                   </radio-group>
                 </span>
-            </form-item>
-            <form-item label="日付" v-show="!selectedRestInfo.transfer">
-              <date-picker type="date" class="datepicker-single width100 tl" transfer v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd" @on-change="restApply.dateList = $event" placeholder="日付" ref="datepicker"></date-picker>
-              <span v-if="timerangeType === 2">
-                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[0]" format="yyyy/MM/dd" @on-change="restApply.dateListRange[0] = $event" placeholder="日付" ref="datepicker1"></date-picker>&nbsp;<span style="position: relative; top: -5px;">-</span>&nbsp;<date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false" @on-change="restApply.dateListRange[1] = $event" placeholder="日付け" ref="datepicker2"></date-picker>
+                        </form-item>
+                        <form-item label="日付" v-show="!selectedRestInfo.transfer">
+                            <date-picker type="date" class="datepicker-single width100 tl" transfer
+                                         v-if="timerangeType === 1" v-model="restApply._dateList" format="yyyy/MM/dd"
+                                         @on-change="restApply.dateList = $event" placeholder="日付"
+                                         ref="datepicker"></date-picker>
+                            <span v-if="timerangeType === 2">
+                   <date-picker style="width:48.8%" type="date" class="datepicker-single tl" transfer
+                                v-model="restApply._dateListRange[0]" format="yyyy/MM/dd"
+                                @on-change="restApply.dateListRange[0] = $event" placeholder="日付"
+                                ref="datepicker1"></date-picker>&nbsp;<span
+                                    style="position: relative; top: -5px;">-</span>&nbsp;<date-picker
+                                    style="width:48.8%" type="date" class="datepicker-single tl" transfer
+                                    v-model="restApply._dateListRange[1]" format="yyyy/MM/dd" :editable="false"
+                                    @on-change="restApply.dateListRange[1] = $event" placeholder="日付け"
+                                    ref="datepicker2"></date-picker>
                 </span>
-            </form-item>
-            <!-- 有振休 -->
-            <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
-              <date-picker type="date" :value="restApply.begin" class="datepicker-single tl width100" placeholder="日付"
-                           format="yyyy/MM/dd" @on-change="restApply.begin = $event" transfer></date-picker>
-            </form-item>
-            <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
-              <date-picker type="date" :value="restApply.end" class="datepicker-single tl width100" placeholder="日付"
-                           format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
-            </form-item>
+                        </form-item>
+                        <!-- 有振休 -->
+                        <form-item label="出勤にする休日" 　v-show="selectedRestInfo.transfer">
+                            <date-picker type="date" :value="restApply.begin" class="datepicker-single tl width100"
+                                         placeholder="日付"
+                                         format="yyyy/MM/dd" @on-change="restApply.begin = $event"
+                                         transfer></date-picker>
+                        </form-item>
+                        <form-item label="振休日とする出勤日" 　v-show="selectedRestInfo.transfer">
+                            <date-picker type="date" :value="restApply.end" class="datepicker-single tl width100"
+                                         placeholder="日付"
+                                         format="yyyy/MM/dd" @on-change="restApply.end = $event" transfer></date-picker>
+                        </form-item>
 
-            <!-- 有起算日-->
-            <form-item label="起算日" 　v-show="selectedRestInfo.period" >
-              <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single tl width100"
-                           placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event" transfer>
-              </date-picker>
-            </form-item>
+                        <!-- 有起算日-->
+                        <form-item label="起算日" 　v-show="selectedRestInfo.period">
+                            <date-picker type="date" :value="restApply.txtPeriod" class="datepicker-single tl width100"
+                                         placeholder="日付" format="yyyy/MM/dd" @on-change="restApply.txtPeriod = $event"
+                                         transfer>
+                            </date-picker>
+                        </form-item>
 
-            <!-- 有加算日-->
-            <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
-              <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span></input-number>
-            </form-item>
+                        <!-- 有加算日-->
+                        <form-item label="加算日数" 　v-show="selectedRestInfo.addDate">
+                            <input-number :max="99" :min="1" :precision="0" class="mb15　tl"
+                                          v-model="restApply.txtAddDate" placeholder="日数"><span slot="append">日</span>
+                            </input-number>
+                        </form-item>
 
-            <!-- 是小时单位的 時間帯 -->
-            <form-item label="開始・終了" v-show="selectedRestInfo.timeZone">
-              <Row>
-                <i-col span="11">
-                  <i-input v-model="restApply.timezoneOpen" @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)" placeholder="開始時間" />
-                </i-col>
-                <i-col span="2">
-                  <p class="tc" style="padding: 4px;">-</p>
-                </i-col>
-                <i-col span="11">
-                  <i-input v-model="restApply.timezoneClose" @on-blur="handleInputChange(0,  restApply,'timezoneClose', $event.target)" placeholder="終了時間" />
-                </i-col>
-              </Row>
-            </form-item>
+                        <!-- 是小时单位的 時間帯 -->
+                        <form-item label="開始・終了" v-show="selectedRestInfo.timeZone">
+                            <Row>
+                                <i-col span="11">
+                                    <i-input v-model="restApply.timezoneOpen"
+                                             @on-blur="handleInputChange(0,  restApply,'timezoneOpen', $event.target)"
+                                             placeholder="開始時間"/>
+                                </i-col>
+                                <i-col span="2">
+                                    <p class="tc" style="padding: 4px;">-</p>
+                                </i-col>
+                                <i-col span="11">
+                                    <i-input v-model="restApply.timezoneClose"
+                                             @on-blur="handleInputChange(0,  restApply,'timezoneClose', $event.target)"
+                                             placeholder="終了時間"/>
+                                </i-col>
+                            </Row>
+                        </form-item>
 
-            <!-- 始業・終業-->
-            <form-item label="始業・終業" 　v-show="selectedRestInfo.workTime" >
-              <Row>
-                <i-col span="11">
-                  <i-input placeholder="始業後" v-model="restApply.timeOpen" v-show="selectedRestInfo.workTime"><span
-                          slot="append">分</span></i-input>
-                </i-col>
-                <i-col span="2">
-                  <p class="tc" style="padding: 4px;">-</p>
-                </i-col>
-                <i-col span="11">
-                  <i-input placeholder="終業前" v-model="restApply.timeClose" v-show="selectedRestInfo.workTime"><span
-                          slot="append">分</span></i-input>
-                </i-col>
-              </Row>
-            </form-item>
+                        <!-- 始業・終業-->
+                        <form-item label="始業・終業" 　v-show="selectedRestInfo.workTime">
+                            <Row>
+                                <i-col span="11">
+                                    <i-input placeholder="始業後" v-model="restApply.timeOpen"
+                                             v-show="selectedRestInfo.workTime"><span
+                                            slot="append">分</span></i-input>
+                                </i-col>
+                                <i-col span="2">
+                                    <p class="tc" style="padding: 4px;">-</p>
+                                </i-col>
+                                <i-col span="11">
+                                    <i-input placeholder="終業前" v-model="restApply.timeClose"
+                                             v-show="selectedRestInfo.workTime"><span
+                                            slot="append">分</span></i-input>
+                                </i-col>
+                            </Row>
+                        </form-item>
 
-            <!-- 是范围才有曜日-->
-            <form-item label="曜日" 　v-show="selectedRestInfo.daysOfWeek  && timerangeType === 2">
+                        <!-- 是范围才有曜日-->
+                        <form-item label="曜日" 　v-show="selectedRestInfo.daysOfWeek  && timerangeType === 2">
                 <span class="input-like-span">
                   <Row>
                     <i-col span="7">
@@ -478,1047 +507,1139 @@
                     </i-col>
                   </Row>
                 </span>
-            </form-item>
+                        </form-item>
 
-            <!-- 是有氏名的-->
-            <form-item label="氏名" v-show="selectedRestInfo.name" >
-              <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="20" placeholder="氏名は20文字以内で入力してください。"/>
-            </form-item>
+                        <!-- 是有氏名的-->
+                        <form-item label="氏名" v-show="selectedRestInfo.name">
+                            <i-input class="mb5 tl" v-model="restApply.txtName" :maxlength="20"
+                                     placeholder="氏名は20文字以内で入力してください。"/>
+                        </form-item>
 
-            <!-- 是有続柄的-->
-            <form-item label="続柄" v-show="selectedRestInfo.relation" >
-              <i-input class="mb5" v-model="restApply.txtRelation" :maxlength="10" placeholder="続柄は10文字以内で入力してください。"/>
-            </form-item>
+                        <!-- 是有続柄的-->
+                        <form-item label="続柄" v-show="selectedRestInfo.relation">
+                            <i-input class="mb5" v-model="restApply.txtRelation" :maxlength="10"
+                                     placeholder="続柄は10文字以内で入力してください。"/>
+                        </form-item>
 
-            <!-- 是有対象の人数的-->
-            <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber" >
-              <input-number :max="99" :min="1" :precision="0" class="mb15　tl" v-model="restApply.txtTargetNumber" placeholder="人数"><span slot="append">人</span></input-number>
-            </form-item>
+                        <!-- 是有対象の人数的-->
+                        <form-item label="対象の人数" v-show="selectedRestInfo.targetNumber">
+                            <input-number :max="99" :min="1" :precision="0" class="mb15　tl"
+                                          v-model="restApply.txtTargetNumber" placeholder="人数"><span
+                                    slot="append">人</span></input-number>
+                        </form-item>
 
-            <!-- 有生年月日-->
-            <form-item label="生年月日" 　v-show="selectedRestInfo.birthday">
-              <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5" placeholder="日付"
-                           format="yyyy/MM/dd" @on-change="restApply.txtBirthday = $event" transfer></date-picker>
-            </form-item>
+                        <!-- 有生年月日-->
+                        <form-item label="生年月日" 　v-show="selectedRestInfo.birthday">
+                            <date-picker type="date" :value="restApply.txtBirthday" class="datepicker-single mb5"
+                                         placeholder="日付"
+                                         format="yyyy/MM/dd" @on-change="restApply.txtBirthday = $event"
+                                         transfer></date-picker>
+                        </form-item>
 
-            <!-- 有伤病-->
-            <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
-              <i-input v-model="restApply.txtSickName" class="tl" maxlength="50" placeholder="傷病名は50文字以内で入力してください。"/>
-            </form-item>
+                        <!-- 有伤病-->
+                        <form-item label="傷病名" 　v-show="selectedRestInfo.sickName">
+                            <i-input v-model="restApply.txtSickName" class="tl" maxlength="50"
+                                     placeholder="傷病名は50文字以内で入力してください。"/>
+                        </form-item>
 
-            <form-item label="申請事由等">
-              <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100" class="tl"
-                       placeholder="文字の長さは100文字以内になっております。"></i-input>
-            </form-item>
-            <form-item label="承認者コメント">
-              <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }" :maxlength="100" class="tl"
-                       placeholder="文字の長さは100文字以内になっております。"></i-input>
-            </form-item>
+                        <form-item label="申請事由等">
+                            <i-input v-model="restApply.owncomment" type="textarea" :autosize="{ minRows: 3 }"
+                                     :maxlength="100" class="tl"
+                                     placeholder="文字の長さは100文字以内になっております。"></i-input>
+                        </form-item>
+                        <form-item label="承認者コメント">
+                            <i-input v-model="restApply.bosscomment" type="textarea" :autosize="{ minRows: 3 }"
+                                     :maxlength="100" class="tl"
+                                     placeholder="文字の長さは100文字以内になっております。"></i-input>
+                        </form-item>
 
-            <form-item label="添付ファイル">
-              <Upload ref="upload" :show-upload-list="false" multiple type="drag" action="/" :before-upload="handleBeforeUpload">
-                <i-button style="border:0" icon="ios-cloud-upload-outline" long>ファイルを選択</i-button>
-              </Upload>
-            </form-item>
-            <form-item label="">
-              <ul class="ivu-upload-list tl mb10">
-                <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
+                        <form-item label="添付ファイル">
+                            <Upload ref="upload" :show-upload-list="false" multiple type="drag" action="/"
+                                    :before-upload="handleBeforeUpload">
+                                <i-button style="border:0" icon="ios-cloud-upload-outline" long>ファイルを選択</i-button>
+                            </Upload>
+                        </form-item>
+                        <form-item label="">
+                            <ul class="ivu-upload-list tl mb10">
+                                <li class="ivu-upload-list-file" v-for="(item,i) of uploadFiles" :key="i">
                     <span @click="applyCardDownloadFile(item)">
                       <Icon
                               :type="item.type.indexOf('image') > -1 ? 'ios-image' : item.type.indexOf('sheet') > -1 || item.type.indexOf('xls') > -1 ? 'ios-stats' : 'md-document'">
                       </Icon> {{ item.name }}
                     </span>
-                  <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove" @click="handleDelFile(item)"></i>
-                </li>
-              </ul>
-            </form-item>
-            <form-item label="">
-              <Alert class="primary-info">各上限 500kBytes</Alert>
-            </form-item>
+                                    <i class="ivu-icon ivu-icon-ios-close ivu-upload-list-remove"
+                                       @click="handleDelFile(item)"></i>
+                                </li>
+                            </ul>
+                        </form-item>
+                        <form-item label="">
+                            <Alert class="primary-info">各上限 500kBytes</Alert>
+                        </form-item>
 
-              <form-item label="注意事項" v-if="selectBiko">
-                <Alert class="primary-info" >{{selectBiko}}</Alert>
-              </form-item>
-            </i-form>
-            <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create" :loading="applyLoading">申請
-            </i-button>
-          </tab-pane>
-        </Tabs>
-      </Drawer>
+                        <form-item label="注意事項" v-if="selectBiko">
+                            <Alert class="primary-info">{{selectBiko}}</Alert>
+                        </form-item>
+                    </i-form>
+                    <i-button class="btn" type="primary" ghost long @click="apply()" icon="md-create"
+                              :loading="applyLoading">申請
+                    </i-button>
+                </tab-pane>
+            </Tabs>
+        </Drawer>
     </div>
     <back-top></back-top>
-  </main>
-  <div th:replace="layout/head::header"></div>
-  <script type="text/babel" th:inline="javascript">
+</main>
+<div th:replace="layout/head::header"></div>
+<script type="text/babel" th:inline="javascript">
     const REST_APPLY_CONFIRM = new Vue({
-      el: '.restapplyconfirm-warp',
-      data() {
-        return {
-          isDrop:false,
-          isPerm:false,
-          isCancel:false,
-          isNotification:false,
-          approvalLevel:'',
-          selectBiko:'',
-          hasAuthority:false,
-          hasPassedTimeCheck: true,
-          agencyApplyShow: false,
-          columns: [
-            {
-              title: '申請者',
-              key: 'tntfCemployeeidName',
-              align: 'right',
-              minWidth: 100,
-              maxWidth: 200
-            },
-            {
-              title: '代理申請',
-              slot: 'otherOne',
-              align: 'center',
-              width: 80
-            },
-            {
-              title: '申請区分',
-              key: 'tntfCtype',
-              tooltip: true,
-              align: 'left',
-              minWidth: 105,
-              maxWidth: 200
-            },
-            {
-              title: '対象期間',
-              slot: 'dateList',
-              align: 'center',
-              minWidth: 190,
-              maxWidth: 200
-            },
-            {
-              title: '次の承認者',
-              slot: 'nextAdmin',
-              align: 'center',
-              minWidth: 150
-            },
-            {
-              title: '申請理由',
-              key: 'tntfCowncomment',
-              tooltip: true,
-              minWidth: 100
-            },
-            {
-              title: '申請日時',
-              key: 'tntfDnotification',
-              align: 'center',
-              minWidth: 50,
-              maxWidth: 160
-            },
-            {
-              title: '最終更新日',
-              key: 'tntfDmodifieddate',
-              align: 'center',
-              minWidth: 50,
-              maxWidth: 160
-            },
-            {
-              title: '状態',
-              slot: 'status',
-              align: 'center',
-              width: 45
-            },
-            {
-              title: '詳細',
-              slot: 'more',
-              align: 'center',
-              width: 80
-            },
-            {
-              type: 'selection',
-              width: 50,
-              align: 'center'
-            }
-          ],
-          week: [
-            { name: '月', value: 1 },
-            { name: '火', value: 2 },
-            { name: '水', value: 3 },
-            { name: '木', value: 4 },
-            { name: '金', value: 5 },
-            { name: '土', value: 6 },
-            { name: '日', value: 7 }
-          ],
-          loading: false,
-          detailsLoading: false,
-          restInfoLoading: false,
-          confirmLoading: false,
-          errorInfo: false,
-          agencyApplyPanel: true, // 代理申请第二个panel是否可点
-          agencyApplyPanelLoading: false,
-          applyLoading: false,
-          errorMsg: '',
-          timerangeType: 1,
-          applyEmployRestInfoLoading: false,
-          needRefreshTable: false,
-          tableData: [],
-          pageValue: {
-            amount: 0,
-            curPage: 1,
-            curSize: 50
-          },
-          opts: {
-            ntfTypeId: '全て',
-            statusFlg: 0,
-            year: '',
-            serchEmpId: '全て',
-            page: 1
-          },
-          curYear: new Date(),
-          empList: [],
-          statusList: [],
-          detailsData: {},
-          applyEmployPersonalInfo: [],
-          applyEmployRestInfo: [],
-          applyEmployRestList: [],
-          detailsStatus: '',
-          updateHistorycolumns: [
-            {
-              title: '更新者',
-              key: 'empname',
-              align: 'right',
-            }, {
-              title: '操作',
-              key: 'ntfactionname',
-              align: 'center',
-            }, {
-              title: '状態',
-              key: 'statusname',
-              align: 'center',
-            }, {
-              title: '更新日時',
-              key: 'tnalDmodifieddate',
-              width: 180,
-              align: 'center',
-            }, {
-              title: '更新時コメント',
-              key: 'tnalCupdateccomment',
-              align: 'center',
-              tooltip: true
-            }],
-          detailDrawShow: false,
-          restInfoList: [],
-          restTypeListForReview: [],
-          selectedRestInfo: {},
-          selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]]  ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]]:"section", //类型选择
-          empDeptLoading: false,  // 組織ツリーloading用
-          deptDrawShow: false,    //組織ツリー用
-          treeData: [],            //組織ツリー用
-          currentTab: '',         //組織のツリーと検索タブーを切り替え
-          isSearchHistory: false,
-          empTreeData: [],        //組織ツリー用
-          searchTypesList: [],     //組織ツリー用
-          searchConditionsList: [],//組織ツリー用
-          emplistLoading: false,  //職員番号ローディング用動画
-          deptName: '選んでください',   //選択した職員の所属
-          referListObject: {       //組織ツリー共通
-            txtTmgReferListTreeViewRecordDate: '',
-            txtTmgReferListTreeViewPermTargetSection: '',
-            txtTmgReferListTreeViewPermTargetGroup: '',
-            txtTmgReferListTreeViewPermTargetEmp: '',
-            txtTmgReferListTreeViewPermSelectedView: '',
-            hidSearchData:'',
-            hidSearchItems:'EMPLOYEEID',
-            hidSearchCondition:'BROADMATCH',
-            hidSelectTab:'0',      //組織タブー0：ツリ、1:検索
-            psSite: Utils.getUrlParam(location.href, 'psSite'),
-            psApp: Utils.getUrlParam(location.href, 'psApp'),
-            type: 21
-          },
-          restApply: {
-            useVacation: false,
-            weekSelected: [],
-            noreserved: 1,
-            _dateList: '',
-            _dateListRange:['', ''],
-            dateListRange:['', ''],
-            txtAddDate:null,
-            txtTargetNumber:null
-          },
-          tabPaneLabel: (h) => {
-            return h('div', [
-              h('i-button', {
-                props: {
-                  type: 'text',
-                  loading: this.agencyApplyPanelLoading,
-                  disabled: this.agencyApplyPanel
-                }
-              }, '2. 休暇・休業申請'),
-            ])
-          },
-          ruleValidate: {
-            restTypeId: [
-              { required: true, message: 'The name cannot be empty', trigger: 'blur' }
-            ],
-          },
-          contentScrollTop: 0,
-          uploadFiles: [],
-          deleteFiles: [],
-          curClickedEmpId: 0,
-          curTab:'name1'
-        }
-      },
-      async mounted() {
-         this.getInit()
-         this.getStatusList()
-         this.getRestTypeForReview()
-        window.addEventListener('scroll',this.handleScroll,{ passive: true })
-      },
-        beforeDestroy() {
-            window.removeEventListener('scroll',this.handleScroll,{ passive: true })
-      },
-      computed: {
-        tableHeadFixed() {
-          if (this.contentScrollTop > 230) return true
-          else return false
-        },
-        flatRestTypeList() {
-          let result = []
-          if (this.applyEmployRestList.length > 0) {
-            this.applyEmployRestList.forEach(e => (result = result.concat(e.ntfTypeValue)))
-          }
-          return result
-        },
-      },
-      methods: {
-        //初期化処理
-        async getInit() {
-          console.log([[${ session }]])
-          let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-          if(Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')){
-            this.referListObject.txtTmgReferListTreeViewRecordDate =  Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
-          }
-          console.log(this.referListObject)
-          await this.getOrgTree()
-          await this.getSearchCondition()
-          //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
-          if (targetPermSection) {
-            let getDeptCode=this.getDeptCode(this.treeData,targetPermSection)
-            if (getDeptCode) {
-              this.getDeptName(this.treeData, targetPermSection)
-              this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
-              this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
-              this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
-              this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
-            }
-          }else{
-            this.deptName = this.treeData[0].label
-            this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
-            this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
-            this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
-            this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
-            this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
-            this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
-          }
-          //一覧画面取得
-          this.getEmplist()
-          this.getTableData(true)
-        },
-        getDeptCode(data,section) {
-          let dept =false
-          data.forEach(e => {
-            if (e.secid === section) {
-              dept=true
-            }
-          })
-          return dept
-        },
-        getDeptName(data,section) {
-          // idによりループ処理でdeptNameを取得する
-          data.forEach(e => {
-            if (e.secid === section) {
-              this.deptName = e.label
-            }
-          })
-        },
-        getTableData: Debounce(async function (isInit, resetPage) {
-          await this.getHasAuthority()
-          try {
-            this.loading = true
-            let OPTS = { ...this.opts, ...this.referListObject }
-            if (this.opts.statusFlg === 0) {
-              OPTS.statusFlg = ''
-            }
-            if (OPTS.serchEmpId === '全て') {
-              OPTS.serchEmpId = ''
-            }
-            if (OPTS.ntfTypeId === '全て') {
-              OPTS.ntfTypeId = ''
-            }
-            // 点击非换页请求时需要将页数重置为1
-            if (resetPage) {
-              OPTS.page = 1
-              this.pageValue.curPage = 1
-            }
-            const { data } = await this.http.get('sys/vapply/NotificationList', OPTS)
-            this.tableData = data.list.map(e=>{
-              return {
-                ...e,
-                _disabled: (e.tntfCstatusflg !== 'TMG_NTFSTATUS|2' || !this.hasAuthority )
-              }
-            })
-            this.pageValue.amount = data.totalCount
-            if (!isInit) this.$Message.success('再表示完了')
-            this.amount = data.totalCount || 2
-          } catch (error) {
-            return
-          } finally {
-            this.loading = false
-          }
-        }),
-        async getOrgTree() {
-          this.empDeptLoading = true
-          try {
-            const { groupList, sectionList, recordDate } = await this.http.get('sys/tree', this.referListObject)
-            // 先将数据转为标准格式，再转为可用数据
-            if (this.selectedDeptViewType === "section") {
-              this.treeData = Utils.convertTreeData(sectionList)
-            }
-            if (this.selectedDeptViewType === "group") {
-              this.treeData = Utils.convertTreeData(groupList)
-            }
-            this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
-          } catch (error) {
-            return
-          } finally {
-            this.loading = false
-            this.empDeptLoading = false
-          }
-        },
-        async getStatusList() {
-          const { data } = await this.http.get('sys/vapply/StatusFlg', this.opts)
-          this.statusList = data
-        },
-        async getRestTypeForReview() {
-          // 获得休假选择list
-          const { data } = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
-          this.restTypeListForReview = data
-        },
-        async getHasAuthority() {
-          // 获得休假选择list
-          const { data } = await this.http.get('sys/vapply/hasAuthority', this.referListObject)
-          this.hasAuthority = data
-        },
-        async handleDeptDateChange(e) {
-          this.referListObject.txtTmgReferListTreeViewRecordDate = e
-          this.curYear=e
-          this.opts.year=e.slice(0,4)
-          this.isSearchHistory = true
-          await this.getOrgTree()
-          this.getHasAuthority()
-          if(this.treeData.length !== 0) {
-            this.$Notice.warning({ title:'所属図更新完了',desc:"下記の所属リストから対象を選んでください" })
-          }
-          this.empTreeData= []
-          this.agencyApplyPanel = true
-        },
-        handleRestFilter(e) {
-          if (!e) return
-          this.getTableData(false, true)
-        },
-        async handleDeptViewTypeChange(forAgencyApply) {
-          if (this.selectedDeptViewType === "all") {
-            this.deptDrawShow = false
-            this.deptName = '全て表示中'
-            this.treeData = []
-            this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
-            if(!forAgencyApply) {
-              this.getTableData(false, true)
-            } else {
-              this.getEmplist()
-            }
-            return
-          }
-          await this.getOrgTree()
-          if (this.selectedDeptViewType === "section") {
-            this.opts.txtTmgReferListTreeViewPermSelectedView = 'section'
-          }
-          if (this.selectedDeptViewType === "group") {
-            this.opts.txtTmgReferListTreeViewPermSelectedView = 'group'
-          }
-          this.$Notice.success({ title: '所属図更新完了' })
-        },
-        async handleClickLeaf(e, forAgencyApply) {
-          if (!e[0]) return
-          this.deptDrawShow = false
-          this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
-          this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
-          if (this.selectedDeptViewType === "section") {
-            this.deptName = e[0].label
-          }
-          if (this.selectedDeptViewType === "group") {
-            this.deptName = e[0].secnic
-          }
-          // 点击部署时需要将员工重置为全部
-          this.opts.serchEmpId = '全て'
-
-        if (forAgencyApply) {
-          // 点击所属的时候需要拉取表格数据
-          this.getTableData(false, true)
-        } else {
-          // 代理申请则关闭时才拉取
-          this.needRefreshTable = true
-        }
-        this.getEmplist()
-      },
-      async handleClickEmpLeaf(e) {
-        if (!e[0]) return
-        let OPTS = { ...this.referListObject }
-        this.curClickedEmpId = e[0].id
-        OPTS.txtTmgReferListTreeViewPermTargetEmp = e[0].id
-
-        // 3条都完成的时候，就可以进行代理申请了
-        this.agencyApplyPanelLoading = true
-        Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
-          this.agencyApplyPanel = false
-          this.agencyApplyPanelLoading = false
-          this.curTab='name2'
-        })
-      },
-      async getApplyEmployPersonalInfo(opts) {
-        // 员工信息
-        const { data } = await this.http.get('sys/vapply/EmployInfo', opts)
-        this.applyEmployPersonalInfo = data
-      },
-      async getApplyEmployRestInfo(opts) {
-        // 员工年休信息
-        this.applyEmployRestInfoLoading = true
-        try {
-          const { data } = await this.http.get('sys/vapply/RestYearList', opts)
-          this.applyEmployRestInfo = data
-        } catch (error) {
-        } finally {
-          this.applyEmployRestInfoLoading = false
-        }
-      },
-      async getApplyEmployInfo(opts) {
-        // 请假list
-        const { data } = await this.http.get('sys/vapply/NtfTypeList', opts)
-        this.applyEmployRestList = data
-      },
-      async getEmplist() {
-        this.emplistLoading = true
-        try {
-          const { data } = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
-          this.empList = data
-          this.empTreeData = data.map(e => {
+        el: '.restapplyconfirm-warp',
+        data() {
             return {
-              title: e.empname,
-              id: e.empid
+                isDrop: false,
+                isPerm: false,
+                isCancel: false,
+                isNotification: false,
+                approvalLevel: '',
+                selectBiko: '',
+                hasAuthority: false,
+                hasPassedTimeCheck: true,
+                agencyApplyShow: false,
+                columns: [
+                    {
+                        title: '申請者',
+                        key: 'tntfCemployeeidName',
+                        align: 'right',
+                        minWidth: 100,
+                        maxWidth: 200
+                    },
+                    {
+                        title: '代理申請',
+                        slot: 'otherOne',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        title: '申請区分',
+                        key: 'tntfCtype',
+                        tooltip: true,
+                        align: 'left',
+                        minWidth: 105,
+                        maxWidth: 200
+                    },
+                    {
+                        title: '対象期間',
+                        slot: 'dateList',
+                        align: 'center',
+                        minWidth: 190,
+                        maxWidth: 200
+                    },
+                    {
+                        title: '次の承認者',
+                        slot: 'nextAdmin',
+                        align: 'center',
+                        minWidth: 150
+                    },
+                    {
+                        title: '申請理由',
+                        key: 'tntfCowncomment',
+                        tooltip: true,
+                        minWidth: 100
+                    },
+                    {
+                        title: '申請日時',
+                        key: 'tntfDnotification',
+                        align: 'center',
+                        minWidth: 50,
+                        maxWidth: 160
+                    },
+                    {
+                        title: '最終更新日',
+                        key: 'tntfDmodifieddate',
+                        align: 'center',
+                        minWidth: 50,
+                        maxWidth: 160
+                    },
+                    {
+                        title: '状態',
+                        slot: 'status',
+                        align: 'center',
+                        width: 45
+                    },
+                    {
+                        title: '詳細',
+                        slot: 'more',
+                        align: 'center',
+                        width: 80
+                    },
+                    {
+                        type: 'selection',
+                        width: 50,
+                        align: 'center'
+                    }
+                ],
+                week: [
+                    {name: '月', value: 1},
+                    {name: '火', value: 2},
+                    {name: '水', value: 3},
+                    {name: '木', value: 4},
+                    {name: '金', value: 5},
+                    {name: '土', value: 6},
+                    {name: '日', value: 7}
+                ],
+                loading: false,
+                detailsLoading: false,
+                restInfoLoading: false,
+                confirmLoading: false,
+                errorInfo: false,
+                agencyApplyPanel: true, // 代理申请第二个panel是否可点
+                agencyApplyPanelLoading: false,
+                applyLoading: false,
+                errorMsg: '',
+                timerangeType: 1,
+                applyEmployRestInfoLoading: false,
+                needRefreshTable: false,
+                tableData: [],
+                pageValue: {
+                    amount: 0,
+                    curPage: 1,
+                    curSize: 50
+                },
+                opts: {
+                    ntfTypeId: '全て',
+                    statusFlg: 0,
+                    year: '',
+                    serchEmpId: '全て',
+                    page: 1
+                },
+                curYear: new Date(),
+                empList: [],
+                statusList: [],
+                detailsData: {},
+                applyEmployPersonalInfo: [],
+                applyEmployRestInfo: [],
+                applyEmployRestList: [],
+                detailsStatus: '',
+                updateHistorycolumns: [
+                    {
+                        title: '更新者',
+                        key: 'empname',
+                        align: 'right',
+                    }, {
+                        title: '操作',
+                        key: 'ntfactionname',
+                        align: 'center',
+                    }, {
+                        title: '状態',
+                        key: 'statusname',
+                        align: 'center',
+                    }, {
+                        title: '更新日時',
+                        key: 'tnalDmodifieddate',
+                        width: 180,
+                        align: 'center',
+                    }, {
+                        title: '更新時コメント',
+                        key: 'tnalCupdateccomment',
+                        align: 'center',
+                        tooltip: true
+                    }],
+                detailDrawShow: false,
+                restInfoList: [],
+                restTypeListForReview: [],
+                selectedRestInfo: {},
+                selectedDeptViewType: [[${ session.txtTmgReferListTreeViewPermSelectedView }]] ? [[${ session.txtTmgReferListTreeViewPermSelectedView }]] : "section", //类型选择
+                empDeptLoading: false,  // 組織ツリーloading用
+                deptDrawShow: false,    //組織ツリー用
+                treeData: [],            //組織ツリー用
+                currentTab: '',         //組織のツリーと検索タブーを切り替え
+                isSearchHistory: false,
+                empTreeData: [],        //組織ツリー用
+                searchTypesList: [],     //組織ツリー用
+                searchConditionsList: [],//組織ツリー用
+                emplistLoading: false,  //職員番号ローディング用動画
+                deptName: '選んでください',   //選択した職員の所属
+                referListObject: {       //組織ツリー共通
+                    txtTmgReferListTreeViewRecordDate: '',
+                    txtTmgReferListTreeViewPermTargetSection: '',
+                    txtTmgReferListTreeViewPermTargetGroup: '',
+                    txtTmgReferListTreeViewPermTargetEmp: '',
+                    txtTmgReferListTreeViewPermSelectedView: '',
+                    hidSearchData: '',
+                    hidSearchItems: 'EMPLOYEEID',
+                    hidSearchCondition: 'BROADMATCH',
+                    hidSelectTab: '0',      //組織タブー0：ツリ、1:検索
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    type: 21
+                },
+                restApply: {
+                    useVacation: false,
+                    weekSelected: [],
+                    noreserved: 1,
+                    _dateList: '',
+                    _dateListRange: ['', ''],
+                    dateListRange: ['', ''],
+                    txtAddDate: null,
+                    txtTargetNumber: null
+                },
+                tabPaneLabel: (h) => {
+                    return h('div', [
+                        h('i-button', {
+                            props: {
+                                type: 'text',
+                                loading: this.agencyApplyPanelLoading,
+                                disabled: this.agencyApplyPanel
+                            }
+                        }, '2. 休暇・休業申請'),
+                    ])
+                },
+                ruleValidate: {
+                    restTypeId: [
+                        {required: true, message: 'The name cannot be empty', trigger: 'blur'}
+                    ],
+                },
+                contentScrollTop: 0,
+                uploadFiles: [],
+                deleteFiles: [],
+                curClickedEmpId: 0,
+                curTab: 'name1'
             }
-          })
-        } catch (error) {
-        } finally {
-          this.emplistLoading = false
-        }
-      },
-      async showDetails(row) {
-        this.getDetails(row.tntfCntfNo)
-        this.getRestInfo(row.tntfCemployeeid)
-        this.detailDrawShow = true
-      },
-      async getDetails(id) {
-        this.detailsLoading = true
-        try {
-          const { data } = await this.http.get('sys/vapply/NotificationDetail', { ntfNo: id })
-          this.detailsData = data
-          this.detailsStatus = data.tntfCstatusflg
-        } catch (error) {
-          return
-        } finally {
-          this.detailsLoading = false
-        }
-      },
-      // 左边的年休残
-      async getRestInfo(id) {
-        this.restInfoLoading = true
-        let OPTS = { ...this.referListObject }
-        OPTS.txtTmgReferListTreeViewAdminTargetEmp = id
-        try {
-          const { data } = await this.http.get('sys/vapply/RestYearList', OPTS)
-          this.restInfoList = data
-        } catch (error) {
-          return
-        } finally {
-          this.restInfoLoading = false
-        }
-      },
-      handleApplyDayShow(e) {
-        let result = ''
-        if (e.tntfDbegin === e.tntfDend) {
-          result = result.concat(e.tntfDbegin)
-        } else {
-          if(e.ntfTypeValue.transfer){
-            result = result.concat(`出勤にする休日:${e.tntfDbegin} ～ 振休日とする出勤日:${e.tntfDend}`)
-          }else{
-            result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
-          }
+        },
+        async mounted() {
+            this.getInit()
+            this.getStatusList()
+            this.getRestTypeForReview()
+            window.addEventListener('scroll', this.handleScroll, {passive: true})
+        },
+        beforeDestroy() {
+            window.removeEventListener('scroll', this.handleScroll, {passive: true})
+        },
+        computed: {
+            tableHeadFixed() {
+                if (this.contentScrollTop > 230) return true
+                else return false
+            },
+            flatRestTypeList() {
+                let result = []
+                if (this.applyEmployRestList.length > 0) {
+                    this.applyEmployRestList.forEach(e => (result = result.concat(e.ntfTypeValue)))
+                }
+                return result
+            },
+        },
+        methods: {
+            //初期化処理
+            async getInit() {
+                console.log([[${ session }]])
+                let targetPermSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                if (Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')) {
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = Utils.formatDate([[${ session.TmgReferListSYSDATE }]], 'yyyy/mm/dd')
+                }
+                console.log(this.referListObject)
+                await this.getOrgTree()
+                await this.getSearchCondition()
+                //　初回の画面にアクセスするなら、targetSectionがnullであることから、下記通りでデフォルト所属を設定する
+                if (targetPermSection) {
+                    let getDeptCode = this.getDeptCode(this.treeData, targetPermSection)
+                    if (getDeptCode) {
+                        this.getDeptName(this.treeData, targetPermSection)
+                        this.referListObject.txtTmgReferListTreeViewPermTargetSection = [[${ session.txtTmgReferListTreeViewPermTargetSection }]]
+                        this.referListObject.txtTmgReferListTreeViewPermTargetGroup = [[${ session.txtTmgReferListTreeViewPermTargetGroup }]]
+                        this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
+                        this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    }
+                } else {
+                    this.deptName = this.treeData[0].label
+                    this.referListObject.txtTmgReferListTreeViewPermTargetSection = this.treeData[0].secid
+                    this.referListObject.txtTmgReferListTreeViewPermTargetGroup = this.treeData[0].groupid
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'section'
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = this.referListObject.txtTmgReferListTreeViewRecordDate
+                    this.opts.year = this.referListObject.txtTmgReferListTreeViewRecordDate.slice(0, 4)
+                    this.curYear = this.referListObject.txtTmgReferListTreeViewRecordDate
+                }
+                //一覧画面取得
+                this.getEmplist()
+                this.getTableData(true)
+            },
+            getDeptCode(data, section) {
+                let dept = false
+                data.forEach(e => {
+                    if (e.secid === section) {
+                        dept = true
+                    }
+                })
+                return dept
+            },
+            getDeptName(data, section) {
+                // idによりループ処理でdeptNameを取得する
+                data.forEach(e => {
+                    if (e.secid === section) {
+                        this.deptName = e.label
+                    }
+                })
+            },
+            getTableData: Debounce(async function (isInit, resetPage) {
+                await this.getHasAuthority()
+                try {
+                    this.loading = true
+                    let OPTS = {...this.opts, ...this.referListObject}
+                    if (this.opts.statusFlg === 0) {
+                        OPTS.statusFlg = ''
+                    }
+                    if (OPTS.serchEmpId === '全て') {
+                        OPTS.serchEmpId = ''
+                    }
+                    if (OPTS.ntfTypeId === '全て') {
+                        OPTS.ntfTypeId = ''
+                    }
+                    // 点击非换页请求时需要将页数重置为1
+                    if (resetPage) {
+                        OPTS.page = 1
+                        this.pageValue.curPage = 1
+                    }
+                    const {data} = await this.http.get('sys/vapply/NotificationList', OPTS)
+                    this.tableData = data.list.map(e => {
+                        return {
+                            ...e,
+                            _disabled: (e.tntfCstatusflg !== 'TMG_NTFSTATUS|2' || !this.hasAuthority)
+                        }
+                    })
+                    this.pageValue.amount = data.totalCount
+                    if (!isInit) this.$Message.success('再表示完了')
+                    this.amount = data.totalCount || 2
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                }
+            }),
+            async getOrgTree() {
+                this.empDeptLoading = true
+                try {
+                    const {groupList, sectionList, recordDate} = await this.http.get('sys/tree', this.referListObject)
+                    // 先将数据转为标准格式，再转为可用数据
+                    if (this.selectedDeptViewType === "section") {
+                        this.treeData = Utils.convertTreeData(sectionList)
+                    }
+                    if (this.selectedDeptViewType === "group") {
+                        this.treeData = Utils.convertTreeData(groupList)
+                    }
+                    this.referListObject.txtTmgReferListTreeViewRecordDate = recordDate
+                } catch (error) {
+                    return
+                } finally {
+                    this.loading = false
+                    this.empDeptLoading = false
+                }
+            },
+            async getStatusList() {
+                const {data} = await this.http.get('sys/vapply/StatusFlg', this.opts)
+                this.statusList = data
+            },
+            async getRestTypeForReview() {
+                // 获得休假选择list
+                const {data} = await this.http.get('sys/vapply/NtfTypeDispList', this.opts)
+                this.restTypeListForReview = data
+            },
+            async getHasAuthority() {
+                // 获得休假选择list
+                const {data} = await this.http.get('sys/vapply/hasAuthority', this.referListObject)
+                this.hasAuthority = data
+            },
+            async handleDeptDateChange(e) {
+                this.referListObject.txtTmgReferListTreeViewRecordDate = e
+                this.curYear = e
+                this.opts.year = e.slice(0, 4)
+                this.isSearchHistory = true
+                await this.getOrgTree()
+                this.getHasAuthority()
+                if (this.treeData.length !== 0) {
+                    this.$Notice.warning({title: '所属図更新完了', desc: "下記の所属リストから対象を選んでください"})
+                }
+                this.empTreeData = []
+                this.agencyApplyPanel = true
+            },
+            handleRestFilter(e) {
+                if (!e) return
+                this.getTableData(false, true)
+            },
+            async handleDeptViewTypeChange(forAgencyApply) {
+                if (this.selectedDeptViewType === "all") {
+                    this.deptDrawShow = false
+                    this.deptName = '全て表示中'
+                    this.treeData = []
+                    this.referListObject.txtTmgReferListTreeViewPermSelectedView = 'all'
+                    if (!forAgencyApply) {
+                        this.getTableData(false, true)
+                    } else {
+                        this.getEmplist()
+                    }
+                    return
+                }
+                await this.getOrgTree()
+                if (this.selectedDeptViewType === "section") {
+                    this.opts.txtTmgReferListTreeViewPermSelectedView = 'section'
+                }
+                if (this.selectedDeptViewType === "group") {
+                    this.opts.txtTmgReferListTreeViewPermSelectedView = 'group'
+                }
+                this.$Notice.success({title: '所属図更新完了'})
+            },
+            async handleClickLeaf(e, forAgencyApply) {
+                if (!e[0]) return
+                this.deptDrawShow = false
+                this.referListObject.txtTmgReferListTreeViewPermTargetSection = e[0].secid
+                this.referListObject.txtTmgReferListTreeViewPermTargetGroup = e[0].groupid
+                if (this.selectedDeptViewType === "section") {
+                    this.deptName = e[0].label
+                }
+                if (this.selectedDeptViewType === "group") {
+                    this.deptName = e[0].secnic
+                }
+                // 点击部署时需要将员工重置为全部
+                this.opts.serchEmpId = '全て'
 
-        }
-        return result
-      },
-      handleApplyHourShow(e) {
-        let result = ''
-        if (e.tntfNtimezoneOpenHhmi) {
-          result = result.concat(`${e.tntfNtimezoneOpenHhmi} ～ ${e.tntfNtimezoneCloseHhmi}`)
-        }
-        if (e.tntfNtimeOpen) {
-          result = result.concat(`始業後${e.tntfNtimeOpen}分 ～ 終業前${e.tntfNtimeClose}分`)
-        }
-        if (e.tntfNrestopen) {
-          result = result.concat(`休憩時間:${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
-        }
-        return result
-      },
-      handleWeekShow(e) {
-        let result = ''
-        if (e.tntfNmon === 1) {
-          result = result.concat('月')
-        }
-        if (e.tntfNtue === 1) {
-          result = result.concat('火')
-        }
-        if (e.tntfNwed === 1) {
-          result = result.concat('水')
-        }
-        if (e.tntfNthu === 1) {
-          result = result.concat('木')
-        }
-        if (e.tntfNfri === 1) {
-          result = result.concat('金')
-        }
-        if (e.tntfNsat === 1) {
-          result = result.concat('土')
-        }
-        if (e.tntfNsun === 1) {
-          result = result.concat('日')
-        }
-        return result
-      },
-      handleDatePicker(e) {
-        this.opts.year = e.slice(0,-1)
-        if (this.deptName !== '選んでください') {
-          this.getTableData(false, true)
-          return
-        }
-        this.$Notice.warning({ title: '所属を選択して下さい' })
+                if (forAgencyApply) {
+                    // 点击所属的时候需要拉取表格数据
+                    this.getTableData(false, true)
+                } else {
+                    // 代理申请则关闭时才拉取
+                    this.needRefreshTable = true
+                }
+                this.getEmplist()
+            },
+            async handleClickEmpLeaf(e) {
+                if (!e[0]) return
+                let OPTS = {...this.referListObject}
+                this.curClickedEmpId = e[0].id
+                OPTS.txtTmgReferListTreeViewPermTargetEmp = e[0].id
 
-      },
-      handleScroll: Throttle(function (e) {
-        this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
-      }, 50),
-      async confirm() {
-        const ntfNoList = this.$refs.table.getSelection().map(e=>e.tntfCntfNo)
-        if(ntfNoList.length === 0) {
-          return this.$Notice.warning({ title: '注意', desc: '少なくとも一つの項目を選んでください。', duration: 6.5 })
-        }
-        this.confirmLoading = true
-        try {
-          const { data } = await this.http.postForm('sys/vapply/BulkPermit', {
-            ntfNoList: JSON.stringify(ntfNoList),
-            psSite: this.referListObject.psSite
-          })
-          this.$Message.success('一括承認完了')
-          this.getTableData(false, true)
-        } catch (error) {
-        } finally {
-          this.confirmLoading = false
-        }
-      },
-      confirmByPerson() {
-        let query = { ...this.referListObject }
-        query.action = "ACT_EditPerm_UPermit"
-        // 将详细的数据变成申请的数据
-        query = this.changeData(query)
-        this.$Modal.confirm({
-          inDrawer: true,
-          title: 'この申請を最終決裁します。よろしいですか？',
-          width: 490,
-          okText: 'OK',
-          cancelText: 'キャンセル',
-          onOk: async () => {
-            this.detailDrawShow = false
-            this.loading = true
-            await this.http.uploadFiles('sys/vapply/MakeApply', {
-              params: JSON.stringify(query),
-              psSite: this.referListObject.psSite
-            })
+                // 3条都完成的时候，就可以进行代理申请了
+                this.agencyApplyPanelLoading = true
+                Promise.all([this.getApplyEmployPersonalInfo(OPTS), this.getApplyEmployInfo(OPTS), this.getApplyEmployRestInfo(OPTS)]).then(() => {
+                    this.agencyApplyPanel = false
+                    this.agencyApplyPanelLoading = false
+                    this.curTab = 'name2'
+                })
+            },
+            async getApplyEmployPersonalInfo(opts) {
+                // 员工信息
+                const {data} = await this.http.get('sys/vapply/EmployInfo', opts)
+                this.applyEmployPersonalInfo = data
+            },
+            async getApplyEmployRestInfo(opts) {
+                // 员工年休信息
+                this.applyEmployRestInfoLoading = true
+                try {
+                    const {data} = await this.http.get('sys/vapply/RestYearList', opts)
+                    this.applyEmployRestInfo = data
+                } catch (error) {
+                } finally {
+                    this.applyEmployRestInfoLoading = false
+                }
+            },
+            async getApplyEmployInfo(opts) {
+                // 请假list
+                const {data} = await this.http.get('sys/vapply/NtfTypeList', opts)
+                this.applyEmployRestList = data
+            },
+            async getEmplist() {
+                this.emplistLoading = true
+                try {
+                    const {data} = await this.http.get('sys/vapply/EmployeeList', this.referListObject)
+                    this.empList = data
+                    this.empTreeData = data.map(e => {
+                        return {
+                            title: e.empname,
+                            id: e.empid
+                        }
+                    })
+                } catch (error) {
+                } finally {
+                    this.emplistLoading = false
+                }
+            },
+            async showDetails(row) {
+                await this.getIsNotification(row.tntfCemployeeid)
+                this.getDetails(row.tntfCntfNo, row.allCancellation)
+                this.getRestInfo(row.tntfCemployeeid)
+                this.detailDrawShow = true
+            },
+            async getIsNotification(empId) {
+                console.log(this.referListObject)
+                try {
+                    const {data} = await this.http.get('sys/vapply/isNotification', {empId: empId})
+                    this.isNotification = data
+                } catch (error) {
+                    return
+                } finally {
+                }
+            },
+            async getDetails(id, allCancellation) {
+                this.detailsLoading = true
+                let OPTS = {
+                    psSite: Utils.getUrlParam(location.href, 'psSite'),
+                    psApp: Utils.getUrlParam(location.href, 'psApp'),
+                    ntfNo: id
+                }
+                try {
+                    const {data} = await this.http.get('sys/vapply/NotificationDetail', OPTS)
+                    this.detailsData = data
+                    this.detailsStatus = data.tntfCstatusflg
+                    this.getButtonFlag(allCancellation)
+                } catch (error) {
+                    return
+                } finally {
+                    this.detailsLoading = false
+                }
+            },
+            getButtonFlag(allCancellation) {
+                //初期化
+                this.isDrop = false
+                this.isPerm = false
+                this.isCancel = false
 
-            this.getTableData(false, true)
+                //権限がない場合
+                if (!this.isNotification) {
 
-          }
-        })
-      },
-      denyByPerson() {
-        let query = { ...this.referListObject }
-        query.action = "ACT_EditPerm_UReject"
-        query = this.changeData(query)
-        this.$Modal.confirm({
-          inDrawer: true,
-          title: 'この申請を差戻します。よろしいですか？',
-          width: 490,
-          okText: 'OK',
-          cancelText: 'キャンセル',
-          onOk: async () => {
-            this.detailDrawShow = false
-            this.loading = true
-            await this.http.uploadFiles('sys/vapply/ApplyReject', {
-              params: JSON.stringify(query),
-              psSite: this.referListObject.psSite
-            })
-            this.getTableData(false, true)
-          }
-        })
-      },
-      cancelByPerson() {
-        let query = { ...this.referListObject }
-        query.action = "ACT_EditApply_UDel"
-        // 将详细的数据变成申请的数据
-        query = this.changeData(query)
-        console.log(query)
-        this.$Modal.confirm({
-          inDrawer: true,
-          title: '申請の最終決裁を取消します。よろしいですか？',
-          width: 490,
-          okText: 'OK',
-          cancelText: 'キャンセル',
-          onOk: async () => {
-            this.detailDrawShow = false
-            this.loading = true
-            await this.http.uploadFiles('sys/vapply/MakeApply', {
-              params: JSON.stringify(query),
-              psSite: this.referListObject.psSite,
-            })
+                    // 権限がある場合
+                } else {
+                    // 確定済の場合
+                    if (this.detailsData.fixed) {
 
-            this.getTableData(false, true)
+                        // 確定済でない場合
+                        // 承認待ち
+                    } else if (this.detailsStatus.indexOf('2') > -1) {
+                        // レベル判定
+                        if (!this.detailsData.checkApprovelLevel) {
+                            // 申請者が本人の場合のみ取下が可能
+                            if (this.detailsData.matchUserId) {
+                                this.isDrop = true
+                            }
+                        } else {
+                            this.isPerm = true
+                        }
+                    } else if (this.detailsStatus.indexOf('5') > -1) {
+                        if (allCancellation === '1') {
+                            this.isCancel = true
+                        }
+                    } else {
+                        if (this.detailsStatus.indexOf('3') > -1) {
 
-          }
-        })
-      },
-      changeData(e) {
-        let query = e
-        query.typeNew = this.detailsData.tntfCtypeCode
-        query.ntfNo = this.detailsData.tntfCntfno
-        query.finalApprovalLevel = this.detailsData.finalApprovelLevel
+                        }
+                    }
+                }
 
-        // 时间部分
-        query.tntfDbegin = this.detailsData.tntfDbegin
-        query.tntfDend = this.detailsData.tntfDend
-        // comment
-        query.owncomment = this.detailsData.tntfCowncomment
-        query.bosscomment = this.detailsData.tntfCbosscomment
-        //query.cancelcomment = this.detailsData.tntfCcancelcomment
-        // 起算日
-        query.txtPeriod = this.detailsData.tntfDperiodDate
 
-        // 加算日
-        query.txtAddDate = this.detailsData.tntfNuapperAddition
+            },
+            // 左边的年休残
+            async getRestInfo(id) {
+                this.restInfoLoading = true
+                let OPTS = {...this.referListObject}
+                OPTS.txtTmgReferListTreeViewAdminTargetEmp = id
+                try {
+                    const {data} = await this.http.get('sys/vapply/RestYearList', OPTS)
+                    this.restInfoList = data
+                } catch (error) {
+                    return
+                } finally {
+                    this.restInfoLoading = false
+                }
+            },
+            handleApplyDayShow(e) {
+                let result = ''
+                if (e.tntfDbegin === e.tntfDend) {
+                    result = result.concat(e.tntfDbegin)
+                } else {
+                    if (e.ntfTypeValue.transfer) {
+                        result = result.concat(`出勤にする休日:${e.tntfDbegin} ～ 振休日とする出勤日:${e.tntfDend}`)
+                    } else {
+                        result = result.concat(`${e.tntfDbegin} ～ ${e.tntfDend}`)
+                    }
 
-        // 時間帯
-        query.timezoneOpen = this.detailsData.tntfNtimezoneOpenHhmi
-        query.timezoneClose = this.detailsData.tntfNtimezoneCloseHhmi
+                }
+                return result
+            },
+            handleApplyHourShow(e) {
+                let result = ''
+                if (e.tntfNtimezoneOpenHhmi) {
+                    result = result.concat(`${e.tntfNtimezoneOpenHhmi} ～ ${e.tntfNtimezoneCloseHhmi}`)
+                }
+                if (e.tntfNtimeOpen) {
+                    result = result.concat(`始業後${e.tntfNtimeOpen}分 ～ 終業前${e.tntfNtimeClose}分`)
+                }
+                if (e.tntfNrestopen) {
+                    result = result.concat(`休憩時間:${e.tntfNtimeOpen} ～ ${e.tntfNtimeClose}`)
+                }
+                return result
+            },
+            handleWeekShow(e) {
+                let result = ''
+                if (e.tntfNmon === 1) {
+                    result = result.concat('月')
+                }
+                if (e.tntfNtue === 1) {
+                    result = result.concat('火')
+                }
+                if (e.tntfNwed === 1) {
+                    result = result.concat('水')
+                }
+                if (e.tntfNthu === 1) {
+                    result = result.concat('木')
+                }
+                if (e.tntfNfri === 1) {
+                    result = result.concat('金')
+                }
+                if (e.tntfNsat === 1) {
+                    result = result.concat('土')
+                }
+                if (e.tntfNsun === 1) {
+                    result = result.concat('日')
+                }
+                return result
+            },
+            handleDatePicker(e) {
+                this.opts.year = e.slice(0, -1)
+                if (this.deptName !== '選んでください') {
+                    this.getTableData(false, true)
+                    return
+                }
+                this.$Notice.warning({title: '所属を選択して下さい'})
 
-        // 始业终业
-        query.timeOpen = this.detailsData.tntfNtimeOpen
-        query.timeClose = this.detailsData.tntfNtimeClose
+            },
+            handleScroll: Throttle(function (e) {
+                this.contentScrollTop = e.target.documentElement.scrollTop || e.target.body.scrollTop
+            }, 50),
+            async confirm() {
+                const ntfNoList = this.$refs.table.getSelection().map(e => e.tntfCntfNo)
+                if (ntfNoList.length === 0) {
+                    return this.$Notice.warning({title: '注意', desc: '少なくとも一つの項目を選んでください。', duration: 6.5})
+                }
+                this.confirmLoading = true
+                try {
+                    const {data} = await this.http.postForm('sys/vapply/BulkPermit', {
+                        ntfNoList: JSON.stringify(ntfNoList),
+                        psSite: this.referListObject.psSite
+                    })
+                    this.$Message.success('一括承認完了')
+                    this.getTableData(false, true)
+                } catch (error) {
+                } finally {
+                    this.confirmLoading = false
+                }
+            },
+            confirmByPerson() {
+                let query = {...this.referListObject}
+                query.action = "ACT_EditPerm_UPermit"
+                // 将详细的数据变成申请的数据
+                query = this.changeData(query)
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: 'この申請を最終決裁します。よろしいですか？',
+                    width: 490,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.detailDrawShow = false
+                        this.loading = true
+                        await this.http.uploadFiles('sys/vapply/MakeApply', {
+                            params: JSON.stringify(query),
+                            psSite: this.referListObject.psSite
+                        })
 
-        // 曜日
-        query.noreserved = this.detailsData.tntfNnoreserved
-        query.mon = this.detailsData.tntfNmon
-        query.tue = this.detailsData.tntfNtue
-        query.wed = this.detailsData.tntfNwed
-        query.thu = this.detailsData.tntfNthu
-        query.fri = this.detailsData.tntfNfri
-        query.sat = this.detailsData.tntfNsat
-        query.sun = this.detailsData.tntfNsun
+                        this.getTableData(false, true)
 
-        // 氏名
-        query.txtName = this.detailsData.tntfCemployeeidName
+                    }
+                })
+            },
+            denyByPerson() {
+                let query = {...this.referListObject}
+                query.action = "ACT_EditPerm_UReject"
+                query = this.changeData(query)
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: 'この申請を差戻します。よろしいですか？',
+                    width: 490,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.detailDrawShow = false
+                        this.loading = true
+                        await this.http.uploadFiles('sys/vapply/ApplyReject', {
+                            params: JSON.stringify(query),
+                            psSite: this.referListObject.psSite
+                        })
+                        this.getTableData(false, true)
+                    }
+                })
+            },
+            dropByPerson() {
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '申請を取り下げます。よろしいですか？',
+                    width: 490,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.detailDrawShow = false
+                        this.loading = true
+                        await this.http.post('sys/vapply/EditWithdrop', {
+                            action: 'ACT_EditPermApply_UWithdraw',
+                            ntfNo: this.detailsData.tntfCntfno,
+                            psSite: this.referListObject.psSite
+                        })
+                        this.$Message.success('取り消し完了')
+                        this.getTableData(false, true)
+                    }
+                })
+            },
+            cancelByPerson() {
+                let query = {...this.referListObject}
+                query.action = "ACT_EditApply_UDel"
+                // 将详细的数据变成申请的数据
+                query = this.changeData(query)
+                console.log(query)
+                this.$Modal.confirm({
+                    inDrawer: true,
+                    title: '申請の最終決裁を取消します。よろしいですか？',
+                    width: 490,
+                    okText: 'OK',
+                    cancelText: 'キャンセル',
+                    onOk: async () => {
+                        this.detailDrawShow = false
+                        this.loading = true
+                        await this.http.uploadFiles('sys/vapply/MakeApply', {
+                            params: JSON.stringify(query),
+                            psSite: this.referListObject.psSite,
+                        })
 
-        // 続柄
-        query.txtRelation = this.detailsData.tntfCrelation
+                        this.getTableData(false, true)
 
-        // 対象の人数
-        query.txtTargetNumber = this.detailsData.tntfNnumberOfTarget
+                    }
+                })
+            },
+            changeData(e) {
+                let query = e
+                query.typeNew = this.detailsData.tntfCtypeCode
+                query.ntfNo = this.detailsData.tntfCntfno
+                query.finalApprovalLevel = this.detailsData.finalApprovelLevel
 
-        // 生年月日
-        query.txtBirthday = this.detailsData.tntfDdateofbirth
+                // 时间部分
+                query.tntfDbegin = this.detailsData.tntfDbegin
+                query.tntfDend = this.detailsData.tntfDend
+                // comment
+                query.owncomment = this.detailsData.tntfCowncomment
+                query.bosscomment = this.detailsData.tntfCbosscomment
+                //query.cancelcomment = this.detailsData.tntfCcancelcomment
+                // 起算日
+                query.txtPeriod = this.detailsData.tntfDperiodDate
 
-        // 伤病
-        query.txtSickName = this.detailsData.tntfCsickName
+                // 加算日
+                query.txtAddDate = this.detailsData.tntfNuapperAddition
 
-        return query
-      },
-      handleRestType(e) {
-        // 选择不同的休假时，判断显示不同的项目
-        if (!e || e === '全て') {
-          this.restApply = {
-            useVacation: false,
-            restTypeId: '全て',
-            weekSelected: [],
-            noreserved: 1,
-            _dateList: '',
-            _dateListRange: ['', ''],
-            dateListRange: ['', ''],
-            txtAddDate:null,
-            txtTargetNumber:null,
-          }
-          this.approvalLevel=''
-          this.errorInfo = false
-          this.uploadFiles = []
-          this.hasPassedTimeCheck = true
-          this.selectedRestInfo = {}
-          return
-        }
-        this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
-        this.approvalLevel=this.flatRestTypeList.find(t => t.ntfId === e).sparechar2
-        const turnLine = Vue.filter('turnLine');
-        this.selectBiko=turnLine(this.selectedRestInfo.biko)
-      },
-      handleBeforeUpload(files) {
-        // 返回false, 取消自带上传
-        let checkPassed = true
-        if (this.uploadFiles.length >= 5) {
-          this.$Notice.warning({
-            desc: '添付可能なファイル数が上限（5個）を超えました。'
-          })
-          checkPassed = false
-        }
-        if (files.size / 1024 > 500) {
-          this.$Notice.warning({
-            desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
-          })
-          checkPassed = false
-        }
-        if (checkPassed) {
-          this.uploadFiles.push(files)
-        }
-        return false;
-      },
-      handleDelFile(file) {
-        // 删除文件
-        this.deleteFiles.push(file.name)
-        this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
-      },
-      apply: Debounce(async function () {
-        // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
-        this.errorInfo = false
-        this.restApply.action = 'ACT_AlterApply_CAppl'
-        this.restApply.typeNew = this.selectedRestInfo.ntfId
-        // 代理申请用，个人申请此处为空
-        this.restApply.finalApprovalLevel = this.selectedRestInfo.sparechar2
-        this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
-        const week = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
-        week.forEach((e, i) => {
-          if (this.restApply.weekSelectedHelper.indexOf(`${i + 1}`) > -1) this.restApply[e] = '1'
-          else this.restApply[e] = '0'
-        })
-        if (!this.selectedRestInfo.transfer) {
-          if (this.timerangeType === 2) {
-            this.restApply.begin = this.restApply.dateListRange[0]
-            this.restApply.end = this.restApply.dateListRange[1]
-          }
-          if (this.timerangeType === 1) {
-            this.restApply.begin = this.restApply.dateList
-            this.restApply.end = this.restApply.dateList
-          }
-        }
-        if (!this.restApply.typeNew) {
-          this.errorInfo = true
-          this.errorMsg = '申請区分を選んでください。'
-          return
-        }
+                // 時間帯
+                query.timezoneOpen = this.detailsData.tntfNtimezoneOpenHhmi
+                query.timezoneClose = this.detailsData.tntfNtimezoneCloseHhmi
 
-        if (!this.restApply.begin || !this.restApply.end) {
-          this.errorInfo = true
-          this.errorMsg = '期間を選んでください。'
-          return
-        }
+                // 始业终业
+                query.timeOpen = this.detailsData.tntfNtimeOpen
+                query.timeClose = this.detailsData.tntfNtimeClose
 
-        if (this.restApply.begin || this.restApply.end) {
-          if (this.restApply.begin && !this.restApply.end) {
-            this.errorInfo = true
-            this.errorMsg = '開始期間を入力してください'
-            return
-          }
-          if (!this.restApply.begin && this.restApply.end) {
-            this.errorInfo = true
-            this.errorMsg = '終了期間を入力してください。'
-            return
-          }
-          if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
-            this.errorInfo = true
-            this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
-            return
-          }
-        }
+                // 曜日
+                query.noreserved = this.detailsData.tntfNnoreserved
+                query.mon = this.detailsData.tntfNmon
+                query.tue = this.detailsData.tntfNtue
+                query.wed = this.detailsData.tntfNwed
+                query.thu = this.detailsData.tntfNthu
+                query.fri = this.detailsData.tntfNfri
+                query.sat = this.detailsData.tntfNsat
+                query.sun = this.detailsData.tntfNsun
 
-        if (this.selectedRestInfo.timeZone) {
-            if(!this.restApply.timezoneOpen) {
-              this.errorInfo = true
-              this.errorMsg = '開始時間を入力してください。'
-              return
+                // 氏名
+                query.txtName = this.detailsData.tntfCemployeeidName
+
+                // 続柄
+                query.txtRelation = this.detailsData.tntfCrelation
+
+                // 対象の人数
+                query.txtTargetNumber = this.detailsData.tntfNnumberOfTarget
+
+                // 生年月日
+                query.txtBirthday = this.detailsData.tntfDdateofbirth
+
+                // 伤病
+                query.txtSickName = this.detailsData.tntfCsickName
+
+                return query
+            },
+            handleRestType(e) {
+                // 选择不同的休假时，判断显示不同的项目
+                if (!e || e === '全て') {
+                    this.restApply = {
+                        useVacation: false,
+                        restTypeId: '全て',
+                        weekSelected: [],
+                        noreserved: 1,
+                        _dateList: '',
+                        _dateListRange: ['', ''],
+                        dateListRange: ['', ''],
+                        txtAddDate: null,
+                        txtTargetNumber: null,
+                    }
+                    this.approvalLevel = ''
+                    this.errorInfo = false
+                    this.uploadFiles = []
+                    this.hasPassedTimeCheck = true
+                    this.selectedRestInfo = {}
+                    return
+                }
+                this.selectedRestInfo = this.flatRestTypeList.find(t => t.ntfId === e)
+                this.approvalLevel = this.flatRestTypeList.find(t => t.ntfId === e).sparechar2
+                const turnLine = Vue.filter('turnLine');
+                this.selectBiko = turnLine(this.selectedRestInfo.biko)
+            },
+            handleBeforeUpload(files) {
+                // 返回false, 取消自带上传
+                let checkPassed = true
+                if (this.uploadFiles.length >= 5) {
+                    this.$Notice.warning({
+                        desc: '添付可能なファイル数が上限（5個）を超えました。'
+                    })
+                    checkPassed = false
+                }
+                if (files.size / 1024 > 500) {
+                    this.$Notice.warning({
+                        desc: 'ファイル「' + files.name + '」のサイズが上限（500kBytes）を超えました。'
+                    })
+                    checkPassed = false
+                }
+                if (checkPassed) {
+                    this.uploadFiles.push(files)
+                }
+                return false;
+            },
+            handleDelFile(file) {
+                // 删除文件
+                this.deleteFiles.push(file.name)
+                this.uploadFiles = this.uploadFiles.filter(e => e.name !== file.name)
+            },
+            apply: Debounce(async function () {
+                // 申请完后的4件事： 成功消息，翻转卡片，解除loading，展示数据
+                this.errorInfo = false
+                this.restApply.action = 'ACT_AlterApply_CAppl'
+                this.restApply.typeNew = this.selectedRestInfo.ntfId
+                // 代理申请用，个人申请此处为空
+                this.restApply.finalApprovalLevel = this.selectedRestInfo.sparechar2
+                this.restApply.weekSelectedHelper = this.restApply.weekSelected.join()
+                const week = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+                week.forEach((e, i) => {
+                    if (this.restApply.weekSelectedHelper.indexOf(`${i + 1}`) > -1) this.restApply[e] = '1'
+                    else this.restApply[e] = '0'
+                })
+                if (!this.selectedRestInfo.transfer) {
+                    if (this.timerangeType === 2) {
+                        this.restApply.begin = this.restApply.dateListRange[0]
+                        this.restApply.end = this.restApply.dateListRange[1]
+                    }
+                    if (this.timerangeType === 1) {
+                        this.restApply.begin = this.restApply.dateList
+                        this.restApply.end = this.restApply.dateList
+                    }
+                }
+                if (!this.restApply.typeNew) {
+                    this.errorInfo = true
+                    this.errorMsg = '申請区分を選んでください。'
+                    return
+                }
+
+                if (!this.restApply.begin || !this.restApply.end) {
+                    this.errorInfo = true
+                    this.errorMsg = '期間を選んでください。'
+                    return
+                }
+
+                if (this.restApply.begin || this.restApply.end) {
+                    if (this.restApply.begin && !this.restApply.end) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始期間を入力してください'
+                        return
+                    }
+                    if (!this.restApply.begin && this.restApply.end) {
+                        this.errorInfo = true
+                        this.errorMsg = '終了期間を入力してください。'
+                        return
+                    }
+                    if (!this.selectedRestInfo.transfer && this.restApply.begin && this.restApply.end && Utils.timeToMinute(this.restApply.begin) > Utils.timeToMinute(this.restApply.end)) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始期間 ＜ 終了期間となるようにしてください。'
+                        return
+                    }
+                }
+
+                if (this.selectedRestInfo.timeZone) {
+                    if (!this.restApply.timezoneOpen) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始時間を入力してください。'
+                        return
+                    }
+                    if (!this.restApply.timezoneClose) {
+                        this.errorInfo = true
+                        this.errorMsg = '終了時間を入力してください'
+                        return
+                    }
+                    if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
+                        this.errorInfo = true
+                        this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
+                        return
+                    }
+                }
+                if (!this.hasPassedTimeCheck) {
+                    this.errorInfo = true
+                    this.errorMsg = '時刻をHH:MM形式で入力してください'
+                    return
+                }
+                if (this.selectedRestInfo.workTime) {
+                    if (!this.restApply.timeOpen) {
+                        this.errorInfo = true
+                        this.errorMsg = '始業後時刻を入力してください'
+                        return
+                    }
+                    if (!this.restApply.timeClose) {
+                        this.errorInfo = true
+                        this.errorMsg = '終業前時刻を入力してください'
+                        return
+                    }
+                }
+                if (this.selectedRestInfo.period && !this.restApply.txtPeriod) {
+                    this.errorInfo = true
+                    this.errorMsg = '起算日を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.name && !this.restApply.txtName) {
+                    this.errorInfo = true
+                    this.errorMsg = '氏名を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.relation && !this.restApply.txtRelation) {
+                    this.errorInfo = true
+                    this.errorMsg = '続柄を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber) {
+                    this.errorInfo = true
+                    this.errorMsg = '対象の人数を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
+                    this.errorInfo = true
+                    this.errorMsg = '生年月日を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
+                    this.errorInfo = true
+                    this.errorMsg = '傷病名を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.confirmComment != '0' && !this.restApply.owncomment) {
+                    this.errorInfo = true
+                    this.errorMsg = '申請事由等を入力してください。'
+                    return
+                }
+                if (this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length > 0) {
+                    this.errorInfo = true
+                    this.errorMsg = '添付ファイルを入力してください。'
+                    return
+                }
+                this.deleteFiles = [...new Set(this.deleteFiles)]
+                try {
+                    this.applyLoading = true
+                    await this.http.uploadFiles('sys/vapply/MakeApply', {
+                        params: JSON.stringify(this.restApply),
+                        uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
+                        deleteFiles: JSON.stringify(this.deleteFiles),
+                        txtTmgReferListTreeViewPermTargetEmp: this.curClickedEmpId,
+                        psSite: this.referListObject.psSite
+                    })
+                    this.restApply = {
+                        useVacation: false,
+                        restTypeId: '全て',
+                        weekSelected: [],
+                        noreserved: 1,
+                        _dateList: '',
+                        _dateListRange: ['', ''],
+                        dateListRange: ['', ''],
+                        txtAddDate: null,
+                        txtTargetNumber: null
+                    }
+                    this.$Message.success('申请完了')
+                    this.agencyApplyShow = false
+                    this.getTableData(false, true)
+                    this.uploadFiles = []
+                    this.$refs.select.clearSingleSelect()
+                    this.curTab = 'name1'
+                } catch (error) {
+                    if (error.config || error.response && error.response.status === 500) return
+                    this.errorInfo = true
+                    const _error = JSON.parse(error)
+                    this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
+                } finally {
+                    this.applyLoading = false
+                    this.deleteFiles = []
+                }
+            }),
+            handleWeekSelect(e) {
+                //console.log(e)
+            },
+            pageChange(e) {
+                this.opts.page = e
+                this.pageValue.curPage = e
+                this.getTableData()
+            },
+            closeAgentApplyDrawer() {
+                if (this.deptName !== "選んでください" && this.needRefreshTable) {
+                    this.getTableData(false, true)
+                    this.needRefreshTable = false
+                }
+            },
+            applyCardDownloadFile(e) {
+                if (e.url) {
+                    window.open(e.url, '_blank')
+                }
+            },
+            currentTabChanged(name) {
+                console.log("tabPaneClick")
+                console.log(name)
+
+                if (name == "organisationTree") {
+                    this.referListObject.hidSelectTab = '0'
+                } else if (name == "organisationSearch") {
+                    this.referListObject.hidSelectTab = '1'
+                }
+            },
+            async getSearchCondition() {
+                const {data} = await this.http.get('sys/tree/conditions', this.referListObject)
+                this.searchConditionsList = Object.keys(data.searchConditions).map(e => {
+                    return {name: data.searchConditions[e], value: e}
+                })
+                this.searchTypesList = Object.keys(data.searchTypes).map(e => {
+                    return {name: data.searchTypes[e], value: e}
+                })
+            },
+            handleClickEmpLeafTree(e) {
+                this.deptName = '職員により検索中'
+                this.referListObject.hidSelectTab = '1'
+                this.referListObject.hidSearchData = this.referListObject.hidSearchData
+                this.deptDrawShow = false
+
+                this.getTableData()
+            },
+            handleInputChange(i, object, value, el) {
+                if (object) {
+                    this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
+                }
             }
-            if (!this.restApply.timezoneClose) {
-              this.errorInfo = true
-              this.errorMsg = '終了時間を入力してください'
-              return
-            }
-            if (!this.selectedRestInfo.transfer && this.restApply.timezoneOpen && this.restApply.timezoneOpen && Utils.timeToMinute(this.restApply.timezoneOpen) >= Utils.timeToMinute(this.restApply.timezoneClose)) {
-              this.errorInfo = true
-              this.errorMsg = '開始時間 ＜ 終了時間となるようにしてください。'
-              return
-            }
         }
-        if (!this.hasPassedTimeCheck) {
-          this.errorInfo = true
-          this.errorMsg = '時刻をHH:MM形式で入力してください'
-          return
-        }
-        if(this.selectedRestInfo.workTime) {
-          if (!this.restApply.timeOpen) {
-            this.errorInfo = true
-            this.errorMsg = '始業後時刻を入力してください'
-            return
-          }
-          if (!this.restApply.timeClose) {
-            this.errorInfo = true
-            this.errorMsg = '終業前時刻を入力してください'
-            return
-          }
-        }
-        if(this.selectedRestInfo.period && !this.restApply.txtPeriod ) {
-          this.errorInfo = true
-          this.errorMsg = '起算日を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.name && !this.restApply.txtName ) {
-          this.errorInfo = true
-          this.errorMsg = '氏名を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.relation && !this.restApply.txtRelation) {
-          this.errorInfo = true
-          this.errorMsg = '続柄を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.targetNumber && !this.restApply.txtTargetNumber ) {
-          this.errorInfo = true
-          this.errorMsg = '対象の人数を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.birthday && !this.restApply.txtBirthday) {
-          this.errorInfo = true
-          this.errorMsg = '生年月日を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.sickName && !this.restApply.txtSickName) {
-          this.errorInfo = true
-          this.errorMsg = '傷病名を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.confirmComment !='0' &&!this.restApply.owncomment) {
-          this.errorInfo = true
-          this.errorMsg = '申請事由等を入力してください。'
-          return
-        }
-        if(this.selectedRestInfo.confirmFile === '1' && !this.uploadFiles.length>0) {
-          this.errorInfo = true
-          this.errorMsg = '添付ファイルを入力してください。'
-          return
-        }
-        this.deleteFiles = [...new Set(this.deleteFiles)]
-        try {
-          this.applyLoading = true
-          await this.http.uploadFiles('sys/vapply/MakeApply', {
-            params: JSON.stringify(this.restApply),
-            uploadFiles: this.uploadFiles.filter(e => !e.isDefault),
-            deleteFiles: JSON.stringify(this.deleteFiles),
-            txtTmgReferListTreeViewPermTargetEmp: this.curClickedEmpId,
-            psSite: this.referListObject.psSite
-          })
-          this.restApply = {
-            useVacation: false,
-            restTypeId: '全て',
-            weekSelected: [],
-            noreserved: 1,
-            _dateList: '',
-            _dateListRange: ['', ''],
-            dateListRange: ['', ''],
-            txtAddDate:null,
-            txtTargetNumber:null
-          }
-          this.$Message.success('申请完了')
-          this.agencyApplyShow = false
-          this.getTableData(false, true)
-          this.uploadFiles = []
-          this.$refs.select.clearSingleSelect()
-          this.curTab='name1'
-        } catch (error) {
-          if (error.config || error.response && error.response.status === 500) return
-          this.errorInfo = true
-          const _error = JSON.parse(error)
-          this.errorMsg = _error[Object.keys(_error)[0]][0].ERRMSG
-        } finally {
-          this.applyLoading = false
-          this.deleteFiles = []
-        }
-      }),
-      handleWeekSelect(e) {
-        //console.log(e)
-      },
-      pageChange(e) {
-        this.opts.page = e
-        this.pageValue.curPage = e
-        this.getTableData()
-      },
-      closeAgentApplyDrawer() {
-        if(this.deptName !== "選んでください" && this.needRefreshTable) {
-          this.getTableData(false, true)
-          this.needRefreshTable = false
-        }
-      },
-      applyCardDownloadFile(e) {
-        if(e.url) {
-          window.open(e.url, '_blank')
-        }
-      },
-      currentTabChanged(name) {
-        console.log("tabPaneClick")
-        console.log(name)
-
-        if (name=="organisationTree") {
-          this.referListObject.hidSelectTab='0'
-        } else if (name=="organisationSearch") {
-          this.referListObject.hidSelectTab='1'
-        }
-      },
-      async getSearchCondition() {
-        const { data } = await this.http.get('sys/tree/conditions', this.referListObject)
-        this.searchConditionsList= Object.keys(data.searchConditions).map(e=> { return { name:data.searchConditions[e], value:e }})
-        this.searchTypesList = Object.keys(data.searchTypes).map(e=> { return { name:data.searchTypes[e], value:e }})
-      },
-      handleClickEmpLeafTree(e) {
-        this.deptName = '職員により検索中'
-        this.referListObject.hidSelectTab = '1'
-        this.referListObject.hidSearchData = this.referListObject.hidSearchData
-        this.deptDrawShow = false
-
-        this.getTableData()
-      },
-      handleInputChange(i, object, value, el) {
-        if (object) {
-          this.hasPassedTimeCheck = Utils.checkTime(object, value, el)
-        }
-      }
-    }
-  })
+    })
 </script>
 </body>
 
