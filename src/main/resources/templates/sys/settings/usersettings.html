@@ -146,14 +146,15 @@
       </Modal>
       <!-- パスワードポリシー設定 end-->
 
-      <!-- 利用開始 start-->
-      <Drawer class="tc" placement="right" width="800" v-model="useStart" :title="useTitle">
+      <!-- 利用開始, 终了, パスワード　通过useType区分 start-->
+      <Drawer class="tc" placement="right" width="800" v-model="useDrawerShow" :title="useTitle">
         <div class="mb10 tr">
-          <i-button type="primary" ghost @click="handleEvent" 　icon="md-create" :loading="drawerBtnLoading">
+          <i-button type="primary" ghost @click="handleEvent" icon="md-create" :loading="drawerBtnLoading">
             登録
           </i-button>
         </div>
-        <div class="no-border-radius" style="display: flex; align-items: stretch;">
+        <!-- 利用開始 -->
+        <div v-if="useType === 'start'" class="no-border-radius" style="display: flex; align-items: stretch;">
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用開始日</span>
           <span class="input-like-span tl" style="margin-bottom: 1px;">
@@ -161,13 +162,20 @@
               format="yyyy/MM/dd" @on-change="detailData.startDate = $event"></date-picker>
             <Checkbox v-model="detailData.useEntranceDate" class="tl mt5">各ユーザの入社年月日に設定する</Checkbox>
           </span>
-
-          <!-- <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCowncommentR" type="textarea" v-if="!bFixed">
-          </i-input>
-          <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bFixed">{{ dailyEdit.tdaCowncommentR}}</span> -->
         </div>
 
-        <div class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
+        <!-- 利用终了 -->
+        <div v-if="useType === 'end'" class="no-border-radius" style="display: flex; align-items: stretch;">
+          <span class="label tr"
+            style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 13px 10px 0 0;">利用終了日</span>
+          <span class="input-like-span tl" style="margin-bottom: 1px;">
+          <date-picker type="date" :value="detailData.endDate" class="datepicker-single mb10" placeholder="日付" :options="startDateLimit"
+            format="yyyy/MM/dd" @on-change="detailData.endDate = $event"></date-picker>
+          <Checkbox v-model="detailData.useRetireDate" class="tl mt5">各ユーザの退職日に設定する</Checkbox>
+          </span>
+        </div>
+
+        <div v-if="useType !== 'end'" class="mb5 no-border-radius" style="display: flex; align-items: stretch;">
           <span class="label tr"
             style="display: inline-block;width: 250px;margin-bottom: 1px;padding: 66px 10px 0 0;">パスワード</span>
           <radio-group class="tl input-like-span" v-model="detailData.passwordType" @on-change="handleRadio" vertical>
@@ -176,14 +184,10 @@
             <i-input v-model="detailData.repeatPassword" class="width75" :disabled="detailData.disabled"></i-input>
             <Radio :label="2">ユーザ毎にランダムな文字列を発行する</Radio>
             <Checkbox style="display: block;margin-left: 0;" v-model="detailData.forceChangePassword" class="tl mt5">
-              各ユーザの入社年月日に設定する</Checkbox>
-
+              次回ログイン時にパスワードを変更させる</Checkbox>
           </radio-group>
-          <!-- <i-input class="tl" style="width: 67%;margin-bottom: 1px;" v-model="dailyEdit.tdaCbosscommentR" type="textarea" v-if="!bApproved">
-          </i-input>
-          <span class="input-like-span tl" style="width: 67%;margin-bottom: 1px;" v-if="bApproved">{{ dailyEdit.tdaCmodifieruseridR}} ({{dailyEdit.tdaDmodifieddateR }})</span> -->
         </div>
-        <i-table border :row-class-name="rowClassName" :columns="columnsforView" :disabled-hover="true"
+        <i-table class="mt10" border :row-class-name="rowClassName" :columns="columnsforView" :disabled-hover="true"
           :data="detailData.originalUserList" :loading="loading" no-data-text="">
           <template slot-scope="{ row }" slot="start">{{ Utils.formatDate(row.maDstart, 'yyyy/mm/dd') }}
           </template>
@@ -294,10 +298,11 @@
           treeData: [],
           passwordSetting: [{}, {}, {}, {}, {}],
           passwordPolicyLoading: false,
-          useStart: false,
+          useDrawerShow: false,
+          useType:'',
           updatePasswordPolicyLoading: false,
           drawerBtnLoading: false,
-          detailData: { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false },
+          detailData: { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, useRetireDate: false, startDate:'', endDate:'' },
           startDateLimit:{
             disabledDate: date => {
               // 利用開始日は、1900/01/01～2222/12/31の範囲で入力してください。
@@ -433,15 +438,26 @@
           if (list.length === 0) {
             return this.$Notice.warning({ title: '注意', desc: 'パスワード変更処理をするユーザを選択してください。', duration: 6.5 })
           }
-          this.useStart = true
+          // 初始化
+          this.detailData = { userIds:[], passwordType: 1, repeatPassword: '', password: '' }
+
+          this.useType = 'password'
+          this.useDrawerShow = true
           this.useTitle = 'パスワード編集画面'
+          const { data } = await this.http.post('sys/usermanager/show/password?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
+          console.log(data)
+
         }),
         handleUseStart: Debounce(async function () {
           const list = this.$refs.table.getSelection().map(e => e.maCuserid)
           if (list.length === 0) {
             return this.$Notice.warning({ title: '注意', desc: '利用開始処理をするユーザを選択してください。', duration: 6.5 })
           }
-          this.useStart = true
+          // 初始化
+          this.detailData = { originalUserList: [],userIds:[], passwordType: 1, repeatPassword: '', password: '', useEntranceDate: false, startDate:'' }
+
+          this.useType = 'start'
+          this.useDrawerShow = true
           this.useTitle = '利用開始日編集画面'
           const { data } = await this.http.post('sys/usermanager/show/startDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
           this.detailData.startDate = data.defaultStartDate
@@ -455,14 +471,15 @@
           if (list.length === 0) {
             return this.$Notice.warning({ title: '注意', desc: '利用終了処理をするユーザを選択してください。', duration: 6.5 })
           }
-          this.useStart = true
+          // 初始化
+          this.detailData = { list: [], useRetireDate: false, endDate:'' }
+
+          this.useType = 'end'
+          this.useDrawerShow = true
           this.useTitle = '利用終了日編集画面'
           const { data } = await this.http.post('sys/usermanager/show/endDate?psSite=Admin', { userIds: list, searchType: this.opts.searchType })
-          this.detailData.startDate = data.defaultStartDate
-          this.detailData.min = data.PASSWORD_MIN_LEN
-          this.detailData.max = data.PASSWORD_MAX_LEN
-          this.detailData.originalUserList = data.list
-          this.detailData.userIds = data.list.map(e => e.maCuserid)
+          this.detailData.endDate = Utils.formatDate(data.defaultEndDate, 'yyyy/mm/dd')
+          this.detailData.list = data.list
           console.log(this.detailData)
         }),
         cancelLock: Debounce(async function () {
@@ -484,7 +501,10 @@
           })
         }),
         handleEvent() {
-          if (this.detailData.passwordType === 1) {
+          // 利用开始既改日期又改密码
+          // 密码只改改密码
+          // 终了只改日期且字段不同
+          if (this.useType !== 'end' && this.detailData.passwordType === 1) {
             if (!this.detailData.password) {
               return this.$Notice.warning({ title: '注意', desc: 'アカウントを発行する際は、パスワードを入力してください。', duration: 6.5 })
             }
@@ -502,21 +522,35 @@
             }
           }
 
-          if (!this.detailData.startDate) {
+          if (this.useType === 'start' && !this.detailData.useEntranceDate && !this.detailData.startDate) {
               return this.$Notice.warning({ title: '注意', desc: '利用開始日を入力してください。', duration: 6.5 })
-            }
+          }
+
+          if (this.useType === 'end' && !this.detailData.useRetireDate && !this.detailData.endDate) {
+            return this.$Notice.warning({ title: '注意', desc: '利用終了日を入力してください。', duration: 6.5 })
+          }
 
           this.$Modal.confirm({
             title: '注意',
-            content: 'ページ下にある一覧のユーザに対し、アカウントの利用開始日等を、入力内容に更新します。よろしいですか？',
+            content: `ページ下にある一覧のユーザに対し、${this.useType === 'start' ? 'アカウントの利用開始日等' : this.useType === 'end' ? 'アカウントの利用終了日' : 'パスワード'}を、入力内容に更新します。よろしいですか？`,
             okText: 'OK',
             inDrawer: true,
             cancelText: 'キャンセル',
             onOk: async () => {
               try {
                 this.drawerBtnLoading = true
-                const { data } = await this.http.post('sys/usermanager/change/startDate?psSite=Admin', this.detailData)
-                this.useStart = false
+                if(this.useType === 'start') {
+                  const { data } = await this.http.post('sys/usermanager/change/startDate?psSite=Admin', this.detailData)
+                }
+
+                if(this.useType === 'end') {
+                  const { data } = await this.http.post('sys/usermanager/change/endDate?psSite=Admin', this.detailData)
+                }
+
+                if(this.useType === 'password') {
+                  const { data } = await this.http.post('sys/usermanager/change/password?psSite=Admin', this.detailData)
+                }
+                this.useDrawerShow = false
                 this.$Message.success('更新完了')
                 this.getTableData()
               } catch (error) {
